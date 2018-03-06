@@ -1,0 +1,273 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  gentable.tex                GAP documentation               Thomas Breuer
+%%
+%A  @(#)$Id: gentable.tex,v 1.2 1997/02/24 12:44:39 gap Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%H  $Log: gentable.tex,v $
+%H  Revision 1.2  1997/02/24 12:44:39  gap
+%H  vfelsch updated the last example
+%H
+%H  Revision 1.1.1.1  1996/12/11 12:36:45  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.9  1994/06/17  19:02:06  vfelsch
+%H  examples adjusted to version 3.4
+%H
+%H  Revision 3.8  1994/06/10  04:42:01  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.7  1994/05/19  13:45:21  sam
+%H  bug fixes, introduced 'PrintCharTable'
+%H
+%H  Revision 3.6  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.5  1993/02/15  10:54:58  felsch
+%H  examples fixed
+%H
+%H  Revision 3.4  1993/02/13  10:05:33  felsch
+%H  example fixed
+%H
+%H  Revision 3.3  1992/04/07  23:05:55  martin
+%H  changed the author line
+%H
+%H  Revision 3.2  1992/03/27  14:04:16  sam
+%H  removed "'" in index entries
+%H
+%H  Revision 3.1  1991/12/30  08:08:05  sam
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Generic Character Tables}\index{character tables!generic}%
+\index{tables!generic}\index{library tables!generic}
+
+This  chapter informs about  the conception  of generic  character tables
+(see "More about Generic  Character  Tables"), it gives some examples  of
+generic  tables  (see  "Examples   of  Generic  Character  Tables"),  and
+introduces the specialization function (see "CharTableSpecialized").
+
+The  generic  tables  that  are actually  available  in the  \GAP\  group
+collection  are listed in "CharTable", see  also "Contents  of  the Table
+Libraries".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Generic Character Tables}
+
+Generic character tables provide a means  for writing  down the character
+tables of  all  groups in  a (usually infinite) series of similar groups,
+e.g. the cyclic groups, the symmetric groups or the general linear groups
+${\rm GL}(2,q)$.
+
+Let $\{G_q\|q\in I\}$, where $I$ is an index set, be such  a series.  The
+table of a member $G_q$ could be computed using a program for this series
+which takes  $q$ as parameter, and constructs the table.  It is, however,
+desirable  to compute  not  only  the  whole  table  but  to get a single
+character  or  just one character  value without  computation  the table.
+E.g.\ both conjugacy classes and irreducible characters of  the symmetric
+group $S_n$ are in bijection with the partitions of $n$.   Thus for given
+$n$,  it  makes  sense  to  ask  for the  character  corresponding  to  a
+particular partition, and its value at a partition\:
+
+|    gap> t:= CharTable( "Symmetric" );;
+    gap> t.irreducibles[1][1]( 5, [ 3, 2 ], [ 2, 2, 1 ] );
+    1  # a character value of $S_5$
+    gap> t.orders[1]( 5, [ 2, 1, 1, 1 ] );
+    2  # a representative order in $S_5$|
+
+*Generic table* in \GAP\ means that such local evaluation is possible, so
+\GAP\ can also deal with  tables  that  are too big to  be computed as  a
+whole.  In  some cases there are methods to compute the complete table of
+small  members $G_q$ faster than  local evaluation.  If such an algorithm
+is part of the generic table, it will be used when the  generic table  is
+used to compute the whole table (see "CharTableSpecialized").
+
+While the numbers  of  conjugacy classes for  the series are  usually not
+bounded, there is  a fixed finite number of *types* (equivalence classes)
+of conjugacy classes;  very often the equivalence relation is isomorphism
+of the centralizer of the representatives.
+
+For each type $t$ of classes and a fixed $q\in I$, a *parametrisation* of
+the classes in $t$ is  a function that assigns to each conjugacy class of
+$G_q$ in $t$  a *parameter* by which it is uniquely determined.  Thus the
+classes  are indexed by pairs  $(t,p_t)$  for a  type $t$ and a parameter
+$p_t$ for that type.
+
+There has  to be a  fixed  number of  types of irreducibles characters of
+$G_q$,  too.  Like  the  classes,  the   characters  of  each  type   are
+parametrised.
+
+In \GAP, the parametrisations of  classes and  characters of the  generic
+table is given by the record  fields 'classparam'  and 'charparam';  they
+are   both  lists   of   functions,   each  function   representing   the
+parametrisation  of  a  type.   In  the   specialized  table,  the  field
+'classparam'  contains  the  lists  of  class parameters,  the  character
+parameters are stored in the field 'charparam' of the 'irredinfo' records
+(see "Character Table Records").
+
+The centralizer orders, representative orders  and all  powermaps  of the
+generic character table can be represented by  functions in $q$,  $t$ and
+$p_t$; in \GAP, however, they  are represented by  lists of  functions in
+$q$  and a  class  parameter where  each function represents  a  type  of
+classes.   The  value of  a  powermap  at  a particular  class  is a pair
+consisting of type and parameter that specifies the image class.
+
+The values  of the irreducible characters of $G_q$ can be  represented by
+functions in $q$, class type and parameter, character type and parameter;
+in  \GAP, they are  represented by lists of lists of functions, each list
+of functions representing the characters of a type, the function (in $q$,
+character parameters and class parameters) representing  the classes of a
+type in these characters.
+
+Any generic table  is  a  record  like an ordinary character  table  (see
+"Character  Table Records").   There  are some  fields which are used for
+generic tables only\:
+
+'isGenericTable':\\
+     always 'true'
+
+'specializedname':\\
+     function that maps $q$ to the name of the table of $G_q$
+
+'domain':\\
+     function that returns 'true' if its argument is a valid $q$ for $G_q$
+     in the series
+
+'wholetable':\\
+     function to construct the whole table, more efficient than the local
+     evaluation for this purpose
+
+The table of $G_q$ can be constructed  by specializing $q$ and evaluating
+the functions in the generic table  (see  "CharTableSpecialized"  and the
+examples given in "Examples of Generic Character Tables").
+
+The  available  generic  tables are  listed  in  "Contents of  the  Table
+Libraries" and "CharTable".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Examples of Generic Character Tables}\index{tables!generic}%
+\index{character tables!generic}
+
+1. The generic table of the cyclic group\:
+
+For the cyclic group $C_q = \langle x \rangle$ of order $q$, there is one
+type    of    classes.    The    class     parameters     are    integers
+$k\in\{0,\ldots,q-1\}$, the class  of the parameter $k$ consists  of  the
+group element $x^k$.  Group order and centralizer orders are the identity
+function $q \mapsto q$, independent of the parameter $k$.
+
+The representative order function maps $(q,k)$ to  $\frac{q}{\gcd(q,k)}$,
+the order of $x^k$ in $C_q$; the $p$-th powermap is the function $(q,k,p)
+\mapsto [1,(kp\bmod q)]$.
+
+There is one  type of  characters with parameters $l\in\{0,\ldots,q-1\}$;
+for $e_q$ a primitive complex $q$-th  root of unity, the character values
+are $\chi_l(x^k) = e_q^{kl}$.
+
+The library file contains the following generic table\:
+
+|    rec(name:="Cyclic",
+    specializedname:=(q->ConcatenationString("C",String(q))),
+    order:=(n->n),
+    text:="generic character table for cyclic groups",
+    centralizers:=[function(n,k) return n;end],
+    classparam:=[(n->[0..n-1])],
+    charparam:=[(n->[0..n-1])],
+    powermap:=[function(n,k,pow) return [1,k*pow mod n];end],
+    orders:=[function(n,k) return n/Gcd(n,k);end],
+    irreducibles:=[[function(n,k,l) return E(n)^(k*l);end]],
+    domain:=(n->IsInt(n) and n>0),
+    libinfo:=rec(firstname:="Cyclic",othernames:=[]),
+    isGenericTable:=true);|
+
+2. The generic table of the general linear group $\rm{GL}(2,q)$\:
+
+We have  four types  $t_1,  t_2, t_3, t_4$  of classes according  to  the
+rational canonical form of the elements\::\\
+$t_1$ scalar matrices,\\
+$t_2$ nonscalar diagonal matrices,\\
+$t_3$ companion matrices of $(X-\rho)^2$ for elements $\rho\in F_q^{\ast}$
+      and\\
+$t_4$ companion matrices of irreducible polynomials of degree 2 over $F_q$.
+
+The sets of class parameters of the types are in bijection with\\
+$F_q^{\ast}$ for $t_1$ and $t_3$,
+$\{\{\rho,\tau\}; \rho, \tau\in F_q^{\ast}, \rho\not=\tau\}$ for $t_2$ and
+$\{\{\epsilon,\epsilon^q\}; \epsilon\in F_{q^2}\setminus F_q\}$ for $t_4$.
+
+The centralizer order functions are  $q  \mapsto (q^2-1)(q^2-q)$ for type
+$t_1$,  $q \mapsto (q-1)^2$ for type $t_2$, $q  \mapsto q(q-1)$  for type
+$t_3$ and $q \mapsto q^2-1$ for type $t_4$.
+
+The representative  order function of $t_1$  maps $(q,\rho)$ to the order
+of $\rho$ in  $F_q$, that  of $t_2$ maps $(q,\{\rho,\tau\})$ to the least
+common multiple of the orders of $\rho$ and $\tau$.
+
+The file contains something similar to this table\:
+
+|    rec(name:="GL2",
+        specializedname:=(q->ConcatenationString("GL(2,",String(q),")")),
+        order:= ( q -> (q^2-1)*(q^2-q) ),
+        text:= "generic character table of GL(2,q),\
+     see Robert Steinberg: The Representations of Gl(3,q), Gl(4,q),\
+     PGL(3,q) and PGL(4,q), Canad. J. Math. 3 (1951)",
+        classparam:= [ ( q -> [0..q-2] ), ( q -> [0..q-2] ),
+                   ( q -> Combinations( [0..q-2], 2 ) ),
+                   ( q -> Filtered( [1..q^2-2], x -> not (x mod (q+1) = 0)
+                               and (x mod (q^2-1)) < (x*q mod (q^2-1)) ))],
+        charparam:= [ ( q -> [0..q-2] ), ( q -> [0..q-2] ),
+                  ( q -> Combinations( [0..q-2], 2 ) ),
+                  ( q -> Filtered( [1..q^2-2], x -> not (x mod (q+1) = 0)
+                               and (x mod (q^2-1)) < (x*q mod (q^2-1)) ))],
+        centralizers := [ function( q, k ) return (q^2-1) * (q^2-q); end,
+                          function( q, k ) return q^2-q; end,
+                          function( q, k ) return (q-1)^2; end,
+                          function( q, k ) return q^2-1; end],
+        orders:= [ function( q, k ) return (q-1)/Gcd( q-1, k ); end,
+                 ..., ..., ... ],
+        classtext:= [ ..., ..., ..., ... ],
+        powermap:=
+               [ function( q, k, pow ) return [1, (k*pow) mod (q-1)]; end,
+                 ..., ..., ... ],
+        irreducibles := [[ function( q, k, l ) return E(q-1)^(2*k*l); end,
+                       function( q, k, l ) return E(q-1)^(2*k*l); end,
+                       ...,
+                       function( q, k, l ) return E(q-1)^(k*l); end    ],
+                         [ ..., ..., ..., ... ],
+                         [ ..., ..., ..., ... ],
+                         [ ..., ..., ..., ... ]],
+        domain := ( q->IsInt(q) and q>1 and Length(Set(FactorsInt(q)))=1 ),
+        isGenericTable := true )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharTableSpecialized}\index{character tables!generic}
+\index{tables!generic}
+
+'CharTableSpecialized( <generic\_table>, <q> )'
+
+returns a  character  table which  is computed by  evaluating the generic
+character table <generic\_table> at the parameter <q>.
+
+|    gap> t:= CharTableSpecialized( CharTable( "Cyclic" ), 5 );;
+    gap> PrintCharTable( t );
+    rec( identifier := "C5", name := "C5", size := 5, order :=
+    5, centralizers := [ 5, 5, 5, 5, 5 ], orders := [ 1, 5, 5, 5, 5
+     ], powermap := [ ,,,, [ 1, 1, 1, 1, 1 ] ], irreducibles :=
+    [ [ 1, 1, 1, 1, 1 ], [ 1, E(5), E(5)^2, E(5)^3, E(5)^4 ],
+      [ 1, E(5)^2, E(5)^4, E(5), E(5)^3 ],
+      [ 1, E(5)^3, E(5), E(5)^4, E(5)^2 ],
+      [ 1, E(5)^4, E(5)^3, E(5)^2, E(5) ] ], classparam :=
+    [ [ 1, 0 ], [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ] ], irredinfo :=
+    [ rec(
+          charparam := [ 1, 0 ] ), rec(
+          charparam := [ 1, 1 ] ), rec(
+          charparam := [ 1, 2 ] ), rec(
+          charparam := [ 1, 3 ] ), rec(
+          charparam := [ 1, 4 ] )
+     ], text := "computed using generic character table for cyclic groups"\
+    , classes := [ 1, 1, 1, 1, 1
+     ], operations := CharTableOps, fusions := [  ], fusionsource :=
+    [  ], projections := [  ], projectionsource := [  ] )|
+

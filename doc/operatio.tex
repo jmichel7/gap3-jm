@@ -1,0 +1,1301 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  operatio.tex                GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: operatio.tex,v 1.3 1997/03/28 11:38:42 gap Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the functions that deal with  operations  of  groups.
+%%
+%H  $Log: operatio.tex,v $
+%H  Revision 1.3  1997/03/28 11:38:42  gap
+%H  Documented OnLeftInverse and OnLeftAntiOperation.	SL
+%H
+%H  Revision 1.2  1997/01/17 13:38:01  gap
+%H  vfelsch corrected the spelling of the word occurrence
+%H
+%H  Revision 1.1.1.1  1996/12/11 12:36:48  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.20  1994/06/30  15:33:58  vfelsch
+%H  included final changes for version 3.4
+%H
+%H  Revision 3.19  1994/06/17  19:03:10  vfelsch
+%H  examples adjusted to version 3.4
+%H
+%H  Revision 3.18  1994/06/10  02:51:09  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.17  1993/07/27  08:18:35  fceller
+%H  added missing index entries
+%H
+%H  Revision 3.16  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.15  1993/02/18  14:52:37  felsch
+%H  another example fixed
+%H
+%H  Revision 3.14  1993/02/15  14:16:36  felsch
+%H  DefineName eliminated
+%H
+%H  Revision 3.13  1993/02/12  14:44:22  felsch
+%H  examples adjusted to line length 72
+%H
+%H  Revision 3.12  1993/02/02  12:48:20  felsch
+%H  long lines fixed
+%H
+%H  Revision 3.11  1993/02/01  13:50:06  felsch
+%H  example fixed
+%H
+%H  Revision 3.10  1993/01/27  10:09:53  fceller
+%H  various fixes of examples
+%H
+%H  Revision 3.9  1992/06/01  19:18:28  martin
+%H  changed 'Blocks', <G> must operate transitively on <D>
+%H
+%H  Revision 3.8  1992/04/30  11:59:19  martin
+%H  changed a few sentences to avoid bold non-roman fonts
+%H
+%H  Revision 3.7  1992/04/06  16:18:22  martin
+%H  fixed some more typos
+%H
+%H  Revision 3.6  1992/03/25  15:37:32  martin
+%H  added new sections for group homomorphisms
+%H
+%H  Revision 3.5  1992/03/11  15:59:44  martin
+%H  added the examples
+%H
+%H  Revision 3.4  1992/03/10  12:17:54  martin
+%H  added 'IsRegular' and 'IsSemiRegular'
+%H
+%H  Revision 3.3  1992/01/31  16:33:08  martin
+%H  added 'IsEquivalentOperation'
+%H
+%H  Revision 3.2  1992/01/23  13:06:56  martin
+%H  changed a reference
+%H
+%H  Revision 3.1  1992/01/15  13:22:44  martin
+%H  changed a reference
+%H
+%H  Revision 3.0  1991/12/27  16:10:27  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Operations of Groups}
+
+One of the most  important tools in  group  theory is the *operation*  or
+*action* of a group on a certain set.
+
+We say that a group $G$ operates on a set $D$ if we  have a function that
+takes each $d \in D$ and  each $g \in G$ to  another element $d^g \in D$,
+which we  call the image of $d$  under $g$, such  that $d^{identity} = d$
+and $(d^g)^h = d^{gh}$ for each $d \in D$ and $g,h \in G$.
+
+This is equivalent to saying that  an operation is  a homomorphism of the
+group $G$ into the full symmetric group on $D$.  We  usually call $D$ the
+*domain* of the operation and its elements *points*.
+
+An example of the usage of the functions in this  package can be found in
+the introduction to {\GAP} (see "About Operations of Groups").
+
+In  {\GAP}  group elements usually operate through  the  power  operator,
+which is denoted by  the caret '\^'.  It is  possible  however to specify
+other operations (see "Other Operations").
+
+First this chapter describes the functions that take  a single element of
+the group   and compute   cycles    of this  group  element and   related
+information  (see "Cycle",  "CycleLength", "Cycles", and "CycleLengths"),
+and the function   that  describes how  a group  element  operates  by  a
+permutation that operates the same way on '[1..<n>]' (see "Permutation").
+
+Next come the functions that test whether an orbit has minimal or maximal
+length   and related    functions  (see "IsFixpoint",   "IsFixpointFree",
+"DegreeOperation", "IsTransitive", and "Transitivity").
+
+Next this chapter  describes the functions that  take a group and compute
+orbits of this group and related information (see "Orbit", "OrbitLength",
+"Orbits", and "OrbitLengths").
+
+Next are the   functions that  compute  the permutation  group  <P>  that
+operates on '[ 1 .. Length(<D>) ]' in  the same way  that <G> operates on
+<D>, and the corresponding homomorphism from <G> to <P> (see "Operation",
+"OperationHomomorphism").
+
+Next is the functions that compute block systems, i.e., partitions of <D>
+such that <G> operates on the  sets of the  partition (see "Blocks"), and
+the function that tests whether  <D>  has such a nontrivial  partitioning
+under the operation of <G> (see "IsPrimitive").
+
+Finally come the  functions that relate an orbit  of <G> on <D> with  the
+subgroup of  <G>   that  fixes  the   first  point  in  the  orbit   (see
+"Stabilizer"), and    the   cosets  of   this   subgroup in      <G> (see
+"RepresentativeOperation" and "RepresentativesOperation").
+
+All functions described in this chapter are in 'LIBNAME/\"operatio.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Other Operations}
+\index{OnPoints}%
+\index{OnPairs}%
+\index{OnTuples}%
+\index{OnSets}%
+\index{OnRight}%
+\index{OnLeft}%
+\index{OnLeftInverse}%
+\index{OnLeftAntiOperation}%
+\index{OnRightCosets}%
+\index{OnLeftCosets}%
+\index{OnLines}%
+
+The functions in   the operation  package   generally  compute  with  the
+operation of group elements defined  by the canonical  operation that  is
+denoted with the caret ('\^') in {\GAP}.   However they also allow you to
+specify other operations.   Such  operations are specified  by functions,
+which are  accepted as optional  argument  by all  the operations package
+functions.
+
+This function must accept two arguments.   The first argument will be the
+point and the second will be the group element.  The function must return
+the image of the point under the group element.
+
+As an example, the function  'OnPairs' that  specifies  the operation  on
+pairs could be defined as follows\\
+|    OnPairs := function ( pair, g )
+        return [ pair[1] ^ g, pair[2] ^ g ];
+    end; |
+
+The following operations are predefined.
+
+'OnPoints':\\
+        specifies the canonical default operation.  Passing this function
+        is equivalent to specifying no operation.  This  function  exists
+        because there are places where the operation in not an option.
+
+'OnPairs':\\
+        specifies the componentwise operation of  group elements on pairs
+        of points, which are represented by lists of length 2.
+
+'OnTuples':\\
+        specifies the componentwise operation of group elements on tuples
+        of points, which are represented  by  lists.   'OnPairs'  is  the
+        special case of 'OnTuples' for tuples with two elements.
+
+'OnSets':\\
+        specifies  the  operation of group   elements on sets  of points,
+        which  are   represented   by  sorted   lists of  points  without
+        duplicates (see "Sets").
+
+'OnRight':\\
+        specifies that group elements operate by multiplication from  the
+        right.
+
+'OnLeftInverse':\\  
+	specifies that group elements operate  by multiplication by their
+	inverses   from the    left.   This  is    an operation,   unlike
+	'OnLeftAntiOperation' (see below).
+
+'OnRightCosets':\\
+        specifies that group elements operate by multiplication from  the
+        right on sets of points, which are represented by sorted lists of
+        points without duplicates (see "Sets").
+
+'OnLeftCosets':\\
+        specifies that group elements operate by multiplication from  the
+        left  on sets of points, which are represented by sorted lists of
+        points without duplicates (see "Sets").
+
+'OnLines':\\
+        specifies that group elements, which must be matrices, operate on
+        lines,  which are  represented  by  vectors  with  first  nonzero
+        coefficient one.  That is, 'OnLines' multiplies the vector by the
+        group  element and  then divides  the vector by the first nonzero
+        coefficient.
+
+Note that it is your responsibility to make sure that the elements of the
+domain <D> on which you  are  operating  are already in normal form.  The
+reason is that all functions will compare points using the '=' operation.
+For example, if you are operating on sets  with 'OnSets', you will get an
+error message it not all elements of the domain are sets.
+
+|    gap> Cycle( (1,2), [2,1], OnSets );
+    Error, OnSets: <tuple> must be a set |
+
+The former  function 'OnLeft' which  operated  by mulitplication from the
+left has been renamed  'OnLeftAntiOperation', to emphasise the point that
+it does not satisify the axioms of an operation, and  may cause errors if
+supplied where an operation is expected.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cycle}
+
+'Cycle( <g>, <d> )' \\
+'Cycle( <g>, <d>, <operation> )'
+
+'Cycle' returns the orbit  of the point <d>,  which may be  an  object of
+arbitrary type, under the group element <g> as a list of points.
+
+The points <e> in the cycle of <d> under  the group element <g> are those
+for which a power $g^i$ exists such that $d^{g^i} = e$.
+
+The first point in the list returned by 'Cycle' is  the point <d> itself,
+the ordering of the other points is such that each point  is the image of
+the previous point.
+
+'Cycle' accepts a  function <operation> of two arguments  <d> and  <g> as
+optional third argument, which  specifies how  the element   <g> operates
+(see "Other Operations").
+
+|    gap> Cycle( (1,5,3,8)(4,6,7), 3 );
+    [ 3, 8, 1, 5 ]
+    gap> Cycle( (1,5,3,8)(4,6,7), [3,4], OnPairs );
+    [ [ 3, 4 ], [ 8, 6 ], [ 1, 7 ], [ 5, 4 ], [ 3, 6 ], [ 8, 7 ],
+      [ 1, 4 ], [ 5, 6 ], [ 3, 7 ], [ 8, 4 ], [ 1, 6 ], [ 5, 7 ] ] |
+
+'Cycle' calls \\
+'Domain([<g>]).operations.Cycle( <g>, <d>, <operation> )' \\
+and returns the value.  Note that the third argument  is not optional for
+the functions called this way.
+
+The default function  called this  way is 'GroupElementsOps.Cycle', which
+starts with <d> and applies <g> to the last point repeatedly until <d> is
+reached again.  Special categories of group elements overlay this default
+function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CycleLength}
+
+'CycleLength( <g>, <d> )' \\
+'CycleLength( <g>, <d>, <operation> )'
+
+'CycleLength' returns the length of the orbit of the point <d>, which may
+be an object of  arbitrary  type,  under  the  group  elements  <g>.  See
+"Cycle" for the definition of cycles.
+
+'CycleLength' accepts a function <operation> of two arguments <d> and <g>
+as optional third  argument, which specifies  how the  group element  <g>
+operates (see "Other Operations").
+
+|    gap> CycleLength( (1,5,3,8)(4,6,7), 3 );
+    4
+    gap> CycleLength( (1,5,3,8)(4,6,7), [3,4], OnPairs );
+    12 |
+
+'CycleLength' calls \\
+'Domain([<g>]).operations.CycleLength( <g>, <d>, <operation> )' \\
+and returns the value.  Note that the third argument  is not optional for
+the functions called this way.
+
+The default function called  this way  is 'GroupElementsOps.CycleLength',
+which starts with <d> and applies <g> to the  last point repeatedly until
+<d> is reached again.  Special categories of group  elements overlay this
+default function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cycles}
+
+'Cycles( <g>, <D> )' \\
+'Cycles( <g>, <D>, <operation> )'
+
+'Cycles' returns the set of cycles of the group element <g> on the domain
+<D>, which must be a list of points of arbitrary type,  as a set of lists
+of points.  See "Cycle" for the definition of cycles.
+
+It is allowed that <D> is a proper subset of a domain, i.e., that  <D> is
+not invariant under the  operation of <g>.   In this case <D> is silently
+replaced by the smallest superset of <D> which is invariant.
+
+The first point in each cycle is the smallest point of <D> in this cycle.
+The ordering of the other points is such that each  point is the image of
+the previous point.  If <D> is invariant under <g>, then because 'Cycles'
+returns a set  of cycles,  i.e.,  a sorted list, and  because cycles  are
+compared lexicographically, and because the first point in each  cycle is
+the smallest  point in that  cycle, the list returned  by  'Cycles' is in
+fact sorted with respect to the smallest point in the cycles.
+
+'Cycles' accepts a  function <operation> of two arguments  <d> and <g> as
+optional third  argument, which specifies  how  the element  <g> operates
+(see "Other Operations").
+
+|    gap> Cycles( (1,5,3,8)(4,6,7), [3,5,7] );
+    [ [ 3, 8, 1, 5 ], [ 7, 4, 6 ] ]
+    gap> Cycles( (1,5,3,8)(4,6,7), [[1,3],[4,6]], OnPairs );
+    [ [ [ 1, 3 ], [ 5, 8 ], [ 3, 1 ], [ 8, 5 ] ],
+      [ [ 4, 6 ], [ 6, 7 ], [ 7, 4 ] ] ] |
+
+'Cycles' calls \\
+'Domain([<g>]).operations.Cycles( <g>, <D>, <operation> )' \\
+and returns the value.  Note that the third  argument is not optional for
+the functions called this way.
+
+The default function called this  way is 'GroupElementsOps.Cycles', which
+takes elements from <D>, computes their  orbit, removes all points in the
+orbit from <D>, and  repeats  this until <D>  has been emptied.   Special
+categories  of  group elements  overlay this default  function  with more
+efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CycleLengths}
+
+'CycleLengths( <g>, <D> )' \\
+'CycleLengths( <g>, <D>, <operation> )'
+
+'CycleLengths' returns a list of the  lengths of the  cycles of the group
+element   <g> on  the domain  <D>,   which must be   a  list of points of
+arbitrary type.  See "Cycle" for the definition of cycles.
+
+It is allowed that <D> is a proper subset of a domain, i.e., that  <D> is
+not invariant under the  operation of <g>.   In this case <D> is silently
+replaced by the smallest superset of <D> which is invariant.
+
+The  ordering  of   the lengths  of   cycles   in  the  list  returned by
+'CycleLengths' corresponds  to the list  of cycles returned  by 'Cycles',
+which is ordered with respect to the smallest point in each cycle.
+
+'CycleLengths' accepts  a function <operation>  of two arguments  <d> and
+<g>  as   optional third argument, which  specifies   how the element <g>
+operates (see "Other Operations").
+
+|    gap> CycleLengths( (1,5,3,8)(4,6,7), [3,5,7] );
+    [ 4, 3 ]
+    gap> CycleLengths( (1,5,3,8)(4,6,7), [[1,3],[4,6]], OnPairs );
+    [ 4, 3 ] |
+
+'CycleLengths' calls \\
+'Domain([<g>]).operations.CycleLengths( <g>, <D>, <operation> )' \\
+and returns the value.  Note that the  third argument is not optional for
+the functions called this way.
+
+The default function called  this way is 'GroupElementsOps.CycleLengths',
+which takes elements  from <D>, computes  their orbit, removes all points
+in the orbit from <D>,  and repeats  this   until  <D> has been  emptied.
+Special categories of group elements  overlay  this default function with
+more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MovedPoints}
+
+'MovedPoints( <g> )'
+
+
+|    gap> MovedPoints( (1,7)(2,3,8) );
+    [ 1, 2, 3, 7, 8 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NrMovedPoints}
+
+'NrMovedPoints( <p> )'
+
+'NrMovedPoints'  returns the number of points moved by the permutation <g>,
+the group element <g>, or the group <g>.
+
+|    gap> NrMovedPoints( (1,7)(2,3,8) );
+     5  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Permutation}
+
+'Permutation( <g>, <D> )' \\
+'Permutation( <g>, <D>, <operation> )'
+
+'Permutation'   returns  a  permutation that   operates   on the   points
+'[1..Length(D)]' in the same way  that the group  element <g> operates on
+the domain <D>, which may be a list of arbitrary type.
+
+It is not allowed that <D> is a proper subset of a domain, i.e., <D> must
+be invariant under the element <g>.
+
+'Permutation' accepts a function <operation> of two arguments <d> and <g>
+as optional third argument, which  specifies how the element <g> operates
+(see "Other Operations").
+
+|    gap> Permutation( (1,5,3,8)(4,6,7), [4,7,6] );
+    (1,3,2)
+    gap> D := [ [1,4], [1,6], [1,7], [3,4], [3,6], [3,7],
+    >           [4,5], [5,6], [5,7], [4,8], [6,8], [7,8] ];;
+    gap> Permutation( (1,5,3,8)(4,6,7), D, OnSets );
+    ( 1, 8, 6,10, 2, 9, 4,11, 3, 7, 5,12) |
+
+'Permutation' calls \\
+'Domain([<g>]).operations.Permutation( <g>, <D>, <operation> )' \\
+and returns the value.  Note that the  third argument is not optional for
+the functions called this way.
+
+The default  function called this  way is 'GroupElementsOps.Permutation',
+which simply applies <g> to all the points of  <D>, finds the position of
+the image in <D>, and finally applies 'PermList'  (see "PermList") to the
+list of those positions.   Actually this  is  not  quite  true.   Because
+finding the position of an image in a sorted list is so  much faster than
+finding it in <D>,  'GroupElementsOps.Permutation' first sorts  a copy of
+<D> and remembers how it had to rearrange the elements  of <D> to achieve
+this.  Special categories of group elements overlay this default function
+with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsFixpoint}
+
+'IsFixpoint( <G>, <d> )' \\
+'IsFixpoint( <G>, <d>, <operation> )'
+
+'IsFixpoint'  returns  'true' if the point  <d>  is a  fixpoint under the
+operation of the group <G>.
+
+We say that  <d> is  a *fixpoint*  under the  operation of <G>  if  every
+element <g> of <G> maps <d> to itself.  This is equivalent to saying that
+each generator of <G> maps <d> to itself.
+
+As a special case it is allowed that the first argument is a single group
+element,  though this  does not make a  lot of sense, since in  this case
+'IsFixpoint' simply has to test '<d>\^<g> = <d>'.
+
+'IsFixpoint' accepts a function <operation> of two arguments <d>  and <g>
+as optional  third  argument,  which specifies how  the  elements  of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsFixpoint( g, 1 );
+    false
+    gap> IsFixpoint( g, [6,7,8], OnSets );
+    true |
+
+'IsFixpoint' is so simple that  it  does  all  the  work  by itself, and,
+unlike the  other functions described in this chapter, does not  dispatch
+to another function.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsFixpointFree}
+
+'IsFixpointFree( <G>, <D> )' \\
+'IsFixpointFree( <G>, <D>, <operation> )'
+
+'IsFixpointFree'  returns  'true'  if  the group  <G>  operates without a
+fixpoint (see "IsFixpoint")  on the domain  <D>, which must be  a list of
+points of arbitrary type.
+
+We say that  <G> operates *fixpoint free* on the domain <D> if each point
+of <D> is moved  by at least  one element of  <G>.  This is equivalent to
+saying that each point of <D> is moved by at least one generator of  <G>.
+This definition also applies in the case that <D> is a proper subset of a
+domain, i.e., that <D> is not invariant under the operation of <G>.
+
+As a special case it is allowed that the first argument is a single group
+element.
+
+'IsFixpointFree' accepts a function <operation> of two arguments <d>  and
+<g> as optional third argument, which specifies how the  elements  of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsFixpointFree( g, [1..8] );
+    true
+    gap> sets := Combinations( [1..8], 3 );;  Length( sets );
+    56    # a list of all three element subsets of '[1..8]'
+    gap> IsFixpointFree( g, sets, OnSets );
+    false |
+
+'IsFixpointFree' calls \\
+'<G>.operations.IsFixpointFree( <G>, <D>, <operation> )' \\
+and returns the value.  Note that the third  argument is not optional for
+functions called this way.
+
+The default function called this  way is 'GroupOps.IsFixpointFree', which
+simply loops over the elements of <D> and applies to each  all generators
+of <G>, and tests whether each is moved by at  least one generator.  This
+function is seldom overlaid, because it is very difficult to improve it.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DegreeOperation}
+
+'DegreeOperation( <G>, <D> )' \\
+'DegreeOperation( <G>, <D>, <operation> )'
+
+'DegreeOperation' returns the degree of the operation of the group <G> on
+the domain <D>, which must be a list of points of arbitrary type.
+
+The *degree* of the operation of <G>  on <D> is defined  as the number of
+points  of <D> that  are properly moved by at   least one element of <G>.
+This definition also applies in the case that <D> is a proper subset of a
+domain, i.e., that <D> is not invariant under the operation of <G>.
+
+'DegreeOperation' accepts a function <operation> of two arguments <d> and
+<g> as optional third  argument, which specifies  how the elements of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> DegreeOperation( g, [1..10] );
+    8
+    gap> sets := Combinations( [1..8], 3 );;  Length( sets );
+    56   # a list of all three element subsets of '[1..8]'
+    gap> DegreeOperation( g, sets, OnSets );
+    55 |
+
+'DegreeOperation' calls \\
+'<G>.operations.DegreeOperation( <G>, <D>, <operation> )' \\
+and returns the value.  Note that the third argument is  not optional for
+functions called this way.
+
+The default function called this way is 'GroupOps.DegreeOperation', which
+simply loops over the elements of <D> and  applies to each all generators
+of <G>, and counts those that are  moved by at least one generator.  This
+function is seldom overlaid, because it is very difficult to improve it.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsTransitive}
+
+'IsTransitive( <G>, <D> )' \\
+'IsTransitive( <G>, <D>, <operation> )'
+
+'IsTransitive' returns 'true' if  the group  <G> operates transitively on
+the domain <D>, which must be a list of points of arbitrary type.
+
+We say that a  group <G> acts *transitively* on  a domain <D> if and only
+if for every pair  of points <d>  and <e> there is  an element <g> of <G>
+such that $d^g = e$.  An alternative characterization of this property is
+to say that <D> as a set is equal to the orbit of every single point.
+
+It is allowed that <D> is a proper subset of  a domain, i.e., that <D> is
+not invariant under the  operation of  <G>.  In this  case 'IsTransitive'
+checks  whether  for every pair  of  points  <d>, <e>  of <D> there is an
+element <g> of  <G>, such that $d^g = e$.  This can also be characterized
+by saying that <D> is a subset of the orbit of every single point.
+
+'IsTransitive' accepts a  function <operation> of  two  arguments <d> and
+<g> as  optional third argument, which specifies  how the elements of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsTransitive( g, [1..8] );
+    false
+    gap> IsTransitive( g, [1,6] );
+    false    # note that the domain need not be invariant
+    gap> sets := Combinations( [1..5], 3 );;  Length( sets );
+    10    # a list of all three element subsets of '[1..5]'
+    gap> IsTransitive( g, sets, OnSets );
+    true |
+
+'IsTransitive' calls \\
+'<G>.operations.IsTransitive( <G>, <D>, <operation> )' \\
+and returns the value.  Note that the third argument is not  optional for
+functions called this way.
+
+The default function  called  this way is  'GroupOps.IsTransitive', which
+tests  whether <D> is a subset  of the orbit  of  the first point in <D>.
+This function is seldom overlaid, because it is difficult to improve it.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Transitivity}
+
+'Transitivity( <G>, <D> )' \\
+'Transitivity( <G>, <D>, <operation> )'
+
+'Transitivity' returns the degree of transitivity of the group <G> on the
+domain  <D>, which must be a  list of points  of  arbitrary type.  If <G>
+does not operate transitively on <D> then 'Transitivity' returns 0.
+
+The  *degree of  transitivity*  of the operation of    <G> on <D> is  the
+largest <k> such that <G> operates <k>-fold  transitively on <D>.  We say
+that  <G>   operates  <k>-*fold   transitively*  on <D>   if it  operates
+transitively on <D> (see "IsTransitive") and  the stabilizer of one point
+<d> of <D> operates '<k>-1'-fold transitively on 'Difference(<D>,[<d>])'.
+Because the stabilizers   of the  points  of  <D> are conjugate  this  is
+equivalent to  saying  that the stabilizer  of  *each* point  <d>  of <D>
+operates '<k>-1'-fold transitively on 'Difference(<D>,[<d>])'.
+
+It is not allowed that <D> is a proper subset of a domain, i.e., <D> must
+be invariant under the operation of <G>.
+
+'Transitivity'  accepts a function <operation>  of two  arguments <d> and
+<g>  as optional third argument, which  specifies how the elements of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Transitivity( g, [1..8] );
+    0
+    gap> Transitivity( g, [1..5] );
+    3
+    gap> sets := Combinations( [1..5], 3 );;  Length( sets );
+    10    # a list of all three element subsets of '[1..5]'
+    gap> Transitivity( g, sets, OnSets );
+    1 |
+
+'Transitivity' calls \\
+'<G>.operations.Transitivity( <G>, <D>, <operation> )' \\
+and returns the value.  Note that the third argument is not  optional for
+functions called this way.
+
+The  default function called  this way is  'GroupOps.Transitivity', which
+first tests whether <G> operates transitively on <D>.  If so, it returns \\
+'Transitivity(Stabilizer(<G>,Difference(<D>,[<D>[1]]),<operation>)+1'; \\
+if not, it simply returns 0.  Special  categories of groups  overlay this
+default function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRegular}
+
+'IsRegular( <G>, <D> )'
+'IsRegular( <G>, <D>, <operation> )'
+
+'IsRegular'  returns 'true'  if  the group <G>  operates regularly on the
+domain <D>, which must be a list of points of arbitrary type, and 'false'
+otherwise.
+
+A  group  <G>  operates *regularly*  on  a  domain  <D>  if  it  operates
+transitively and no element of <G>  other than the idenity leaves a point
+of   <D>   fixed.   An  equal   characterisation  is  that  <G>  operates
+transitively on <D> and the stabilizer  of any  point  of <D> is trivial.
+Yet  another  characterisation  is  that the operation of <G>  on <D>  is
+equivalent to the operation of <G> on its elements by multiplication from
+the right.
+
+It is not allowed that <D> is a proper subset of a domain, i.e., <D> must
+be invariant under the operation of <G>.
+
+'IsRegular'  accepts a function <operation> of two  arguments <d> and <g>
+as  optional  third  argument, which specifies  how  the elements  of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsRegular( g, [1..5] );
+    false
+    gap> IsRegular( g, Elements(g), OnRight );
+    true
+    gap> g := Group( (1,2,3), (3,4,5) );;
+    gap> IsRegular( g, Orbit( g, [1,2,3], OnTuples ), OnTuples );
+    true |
+
+'IsRegular' calls \\
+'<G>.operations.IsRegular( <G>, <D>, <operation> )' \\
+and returns the  value.  Note that the third argument is not optional for
+functions called this way.
+
+The default function called this way is 'GroupOps.IsRegular', which tests
+if <G> operates transitively and semiregularly on <D> (see "IsTransitive"
+and "IsSemiRegular").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSemiRegular}
+
+'IsSemiRegular( <G>, <D> )'\\
+'IsSemiRegular( <G>, <D>, <operation> )'
+
+'IsSemiRegular' returns 'true' if the group <G> operates semiregularly on
+the domain  <D>, which must  be  a list of  points of arbitrary type, and
+'false' otherwise.
+
+A group <G> operates *semiregularly* on a domain <D> if no element of <G>
+other  than  the   idenity  leaves  a  point  of  <D>  fixed.   An  equal
+characterisation is  that the stabilizer of any point of <D> is  trivial.
+Yet  another characterisation  is that  the operation  of <G>  on <D>  is
+equivalent to multiple copies of the operation  of <G> on its elements by
+multiplication from the right.
+
+It is not allowed that <D> is a proper subset of a domain, i.e., <D> must
+be invariant under the operation of <G>.
+
+'IsSemiRegular' accepts a function <operation> of two arguments  <d>  and
+<g> as  optional third argument,  which specifies how the elements of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2)(3,4)(5,7)(6,8), (1,3)(2,4)(5,6)(7,8) );;
+    gap> IsSemiRegular( g, [1..8] );
+    true
+    gap> g := Group( (1,2)(3,4)(5,7)(6,8), (1,3)(2,4)(5,6,7,8) );;
+    gap> IsSemiRegular( g, [1..8] );
+    false
+    gap> IsSemiRegular( g, Orbit( g, [1,5], OnSets ), OnSets );
+    true |
+
+'IsSemiRegular' calls \\
+'<G>.operations.IsSemiRegular( <G>, <D>, <operation> )' \\
+and returns the  value.  Note that the third argument is not optional for
+functions called this way.
+
+The  default  function called this way is 'GroupOps.IsSemiRegular', which
+computes  a permutation group <P> that operates on  '[1..Length(<D>)]' in
+the  same way  that <G> operates on <D> (see "Operation") and then checks
+if this permutation group operations semiregularly.  This of course  only
+works because this  default  function is overlaid  for permutation groups
+(see "Operations of Permutation Groups").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Orbit}
+
+'Orbit( <G>, <d> )' \\
+'Orbit( <G>, <d>, <operation> )'
+
+'Orbit' returns the orbit  of the point <d>,  which  may be an  object of
+arbitrary type, under the group <G> as a list of points.
+
+The points <e> in the orbit of <d>  under the group  <G> are those points
+for which a group element <g> of <G> exists such that $d^g = e$.
+
+Suppose <G> has <n>  generators.  First we   order the words of the  free
+monoid  with <n> abstract  generators according  to  length and for words
+with equal length lexicographically.  So if <G> has two generators called
+<a> and <b> the ordering is $identity, a, b, a^2, ab, ba, b^2, a^3, ...$.
+Next we order the elements of <G> that can be written as a product of the
+generators, i.e.,  without inverses of  the  generators, according to the
+first occurrence  of  a word    representing the  element   in the  above
+ordering.   Then the ordering of points  in the orbit returned by 'Orbit'
+is according to the order of the first  representative of each point <e>,
+i.e., the smallest <g> such that $d^g =  e$.  Note that because the orbit
+is   finite  there is   for every   point in   the   orbit at   least one
+representative that can be written as a product in the generators of <G>.
+
+'Orbit' accepts a  function <operation> of two  arguments <d>  and <g> as
+optional third argument, which specifies how the elements of <G>  operate
+(see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Orbit( g, 1 );
+    [ 1, 2, 3, 4, 5 ]
+    gap> Orbit( g, 2 );
+    [ 2, 3, 1, 4, 5 ]
+    gap> Orbit( g, [1,6], OnPairs );
+    [ [ 1, 6 ], [ 2, 7 ], [ 3, 6 ], [ 2, 8 ], [ 1, 7 ], [ 4, 6 ],
+      [ 3, 8 ], [ 2, 6 ], [ 1, 8 ], [ 4, 7 ], [ 5, 6 ], [ 3, 7 ],
+      [ 5, 8 ], [ 5, 7 ], [ 4, 8 ] ] |
+
+'Orbit' calls \\
+'<G>.operations.Orbit( <G>, <d>, <operation> )' \\
+and returns the value.  Note that the third argument  is not optional for
+functions called this way.
+
+The default function called this  way is 'GroupOps.Orbit', which performs
+an ordinary orbit algorithm.  Special  categories of groups  overlay this
+default function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrbitLength}
+
+'OrbitLength( <G>, <d> )' \\
+'OrbitLength( <G>, <d>, <operation> )'
+
+'OrbitLength' returns the length of the orbit of the point <d>, which may
+be an object of arbitrary type, under the group <G>.  See "Orbit" for the
+definition of orbits.
+
+'OrbitLength' accepts a function <operation> of two arguments <d> and <g>
+as  optional third  argument,  which specifies how  the  elements  of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> OrbitLength( g, 1 );
+    5
+    gap> OrbitLength( g, 10 );
+    1
+    gap> OrbitLength( g, [1,6], OnPairs );
+    15 |
+
+'OrbitLength' calls \\
+'<G>.operations.OrbitLength( <G>, <d>, <operation> )' \\
+and returns the value.  Note that the third argument is  not optional for
+functions called this way.
+
+The  default  function called this way   is 'GroupOps.OrbitLength', which
+performs an  ordinary   orbit  algorithm.  Special categories  of  groups
+overlay this default function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Orbits}
+
+'Orbits( <G>, <D> )' \\
+'Orbits( <G>, <D>, <operation> )'
+
+'Orbits' returns  the orbits of the group  <G>  on the domain  <D>, which
+must be a list of points of arbitrary type, as a set of lists of  points.
+See "Orbit" for the definition of orbits.
+
+It is allowed that <D> is a proper subset of a domain,  i.e., that <D> is
+not invariant under the  operation of <G>.  In  this case <D> is silently
+replaced by the smallest superset of <D> which is invariant.
+
+The first point in each orbit is the smallest point, the  other points of
+each orbit  are  ordered in the standard  order defined  for  orbits (see
+"Orbit").  Because 'Orbits' returns a set of orbits, i.e., a sorted list,
+and because those orbits  are compared lexicographically, and because the
+first point in each orbit is the smallest point  in that orbit,  the list
+returned  by 'Orbits' is in  fact  sorted  with respect  to  the smallest
+points the orbits.
+
+'Orbits' accepts a  function <operation> of two arguments <d>  and <g> as
+optional third argument, which specifies how the elements of <G>  operate
+(see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Orbits( g, [1..8] );
+    [ [ 1, 2, 3, 4, 5 ], [ 6, 7, 8 ] ]
+    gap> Orbits( g, [1,6] );
+    [ [ 1, 2, 3, 4, 5 ], [ 6, 7, 8 ] ]    # the domain is not invariant
+    gap> sets := Combinations( [1..8], 3 );; Length( sets );
+    56    # a list of all three element subsets of '[1..8]'
+    gap> Orbits( g, sets, OnSets );
+    [ [ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 2, 3, 4 ], [ 1, 2, 5 ], [ 1, 3, 4 ],
+          [ 2, 4, 5 ], [ 2, 3, 5 ], [ 1, 4, 5 ], [ 3, 4, 5 ], [ 1, 3, 5 ]
+         ],
+      [ [ 1, 2, 6 ], [ 2, 3, 7 ], [ 1, 3, 6 ], [ 2, 4, 8 ], [ 1, 2, 7 ],
+          [ 1, 4, 6 ], [ 3, 4, 8 ], [ 2, 5, 7 ], [ 2, 3, 6 ],
+          [ 1, 2, 8 ], [ 2, 4, 7 ], [ 1, 5, 6 ], [ 1, 4, 8 ],
+          [ 4, 5, 7 ], [ 3, 5, 6 ], [ 2, 3, 8 ], [ 1, 3, 7 ],
+          [ 2, 4, 6 ], [ 3, 4, 6 ], [ 2, 5, 8 ], [ 1, 5, 7 ],
+          [ 4, 5, 6 ], [ 3, 5, 8 ], [ 1, 3, 8 ], [ 3, 4, 7 ],
+          [ 2, 5, 6 ], [ 1, 4, 7 ], [ 1, 5, 8 ], [ 4, 5, 8 ], [ 3, 5, 7 ]
+         ],
+      [ [ 1, 6, 7 ], [ 2, 6, 7 ], [ 1, 6, 8 ], [ 3, 6, 7 ], [ 2, 6, 8 ],
+          [ 2, 7, 8 ], [ 4, 6, 8 ], [ 3, 7, 8 ], [ 3, 6, 8 ],
+          [ 4, 7, 8 ], [ 5, 6, 7 ], [ 1, 7, 8 ], [ 4, 6, 7 ],
+          [ 5, 7, 8 ], [ 5, 6, 8 ] ], [ [ 6, 7, 8 ] ] ] |
+
+'Orbits' calls \\
+'<G>.operations.Orbits( <G>, <D>, <operation> )' \\
+and returns the value.  Note that the third argument is  not optional for
+functions called this way.
+
+The default function called this way is 'GroupOps.Orbits', which takes an
+element from  <D>, computes its  orbit, removes all  points in the  orbit
+from  <D>,  and  repeats  this  until  <D>  has  been  emptied.   Special
+categories of  groups  overlay this default  function with more efficient
+functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrbitLengths}
+
+'OrbitLengths( <G>, <D> )' \\
+'OrbitLengths( <G>, <D>, <operation> )'
+
+'OrbitLengths' returns a list of the lengths  of  the orbits of the group
+<G> on the domain <D>, which may be a list of  points of arbitrary  type.
+See "Orbit" for the definition of orbits.
+
+It is allowed that <D>  is  proper subset of a domain,  i.e., that <D> is
+not invariant under the operation of <G>.   In this case  <D> is silently
+replaced by the smallest superset of <D> which is invariant.
+
+The  ordering   of  the  lengths  of  orbits  in  the  list  returned  by
+'OrbitLengths'  corresponds to the list of cycles returned  by  'Orbits',
+which is ordered with respect to the smallest point in each orbit.
+
+'OrbitLengths' accepts  a  function <operation> of two arguments  <d> and
+<g> as optional third argument, which specifies how  the elements  of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> OrbitLengths( g, [1..8] );
+    [ 5, 3 ]
+    gap> sets := Combinations( [1..8], 3 );; Length( sets );
+    56    # a list of all three element subsets of '[1..8]'
+    gap> OrbitLengths( g, sets, OnSets );
+    [ 10, 30, 15, 1 ] |
+
+'OrbitLengths' calls \\
+'<G>.operations.OrbitLenghts( <G>, <D>, <operation> )' \\
+and returns the value.  Note that the  third argument is not optional for
+functions called this way.
+
+The default  function called this way is  'GroupOps.OrbitLengths',  which
+takes an element from <D>, computes its orbit, removes all points  in the
+orbit from <D>,  and repeats this until <D>  has been  emptied.   Special
+categories  of groups  overlay  this default function with more efficient
+functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operation}
+
+'Operation( <G>, <D> )' \\
+'Operation( <G>, <D>, <operation> )'
+
+'Operation'  returns  a  permutation  group  with  the  same   number  of
+generators  as  <G>, such that each generator  of  the permutation  group
+operates  on  the  set  '[1..Length(D)]'  in   the   same  way  that  the
+corresponding  generator of the  group <G> operates on  the  domain  <D>,
+which may be a list of arbitrary type.
+
+It is not allowed that <D> is a proper subset of a domain, i.e., <D> must
+be invariant under the element <g>.
+
+'Operation' accepts  a  function <operation> of two arguments <d> and <g>
+as  optional  third  argument, which  specifies how  the elements  of <G>
+operate (see "Other Operations").
+
+The function 'OperationHomomorphism' (see "OperationHomomorphism") can be
+used to  compute the homomorphism that  maps <G> onto the new permutation
+group.  Of course  if you are  only interested in mapping single elements
+of <G> into the new permutation group you may also use 'Permutation' (see
+"Permutation").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Operation( g, [1..5] );
+    Group( (1,2,3), (3,4,5) )
+    gap> Operation( g, Orbit( g, [1,6], OnPairs ), OnPairs );
+    Group( ( 1, 2, 3, 5, 8,12)( 4, 7, 9)( 6,10)(11,14), ( 2, 4)( 3, 6,11)
+    ( 5, 9)( 7,10,13,12,15,14) ) |
+
+'Operation' calls \\
+'<G>.operations.Operation( <G>, <D>, <operation> )' \\
+and returns the value.  Note that the  third argument is not optional for
+functions called this way.
+
+The default function  called   this  way is  'GroupOps.Operation',  which
+simply applies each generator of <G> to all the points of <D>,  finds the
+position of  the  image in  <D>,  and   finally applies 'PermList'   (see
+"PermList") to  the list of those positions.   Actually this is not quite
+true.  Because  finding the  position on an image in  a sorted list is so
+much  faster than  finding it in  <D>, 'GroupElementsOps.Operation' first
+sorts a copy of <D> and remembers how it had to rearrange the elements of
+<D> to achieve this.  Special  categories of groups overlay this  default
+function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OperationHomomorphism}
+\index{group homomorphisms!operation}
+\index{homomorphisms!operation, group}
+\index{Image!for OperationHomomorphism}
+\index{PreImage!for OperationHomomorphism}
+\index{Kernel!for OperationHomomorphism}
+
+'OperationHomomorphism( <G>, <P> )'
+
+'OperationHomomorphism'  returns  the  group  homomorphism  (see   "Group
+Homomorphisms") from  the group <G> to the  permutation group <P>,  which
+must be the result of a prior call to 'Operation' (see  "Operation") with
+<G>  or a group of which <G>  is a  subgroup (see "IsSubgroup") as  first
+argument.
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> h := Operation( g, [1..5] );
+    Group( (1,2,3), (3,4,5) )
+    gap> p := OperationHomomorphism( g, h );
+    OperationHomomorphism( Group( (1,2,3)(6,7), (3,4,5)(7,8) ), Group(
+    (1,2,3), (3,4,5) ) )
+    gap> (1,4,2,5,3)(6,7,8) ^ p;
+    (1,4,2,5,3)
+    gap> h := Operation( g, Orbit( g, [1,6], OnPairs ), OnPairs );
+    Group( ( 1, 2, 3, 5, 8,12)( 4, 7, 9)( 6,10)(11,14), ( 2, 4)( 3, 6,11)
+    ( 5, 9)( 7,10,13,12,15,14) )
+    gap> p := OperationHomomorphism( g, h );;
+    gap> s := SylowSubgroup( g, 2 );
+    Subgroup( Group( (1,2,3)(6,7), (3,4,5)(7,8) ),
+    [ (7,8), (7,8), (2,5)(3,4), (2,3)(4,5) ] )
+    gap> Images( p, s );
+    Subgroup( Group( ( 1, 2, 3, 5, 8,12)( 4, 7, 9)( 6,10)(11,14), ( 2, 4)
+    ( 3, 6,11)( 5, 9)( 7,10,13,12,15,14) ),
+    [ ( 2, 4)( 5, 9)( 7,12)(10,15)(13,14),
+      ( 2, 4)( 5, 9)( 7,12)(10,15)(13,14),
+      ( 2,14)( 3, 6)( 4,13)( 7,15)( 8,11)(10,12),
+      ( 2,12)( 3, 8)( 4, 7)( 6,11)(10,14)(13,15) ] )
+    gap> OperationHomomorphism( g, Group( (1,2,3), (3,4,5) ) );
+    Error, Record: element 'operation' must have an assigned value |
+
+'OperationHomomorphism' calls \\
+'<P>.operations.OperationHomomorphism( <G>, <P> )' \\
+and returns the value.
+
+The default function called this way is 'GroupOps.OperationHomomorphism',
+which uses  the  fields  '<P>.operationGroup', '<P>.operationDomain', and
+'<P>.operationOperation'  (the arguments  to  the  'Operation' call  that
+created    <P>)   to  construct     a  generic   homomorphism  <h>.  This
+homomorphism uses \\
+'Permutation(<g>,<h>.range.operationDomain,<h>.range.operationOperation)'
+\\
+to  compute  the image  of an element  <g>  of  <G>  under  <h>.  It uses
+'Representative' to compute the preimages  of an element <p> of <P> under
+<h>.  And it computes  the kernel by intersecting  the cores (see "Core")
+of the stabilizers (see "Stabilizer") of representatives of the orbits of
+<G>.  Look  under  *OperationHomomorphism* in the index  to see for which
+groups and operations this function is overlaid.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Blocks}
+
+'Blocks( <G>, <D>, <seed> )' \\
+'Blocks( <G>, <D>, <seed>, <operation> )'
+
+In this form 'Blocks' returns a block system of the domain <D>, which may
+be a list of points of arbitrary type, under the group <G>, such that the
+points  in  the  list <seed>  all  lie in  the  same block.  If  no  such
+nontrivial  block  system exists,  'Blocks' returns '[ <D>  ]'.  <G> must
+operate transitively on <D>, otherwise an error is signalled.
+
+'Blocks( <G>, <D> )' \\
+'Blocks( <G>, <D>, <operation> )'
+
+In this form 'Blocks' returns a minimal  block system of the domain  <D>,
+which may be a list of points of arbitrary type, under the group <G>.  If
+no nontrivial  block system exists, 'Blocks' returns '[ <D> ]'.  <G> must
+operate transitively on <D>, otherwise an error is signalled.
+
+A *block system* <B> is  a list of blocks  with the following properties.
+Each block <b> of  <B>  is a subset of   <D>.   The blocks are   pairwise
+disjoint.   The union of blocks  is <D>.  The  image  of each block under
+each element  <g> of <G> is as  a set  equal to  some block of  the block
+system.  Note that  this implies that all  blocks contain the same number
+of elements as <G>  operates transitive on <D>.   Put differently a block
+system  <B> of  <D>  is a partition  of <D>  such that  <G> operates with
+'OnSets' (see "Other Operations") on <B>.  The block system that consists
+of  only singleton sets  and the block system consisting  only of <D> are
+called *trivial*.  A block system <B> is called *minimal*  if there is no
+nontrivial block system whose blocks are all subsets of the blocks of <B>
+and whose number of blocks is larger than the number of blocks of <B>.
+
+'Blocks' accepts a function <operation>  of two  arguments <d> and <g> as
+optional third, resp. fourth, argument, which  specifies how the elements
+of <G> operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Blocks( g, [1..5] );
+    [ [ 1 .. 5 ] ]
+    gap> Blocks( g, Orbit( g, [1,2], OnPairs ), OnPairs );
+    [ [ [ 1, 2 ], [ 3, 2 ], [ 4, 2 ], [ 5, 2 ] ],
+      [ [ 1, 3 ], [ 2, 3 ], [ 4, 3 ], [ 5, 3 ] ],
+      [ [ 1, 4 ], [ 2, 4 ], [ 3, 4 ], [ 5, 4 ] ],
+      [ [ 1, 5 ], [ 2, 5 ], [ 3, 5 ], [ 4, 5 ] ],
+      [ [ 2, 1 ], [ 3, 1 ], [ 4, 1 ], [ 5, 1 ] ] ] |
+
+'Blocks' calls \\
+'<G>.operations.Blocks( <G>, <D>, <seed>, <operation> )' \\
+and returns the value.  If  no seed was given as  argument to 'Blocks' it
+passes the empty list.  Note that the fourth argument is not optional for
+functions called this way.
+
+The default function called this way is 'GroupOps.Blocks', which computes
+a permutation  group  <P> that operates on '[1..Length(<D>)]' in the same
+way  that  <G>  operates on <D>  (see "Operation") and leaves  it to this
+permutation group to find the blocks.  This of  course works only because
+this default function is overlaid for permutation groups (see "Operations
+of Permutation Groups").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPrimitive}
+
+'IsPrimitive( <G>, <D> )' \\
+'IsPrimitive( <G>, <D>, <operation> )'
+
+'IsPrimitive' returns 'true' if the group <G> operates primitively on the
+domain <D>, which may  be a list of points of arbitrary type, and 'false'
+otherwise.
+
+A group <G>  operates *primitively*  on a  domain <D> if and only  if <D>
+operates transitively (see "IsTransitive") and has only the trivial block
+systems (see "Blocks").
+
+'IsPrimitive' accepts a function <operation> of two arguments <d> and <g>
+as  optional third argument,   which specifies  how  the elements  of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsPrimitive( g, [1..5] );
+    true
+    gap> IsPrimitive( g, Orbit( g, [1,2], OnPairs ), OnPairs );
+    false |
+
+'IsPrimitive' calls \\
+'<G>.operations.IsPrimitive( <G>, <D>, <operation> )' \\
+and returns the value.  Note that the  third argument is not optional for
+functions called this way.
+
+The  default  function called this way is  'GroupOps.IsPrimitive',  which
+simply calls  'Blocks( <G>, <D>,  <operation>  )'  and tests whether  the
+returned block  system is '[ <D> ]'.  This function  is  seldom overlaid,
+because all the important work is done in 'Blocks'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Stabilizer}
+
+'Stabilizer( <G>, <d> )' \\
+'Stabilizer( <G>, <d>, <operation> )'
+
+'Stabilizer' returns the stabilizer of  the point <d> under the operation
+of the group <G>.
+
+The *stabilizer* $S$ of $d$ in $G$ is  the subgroup of those elements $g$
+of $G$ that fix $d$, i.e., for which $d^g = d$.   The right cosets of $S$
+correspond in a canonical way to  the points $p$ in  the orbit $O$ of $d$
+under  $G$; namely all elements  from a right coset  $S g$ map $d$ to the
+same  point $d^g \in  O$, and elements from different  right cosets $S g$
+and $S h$ map $d$ to different points $d^g$ and $d^h$.  Thus the index of
+the stabilizer $S$   in $G$ is equal to    the length of  the orbit  $O$.
+'RepresentativesOperation'  (see "RepresentativesOperation")  computes  a
+system of representatives of the right cosets of $S$ in $G$.
+
+'Stabilizer' accepts a function <operation> of  two arguments <d> and <g>
+as  optional  third argument, which  specifies  how the  elements  of <G>
+operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> g.name := "G";;
+    gap> Stabilizer( g, 1 );
+    Subgroup( G, [ (3,4,5)(7,8), (2,5,3)(6,7) ] )
+    gap> Stabilizer( g, [1,2,3], OnSets );
+    Subgroup( G, [ (7,8), (6,8), (2,3)(4,5)(6,7,8), (1,2)(4,5)(6,7,8) ] )|
+
+'Stabilizer' calls \\
+'<G>.operations.Stabilizer( <G>, <d>, <operation> )' \\
+and returns the value.  Note that the third argument is  not optional for
+functions called this way.
+
+The  default  function called  this  way  is 'GroupOps.Stabilizer', which
+computes the orbit of $d$ under $G$, remembers a representative $r_e$ for
+each  point $e$ in the  orbit,  and uses Schreier\'s theorem, which  says
+that the stabilizer  is generated by  the elements $r_e  g r_{e^g}^{-1}$.
+Special categories of  groups overlay  this  default  function with  more
+efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RepresentativeOperation}
+
+'RepresentativeOperation( <G>, <d>, <e> )' \\
+'RepresentativeOperation( <G>, <d>, <e>, <operation> )'
+
+'RepresentativeOperation' returns a  representative of the  point <e>  in
+the  orbit of the point  <d> under the group   <G>.   If <d> =  <e>  then
+'RepresentativeOperation' returns   '<G>.identity',  otherwise it  is not
+specified which group element   'RepresentativeOperation' will return  if
+there are several that map <d> to <e>.  If <e> is not in the orbit of <d>
+under <G>, 'RepresentativeOperation' returns 'false'.
+
+An element $g$ of $G$ is called a *representative*  for  the point $e$ in
+the orbit of $d$ under $G$ if $g$ maps $d$ to $e$, i.e., $d^g = e$.  Note
+that the set  of such  representatives that map  $d$ to $e$ forms a right
+coset of the stabilizer of $d$ in $G$ (see "Stabilizer").
+
+'RepresentativeOperation' accepts a function <operation> of two arguments
+<d> and <g> as optional third  argument, which specifies how the elements
+of <G> operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> RepresentativeOperation( g, 1, 5 );
+    (1,5,4,3,2)(6,8,7)
+    gap> RepresentativeOperation( g, 1, 6 );
+    false
+    gap> RepresentativeOperation( g, [1,2,3], [3,4,5], OnSets );
+    (1,3,5,2,4)
+    gap> RepresentativeOperation( g, [1,2,3,4], [3,4,5,2], OnTuples );
+    false |
+
+'RepresentativeOperation' calls \\
+'<G>.operations.RepresentativeOperation( <G>, <d>, <e>, <operation> )' \\
+and returns the value.  Note that the fourth argument is not optional for
+functions called this way.
+
+The      default     function      called     this          way        is
+'GroupOper.RepresentativeOperation',   which    starts   a  normal  orbit
+calculation to compute the orbit of <d> under <G>, and remembers for each
+point how it was obtained, i.e., which generator of  <G> took which orbit
+point to this new point.  When the point <e> appears this information can
+be traced back to write down the representative of <e>  as a  word in the
+generators.  Special  categories of groups  overlay this default function
+with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RepresentativesOperation}
+
+'RepresentativesOperation( <G>, <d> )' \\
+'RepresentativesOperation( <G>, <d>, <operation> )'
+
+'RepresentativesOperation' returns  a  list  of  representatives of   the
+points in the orbit of the point <d> under the group <G>.
+
+The ordering  of the representatives corresponds  to  the ordering of the
+points in  the orbit  as  returned by 'Orbit'  (see  "Orbit").  Therefore
+'List( RepresentativesOperation(<G>,<d>), r-><d>\^r ) = Orbit(<G>,<d>)'.
+
+An element $g$ of $G$ is called a  *representative*  for the point $e$ in
+the orbit of $d$ under $G$ if $g$ maps $d$ to $e$, i.e., $d^g = e$.  Note
+that the set  of such representatives  that map $d$ to $e$  forms a right
+coset of the stabilizer of $d$ in $G$ (see "Stabilizer").  The set of all
+representatives of the orbit  of  $d$ under $G$  thus  forms a system  of
+representatives of the right cosets of the stabilizer of $d$ in $G$.
+
+'RepresentativesOperation' accepts    a  function   <operation>  of   two
+arguments <d> and <g> as optional third argument, which specifies how the
+elements of <G> operate (see "Other Operations").
+
+|    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> RepresentativesOperation( g, 1 );
+    [ (), (1,2,3)(6,7), (1,3,2), (1,4,5,3,2)(7,8), (1,5,4,3,2) ]
+    gap> Orbit( g, [1,2], OnSets );
+    [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 2, 4 ], [ 1, 4 ], [ 3, 4 ],
+      [ 2, 5 ], [ 1, 5 ], [ 4, 5 ], [ 3, 5 ] ]
+    gap> RepresentativesOperation( g, [1,2], OnSets );
+    [ (), (1,2,3)(6,7), (1,3,2), (1,2,4,5,3)(6,8,7), (1,4,5,3,2)(7,8),
+      (1,3,2,4,5)(6,8), (1,2,5,4,3)(6,7), (1,5,4,3,2), (1,4,3,2,5)(6,7,8),
+      (1,3,2,5,4) ] |
+
+'RepresentativesOperation' calls \\
+'<G>.operations.RepresentativesOperation( <G>, <d>, <operation> )' \\
+and returns the value.  Note that the third  argument is not optional for
+functions called this way.
+
+The       default       function      called       this       way      is
+'GroupOps.RepresentativesOperation', which computes the orbit of <d> with
+the  normal  algorithm,  but remembers  for each point $e$ in the orbit a
+representative $r_e$.  When a generator $g$ of $G$ takes an old point $e$
+to a point $f$ not yet in the orbit, the representative $r_f$ for  $f$ is
+computed as $r_e  g$.  Special categories of  groups overlay this default
+function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsEquivalentOperation}
+
+'IsEquivalentOperation( <G>, <D>, <H>, <E> )' \\
+'IsEquivalentOperation( <G>, <D>, <H>, <E>, <operationH> )' \\
+'IsEquivalentOperation( <G>, <D>, <operationG>, <H>, <E> )' \\
+'IsEquivalentOperation( <G>, <D>, <operationG>, <H>, <E>, <operationH> )'
+
+'IsEquivalentOperation' returns 'true' if <G> operates on <D> in like <H>
+operates on <E>, and 'false' otherwise.
+
+The operations of $G$ on $D$ and $H$  on $E$ are  equivalent if they have
+the same  number of  generators  and there  is a   permutation $F$ of the
+elements of   $E$  such that  for every   generator $g$ of   $G$  and the
+corresponding generator  $h$ of  $H$ we  have   $Position(  D, D_i^g  ) =
+Position( F, F_i^h )$.  Note that this  assumes that the  mapping defined
+by mapping $G.generators$  to $H.generators$ is a  homomorphism (actually
+an isomorphism  of  factor  groups of $G$   and  $H$ represented   by the
+respective operation).
+
+'IsEquivalentOperation' accepts functions   <operationG> and <operationH>
+of two arguments <d> and <g> as optional third and sixth arguments, which
+specify  how  the  elements  of   <G>  and  <H>  operate   (see    "Other
+Operations").
+
+|    gap> g := Group( (1,2)(4,5), (1,2,3)(4,5,6) );;
+    gap> h := Group( (2,3)(4,5), (1,2,3)(4,5,6) );;
+    gap> IsEquivalentOperation( g, [1..6], h, [1..6] );
+    true
+    gap> h := Group( (1,2), (1,2,3) );;
+    gap> IsEquivalentOperation(g,[[1,4],[2,5],[3,6]],OnPairs,h,[1..3]);
+    true
+    gap> h := Group( (1,2), (1,2,3)(4,5,6) );;
+    gap> IsEquivalentOperation( g, [1..6], h, [1..6] );
+    false
+    gap> h := Group( (1,2,3)(4,5,6), (1,2)(4,5) );;
+    gap> IsEquivalentOperation( g, [1..6], h, [1..6] );
+    false    # the generators must correspond |
+
+'IsEquivalentOperation' calls \\
+'<G>.operations.IsEquivalentOperation(<G>,<D>,<oprG>,<H>,<E>,<oprH>)' and
+returns  the value.   Note that  the  third   and sixth argument are  not
+optional for functions called this way.
+
+The default function called this way is 'GroupOps.IsEquivalentOperation',
+which tries to rearrange <E>  so that the above  condition  is satisfied.
+This is done one orbit of <G> at a time, and for each such  orbit all the
+orbits of <H> of the same length are tried to see  if there is  one which
+can be rearranged  as necessary.  Special   categories of groups  overlay
+this function with more efficient ones.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

@@ -1,0 +1,400 @@
+%-----------------------------------------------------------------------------
+% Beginning of grape1.tex
+%-----------------------------------------------------------------------------
+%
+\input amstex
+\documentstyle{dimacs}
+\NoBlackBoxes
+\font\sf=cmss10
+\def \GAP {{\sf GAP}}
+\def \GRAPE {{\sf GRAPE}}
+\def \im {\cong}
+\def \cl {\centerline}
+\def \ss {\smallskip}
+\def \ms {\medskip}
+\def \bs {\bigskip}
+\def \ds {\displaystyle}
+\def \split {\colon}
+\def \bec {\colon=}
+\def \ns {{}^{\ds .}}
+\def \intersect {\cap}
+\def \union {\cup}
+\def \la {\langle}
+\def \ra {\rangle}
+\def \x {\times}
+\def \a {\alpha}
+\def \b {\beta}
+\def \G {\Gamma}
+\def \D {\Delta}
+\def \S {\Sigma}
+\def \s {\sigma}
+\def \t {\tau}
+\def \w {\omega}
+\def \W {\Omega}
+\def \Aut {\hbox{\rm Aut\,}}
+%
+\leftheadtext{LEONARD H. SOICHER}
+\rightheadtext{GRAPE: FOR COMPUTING WITH GRAPHS AND GROUPS}
+
+\topmatter
+\title GRAPE: a System for Computing\\
+with Graphs and Groups\endtitle
+\author Leonard H. Soicher\endauthor
+\address 
+School of Mathematical Sciences,
+Queen Mary and Westfield College,
+Mile End Road,
+London E1 4NS,
+U.K.
+\endaddress  %address for author one
+\email L.H.Soicher\@qmw.ac.uk\endemail
+
+%  The following items give publication information for the DIMACS logo
+\cvol{00}
+\cvolyear{0000}
+\cyear{0000}
+
+%  Math Subject Classifications 
+\subjclass Primary 05C25, 05C85\endsubjclass
+
+\thanks This paper is in final form and no version of it will be submitted for
+publication elsewhere\endthanks
+
+\endtopmatter
+
+\document
+
+\head 1. Introduction                % bold, centered; 
+\endhead                             % don't type final punctuation 
+
+This note briefly describes {\GRAPE}, a computer system 
+for calculations with graphs and groups.
+{\GRAPE} is designed primarily to study
+finite graphs arising from group-theoretical and geometrical constructions.
+
+The {\GRAPE} philosophy is that a graph $\G$ always comes together
+with a known subgroup $G$ of $\Aut\G$ 
+(this is sensible if we assume our graph
+comes from a group-theoretical or geometrical construction), and that
+$G$ should be used to reduce the storage and 
+CPU-time requirements for calculations with $\G$. 
+The result is that we are routinely able to do calculations with 
+many large symmetric graphs (having 20,000 vertices or more) 
+on a SUN Sparcstation~2. 
+However, even if $G$ is the trivial group, {\GRAPE} tries not to impose
+an unreasonable overhead for trying to use $G$.
+
+The {\GRAPE} system consists of the 
+{\GAP} (version 3.1) group theoretical system \cite{11} 
+from Aachen, a {\GAP} language library of 
+graph-theoretical functions, and some standalone programs integrated 
+into the system.
+{\GAP} provides a programming language 
+(the {\GAP} language), a storage manager, objects such as
+lists, sets, records, permutations, and groups, and a library
+of group-theoretical routines (written in the {\GAP}
+language). {\GAP} also allows the execution of operating system
+commands from within {\GAP}, 
+and the reading and writing of files. This allows us
+to run various efficient standalone programs under a {\GAP}
+interface as part of the {\GRAPE} system. 
+At present these standalones are the author's coset
+enumeration program {\it enum} (although {\GAP} now 
+has a coset enumerator), B.D.~McKay's graph 
+automorphism and isomorphism program {\it nauty} \cite{8},
+and the author's collapsed adjacency matrix program {\it coladj}. 
+All computations in the {\GRAPE} system take place via 
+{\GAP} functions, so that the running of  
+standalone programs is invisible to the user.
+This approach allows us the flexibility 
+to add programs written in various languages, but still 
+to have a standard, high-level programming interface via {\GAP}.
+We have in fact found that most of our graph routines are
+most easily written in the {\GAP} language, and are 
+reasonably efficient in this form. 
+
+{\GRAPE} is being developed by the author at
+Queen Mary and Westfield College on a SUN Sparcstation~2, 
+but it should be possible to set up {\GRAPE} on most
+computers running a version of the {\it UNIX} operating system.    
+
+A predecessor to {\GRAPE}, using
+{\GAP}~2.4 \cite{9}, was written by the author during visits
+to the Universit\`{a} di Roma ``La Sapienza" and 
+the University of Western Australia.
+This system has already proved very useful. 
+It was instrumental in the discovery of some new distance-regular graphs
+\cite{12}, and in the determination of some of their properties. 
+For some examples in \cite{5}, the system was
+used to construct covers of certain graphs, and to determine the 
+automorphism groups of these covers. 
+For \cite{6}, the system was used to determine when certain 2-arc 
+transitive graphs $QR(q)$ $(q=7,9,17,23,25,31)$
+are distance-transitive, as these particular $QR(q)$ 
+are not handled by a general result in \cite{6}
+($QR(q)$ has $2^{(q+1)/2}$ vertices and valency $q+1$). 
+Also, we are using the {\it enum} and {\it coladj} standalone
+programs to construct
+(most of) the intersection matrices for the 1-arc transitive 
+graphs of rank $\le5$
+acted on by sporadic simple groups or their automorphism groups
+(see \cite{10}). The biggest cases handled so far (on a University of 
+London Convex supercomputer) are the intersection matrices for the
+1-arc transitive graphs on $1,545,600$ vertices arising from the action 
+of Conway's group $Co_1$ on its $3A$-generated subgroups of order 
+3 (our notation is that of the ATLAS \cite{4}).
+
+We note that the latest version (3.8) of the group theory system {\it CAYLEY} 
+\cite{3} provides graph-theoretical functions and incorporates
+the {\it nauty} program. We have found {\it CAYLEY} useful for much
+group-theoretical and some graph-theoretical work.
+The {\it CAYLEY} approach to graphs is more general than that of 
+{\GRAPE}, but the specialist approach of {\GRAPE} allows 
+it to work with much larger symmetric graphs than {\it CAYLEY} does.
+
+The reader is referred to \cite{2} for graph-theoretical 
+terms not defined here.
+
+\head 2. Representing graphs in {\GRAPE}                % bold, centered; 
+\endhead                             % don't type final punctuation 
+
+In general {\GRAPE} deals with finite directed graphs,
+possibly with loops, but with no multiple edges.
+Let $\G=(V,E)$ be such a graph.  Let $v\in V$, and denote by  
+$\G_i(v)$ the set of vertices of $\G$ at distance 
+$i$ from $v$, with the convention that $\G(v)=\G_1(v)$.
+We suppose $n=|V|$, $V=\{v_1,\ldots,v_n\}$, and
+discuss how $\G$ can be represented on a computer. 
+The most common methods are by an {\it adjaceny matrix} 
+(an $n\x n$ matrix whose $(i,j)$-entry is 1 if $(v_i,v_j)$
+is an edge of $\G$, and 0 otherwise), 
+or by a list $\G(v_1),\ldots,\G(v_n)$ of adjacency sets. 
+
+An adjacency matrix requires $n^2$ bits of storage, 
+it can be inefficient for computations with sparse graphs, 
+and requires too much store for $n$ greater than about $15,000$
+(with present workstation technology).
+Also, constructing an adjacency matrix requires at least $O(n^2)$ steps.
+Adjacency matrices are used by {\it nauty} and {\it CAYLEY},
+but not by (the {\GAP} part) of {\GRAPE}.
+
+A list of adjacency sets requires at least $O(|E|)$ storage, 
+and at least $O(|E|)$  
+time for its construction. Thus, such a list is inappropriate for 
+a graph with very many edges (if a better way can be found, as
+described below).
+
+Suppose now we know a group $G$ of automorphisms of $\G$.
+Let $V_1,\ldots,V_k$ be the distinct orbits
+of $G$ on the vertex set $V$, with respective representatives 
+$v_1,\ldots,v_k$. Clearly, to store $\G$, we need only store
+permutation generators for $G$, the list
+$v_1,\ldots,v_k$ of orbit representatives, 
+and the list $\G(v_1),\ldots,\G(v_k)$. 
+This is how a graph is stored in {\GRAPE}, in the form 
+of a {\GAP} record. This record also contains a 
+Schreier vector (see, for example, \cite{7}) to allow the efficient
+calculation of $\G(v)$ for any $v\in V$. 
+In practice, we often have $k\le2$, and so this method of
+storage can represent a huge saving over conventional 
+means. Even if $G$ is trivial, our method is not 
+significantly worse than a represention by a complete list of adjacency sets. 
+
+By default in {\GRAPE}, the vertices of a graph $\G=(V,E)$ are 
+named $1,\ldots,|V|$, and this is how they are always 
+represented internally. Following a suggestion of P.J. Cameron,
+we allow an (optional) field called {\tt names} for a graph record, so  
+that a user may give his or her names for the vertices
+(these names can be integers, sets, vectors, or indeed, any {\GAP} 
+type). If a subgraph of $\G$ is created then this subgraph inherits
+its vertex names from $\G$.
+
+\head 3. Some {\GRAPE} functions                % bold, centered; 
+\endhead                             % don't type final punctuation 
+
+The most common way for a graph to be constructed in {\GRAPE}
+is to start with a permutation group $G$ of degree $n$, and 
+a set $S$ of ordered pairs of elements of $\{1,\ldots,n\}$, and then
+to construct $\G$ to have vertex set $\{1,\ldots,n\}$, and edge 
+set the union of the $G$-orbits of the elements of $S$.
+We are then able to associate the group $G$ with $\G$, and 
+to construct $\G$, we only determine the adjacency sets for the 
+orbit representatives $v_1,\ldots,v_k$, say, of $G$ on $\{1,\ldots,n\}$. 
+This calculation is made especially easy if we know (generators for)
+the stabilizers in $G$ for each of the $v_i$.
+Many {\GRAPE} functions allow the user to input such additional 
+useful information, if known,  to make the functions run faster. 
+
+Now, for ease of exposition, we assume that our graph
+$\G=(V,E)$ is undirected and has no loops. As before,
+we suppose $G\le\Aut\G$ has $k$ orbits on the vertices
+of $\G$, with representatives $v_1,\ldots,v_k$.
+
+Many properties of $\G$ can be determined by {\GRAPE} functions;
+for example, connected components, diameter, girth, and various regularity
+properties, such as whether $\G$ is distance-regular.
+Also, given a subset $X$ of $V$, {\GRAPE} can determine if
+$X$ is a distance-regular code.
+
+{\GRAPE} can construct induced subgraphs of $\G$, such as the 
+induced subgraph $\D$ on a set $\G_i(v)$. 
+Here, the group associated with $\D$ is the vertex stabilizer $G_v$ 
+acting on $\G_i(v)$ (if the user does not provide a group).
+If we do not already know this stabilizer then we can quickly construct an 
+approximation $H\le G_v$ using random methods (see \cite{1} and \cite{7}). 
+This is adequate as we need only be sure that $H$ acting on 
+$\G_i(v)$ is a subgroup of $\Aut\D$, and
+in practice we will almost always have $H=G_v$.
+Approximations of this sort are used in some other {\GRAPE} functions.
+    
+The most important function in {\GRAPE} is called {\tt LocalInfo},
+and is used by many other procedures. 
+
+The function {\tt LocalInfo} performs a calculation similar to
+a breadth-first search in $\G$, 
+starting at a given vertex $v$ to successively determine 
+$$\G_0(v),\G_1(v),\G_2(v),\ldots,$$ among other things. (Here, as you might
+expect, we first calculate the orbits of (an approximation to) 
+$G_v$ and then we only look at the adjacency sets of 
+representatives of these orbits.)
+Thus, one thing {\tt LocalInfo} determines is the connected component
+of $\G$ containing $v$. 
+
+Now suppose $\G$ is connected. For $v\in V$ let $d_v$ denote 
+the maximum distance from $v$ to any vertex of $\G$.
+Thus {\tt LocalInfo} determines $d_v$, and we have that
+the diameter of $\G$ is just max$\{d_{v_1},\ldots,d_{v_k}\}$.
+
+Suppose $v,w\in V$, and $w\in\G_i(v)$. Then {\tt LocalInfo},
+in the process of performing its breadth-first search starting at
+$v$, determines the numbers
+$$\eqalign{c_i(v,w)&=|\G_{i-1}(v)\cap\G(w)|,\cr
+a_i(v,w)&=|\G_{i}(v)\cap\G(w)|,\cr
+b_i(v,w)&=|\G_{i+1}(v)\cap\G(w)|.}$$
+(Note that these quantities are constant as $w$ varies
+over an orbit of $G_v$).
+
+Now define $g_v$ to be the length of the shortest circuit 
+containing $v$, if $v$ is in a circuit, and define $g_v=\infty$
+otherwise. Now let $t$ be the least $i$ such that 
+some $c_i(v,w)\ge2$ or some $a_i(v,w)\ge1$, if such an 
+$i$ exists. If no such $i$ exists then $g_v=\infty$.
+Otherwise, if $c_t(v,w)\ge2$ for some $w$, then $g_v=2t$, else
+$g_v=2t+1$. We also have that the girth
+of $\G$ is min$\{g_{v_1},\ldots,g_{v_k}\}$.   
+
+The function {\tt LocalInfo} saves a $c_i(v,w)$, $a_i(v,w)$, or
+$b_i(v,w)$ just if it depends only on $i$ and $v$ (and not 
+$w$). Such {\it parameters} $c_i(v),a_i(v),b_i(v)$,
+if and when they exist,
+are used in the determination of many regularity properties of
+$\G$, the strongest of which is distance-regularity.            
+A function very similar to {\tt LocalInfo}
+can determine if a given subset of the vertices of $\G$ is
+a distance-regular code.
+   
+Finally, it is possible to use {\GRAPE} functions as an 
+interface to {\it nauty} to determine the automorphism group
+of a (vertex-coloured) graph, and to test if two graphs 
+are isomorphic, if these graphs are not too large.
+
+\head 4. Note added: 20 August 1992                % bold, centered; 
+\endhead                             % don't type final punctuation 
+
+The {\GRAPE} system and a beginning user's guide \cite{13}
+are available from the author.
+The {\GRAPE} library now contains over 50 graph-theoretical 
+functions, many of which were written while the author
+was visiting the State University of Ghent. 
+All the functionality of the {\GRAPE} system, except
+for the ability to compute graph automorphism groups and test
+for graph isomorphism, can now be achieved by {\GAP} code alone.
+
+New features in {\GRAPE} include the ability to analyse 
+the clique structure of a graph, as well as certain other induced
+subgraph structure, and also functions for constructing
+quotient graphs, bipartite doubles, point graphs, and 
+edge graphs.
+
+\Refs
+
+\ref \no 1
+\by L. Babai, G. Cooperman, L. Finkelstein and A. Seress 
+\paper Nearly linear time algorithms for permutation groups with a small base 
+\inbook ISSAC '91
+\publ ACM Press \publaddr New York \yr 1991
+\pages 200--209 
+\endref
+\ref \no 2
+\by A.E. Brouwer, A.M. Cohen and A. Neumaier 
+\book Distance-Regular Graphs
+\publ Springer \publaddr Berlin and New York \yr 1989
+\endref
+\ref \no 3
+\by J.J. Cannon
+\paper An introduction to the group theory language, Cayley
+\inbook Computational Group Theory
+\ed M.D. Atkinson
+\publ Academic Press \publaddr London \yr 1984
+\pages 145--183
+\endref
+\ref \no 4
+\by J.H. Conway, R.T. Curtis, S.P. Norton, R.A. Parker and R.A. Wilson
+\book  An ATLAS of Finite Groups
+\publ Clarendon Press
+\publaddr Oxford \yr 1985 
+\endref
+\ref \no 5
+\by D.R. Hughes
+\paper Regular covers of graphs and structures
+\toappear
+\endref
+\ref \no 6
+\by A.A. Ivanov and C.E. Praeger
+\paper On finite affine 2-arc transitive graphs
+\publ University of Western Australia Pure Mathematics Research Report, 1992
+\endref
+\ref \no 7
+\by J.S. Leon 
+\paper On an algorithm for finding a base and 
+strong generating set for a group given by generating permutations
+\jour Math. Comp. \vol 35 \yr 1980 \pages 941--974 
+\endref
+\ref \no 8
+\by B.D. McKay
+\paper {\it nauty} user's guide (version 1.5) 
+\publ Technical report TR-CS-90-02, Computer Science Department, 
+Australian National University, 1990
+\endref
+\ref \no 9
+\by A. Niemeyer, W. Nickel and M. Sch\"onert 
+\book GAP: Getting Started and Reference Manual
+\publ Lehrstuhl D f\"ur Mathematik 
+\publaddr RWTH Aachen \yr 1988
+\endref
+\ref \no 10
+\by C.E. Praeger and L.H. Soicher
+\paper Permutation representations and orbital graphs for the
+sporadic simple groups and their automorphism groups:
+rank at most five
+\toappear
+\endref
+\ref \no 11
+\by M. Sch\"onert, et. al.
+\book GAP: Groups, Algorithms and Programming
+\publ Lehrstuhl D f\"ur Mathematik
+\publaddr RWTH Aachen \yr 1992 
+\endref
+\ref \no 12
+\by L.H. Soicher
+\paper Three new distance-regular graphs
+\jour Europ. J. Combinatorics \toappear
+\endref
+\ref \no 13
+\by L.H. Soicher
+\paper Getting started with GRAPE
+\publ preprint, QMW, 1992
+\endref
+\endRefs
+
+\enddocument

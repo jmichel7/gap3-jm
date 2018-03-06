@@ -1,0 +1,420 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  string.tex                  GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: string.tex,v 1.1.1.1 1996/12/11 12:36:51 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the string datatype and its functions.
+%%
+%H  $Log: string.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:51  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.10  1993/03/11  17:47:16  fceller
+%H  changed description of comparison
+%H
+%H  Revision 3.9  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.8  1993/02/12  11:41:19  felsch
+%H  new example fixed
+%H
+%H  Revision 3.7  1993/02/11  12:20:47  martin
+%H  changed reference "Strings" to "Strings and Characters"
+%H
+%H  Revision 3.6  1993/02/11  12:10:05  martin
+%H  strings are now lists too
+%H
+%H  Revision 3.5  1993/02/09  10:40:18  felsch
+%H  examples fixed
+%H
+%H  Revision 3.4  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.3  1991/07/26  12:34:01  martin
+%H  improved the index
+%H
+%H  Revision 3.2  1991/07/26  09:01:07  martin
+%H  changed |\GAP\ | to |{\GAP}|
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:35:22  martin
+%H  Initial revision under RCS
+%H
+%%
+\Chapter{Strings and Characters}%
+\index{type!strings}%
+\index{doublequotes}\index{backslash}\index{special character sequences}
+
+A *character*  is simply an object in {\GAP} that represents an arbitrary
+character from the character set  of  the  operating  system.   Character
+literals  can  be  entered  in  {\GAP}  by  enclosing  the  character  in
+*singlequotes* '\''.
+
+|    gap> 'a';
+    'a'
+    gap> '*';
+    '*' |
+
+A *string* is simply a dense list of characters.  Strings are used mainly
+in filenames and error messages.  A string literal can either be  entered
+simply  as  the  list of characters or by  writing the characters between
+*doublequotes* '\"'.   {\GAP}  will always output strings  in  the latter
+format.
+
+|    gap> s1 := ['H','a','l','l','o',' ','w','o','r','l','d','.'];
+    "Hallo world."
+    gap> s2 := "Hallo world.";
+    "Hallo world."
+    gap> s1 = s2;
+    true
+    gap> s3 := "";
+    ""    # the empty string
+    gap> s3 = [];
+    true |
+
+Note that a string is just a special case  of a list.  So everything that
+is possible for lists (see  "Lists")  is also possible for strings.  Thus
+you can  access  the characters in  such  a string (see "List Elements"),
+test  for  membership (see  "In"), etc.  You can  even assign  to such  a
+string (see "List Assignment").  Of course unless you  assign a character
+in such a way  that the  list  stays dense,  the  resulting  list will no
+longer be a string.
+
+|    gap> Length( s2 );
+    12
+    gap> s2[2];
+    'a'
+    gap> 'e' in s2;
+    false
+    gap> s2[2] := 'e';;  s2;
+    "Hello world." |
+
+If a string is displayed as result of an evaluation (see "Main Loop"), it
+is  displayed  with enclosing   doublequotes.  However,  if  a  string is
+displayed by 'Print',  'PrintTo', or 'AppendTo' (see "Print",  "PrintTo",
+"AppendTo") the enclosing doublequotes are dropped.
+
+|    gap> s2;
+    "Hello world."
+    gap> Print( s2 );
+    Hello world.gap> |
+
+There  are a number  of *special character  sequences* that  can be  used
+between   the  single  quote  of  a  character  literal  or  between  the
+doublequotes  of  a  string  literal to  specify  characters,  which  may
+otherwise be inaccessible.  They consist of two characters.  The first is
+a  backslash $\backslash$.  The second may be any character.  The meaning
+is given in the following list
+
+'n':    *newline character*.  This  is  the character that, at   least on
+        UNIX systems, separates  lines in a  text file.  Printing of this
+        character in a string has the effect of moving  the  cursor  down
+        one line and back to the beginning  of the line.
+
+'\"':    *doublequote character*.  Inside  a string a doublequote  must be
+        escaped by the backslash,  because it is otherwise interpreted as
+        end of the string.
+
+'\'':    *singlequote character*.  Inside a character a  singlequote  must
+        escaped by the backslash, because it is  otherwise interpreted as
+        end of the character.
+
+$\backslash$:  *backslash character*.  Inside  a string a backslash  must
+        be   escaped  by  another  backslash,    because it is  otherwise
+        interpreted as first character of an escape sequence.
+
+'b':    *backspace character*.  Printing this character should  have  the
+        effect of moving the cursor back one character.  Whether it works
+        or not is system dependent and should not be relied upon.
+
+'r':    *carriage return character*.  Printing this character should have
+        the effect of moving the cursor back to the beginning of the same
+        line.  Whether this works or not is again system dependent.
+
+'c':    *flush character*.  This character is not  printed.  Its  purpose
+        is to flush the output queue.  Usually {\GAP} waits until it sees
+        a <newline> before it prints a string.  If you want to display  a
+        string that does not include this character use $\backslash c$.
+
+other:  For any other character the backslash is simply ignored.
+
+Again, if the line is displayed as result of  an evaluation, those escape
+sequences are displayed in the  same way that they  are input.  They  are
+displayed in their special way only by 'Print', 'PrintTo', or 'AppendTo'.
+
+|    gap> "This is one line.\nThis is another line.\n";
+    "This is one line.\nThis is another line.\n"
+    gap> Print( last );
+    This is one line.
+    This is another line. |
+
+It is not allowed to enclose a <newline> inside the  string.  You can use
+the special  character  sequence  $\backslash n$  to  write  strings that
+include <newline>  characters.  If, however, a string  is too long to fit
+on a single line it is possible to *continue* it  over several lines.  In
+this case  the last character of  each  line, except the  last  must be a
+backslash.  Both backslash and <newline>  are thrown away.  Note that the
+same continuation mechanism is available for identifiers and integers.
+
+|    gap> "This is a very long string that does not fit on a line \
+    gap> and is therefore continued on the next line.";
+    "This is a very long string that does not fit on a line and is therefo\
+    re continued on the next line."
+    # note that the output is also continued, but at a different place |
+
+This chapter contains sections  describing  the function that creates the
+printable representation  of a string  (see "String"), the functions that
+create new   strings  (see    "ConcatenationString",  "SubString"),   the
+functions that tests  if an object  is   a  string  (see "IsString"), the
+string comparisons (see "Comparisons of Strings"), and the  function that
+returns the length of a string (see "Length").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{String}%
+\index{convert!to a string}
+
+'String( <obj> )' \\
+'String( <obj>, <length> )'
+
+'String' returns a representation of the <obj>, which may be an object of
+arbitrary type, as a string.   This string should approximate  as closely
+as possible the character sequence you see if you print <obj>.
+
+If <length> is given it must be an integer.  The absolute value gives the
+minimal  length of the  result.  If  the string  representation of  <obj>
+takes  less than that  many  characters  it is   filled with blanks.   If
+<length> is positive it is filled on the left, if <length> is negative it
+is filled on the right.
+
+|    gap> String( 123 );
+    "123"
+    gap> String( [1,2,3] );
+    "[ 1, 2, 3 ]"
+    gap> String( 123, 10 );
+    "       123"
+    gap> String( 123, -10 );
+    "123       "
+    gap> String( 123, 2 );
+    "123" |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ConcatenationString}%
+\index{concatenation!of strings}\index{append!one string to another}
+
+'ConcatenationString( <string1>, <string2> )'
+
+'ConcatenationString'   returns   the  concatenation of the   two strings
+<string1> and  <string2>.   This is a  new string  that  starts  with the
+characters of <string1> and ends with the characters of <string2>.
+
+|    gap> ConcatenationString( "Hello ", "world.\n" );
+    "Hello world.\n" |
+
+Because strings are now lists, 'Concatenation' (see "Concatenation") does
+exactly the  right  thing,  and  the  function  'ConcatenationString'  is
+obsolete.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SubString}%
+\index{substring!of a string}\index{part!of a string}
+
+'SubString( <string>, <from>, <to> )'
+
+'SubString'  returns the  substring of  the string  <string> that begins at
+position <from> and continues to position <to>. The characters at these two
+positions  are included.  Indexing is  done with  origin 1, i.e., the first
+character  is at position 1. <from> and  <to> must be integers and are both
+silently  forced into  the range  '1..Length(<string>)' (see  "Length"). If
+<to> is less than <from> the substring is empty.
+
+|    gap> SubString( "Hello world.\n", 1, 5 );
+    "Hello"
+    gap> SubString( "Hello world.\n", 5, 1 );
+    "" |
+
+Because strings are  now  lists, substrings  can  also be extracted  with
+'<string>\{[<from>..<to>]\}' (see "List  Elements").  'SubString'  forces
+<from> and <to> into  the range  '1..Length(<string>)', which  the  above
+does not, but apart from that 'SubString' is obsolete.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Strings}%
+\index{comparisons!of strings}
+
+'<string1> = <string2>', '<string1> \<> <string2>'
+
+The  equality  operator  '='   evaluates to  'true'   if  the two strings
+<string1> and <string2> are equal and  'false' otherwise.  The inequality
+operator '\<>' returns 'true' if  the two strings <string1> and <string2>
+are not equal and 'false' otherwise.
+
+|    gap> "Hello world.\n" = "Hello world.\n";
+    true
+    gap> "Hello World.\n" = "Hello world.\n";
+    false    # string comparison is case sensitive
+    gap> "Hello world." = "Hello world.\n";
+    false    # the first string has no <newline>
+    gap> "Goodbye world.\n" = "Hello world.\n";
+    false
+    gap> [ 'a', 'b' ] = "ab";
+    true |
+
+'<string1> \<\ <string2>', '<string1> \<= <string2>',
+'<string1>  > <string2>', '<string1>  => <string2>'
+
+The operators '\<', '\<=', '>', and '=>' evaluate to 'true' if the string
+<string1> is less than, less than or equal to, greater than, greater than
+or  equal to the string  <string2> respectively.  The ordering of strings
+is  lexicographically according  to the order  implied by the underlying,
+system dependent, character set.
+
+You  can  also compare  objects  of other types, for example integers  or
+permutations with strings.  As strings  are  dense  character  lists they
+compare  with other objects  as lists  do, i.e., they are  never equal to
+those  objects, records  (see "Records") are  greater  than  strings, and
+objects of every other type are smaller than strings.
+
+|    gap> "Hello world.\n" < "Hello world.\n";
+    false    # the strings are equal
+    gap> "Hello World.\n" < "Hello world.\n";
+    true    # in ASCII uppercase letters come before lowercase letters
+    gap> "Hello world." < "Hello world.\n";
+    true    # prefixes are always smaller
+    gap> "Goodbye world.\n" < "Hello world.\n";
+    true    # 'G' comes before 'H', in ASCII at least |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsString}%
+\index{test!for a string}
+
+'IsString( <obj> )'
+
+'IsString' returns 'true' if the object <obj>, which  may be an object of
+arbitrary type, is a  string and 'false' otherwise.   Will cause an error
+if <obj> is an unbound variable.
+
+|    gap> IsString( "Hello world.\n" );
+    true
+    gap> IsString( "123" );
+    true
+    gap> IsString( 123 );
+    false
+    gap> IsString( [ '1', '2', '3' ] );
+    true
+    gap> IsString( [ '1', '2', , '4' ] );
+    false    # strings must be dense
+    gap> IsString( [ '1', '2', 3 ] );
+    false    # strings must only contain characters |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Join}%
+
+'Join( <list> [, <delimiter>] )'
+
+The  function 'Join' is similar  to the Perl function  of the same name. It
+first  applies the  function 'String'  to all  elements of the <list>, then
+joins  the  resulting  strings,  separated  by  the  given  <delimiter> (if
+omitted, '\",\"' is used as a delimiter)
+
+|   gap> Join([1..4]);
+   "1,2,3,4"
+   gap> Join([1..4],"foo");
+   "1foo2foo3foo4"|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SPrint}%
+
+'SPrint(<s1>,...,<sn>)'
+
+'SPrint(<s1>,...,<sn>)' is a synonym for 'Join([<s1>,...,<sn>],\"\")'. That
+is, it first applies the function 'String' to all arguments, then joins the
+resulting  strings. If '<s1>,...,<sn>'  have string methods,  the effect of
+'Print(SPrint(<s1>,...,<sn>))' is the same as directly
+'Print(<s1>,...,<sn>)'.
+
+|   gap> SPrint(1,"a",[3,4]);
+   "1a[ 3, 4 ]"|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrintToString}%
+
+'PrintToString(<s>,<s1>,...,<sn>)'
+
+'PrintToString(<s>,<s1>,...,<sn>)'   appends  to  string   <s>  the  string
+'SPrint(<s1>,...,<sn>)'.
+
+|   gap> s:="a";
+   "a"
+   gap> PrintToString(s,[1,2]);
+   gap> s;
+   "a[ 1, 2 ]"|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Split}%
+
+'Split( <s> [, <delimiter>] )'
+
+This function is similar to the Perl function of the same name. It splits
+the string <s> at each occurrence of the <delimiter> (a character).
+If <delimiter> is omitted, '\',\'' is used as a delimiter.
+
+|   gap> Split("14,2,2,1,");
+    [ "14", "2", "2", "1", "" ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{StringDate}%
+
+'StringDate(<days>)'
+
+'StringDate([<day>, <month>, <year>])'
+
+This  function converts to a readable string  a date, which can be a number
+of days since 1-Jan-1970 or a list '[<day>, <month>, <year>]'.
+
+|   gap> StringDate([11,3,1998]);
+   "11-Mar-1998"
+   gap> StringDate(2^14);
+   "10-Nov-2014"|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{StringTime}%
+
+'StringTime(<msec>)'
+
+'StringTime([<hour>, <min>, <sec>, <msec>])'
+
+This function converts to a readable string atime,  which can be a number of
+milliseconds or a list '[<hour>, <min>, <sec>, <msec>]'.
+
+|   gap> StringTime([1,10,5,13]);
+   " 1:10:05.013"
+   gap> StringTime(2^22);
+   " 1:09:54.304"|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{StringPP}%
+
+'StringPP(<int>)'
+
+returns a string representing the prime factor decomposition of the integer
+int.
+
+|   gap> StringPP(40320);
+"2^7*3^2*5*7"|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%

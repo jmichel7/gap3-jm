@@ -1,0 +1,236 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvposet.tex       CHEVIE documentation       Jean Michel
+%%
+%Y  Copyright (C) 2010 - 1013  University  Paris VII.
+%%
+%%  This  file  contains  useful functions to deal with posets.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{Posets and relations}
+
+Posets are represented in \CHEVIE\ as records where at least one of the two
+following fields is present\:
+
+  |.incidence|:  a  boolean  matrix  such  that |.incidence[i][j]=true| iff
+  |i<=j| in the poset.
+
+  |.hasse|: a list representing the Hasse diagram of the poset\: the $i$-th
+  entry  is the list of indices  of elements which are immediate successors
+  (covers)  of the $i$-th element, that is  the list of $j$ such that |i<j|
+  and such that there is no $k$ such that |i<k<j|.
+
+If  only one field is present, the other  is computed on demand. Here is an
+example of use;
+
+|    gap> P:=BruhatPoset(CoxeterGroup("A",2));
+    Poset with 6 elements
+    gap> Display(P);
+    <1,2<21,12<121
+    gap> Hasse(P);
+    [ [ 2, 3 ], [ 4, 5 ], [ 4, 5 ], [ 6 ], [ 6 ], [  ] ]
+    gap> Incidence(P);   
+    [ [ true, true, true, true, true, true ], 
+      [ false, true, false, true, true, true ], 
+      [ false, false, true, true, true, true ], 
+      [ false, false, false, true, false, true ], 
+      [ false, false, false, false, true, true ], 
+      [ false, false, false, false, false, true ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TransitiveClosure of incidence matrix}%
+\index{TransitiveClosure}
+
+'TransitiveClosure(<M>)'
+
+<M>  should be a  square boolean matrix  representing a relation; returns a
+boolean  matrix representing the  transitive closure of  this relation. The
+transitive  closure is computed  by the Floyd-Warshall  algorithm, which is
+quite fast even for large matrices.
+
+|    gap> M:=List([1..5],i->List([1..5],j->j-i in [0,1]));
+    [ [ true, true, false, false, false ], 
+      [ false, true, true, false, false ], 
+      [ false, false, true, true, false ], 
+      [ false, false, false, true, true ], 
+      [ false, false, false, false, true ] ]
+    gap> PrintArray(TransitiveClosure(M));
+    [[ true,  true,  true,  true,  true],
+     [false,  true,  true,  true,  true],
+     [false, false,  true,  true,  true],
+     [false, false, false,  true,  true],
+     [false, false, false, false,  true]]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LcmPartitions}%
+\index{LcmPartitions}
+
+'LcmPartitions(<p1>,...,<pn>)'
+Each  argument is a partition of the same set 'S', represented by a list of
+disjoint  subsets whose union is 'S'. Equivalently each argument represents
+an equivalence relation on 'S'.
+
+The result is the finest partition of 'S' such that each argument partition
+refines it. It represents the 'or' of the equivalence relations represented
+by the arguments.
+
+|    gap> LcmPartitions([[1,2],[3,4],[5,6]],[[1],[2,5],[3],[4],[6]]);
+    [ [ 1, 2, 5, 6 ], [ 3, 4 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GcdPartitions}%
+\index{GcdPartitions}
+
+'GcdPartitions(<p1>,...,<pn>)'
+Each  argument is a partition of the same set 'S', represented by a list of
+disjoint  subsets whose union is 'S'. Equivalently each argument represents
+an equivalence relation on 'S'.
+
+The result is the coarsest partition which refines all argument partitions.
+It  represents the  'and' of  the equivalence  relations represented by the
+arguments.
+
+|    gap> GcdPartitions([[1,2],[3,4],[5,6]],[[1],[2,5],[3],[4],[6]]);
+    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Poset}%
+\index{Poset}
+
+'Poset(<M>)'
+
+'Poset(<H>)'
+
+Creates   a  poset   from  either   an  incidence   matrix  <M>  such  that
+|M[i][j]=true|  if and only if |i<=j| in  the poset, or a Hasse diagram <H>
+given as a list whose $i$-th entry is the list of indices of elements which
+are  immediate successors (covers) of the $i$-th element, that is |M[i]| is
+the  list of $j$ such that |i<j| in the poset and such that there is no $k$
+such that |i<k<j|.
+
+'Poset(arg)'
+
+In  this last form |arg[1]|  should be a record  with a field |.operations|
+and the functions calls |ApplyFunc(arg[1].operations.Poset,arg)|.
+
+A poset is represented as a record with the following fields.
+
+  |.incidence|:  the incidence matrix.
+
+  |.hasse|: the Hasse diagram.
+
+Since the cost of computing one from the other is high, the above fields are
+optional (only one of them needs to be present) and the other is computed on
+demand.
+
+  |.size|: the number of elements of the poset.
+
+Finally,  an optional field |.label| may be given for formatting or display
+purposes.  It should be  a function |label(P,i,opt)|  which returns a label
+for the |i|-th element of the poset |P|, formatted according to the options
+(if any) given in the options record |opt|.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Hasse}%
+\index{Hasse}
+
+'Hasse(<P>)'
+
+returns the Hasse diagram of the poset <P>.
+
+|    gap> p:=Poset(List([1..5],i->List([1..5],j->j mod i=0)));                  
+    Poset with 5 elements
+    gap> Hasse(p);
+    [ [ 2, 3, 5 ], [ 4 ], [  ], [  ], [  ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Incidence}%
+\index{Incidence}
+
+'Incidence(<P>)'
+
+returns the Incidence matrix of the poset <P>.
+
+|    gap> p:=Poset(Concatenation(List([1..5],i->[i+1]),[[]]));
+    Poset with 6 elements
+    gap> Incidence(p);
+    [ [ true, true, true, true, true, true ], 
+      [ false, true, true, true, true, true ], 
+      [ false, false, true, true, true, true ], 
+      [ false, false, false, true, true, true ], 
+      [ false, false, false, false, true, true ], 
+      [ false, false, false, false, false, true ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LinearExtension}%
+\index{LinearExtension}
+
+'LinearExtension(<P>)'
+
+returns  a linear extension of the poset <P>, that is a list |l| containing
+a  permutation of  the integers  |[1..Size(P)]| such  that if |i<j| in <P>,
+then |Position(l,i)<Position(l,j)|. This is also called a topological sort
+of <P>.
+
+|    gap> p:=Poset(List([1..5],i->List([1..5],j->j mod i=0))); 
+    Poset with 5 elements
+    gap> Display(p);
+    1<2<4
+    1<3,5
+    gap> LinearExtension(p);
+    [ 1, 2, 3, 5, 4 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for Posets}%
+
+The function 'Size' returns the number of elements of the poset.
+
+The functions 'String' and 'Print' just indicate the |Size| of the poset.
+
+The  functions 'Format' and 'Display'  show the poset as  a list of maximal
+covering chains, with formatting depending on their record of options. They
+take  in account the  associated partition (see  "Partition for posets") to
+give  a  more  compact  description  where  equivalent  elements are listed
+together, separated by commas.
+
+|    gap> p:=Poset(UnipotentClasses(ComplexReflectionGroup(28)));
+    Poset with 16 elements
+    gap> Display(p); 
+    1<A1<~A1<A1+~A1<A2<A2+~A1<~A2+A1<C3(a1)<F4(a3)<C3,B3<F4(a2)<F4(a1)<F4
+    A1+~A1<~A2<~A2+A1
+    A2+~A1<B2<C3(a1)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Partition for posets}%
+\index{Partition}%
+
+'Partition(<P>)'
+
+returns  the  partition  of  |[1..Size(P)]|  determined  by the equivalence
+relation  associated to <P>; that  is, |i| and |j|  are in the same part of
+the  partition if the relations |i<k| and |j<k| as well are |k<i| and |k<j|
+are equivalent for any |k| in the poset.
+
+|    gap> p:=Poset(List([1..8],i->List([1..8],j->i=j or (i mod 4)<(j mod 4))));
+    Poset with 8 elements
+    gap> Display(p);
+    4,8<1,5<2,6<3,7
+    gap> Partition(p);
+    [ [ 4, 8 ], [ 2, 6 ], [ 3, 7 ], [ 1, 5 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Restricted for Posets}%
+\index{Restricted}
+\index{Poset!Restricted}
+
+Restricted(<P>,<indices>)
+
+returns the sub-poset of <P> determined by <indices>, which must be a sublist
+of |[1..Size(P)]|.
+
+|    gap> Display(p);
+    4,8<1,5<2,6<3,7
+    gap> Display(Restricted(p,[2..6]));
+    3<4<1,5<2|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,278 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  algmat.tex                  GAP documentation               Thomas Breuer
+%%
+%A  @(#)$Id: algmat.tex,v 1.1.1.1 1996/12/11 12:36:42 werner Exp $
+%%
+%Y  Copyright 1994-1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file contains the description of matrix algebras.
+%%
+%H  $Log: algmat.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:42  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.0  1994/05/19  14:00:16  sam
+%H  Initial Revision under RCS
+%H
+%%
+\Chapter{Matrix Algebras}
+
+This chapter describes the data structures and functions for matrix
+algebras in {\GAP}.  See chapter "Algebras" for the description of all
+those aspects that concern general algebras.
+
+First the objects of interest in this chapter are introduced (see "More
+about Matrix Algebras", "Bases for Matrix Algebras").
+
+The next sections describe functions for matrix algebras, first those
+that can be applied not only for matrix algebras (see "IsMatAlgebra",
+"Zero and One for Matrix Algebras", "Functions for Matrix Algebras", 
+"Algebra Functions for Matrix Algebras", "RepresentativeOperation for
+Matrix Algebras"), and then specific matrix algebra functions (see
+"MatAlgebra", "NullAlgebra", "Fingerprint", "NaturalModule").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Matrix Algebras}
+
+A *matrix algebra* is an algebra (see "More about Algebras") the elements
+of which are matrices.
+
+There is a canonical isomorphism of a matrix algebra onto a row space
+(see chapter "Row Spaces") that maps a matrix to the concatenation of its
+rows.  This makes all computations with matrix algebras that use its
+vector space structure as efficient as the corresponding computation with
+a row space.  For example the computation of a vector space basis, of
+coefficients with respect to such a basis, and of representatives under
+the action on a vector space by right multiplication.
+
+If one is interested in matrix algebras as domains themselves then one
+should think of this algebra as of a row space that admits a
+multiplication.  For example, the convention for row spaces that the
+coefficients field must contain the field of the vector elements also
+applies to matrix algebras.  And the concept of vector space bases is
+the same as that for row spaces (see "Bases for Matrix Algebras").
+
+In the chapter about modules (see chapter "Modules") it is stated that
+modules are of interest mainly as operation domains of algebras.  Here
+we can state that matrix algebras are of interest mainly because they
+describe modules.  For some of the functions it is not obvious whether
+they are functions for modules or for algebras or for the matrices that
+generate an algebra.  For example, one usually talks about the
+fingerprint of an $A$-module $M$, but this is in fact computed as the
+list of nullspace dimensions of generators of a certain matrix algebra,
+namely the induced action of $A$ on $M$ as is computed using
+'Operation( <A>, <M> )' (see "Fingerprint", "Operation for Algebras").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Bases for Matrix Algebras}
+
+As stated in section "More about Matrix Algebras", the implementation of
+bases for matrix algebras follows that of row space bases, see "Row Space
+Bases" for the details.  Consequently there are two types of bases,
+arbitrary bases and semi-echelonized bases, where the latter type can be
+defined as follows.  Let $\varphi$ be the vector space homomorphism that
+maps a matrix in the algebra $A$ to the concatenation of its rows, and
+let $B = (b_1, b_2, \ldots, b_n)$ be a vector space basis of $A$, then
+$B$ is called *semi-echelonized* if and only if the row space basis
+$(\varphi(b_1), \varphi(b_2), \ldots, \varphi(b_n))$ is semi-echelonized,
+in the sense of "Row Space Bases".  The *canonical basis* is defined
+analogeously.
+
+Due to the multiplicative structure that allows to view a matrix algebra
+$A$ as an $A$-module with action via multiplication from the right,
+there is additionally the notion of a *standard basis* for $A$, which is
+essentially described in "StandardBasis for Row Modules".  The default way
+to compute a vector space basis of a matrix algebra from a set of
+generating matrices is to compute this standard basis and a
+semi-echelonized basis in parallel.
+
+If the matrix algebra $A$ is unital then every semi-echelonized basis and
+also the standard basis have 'One( <A> )' as first basis vector.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsMatAlgebra}
+
+'IsMatAlgebra( <obj> )'
+
+returns 'true' if <obj>, which may be an object of arbitrary type, is a
+matrix algebra and 'false' otherwise.
+
+|    gap> IsMatAlgebra( FreeAlgebra( GF(2), 0 ) );
+    false
+    gap> IsMatAlgebra( Algebra( Rationals, [[[1]]] ) );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Zero and One for Matrix Algebras}
+
+'Zero( <A> )' : \\
+    returns the square zero matrix of the same dimension and
+    characteristic as the elements of <A>.  This matrix is thought only
+    for testing whether a matrix is zero, usually all its rows will be
+    *identical* in order to save space.  So you should *not* use this
+    zero matrix for other purposes; use "NullMat" 'NullMat' instead.
+
+'One( <A> )' : \\
+    returns for a unital matrix algebra <A> the identity matrix of the
+    same dimension and characteristic as the elements of <A>; for a not
+    unital matrix algebra <A> the (left and right) multiplicative
+    neutral element (if exists) is computed by solving a linear equation
+    system.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for Matrix Algebras}
+
+'Closure', 'Elements', 'IsFinite', and 'Size' are the only *set theoretic
+functions* that are overlaid in the operations records for matrix
+algebras and unital matrix algebras.
+See "Set Theoretic Functions for Algebras" for an overview of set
+theoretic functions for general algebras.
+
+No *vector space functions* are overlaid in the operations records for
+matrix algebras and unital matrix algebras.
+The *functions for vector space bases* are mainly the same as those for
+row space bases (see "Bases for Matrix Algebras").
+
+For other functions for matrix algebras, see "Algebra Functions for
+Matrix Algebras".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebra Functions for Matrix Algebras}
+
+'Centralizer( <A>, <a> )' \\
+'Centralizer( <A>, <S> )' : \\
+    returns the element or subalgebra centralizer in the matrix algebra
+    <A>.  Centralizers in matrix algebras are computed by solving a
+    linear equation system.
+
+'Centre( <A> )' : \\
+    returns the centre of the matrix algebra <A>, which is computed by
+    solving a linear equation system.
+
+'FpAlgebra( <A> )' : \\
+    returns a finitely presented algebra that is isomorphic to <A>.
+    The presentation is computed using the structure constants, thus
+    a vector space basis of <A> has to be computed.
+    If <A> contains no multiplicative neutral element (see "Zero and One
+    for Matrix Algebras") an error is signalled.
+    (At the moment the implementation is really simpleminded.)
+
+|    gap> a:= UnitalAlgebra( Rationals, [[[0,1],[0,0]]] );
+    UnitalAlgebra( Rationals, [ [ [ 0, 1 ], [ 0, 0 ] ] ] )
+    gap> FpAlgebra( a );
+    UnitalAlgebra( Rationals, [ a.1 ] )
+    gap> last.relators;
+    [ a.1^2 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RepresentativeOperation for Matrix Algebras}
+
+'RepresentativeOperation( <A>, <v1>, <v2> )'
+
+returns the element in the matrix algebra <A> that maps <v1> to <v2>
+via right multiplication if such an element exists, and 'false'
+otherwise.  <v1> and <v2> may be vectors or matrices of same dimension.
+
+|    gap> a:= MatAlgebra( GF(2), 2 );
+    UnitalAlgebra( GF(2), [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2) ] ], 
+      [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] ] )
+    gap> v1:= [ 1, 0 ] * Z(2);; v2:= [ 1, 1 ] * Z(2);;
+    gap> RepresentativeOperation( a, v1, v2 );
+    [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, Z(2)^0 ] ]
+    gap> t:= TrivialSubalgebra( a );;
+    gap> RepresentativeOperation( t, v1, v2 );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MatAlgebra}
+
+'MatAlgebra( <F>, <n> )'
+
+returns the full matrix algebra of <n> by <n> matrices over the field <F>.
+
+|    gap> a:= MatAlgebra( GF(2), 2 );
+    UnitalAlgebra( GF(2), [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2) ] ], 
+      [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] ] )
+    gap> Size( a );
+    16 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NullAlgebra}
+
+'NullAlgebra( <F> )'
+
+returns a trivial algebra (that is, it contains only the zero element)
+over the field <F>.
+This occurs in a natural way whenever 'Operation' (see "Operation for
+Algebras") constructs a faithful representation of the zero module.
+
+Here we meet the strange situation that an operation algebra does not
+consist of matrices, since in {\GAP} a matrix always has a positive
+number of rows and columns.  The element of a 'NullAlgebra( <F> )' is
+the object 'EmptyMat' that acts (trivially) on empty lists via right
+multiplication.
+
+|    gap> a:= NullAlgebra( GF(2) );
+    NullAlgebra( GF(2) )
+    gap> Size( a );
+    1
+    gap> Elements( a );
+    [ EmptyMat ]
+    gap> [] * EmptyMat;
+    [  ]
+    gap> IsAlgebra( a );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Fingerprint}
+
+'Fingerprint( <A> )'\\
+'Fingerprint( <A>, <list> )'
+
+returns the fingerprint of the matrix algebra <A>, i.e., a list of
+nullities of six ``standard\'\'\ words in <A> (for 2-generator
+algebras only) or of the words with numbers in <list>.
+
+|    gap> m1:= PermutationMat( (1,2,3,4,5), 5, GF(2) );;
+    gap> m2:= PermutationMat( (1,2)      , 5, GF(2) );;
+    gap> a:= Algebra( GF(2), [ m1, m2 ] );;
+    gap> Fingerprint( a );
+    [ 1, 1, 1, 3, 0, 4 ] |
+
+Let $a$ and $b$ be the generators of a 2-generator matix algebra.
+The six standard words used by 'Fingerprint' are $w_1, w_2, \ldots, w_6$
+where
+\[ \begin{array}{llllll} w_1 & = & a b + a + b, &
+                         w_2 & = & w_1 + a b^2, \\
+                         w_3 & = & a + b w_2,   &
+                         w_4 & = & b + w_3,     \\
+                         w_5 & = & a b + w_4,   &
+                         w_6 & = & a + w_5     \end{array} \]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NaturalModule}
+
+'NaturalModule( <A> )'
+
+returns the *natural module* $M$ of the matrix algebra <A>.
+If <A> consists of $n$ by $n$ matrices, and $F$ is the coefficients field of
+<A> then $M$ is an $n$-dimensional row space over the field $F$, viewed as
+<A>-right module (see "Module").
+
+|    gap> a:= MatAlgebra( GF(2), 2 );;
+    gap> a.name:= "a";;
+    gap> m:= NaturalModule( a );
+    Module( a, [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "%F\\|%V\\|%E"
+%%  fill-column:        73
+%%  fill-prefix:        "%%  "
+%%  eval:               (hide-body)
+%%  End:

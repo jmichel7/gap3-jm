@@ -1,0 +1,178 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  range.tex                   GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: range.tex,v 1.1.1.1 1996/12/11 12:36:49 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes those functions that mainly deal with ranges.
+%%
+%H  $Log: range.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:49  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.8  1994/06/09  09:29:42  vfelsch
+%H  updated output of examples
+%H
+%H  Revision 3.7  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.6  1993/02/12  11:39:35  felsch
+%H  new example fixed
+%H
+%H  Revision 3.5  1993/02/10  18:56:42  martin
+%H  changed the description for extended ranges
+%H
+%H  Revision 3.4  1993/02/05  08:07:20  felsch
+%H  examples fixed
+%H
+%H  Revision 3.3  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.2  1991/07/26  09:01:07  martin
+%H  changed |\GAP\ | to |{\GAP}|
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:32:53  martin
+%H  Initial revision under RCS
+%H
+%%
+\Chapter{Ranges}
+
+A *range* is a dense list of integers,  such  that the difference between
+consecutive  elements is a nonzero  constant.   Ranges can be abbreviated
+with the syntactic construct '[ <first>, <second> .. <last> ]' or, if the
+difference between consecutive elements is 1, as '[ <first> .. <last> ]'.
+
+If  '<first> > <last>',  '[<first>,<second>..<last>]' is  the empty list,
+which   by  definition  is   also   a  range.    If   <first>  =  <last>,
+'[<first>,<second>..<last>]' is a singleton list,  which is a range  too.
+Note that '<last> - <first>' must be divisible by the increment '<second>
+- <first>', otherwise an error is signalled.
+
+Note  that a range is  just a special case of a list.  So everything that
+is  possible for lists (see "Lists") is also  possible for ranges.   Thus
+you can  access elements in such a range (see "List Elements"),  test for
+membership  (see  "In"), etc.   You can even assign to such a  range (see
+"List   Assignment").   Of   course,  unless   you   assign   '<last>   +
+<second>-<first>'  to   the   entry   '<range>[Length(<range>)+1]',   the
+resulting list will no longer be a range.
+
+Most often ranges are used in connection with the 'for'-loop (see "For").
+Here  the construct \\
+'for <var>  in [<first>..<last>]  do <statements>  od' replaces the \\
+'for <var>  from <first>  to <last>  do <statements>  od',  which is more
+usual in other programming languages.
+
+Note that a range is at the same time also a set (see "Sets"), because it
+contains no  holes or duplicates  and is sorted, and  also a  vector (see
+"Vectors"), because it contains no holes and all elements are integers.
+
+|    gap> r := [10..20];
+    [ 10 .. 20 ]
+    gap> Length( r );
+    11
+    gap> r[3];
+    12
+    gap> 17 in r;
+    true
+    gap> r[12] := 25;; r;
+    [ 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25 ]
+    gap> r := [1,3..17];
+    [ 1, 3 .. 17 ]
+    gap> Length( r );
+    9
+    gap> r[4];
+    7
+    gap> r := [0,-1..-9];
+    [ 0, -1 .. -9 ]
+    gap> r[5];
+    -4
+    gap> r := [ 1, 4 .. 32 ];
+    Error, Range: <high>-<low> must be divisible by <inc>
+    gap> s := [];;  for i  in [10..20]  do Add( s, i^2 );  od;  s;
+    [ 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400 ] |
+
+The first section in this chapter describes  the function that tests if a
+list is a range (see "IsRange").
+
+The  other section tells  you more  about  the internal representation of
+ranges (see "More about Ranges").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRange}\index{test!for a range}
+
+'IsRange( <obj> )'
+
+'IsRange' returns 'true' if <obj>, which may be an object of any type, is
+a range and 'false' otherwise.  A range is a list without holes such that
+the elements are integers with a constant increment.  Will cause an error
+if <obj> is an unassigned variable.
+
+|    gap> IsRange( [1,2,3] );
+    true    # this list is a range
+    gap> IsRange( [7,5,3,1] );
+    true    # this list is a range
+    gap> IsRange( [1,2,4,5] );
+    false    # this list is a set and a vector, but not a range
+    gap> IsRange( [1,,3,,5,,7] );
+    false    # this list contains holes
+    gap> IsRange( 1 );
+    false    # is not even a list
+    gap> IsRange( [] );
+    true    # the empty list is a range by definition
+    gap> IsRange( [1] );
+    true    # singleton lists are a range by definition too |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Ranges}
+
+For some  lists the kernel knows   that they are  in fact  ranges.  Those
+lists are represented internally in a compact way instead of the ordinary
+way.  This is important since this representation needs only 12 bytes for
+the entire list while the ordinary representation needs $4 length$ bytes.
+
+Note that a list that is represented in the ordinary way might still be a
+range.  It is just that {\GAP} does not  know this.   This  section tells
+you under which circumstances a range is represented  in the compact way,
+so you can write your  program in such  a  way that you make best  use of
+this compact representation for ranges.
+
+Lists  created by the syntactic construct '[ <first>, <second>  .. <last>
+]' are  of  course known to be ranges and  are represented in the compact
+way.
+
+If  you call  'IsRange' for a  list represented the ordinary  way that is
+indeed a range, 'IsRange' will note this,  change the representation from
+the ordinary to the compact representation, and then return 'true';
+
+
+If   you change a   range  that is  represented   in the compact  way, by
+assignment, 'Add'   or 'Append', the   range will  be   converted to  the
+ordinary representation, even  if the change is  such that the  resulting
+list is still a proper range.
+
+Suppose  you have   built a proper   range  in  such  a way   that  it is
+represented in the  ordinary way and that you  now want to convert  it to
+the compact representation to save space.  Then you should call 'IsRange'
+with that list as an argument.  If it is indeed a proper range, 'IsRange'
+will convert it to the compact representation.  You can think of the call
+to 'IsRange' as a hint to {\GAP} that this list is a proper range.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

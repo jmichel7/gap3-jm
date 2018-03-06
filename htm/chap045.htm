@@ -1,0 +1,169 @@
+<html><head><title>GAP3 Manual: 45 Booleans</title></head>
+<body bgcolor="ffffff">
+<h1>45 Booleans</h1>
+<P><P>
+<A name = "I0"></a>
+<A name = "I1"></a>
+
+<P>
+The two <strong>boolean</strong>   values are <code>true</code> and  <code>false</code>.   They stand for  the
+<strong>logical</strong> values  of the same name.  They  appear mainly as values of the
+conditions in <code>if</code>-statements and <code>while</code>-loops.
+<P>
+This  chapter contains  sections   describing  the operations  that   are
+available   for  the  boolean  values   (see   <a href="chap045.htm#SECT001">Comparisons of Booleans</a>,
+<a href="chap045.htm#SECT002">Operations for Booleans</a>).
+<P>
+Further this chapter contains a section  about the function <code>IsBool</code> (see
+<a href="chap045.htm#SECT003">IsBool</a>).  Note that it is a convention that the name of a function that
+tests a   property, and  returns  <code>true</code> and   <code>false</code>  according to  the
+outcome, starts with <code>Is</code>, as in <code>IsBool</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap045.htm#SECT001">Comparisons of Booleans</a>
+<LI> <A HREF="chap045.htm#SECT002">Operations for Booleans</a>
+<LI> <A HREF="chap045.htm#SECT003">IsBool</a>
+</ol>
+<A NAME="SECT001"><h2>45.1 Comparisons of Booleans</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code><var>bool1</var> = <var>bool2</var></code>, <code><var>bool1</var> <> <var>bool2</var></code>
+<P>
+The equality  operator <code>=</code> evaluates to  <code>true</code> if the two boolean values
+<var>bool1</var> and <var>bool2</var> are equal, i.e., both are <code>true</code> or both are <code>false</code>,
+and <code>false</code> otherwise.  The inequality operator <code><></code> evaluates to <code>true</code>
+if the two boolean  values <var>bool1</var> and  <var>bool2</var> are different and <code>false</code>
+otherwise.  This operation is also called the <strong>exclusive or</strong>, because its
+value is <code>true</code> if exactly one of <var>bool1</var> or <var>bool2</var> is <code>true</code>.
+<P>
+You  can compare boolean  values with objects  of other types.  Of course
+they are never equal.
+<P>
+<pre>    gap> true = false;
+    false
+    gap> false = (true = false);
+    true
+    gap> true &lt;> 17;
+    true </pre>
+<P>
+<code><var>bool1</var> < <var>bool2</var></code>, <code><var>bool1</var> <= <var>bool2</var></code>,<BR> 
+<code><var>bool1</var>  > <var>bool2</var></code>, <code><var>bool1</var>  >= <var>bool2</var></code>
+<P>
+The operators  <code><</code>, <code><=</code>,  <code>></code>, and   <code>=></code>  evaluate to <code>true</code>  if  the
+boolean value <var>bool1</var> is less than, less than  or equal to, greater than,
+and greater than or equal to the  boolean value <var>bool2</var>.  The ordering of
+boolean values is defined by <code>true < false</code>.
+<P>
+You can compare  boolean values  with objects of other  types.  Integers,
+rationals, cyclotomics, permutations, and  words are smaller than boolean
+values.  Objects of the other types, i.e., functions, lists,  and records
+are larger.
+<P>
+<pre>    gap> true &lt; false;
+    true
+    gap> false >= true;
+    true
+    gap> 17 &lt; true;
+    true
+    gap> true &lt; [17];
+    true </pre>
+<P><A NAME="SECT002"><h2>45.2 Operations for Booleans</h2></a>
+<P><P>
+<A name = "I3"></a>
+<A name = "I4"></a>
+
+<A name = "I5"></a>
+<A name = "I6"></a>
+<A name = "I7"></a>
+
+<P>
+<code><var>bool1</var> or <var>bool2</var></code>
+<P>
+The logical operator <code>or</code> evaluates to <code>true</code> if at  least one of the two
+boolean operands <var>bool1</var> and <var>bool2</var> is  <code>true</code> and to <code>false</code> otherwise.
+<P>
+<code>or</code> first evaluates <var>bool1</var>.  If the value is neither <code>true</code> nor <code>false</code>
+an error is signalled.  If the value is <code>true</code>, then  <code>or</code> returns <code>true</code>
+<strong>without</strong>  evaluating  <var>bool2</var>.   If  the value  is  <code>false</code>,  then  <code>or</code>
+evaluates <var>bool2</var>.  Again, if the value is neither <code>true</code>  nor <code>false</code> an
+error is signalled.  Otherwise <code>or</code> returns  the value  of <var>bool2</var>.  This
+<strong>short-circuited</strong> evaluation  is important if   the value of  <var>bool1</var>  is
+<code>true</code> and evaluation of <var>bool2</var> would take much time or cause an error.
+<P>
+<code>or</code> is associative, i.e., it is allowed to write <code><var>b1</var> or <var>b2</var> or <var>b3</var></code>,
+which is interpreted as  <code>(<var>b1</var> or <var>b2</var>) or <var>b3</var></code>.   <code>or</code> has the  lowest
+precedence  of the logical  operators.   All logical operators have lower
+precedence than the comparison operators <code>=</code>, <code><</code>, <code>in</code>, etc.
+<P>
+<pre>    gap> true or false;
+    true
+    gap> false or false;
+    false
+    gap> i := -1;;  l := [1,2,3];;
+    gap> if i &lt;= 0 or l[i] = false  then Print("aha\n");  fi;
+    aha    # no error, because <code>l[i]</code> is not evaluated </pre>
+<P>
+<code><var>bool1</var> and <var>bool2</var></code>
+<P>
+The  logical operator <code>and</code> evaluates  to <code>true</code> if both boolean operands
+<var>bool1</var> and <var>bool2</var> are <code>true</code> and to <code>false</code> otherwise.
+<P>
+<code>and</code>  first evaluates  <var>bool1</var>.    If the value   is neither <code>true</code>  nor
+<code>false</code> an  error is signalled.   If the  value  is <code>false</code>,  then  <code>and</code>
+returns <code>false</code>  <strong>without</strong> evaluating <var>bool2</var>.  If  the value is  <code>true</code>,
+then <code>and</code> evaluates <var>bool2</var>.  Again, if the value  is neither <code>true</code> nor
+<code>false</code> an  error is signalled.   Otherwise   <code>and</code> returns the  value of
+<var>bool2</var>.  This <strong>short-circuited</strong> evaluation is important if the  value of
+<var>bool1</var> is <code>false</code>  and evaluation  of   <var>bool2</var> would take much time  or
+cause an error.
+<P>
+<code>and</code> is  associative, i.e., it is  allowed  to write <code><var>b1</var>  and <var>b2</var> and
+<var>b3</var></code>,  which is interpreted  as <code>(<var>b1</var> and <var>b2</var>)  and  <var>b3</var></code>.  <code>and</code> has
+higher precedence than  the  logical <code>or</code> operator,  but lower  than  the
+unary  logical <code>not</code>  operator.    All   logical operators  have    lower
+precedence than the comparison operators <code>=</code>, <code><</code>, <code>in</code>, etc.
+<P>
+<pre>    gap> true and false;
+    false
+    gap> true and true;
+    true
+    gap> false and 17;
+    false    # is no error, because <code>17</code> is never looked at </pre>
+<P>
+<code>not <var>bool</var></code>
+<P>
+The logical operator <code>not</code> returns <code>true</code>  if the boolean value <var>bool</var> is
+<code>false</code> and <code>true</code> otherwise.  An error is  signalled if <var>bool</var>  does not
+evaluate to <code>true</code> or <code>false</code>.
+<P>
+<code>not</code> has higher  precedence than the  other logical operators,  <code>or</code> and
+<code>and</code>.  All logical operators  have lower precedence than  the comparison
+operators <code>=</code>, <code><</code>, <code>in</code>, etc.
+<P>
+<pre>    gap> not true;
+    false
+    gap> not false;
+    true </pre>
+<P><A NAME="SECT003"><h2>45.3 IsBool</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>IsBool( <var>obj</var> )</code>
+<P>
+<code>IsBool</code> returns <code>true</code> if <var>obj</var>, which may  be an object of an arbitrary
+type, is a boolean value and <code>false</code> otherwise.  <code>IsBool</code> will  signal an
+error if <var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsBool( true );
+    true
+    gap> IsBool( false );
+    true
+    gap> IsBool( 17 );
+    false </pre>
+<P><a href ="chap044.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap046.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

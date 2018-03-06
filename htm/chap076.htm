@@ -1,0 +1,597 @@
+<html><head><title>GAP3 Manual: 76 Binary Relations</title></head>
+<body bgcolor="ffffff">
+<h1>76 Binary Relations</h1>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+A binary <strong>relation</strong> on  <I>n</I> points is a subset  <I>R &sube;  {1, ...,
+n}  &times; {1, ..., n}</I>.  It  can also be seen  as a multivalued map
+from <I>{1, ..., n}</I>  to itself, or as a  directed graph  with vertices
+<I>{1, ...,  n}</I>.   The  number <I>n</I>  is   called  the  <strong>degree</strong>  of the
+relation.   Thus  a binary relation  <I>R</I> of  degree  <I>n</I> associates a set
+<I>i<sup>R</sup></I> of  positive integers  less than or  equal to   <I>n</I> to each  number
+between <I>1</I> and <I>n</I>.  This set <I>i<sup>R</sup></I> is called the set of <strong>successors</strong> of
+<I>i</I> under the relation <I>R</I>.
+<P>
+The degree of  a binary relation may  not be larger than <I>2<sup>28</sup>-1</I> which
+is (currently) the highest index that can be accessed in a list.
+<P>
+Special  cases   of binary  relations  are  transformations  (see chapter
+<a href="chap077.htm">Transformations</a>)  and  permutations   (see  chapter  "Permutations"). 
+However, an object of one of these types must be  converted into a binary
+relation before most of the functions of this chapter are applicable.
+<P>
+The  product of binary relations is  defined via composition of mappings,
+or   equivalently,   via concatenation   of edges   of   directed graphs. 
+Precisely, if  <I>R</I> and <I>S</I>  are two  relations on  <I>{1, ..., n}</I> then
+their product <I>R S</I> is defined  by saying that  two points <I>x, y &isin; {1,
+..., n}</I> are in relation <I>R S</I> if and only if there is  a point <I>z &isin;
+{1, ..., n}</I> such that <I>x R z</I> and <I>z  S y</I>.  As multivalued map, the
+product <I>RS</I> is defined by
+<center><table><tr><td><I>
+  i\<sup>(</sup>RS) = (i\<sup>R</sup>)\<sup>S</sup> &emsp; </i>for all <i> i = 1, ..., n.
+</I></td></tr></table></center>
+With respect to  this multiplication the set  of all binary  relations of
+degree <I>n</I> forms a monoid, the <strong>full relation monoid</strong> of degree <I>n</I>.
+<A name = "I1"></a>
+
+<A name = "I2"></a>
+
+<P>
+Each relation of degree <I>n</I> is considered an element of the full relation
+monoid of degree <I>n</I>  although it  is not necessary  to construct  a full
+relation monoid before working with relations.  But you can only multiply
+two relations if they have the same degree.  You can, however, multiply a
+relation of  degree <I>n</I> by a transformation   or a permutation  of degree
+<I>n</I>.
+<P>
+A  binary relation is   entered  and displayed by    giving its lists  of
+successors as an argument to the function  <code>Relation</code>.  The relation <I>&lt;</I>
+on the set <I>{1, 2, 3}</I>, for instance, is written as follows.
+<P>
+<pre>    gap> Relation( [ [ 2, 3 ], [ 3 ], [ ] ] );
+    Relation( [ [ 2, 3 ], [ 3 ], [  ] ] ) </pre>
+<P>
+This  chapter   describes finite binary    relations in  <strong>GAP3</strong>  and  the
+functions  that deal  with them.     The   first sections describe    the
+representation of a binary relation (see  <a href="chap076.htm#SECT001">More about Relations</a>) and how
+an  object  that  represents   a  binary relation   is constructed   (see
+<a href="chap076.htm#SECT002">Relation</a>).  There is a  function which constructs the identity relation
+of  degree <I>n</I> (see  <a href="chap076.htm#SECT004">IdentityRelation</a>) and a  function which constructs
+the empty relation of degree <I>n</I> (see <a href="chap076.htm#SECT005">EmptyRelation</a>).  Then there are a
+function   which tests whether  an  arbitrary object  is  a relation (see
+<a href="chap076.htm#SECT003">IsRelation</a>) and  a function which  determines the  degree of a relation
+(see <a href="chap076.htm#SECT006">Degree of a Relation</a>).
+<P>
+The next  sections describe how relations  are compared (see <a href="chap076.htm#SECT007">Comparisons
+of  Relations</a>)  and which operations  are  available for  relations (see
+<a href="chap076.htm#SECT008">Operations for Relations</a>).   There  are  functions which  test  certain
+properties  of   relations   (see     <a href="chap076.htm#SECT009">IsReflexive</a>,       <a href="chap076.htm#SECT011">IsSymmetric</a>,
+<a href="chap076.htm#SECT013">IsTransitiveRel</a>,    <a href="chap076.htm#SECT015">IsAntisymmetric</a>,    <a href="chap076.htm#SECT017">IsPartialOrder</a>,         and
+<a href="chap076.htm#SECT018">IsEquivalence</a>)  and functions that  construct  different closures of  a
+relation     (see   <a href="chap076.htm#SECT010">ReflexiveClosure</a>,     <a href="chap076.htm#SECT012">SymmetricClosure</a>,       and
+<a href="chap076.htm#SECT014">TransitiveClosure</a>).  Moreover there are a  function which computes  the
+classes  of  an  equivalence  relation (see <a href="chap076.htm#SECT019">EquivalenceClasses</a>)   and a
+function which determines the Hasse diagram of a partial order.  Finally,
+two functions are  describe which convert a  transformation into a binary
+relation (see  <a href="chap076.htm#SECT021">RelTrans</a>) and, if   possible, a binary relation  into  a
+transformation (see <a href="chap076.htm#SECT022">TransRel</a>).
+<P>
+The last  section of  the  chapter describes monoids generated  by binary
+relations (see <a href="chap076.htm#SECT023">Monoids of Relations</a>).
+<P>
+The functions described in this chapter are in the file <code>"relation.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap076.htm#SECT001">More about Relations</a>
+<LI> <A HREF="chap076.htm#SECT002">Relation</a>
+<LI> <A HREF="chap076.htm#SECT003">IsRelation</a>
+<LI> <A HREF="chap076.htm#SECT004">IdentityRelation</a>
+<LI> <A HREF="chap076.htm#SECT005">EmptyRelation</a>
+<LI> <A HREF="chap076.htm#SECT006">Degree of a Relation</a>
+<LI> <A HREF="chap076.htm#SECT007">Comparisons of Relations</a>
+<LI> <A HREF="chap076.htm#SECT008">Operations for Relations</a>
+<LI> <A HREF="chap076.htm#SECT009">IsReflexive</a>
+<LI> <A HREF="chap076.htm#SECT010">ReflexiveClosure</a>
+<LI> <A HREF="chap076.htm#SECT011">IsSymmetric</a>
+<LI> <A HREF="chap076.htm#SECT012">SymmetricClosure</a>
+<LI> <A HREF="chap076.htm#SECT013">IsTransitiveRel</a>
+<LI> <A HREF="chap076.htm#SECT014">TransitiveClosure</a>
+<LI> <A HREF="chap076.htm#SECT015">IsAntisymmetric</a>
+<LI> <A HREF="chap076.htm#SECT016">IsPreOrder</a>
+<LI> <A HREF="chap076.htm#SECT017">IsPartialOrder</a>
+<LI> <A HREF="chap076.htm#SECT018">IsEquivalence</a>
+<LI> <A HREF="chap076.htm#SECT019">EquivalenceClasses</a>
+<LI> <A HREF="chap076.htm#SECT020">HasseDiagram</a>
+<LI> <A HREF="chap076.htm#SECT021">RelTrans</a>
+<LI> <A HREF="chap076.htm#SECT022">TransRel</a>
+<LI> <A HREF="chap076.htm#SECT023">Monoids of Relations</a>
+</ol>
+<A NAME="SECT001"><h2>76.1 More about Relations</h2></a>
+<P><P><P>
+A binary relation  seen as a  directed graph on  <I>n</I> points is completely
+determined  by its degree  and  its list  of edges.   This information is
+represented in the  form  of a  <strong>successors list</strong> which,  for each single
+point <I>i &isin; {1, ..., n}</I> contains the set <I>i<sup>R</sup></I> of succesors of <I>i</I>.
+Here each single set  of successors is represented  as a subset  of <I>{1,
+..., n}</I> by boolean list (see chapter "Boolean Lists").
+<P>
+A  relation  <I>R</I> of degree   <I>n</I>  is represented  by  a  record with  the
+following category components.
+<P>
+<DL><DT><code>isRelation</code>:<DD> <BR> 
+        is always set to <code>true</code>.
+</DL><P>
+<DL><DT><code>domain</code>:<DD> <BR> 
+        is always set to <code>Relations</code>.
+</DL><P>
+Moreover a relation record has the identification component
+<P>
+<DL><DT><code>successors</code>:<DD> <BR> 
+        containing a list which  has as its <I>i</I>th entry the  boolean list
+        representing the successors of <I>i</I>.
+</DL><P>
+A relation record <var>rel</var> can aquire the following knowledge components.
+<P>
+<DL><DT><code>isReflexive</code>:<DD> <BR> 
+        set to  <code>true</code> if  <var>rel</var>  represents a  reflexive  relation  (see 
+        <a href="chap076.htm#SECT009">IsReflexive</a>)
+</DL><P>
+<DL><DT><code>isSymmetric</code>:<DD> <BR> 
+        set to  <code>true</code> if  <var>rel</var>  represents a  symmetric  relation  (see 
+        <a href="chap076.htm#SECT011">IsSymmetric</a>)
+</DL><P>
+<DL><DT><code>isTransitive</code>:<DD> <BR> 
+        set to  <code>true</code> if  <var>rel</var>  represents a  transitive relation  (see 
+        <a href="chap076.htm#SECT013">IsTransitiveRel</a>)
+</DL><P>
+<DL><DT><code>isPreOrder</code>:<DD> <BR> 
+        set to <code>true</code> if <var>rel</var> represents a preorder (see <a href="chap076.htm#SECT016">IsPreOrder</a>)
+</DL><P>
+<DL><DT><code>isPartialOrder</code>:<DD> <BR> 
+        set   to   <code>true</code>  if  <var>rel</var>   represents a   partial  order (see
+        <a href="chap076.htm#SECT017">IsPartialOrder</a>)
+</DL><P>
+<DL><DT><code>isEquivalence</code>:<DD> <BR> 
+        set to <code>true</code> if   <var>rel</var> represents an equivalence relation  (see
+        <a href="chap076.htm#SECT018">IsEquivalence</a>)
+</DL><P><A NAME="SECT002"><h2>76.2 Relation</h2></a>
+<P><P><P>
+<code>Relation( <var>list</var> )</code>
+<P>
+<code>Relation</code> returns the binary  relation  defined by  the list <var>list</var>   of
+subsets of <I>{1, ..., n}</I> where <I>n</I> is the length of <var>list</var>.
+<P>
+<pre>    gap> Relation( [ [ 1, 2 ], [ ], [ 3, 1 ] ] );
+    Relation( [ [ 1, 2 ], [  ], [ 1, 3 ] ] ) </pre>
+<P>
+Alternatively, <var>list</var> can be a list of boolean lists  of length <I>n</I>, each
+of which  is interpreted as  a subset  of <I>{1, ...,  n}</I> (see chapter
+"Boolean Lists").
+<P>
+<pre>    gap> Relation( [ 
+    > [ true, true, false ],
+    > [ false, false, false ],
+    > [ true, false, true ] ] ); 
+    Relation( [ [ 1, 2 ], [  ], [ 1, 3 ] ] ) </pre>
+<P><A NAME="SECT003"><h2>76.3 IsRelation</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>IsRelation( <var>obj</var> )</code>
+<P>
+<code>IsRelation</code> returns <code>true</code> if <var>obj</var>, which may be an object of arbitrary
+type, is a relation and  <code>false</code> otherwise.  It  will signal an error  if
+<var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsRelation( 1 );
+    false
+    gap> IsRelation( Relation(  [ [ 1 ], [ 2 ], [ 3 ] ] ) );
+    true </pre>
+<P><A NAME="SECT004"><h2>76.4 IdentityRelation</h2></a>
+<P><P><P>
+<code>IdentityRelation( <var>n</var> )</code>
+<P>
+<code>IdentityRelation</code> returns the identity relation  of degree <var>n</var>.  This is
+the relation <code>=</code> on the set <I>{1, ..., n}</I>.
+<P>
+<pre>    gap> IdentityRelation( 5 );
+    Relation( [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ] ] ) </pre>
+<P>
+The identity relation  of  degree <var>n</var> acts  as  the identity in  the full
+relation monoid of degree <var>n</var>.
+<P><A NAME="SECT005"><h2>76.5 EmptyRelation</h2></a>
+<P><P><P>
+<code>EmptyRelation( <var>n</var> )</code>
+<P>
+<code>EmptyRelation</code>  returns  the  empty relation  of degree.     This is the
+relation <I>{ } &sube; {1, ..., n} &times; {1, ..., n}</I>.
+<P>
+<pre>    gap> EmptyRelation( 5 ) ;
+    Relation( [ [  ], [  ], [  ], [  ], [  ] ] ) </pre>
+<P>
+The empty relation of degree <var>n</var> acts as zero in the full relation monoid
+of degree <var>n</var>.
+<P><A NAME="SECT006"><h2>76.6 Degree of a Relation</h2></a>
+<P><P><P>
+<code>Degree( <var>rel</var> )</code>
+<P>
+<code>Degree</code> returns the degree of the binary relation <var>rel</var>.
+<P>
+<pre>    gap> Degree( Relation( [ [ 1 ], [ 2, 3 ], [ 2, 3 ] ] ) );               
+    3 </pre>
+<P>
+The <strong>degree</strong>  of  a relation <I>R  &sube;  {1, ...,   n} &times; {1,
+..., n}</I> is defined as <I>n</I>.
+<P><A NAME="SECT007"><h2>76.7 Comparisons of Relations</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<A name = "I5"></a>
+
+<P>
+<code><var>rel1</var> = <var>rel2</var></code><BR> 
+<code><var>rel1</var> <> <var>rel2</var></code>
+<P>
+The equality operator  <code>=</code>  applied to  two relations <var>rel1</var>  and  <var>rel2</var>
+evaluates to   <code>true</code> if the   two  relations are  equal  and  to <code>false</code>
+otherwise.  The inequality operator <code><></code> applied to two relations <var>rel1</var>
+and <var>rel2</var> evaluates to <code>true</code> if the two  relations are not equal and to
+<code>false</code>  otherwise.  A relation can also  be compared to any other object
+that is not a relation, of course they are never equal.
+<P>
+Two relations are considered equal if and only if their  successors lists
+are equal as lists.  In particular, they must have the same degree.
+<P>
+<pre>    gap> Relation( [ [ 1 ], [ 2 ], [ 3 ], [ 4 ] ] ) =
+    > IdentityRelation( 4 );
+    true
+    gap> Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) =
+    > Relation( [ [ ], [ 1 ], [ 1, 2 ], [ ] ] );
+    false</pre>
+<P>
+<P>
+<code><var>rel1</var> < <var>rel2</var></code> <BR> 
+<code><var>rel1</var> <= <var>rel2</var></code> <BR> 
+<code><var>rel1</var>  >  <var>rel2</var></code> <BR> 
+<code><var>rel1</var>  >= <var>rel2</var></code>
+<P>
+The  operators <code><</code>,  <code><=</code>, <code>></code>,  and  <code>>=</code>  evaluate  to <code>true</code> if  the
+relation <var>rel1</var>  is less than, less  than or equal   to, greater than, or
+greater than or equal to the relation <var>rel2</var>, and to <code>false</code> otherwise.
+<P>
+Let <var>rel1</var> and <var>rel2</var> be two  relations that are  not equal.  Then <var>rel1</var>
+is considered smaller  than <var>rel2</var> if and only  if the successors list of 
+<var>rel1</var> is  smaller than the successors list of  <var>rel2</var>.
+<P>
+You can  also compare relations  with objects  of other  types.  Here any
+object  that is   not a relation   will  be considered smaller than   any
+relation.
+<P><A NAME="SECT008"><h2>76.8 Operations for Relations</h2></a>
+<P><P>
+<code><var>rel1</var> * <var>rel2</var></code>
+<A name = "I6"></a>
+
+<P>
+The operator <code>*</code>  evaluates to the product of  the  two relations <var>rel1</var>
+and <var>rel2</var> if both have the same degree.
+<P>
+<P>
+<code><var>rel</var> * <var>trans</var></code><BR> 
+<code><var>trans</var> * <var>rel</var></code>
+<A name = "I7"></a>
+
+<P>
+The operator <code>*</code> evaluates to the product of the  relation <var>rel</var> and the
+transformation  <var>trans</var> in  the given order  provided  both have the same
+degree (see chapter <a href="chap077.htm">Transformations</a>).
+<P>
+<P>
+<code><var>rel</var> * <var>perm</var></code><BR> 
+<code><var>perm</var> * <var>rel</var></code>
+<A name = "I8"></a>
+
+<P>
+The operator <code>*</code> evaluates to the product of  the relation <var>rel</var> and the
+permutation <var>perm</var> in the given order provided  both have the same degree
+(see chapter "Permutations").
+<P>
+<P>
+<code><var>list</var> * <var>rel</var></code> <BR> 
+<code><var>rel</var> * <var>list</var></code>
+<A name = "I9"></a>
+
+<P>
+The operator  <code>*</code> evaluates to  the list of  products of the elements in
+<var>list</var> with the relation <var>rel</var>.  That means that the value  is a new list
+<var>new</var> such that  <code><var>new</var>[<var>i</var>] =  <var>list</var>[<var>i</var>] *  <var>rel</var></code> or  <code><var>new</var>[<var>i</var>] =
+<var>rel</var> * <var>list</var>[<var>i</var>]</code>, respectively.
+<P>
+<P>
+<code><var>i</var> ^ <var>rel</var></code>
+<A name = "I10"></a>
+
+<P>
+The operator <code>^</code> evaluates to the  set of successors <I>&lt;i&gt;\<sup><var>rel</var></sup> </I> of the
+positive integer <var>i</var> under  the relation <var>rel</var>  if <var>i</var> is smaller than or
+equal to the degree of <var>rel</var>.
+<P>
+<P>
+<code><var>set</var> ^ <var>rel</var></code>
+<A name = "I11"></a>
+
+<P>
+The operator <code>^</code>  evaluates  to the image   or the set <var>set</var>  under  the
+relation <var>rel</var> which is defined as the union of the sets of successors of
+the elements of <var>set</var>.
+<P>
+<P>
+<code><var>rel</var> ^ 0</code>
+<P>
+The operator <code>^</code> evaluates to  the identity  relation  on <I>n</I> points  if
+<var>rel</var> is a relation on <I>n</I> points (see <a href="chap076.htm#SECT004">IdentityRelation</a>).
+<P>
+<P>
+<code><var>rel</var> ^ <var>i</var></code>
+<A name = "I12"></a>
+
+<P>
+For a  positive integer  <var>i</var> the operator   <code>^</code> evaluates to the  <var>i</var>-th
+power of the  relation <var>rel</var> which  is defined  in the  usual  way as the
+<I>i</I>-fold product of <var>rel</var> by itself.
+<P>
+<P>
+<code><var>rel</var> ^ -1</code>
+<A name = "I13"></a>
+
+<P>
+The operator <code>^</code> evaluates to  the inverse of  the relation <var>rel</var>.   The
+inverse of a relation  <I>R &sube; {1, ...,   n} &times; {1,  ...,
+n}</I> is given by <I>{(y, x) | (x, y) &isin;  R}</I>.  Note that, in general,
+the product of a   binary relation and its inverse   is not equal to  the
+identity relation.  Neither is it in general  equal to the product of the
+inverse and the binary relation.
+<P><A NAME="SECT009"><h2>76.9 IsReflexive</h2></a>
+<P><P>
+<A name = "I14"></a>
+
+<P>
+<code>IsReflexive( <var>rel</var> )</code>
+<P>
+<code>IsReflexive</code> returns  <code>true</code> if the  binary  relation <var>rel</var> is reflexive
+and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsReflexive( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );
+    false
+    gap> IsReflexive( Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );
+    true </pre>
+<P>
+A  relation  <I>R &sube;  {1, ...,  n}  &times;  {1, ...,  n}</I> is
+<strong>reflexive</strong> if  <I>(i, i)  &isin;  R</I> for all  <I>i =  1, ...,  n</I>.  (See also
+<a href="chap076.htm#SECT010">ReflexiveClosure</a>.)
+<P><A NAME="SECT010"><h2>76.10 ReflexiveClosure</h2></a>
+<P><P><P>
+<code>ReflexiveClosure( <var>rel</var> )</code>
+<P>
+<code>ReflexiveClosure</code> returns the  reflexive closure of  the relation <var>rel</var>,
+i.e., the relation  <I>R &sube; {1,  ..., n} &times; {1, ..., n}</I>
+that consists of all pairs  in <var>rel</var> and the pairs  <I>(1, 1)</I>, ..., <I>(n,
+n)</I>, where <I>n</I> is the degree of <var>rel</var>.
+<P>
+<pre>    gap> ReflexiveClosure( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );   
+    Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) </pre>
+<P>
+By construction,  the reflexive closure of  a relation is  reflexive (see
+<a href="chap076.htm#SECT009">IsReflexive</a>).
+<P><A NAME="SECT011"><h2>76.11 IsSymmetric</h2></a>
+<P><P>
+<A name = "I15"></a>
+
+<P>
+<code>IsSymmetric( <var>rel</var> )</code>
+<P>
+<code>IsSymmetric</code> returns  <code>true</code> if the binary  relation <var>rel</var> is symnmetric
+and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsSymmetric( Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );
+    false
+    gap> IsSymmetric( Relation( [ [ 2, 3 ], [ 1, 3 ], [ 1, 2 ] ] ) );
+    true </pre>
+<P>
+A relation <I>R  &sube;  {1, ...,   n}  &times; {1, ...,  n}</I>  is
+<strong>symmetric</strong> if  <I>(y,  x)  &isin; R</I> for  all   <I>(x, y)  &isin; R</I>.   (See  also
+<a href="chap076.htm#SECT012">SymmetricClosure</a>.)
+<P><A NAME="SECT012"><h2>76.12 SymmetricClosure</h2></a>
+<P><P><P>
+<code>SymmetricClosure( <var>rel</var> )</code>
+<P>
+<code>SymmetricClosure</code> returns the  symmetric closure of the binary  relation
+<var>rel</var>.
+<P>
+<pre>    gap> SymmetricClosure( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );        
+    Relation( [ [ 2, 3 ], [ 1, 3 ], [ 1, 2 ] ] ) </pre>
+<P>
+By construction,  the symmetric closure of a  relation is  symmetric (see
+<a href="chap076.htm#SECT011">IsSymmetric</a>).
+<P><A NAME="SECT013"><h2>76.13 IsTransitiveRel</h2></a>
+<P><P>
+<A name = "I16"></a>
+
+<P>
+<code>IsTransitiveRel( <var>rel</var> )</code>
+<P>
+<code>IsTransitiveRel</code>  returns  <code>true</code> if    the   binary relation  <var>rel</var>  is
+transitive and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsTransitiveRel( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );    
+    true
+    gap> IsTransitiveRel( Relation( [ [ 2, 3 ], [ 1, 3 ], [ 1, 2 ] ] ) );
+    false </pre>
+<P>
+A  relation <I>R   &sube; {1, ...,   n}  &times; {1,  ..., n}</I> is
+<strong>transitive</strong> if <I>(x, z) &isin; R</I> whenever <I>(x, y) &isin; R</I> and <I>(y, z) &isin; R</I>
+for some <I>y &isin; {1, ..., n}</I>.  (See also <a href="chap076.htm#SECT014">TransitiveClosure</a>.)
+<P><A NAME="SECT014"><h2>76.14 TransitiveClosure</h2></a>
+<P><P><P>
+<code>TransitiveClosure( <var>rel</var> )</code>
+<P>
+<code>TransitiveClosure</code> returns the transitive closure of the binary relation
+<var>rel</var>.
+<P>
+<pre>    gap> TransitiveClosure( Relation( [ [ ], [ 1 ], [ 2 ], [ 3 ] ] ) );
+    Relation( [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) </pre>
+<P>
+By construction, the transitive closure  of a relation is transitive (see
+<a href="chap076.htm#SECT013">IsTransitiveRel</a>).
+<P><A NAME="SECT015"><h2>76.15 IsAntisymmetric</h2></a>
+<P><P>
+<A name = "I17"></a>
+
+<P>
+<code>IsAntisymmetric( <var>rel</var> )</code>
+<P>
+<code>IsAntisymmetric</code>  returns <code>true</code>    if the  binary  relation <var>rel</var>    is
+antisymmetric and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsAntisymmetric( Relation( [ [  ], [ 1 ], [ 1, 2 ] ] ) );
+    true
+    gap> IsAntisymmetric( Relation( [ [ 2, 3 ], [ 1, 3 ], [ 1, 2 ] ] ) ) ;
+    false </pre>
+<P>
+A  relation <I>R   &sube; {1, ...,   n}  &times; {1,  ..., n}</I> is
+<strong>antisymmetric</strong> if <I>(x, y) &isin; R</I> and <I>(y, x) &isin; R</I> implies <I>x = y</I>.
+<P><A NAME="SECT016"><h2>76.16 IsPreOrder</h2></a>
+<P><P>
+<A name = "I18"></a>
+
+<P>
+<code>IsPreOrder( <var>rel</var> )</code>
+<P>
+<code>IsPreOrder</code> returns <code>true</code> if the binary relation <var>rel</var> is a preoder and
+<code>false</code> otherwise.
+<P>
+<pre>    gap> IsPreOrder( Relation( [ [  ], [ 1 ], [ 1, 2 ] ] ) );      
+    false
+    gap> IsPreOrder( Relation( [ [ 1, 2 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) ); 
+    true </pre>
+<P>
+A relation    <var>rel</var> is called  a   <strong>preorder</strong> if <var>rel</var>   is reflexive and
+transitive.
+<P><A NAME="SECT017"><h2>76.17 IsPartialOrder</h2></a>
+<P><P>
+<A name = "I19"></a>
+
+<P>
+<code>IsPartialOrder( <var>rel</var> )</code>
+<P>
+<code>IsPartialOrder</code> returns <code>true</code> if the binary relation <var>rel</var> is a partial
+order and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsPartialOrder( Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );
+    true
+    gap> IsPartialOrder( Relation( [ [ 1, 2 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );
+    false </pre>
+<P>
+A relation   <var>rel</var> is called  a  <strong>partial order</strong>  if  <var>rel</var> is reflexive,
+transitive and antisymmetric, i.e., if <var>rel</var> is an antisymmetric preorder
+(see <a href="chap076.htm#SECT016">IsPreOrder</a>).
+<P><A NAME="SECT018"><h2>76.18 IsEquivalence</h2></a>
+<P><P>
+<A name = "I20"></a>
+
+<P>
+<code>IsEquivalence( <var>rel</var> )</code>
+<P>
+<code>IsEquivalence</code> returns  <code>true</code> if   the  binary  relation <var>rel</var>   is  an
+equivalence relation and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsEquivalence( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );
+    false
+    gap> IsEquivalence( Relation( [ [ 1 ], [ 2, 3 ], [ 2, 3 ] ] ) );
+    true </pre>
+<P>
+A relation   <var>rel</var> is an <strong>equivalence  relation</strong>   if <var>rel</var> is reflexive,
+symmetric,  and transitive, i.e.,  if <var>rel</var> is  a symmetric preorder (see
+<a href="chap076.htm#SECT016">IsPreOrder</a>).  (See also <a href="chap076.htm#SECT019">EquivalenceClasses</a>.)
+<P><A NAME="SECT019"><h2>76.19 EquivalenceClasses</h2></a>
+<P><P><P>
+<code>EquivalenceClasses( <var>rel</var> )</code>
+<P>
+returns  the  list of equivalence  classes   of the equivalence  relation
+<var>rel</var>.  It  will signal an error if  <var>rel</var> is not an equivalence relation
+(see <a href="chap076.htm#SECT018">IsEquivalence</a>).
+<P>
+<pre>    gap> EquivalenceClasses( Relation( [ [ 1 ], [ 2, 3 ], [ 2, 3 ] ] ) );
+    [ [ 1 ], [ 2, 3 ] ] </pre>
+<P><A NAME="SECT020"><h2>76.20 HasseDiagram</h2></a>
+<P><P><P>
+<code>HasseDiagram( <var>rel</var> )</code>
+<P>
+<code>HasseDiagram</code> returns the Hasse diagram  of the binary relation <var>rel</var> if
+this  is a partial  order.  It will   signal an error  if <var>rel</var>  is not a
+partial order (see <a href="chap076.htm#SECT017">IsPartialOrder</a>).
+<P>
+<pre>    gap> HasseDiagram( Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );      
+    Relation( [ [  ], [ 1 ], [ 2 ] ] ) </pre>
+<P>
+The <strong>Hasse  diagram</strong> of  a partial  order <I>R  &sube; {1,  ...,  n}
+&times; {1, ..., n}</I> is the smallest relation <I>H &sube; {1, ...,
+n} &times; {1, ..., n}</I> such that <I>R</I> is the reflexive and transitive
+closure of <I>H</I>.
+<P><A NAME="SECT021"><h2>76.21 RelTrans</h2></a>
+<P><P>
+<A name = "I21"></a>
+
+<P>
+<code>RelTrans( <var>trans</var> )</code>
+<P>
+<code>RelTrans</code> returns the binary  relation   defined by the   transformation
+<var>trans</var> (see chapter <a href="chap077.htm">Transformations</a>).
+<P>
+<pre>    gap> RelTrans( Transformation( [ 3, 3, 2, 1, 4 ] ) );
+    Relation( [ [ 3 ], [ 3 ], [ 2 ], [ 1 ], [ 4 ] ] ) </pre>
+<P><A NAME="SECT022"><h2>76.22 TransRel</h2></a>
+<P><P>
+<A name = "I22"></a>
+
+<P>
+<code>TransRel( <var>rel</var> )</code>
+<P>
+<code>TransRel</code>   returns the  transformation  defined by  the binary relation
+<var>rel</var> (see chapter <a href="chap077.htm">Transformations</a>).  This can only be applied if every
+set of successors of <var>rel</var> has size 1.  Otherwise an error is signaled.
+<P>
+<pre>    gap> TransRel( Relation( [ [ 3 ], [ 3 ], [ 2 ], [ 1 ], [ 4 ] ] ) );
+    Transformation( [ 3, 3, 2, 1, 4 ] ) </pre>
+<P><A NAME="SECT023"><h2>76.23 Monoids of Relations</h2></a>
+<P><P><P>
+There  are no special functions  provided for monoids generated by binary
+relations.  The action of such a monoid on sets,  however, provides a way
+to  convert a relation  monoid into a  transformation monoid (see chapter
+<a href="chap079.htm">Actions  of Monoids</a>).  This monoid can  then be used to investigate the
+structure of the original relation monoid.
+<P>
+<pre>    gap> a:= Relation( [ [  ], [  ], [ 1, 3, 4 ], [  ], [ 2, 5 ] ] );;
+    gap> b:= Relation( [ [  ], [ 2 ], [ 4 ], [ 1, 2, 3 ], [ 1 ] ] );;
+    gap> M:= Monoid( a, b );
+    Monoid( [ Relation( [ [  ], [  ], [ 1, 3, 4 ], [  ], [ 2, 5 ] ] ), 
+      Relation( [ [  ], [ 2 ], [ 4 ], [ 1, 2, 3 ], [ 1 ] ] ) ] )
+    gap> # transform points into singleton sets.
+    gap> one:= List( [ 1 .. 5 ], x-> [ x ] );
+    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ] ]
+    gap> # determine all reachable sets.
+    gap> sets:= Union( Orbits( M, one ) ); 
+    [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 3 ], [ 1, 2, 3, 4 ], [ 1, 3, 4 ], 
+      [ 2 ], [ 2, 4 ], [ 2, 5 ], [ 3 ], [ 4 ], [ 5 ] ]
+    gap> # construct isomorphic transformation monoid.
+    gap> act:= Action( M, sets ); 
+    Monoid( [ Transformation( [ 1, 1, 1, 6, 6, 6, 1, 1, 9, 6, 1, 9 ] ), 
+      Transformation( [ 1, 1, 7, 8, 5, 5, 7, 4, 3, 11, 4, 2 ] ) ] )
+    gap> Size(act);
+    11</pre>
+<P><a href ="chap075.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap077.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

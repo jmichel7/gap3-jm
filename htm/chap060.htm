@@ -1,0 +1,247 @@
+<html><head><title>GAP3 Manual: 60 Cohomology</title></head>
+<body bgcolor="ffffff">
+<h1>60 Cohomology</h1>
+<P><P><P>
+This chapter describes functions which may be used to perform certain
+cohomological calculations on a finite group <var>G</var>.
+<P>
+<DL><DT>These include:<BR> 
+:<DD>(i) The <var>p</var>-part <I>Mul<sub>p</sub></I> of the Schur multiplier <var>Mul</var> of <var>G</var>,
+and a presentation
+of a covering extension of <I>Mul<sub>p</sub></I> by <var>G</var>, for a specified prime <var>p</var>;<BR> 
+(ii) The dimensions of the first and second cohomology groups of <var>G</var> acting on
+a finite dimensional <var>KG</var> module <var>M</var>, where <var>K</var> is a field of prime order; and<BR> 
+(iii) Presentations of split and nonsplit extensions of <var>M</var> by <var>G</var>.
+</DL><P>
+All of these functions require <var>G</var> to be defined as a finite permutation
+group. The functions which compute presentations require, in addition, a
+presentation of <var>G</var>. Finally, the functions which operate on a module <var>M</var>
+require the module to be defined by a list of matrices over <var>K</var>. This
+situation is handled by first defining a <I>GAP</I> record, which contains the
+required information. This is done using the function <code>CHR</code>, which must be
+called before any of the other functions. The remaining functions operate
+on this record.
+<P>
+If no presentation of the permutation group <var>G</var> is known, and <var>G</var> has
+order at most 32767, then a presentation can be computed using the
+function <code>CalcPres</code>. On the other hand, if you start with a finitely
+presented group, then you can create a permutation representation
+with the function <code>PermRep</code> (although there is no guarantee that the
+representation will be faithful ingeneral).
+<P>
+The functions all compute and make use of a descending sequence of subgroups
+of <var>G</var>, starting at <var>G</var> and ending with a Sylow <var>p</var>-subgroup of <var>G</var>, and
+it is usually most efficient to have the indices of the subgroups in this
+chain as small as possible. If you get a warning message, and one of
+the function fails because the indices in the chain computed are too large,
+then you can try to remedy matters by supplying your own chain. See
+Section <a href="chap060.htm#SECT010">Further Information</a> for more details, and an example.
+<P>
+If you set the external variable <code>InfoCohomolofy</code> to the value <code>Print</code>,
+then a small amount of information will be printed, indicating what is
+happening. If <var>chr</var> is the cohomology record you are working with, and
+you set the field <var>chr</var><code>.verbose</code> to the value <code>true</code>, then you will
+see all the output of the external programs.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap060.htm#SECT001">CHR</a>
+<LI> <A HREF="chap060.htm#SECT002">SchurMultiplier</a>
+<LI> <A HREF="chap060.htm#SECT003">CoveringGroup</a>
+<LI> <A HREF="chap060.htm#SECT004">FirstCohomologyDimension</a>
+<LI> <A HREF="chap060.htm#SECT005">SecondCohomologyDimension</a>
+<LI> <A HREF="chap060.htm#SECT006">SplitExtension</a>
+<LI> <A HREF="chap060.htm#SECT007">NonsplitExtension</a>
+<LI> <A HREF="chap060.htm#SECT008">CalcPres</a>
+<LI> <A HREF="chap060.htm#SECT009">PermRep</a>
+<LI> <A HREF="chap060.htm#SECT010">Further Information</a>
+</ol>
+<A NAME="SECT001"><h2>60.1 CHR</h2></a>
+<P><P>
+<code>CHR(<var>G</var>, <var>p</var>, [<var>F</var>], [<var>mats</var>] )</code>
+<P>
+<code>CHR</code>  constructs  a  cohomology-record, which is used as a parameter for
+all of the other functions in this chapter. <var>G</var> must be  a finite
+permutation group, and <var>p</var> a prime number. If present, <var>F</var> must either be
+zero or a finitely presented group with the same number of generators as
+<var>G</var>, of which the relators are satisfied by the generators of <var>G</var>.
+In fact, to obtain meaningful results, <var>F</var> should almost certainly be
+isomorphic to <var>G</var>. If present, <var>mats</var> should be a list of invertible matrices
+over the finite field <var>K</var> = <var>GF(p)</var>. The list should have the same length as the
+number of generators of <var>G</var>, and the matrices should correspond to these
+generators, and define a <var>GF(p)G</var>-module, which we will denote by <var>M</var>.
+<P><A NAME="SECT002"><h2>60.2 SchurMultiplier</h2></a>
+<P><P>
+<code>SchurMultiplier(<var>chr</var>)</code>
+<P>
+<var>chr</var> must be a cohomology-record that was created by a call of
+<code>CHR(<var>G</var>,<var>p</var>,[<var>F</var>],[<var>mats</var>])</code>. <code>SchurMultiplier</code> calculates
+the <var>p</var>-part <I>Mul<sub>p</sub></I> of the Schur multiplier <var>Mul</var> of <var>G</var>.
+The result is returned as a list of integers, which are the
+abelian invariants of <I>Mul<sub>p</sub></I>. If the list is empty, then
+<I>Mul<sub>p</sub></I> is trivial.
+<P><A NAME="SECT003"><h2>60.3 CoveringGroup</h2></a>
+<P><P>
+<code>CoveringGroup(<var>chr</var>)</code>
+<P>
+<var>chr</var> must be a cohomology-record, created by a call of
+<code>CHR(<var>G</var>,<var>p</var>,<var>F</var>,[<var>mats</var>])</code>, where <var>F</var> is a finitely presented group.
+<code>CoveringGroup</code> calculates a presentation of a covering extension of <I>Mul<sub>p</sub></I>
+by <var>G</var>, where <I>Mul<sub>p</sub></I> is the <var>p</var>-part of the Schur multiplier <var>Mul</var> of <var>G</var>.
+The set of generators of the finitely presented group that is returned
+is a union of two sets, which are in one-one correspondence with the
+generators of <var>F</var> and of <I>Mul<sub>p</sub></I>, respectively. 
+<P>
+<DL><DT>The relators fall into three classes:<BR> 
+:<DD>a) Those that specify the orders of the generators of <I>Mul<sub>p</sub></I>;<BR> 
+b) Those that say that the generators of <I>Mul<sub>p</sub></I> are central; and<BR> 
+c) Those that give the values of the relators of <var>F</var> as elements of <I>Mul<sub>p</sub></I>.
+</DL><P><A NAME="SECT004"><h2>60.4 FirstCohomologyDimension</h2></a>
+<P><P>
+<code>FirstCohomologyDimension(<var>chr</var>)</code>
+<P>
+<var>chr</var> must be a cohomology-record, created by a call of
+<code>CHR(<var>G</var>,<var>p</var>,<var>F</var>,<var>mats</var>)</code>. (If there is no finitely presented group <var>F</var> involved,
+then the third parameter of <code>CHR</code> should be given as 0.)
+<code>FirstCohomologyDimension</code> calculates and returns the dimension
+over <var>K</var> = <var>GF(p)</var> of the first cohomology group <I>H<sup>1</sup>(G,M)</I> of the group
+<var>G</var> in its action on the module <var>M</var> defined by the matrices <var>mats</var>.
+<P><A NAME="SECT005"><h2>60.5 SecondCohomologyDimension</h2></a>
+<P><P>
+<code>SecondCohomologyDimension(<var>chr</var>)</code>
+<P>
+<var>chr</var> must be a cohomology-record, created by a call of
+<code>CHR(<var>G</var>,<var>p</var>,<var>F</var>,<var>mats</var>)</code>.
+(If there is no finitely presented group <var>F</var> involved,
+then the third parameter of <code>CHR</code> should be given as 0.)
+<code>SecondCohomologyDimension</code> calculates and returns the dimension
+over <var>K</var> = <var>GF(p)</var> of the second cohomology group <I>H<sup>2</sup>(G,M)</I> of the group
+<var>G</var> in its action on the module <var>M</var> defined by the matrices <var>mats</var>.
+<P><A NAME="SECT006"><h2>60.6 SplitExtension</h2></a>
+<P><P>
+<code>SplitExtension(<var>chr</var>)</code>
+<P>
+<var>chr</var> must be a cohomology-record, created by a call of
+<code>CHR(<var>G</var>,<var>p</var>,<var>F</var>,<var>mats</var>)</code>, where <var>F</var> is a finitely presented group.
+<code>SplitExtension</code> returns a presentation of the split extension of the module
+<var>M</var> defined by the matrices <var>mats</var> by the group <var>G</var>.
+This is a straightforward calculation, and involves no call of the
+external cohomology programs. It is provided here for convenience.
+<P><A NAME="SECT007"><h2>60.7 NonsplitExtension</h2></a>
+<P><P>
+<code>NonsplitExtension(<var>chr</var>, [<var>vec</var>] )</code>
+<P>
+<var>chr</var> must be a cohomology-record, created by a call of
+<code>CHR(<var>G</var>,<var>p</var>,<var>F</var>,<var>mats</var>)</code>, where <var>F</var> is a finitely presented group.
+If present, <var>vec</var> must be a list of integers of length equal to the
+dimension over <var>K</var> = <var>GF(p)</var> of the second cohomology group <I>H<sup>2</sup>(G,M)</I> of the
+group <var>G</var> in its action on the module <var>M</var> defined by the matrices <var>mats</var>.
+<code>NonsplitExtension</code> calculates and returns a presentation of a nonsplit
+extension of <var>M</var> by <var>G</var>. Since there may be many such extensions, and
+the equivalence classes of these extensions are in one-one correspondence
+with the nonzero elements of <I>H<sup>2</sup>(G,M)</I>, the optional second parameter
+can be used to specify an element of <I>H<sup>2</sup>(G,M)</I> as a vector.
+The default value of this vector is <code>[1,0,...,0]</code>.
+The set of generators of the finitely presented group that is returned
+is a union of two sets, which are in one-one correspondence with the
+generators of <var>F</var> and of <var>M</var> (as an abelian group), respectively. 
+<P>
+<DL><DT>The relators fall into three classes:<BR> 
+:<DD>a) Those that say that <var>M</var> is an abelian group of exponent <var>p</var>;<BR> 
+b) Those that define the action of the generators of <var>F</var> on
+those of <var>M</var>; and<BR> 
+c) Those that give the values of the relators of <var>F</var> as elements of <I>M</I>.
+</DL><P>
+(<var>Note</var>: It is not particularly efficient to call <code>SecondCohomologyDimension</code>
+first to calculate the dimension of <I>H<sup>2</sup>(G,M)</I>, which must of course be known
+if the second parameter is to be given; it is preferable to call
+<code>NonsplitExtension</code> immediately without the second parameter (which will
+return one nonsplit extension), and then to call <code>SecondCohomologyDimension</code>,
+which will at that stage return the required dimension immediately -
+all subsequent calls of <code>NonsplitExtension</code> on <var>chr</var> will also yield
+immediate results.)
+<P><A NAME="SECT008"><h2>60.8 CalcPres</h2></a>
+<P><P>
+<code>CalcPres(<var>chr</var>)</code>
+<P>
+<code>CalcPres</code>  computes a presentation of the permutation group <var>chr</var><code>.permgp</code>
+on the same generators as <var>chr</var><code>.permgp</code>, and stores it as <var>chr</var><code>.fpgp</code>.
+It currently only works for groups of order up to 32767, although that
+could easily be increased if required.
+<P><A NAME="SECT009"><h2>60.9 PermRep</h2></a>
+<P><P>
+<code>PermRep(<var>G</var>, <var>K</var>)</code>
+<P>
+<code>PermRep</code> calculates the permutation representation of the finitely
+presented group <var>F</var> on the right cosets of the subgroup <var>K</var>, and returns
+it as a permutation group of which the generators correspond to those
+of <var>F</var>. It simply calls the <strong>GAP3</strong> Todd-Coxeter function. Of course,
+there is no guarantee in general that this representation will be
+faithful.
+<P><A NAME="SECT010"><h2>60.10 Further Information</h2></a>
+<P><P><P>
+Suppose, as usual, that the cohomology record <var>chr</var> was constructed
+with the call <code>CHR(<var>G</var>,<var>p</var>, [<var>F</var>],[<var>mats</var>])</code>.
+All of the functions make use of a strictly decreasing chain of subgroups
+of the permutation group <var>G</var> starting with <var>G</var> itself and ending with a
+Sylow <var>p</var>-subgroup <var>P</var> of <var>G</var>. In general, the programs run most efficiently
+if the indices between successive terms in this sequence are as small as
+possible. By default, <strong>GAP3</strong> will attempt to find a suitable chain, when
+you call the first cohomology function on <var>chr</var>. However, you may be able
+to construct a better chain yourself. If so, then you can do this
+by assigning the record field <var>chr</var><code>.chain</code> to the list <var>L</var> of subgroups
+that you wish to use. You should do that before calling any of the
+cohomology functions. Remeber that the first term in the list must be
+<var>G</var> itself, the sequence of subgroups must be strictly decreasing,
+and the last term must be equal to the Sylow subgroup stored as
+<var>chr</var><code>.sylow</code>. (You can change <var>chr</var><code>.sylow</code> to a different Sylow
+<var>p</var>-subgroup if you like.) Here is a slightly contrived example of this
+process.
+<P>
+<pre>    gap> RequirePackage( "cohomolo" );
+    gap> G:=AlternatingGroup(16);;
+    gap> chr:=CHR(G,2);;
+    gap> InfoCohomology:=Print;;
+    gap> SchurMultiplier(chr);
+    #Indices in the subgroup chain are:  2027025 315 
+    #WARNING: An index in the subgroup chain found is larger than 50000.
+    #This calculation may fail. See manual for possible remedies.
+    #I  Cohomology package: Calling external program.
+    #I  External program complete.
+    Error, 'Cohomology' failed for some reason.
+     in
+    Cohomology( chr, true, false, false, TmpName(  ) ) called from
+    SchurMultiplier( chr ) called from
+    main loop
+    brk> quit;</pre>
+<P>
+The first index in the chain found by GAP was hopelessly large. Let's try
+and do better.
+<P>
+<pre>    gap> P:=chr.sylow;;
+    gap> H1:=Subgroup(G, [(1,2)(9,10), (2,3,4,5,6,7,8),
+    >        (1,9)(2,10)(3,11)(4,12)(5,13)(6,14)(7,15)(8,16)]);;
+    gap> Index(G,H1);
+    6435
+    gap> H2:=Subgroup(H1, [(1,2)(5,6), (1,2)(9,10), (2,3,4),
+    >        (1,5)(2,6)(3,7)(4,8),
+    >        (1,9)(2,10)(3,11)(4,12)(5,13)(6,14)(7,15)(8,16)]);;
+    gap> Index(H1,H2);
+    1225
+    gap> IsSubgroup(H2,P);
+    true</pre>
+<P>
+If that had been false, we could have replaced chr.sylow by a Sylow
+2-subgroup of H2. As it is true, we just continue.
+<P>
+<pre>    gap> Index(H2,P);
+    81
+    gap> chr.chain := [G,H1,H2,P];;
+    gap> SchurMultiplier(chr);
+    #I  Cohomology package: Calling external program.
+    #I  External program complete.
+    #I  Removing temporary files.
+    [ 2 ]</pre>
+<P><a href ="chap059.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap061.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

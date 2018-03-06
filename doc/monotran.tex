@@ -1,0 +1,600 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  GAP documentation                                   Goetz.Pfeiffer@UCG.IE
+%%
+%A  $Id: monotran.tex,v 2.2 1997/11/24 12:53:51 goetz Exp $
+%%
+%Y  Copyright (C) 1997, Mathematics Dept, University College Galway, Ireland.
+%%
+%%  This file documents the functions for transformation monoids.
+%%
+\Chapter{Transformation Monoids}
+
+A transformation monoid is a monoid of transformations of $n$ points (see
+chapter "Transformations").   These  monoids occur   for example in   the
+theory of finite state  automata and  as  the results of enumerations  of
+finitely presented monoids.  In the theory of semigroups and monoids they
+ply to some extend the role that is taken  by permutation groups in group
+theory.  In fact, there are  close  relations between permutation  groups
+and transformation monoids.  One of these relations  is manifested by the
+Sch\accent127utzenberger group of an element  of a transformation monoid,
+which  is represented  as  a permutation  group rather   than a group  of
+transformations.   Another relation which  is used by most functions that
+deal with transformation monoids is the fact that a transformation monoid
+can be efficiently described in terms  of several permutation groups (for
+details see~\cite{LPRR1} and~\cite{LPRR2}).
+
+This   chapter describes the    functions  that deal with  transformation
+monoids.
+
+The chapter  starts with  the  description of   the function  that  tests
+whether  or   not  a  given   object  is a   transformation  monoid  (see
+"IsTransMonoid").  Then there is  the function that determines the degree
+of a transformation monoid (see "Degree of a Transformation Monoid").
+
+There are  a function to   construct  the full transformation  monoid  of
+degree $n$ (see "FullTransMonoid") and a function to construct the monoid
+of all partial transformations of degree $n$ (see "PartialTransMonoid").
+
+Then there are a function that determines all  images of a transformation
+monoid (see  "ImagesTransMonoid") and   a function that    determines all
+kernels of a transformation monoid (see "KernelsTransMonoid").
+
+Because  each transformation monoid   is   a domain  all  set   theoretic
+functions can  be   applied to it  (see   chapter  \"Domains\"\ and  "Set
+Functions  for  Transformation Monoids").  Also because  a transformation
+monoid is after  all a monoid all  monoid functions can  be applied to it
+(see chapter   "Monoids and Semigroups"      and "Monoid Functions    for
+Transformation Monoids").
+
+Next the functions that determine Green classes in transformation monoids
+are described (see "H Classes for Transformation Monoids", "R Classes for
+Transformation Monoids", "L Classes  for Transformation Monoids", and  "D
+Classes for Transformation Monoids").
+
+Finally,  there is  a  section   about how  a  transformation  monoid  is
+displayed (see "Display a  Transformation Monoid").  The last section  in
+this  chapter  describes how  transformation   monoids are represented as
+records in {\GAP} (see "Transformation Monoid Records").
+
+The functions described here are in the file '\"monotran.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsTransMonoid}%
+\index{test!for transformation monoid}
+
+'IsTransMonoid( <obj> )'
+
+'IsTransMonoid'  returns  'true' if the object    <obj>, which may  be an
+object  of an  arbitrary type,  is  a transformation monoid, and  'false'
+otherwise.  It will signal an error if <obj> is an unbound variable.
+
+|    gap> IsTransMonoid( Monoid( [ Transformation( [ 1, 2, 1 ] ) ] ) );
+    true
+    gap> IsTransMonoid( Group( (1,2), (1,2,3,4) ) );
+    false
+    gap> IsTransMonoid( [ 1, 2, 1 ] );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Degree of a Transformation Monoid}
+
+'Degree( <M> )'
+
+'Degree' returns the degree of a  transformation monoid <M>, which is the
+common degree of all the generators of <M>.
+
+|    gap> Degree( Monoid( Transformation( [ 1, 2, 1 ] ) ) );
+    3 |
+
+The *degree* of a transformation monoid is the  number  of points it acts
+upon.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FullTransMonoid}%
+\index{full transformation monoid}
+
+'FullTransMonoid( <n> )'
+
+'FullTransMonoid' returns the full transformation monoid of degree <n>.
+
+|    gap> M:= FullTransMonoid( 8 );
+    Monoid( [ Transformation( [ 2, 1, 3, 4, 5, 6, 7, 8 ] ), 
+      Transformation( [ 8, 1, 2, 3, 4, 5, 6, 7 ] ), 
+      Transformation( [ 2, 2, 3, 4, 5, 6, 7, 8 ] ) ] ) 
+    gap> Size( M );
+    16777216 |
+
+The   *full transformation monoid* of  degree  $n$ is  the  monoid of all
+transformations of degree $n$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PartialTransMonoid}%
+\index{partial transformation}
+
+'PartialTransMonoid( <n> )'
+
+'PartialTransMonoid'  returns  the monoid  of partial  transformations of
+degree <n>.
+
+|    gap> M:= PartialTransMonoid( 8 );
+    Monoid( [ Transformation( [ 2, 1, 3, 4, 5, 6, 7, 8, 9 ] ), 
+      Transformation( [ 8, 1, 2, 3, 4, 5, 6, 7, 9 ] ), 
+      Transformation( [ 9, 2, 3, 4, 5, 6, 7, 8, 9 ] ), 
+      Transformation( [ 2, 2, 3, 4, 5, 6, 7, 8, 9 ] ) ] )
+    gap> Size( M );
+    1000000000 |
+    
+A *partial transformation*  of degree $n$  is a  mapping from $\{1,  ...,
+n\}$ to itself where  every point $i \in  \{1, ..., n\}$  has at most one
+image.  Here the undefined point is represented by $n+1$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ImagesTransMonoid}
+
+'ImagesTransMonoid( <M> )'
+
+'ImagesTransMonoid'  returns the set    of images of  all elements of the
+transformation monoid <M> (see "Image of a Transformation").
+
+|    gap> M:= Monoid( Transformation( [ 1, 4, 4, 2 ] ),    
+    >       Transformation( [ 2, 4, 4, 4 ] ) );;   
+    gap> ImagesTransMonoid(M);                                              
+    [ [ 1, 2, 3, 4 ], [ 1, 2, 4 ], [ 2 ], [ 2, 4 ], [ 4 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{KernelsTransMonoid}
+
+'KernelsTransMonoid( <M> )'
+
+'KernelsTransMonoid' returns  the set of kernels of  all  elements of the
+transformation monoid <M> (see "Kernel of a Transformation").
+
+|    gap> M:= Monoid( [ Transformation( [ 1, 4, 4, 2 ] ),    
+    >       Transformation( [ 2, 4, 4, 4 ] ) ] );;   
+    gap> KernelsTransMonoid(M);
+    [ [ [ 1 ], [ 2 ], [ 3 ], [ 4 ] ], [ [ 1 ], [ 2, 3 ], [ 4 ] ], 
+      [ [ 1 ], [ 2, 3, 4 ] ], [ [ 1, 2, 3, 4 ] ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Functions for Transformation Monoids}
+
+All set theoretic  functions described in   chapter \"Domains\" are  also
+applicable  to transformation  monoids.    This section  describes  which
+functions are implemented specially for transformation monoids. Functions
+not mentioned here  are handled by the default  methods  described in the
+respective sections of chapter \"Domains\".
+
+'Size( <M> )'%
+\index{Size!for Transformation Monoids}
+
+'Size'  calls 'RClasses' (see "RClasses"),  if necessary, and returns the
+sum of the sizes of all $R$ classes of <M>.
+
+|    gap> Size( Monoid( Transformation( [ 1, 2, 1 ] ) ) );
+    2 |
+
+\vspace{5mm}
+'Elements( <M> )'
+\index{Elements!for Transformation Monoids}
+
+'Elements' calls  'RClasses' (see "RClasses")  if necessary,  and returns
+the union of the elements of all $R$ classes of <M>.
+
+|    gap> Elements( Monoid( Transformation( [ 1, 2, 1 ] ) ) );
+    [ Transformation( [ 1, 2, 1 ] ), Transformation( [ 1 .. 3 ] ) ] |
+
+\vspace{5mm}
+'<obj> in <M>'%
+\index{in!for Transformation Monoids}%
+\index{membership test!for Transformation Monoids}
+
+The  membership test of elements of  transformation  monoids first checks
+whether  <obj>  is    a    transformation  in the   first     place  (see
+"IsTransformation") and if so whether the degree of <obj> (see "Degree of
+a Transformation") coincides  with the  degree of <M>  (see "Degree  of a
+Transformation Monoid").  Then the image and  the kernel of <obj> is used
+to locate the possible $R$ class of <obj> in  <M> and the membership test
+is delegated to that $R$ class (see "Set Functions for Green Classes").
+
+|   gap> M:= Monoid( Transformation( [ 1, 2, 1 ] ) );;
+    gap> (1,2,3) in M;
+    false
+    gap> Transformation( [1, 2, 1 ] ) in M;
+    true
+    gap> Transformation( [ 1, 2, 1, 4 ] ) in M;
+    false | 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Monoid Functions for Transformation Monoids}
+
+All  functions   described in chapter   "Monoids  and Semigroups"  can be
+applied to transformation monoids.
+
+Green   classes  are special  subsets  of  a   transformation monoid.  In
+particular,  they are domains so  all set theoretic functions for domains
+(see chapter \"Domains\")   can be applied to   Green classes.  This   is
+described in "Set Functions for Green  Classes".  Single Green classes of
+a transformation  monoid are constructed by  the  functions 'RClass' (see
+"RClass"  and "R   Classes for  Transformation   Monoids"), 'LClass' (see
+"LClass" and   "L  Classes for  Transformation   Monoids"), 'DClass' (see
+"DClass" and "D Classes  for Transformation Monoids"), and  'HClass' (see
+"HClass"  and "H Classes for Transformation  Monoids").   The list of all
+Green classes  of a given type  in a transformation monoid is constructed
+by    the   functions   'RClasses'  (see    "RClasses"),  'LClasses' (see
+"LClasses"),   'DClasses'    (see    "DClasses"),  and   'HClasses'  (see
+"HClasses").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SchutzenbergerGroup for Transformation Monoids}
+
+'SchutzenbergerGroup( <M>, <s> )'\\
+'SchutzenbergerGroup( <class> )'
+
+'SchutzenbergerGroup' returns the  Sch\accent127utzenberger  group of the
+element  <s> in the  transformation monoid <M> as  a permutation group on
+the image of <s>.
+
+In     the   second    form      'SchutzenbergerGroup'    returns     the
+Sch\accent127utzenberger   group  of  the    Green class   <class>   of a
+transformation monoid, where <class> is either an H  class, an R class or
+a D class.  The  Sch\accent127utzenberger group of an  H class <class> is
+the  same  as   the  Sch\accent127utzenberger  group  of   <class>.   The
+Sch\accent127utzenberger group of  an R class  <class> is the generalised
+right Sch\accent127utzenberger group of the representative of <class> and
+the  Sch\accent127utzenberger  group  of an    L  class  <class> is   the
+generalised left Sch\accent127utzenberger group  of the representative of
+<class>.  Note  that the Sch\accent127utzenberger of  an R  class is only
+unique up to conjugation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{H Classes for Transformation Monoids}
+
+In addition to  the usual components of   an H class record,  the  record
+representing the H class  <hClass> of <s>  in a transformation monoid can
+have the  following  components.     They are created  by   the  function
+'SchutzenbergerGroup'   (see  "SchutzenbergerGroup")    which is   called
+whenever the size, the list of elements of <hClass>, or a membership test
+in <hClass> is asked for.
+
+'schutzenbergerGroup':\\
+        set to   the Sch\accent127utzenberger group     of <hClass> as  a
+        permutation      group  on       the  set     of    images     of
+        '<hClass>.representative'    (see   "SchutzenbergerGroup      for
+        Transformation Monoids").
+
+'R':\\
+        the R class of '<hClass>.representative.'
+
+'L':\\
+        the L class of '<hClass>.representative.'
+        
+The  following functions have a  special implementation in terms of these
+components.
+
+\vspace{5mm}
+'Size( <hClass> )'%
+\index{Size!of an H class of transformations}
+
+returns    the size  of  the   H  class  <hClass>.   This  function calls
+'SchutzenbergerGroup' and determines the size of <hClass>  as the size of
+the resulting group.
+
+\vspace{5mm}
+'Elements( <hClass> )'%
+\index{Elements!of an H class of transformations}
+
+returns the set of elements of the H class <hClass>.  This function calls
+'SchutzenbergerGroup' and  determines the set  of elements of <hClass> as
+the  set   of  elements  of   the   resulting  group   multiplied by  the
+representative of <hClass>.
+
+\vspace{5mm}
+'<x> in <hClass>'%
+\index{in!for H class of transformations}%
+\index{membership test!for H class of transformations}
+
+returns 'true' if  <x> is an element of  the H class <hClass> and 'false'
+otherwise.   This function calls  'SchutzenbergerGroup' and tests whether
+the  quotient   of the   representative   of    <hClass> and  <x>    (see
+"PermLeftQuoTrans") is in the resulting group.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{R Classes for Transformation Monoids}
+
+In addition to  the usual components of   an R class record,  the  record
+representing the R class  <rClass> of <s>  in a transformation monoid can
+have the  following  components.     They are created  by   the  function
+'SchutzenbergerGroup'   (see  "SchutzenbergerGroup")    which is   called
+whenever the size, the list of elements of <rClass>, or a membership test
+in <rClass> is asked for.
+
+'schutzenbergerGroup':\\
+        set to   the Sch\accent127utzenberger group     of <rClass> as  a
+        permutation      group  on       the  set     of    images     of
+        '<rClass>.representative'    (see   "SchutzenbergerGroup      for
+        Transformation Monoids").
+        
+'images':\\        
+        is the  list  of different  image  sets occurring in the  R class
+        <rClass>.  The first entry   in this list  is  the image set   of
+        '<rClass>.representative'.
+        
+'rMults':\\        
+        is a  list  of  permutations  such  that    the product  of   the
+        representative of <rClass> and the  inverse of the $i$th entry in
+        the list yields  an element  of <rClass> whose  image  set is the
+        $i$th entry in the list '<rClass>.images'.
+
+The  following functions have a  special implementation in terms of these
+components.
+
+\vspace{5mm}
+'Size( <rClass> )'%
+\index{Size!of an R class of transformations}
+
+returns    the size  of  the   R  class  <rClass>.   This  function calls
+'SchutzenbergerGroup' and determines the size of <rClass>  as the size of
+the resulting group times the length of the list '<rClass>.images'.
+
+\vspace{5mm}
+'Elements( <rClass> )'%
+\index{Elements!of an R class of transformations}
+
+returns the set of elements of the R class <rClass>.  This function calls
+'SchutzenbergerGroup' and determines the  set of elements of  <rClass> as
+the  set   of    elements of  the  resulting    group   multiplied by the
+representative of   <rClass> and each   single   permutation in the  list
+'<rClass>.rMults'.
+
+\vspace{5mm}
+'<x> in <rClass>'%
+\index{in!for R class of transformations}%
+\index{membership test!for R class of transformations}
+
+returns 'true' if <x>  is an element of the  R class <rClass> and 'false'
+otherwise.  This function calls  'SchutzenbergerGroup' and tests  whether
+the  quotient   of   the  representative    of  <rClass>  and   '<x>  \*\ 
+<rClass>.rMults[<i>]' (see  "PermLeftQuoTrans") is in the resulting group
+where <i> is the position of the image set of <x> in '<rClass>.images'.
+
+\vspace{5mm}
+'HClasses( <rClass> )'
+\index{HClasses!of an R class of transformations}
+
+returns the list of H classes contained in the R class <rClass>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{L Classes for Transformation Monoids}
+
+In addition to  the usual components of   an L class record,  the  record
+representing the L class  <lClass> of <s>  in a transformation monoid can
+have the  following  components.     They are created  by   the  function
+'SchutzenbergerGroup'   (see  "SchutzenbergerGroup")    which is   called
+whenever the size, the list of elements of <lClass>, or a membership test
+in <lClass> is asked for.
+
+'schutzenbergerGroup':\\
+        set to   the Sch\accent127utzenberger group     of <lClass> as  a
+        permutation      group  on       the  set     of    images     of
+        '<lClass>.representative'    (see   "SchutzenbergerGroup      for
+        Transformation Monoids").
+        
+'kernels':\\
+        is the list   of different   kernels   occurring in the  L  class
+        <lClass>.  The   first  entry  in  this  list is   the kernel  of
+        '<rClass>.representative'.
+        
+'lMults':\\        
+        is a list  of  binary  relations such  that  the product  of  the
+        inverse of the $i$th entry in the list  and the representative of
+        <rClass> yields an element of <rClass>  whose kernel is the $i$th
+        entry in the list '<rClass>.kernels'.
+
+The  following functions have a  special implementation in terms of these
+components.
+
+\vspace{5mm}
+'Size( <lClass> )'%
+\index{Size!of an L class of transformations}
+
+returns    the size  of  the   L  class  <lClass>.   This  function calls
+'SchutzenbergerGroup' and determines the size of <lClass>  as the size of
+the resulting group times the length of the list '<lClass>.kernels'.
+
+\vspace{5mm}
+'Elements( <lClass> )'%
+\index{Elements!of an L class of transformations}
+
+returns the set of elements of the L class <lClass>.  This function calls
+'SchutzenbergerGroup'  and determines the set of  elements of <lClass> as
+the   set   of elements  of  the   resulting   group premultiplied by the
+representative of <lClass> and each  single binary  relation in the  list
+'<lClass>.lMults'.
+
+\vspace{5mm}
+'<x> in <lClass>'%
+\index{in!for L class of transformations}%
+\index{membership test!for L class of transformations}
+
+returns 'true' if  <x> is an element of  the L class <lClass> and 'false'
+otherwise.  This function calls  'SchutzenbergerGroup' and tests  whether
+the quotient of  the representative of <lClass> and '<lClass>.lMults[<i>]
+\*\ <x>' (see "PermLeftQuoTrans") is in the  resulting group where <i> is
+the position of the kernel of <x> in '<lClass>.kernels'.
+
+\vspace{5mm}
+'HClasses( <lClass> )'
+\index{HClasses!of an L class of transformations}
+
+returns the list of H classes contained in the L class <lClass>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{D Classes for Transformation Monoids}
+
+In  addition to the   usual components of  a D  class record,  the record
+representing  the D class <dClass> of  <s> in a transformation monoid can
+have  the following  components.   They   are  created by   the  function
+'SchutzenbergerGroup'   (see    "SchutzenbergerGroup") which   is  called
+whenever the size, the list of elements of <dClass>, or a membership test
+in <dClass> is asked for.
+
+'schutzenbergerGroup':\\
+        set to   the Sch\accent127utzenberger group     of <dClass> as  a
+        permutation      group  on       the  set     of    images     of
+        '<dClass>.representative'    (see   "SchutzenbergerGroup      for
+        Transformation Monoids").
+        
+'H':\\
+        set to the H class of '<dClass>.representative'.
+
+'L':\\
+        set to the L class of '<dClass>.representative'.
+
+'R':\\
+        set to the R class of '<dClass>.representative'.
+        
+'rCosets':\\
+        contains  a   list  of  (right)  coset  representatives   of  the
+        Sch\accent127utzenberger       group     of   <dClass>   in   the
+        Sch\accent127utzenberger group of the R class '<dClass>.R'.
+
+
+The  following functions have a  special implementation in terms of these
+components.
+
+\vspace{5mm}
+'Size( <dClass> )'%
+\index{Size!of a D class of transformations}
+
+returns the   size of   the  D  class  <dClass>.   This   function  calls
+'SchutzenbergerGroup' and determines the size of <dClass> in terms of the
+sizes  of the resulting  group and the Sch\accent127utzenberger groups of
+the R class '<dClass>.R' and the L class '<dClass>.L'.
+
+\vspace{5mm}
+'Elements( <dClass> )'%
+\index{Elements!of a D class of transformations}
+
+returns the set of elements of the D class <dClass>.  This function calls
+'SchutzenbergerGroup'  and determines the set of  elements of <dClass> as
+the union of cosets of the Sch\accent127utzenberger  group of the L class
+'<dClass>.L'  determined  through  the multipliers '<dClass>.rCosets' and
+'<dClass>.R.rMults'.
+
+\vspace{5mm}
+'<x> in <dClass>'%
+\index{in!for D class of transformations}%
+\index{membership test!for D class of transformations}
+
+returns 'true' if  <x> is an element of  the D class <dClass> and 'false'
+otherwise.  This function  calls 'SchutzenbergerGroup'  and tests whether
+the quotient  of the representative  of <dClass> and a suitable translate
+of <x> can be found in one  of the cosets of the Sch\accent127utzenberger
+group   of  the   L   class   '<dClass>.L'   determined   by    the  list
+'<dClass>.rCosets'.
+
+\vspace{5mm}
+'HClasses( <dClass> )'
+\index{HClasses!of a D class of transformations}
+
+returns the list of H classes contained in the D class <dClass>.
+
+\vspace{5mm}
+'LClasses( <dClass> )'
+\index{LClasses!of a D class of transformations}
+
+returns the list of L classes contained in the D class <dClass>.
+
+\vspace{5mm}
+'RClasses( <dClass> )'
+\index{RClasses!of a D class of transformations}
+
+returns the list of R classes contained in the D class <dClass>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Display a Transformation Monoid}
+
+'Display( <M> )'
+
+'Display' displays the Green class structure of the transformation monoid
+<M>.  Each D class is displayed  as a single item on  a line according to
+its rank.  A D class displayed as
+
+'[<a>.<b>.<d>]'
+
+is a regular D  class with a Sch\accent127utzenberger  group of size <a>,
+consisting of <b> L classes, or <d> R classes.  A D class displayed as 
+
+'\{<a>.<b>x<c>.<d>x<e>\}'
+
+is  a nonregular D  class with  a  Sch\accent127utzenberger group of size
+<a>, consisting of $<b> \times <c>$ L classes (of which <c> have the same
+kernel), or   $<d> \times <e>$ R  classes   (of which <e> have   the same
+image).
+
+|    gap> M:= Monoid( Transformation( [ 7, 7, 1, 1, 5, 6, 5, 5 ] ), 
+    > Transformation( [ 3, 8, 3, 7, 4, 6, 4, 5 ] ) );;
+    gap> Size( M );
+    27
+    gap> Display( M );
+    Rank 8: [1.1.1] 
+    Rank 6: {1.1x1.1x1} 
+    Rank 5: {1.1x1.1x1} 
+    Rank 4: {1.1x1.1x1} [2.1.1] 
+    Rank 3: {1.1x1.4x1} [1.3.4] 
+    Rank 2: [1.5.1] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Transformation Monoid Records}
+
+In addition  to  the usual  components  of a  monoid record  (see "Monoid
+Records and Semigroup Records") the  record representing a transformation
+monoid <M> has a component
+
+'isTransMonoid':\\
+        which is always set to 'true'.
+        
+Moreover,  such  a  record will  (after  a while)   acquire the following
+components.
+
+'orbitClasses':\\
+        a list of R classes of <M> such that every orbit of image sets is
+        represented exactly once.
+
+'images':\\
+        the list of  lists  where 'images[ <k>    ]' is the  list  of all
+        different image sets of size <k> of the elements of <M>.
+        
+'imagePos':\\
+        stores  the relation  between 'orbitClasses'  and  'images'.  The
+        image set 'images[<k>][<l>]'  occurs in the orbit  of the R class
+        with index 'imagePos[<k>][<l>]' in the list 'orbitClasses'.
+        
+'rClassReps':\\
+        a list of  lists,  where 'rClassReps[<l>]' contains  the complete
+        list  of representatives  of  the R  classes  with the same image
+        orbit as the R class 'orbitClasses[<l>]'.
+        
+'lTrans':\\
+        a  list of lists,   where 'lTrans[<l>][<k>]' is  a transformation
+        $\alpha$ such that 'lTrans[<l>][<k>] \*\ rClassReps[<l>][<k>]' is
+        an element of the R class 'orbitClasses[<l>]'.
+        
+'kernels':\\
+        a  list of lists, where  'kernels[<l>][<k>]' is the common kernel
+        of the elements in the R class of 'rClassReps[<l>][<k>]'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               LaTeX
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  TeX-master:         "manual"
+%%  eval:               (outline-minor-mode)
+%%  End:
+%%
+

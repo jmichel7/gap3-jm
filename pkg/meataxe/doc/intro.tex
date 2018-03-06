@@ -1,0 +1,216 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This file is part of the C Meat-Axe.                                 %
+% Written by Michael Ringe <mringe@tiffy.math.rwth-aachen.de>          %
+% (C) Copyright 1992:	    Lehrstuhl D fuer Mathematik                %
+%                           RWTH Aachen                                %
+%                           Aachen, Germany                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Introduction}
+%---------------------
+
+\section{Overview}
+%-----------------
+The {\MeatAxe} is a set of programs for working with matrices over
+finite fields. Its primary purpose is the calculation of modular
+character tables, although it can be used for other purposes, such
+as investigating subgroup structure, module structure etc.\ Indeed,
+there is a set of programs (see section \ref{sec:lattice}) to
+compute automatically the submodule lattice of a given module.
+
+There is one common module (ZZZ) which does all the finite field
+calculations. ZZZ works with single elements and rows of elements,
+does the input and output, handles the memory allocation and a few
+miscellaneous simple operations besides. This makes it possible to
+code the most time-consuming parts in assembler and still have the
+algorithms presented in C. Another advantage is, that all the
+system dependent stuff (file i/o, for example) is concentrated in
+one place.
+
+Each of the programs is self-contained, except that it calls the ZZZ
+subroutines, reading its input from files, and writing its output to
+files. To make the {\MeatAxe} usable, therefore, it is necessary to
+write operating system commands to run the various programs. This
+documentation is primarily for the programs, and further documentation
+is necessary for the various implementations in differing operating
+environments.
+
+The primitive objects are of two types: matrices and permutations.
+Permutation objects can be handled, but not as smoothly as you might
+expect. However, the matrix part is more or less complete. For example,
+it is hoped that programs such as split (ZSP) and multiply (ZMU) will
+be able to work with mixed types, but at
+present ZSP is restricted to matrices only, and ZMU can multiply
+matrix * permutation, but not vice versa.
+
+
+\subsection*{Remarks on the C implementation}
+%--------------------------------------------
+Most of the programs (including their documentation) in this package
+are based on the FORTRAN code written by Richard~A.~Parker. The
+translation from FORTRAN to C was
+done in 1989 and since then both versions have developed independently.
+The user interface of the C programs has been changed significantly
+(e.g., command line arguments were introduced) and some new programs
+have been added which are not available in the FORTRAN {\MeatAxe}.
+However, the data formats are still compatible, so it is possible to
+share even binary data files between FORTRAN and C programs.
+
+The objective of this suite of programs is research, so that where
+simplicity and power are in contention, power is selected. Nevertheless,
+I have tried to make the programs as straightforward and user-friendly
+as possible. Moreover, the source code is available, so the user can
+change any parts he is annoyed with. There are dangers in changing the
+source, though, in that future versions may then need to have the same
+changes made to them. I hope that the file formats and ZZZ interface
+will remain the same, so that the user is welcome to write his own
+programs to do the special parts he needs.
+Of course, I would appreciate any comments on bugs and suggestions for
+improvements of the existing programs, which may be included in future
+releases.
+
+
+
+\subsection*{Non-UNIX Systems}
+%----------------------------
+All the programs have been developed and tested in an UNIX
+environment. Some other systems --- currently MS-DOS and VM/CMS
+--- are supported, but this is not thoroughly tested.
+
+
+\subsubsection*{MS-DOS/DJGPP}
+%---------------------------
+The {\MeatAxe} must be compiled with DJGCC, a DOS port of
+GNU gcc. DJGCC has a built-in DOS extender which allows
+programs to run in protected mode and providing full 32-bit
+memory access.
+
+Some restrictions are imposed by the MS-DOS operating system.
+\begin{itemize}
+\item Process time information and time limits are not
+    available. Programs that report the CPU time at end will
+    print the real run time of the program. The \verb"-T"
+    option is silently ignored.
+\item File names are restricted to 8 characters plus a 3 character
+    extension. The {\MeatAxe} i/o system will try to convert any
+    name that does not fit into this pattern into a valid file name.
+    For example,
+    \msg{zad matrix.1 matrix.2 matrix.sum.1.2}
+    will write its ouput to \verb"matrixsu.m12".
+\end{itemize}
+
+
+\subsubsection*{VM/CMS}
+%---------------------
+File names are translated as follows:
+\begin{list}{}{}
+\item	{\tt file1} becomes \mbox{\tt FILE1 MTX A}
+\item	{\tt file2.test} becomes \mbox{\tt FILE2 TEST A}
+\item	{\tt file3.test.b} becomes \mbox{\tt FILE3 TEST B}
+\end{list}
+
+
+
+
+\section{Using the {\MeatAxe} Programs}
+%--------------------------------------
+This section contains some general information about the {\MeatAxe}
+programs and how to use them.
+
+
+\subsection*{Setting up the Environment}
+%--------------------------------------
+Before you can use the {\MeatAxe} you must include the {\tt bin}
+and {\tt bin/proggy} directories in your shell's path. You may also
+want to define the following environment variables:
+\begin{center}
+\begin{tabular}{|l|p{0.75\linewidth}|}
+\hline
+Name		& Meaning \\
+\hline
+\tt MTXLIB	& Name of the {\tt lib} directory. You need to
+		  define this variable only if you want to use
+		  a library directory different from the default
+		  library (see section \ref{sec:libdir}).\\
+\hline
+\tt MTXBIN	& Name of the {\tt bin} directory. This is used
+		  during the automatic generation of arithmetic
+		  tables.\\
+\hline
+\end{tabular}
+\end{center}
+
+
+
+\subsection*{Arithmetic Tables}
+%-----------------------------
+All programs use lookup tables for row operations and finite field
+arithmetic. These tables are read from a file named
+\msg{pXXX.zzz}
+where \verb"XXX" is the field order. For example, tables for GF(25) are
+read from the file {\tt p025.zzz}. If the table file does not exist,
+the program will try to execute the \verb"maketab" program to generate
+the file. If that fails, too, the program stops. The \verb"maketab"
+program must be in one of the following directories:
+\begin{enumerate}
+\item
+    In the \verb"MTXBIN" directory (see above).
+\item
+    The directory where the program ({e.g.} CHOP) resides. Note that
+    this works only if the program was called with its full path.
+\item
+    Anywhere in the path.
+\end{enumerate}
+
+Table files may also be placed in the library directory (see below)
+because the programs look there before they try to generate a new file.
+
+
+
+\subsection*{File Types}
+%----------------------
+All {\MeatAxe} programs operate on files --- normally, no interactive
+i/o is required during the run. There are two kinds of files:
+\begin{itemize}
+\item	Binary (internal format) data files. Programs usually read
+	and write data in binary format. For a description of the
+	file format, see section \ref{sec:filefmt}. Default names
+	are G1, G2, \ldots for input files and P1, P2, \ldots for
+	output files.
+\item	Text files, used by some programs as ZCV and ZPR. The format
+	of text files is described with the ZCV program (see section
+	\ref{sec:zcv}).
+\end{itemize}
+Typically, a program reads its input from G1,\ldots,G$n$ and writes
+its output to P$n+1$,\ldots,P$m$.
+For example, the ZTE (tensor matrices) program
+reads two matrices from G1 and G2 and writes their tensor product to
+P3. To find out which files are used by a specific program, look up the
+program description in chapter \ref{chap:progs}.
+
+You may override the default names by specifying new file names on the
+command line. For example, to multiply two matrices in {\tt mat1} and
+{\tt mat2} and write the result to {\tt result} call ZMU with
+3 arguments as follows:
+	\msg{zmu mat1 mat2 result}
+
+
+
+\subsection*{The Library}\label{sec:libdir}
+%--------------------
+When given a file name, all programs look for the file in the current
+directory first. If the file is not found there, some programs try to
+find it in the library directory, provided a library has been defined.
+This extended search applies, for example, to ZEV and ZCV input files
+and also to the arithmetic table files.
+
+The library is usually defined at compile-time by assigning a
+value to the symbol {\tt MTXLIB}. This definition may be overridden
+at run-time by defining the environment variable {\tt MTXLIB}.
+In either case {\tt MTXLIB} must be a complete directory name including
+a trailing separator character (e.g., '/' for UNIX). When looking for
+files in the library, the programs simply append the file name to the
+value of {\tt MTXLIB} in order to build the complete file name.
+
+
+

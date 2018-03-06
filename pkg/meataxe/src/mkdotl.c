@@ -1,0 +1,549 @@
+/* ========================== C MeatAxe =============================
+   mkdotl.c: This program calculates the dotted lines.
+
+   (C) Copyright 1993 Michael Ringe, Lehrstuhl D fuer Mathematik,
+   RWTH Aachen, Germany  <mringe@tiffy.math.rwth-aachen.de>
+   This program is free software; see the file COPYING for details.
+   ================================================================== */
+
+
+/* $Id: mkdotl.c,v 1.2 1997/09/11 15:43:04 gap Exp $
+ *
+ * $Log: mkdotl.c,v $
+ * Revision 1.2  1997/09/11 15:43:04  gap
+ * New version 2.2.3. AH
+ *
+ * Revision 2.17  1995/06/27  08:29:32  mringe
+ * GAP output (Written by Max Bisani).
+ *
+ * Revision 2.16  1995/02/08  10:01:14  mringe
+ * PL_ entfernt.
+ *
+ * Revision 2.15  1994/11/28  16:38:00  mringe
+ * Neue Namen: SFOpen() und SFSeek().
+ *
+ * Revision 2.14  1994/07/28  06:04:43  mringe
+ * zsetfield() und zsetlen() als getrennte Funktionen.
+ *
+ * Revision 2.13  1994/07/23  16:50:38  mringe
+ * echelon_()
+ *
+ * Revision 2.12  1994/07/07  06:57:36  mringe
+ * mount in mountlist umbenannt.
+ *
+ * Revision 2.11  1994/05/18  10:12:35  mringe
+ * Neues spinup(), cmpspaces() durch spccomp() ersetzt.
+ *
+ * Revision 2.10  1994/05/16  12:09:16  mringe
+ * matspin() durch spinup() ersetzt
+ *
+ * Revision 2.9  1994/03/26  06:34:04  mringe
+ * basename umbenannt wg. Namenskonflikt.
+ *
+ * Revision 2.8  1994/03/13  13:27:01  mringe
+ * Maschinenunabhaengiges Format fuer Permutationen.
+ *
+ * Revision 2.7  1994/02/13  18:26:56  mringe
+ * Neu: os.c, os.h.
+ *
+ * Revision 2.6  1994/02/12  04:10:13  mringe
+ * UMFANGREICHE AENDERUNGEN AN VIELEN DATENTYPEN.
+ *
+ * Revision 2.5  1993/12/13  08:25:53  mringe
+ * Reihenfolge der Fkt.-argumente vereinheitlicht.
+ *
+ * Revision 2.4  1993/12/08  11:48:50  mringe
+ * Compiler warnings.
+ *
+ * Revision 2.3  1993/12/08  11:33:02  mringe
+ * Neue CPU time - Funktionen.
+ *
+ * Revision 2.2  1993/10/22  16:08:19  mringe
+ * Neues Numerierungsschema fuer irreduzible.
+ *
+ * Revision 2.1  1993/10/20  18:17:07  mringe
+ * MeatAxe-2.0, Phase II.
+ *
+ * Revision 2.0  1993/10/14  18:54:18  mringe
+ * MeatAxe-2.0, Phase I
+ *
+ * Revision 1.23  1993/10/11  19:05:28  mringe
+ * Neue Library-Struktur.
+ *
+ * Revision 1.22  1993/10/06  04:41:05  mringe
+ * utils Library eliminiert.
+ *
+ * Revision 1.21  1993/10/02  16:23:02  mringe
+ * matread() und matwrite() in matload() bzw. matsave() umbenannt.
+ *
+ * Revision 1.20  1993/08/27  15:27:26  mringe
+ * Option -T
+ *
+ * Revision 1.19  1993/08/25  15:43:44  mringe
+ * *** empty log message ***
+ *
+ * Revision 1.18  1993/08/06  14:01:59  mringe
+ * Neuer File-header.
+ *
+ * Revision 1.17  1993/07/17  11:01:00  mringe
+ * Bug entfernt. Findet jetzt keine unvollstaendigen D.L. mehr.
+ *
+ * Revision 1.16  1993/07/16  13:17:24  mringe
+ * Berechne nur noch eine D.L fuer jeden 2-koepfigen.
+ * (Das ist wieder die alte Version 1.9 mit einigen
+ * Neuerungen aus 1.15).
+ *
+ * Revision 1.9  1993/03/03  14:20:46  mringe
+ * help() eingebaut; Schreibe Dotted lines in
+ * aufsteigender Reihenfolge heraus.
+ *
+ * Revision 1.8  1993/02/17  11:16:12  mringe
+ * Include-Files...
+ *
+ * Revision 1.7  1993/02/15  13:49:24  mringe
+ * Funktionen aus cyclic.c -> yyy-Lib verschoben.
+ *
+ * Revision 1.6  1993/02/10  19:40:54  mringe
+ * Libraries angelegt (YYY und ZZZ).
+ *
+ * Revision 1.5  1992/10/01  13:50:10  mringe
+ * Header eingef"ugt.
+ *
+ * Revision 1.4  1992/07/22  07:10:30  mringe
+ * Changed 'global.h' to 'lattice.h'
+ *
+ * Revision 1.3  1992/06/26  16:19:18  mringe
+ * Benutze die (bekannte) L"ange von dottel lines, um
+ * festzustellen, ob eine dotted line vollst"andig ist.
+ *
+ * Revision 1.2  1992/06/01  08:33:30  mringe
+ * CL warnings entfernt.
+ *
+ * Revision 1.1  1992/05/26  07:34:53  mringe
+ * Initial revision
+ *
+ */
+
+#include <string.h>
+#include <stdlib.h>
+#include "meataxe.h"
+#include "lattice.h"
+#include "files.h"
+
+
+/* -----------------------------------------------------------------
+   Global data
+   ----------------------------------------------------------------- */
+
+matrix_t *gen[MAXGEN] = {NULL};	/* Generators */
+matrix_t *cycl = NULL;		/* List of cyclic submodules */
+long *class[MAXCYCL];		/* Classes of vectors */
+long nmountains = 0;		/* Number of mountains */
+matrix_t *mountlist[MAXCYCL];	/* Mountains */
+bitstring_t *subof[MAXCYCL];	/* Incidence matrix */
+int cfstart[MAXCF+1];		/* First mountain of each c.f. */
+char lck[MAXCYCL];
+char lck2[MAXCYCL];
+bitstring_t *dotl[MAXDOTL];	/* Dotted lines */
+int ndotl = 0;
+int firstdotl = 0;		/* Used for locking */
+int firstm, nextm;
+unsigned char *sumdim[MAXCYCL];
+int dotlen;			/* Length of dotted lines (= Q+1,
+				   where GF(Q) = splitting field) */
+int opt_G = 0;			/* GAP output */
+
+static char *helptext[] = {
+"SYNTAX",
+"    mkdotl [Options] <Name>",
+"",
+"OPTIONS",
+"    -Q            Quiet, no messages.",
+"    -G            GAP output (implies -Q).",
+"    -T <Limit>    Set CPU time limit",
+"",
+"FILES",
+"    <Name>.cfinfo         i/o   Composition factor data ",
+"    <Name><Dim><N>.v      i     Cyclic submodules generated by MKCYCL",
+"    <Name>.inc            i     Incidence matrix generated by MKINC",
+"    <Name>.mnt            i     Mountain data (from MKINC)",
+"    <Name>.dot            o     Dotted lines",
+"",
+NULL};
+
+static proginfo_t pinfo =
+   { "mkdotl", "Find Dotted Lines", "$Revision: 1.2 $", helptext };
+
+
+
+/* -----------------------------------------------------------------
+   init()
+   ----------------------------------------------------------------- */
+
+static void init()
+
+{
+    FILE *f;
+    char fn[200];
+    int i;
+
+    mtxinit();
+    readcfinfo();
+    cfstart[0] = 0;
+    for (i = 1; i <= ncf; ++i)
+	cfstart[i] = cfstart[i-1] + (int)(cfinfo[i-1].nmount);
+
+    /* Read the incidence matrix
+       ------------------------- */
+    sprintf(fn,"%s.inc",cfbasename);
+    f = SFOpen(fn,FM_READ);
+    if (f == NULL) FATAL("ERROR READING .inc FILE");
+    zreadlong(f,&nmountains,1);
+    if (nmountains != cfstart[ncf]) FATAL("ERROR IN .inc FILE");
+    MESSAGE(1,("Reading incidence matrix (%ld mountains)\n",
+	nmountains));
+    fflush(stdout);
+    bs_setlen((int) nmountains);
+    for (i = 0; i < (int) nmountains; ++i)
+	subof[i] = bs_read(f);
+    fclose(f);
+
+    for (i = 0; i < (int) nmountains; ++i)
+    {
+	sumdim[i] = (unsigned char *)malloc((size_t)nmountains);
+	memset(sumdim[i],0,(size_t)nmountains);
+    }
+
+    /* Read classes
+       ------------ */
+    sprintf(fn,"%s.mnt",cfbasename);
+    MESSAGE(1,("Reading classes (%s)\n",fn));
+    f = SFOpen(fn,FM_READ);
+    if (f == NULL) FATAL("ERROR OPENING .mnt FILE");
+    for (i = 0; i < nmountains; ++i)
+    {
+	long mno, mdim, nvec, *p;
+	int k;
+	if (fscanf(f,"%ld%ld%ld",&mno,&mdim,&nvec) != 3 ||
+	    mno != i || nvec < 1  || mdim < 1)
+	    FATAL("ERROR IN .mnt FILE");
+	p = class[i] = (long *)malloc((size_t)(nvec+2)*sizeof(long));
+	*p++ = nvec;
+	for (k = 0; k < nvec; ++k, ++p)
+	    if (fscanf(f,"%ld",p) != 1 || *p < 1)
+		FATAL("ERROR IN .mnt FILE");
+	if (fscanf(f,"%ld",p) != 1 || *p != -1)
+		FATAL("ERROR IN .mnt FILE");
+    }
+
+}
+
+
+/* -----------------------------------------------------------------
+   mkmount() - Make mountain
+   ----------------------------------------------------------------- */
+
+static void mkmount(i)
+int i;
+
+{
+    matrix_t *seed;
+    PTR x, y;
+    long *p;
+
+    seed = matalloc(cycl->fl,class[i][0],cycl->noc);
+    x = seed->d;
+    zsetlen(cycl->noc);
+    for (p = class[i] + 1; *p > 0; ++p)
+    {
+    	y = cycl->d;
+	if (*p > cycl->nor)
+	    FATAL("BAD VECTOR IN CLASS");
+	zadvance(&y,*p-1);
+	zmoverow(x,y);
+	zadvance(&x,(long)1);
+    }
+
+    spinup(seed,ngen,gen,SPL_SEED_SPACE,mountlist+i);
+    matfree(seed);
+}
+
+/* -----------------------------------------------------------------
+   nextcf() - Initialize everything for the next composition
+	factor: Read generators and vectors, calculate mountains...
+   ----------------------------------------------------------------- */
+
+static void nextcf(cf)
+int cf;
+
+{
+    char fn[200];
+    int j;
+
+    if (cycl != NULL)
+    {
+	matfree(cycl);
+	for (j = 0; j < ngen; ++j)
+	    matfree(gen[j]);
+    }
+    MESSAGE(0,("%s%s: ",cfbasename,cfname(cf)));
+    fflush(stdout);
+
+    /* Read the generators of the kondensed module
+       ------------------------------------------- */
+    for (j = 0; j < ngen; ++j)
+    {
+	sprintf(fn,"%s%s.%dk",cfbasename,cfname(cf),j+1);
+	gen[j] = matload(fn);
+    }
+
+    /* Read the cyclic submodules
+       -------------------------- */
+    sprintf(fn,"%s%s.v",cfbasename,cfname(cf));
+    cycl = matload(fn);
+    MESSAGE(0,("%ld vectors, ",cycl->nor));
+    fflush(stdout);
+
+    /* Calculate the length of dotted lines, i.e.,
+       the order of the splitting field + 1.
+       ------------------------------------------- */
+    dotlen = (int) zfl;
+    for (j = cfinfo[cf].spl - 1; j > 0; --j)
+    	dotlen *= (int) zfl;
+    ++dotlen;
+
+    /* Calculate the mountains
+       ----------------------- */
+    for (j = cfstart[cf]; j < cfstart[cf+1]; ++j)
+	mkmount(j);
+    MESSAGE(0,("%ld mountains, ",cfinfo[cf].nmount));
+    fflush(stdout);
+}
+
+
+/* -----------------------------------------------------------------
+   sum()
+   ----------------------------------------------------------------- */
+
+static matrix_t *sum(i,k)
+int i, k;
+
+{
+    matrix_t *s;
+    PTR x;
+
+    s = matalloc(mountlist[i]->fl,mountlist[i]->nor+mountlist[k]->nor,
+	mountlist[k]->noc);
+    memcpy(s->d,mountlist[i]->d,zsize(mountlist[i]->nor));
+    x = s->d;
+    zadvance(&x,mountlist[i]->nor);
+    memcpy(x,mountlist[k]->d,zsize(mountlist[k]->nor));
+    echelon_(s);
+
+    /* Die Dimension merken wir uns; dann k"onnen wir sp"ater
+       sofort entscheiden, ob es sich "uberhaupt lohnt, die
+       Summe nochmal zu berechnen
+       ------------------------------------------------------- */
+    sumdim[i][k] = sumdim[k][i] =
+		((s->nor > 255) ? 255 : (unsigned char)(s->nor));
+    return s;
+}
+
+
+
+/* -----------------------------------------------------------------
+   lock()
+   ----------------------------------------------------------------- */
+
+static void lock(i,c)
+int i;
+char *c;
+
+{	int l, m;
+	bitstring_t *b;
+
+	memset(c,0,sizeof(lck));
+	for (m = firstm; m < nextm; ++m)
+	{	if (bs_test(subof[i],m) || bs_test(subof[m],i))
+			c[m] = 1;
+	}
+	for (l = firstdotl; l < ndotl; ++l)
+	{	b = dotl[l];
+		if (!bs_test(b,i))
+			continue;
+		for (m = firstm; m < nextm; ++m)
+		{	if (bs_test(b,m))
+				c[m] = 1;
+		}
+	}
+}
+
+
+
+/* -----------------------------------------------------------------
+   trydot() - Find out if mountains #i and #k generate a dotted
+	line.
+   ----------------------------------------------------------------- */
+
+static void trydot(i, k, beg, next)
+int i,k,beg,next;
+
+{
+    matrix_t *span, *sp;
+    bitstring_t *dot;
+    int count, l, m, res = 0;
+
+    lock(k,lck2);
+    dot = bs_alloc();
+    bs_set(dot,i);
+    bs_set(dot,k);
+    span = sum(i,k);
+    count = 2;
+    for (l = beg; l < next && count < dotlen; ++l)
+    {
+	if (lck[l] || lck2[l]) continue;
+	for (m = i; m < l; ++m)
+	{
+	    if (!bs_test(dot,m)) continue;
+	    if (sumdim[l][m] != 0 && (long)(sumdim[l][m]) != span->nor)
+	    	res = 1;
+	    else
+	    {	sp = sum(l,m);
+		res = !spcequal(sp,span);
+		matfree(sp);
+	    }
+	    if (res != 0) break;
+	}
+	if (res == 0)
+	{	bs_set(dot,l);
+		++count;
+		lck[l] = 1;
+	}
+    }
+    matfree(span);
+    if (count == dotlen)	/* We have found a dotted line */
+    {	if (ndotl >= MAXDOTL)
+	    FATAL("TOO MANY DOTTED LINES");
+	dotl[ndotl++] = dot;
+    }
+    else
+	free(dot);
+}
+
+
+
+static void mkdot(cf)
+int cf;
+
+{
+    int i, k;
+
+    firstm = cfstart[cf];
+    nextm = cfstart[cf+1];
+    firstdotl = ndotl;
+    for (i = firstm; i < nextm; ++i)
+    {
+	lock(i,lck);
+    	for (k = i+1; k < nextm; ++k)
+    	{	if (lck[k]) continue;
+    		trydot(i,k,k+1,nextm);
+    	}
+    }
+}
+
+
+
+/* -----------------------------------------------------------------
+   WriteResult() - Write dotted lines.
+   ----------------------------------------------------------------- */
+
+static void WriteResult()
+
+{
+    FILE *f;
+    char fn[200];
+    int i;
+    long l;
+
+    strcat(strcpy(fn,cfbasename),".dot");
+    MESSAGE(1,("Writing %s (%d dotted line%s)\n",
+	fn,ndotl,ndotl!=1 ? "s" : ""));
+    f = SFOpen(fn,FM_CREATE);
+    if (f == NULL) FATAL("ERROR OPENING .dot FILE");
+    l = (long) ndotl;
+    zwritelong(f,&l,1);
+    for (i = 0; i < ndotl; ++i)
+	bs_write(f,dotl[i]);
+    fclose(f);
+    writecfinfo();
+}
+
+
+/* -----------------------------------------------------------------
+   WriteResultGAP() - Write dotted lines in GAP format.
+   ----------------------------------------------------------------- */
+
+static void WriteResultGAP()
+
+{
+    int i,j ;
+
+    printf ("MeatAxe.DottedLines := [\n") ;
+    for (i = 0; i < ndotl; ++i)
+    {
+	printf( "BlistList([" );
+	for (j = 0 ; j < nmountains ; j++)
+        printf( j < (nmountains - 1) ? "%s," : "%s], [1])" , 
+	       bs_test(dotl[i],j) ? "1" : "0" ) ;
+    	printf( i < ndotl-1 ? ",\n" : "] ;\n" ) ;
+    } ;
+}
+
+
+/* -----------------------------------------------------------------
+   main()
+   ----------------------------------------------------------------- */
+
+
+int main(argc, argv)
+int argc;
+char *argv[];
+
+{
+    int i, nn = 0;
+
+    /* Parse command line
+       ------------------ */
+    mtxinit();
+    initargs(argc, argv, &pinfo);
+    while ((i = zgetopt("G")) != OPT_END)
+    {
+	switch (i)
+	{
+	    case 'G': opt_G = 1; msg_level = -100; break;
+	}
+    }
+
+    if (opt_ind != argc-1) errexit(ERR_NARGS,"mkdotl");
+    MESSAGE(0,("\n*** CALCULATE DOTTED LINES ***\n\n"));
+    setbasename(argv[opt_ind]);
+    init();
+
+    for (i = 0; i < ncf; ++i)
+    {
+	nextcf(i);
+	mkdot(i);
+	cfinfo[i].ndotl = ndotl - nn;
+	MESSAGE(0,("%ld dotted line%s\n",cfinfo[i].ndotl,
+	    cfinfo[i].ndotl != 1 ? "s": ""));
+	fflush(stdout);
+	nn = ndotl;
+    }
+    WriteResult();
+    if (opt_G)
+         WriteResultGAP();
+    if (msg_level >= 0) prtimes();
+    return 0;
+}
+
+

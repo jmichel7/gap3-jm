@@ -1,0 +1,1594 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  list.tex                    GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: list.tex,v 1.3 1997/03/26 16:58:20 gap Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the functions that mainly deal with lists.
+%%
+%H  $Log: list.tex,v $
+%H  Revision 1.3  1997/03/26 16:58:20  gap
+%H  Added documentation of ApplyFunc.
+%H
+%H  	SL
+%H
+%H  Revision 1.1.1.1  1996/12/11 12:36:47  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.20  1994/05/30  14:52:25  vfelsch
+%H  index entries rearranged
+%H
+%H  Revision 3.19  1993/05/25  08:46:57  fceller
+%H  added 'IsIdentical'
+%H
+%H  Revision 3.18  1993/05/04  14:55:44  fceller
+%H  fixed description of 'Maximum' and 'Minimum'
+%H
+%H  Revision 3.17  93/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H  
+%H  Revision 3.16  1993/02/18  13:38:59  felsch
+%H  more examples fixed
+%H
+%H  Revision 3.15  1993/02/12  11:37:19  felsch
+%H  examples adjusted to line length 72
+%H
+%H  Revision 3.14  1993/02/12  11:24:21  martin
+%H  fixed an example
+%H
+%H  Revision 3.13  1993/02/10  18:03:06  martin
+%H  added the sublist extraction and assignment
+%H
+%H  Revision 3.12  1993/02/07  14:33:00  felsch
+%H  example adjusted
+%H
+%H  Revision 3.11  1993/02/03  13:12:51  felsch
+%H  examples fixed
+%H
+%H  Revision 3.10  1992/04/09  11:36:01  martin
+%H  made a few changes so that two LaTeX passes suffice
+%H
+%H  Revision 3.9  1992/04/02  20:43:40  martin
+%H  fixed the description of 'Position' and 'PositionSorted'
+%H
+%H  Revision 3.8  1992/03/25  15:19:50  martin
+%H  reformatted the first paragraphs
+%H
+%H  Revision 3.7  1992/03/25  15:18:02  martin
+%H  changed "Words in Solvable Groups" to "Words in Finite Polycyclic Groups"
+%H
+%H  Revision 3.6  1992/03/11  08:48:48  martin
+%H  added "Identical Lists"
+%H
+%H  Revision 3.5  1991/12/30  09:41:54  martin
+%H  changed incorrect reference to "Cyclotomic Fields"
+%H
+%H  Revision 3.4  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.3  1991/07/26  12:34:01  martin
+%H  improved the index
+%H
+%H  Revision 3.2  1991/07/26  09:01:07  martin
+%H  changed |\GAP\ | to |{\GAP}|
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:54:20  martin
+%H  Initial revision under RCS.
+%H
+%%
+\Chapter{Lists}%
+\index{type!list}
+
+Lists  are the  most  important way  to collect objects  and  treat  them
+together.  A *list* is a collection  of elements.  A list  also implies a
+partial mapping from the integers  to  the elements.   I.e.,  there is  a
+first element of a list, a second, a third, and so on.
+
+List constants are written by writing down the  elements in order between
+square brackets '[', ']', and separating them with commas ','.  An *empty
+list*, i.e., a list with no elements, is written as '[]'.
+
+|    gap> [ 1, 2, 3 ];
+    [ 1, 2, 3 ]    # a list with three elements
+    gap> [ [], [ 1 ], [ 1, 2 ] ];
+    [ [  ], [ 1 ], [ 1, 2 ] ]    # a list may contain other lists |
+
+Usually a list has no holes, i.e., contain an element  at every position.
+However, it is  absolutely  legal  to  have  lists with holes.   They are
+created by leaving the entry between the  commas empty.  Lists with holes
+are sometimes  convenient when  the  list  represents  a mapping  from  a
+finite, but  not consecutive, subset  of the positive  integers.  We  say
+that a list that has no holes is *dense*.
+
+|    gap> l := [ , 4, 9,, 25,, 49,,,, 121 ];;
+    gap> l[3];
+    9
+    gap> l[4];
+    Error, List Element: <list>[4] must have a value |
+
+It is most common  that a list contains  only elements of one type.  This
+is not a must  though.  It  is  absolutely possible  to  have lists whose
+elements  are of different types.  We say that a list whose elements  are
+all of the same type is *homogeneous*.
+
+|    gap> l := [ 1, E(2), Z(3), (1,2,3), [1,2,3], "What a mess" ];;
+    gap> l[1];  l[3];  l[5][2];
+    1
+    Z(3)
+    2 |
+
+The first sections  describe the functions  that test if  an object is  a
+list and convert an object to a list (see "IsList" and "List").
+
+The next section describes  how one can  access elements of  a  list (see
+"List Elements" and "Length").
+
+The  next sections  describe    how one can  change   lists   (see  "List
+Assignment", "Add", "Append", "Identical Lists", "Enlarging Lists").
+
+The  next sections  describe   the operations  applicable to lists   (see
+"Comparisons of Lists" and "Operations for Lists").
+
+The next sections describe how one can find elements in a list (see "In",
+"Position", "PositionSorted", "PositionProperty").
+
+The next sections describe the functions  that construct new lists, e.g.,
+sublists    (see   "Concatenation",   "Flat",   "Reversed",    "Sublist",
+"Cartesian").
+
+The next sections describe the functions deal with the subset of elements
+of a list    that have  a  certain property  (see  "Number", "Collected",
+"Filtered", "ForAll", "ForAny", "First").
+
+The  next sections describe the functions  that sort lists  (see  "Sort",
+"SortParallel", "Sortex", "Permuted").
+
+The  next sections describe the functions  to  compute the product,  sum,
+maximum, and minimum  of the elements  in  a list (see "Product",  "Sum",
+"Maximum", "Minimum", "Iterated").
+
+The final section describes the function that takes a random element from
+a list (see "RandomList").
+
+Lists are also used to represent sets,  subsets, vectors, and ranges (see
+"Sets", "Boolean Lists", "Vectors", and "Ranges").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsList}%
+\index{test!for a list}
+
+'IsList( <obj> )'
+
+'IsList' returns 'true' if the argument <obj>, which can be  an arbitrary
+object, is a list  and 'false' otherwise.  Will signal  an error if <obj>
+is an unbound variable.
+
+|    gap> IsList( [ 1, 3, 5, 7 ] );
+    true
+    gap> IsList( 1 );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{List}%
+\index{convert!to a list}%
+\index{map}
+
+'List( <obj> )' \\
+'List( <list>, <func> )'
+
+In  its  first  form  'List' returns the argument <obj>, which must be  a
+list, a permutation, a string or a word, converted into a list.  If <obj>
+is  a list, it is  simply returned.   If <obj>  is a  permutation, 'List'
+returns a list  where the <i>-th element  is the image  of <i> under  the
+permutation <obj>.  If <obj> is a word, 'List' returns a list  where  the
+<i>-th element is the <i>-th generator of  the  word, as a word of length
+1.
+
+|    gap> List( [1,2,3] );
+    [ 1, 2, 3 ]
+    gap> List( (1,2)(3,4,5) );
+    [ 2, 1, 4, 5, 3 ] |
+
+In its second  form 'List' returns a new  list, where each element is the
+result  of applying  the  function <func>, which  must  take  exactly one
+argument and handle the elements  of <list>, to the corresponding element
+of the list <list>.  The list <list> must not contain holes.
+
+|    gap> List( [1,2,3], x->x^2 );
+    [ 1, 4, 9 ]
+    gap> List( [1..10], IsPrime );
+    [ false, true, true, false, true, false, true, false, false, false ]|
+
+Note that this function  is called 'map' in  Lisp and many other  similar
+programming languages.  This name violates the {\GAP} rule that verbs are
+used for functions  that change their arguments.   According to this rule
+'map' would change <list>, replacing every element with the result of the
+application <func> to this argument.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ApplyFunc}%
+
+'ApplyFunc( <func>, <arglist> )'
+
+'ApplyFunc' invokes the function <func> as if it had been called with the
+elements of <arglist> as its arguments and returns the value, if any,
+returned by that invocation. 
+
+|    gap> foo := function(arg1, arg2) 
+    > Print("first ",arg1," second ",arg2,"\n"); end;
+    function ( arg1, arg2 ) ... end
+    gap> foo(1,2);
+    first 1 second 2
+    gap> ApplyFunc(foo,[1,2]);
+    first 1 second 2
+    gap> ApplyFunc(Position,[[1,2,3],2]);
+    2 |
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{List Elements}%
+\index{accessing!list elements}
+
+'<list>[ <pos> ]'
+
+The above construct evaluates to the <pos>-th element of the list <list>.
+<pos>  must be a positive integer.  List indexing is done  with origin 1,
+i.e., the first element of the list is the element at position 1.
+
+|    gap> l := [ 2, 3, 5, 7, 11, 13 ];;
+    gap> l[1];
+    2
+    gap> l[2];
+    3
+    gap> l[6];
+    13 |
+
+If <list> does not evaluate to a  list, or <pos>  does not evaluate to  a
+positive integer, or '<list>[<pos>]'  is  unbound an  error is signalled.
+As usual you  can leave the break  loop (see "Break Loops") with 'quit;'.
+On the other hand you can return a result to be used in place of the list
+element by 'return <expr>;'.
+
+'<list>\{ <poss> \}'
+
+The above  construct evaluates to a new list <new> whose first element is
+'<list>[<poss>[1]]', whose  second element is '<list>[<poss>[2]]', and so
+on.  <poss>  must be a dense list of positive integers, it need, however,
+not be  sorted  and  may  contain  duplicate  elements.  If for  any <i>,
+'<list>[ <poss>[<i>] ]' is unbound, an error is signalled.
+
+|    gap> l := [ 2, 3, 5, 7, 11, 13, 17, 19 ];;
+    gap> l{[4..6]};
+    [ 7, 11, 13 ]
+    gap> l{[1,7,1,8]};
+    [ 2, 17, 2, 19 ] |
+
+The result is a new  list, that is not identical to any other  list.  The
+elements of that list however are identical to the corresponding elements
+of the left operand (see "Identical Lists").
+
+It  is possible to nest such sublist extractions,  as can be seen  in the
+following example.
+
+|    gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;
+    gap> m{[1,2,3]}{[3,2]};
+    [ [ 3, 2 ], [ 6, 5 ], [ 9, 8 ] ]
+    gap> l := m{[1,2,3]};; l{[3,2]};
+    [ [ 7, 8, 9 ], [ 4, 5, 6 ] ] |
+
+Note  the difference between  the  two  examples.   The  latter  extracts
+elements 1, 2, and 3 from <m> and then extracts the elements 3 and 2 from
+*this list*.  The former extracts elements 1,  2, and 3 from <m> and then
+extracts the elements 3 and 2 from *each of those element lists*.
+
+To be precise.  With each selector '[<pos>]' or '\{<poss>\}' we associate
+a  *level*  that  is  defined  as  the number  of selectors  of the  form
+'\{<poss>\}' to its left in the same expression.  For example
+
+|        l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
+    level   0      0      1     1      1     2   |
+
+Then   a  selector  '<list>[<pos>]'  of  level  <level>  is  computed  as
+'ListElement(<list>,<pos>,<level>)', where  'ListElement' is  defined  as
+follows
+
+|    ListElement := function ( list, pos, level )
+        if level = 0  then
+            return list[pos];
+        else
+            return List( list, elm -> ListElement(elm,pos,level-1) );
+        fi;
+    end; |
+
+and  a selector  '<list>\{<poss>\}'  of  level  <level>  is  computed  as
+'ListElements(<list>,<poss>,<level>)', where 'ListElements' is defined as
+follows
+
+|    ListElements := function ( list, poss, level )
+        if level = 0  then
+            return list{poss};
+        else
+            return List( list, elm -> ListElements(elm,poss,level-1) );
+        fi;
+    end; |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Length}%
+\index{length!of a list}
+
+'Length( <list> )'
+
+'Length' returns the length of the list  <list>.  The *length* is defined
+as 0 for the empty list, and as the largest positive integer <index> such
+that '<list>[<index>]'  has an assigned value  for  nonempty lists.  Note
+that the length of a list may  change if new elements are  added to it or
+assigned to previously unassigned positions.
+
+|    gap> Length( [] );
+    0
+    gap> Length( [ 2, 3, 5, 7, 11, 13, 17, 19 ] );
+    8
+    gap> Length( [ 1, 2,,, 5 ] );
+    5 |
+
+For lists  that contain no holes 'Length',  'Number' (see  "Number"), and
+'Size' (see "Size") return the same value.  For lists with holes 'Length'
+returns the largest  index of a  bound entry, 'Number' returns the number
+of bound entries, and 'Size' signals an error.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{List Assignment}%
+\index{assignment!to a list}
+
+'<list>[ <pos> ] \:= <object>;'
+
+The list  assignment  assigns the  object  <object>, which can be  of any
+type, to the list  entry at the position <pos>, which must  be a positive
+integer, in the  list  <list>.  That means that  accessing  the  <pos>-th
+element of the list <list> will return <object> after this assignment.
+
+|    gap> l := [ 1, 2, 3 ];;
+    gap> l[1] := 3;;  l;                # assign a new object
+    [ 3, 2, 3 ]
+    gap> l[2] := [ 4, 5, 6 ];;  l;      # <object> may be of any type
+    [ 3, [ 4, 5, 6 ], 3 ]
+    gap> l[ l[1] ] := 10;;  l;          # <index> may be an expression
+    [ 3, [ 4, 5, 6 ], 10 ] |
+
+If  the index  <pos> is larger  than the  length of  the list <list> (see
+"Length"),  the list is automatically enlarged to make room  for the  new
+element.  Note that it is possible to generate lists with holes that way.
+
+|    gap> l[4] := "another entry";;  l; # <list> is enlarged
+    [ 3, [ 4, 5, 6 ], 10, "another entry" ]
+    gap> l[ 10 ] := 1;;  l;            # now <list> has a hole
+    [ 3, [ 4, 5, 6 ], 10, "another entry",,,,,, 1 ] |
+
+The   function 'Add' (see  "Add") should  be used  if you  want to add an
+element to the end of the list.
+
+Note that assigning to a list changes the list.  The ability to change an
+object is only available for lists and records (see "Identical Lists").
+
+If <list> does not evaluate  to a list,  <pos>  does  not evaluate  to  a
+positive integer  or <object>  is  a  call to a  function which  does not
+return a value, for example 'Print' (see "Print"), an error  is signalled
+As usual you can  leave the  break loop (see "Break Loops") with 'quit;'.
+On the other hand you can continue the assignment by returning a list, an
+index or an object using 'return <expr>;'.
+
+'<list>\{ <poss> \} \:= <objects>;'
+
+The list assignment  assigns the object '<objects>[1]',  which  can be of
+any  type,  to  the list <list>  at the position '<poss>[1]', the  object
+'<objects>[2]' to '<list>[<poss>[2]]', and so on.  <poss> must be a dense
+list  of  positive  integers, it need, however,  not  be  sorted and  may
+contain duplicate elements.  <objects> must be a dense list and must have
+the same length as <poss>.
+
+|    gap> l := [ 2, 3, 5, 7, 11, 13, 17, 19 ];;
+    gap> l{[1..4]} := [10..13];;  l;
+    [ 10, 11, 12, 13, 11, 13, 17, 19 ]
+    gap> l{[1,7,1,10]} := [ 1, 2, 3, 4 ];; l;
+    [ 3, 11, 12, 13, 11, 13, 2, 19,, 4 ] |
+
+It  is possible to nest  such sublist assignments, as can be seen  in the
+following example.
+
+|    gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;
+    gap> m{[1,2,3]}{[3,2]} := [ [11,12], [13,14], [15,16] ];;  m;
+    [ [ 1, 12, 11 ], [ 4, 14, 13 ], [ 7, 16, 15 ], [ 10, 11, 12 ] ] |
+
+The  exact behaviour  is defined in the  same way as for list extractions
+(see   "List  Elements").   Namely   with  each   selector  '[<pos>]'  or
+'\{<poss>\}'  we  associate a *level*  that is  defined as  the number of
+selectors of the form '\{<poss>\}'  to its  left  in the same expression.
+For example
+
+|        l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
+    level   0      0      1     1      1     2   |
+
+Then  a list assignment '<list>[<pos>]  \:=  <vals>;' of level <level> is
+computed  as  'ListAssignment(  <list>, <pos>,  <vals>, <level> )', where
+'ListAssignment' is defined as follows
+
+|    ListAssignment := function ( list, pos, vals, level )
+        local  i;
+        if level = 0  then
+            list[pos] := vals;
+        else
+            for i  in [1..Length(list)]  do
+                ListAssignment( list[i], pos, vals[i], level-1 );
+            od;
+        fi;
+    end; |
+
+and  a  list assignment '<list>\{<poss>\} \:= <vals>' of level <level> is
+computed  as 'ListAssignments( <list>, <poss>, <vals>, <level> )',  where
+'ListAssignments' is defined as follows
+
+|    ListAssignments := function ( list, poss, vals, level )
+        local  i;
+        if level = 0  then
+            list{poss} := vals;
+        else
+            for i  in [1..Length(list)]  do
+                ListAssignments( list[i], poss, vals[i], level-1 );
+            od;
+        fi;
+    end; |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Add}%
+\index{add!an element to a list}
+
+'Add( <list>, <elm> )'
+
+'Add' adds the element <elm>  to the end of  the list <list>, i.e., it is
+equivalent to  the assignment '<list>[  Length(<list>) + 1 ] \:=  <elm>'.
+The list is  automatically enlarged  to  make room  for the new  element.
+'Add' returns nothing, it is called only for its side effect.
+
+Note that adding to  a list changes the list.   The ability to change  an
+object is only available for lists and records (see "Identical Lists").
+
+To add more than one element to a list use 'Append' (see "Append").
+
+|    gap> l := [ 2, 3, 5 ];;  Add( l, 7 );  l;
+    [ 2, 3, 5, 7 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Append}%
+\index{add!elements to a list}%
+\index{append!elements to a list}
+
+'Append( <list1>, <list2> )'
+
+'Append' adds (see "Add") the elements of the list <list2>  to the end of
+the list <list1>.   <list2>   may  contain   holes, in which   case   the
+corresponding entries in <list1>  will be left unbound.  'Append' returns
+nothing, it is called only for its side effect.
+
+|    gap> l := [ 2, 3, 5 ];; Append( l, [ 7, 11, 13 ] );  l;
+    [ 2, 3, 5, 7, 11, 13 ]
+    gap> Append( l, [ 17,, 23 ] ); l;
+    [ 2, 3, 5, 7, 11, 13, 17,, 23 ] |
+
+Note that appending to a list changes the list.  The ability to change an
+object is only available for lists and records (see "Identical Lists").
+
+Note that 'Append' changes the first argument, while 'Concatenation' (see
+"Concatenation") creates  a new list and  leaves its arguments unchanged.
+As usual the name of the function that work  destructively is a verb, but
+the name of the function that creates a new object is a substantive.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Identical Lists}
+
+With the  list assignment (see "List  Assignment", "Add", "Append") it is
+possible   to change a list.    The ability to   change an object is only
+available  for  lists and records.  This   section describes the semantic
+consequences of this fact.
+
+You may think that in the following example the second assignment changes
+the integer, and  that therefore the  above sentence, which claimed  that
+only lists and records can be changed is wrong
+
+|    i := 3;
+    i :=  i + 1;|
+
+But in this example not the *integer* '3' is changed by adding one to it.
+Instead  the *variable*  'i'  is changed by assigning the value of 'i+1',
+which happens to be '4', to 'i'.  The same thing happens in the following
+example
+
+|    l := [ 1,  2 ];
+    l := [ 1, 2,  3 ];|
+
+The second assignment does not change the first list, instead  it assigns
+a new  list  to  the variable 'l'.   On the other hand,  in the following
+example the  list  is changed by the second assignment.
+
+|    l := [ 1,  2 ];
+    l[3] := 3;|
+
+To understand the difference  first think  of a variable as a name for an
+object.  The important point is that a list can have several names at the
+same  time.    An   assignment  '<var>   \:=   <list>;'  means  in   this
+interpretation that <var> is a name for the object <list>.  At the end of
+the following example  'l2' still  has the value '[ 1, 2 ]' as this  list
+has not been changed and nothing else has been assigned to it.
+
+|    l1 := [ 1, 2 ];
+    l2 := l1;
+    l1 := [ 1, 2, 3 ]; |
+
+But  after  the following  example the list for which 'l2' is a  name has
+been changed and thus the value of 'l2' is now '[ 1, 2, 3 ]'.
+
+|    l1 := [ 1, 2 ];
+    l2 := l1;
+    l1[3] := 3;|
+
+We shall say that two lists are *identical* if changing one of them  by a
+list assignment also changes the other one.   This is slightly incorrect,
+because if  *two* lists are identical,  there are actually only two names
+for *one*  list.  However, the correct  usage  would be  very awkward and
+would only add to the confusion.   Note that two  identical lists must be
+equal, because  there is only  one list with  two  different names.  Thus
+identity is an equivalence relation that is a refinement of equality.
+
+Let us now consider under which circumstances two lists are identical.
+
+If  you enter a list  literal than the list  denoted by this literal is a
+new list that is not identical  to any other list.  Thus in the following
+example 'l1' and 'l2' are not identical, though they are equal of course.
+
+|    l1 := [ 1, 2 ];
+    l2 := [ 1, 2 ];|
+
+Also in the following example, no lists in the list 'l' are identical.
+
+|    l := [];
+    for i  in [1..10]  do l[i] := [ 1, 2 ];  od;|
+
+If you assign a list to a variable no new list is created.  Thus the list
+value of  the variable on  the left hand side  and the  list on the right
+hand side of the assignment  are identical.  So in  the following example
+'l1' and 'l2' are identical lists.
+
+|    l1 := [ 1, 2 ];
+    l2 := l1;|
+
+If you pass  a  list as argument, the  old  list and the argument  of the
+function are identical.  Also if  you return a list from a  function, the
+old list  and the  value of  the function call are  identical.  So in the
+following example 'l1' and 'l2' are identical list
+
+|    l1 := [ 1, 2 ];
+    f := function ( l )  return l;  end;
+    l2 := f( l1 ); |
+
+The functions 'Copy'  and  'ShallowCopy' (see "Copy"  and  "ShallowCopy")
+accept  a list and return a  new list that  is equal to the  old list but
+that is *not*  identical to the old list.  The  difference between 'Copy'
+and 'ShallowCopy' is that  in the case of 'ShallowCopy' the corresponding
+elements of the new and the old lists  will be  identical, whereas in the
+case of 'Copy' they will only be equal.  So in the following example 'l1'
+and 'l2' are not identical lists.
+
+|    l1 := [ 1, 2 ];
+    l2 := Copy( l1 );|
+
+If  you change a list  it  keeps its  identity.   Thus if  two  lists are
+identical and you change one of them, you also change the other, and they
+are still identical  afterwards.  On  the other hand, two lists that  are
+not identical will never become  identical if you change one of them.  So
+in  the following example both 'l1' and 'l2'  are changed,  and are still
+identical.
+
+|    l1 := [ 1, 2 ];
+    l2 := l1;
+    l1[1] := 2;|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsIdentical}
+
+'IsIdentical( <l>, <r> )'
+
+'IsIdentical'  returns 'true'  if the objects <l> and <r>  are identical.
+Unchangeable  objects  are  considered   identical  if   the  are  equal.
+Changeable  objects, i.e., lists  and  records, are identical if changing
+one of them by  an assignment  also  changes the  other one, as described
+in "Identical Lists".
+
+|    gap> IsIdentical( 1, 1 );
+    true
+    gap> IsIdentical( 1, () );
+    false
+    gap> l := [ 'h', 'a', 'l', 'l', 'o' ];;
+    gap> l = "hallo";
+    true
+    gap> IsIdentical( l, "hallo" );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Enlarging Lists}
+
+The previous section  (see    "List Assignment") told you   (among  other
+things), that it is possible to assign beyond the  logical end of a list,
+automatically enlarging  the list.   This section  tells  you how this is
+done.
+
+It would be  extremly wasteful to  make all  lists large enough  so  that
+there is room for all assignments, because some lists  may have more than
+100000 elements, while most lists have less than 10 elements.
+
+On the other hand suppose every assignment beyond the end of a list would
+be done by allocating  new space for the list  and copying all entries to
+the new space.  Then creating a  list of 1000  elements by assigning them
+in order, would take half a million copy operations and also create a lot
+of garbage that the garbage collector would have to reclaim.
+
+So the  following strategy is used.   If a list is  created it is created
+with exactly  the  correct size.  If a   list is enlarged,  because of an
+assignment  beyond   the end of the  list,   it is enlarged   by at least
+'<length>/8 + 4' entries.  Therefore the next  assignments beyond the end
+of the list do not need to enlarge the list.  For example creating a list
+of  1000 elements by   assigning them in order,   would now take  only 32
+enlargements.
+
+The result of this is of course that the *physical length*, which is also
+called the size, of a  list may be different  from the *logical  length*,
+which is usually called  simply the length of  the list.  Aside  from the
+implications for  the performance you need not  be  aware of the physical
+length.    In fact  all you can   ever  observe, for   example by calling
+'Length' is the logical length.
+
+Suppose that 'Length' would  have to take   the physical length and  then
+test how many entries at the end of a list are unassigned, to compute the
+logical length of the list.  That would take  too much time.  In order to
+make 'Length', and other functions that need to  know the logical length,
+more efficient, the length of a list is stored along with the list.
+
+A  note aside.  In the previous  version 2.4 of {\GAP} a  list was indeed
+enlarged   every time  an assignment beyond   the  end  of  the list  was
+performed.  To deal with the above inefficiency the following hacks where
+used.  Instead of creating  lists in order they  were usually  created in
+reverse   order.   In situations   where this  was  not  possible a dummy
+assignment to the last position was performed, for example
+
+|    l := [];
+    l[1000] := "dummy";
+    l[1] := first_value();
+    for i  from 2  to 1000  do l[i] := next_value(l[i-1]);  od; |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Lists}%
+\index{comparisons!of lists}
+
+'<list1> = <list2>' \\
+'<list1> \<> <list2>'
+
+The equality operator '=' evaluates  to 'true' if  the two lists  <list1>
+and <list2> are  equal and  'false'  otherwise.  The inequality  operator
+'\<>'  evaluates to 'true'  if the  two lists are   not equal and 'false'
+otherwise.  Two  lists <list1> and <list2> are  equal if  and only if for
+every index  <i>, either  both entries '<list1>[<i>]'  and '<list2>[<i>]'
+are unbound, or   both are bound and  are  equal,  i.e., '<list1>[<i>]  =
+<list2>[<i>]' is 'true'.
+
+|    gap> [ 1, 2, 3 ] = [ 1, 2, 3 ];
+    true
+    gap> [ , 2, 3 ] = [ 1, 2, ];
+    false
+    gap> [ 1, 2, 3 ] = [ 3, 2, 1 ];
+    false |
+
+'<list1> \<\ <list2>', '<list1> \<= <list2>'
+'<list1>  > <list2>', '<list1>  >= <list2>'
+
+The operators  '\<',  '\<=', '>' and '>='  evaluate to 'true' if the list
+<list1> is  less than,  less  than or equal  to, greater than, or greater
+than or equal to the  list <list2> and  to 'false' otherwise.   Lists are
+ordered lexicographically,  with  unbound  entries comparing very  small.
+That means the following.  Let <i> be the smallest positive integer  <i>,
+such that  neither  both entries  '<list1>[<i>]'  and  '<list2>[<i>]' are
+unbound, nor both are bound and equal.  Then <list1> is less than <list2>
+if  either '<list1>[<i>]' is unbound (and  '<list2>[<i>]' is not) or both
+are bound and '<list1>[<i>] \<\ <list2>[<i>]' is 'true'.
+
+|    gap> [ 1, 2, 3, 4 ] < [ 1, 2, 4, 8 ];
+    true    # '<list1>[3] \<\ <list2>[3]'
+    gap> [ 1, 2, 3 ] < [ 1, 2, 3, 4 ];
+    true    # '<list1>[4]' is unbound and therefore very small
+    gap> [ 1, , 3, 4 ] < [ 1, 2, 3 ];
+    true    # '<list1>[2]' is unbound and therefore very small |
+
+You  can also compare  objects of other  types, for  example integers  or
+permutations with  lists.  Of course  those objects are never equal  to a
+list.  Records (see "Records") are greater  than lists,  objects of every
+other type are smaller than lists.
+
+|    gap> 123 < [ 1, 2, 3 ];
+    true
+    gap> [ 1, 2, 3 ] < rec( a := 123 );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Lists}%
+\index{operations!for lists}
+
+'<list> \*\ <obj>'\\
+'<obj> \*\ <list>'
+
+The operator '\*'  evaluates to the product  of list <list> by  an object
+<obj>.  The product  is a  new list that   at each position contains  the
+product of  the corresponding element  of  <list> by  <obj>.  <list>  may
+contain holes,  in which case  the result will contain  holes at the same
+positions.
+
+The elements of <list> and <obj> must be  objects of the following types;
+integers (see "Integers"), rationals  (see "Rationals"), cyclotomics (see
+"Cyclotomics"),   elements  of a  finite  field  (see  "Finite  Fields"),
+permutations  (see "Permutations"), matrices   (see "Matrices"), words in
+abstract  generators (see  "Words in  Abstract Generators"), or  words in
+solvable groups (see "Words in Finite Polycyclic Groups").
+
+|    gap> [ 1, 2, 3 ] * 2;
+    [ 2, 4, 6 ]
+    gap> 2 * [ 2, 3,, 5,, 7 ];
+    [ 4, 6,, 10,, 14 ]
+    gap> [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ] * (1,4);
+    [ (1,4), (1,4)(2,3), (1,2,4), (1,2,3,4), (1,3,2,4), (1,3,4) ] |
+
+Many more operators are  available for  vectors and  matrices,  which are
+also represented by lists (see "Operations  for Vectors", "Operations for
+Matrices").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{In}%
+\index{test!for membership}
+
+'<elm> in <list>'
+
+The 'in' operator evaluates  to 'true' if the object  <elm> is an element
+of  the  list <list> and  to 'false'  otherwise.  <elm> is  an element of
+<list>    if there   is   a     positive  integer   <index>  such    that
+'<list>[<index>]=<elm>' is  'true'.     <elm>  may be an  object    of an
+arbitrary type and <list> may be a list containing elements of any type.
+
+It is  much faster  to test for  membership for  sets, because for  sets,
+which  are always sorted  (see "Sets"),   'in'  can use a  binary search,
+instead of the linear search used  for ordinary lists.   So if you have a
+list for which you want to perform a large number of membership tests you
+may consider converting it to a set with the function 'Set' (see "Set").
+
+|    gap> 1 in [ 2, 2, 1, 3 ];
+    true
+    gap> 1 in [ 4, -1, 0, 3 ];
+    false
+    gap> s := Set([2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32]);;
+    gap> 17 in s;
+    false        # uses binary search and only 4 comparisons
+    gap> 1 in [ "This", "is", "a", "list", "of", "strings" ];
+    false
+    gap> [1,2] in [ [0,6], [0,4], [1,3], [1,5], [1,2], [3,4] ];
+    true |
+
+'Position' (see  "Position") and  'PositionSorted' (see "PositionSorted")
+allow you to find the position of an element in a list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Position}%
+\index{find!an element in a list}
+
+'Position( <list>, <elm> )'\\
+'Position( <list>, <elm>, <after> )'
+
+'Position'  returns  the position of the element <elm>,  which may be  an
+object  of  any type, in  the list <list>.  If the  element is not in the
+list the  result is  'false'.  If  the element appears several times, the
+first position is returned.
+
+The three  argument form  begins the  search  at position  <after>+1, and
+returns the position  of the  next occurence  of  <elm>. If there  are no
+more, it returns 'false'.
+
+It is  much faster to  search for an element  in a set, because for sets,
+which are always sorted (see "Sets"), 'Position' can use a binary search,
+instead of the  linear search used for ordinary  lists.  So if you have a
+list for which you want  to perform a large  number  of searches you  may
+consider converting it to a set with the function 'Set' (see "Set").
+
+|    gap> Position( [ 2, 2, 1, 3 ],  1 );
+    3
+    gap> Position( [ 2, 1, 1, 3 ], 1 );
+    2
+    gap> Position( [ 2, 1, 1, 3 ], 1, 2 );
+    3
+    gap> Position( [ 2, 1, 1, 3 ], 1, 3 );
+    false
+    gap> Position( [ 4, -1, 0, 3 ],  1 );
+    false
+    gap> s := Set([2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32]);;
+    gap> Position( s,  17 );
+    false        # uses binary search and only 4 comparisons
+    gap> Position( [ "This", "is", "a", "list", "of", "strings" ],  1 );
+    false
+    gap> Position( [ [0,6], [0,4], [1,3], [1,5], [1,2], [3,4] ],  [1,2] );
+    5 |
+
+The 'in'  operator (see "In") can  be used if  you are only interested to
+know  whether the element is in  the list  or not.  'PositionSorted' (see
+"PositionSorted") can be used if the list  is sorted.  'PositionProperty'
+(see "PositionProperty") allows  you to find  the position  of an element
+that satisfies a certain property in a list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PositionSorted}%
+\index{find!an element in a sorted list}
+
+'PositionSorted( <list>, <elm> )' \\
+'PositionSorted( <list>, <elm>, <func> )'
+
+In the first form 'PositionSorted'   returns the position of the  element
+<elm>, which may be an  object of  any type, with respect  to  the sorted
+list <list>.
+
+In the second form 'PositionSorted' returns  the position of  the element
+<elm>,  which may be  an  object of  any type with   respect to  the list
+<list>, which must be sorted with respect  to  <func>.  <func> must  be a
+function  of  two arguments that returns 'true'  if the first argument is
+less than the second argument and 'false' otherwise.
+
+'PositionSorted' returns <pos> such  that '<list>[<pos>-1] \< <elm>'  and
+'<elm> \<= <list>[<pos>]'.  That means,  if <elm> appears once in <list>,
+its position is returned.  If <elm> appears several  times in <list>, the
+position of the first occurrence is returned.  If <elm> is not an element
+of <list>, the index where <elm> must be inserted to keep the list sorted
+is returned.
+
+|    gap> PositionSorted( [1,4,5,5,6,7], 0 );
+    1
+    gap> PositionSorted( [1,4,5,5,6,7], 2 );
+    2
+    gap> PositionSorted( [1,4,5,5,6,7], 4 );
+    2
+    gap> PositionSorted( [1,4,5,5,6,7], 5 );
+    3
+    gap> PositionSorted( [1,4,5,5,6,7], 8 );
+    7 |
+
+'Position' (see "Position") is another function that returns the position
+of an element in a list.  'Position'  accepts unsorted lists, uses linear
+instead of binary search and returns 'false' if <elm> is not in <list>.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PositionSet}
+\index{find!an element in a sorted list}
+
+'PositionSet( <list>, <elm> )' \\
+'PositionSet( <list>, <elm>, <func> )'
+
+In the first form 'PositionSet'   returns the position of the  element
+<elm>, which may be an  object of  any type, with respect  to  the sorted
+list <list>.
+
+In the second form 'PositionSet' returns  the position of  the element
+<elm>,  which may be  an  object of  any type with   respect to  the list
+<list>, which must be sorted with respect  to  <func>.  <func> must  be a
+function  of  two arguments that returns 'true'  if the first argument is
+less than the second argument and 'false' otherwise.
+
+'PositionSet'  returns <pos>  such  that '<list>[<pos>-1]  \< <elm>'  and
+'<elm> = <list>[<pos>]'.  That  means, if <elm>  appears once in  <list>,
+its position is returned.  If <elm>  appears several times in <list>, the
+position of the first occurrence is returned.  If <elm> is not an element
+of <list>, then 'false' is returned.
+
+|    gap> PositionSet( [1,4,5,5,6,7], 0 );
+    false
+    gap> PositionSet( [1,4,5,5,6,7], 2 );
+    false
+    gap> PositionSet( [1,4,5,5,6,7], 4 );
+    2
+    gap> PositionSet( [1,4,5,5,6,7], 5 );
+    3
+    gap> PositionSet( [1,4,5,5,6,7], 8 );
+    false |
+
+'PositionSet'  is very similar to 'PositionSorted' (see "PositionSorted")
+but returns 'false' when <elm> is not an element of <list>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Positions}%
+
+'Positions( <list>, <elm> )'
+
+Returns  the list of indices in <list>  where <elm> occurs, where <elm> may
+be an object of any type.
+
+|   gap> Positions([2,1,3,1],1);
+   [ 2, 4 ]
+   gap> Positions([2,1,3,1],4);
+   [  ]
+   gap> Positions([2,1,3,1],2);
+   [ 1 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PositionProperty}
+
+'PositionProperty( <list>, <func> )'
+
+'PositionProperty' returns the position of the first element in  the list
+<list> for which the unary  function <func>  returns 'true'.  <list> must
+not contain holes.  If <func> returns 'false' for all elements  of <list>
+'false'  is returned.   <func> must  return 'true' or   'false' for every
+element of <list>, otherwise an error is signalled.
+
+|    gap> PositionProperty( [10^7..10^8], IsPrime );
+    20
+    gap> PositionProperty( [10^5..10^6],
+    >                      n -> not IsPrime(n) and IsPrimePowerInt(n) );
+    490 |
+
+'First' (see "First") allows you to extract the first element of a list
+that satisfies a certain property.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PositionsProperty}%
+
+'PositionsProperty( <list>, <func> )'
+
+'PositionsProperty'  returns the  list of  indices |i|  in <list> for which
+'func(list[i])'  returns true. Here  <list> should be  a list without holes
+and <func> be a unary function.
+
+|   gap> PositionsProperty([1..9],IsPrime);
+   [ 2, 3, 5, 7 ]
+   gap> PositionsProperty([1..9],x->x>5);
+   [ 6, 7, 8, 9 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PositionSublist}%
+\index{Lists!positionsublist}
+
+'PositionSublist(<l>,<sub>)'
+
+Returns the position of the first occurrence of the list <sub> as a sublist
+of consecutive elements in <l>, or 'false' if there is no such occurrence.
+
+|gap> PositionSublist("abcde","cd");
+3
+gap> PositionSublist([1,0,0,1,0,1],[1,0,1]);
+4|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Concatenation}%
+\index{concatenation!of lists}
+
+'Concatenation( <list1>, <list2>.. )' \\
+'Concatenation( <list> )'
+
+In the first form 'Concatenation' returns  the concatenation of the lists
+<list1>, <list2>, etc.  The *concatenation* is  the list that begins with
+the elements of <list1>, followed  by the elements  of <list2> and so on.
+Each list  may also contain holes,  in which  case the concatenation also
+contains holes at the corresponding positions.
+
+|    gap> Concatenation( [ 1, 2, 3 ], [ 4, 5 ] );
+    [ 1, 2, 3, 4, 5 ]
+    gap> Concatenation( [2,3,,5,,7], [11,,13,,,,17,,19] );
+    [ 2, 3,, 5,, 7, 11,, 13,,,, 17,, 19 ] |
+
+In the second form <list> must be a list  of lists <list1>, <list2>, etc,
+and 'Concatenation' returns the concatenation of those lists.
+
+|    gap> Concatenation( [ [1,2,3], [2,3,4], [3,4,5] ] );
+    [ 1, 2, 3, 2, 3, 4, 3, 4, 5 ] |
+
+The result is a new list, that is  not identical to any  other list.  The
+elements of that list however are identical to the corresponding elements
+of the argument lists (see "Identical Lists").
+
+Note that 'Concatenation'  creates a  new  list and  leaves it  arguments
+unchanged, while 'Append' (see "Append")  changes its first argument.  As
+usual the name of the  function that works destructively is  a verb,  but
+the name of the function that creates a new object is a substantive.
+
+'Set(Concatenation(<set1>,<set2>..))' (see "Set") is a way to compute the
+union of sets, however, 'Union' (see "Union") is more efficient.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Flat}
+
+'Flat( <list> )'
+
+'Flat' returns  the list of all  elements that are  contained in the list
+<list> or its sublists.   That  is, 'Flat' first makes  a new empty  list
+<new>.  Then it loops over the elements <elm> of <list>.  If <elm> is not
+a list it is added to <new>, otherwise 'Flat' appends 'Flat( <elm>  )' to
+<new>.
+
+|    gap> Flat( [ 1, [ 2, 3 ], [ [ 1, 2 ], 3 ] ] );
+    [ 1, 2, 3, 1, 2, 3 ]
+    gap> Flat( [ ] );
+    [  ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Reversed}%
+\index{reverse the elements of a list}
+
+'Reversed( <list> )'
+
+'Reversed'  returns a new  list  that contains the  elements of  the list
+<list>, which must not  contain  holes, in  reverse order.  The  argument
+list is unchanged.
+
+|    gap> Reversed( [ 1, 4, 5, 5, 6, 7 ] );
+    [ 7, 6, 5, 5, 4, 1 ] |
+
+The result is a new list, that is  not identical to any  other list.  The
+elements of that list however are identical to the corresponding elements
+of the argument list (see "Identical Lists").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sublist}
+
+'Sublist( <list>, <inds> )'
+
+'Sublist'  returns a new  list in which  the <i>-th element  is the element
+'<list>[  <inds>[ <i> ]  ]', of the  list <list>. <inds>  must be a list of
+positive  integers without holes,  it need, however,  not be sorted and may
+contains duplicate elements.
+
+|    gap> Sublist( [ 2, 3, 5, 7, 11, 13, 17, 19 ], [4..6] );
+    [ 7, 11, 13 ]
+    gap> Sublist( [ 2, 3, 5, 7, 11, 13, 17, 19 ], [1,7,1,8] );
+    [ 2, 17, 2, 19 ]
+    gap> Sublist( [ 1, , 2, , , 3 ], [ 1..4 ] );
+    [ 1,, 2 ] |
+
+'Filtered'  (see "Filtered")  allows you  to extract  elements from  a list
+according to a predicate.
+
+'Sublist'  has  been  made  obsolete  by  the introduction of the construct
+'<list>\{  <inds> \}' (see "List Elements"), excepted that in the last case
+an error is signaled if '<list>[ <inds>[ <i> ] ]' is unbound for some 'i'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cartesian}%
+\index{Cartesian}
+\index{cross product of lists}
+
+'Cartesian( <list1>, <list2>.. )' \\
+'Cartesian( <list> )'
+
+In the first form 'Cartesian' returns  the cartesian product of the lists
+<list1>, <list2>, etc.
+
+In the second form <list> must be a list of lists <list1>, <list2>, etc.,
+and 'Cartesian' returns the cartesian product of those lists.
+
+The *cartesian  product* is a list <cart>  of lists <tup>,  such that the
+first  element of <tup> is  an element of  <list1>, the second element of
+<tup> is an element of <list2>, and so on.   The total number of elements
+in  <cart> is the   product of the  lengths  of the  argument  lists.  In
+particular <cart> is empty  if and only if  at least one of  the argument
+lists  is  empty.  Also <cart>   contains duplicates  if  and only  if no
+argument list is empty and at least one contains duplicates.
+
+The last index runs fastest.  That means that the first element <tup1> of
+<cart> contains  the first element from <list1>,  from <list2> and so on.
+The second   element <tup2>  of <cart> contains   the  first element from
+<list1>, the first from <list2>, an so on, but the last element of <tup2>
+is  the  second element  of the  last argument  list.   This implies that
+<cart> is a set if and only if all argument lists are sets.
+
+|    gap> Cartesian( [1,2], [3,4], [5,6] );
+    [ [ 1, 3, 5 ], [ 1, 3, 6 ], [ 1, 4, 5 ], [ 1, 4, 6 ], [ 2, 3, 5 ],
+      [ 2, 3, 6 ], [ 2, 4, 5 ], [ 2, 4, 6 ] ]
+    gap> Cartesian( [1,2,2], [1,1,2] );
+    [ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], 
+      [ 2, 1 ], [ 2, 1 ], [ 2, 2 ] ] |
+
+The function 'Tuples'   (see  "Tuples") computes the   <k>-fold cartesian
+product of a list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Number}%
+\index{number!of elements in a list}
+
+'Number( <list> )' \\
+'Number( <list>, <func> )'
+
+In the first  form 'Number' returns  the number of  bound entries  in the
+list <list>.
+
+For  lists that contain no holes  'Number',  'Length' (see "Length"), and
+'Size' (see "Size") return the same value.  For lists with holes 'Number'
+returns  the number of bound entries,  'Length' returns the largest index
+of a bound entry, and 'Size' signals an error.
+
+'Number' returns the number of elements of the list <list> for  which the
+unary function <func> returns 'true'.   If an   element for which  <func>
+returns 'true'  appears several times in <list>  it  will also be counted
+several times.   <func> must return either  'true' or  'false'  for every
+element of <list>, otherwise an error is signalled.
+
+|    gap> Number( [ 2, 3, 5, 7 ] );
+    4
+    gap> Number( [, 2, 3,, 5,, 7,,,, 11 ] );
+    5
+    gap> Number( [1..20], IsPrime );
+    8
+    gap> Number( [ 1, 3, 4, -4, 4, 7, 10, 6 ], IsPrimePowerInt );
+    4
+    gap> Number( [ 1, 3, 4, -4, 4, 7, 10, 6 ],
+    >            n -> IsPrimePowerInt(n) and n mod 2 <> 0 );
+    2 |
+    
+'Filtered' (see "Filtered") allows you to extract the  elements of a list
+that have a certain property.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Collected}
+
+'Collected( <list> )'
+
+'Collected' returns  a new list  <new> that  contains for each  different
+element <elm> of  <list> a list  of two  elements, the first  element  is
+<elm> itself, and the second element is the number of times <elm> appears
+in <list>.  The order of those pairs in <new> corresponds to the ordering
+of the elements <elm>, so that the result is sorted.
+
+|    gap> Factors( Factorial( 10 ) );
+    [ 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 5, 5, 7 ]
+    gap> Collected( last );
+    [ [ 2, 8 ], [ 3, 4 ], [ 5, 2 ], [ 7, 1 ] ]
+    gap> Collected( last );
+    [ [ [ 2, 8 ], 1 ], [ [ 3, 4 ], 1 ], [ [ 5, 2 ], 1 ], [ [ 7, 1 ], 1 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CollectBy}%
+
+'CollectBy(<list>, <f>)'
+
+<list>  should be a  list and <f>  a unary function,  or a list of the same
+length as <list>. Let $v_1,\ldots,v_n$ be the distinct values (sorted) that
+the  function  <f>  takes  on  the  elements  of <list> (resp. the distinct
+entries  of the  list <f>).  The function  'CollectBy' returns a list whose
+$i$-th  item is the sublist  of the elements of  <list> where <f> takes the
+value  $v_i$  (resp.  where  the  corresponding  element of <f> is equal to
+$v_i$).
+
+|  gap> CollectBy([1..15],x->x mod 4);
+   [ [ 4, 8, 12 ], [ 1, 5, 9, 13 ], [ 2, 6, 10, 14 ], [ 3, 7, 11, 15 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Filtered}
+
+'Filtered( <list>, <func> )'
+
+'Filtered' returns  a new list that  contains those elements of  the list
+<list> for which the unary function <func> returns  'true'.  The order of
+the elements in the result is the same  as the order of the corresponding
+elements  of <list>.  If  an  element, for   which <func> returns  'true'
+appears several times  in <list> it will  also appear the same  number of
+times  in the result.   <list>  may contain  holes,  they are  ignored by
+'Filtered'.  <func>  must  return  either  'true' or 'false'    for every
+element of <list>, otherwise an error is signalled.
+
+|    gap> Filtered( [1..20], IsPrime );
+    [ 2, 3, 5, 7, 11, 13, 17, 19 ]
+    gap> Filtered( [ 1, 3, 4, -4, 4, 7, 10, 6 ], IsPrimePowerInt );
+    [ 3, 4, 4, 7 ]
+    gap> Filtered( [ 1, 3, 4, -4, 4, 7, 10, 6 ],
+    >              n -> IsPrimePowerInt(n) and n mod 2 <> 0 );
+    [ 3, 7 ] |
+
+The result is a new list, that is  not identical to any  other list.  The
+elements of that list however are identical to the corresponding elements
+of the argument list (see "Identical Lists").
+
+'Sublist' (see "Sublist")  allows  you  to extract  elements of   a  list
+according to indices given in another list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Zip}%
+
+'Zip(<a1>,...,<an>,<f>)'
+
+The  first arguments <a1>,...,<an> should be  lists of the same length, and
+the last argument a function taking <n> arguments. This functions zips with
+the  function <f> the lists  <a1>,..,<an>, that is it  returns a list whose
+$i$-th entry is 'f(a1[i],a2[i],..,an[i])'.
+
+|   gap> Zip([1..9],[1..9],function(x,y)return x*y;end);
+   [ 1, 4, 9, 16, 25, 36, 49, 64, 81 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ForAll}
+
+'ForAll( <list>, <func> )'
+
+'ForAll' returns  'true' if the  unary function <func> returns 'true' for
+all  elements of  the list   <list> and 'false'  otherwise.   <list>  may
+contain  holes.   <func> must return either  'true' or 'false' for  every
+element of <list>, otherwise an error is signalled.
+
+|    gap> ForAll( [1..20], IsPrime );
+    false
+    gap> ForAll( [2,3,4,5,8,9], IsPrimePowerInt );
+    true
+    gap> ForAll( [2..14], n -> IsPrimePowerInt(n) or n mod 2 = 0 );
+    true |
+
+'ForAny'  (see "ForAny") allows  you  to test if  any  element  of a list
+satisfies a certain property.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ForAny}
+
+'ForAny( <list>, <func> )'
+
+'ForAny' returns 'true' if the unary function  <func> returns 'true'  for
+at  least one element of the list <list>  and 'false'  otherwise.  <list>
+may contain holes.  <func> must return either 'true' or 'false' for every
+element of <list>, otherwise 'ForAny' signals an error.
+
+|    gap> ForAny( [1..20], IsPrime );
+    true
+    gap> ForAny( [2,3,4,5,8,9], IsPrimePowerInt );
+    true
+    gap> ForAny( [2..14],
+    >    n -> IsPrimePowerInt(n) and n mod 5 = 0 and not IsPrime(n) );
+    false |
+
+'ForAll' (see "ForAll")  allows  you to test  if all  elements of  a list
+satisfies a certain propertie.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{First}
+
+'First( <list>, <func> )'
+
+'First' returns the first element of the list <list> for which  the unary
+function <func> returns 'true'.  <list>  may  contain holes.  <func> must
+return either 'true' or 'false' for every element of <list>, otherwise an
+error is  signalled.  If  <func> returns 'false'   for every element   of
+<list> an error is signalled.
+
+|    gap> First( [10^7..10^8], IsPrime );
+    10000019
+    gap> First( [10^5..10^6],
+    >           n -> not IsPrime(n) and IsPrimePowerInt(n) );
+    100489 |
+
+'PositionProperty'   (see "PositionProperty") allows   you   to  find the
+position of  the first  element  in a    list  that satisfies   a certain
+property.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sort}%
+\index{sort a list}
+
+'Sort( <list> )' \\
+'Sort( <list>, <func> )'
+
+'Sort'  sorts the list <list> in increasing order. In the first form 'Sort'
+uses  the operator '\<' to compare the  elements. In the second form 'Sort'
+uses  the  function  <func>  to  compare  elements. This function must be a
+function  taking two arguments that returns 'true' if the first is strictly
+smaller than the second and 'false' otherwise.
+
+'Sort'  does not return anything, since it changes the argument <list>. Use
+'ShallowCopy'   (see  "ShallowCopy")  if  you  want  to  keep  <list>.  Use
+'Reversed'  (see  "Reversed")  if  you  want  to  get  a new list sorted in
+decreasing order.
+
+It  is possible to sort lists  that contain multiple elements which compare
+equal.  In the first form, it is  guaranteed that those elements keep their
+relative  order, but not in the seccond i.e., 'Sort' is stable in the first
+form but not in te second.
+
+|    gap> list := [ 5, 4, 6, 1, 7, 5 ];;  Sort( list );  list;
+    [ 1, 4, 5, 5, 6, 7 ]
+    gap> list := [ [0,6], [1,2], [1,3], [1,5], [0,4], [3,4] ];;
+    gap> Sort( list, function(v,w) return v*v < w*w; end ); list;
+    [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 3, 4 ], [ 1, 5 ], [ 0, 6 ] ]
+    #  sorted according to the Euclidian distance from [0,0]
+    gap> list := [ [0,6], [1,3], [3,4], [1,5], [1,2], [0,4], ];;
+    gap> Sort( list, function(v,w) return v[1] < w[1]; end ); list;
+    [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
+    # note the random order of the elements with equal first component |
+
+'SortParallel'  (see "SortParallel") allows you to  sort a list and apply
+the exchanges  that are necessary to  another list in parallel.  'Sortex'
+(see "Sortex") sorts a list and returns the sorting permutation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SortParallel}
+
+'SortParallel( <list1>, <list2> )' \\
+'SortParallel( <list1>, <list2>, <func> )'
+
+'SortParallel' sorts the list <list1>  in increasing order just as 'Sort'
+(see "Sort") does.  In  parallel it applies  the same exchanges  that are
+necessary to sort <list1> to the list <list2>, which must of  course have
+at least as many elements as <list1> does.
+
+|    gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+    gap> list2 := [ 2, 3, 5, 7, 8, 9 ];;
+    gap> SortParallel( list1, list2 );
+    gap> list1;
+    [ 1, 4, 5, 5, 6, 7 ]
+    gap> list2;
+    [ 7, 3, 2, 9, 5, 8 ]    # '[ 7, 3, 9, 2, 5, 8 ]' is also possible |
+
+'Sortex' (see "Sortex") sorts a list and returns the sorting permutation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SortBy}%
+
+'SortBy(<list>, <fist>)'
+
+<list>  should be a list and <func> a unary function. The function 'SortBy'
+sorts the list <list> according to the value that the function <func> takes
+on each element of the list.
+
+|   gap> l:=[1..15];
+   [ 1 .. 15 ]
+   gap> SortBy(l,x->x mod 4);      
+   gap> l;
+   [ 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sortex}
+
+'Sortex( <list> )'
+
+'Sortex' sorts the list <list> and  returns the  permutation that must be
+applied to <list> to obtain the sorted list.
+
+|    gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+    gap> list2 := Copy( list1 );;
+    gap> perm := Sortex( list1 );
+    (1,3,5,6,4)
+    gap> list1;
+    [ 1, 4, 5, 5, 6, 7 ]
+    gap> Permuted( list2, perm );
+    [ 1, 4, 5, 5, 6, 7 ] |
+
+'Permuted' (see "Permuted") allows you to rearrange a list according to a
+given permutation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SortingPerm}
+
+'SortingPerm( <list> )'
+
+'SortingPerm' returns  the permutation that must be  applied to <list> to
+sort it into ascending order.
+
+|    gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+    gap> list2 := Copy( list1 );;
+    gap> perm := SortingPerm( list1 );
+    (1,3,5,6,4)
+    gap> list1;
+    [ 5, 4, 6, 1, 7, 5 ]
+    gap> Permuted( list2, perm );
+    [ 1, 4, 5, 5, 6, 7 ] |
+
+'Sortex( <list> )' (see "Sortex") returns the same permutation as
+'SortingPerm( <list> )', and also applies it to <list> (in place).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermListList}
+
+'PermListList( <list1>, <list2> )'
+
+'PermListList' returns a  permutation that may  be applied  to <list1> to
+obtain <list2>, if there is one. Otherwise it returns 'false'.
+
+|    gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+    gap> list2 := [ 4, 1, 7, 5, 5, 6 ];;
+    gap> perm := PermListList(list1, list2);
+    (1,2,4)(3,5,6)
+    gap> Permuted( list2, perm );
+    [ 5, 4, 6, 1, 7, 5 ] |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Permuted}
+
+'Permuted( <list>, <perm> )'
+
+'Permuted' returns  a new  list <new> that contains  the elements  of the
+list  <list>  permuted according  to  the  permutation  <perm>.   That is
+'<new>[<i>\^<perm>] = <list>[<i>]'.
+
+|    gap> Permuted( [ 5, 4, 6, 1, 7, 5 ], (1,3,5,6,4) );
+    [ 1, 4, 5, 5, 6, 7 ] |
+
+'Sortex' (see "Sortex") allows you to compute the permutation that must
+be applied to a list to get the sorted list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Product}%
+\index{multiply!the elements of a list}
+
+'Product( <list> )' \\
+'Product( <list>, <func> )'
+
+In the first form 'Product' returns  the product  of  the elements of the
+list <list>, which must have no holes.  If <list> is empty, the integer 1
+is returned.
+
+In the second form 'Product' applies the function <func> to  each element
+of the list <list>, which must have no holes, and multiplies the results.
+If the <list> is empty, the integer 1 is returned.
+
+|    gap> Product( [ 2, 3, 5, 7, 11, 13, 17, 19 ] );
+    9699690
+    gap> Product( [1..10], x->x^2 );
+    13168189440000
+    gap> Product( [ (1,2), (1,3), (1,4), (2,3), (2,4), (3,4) ] );
+    (1,4)(2,3) |
+
+'Sum' (see "Sum") computes the sum of the elements of a list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sum}%
+\index{add!the elements of a list}
+
+'Sum( <list> )' \\
+'Sum( <list>, <func> )'
+
+In the first form 'Sum'   returns the sum  of the  elements of the   list
+<list>, which must have no holes.  If <list> is empty 0 is returned.
+
+In the second form 'Sum'  applies the function <func>  to each element of
+the list <list>, which must have no holes, and  sums the results.  If the
+<list> is empty 0 is returned.
+
+|    gap> Sum( [ 2, 3, 5, 7, 11, 13, 17, 19 ] );
+    77
+    gap> Sum( [1..10], x->x^2 );
+    385
+    gap> Sum( [ [1,2], [3,4], [5,6] ] );
+    [ 9, 12 ] |
+
+'Product' (see "Product") computes the product of the elements of a list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ValuePol}%
+
+'ValuePol( <list>, <x> )'
+
+<list> represents the coefficients of a polynomial. The function 'ValuePol'
+returns  the value of that  polynomial at <x>, using  Horner\' s scheme. It
+thus  represents  the  most  efficient  way  to  evaluate  the  value  of a
+polynomial.
+
+|    gap> q:=X(Rationals);;q.name:="q";;
+    gap> ValuePol([1..5],q);
+    5*q^4 + 4*q^3 + 3*q^2 + 2*q + 1|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Maximum}%
+\index{maximum!of integers}%
+\index{maximum!of a list}
+
+'Maximum( <obj1>, <obj2>.. )' \\
+'Maximum( <list> )'
+
+'Maximum' returns  the  maximum of  its  arguments,  i.e.,  that argument
+$obj_i$ for  which  $obj_k \<= obj_i$ for all  $k$.   In its second  form
+'Maximum' takes  a list <list> and returns the maximum of the elements of
+this list.
+
+Typically the arguments  or elements  of the  list  respectively will  be
+integers, but actually they  can be  objects of an arbitrary  type.  This
+works because any two objects can be compared using the '\<' operator.
+
+|    gap> Maximum( -123, 700, 123, 0, -1000 );
+    700
+    gap> Maximum( [ -123, 700, 123, 0, -1000 ] );
+    700
+    gap> Maximum( [ 1, 2 ], [ 0, 15 ], [ 1, 5 ], [ 2, -11 ] );
+    [ 2, -11 ]        # lists are compared elementwise |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Minimum}%
+\index{minimum!of integers}%
+\index{minimum!of a list}
+
+'Minimum( <obj1>, <obj2>.. )' \\
+'Minimum( <list> )'
+
+'Minimum'  returns  the  minimum of  its  arguments, i.e.,  that argument
+$obj_i$  for which  $obj_i \<=  obj_k$  for all $k$.  In its second  form
+'Minimum' takes a list <list> and returns the  minimum of the elements of
+this list.
+
+Typically  the  arguments  or elements  of  the list respectively will be
+integers, but actually  they can be  objects  of an arbitrary type.  This
+works because any two objects can be compared using the '\<' operator.
+
+|    gap> Minimum( -123, 700, 123, 0, -1000 );
+    -1000
+    gap> Minimum( [ -123, 700, 123, 0, -1000 ] );
+    -1000
+    gap> Minimum( [ 1, 2 ], [ 0, 15 ], [ 1, 5 ], [ 2, -11 ] );
+    [ 0, 15 ]        # lists are compared elementwise |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Iterated}%
+\index{iterate a function over a list}
+
+'Iterated( <list>, <f> )'
+
+'Iterated' returns the result of the iterated application of the function
+<f>,  which must take  two arguments,  to the  elements of  <list>.  More
+precisely  'Iterated' returns the  result of the  following  application,
+'<f>(..<f>( <f>( <list>[1], <list>[2] ), <list>[3] ),..,<list>[<n>] )'.
+
+|    gap> Iterated( [ 126, 66, 105 ], Gcd );
+    3 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RandomList}
+
+'RandomList( <list> )'
+
+'RandomList' returns a  random element of  the list <list>.   The results
+are equally distributed,  i.e.,  all elements are  equally  likely  to be
+selected.
+
+|    gap> RandomList( [1..200] );
+    192
+    gap> RandomList( [1..200] );
+    152
+    gap> RandomList( [ [ 1, 2 ], 3, [ 4, 5 ], 6 ] );
+    [ 4, 5 ] |
+
+'RandomSeed( <n> )'%
+\index{RandomSeed}
+
+'RandomSeed' seeds the pseudo random number generator 'RandomList'.  Thus
+to reproduce a computation  exactly   you can call 'RandomSeed' each time
+before you  start  the computation.   When {\GAP} is started   the pseudo
+random number generator is seeded with 1.
+
+|    gap> RandomSeed(1);  RandomList([1..100]);  RandomList([1..100]);
+    96
+    76
+    gap> RandomSeed(1);  RandomList([1..100]);  RandomList([1..100]);
+    96
+    76 |
+
+'RandomList'  is   called  by  all  random    functions for domains  (see
+"Random").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

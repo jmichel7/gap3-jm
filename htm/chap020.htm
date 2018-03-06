@@ -1,0 +1,291 @@
+<html><head><title>GAP3 Manual: 20 Permutations</title></head>
+<body bgcolor="ffffff">
+<h1>20 Permutations</h1>
+<P><P><P>
+<strong>GAP3</strong> is a system  especially  designed for the computations  in groups.
+Permutation groups are a very important class of groups and <strong>GAP3</strong> offers
+a data type <strong>permutation</strong> to describe the elements of permutation groups.
+<P>
+Permutations  in  <strong>GAP3</strong>  operate on <strong>positive integers</strong>.  Whenever group
+elements  operate  on  a domain  we  call  the elements  of  this  domain
+<strong>points</strong>.  Thus in this chapter we often  call  positive integers points,
+if we want to  emphasize that a permutation operates on them.  An integer
+<I>i</I> is said to  be <strong>moved</strong> by a permutation <I>p</I> if the image <I>i<sup>p</sup></I> of <I>i</I>
+under <I>p</I> is not  <I>i</I>.  The largest  integer moved by any permutation may
+not be larger  than  <I>2<sup>28</sup>-1</I>.
+<P>
+Note that permutations  do  not belong to  a specific group.   That means
+that you can work  with permutations without defining a permutation group
+that contains them.  This is  just like  it is  with integers, with which
+you can compute without caring about the domain <code>Integers</code> that  contains
+them.  It also means that you can multiply any two permutations.
+<P>
+Permutations are entered and displayed in cycle notation.
+<P>
+<pre>    gap> (1,2,3);
+    (1,2,3)
+    gap> (1,2,3) * (2,3,4);
+    (1,3)(2,4) </pre>
+<P>
+The first  sections  in  this chapter describe  the  operations that  are
+available  for  permutations  (see  <a href="chap020.htm#SECT001">Comparisons  of  Permutations</a>   and
+<a href="chap020.htm#SECT002">Operations for Permutations</a>).   The next section describes the function
+that  tests whether an object is a permutation (see <a href="chap020.htm#SECT003">IsPerm</a>).   The next
+sections describe the functions that find the largest and smallest  point
+moved    by    a    permutation    (see    <a href="chap020.htm#SECT004">LargestMovedPointPerm</a>    and
+<a href="chap020.htm#SECT005">SmallestMovedPointPerm</a>).  The next section describes  the function that
+computes  the sign  of a permutation (see <a href="chap020.htm#SECT006">SignPerm</a>).  The next  section
+describes the  function  that  computes  the  smallest  permutation  that
+generates  the   same  cyclic  subgroup  as  a  given  permutation   (see
+<a href="chap020.htm#SECT007">SmallestGeneratorPerm</a>).  The final sections describe the functions that
+convert  between  lists and  permutations  (see  <a href="chap020.htm#SECT008">ListPerm</a>,  <a href="chap020.htm#SECT009">PermList</a>,
+<a href="chap020.htm#SECT010">RestrictedPerm</a>, and <a href="chap020.htm#SECT011">MappingPermListList</a>).
+<P>
+Permutations are  elements  of groups operating on positive integers in a
+natural way, thus see chapter <a href="chap007.htm">Groups</a>  and chapter <a href="chap002.htm#SECT010">Operations</a> for more
+functions.
+<P>
+The external functions are in the file <code>LIBNAME/"permutat.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap020.htm#SECT001">Comparisons of Permutations</a>
+<LI> <A HREF="chap020.htm#SECT002">Operations for Permutations</a>
+<LI> <A HREF="chap020.htm#SECT003">IsPerm</a>
+<LI> <A HREF="chap020.htm#SECT004">LargestMovedPointPerm</a>
+<LI> <A HREF="chap020.htm#SECT005">SmallestMovedPointPerm</a>
+<LI> <A HREF="chap020.htm#SECT006">SignPerm</a>
+<LI> <A HREF="chap020.htm#SECT007">SmallestGeneratorPerm</a>
+<LI> <A HREF="chap020.htm#SECT008">ListPerm</a>
+<LI> <A HREF="chap020.htm#SECT009">PermList</a>
+<LI> <A HREF="chap020.htm#SECT010">RestrictedPerm</a>
+<LI> <A HREF="chap020.htm#SECT011">MappingPermListList</a>
+</ol>
+<A NAME="SECT001"><h2>20.1 Comparisons of Permutations</h2></a>
+<P><P><P>
+<code><var>p1</var> = <var>p2</var></code> <BR> 
+<code><var>p1</var> <> <var>p2</var></code>
+<P>
+The  equality operator  <code>=</code> evaluates to  <code>true</code>  if the two permutations
+<var>p1</var> and  <var>p2</var> are equal,  and  to  <code>false</code>  otherwise.   The  inequality
+operator <code><></code> evaluates to <code>true</code> if the two permutations <var>p1</var>  and <var>p2</var>
+are  not  equal,  and  to  <code>false</code>   otherwise.   You  can  also  compare
+permutations with objects of other types, of course they are never equal.
+<P>
+Two permutations are considered equal  if and  only if they move the same
+points and if  the images  of the  moved  points are  the  same under the
+operation of both permutations.
+<P>
+<pre>    gap> (1,2,3) = (2,3,1);
+    true
+    gap> (1,2,3) * (2,3,4) = (1,3)(2,4);
+    true </pre>
+<P>
+<code><var>p1</var> <  <var>p2</var></code> <BR> 
+<code><var>p1</var> <= <var>p2</var></code> <BR> 
+<code><var>p1</var>  >  <var>p2</var></code> <BR> 
+<code><var>p1</var>  >= <var>p2</var></code>
+<P>
+The operators <code><</code>,  <code><=</code>,  <code>></code>,  and  <code>>=</code>  evaluate  to <code>true</code>  if the
+permutation <var>p1</var> is less  than,  less than or  equal to, greater than, or
+greater than or equal to the permutation <var>p2</var>, and to <code>false</code> otherwise.
+<P>
+Let <I>p<sub>1</sub></I> and <I>p<sub>2</sub></I> be two  permutations that are  not equal.  Then there
+exists  at least one point  <I>i</I> such that <I>i<sup>p<sub>1</sub></sup> &lt;&gt; i<sup>p<sub>2</sub></sup></I>.  Let <I>k</I>
+be the  smallest such point.  Then <I>p<sub>1</sub></I> is considered smaller than <I>p<sub>2</sub></I>
+if  and only  if <I>k<sup>p<sub>1</sub></sup> &lt; k<sup>p<sub>2</sub></sup></I>.   Note that this implies that the
+identity permutation is the smallest permutation.
+<P>
+You can also compare permutations with objects of other types.  Integers,
+rationals, cyclotomics, unknowns, and  finite field  elements are smaller
+than permutations.  Everything else is larger.
+<P>
+<pre>    gap> (1,2,3) &lt; (1,3,2);
+    true    # <I>1<sup>(1,2,3)</sup> = 2 &lt; 3 = 1<sup>(1,3,2)</sup></I>
+    gap> (1,3,2,4) &lt; (1,3,4,2);
+    false    # <I>2<sup>(1,3,2,4)</sup> = 4 &gt; 1 = 2<sup>(1,3,4,2)</sup></I> </pre>
+<P><A NAME="SECT002"><h2>20.2 Operations for Permutations</h2></a>
+<P><P><P>
+<code><var>p1</var> * <var>p2</var></code>
+<P>
+The operator <code>*</code>  evaluates to the product of the two  permutations <var>p1</var>
+and <var>p2</var>.
+<P>
+<code><var>p1</var> / <var>p2</var></code>
+<P>
+The operator  <code>/</code>  evaluates to the quotient <I>p1 *  p2<sup>-1</sup></I>  of the two
+permutations <var>p1</var> and <var>p2</var>.
+<P>
+<code>LeftQuotient( <var>p1</var>, <var>p2</var> )</code>
+<P>
+<code>LeftQuotient</code> returns  the left  quotient  <I>p1<sup>-1</sup>  * p2</I> of  the  two
+permutations <var>p1</var> and <var>p2</var>.  (This can also be written <code><var>p1</var> mod <var>p2</var></code>.)
+<P>
+<code><var>p</var> ^ <var>i</var></code>
+<P>
+The operator <code>^</code> evaluates to the <var>i</var>-th power of the permutation <var>p</var>.
+<P>
+<code><var>p1</var> ^ <var>p2</var></code>
+<P>
+The operator <code>^</code> evaluates to the conjugate <I>p2<sup>-1</sup> * p1 * p2</I> of the
+permutation <var>p1</var> by the permutation <var>p2</var>.
+<P>
+<code>Comm( <var>p1</var>, <var>p2</var> )</code>
+<P>
+<code>Comm</code> returns the commutator <I>p1<sup>-1</sup> * p2<sup>-1</sup> * p1 * p2</I> of the two
+permutations <var>p1</var> and <var>p2</var>.
+<P>
+<code><var>i</var> ^ <var>p</var></code>
+<P>
+The operator <code>^</code> evaluates to  the image <I>i<sup>p</sup></I>  of the  positive integer
+<var>i</var> under the permutation <var>p</var>.
+<P>
+<code><var>i</var> / <var>p</var></code>
+<P>
+The operator  <code>/</code> evaluates to  the preimage  <I>i<sup>p<sup>-1</sup></sup></I> of the integer
+<var>i</var> under the permutation <var>p</var>.
+<P><P>
+<code><var>list</var> * <var>p</var></code> <BR> 
+<code><var>p</var> * <var>list</var></code>
+<P>
+The operator <code>*</code> evaluates  to the  list of products of the permutations
+in <var>list</var> with  the permutation <var>p</var>.  That  means that the value is a new
+list <var>new</var>  such that  <code><var>new</var>[<var>i</var>] = <var>list</var>[<var>i</var>]  *  <var>p</var></code>  respectively
+<code><var>new</var>[<var>i</var>] = <var>p</var> * <var>list</var>[<var>i</var>]</code>.
+<P>
+<code><var>list</var> / <var>p</var></code>
+<P>
+The operator <code>/</code> evaluates to the list  of  quotients of the permutations
+in <var>list</var> with  the permutation  <var>p</var>.  That means that the value is a new
+list <var>new</var> such that <code><var>new</var>[<var>i</var>] = <var>list</var>[<var>i</var>] / <var>p</var></code>.
+<P>
+For the precedence of the operators see <a href="chap002.htm#SECT010">Operations</a>.
+<P><A NAME="SECT003"><h2>20.3 IsPerm</h2></a>
+<P><P><P>
+<code>IsPerm( <var>obj</var> )</code>
+<P>
+<code>IsPerm</code> returns <code>true</code>  if  <var>obj</var>, which may be  an  object of arbitrary
+type, is a permutation and <code>false</code> otherwise.  It will signal an error if
+<var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsPerm( (1,2) );
+    true
+    gap> IsPerm( 1 );
+    false </pre>
+<P><A NAME="SECT004"><h2>20.4 LargestMovedPointPerm</h2></a>
+<P><P><P>
+<code>LargestMovedPointPerm( <var>perm</var> )</code>
+<P>
+<code>LargestMoverPointPerm</code>   returns  the   largest  point   moved   by  the
+permutation  <var>perm</var>, i.e.,  the  largest  positive  integer <var>i</var> such that
+<code><var>i</var>^<var>perm</var>  <>  <var>i</var></code>.   It will  signal an error  if <var>perm</var> is trivial
+(see also <a href="chap020.htm#SECT005">SmallestMovedPointPerm</a>).
+<P>
+<pre>    gap> LargestMovedPointPerm( (2,3,1) );
+    3
+    gap> LargestMovedPointPerm( (1,2)(1000,1001) );
+    1001 </pre>
+<P><A NAME="SECT005"><h2>20.5 SmallestMovedPointPerm</h2></a>
+<P><P><P>
+<code>SmallestMovedPointPerm( <var>perm</var> )</code>
+<P>
+<code>SmallestMovedPointPerm</code>  returns  the  smallest   point  moved  by   the
+permutation <var>perm</var>,  i.e., the  smallest  positive integer  <var>i</var> such that
+<code><var>i</var>^<var>perm</var> <>  <var>i</var></code>.   It will signal  an error if  <var>perm</var>  is trivial
+(see also <a href="chap020.htm#SECT004">LargestMovedPointPerm</a>).
+<P>
+<pre>    gap> SmallestMovedPointPerm( (4,7,5) );
+    4 </pre>
+<P><A NAME="SECT006"><h2>20.6 SignPerm</h2></a>
+<P><P><P>
+<code>SignPerm( <var>perm</var> )</code>
+<P>
+<code>SignPerm</code> returns the <strong>sign</strong> of the permutation <var>perm</var>.
+<P>
+The sign <I>s</I> of a permutation <I>p</I> is defined by
+<I>s = &prod;<sub>i &lt; j</sub>(i<sup>p</sup> - j<sup>p</sup>) / &prod;<sub>i &lt; j</sub>(i - j)</I>,
+where <I>n</I> is the largest point moved by <I>p</I> and <I>i,j</I> range over <I>1...n</I>.
+<P>
+One can easily show that <strong>sign</strong> is equivalent to the <strong>determinant</strong> of the
+<strong>permutation  matrix</strong> of <var>perm</var>.  Thus  it   is obvious that the function
+<strong>sign</strong> is a homomorphism.
+<P>
+<pre>    gap> SignPerm( (1,2,3)(5,6) );
+    -1 </pre>
+<P><A NAME="SECT007"><h2>20.7 SmallestGeneratorPerm</h2></a>
+<P><P><P>
+<code>SmallestGeneratorPerm( <var>perm</var> )</code>
+<P>
+<code>SmallestGeneratorPerm</code> returns  the smallest permutation that  generates
+the same cyclic group as the permutation <var>perm</var>.
+<P>
+<pre>    gap> SmallestGeneratorPerm( (1,4,3,2) );
+    (1,2,3,4) </pre>
+<P>
+Note that <code>SmallestGeneratorPerm</code> is very efficient, even when <var>perm</var> has
+huge order.
+<P><A NAME="SECT008"><h2>20.8 ListPerm</h2></a>
+<P><P><P>
+<code>ListPerm( <var>perm</var> )</code>
+<P>
+<code>ListPerm</code> returns a list <var>list</var> that contains the images of the positive
+integers  under the permutation <var>perm</var>.   That means  that <code><var>list</var>[<var>i</var>] =
+<var>i</var>^<var>perm</var></code>,  where  <var>i</var> lies between 1 and  the largest  point moved by
+<var>perm</var> (see <a href="chap020.htm#SECT004">LargestMovedPointPerm</a>).
+<P>
+<pre>    gap> ListPerm( (1,2,3,4) );
+    [ 2, 3, 4, 1 ]
+    gap> ListPerm( () );
+    [  ] </pre>
+<P>
+<code>PermList</code> (see <a href="chap020.htm#SECT009">PermList</a>) performs the inverse operation.
+<P><A NAME="SECT009"><h2>20.9 PermList</h2></a>
+<P><P><P>
+<code>PermList( <var>list</var> )</code>
+<P>
+<code>PermList</code> returns the permutation <var>perm</var> that moves  points as describes
+by the list  <var>list</var>.  That  means that <code><var>i</var>^<var>perm</var> = <var>list</var>[<var>i</var>]</code> if <var>i</var>
+lies between 1 and the length of <var>list</var>, and  <code><var>i</var>^<var>perm</var> = <var>i</var></code> if  <var>i</var>
+is larger than the length of the list <var>list</var>.  It will signal an error if
+<var>list</var> does not define a permutation,  i.e.,  if <var>list</var> is not a list  of
+integers without holes,  or if <var>list</var>  contains  an integer  twice, or if
+<var>list</var> contains an integer not in the range <code>[1..Length(<var>list</var>)]</code>.
+<P>
+<pre>    gap> PermList( [6,2,4,1,5,3] );
+    (1,6,3,4)
+    gap> PermList( [] );
+    () </pre>
+<P>
+<code>ListPerm</code> (see <a href="chap020.htm#SECT008">ListPerm</a>) performs the inverse operation.
+<P><A NAME="SECT010"><h2>20.10 RestrictedPerm</h2></a>
+<P><P><P>
+<code>RestrictedPerm( <var>perm</var>, <var>list</var> )</code>
+<P>
+<code>RestrictedPerm</code>  returns the new permutation <var>new</var> that  operates on the
+points  in the list <var>list</var> in the same way as the permutation <var>perm</var>, and
+that fixes those points that are not in <var>list</var>.  <var>list</var> must be a list of
+positive  integers  such  that  for  each   <var>i</var>  in  <var>list</var>   the   image
+<code><var>i</var>^<var>perm</var></code> is also in <var>list</var>, i.e., it must be  the union of cycles of
+<var>perm</var>.
+<P>
+<pre>    gap> RestrictedPerm( (1,2,3)(4,5), [4,5] );
+    (4,5) </pre>
+<P><A NAME="SECT011"><h2>20.11 MappingPermListList</h2></a>
+<P><P><P>
+<code>MappingPermListList( <var>list1</var>, <var>list2</var> )</code>
+<P>
+<code>MappingPermListList</code>   returns   a   permutation   <var>perm</var>    such   that
+<code><var>list1</var>[<var>i</var>] ^ <var>perm</var> = <var>list2</var>[<var>i</var>]</code>.  <var>perm</var> fixes all points larger
+then the  maximum  of the  entries in <var>list1</var> and <var>list2</var>.  If there  are
+several    such    permutations,    it    is    not    specified    which
+<code>MappingPermListList</code> returns.  <var>list1</var>  and  <var>list2</var>  must  be lists  of
+positive integers  of the same length, and neither may contain an element
+twice.
+<P>
+<pre>    gap> MappingPermListList( [3,4], [6,9] );
+    (3,6,4,9,8,7,5)
+    gap> MappingPermListList( [], [] );
+    () </pre>
+<P><a href ="chap019.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap021.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

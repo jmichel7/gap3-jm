@@ -1,0 +1,629 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  matrix.tex                  GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: matrix.tex,v 1.1.1.1 1996/12/11 12:36:48 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the matrix data type, its operations  and  functions.
+%%
+%H  $Log: matrix.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:48  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.7  1994/06/23  13:30:29  vfelsch
+%H  modified an example
+%H
+%H  Revision 3.6  1994/06/23  08:50:40  ahulpke
+%H  added PrintArray
+%H
+%H  Revision 3.5  1994/02/28  06:57:50  fceller
+%H  fixed description of 'KronckerProduct'
+%H
+%H  Revision 3.4  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.3  1993/02/11  17:14:10  martin
+%H  vectors may now contain records
+%H
+%H  Revision 3.2  1993/02/05  09:05:59  felsch
+%H  examples fixed
+%H
+%H  Revision 3.1  1992/03/20  16:34:52  martin
+%H  initial revision under RCS
+%%
+\Chapter{Matrices}%
+\index{matrix}\index{type!matrices}
+
+Matrices are an  important tool in algebra.  A matrix nicely represents a
+homomorphism  between two vector spaces with respect to a choice of bases
+for  the  vector  spaces.   Also  matrices  represent systems  of  linear
+equations.
+
+In {\GAP}  matrices are represented by list of vectors  (see  "Vectors").
+The vectors must all have the same length, and their elements must lie in
+a  common  field.   The  field  may  be  the  field  of   rationals  (see
+"Rationals"), a cyclotomic field (see "Cyclotomics"), a finite field (see
+"Finite Fields"),  or a library and/or user  defined field (or ring) such
+as a polynomial ring (see "Polynomials").
+
+The first  section in this chapter describes the operations applicable to
+matrices (see "Operations for Matrices").   The next  sections  describes
+the function that tests whether an object is a matrix (see "IsMat").  The
+next  sections describe the functions that create  certain  matrices (see
+"IdentityMat", "NullMat", "TransposedMat",  and "KroneckerProduct").  The
+next  sections  describe functions that  compute  certain  characteristic
+values of matrices  (see  "DimensionsMat", "TraceMat",  "DeterminantMat",
+"RankMat", and  "OrderMat").   The  next  sections describe the functions
+that are related to the interpretation of a matrix  as a system of linear
+equations   (see   "TriangulizeMat",   "BaseMat",   "NullspaceMat",   and
+"SolutionMat").   The last  two  sections  describe  the  functions  that
+diagonalize    an    integer    matrix    (see    "DiagonalizeMat"    and
+"ElementaryDivisorsMat").
+
+Because  matrices are  just a special  case of lists, all operations  and
+functions  for  lists  are  applicable  to  matrices  also  (see  chapter
+"Lists").   This especially includes  accessing elements of a matrix (see
+"List Elements"), changing elements of  a matrix (see "List Assignment"),
+and comparing matrices (see "Comparisons of Lists").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Matrices}
+
+'<mat> + <scalar>' \\
+'<scalar> + <mat>'
+
+This  forms evaluates  to  the  sum of  the matrix  <mat> and the  scalar
+<scalar>.  The elements of <mat> and <scalar> must lie in a common field.
+The sum is a new matrix where each entry is the sum of the  corresponding
+entry of <mat> and <scalar>.
+
+'<mat1> + <mat2>'
+
+This  form evaluates to the  sum  of the two matrices <mat1> and  <mat2>,
+which  must have  the  same dimensions and whose  elements must lie in  a
+common field.  The sum is a new matrix where each entry is the sum of the
+corresponding entries of <mat1> and <mat2>.
+
+'<mat> - <scalar>' \\
+'<scalar> - <mat>' \\
+'<mat1> - <mat2>'
+
+The definition  for the '-' operator are similar to the above definitions
+for the '+' operator, except that '-' subtracts of course.
+
+'<mat> \*\ <scalar>' \\
+'<scalar> \*\ <mat>'
+
+This forms evaluate  to the product of the matrix  <mat> and  the  scalar
+<scalar>.  The elements of <mat> and <scalar> must lie in a common field.
+The product  is  a  new matrix  where each entry  is the  product of  the
+corresponding entries of <mat> and <scalar>.
+
+'<vec> \*\ <mat>'
+
+This form evaluates to  the product  of  the vector <vec> and  the matrix
+<mat>.   The length of <vec>  and  the  number  of rows of <mat> must  be
+equal.  The  elements of <vec> and <mat> must lie  in a common field.  If
+<vec> is a vector of length <n> and <mat> is  a matrix with <n>  rows and
+<m> columns, the product is a new  vector of length <m>.   The element at
+position  <i> is  the sum  of  '<vec>[<l>] \*\  <mat>[<l>][<i>]' with <l>
+running from 1 to <n>.
+
+'<mat> \*\ <vec>'
+
+This form evaluates to the product of  the  matrix  <mat> and the  vector
+<vec>.  The number of columns  of <mat> and  the length  of <vec> must be
+equal.  The elements of <mat>  and <vec> must lie in a common  field.  If
+<mat> is a  matrix with <m> rows and <n> columns and <vec> is a vector of
+length <n>, the  product  is a new vector of length <m>.  The element  at
+position  <i>  is the sum  of  '<mat>[<i>][<l>]  \*\ <vec>[<l>]' with <l>
+running from 1 to <n>.
+
+'<mat1> \*\ <mat2>'
+
+This form evaluates to the product of the two matrices <mat1> and <mat2>.
+The number of columns of <mat1> and the number of rows of  <mat2> must be
+equal.  The elements of <mat1> and <mat2> must lie in a common field.  If
+<mat1> is a matrix with <m>  rows and <n> columns and  <mat2> is a matrix
+with  <n> rows and <o> columns, the result is a new  matrix with <m> rows
+and  <o> columns.  The element in row <i> at position <k> of the  product
+is the sum of '<mat1>[<i>][<l>] \*\  <mat2>[<l>][<k>]'  with  <l> running
+from 1 to <n>.
+
+'<mat1> / <mat2>' \\
+'<scalar> / <mat>' \\
+'<mat> / <scalar>' \\
+'<vec> / <mat>'
+
+In general  '<left>  / <right>'  is defined  as '<left> \*\ <right>\^-1'.
+Thus in the above forms the right operand must always be invertable.
+
+'<mat> \^\ <int>'
+
+This form evaluates  to  the <int>-th  power of the matrix  <mat>.  <mat>
+must be a square matrix, <int> must be an integer.  If <int> is negative,
+<mat> must be invertible.   If  <int>  is 0,  the result is the  identity
+matrix, even if <mat> is not invertible.
+
+'<mat1> \^\ <mat2>'
+
+This form evaluates to the conjugation of the matrix <mat1> by the matrix
+<mat2>,  i.e., to '<mat2>\^-1  \*\  <mat1>  \*\  <mat2>'.  <mat2> must be
+invertible and <mat1> must be such that these product can be computed.
+
+'<vec> \^\ <mat>'
+
+This  is  in  every  respect  equivalent  to  '<vec>  \*\  <mat>'.   This
+operations reflects the fact that matrices operate on the vector space by
+multiplication from the right.
+
+'<scalar> + <matlist>' \\
+'<matlist> + <scalar>' \\
+'<scalar> - <matlist>' \\
+'<matlist> - <scalar>' \\
+'<scalar> \*\ <matlist>' \\
+'<matlist> \*\ <scalar>' \\
+'<matlist> / <scalar>'
+
+A scalar <scalar>  may also  be added,  subtracted,  multiplied with,  or
+divide into a whole list of matrices <matlist>.  The result is a new list
+of matrices where each  matrix is the result  of performing the operation
+with the corresponding matrix in <matlist>.
+
+'<mat> \*\ <matlist>' \\
+'<matlist> \*\ <mat>'
+
+A  matrix  <mat>  may  also be multiplied  with a whole list  of matrices
+<matlist>.  The  result  is a new list of matrices, where each matrix  is
+the product of <mat> and the corresponding matrix in <matlist>.
+
+'<matlist> / <mat>'
+
+This form evaluates to  '<matlist> \*\ <mat>\^-1'.  <mat>  must of course
+be invertable.
+
+'<vec> \*\ <matlist>'
+
+This form evaluates to  the product  of the vector <vec> and the  list of
+matrices  <mat>.  The length  <l> of  <vec> and <matlist> must be  equal.
+All matrices in <matlist> must have the same dimensions.  The elements of
+<vec> and the elements of the matrices in <matlist> must lie in a  common
+field.   The product  is the sum of '<vec>[<i>] \*\  <matlist>[<i>]' with
+<i> running from 1 to <l>.
+
+'Comm( <mat1>, <mat2> )'
+
+'Comm' returns the  commutator of  the matrices <mat1> and  <mat2>, i.e.,
+'<mat1>\^-1  \*\ <mat2>\^-1  \*\ <mat1>  \*\  <mat2>'.  <mat1> and <mat2>
+must be invertable and such that these product can be computed.
+
+There is  one exception to  the rule that  the operands or their elements
+must  lie in common field.  It is allowed  that  one operand is  a finite
+field element, a finite field vector, a finite field matrix, or a list of
+finite  field  matrices, and the other operand  is an integer, an integer
+vector, an integer matrix,  or  a list of integer matrices.  In this case
+the integers are interpreted  as  '<int> \*\ <GF>.one', where <GF> is the
+finite field (see "Operations for Finite Field Elements").
+
+For  all  the above operations the result  is new, i.e., not identical to
+any other list  (see  "Identical Lists").  This is the  case  even if the
+result is equal  to  one of  the  operands, e.g., if  you add zero  to  a
+matrix.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsMat}
+
+'IsMat( <obj> )'
+
+'IsMat' return 'true' if <obj>, which can be an object of arbitrary type,
+is  a matrix and 'false'  otherwise.  Will cause an error  if <obj> is an
+unbound variable.
+
+|    gap> IsMat( [ [ 1, 0 ], [ 0, 1 ] ] );
+    true    # a matrix is a list of vectors
+    gap> IsMat( [ [ 1, 2, 3, 4, 5 ] ] );
+    true
+    gap> IsMat( [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] );
+    true
+    gap> IsMat( [ [ Z(2)^0, 0 ], [ 0, Z(2)^0 ] ] );
+    false    # 'Z(2)\^0' and '0' do not lie in a common field
+    gap> IsMat( [ 1, 0 ] );
+    false    # a vector is not a matrix
+    gap> IsMat( 1 );
+    false    # neither is a scalar |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdentityMat}
+
+'IdentityMat( <n> )' \\
+'IdentityMat( <n>, <F> )'
+
+'IdentityMat' returns the identity matrix  with <n> rows  and <n> columns
+over  the  field  <F>.  If  no field is given, 'IdentityMat'  returns the
+identity matrix over the field of rationals.  Each call to 'IdentityMat'
+returns a new matrix, so it is safe to modify the result.
+
+|    gap> IdentityMat( 3 );
+    [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
+    gap> PrintArray( last );
+    [ [  1,  0,  0 ],
+      [  0,  1,  0 ],
+      [  0,  0,  1 ] ]
+    gap> PrintArray( IdentityMat( 3, GF(2) ) );
+    [ [  Z(2)^0,  0*Z(2),  0*Z(2) ],
+      [  0*Z(2),  Z(2)^0,  0*Z(2) ],
+      [  0*Z(2),  0*Z(2),  Z(2)^0 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NullMat}
+
+'NullMat( <m> )' \\
+'NullMat( <m>, <n> )' \\
+'NullMat( <m>, <n>, <F> )'
+
+'NullMat'  returns the null matrix  with <m> rows and  <n> columns over the
+field  <F>; if <n> is omitted,  it is assumed equal to  <m>. If no field is
+given,  'NullMat' returns the null matrix over the field of rationals. Each
+call to 'NullMat' returns a new matrix, so it is safe to modify the result.
+
+|    gap> PrintArray( NullMat( 2, 3 ) );
+    [ [  0,  0,  0 ],
+      [  0,  0,  0 ] ]
+    gap> PrintArray( NullMat( 2, 2, GF(2) ) );
+    [ [  0*Z(2),  0*Z(2) ],
+      [  0*Z(2),  0*Z(2) ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TransposedMat}
+
+'TransposedMat( <mat> )'
+
+'TransposedMat'  returns  the  transposed  of   the  matrix  <mat>.   The
+transposed matrix is a new  matrix  <trn>, such that '<trn>[<i>][<k>]' is
+'<mat>[<k>][<i>]'.
+
+|    gap> TransposedMat( [ [ 1, 2 ], [ 3, 4 ] ] );
+    [ [ 1, 3 ], [ 2, 4 ] ]
+    gap> TransposedMat( [ [ 1..5 ] ] );
+    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{KroneckerProduct}
+
+'KroneckerProduct( <mat1>, ..., <matn> )'
+
+'KroneckerProduct'  returns the  Kronecker product  of the matrices <mat1>,
+...,  <matn>. If <mat1> is a  <m> by <n> matrix and  <mat2> is a <o> by <p>
+matrix,  the  Kronecker  product  of  <mat1>  by  <mat2> is a '<m>\*<o>' by
+'<n>\*<p>'  matrix,  such  that  the  entry  in row '(<i1>-1)\*<o>+<i2>' at
+position '(<k1>-1)\*<p>+<k2>' is '<mat1>[<i1>][<k1>] \*\
+<mat2>[<i2>][<k2>]'.
+
+|    gap> mat1 := [ [ 0, -1, 1 ], [ -2, 0, -2 ] ];;
+    gap> mat2 := [ [ 1, 1 ], [ 0, 1 ] ];;
+    gap> PrintArray( KroneckerProduct( mat1, mat2 ) );
+    [ [   0,   0,  -1,  -1,   1,   1 ],
+      [   0,   0,   0,  -1,   0,   1 ],
+      [  -2,  -2,   0,   0,  -2,  -2 ],
+      [   0,  -2,   0,   0,   0,  -2 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DimensionsMat}
+
+'DimensionsMat( <mat> )'
+
+'DimensionsMat' returns the dimensions of the matrix <mat>  as  a list of
+two integers.  The first entry is the number of rows of <mat>, the second
+entry is the number of columns.
+
+|    gap> DimensionsMat( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );
+    [ 2, 3 ]
+    gap> DimensionsMat( [ [ 1 .. 5 ] ] );
+    [ 1, 5 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsDiagonalMat}
+
+'IsDiagonalMat( <mat> )'
+
+<mat> must be a matrix. This function returns 'true' if <mat> is square and
+all  entries  'mat[i][j]'  with  'i\<>j'  are  equal  to '0\*mat[i][j]' and
+'false' otherwise.
+
+|    gap> mat := [ [ 1, 2 ], [ 3, 1 ] ];;
+    gap> IsDiagonalMat( mat );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsLowerTriangularMat}
+
+'IsLowerTriangularMat( <mat> )'
+
+<mat>  must be  a matrix.  This  function  returns 'true' if all  entries
+ 'mat[i][j]' with 'j>i'   are   equal  to '0\*mat[i][j]'   and    'false'
+ otherwise.
+
+|    gap> a := [ [ 1, 2 ], [ 3, 1 ] ];;
+    gap> IsLowerTriangularMat( a );
+    false
+    gap> a[1][2] := 0;;
+    gap> IsLowerTriangularMat( a );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsUpperTriangularMat}
+
+'IsUpperTriangularMat( <mat> )'
+
+<mat>  must  be  a  matrix.  This  function  returns  'true' if all entries
+'mat[i][j]'  with  'j  \<  i'  are  equal  to  '0\*mat[i][j]'  and  'false'
+otherwise.
+
+|    gap> a := [ [ 1, 2 ], [ 3, 1 ] ];;
+    gap> IsUpperTriangularMat( a );
+    false
+    gap> a[2][1] := 0;;
+    gap> IsUpperTriangularMat( a );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DiagonalOfMat}
+
+'DiagonalOfMat( <mat> )'
+
+This function returns the list of diagonal entries of the matrix <mat>,
+that is the list of '<mat>[i][i]'.
+
+|    gap> mat := [ [ 1, 2 ], [ 3, 1 ] ];;
+    gap> DiagonalOfMat( mat );
+    [ 1, 1 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DiagonalMat}%
+\index{Matrices!direct sum of}
+
+'DiagonalMat( <mat1>, ... , <matn> )'
+
+returns the block diagonal direct sum of the matrices <mat1>, $\ldots$,
+<matn>. Blocks of size $1\times 1$ may be given as scalars.
+
+|    gap> C1 := [ [   2,  -1,   0,   0 ],
+    >            [  -1,   2,  -1,   0 ],
+    >            [   0,  -1,   2,  -1 ],
+    >            [   0,   0,  -1,   2 ] ];;
+    gap> C2 := [ [   2,   0,  -1 ],
+    >            [   0,   2,  -1 ],
+    >            [  -1,  -1,   2 ] ];;
+    gap> PrintArray( DiagonalMat( C1, 3, C2 ) );
+    [ [   2,  -1,   0,   0,   0,   0,   0,   0 ],
+      [  -1,   2,  -1,   0,   0,   0,   0,   0 ],
+      [   0,  -1,   2,  -1,   0,   0,   0,   0 ],
+      [   0,   0,  -1,   2,   0,   0,   0,   0 ],
+      [   0,   0,   0,   0,   3,   0,   0,   0 ],
+      [   0,   0,   0,   0,   0,   2,   0,  -1 ],
+      [   0,   0,   0,   0,   0,   0,   2,  -1 ],
+      [   0,   0,   0,   0,   0,  -1,  -1,   2 ] ]|
+
+To make a diagonal matrix with a specified diagonal <d> use
+'ApplyFunc(DiagonalMat, d )'.
+
+‣ PermutationMat( perm, dim[, F] )	( function )
+returns a matrix in dimension dim over the field given by F (i.e. the smallest field containing the element F or F itself if it is a field) that represents the permutation perm acting by permuting the basis vectors as it permutes points.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermutationMat}%
+\index{Matrices!permutation}
+
+'PermutationMat( <perm>, <dim> [,<F>])'
+
+returns  a matrix  in dimension  <dim> over  the field  <F> (by default the
+rationals)  that represents the permutation  <perm> acting by permuting the
+basis vectors as it permutes points.
+
+|    gap> PermutationMat((1,2,3),4);
+    [ [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 1 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TraceMat}
+
+'TraceMat( <mat> )'
+
+'TraceMat' returns  the trace  of the square matrix <mat>.   The trace is
+the sum of all entries on the diagonal of <mat>.
+
+|    gap> TraceMat( [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ] );
+    15
+    gap> TraceMat( IdentityMat( 4, GF(2) ) );
+    0*Z(2) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DeterminantMat}
+
+'DeterminantMat( <mat> )'
+
+'DeterminantMat' returns the determinant of the square matrix <mat>.  The
+determinant is defined by\\
+$\sum_{p \in Symm(n)}{sign(p)\prod_{i=1}^{n}{mat[i][i^p]}}$.
+
+|    gap> DeterminantMat( [ [ 1, 2 ], [ 3, 4 ] ] );
+    -2
+    gap> DeterminantMat( [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, Z(3) ] ] );
+    Z(3) |
+
+Note that 'DeterminantMat' does not use  the above  definition to compute
+the  result.   Instead  it  performs a Gaussian  elimination.   For large
+rational matrices this may take very long, because the entries may become
+very large, even if the final result is a small integer.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RankMat}
+
+'RankMat( <mat> )'
+
+'RankMat'  returns the  rank of the matrix <mat>.  The rank is defined as
+the  dimension  of the vector  space spanned by the rows  of  <mat>.   It
+follows  that  a <n> by  <n>  matrix is invertible exactly if its rank is
+<n>.
+
+|    gap> RankMat( [ [ 4, 1, 2 ], [ 3, -1, 4 ], [ -1, -2, 2 ] ] );
+    2 |
+
+Note that 'RankMat' performs a  Gaussian elimination.  For large rational
+matrices  this  may take  very long, because the  entries may become very
+large.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrderMat}
+
+'OrderMat( <mat> )'
+
+'OrderMat' returns  the order of the invertible square matrix <mat>.  The
+order <ord> is the smallest positive integer such  that '<mat>\^<ord>' is
+the identity.
+
+|    gap> OrderMat( [ [ 0*Z(2), 0*Z(2), Z(2)^0 ],
+    >                 [ Z(2)^0, Z(2)^0, 0*Z(2) ],
+    >                 [ Z(2)^0, 0*Z(2), 0*Z(2) ] ] );
+    4 |
+
+'OrderMat'  first  computes <ord1>  such that  the first  standard  basis
+vector  is  mapped  by  '<mat>\^<ord1>' onto  itself.   It  does this  by
+applying <mat> repeatedly to the  first standard basis  vector.   Then it
+computes <mat1> as '<mat1>\^<ord1>'.   Then it  computes <ord2> such that
+the second  standard  basis vector is  mapped  by  '<mat1>\^<ord2>'  onto
+itself.  This process is repeated until all basis vectors are mapped onto
+themselves.  'OrderMat' warns you that the order may be infinite, when it
+finds that the order must be larger than 1000.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TriangulizeMat}
+
+'TriangulizeMat( <mat> )'
+
+'TriangulizeMat'  brings the matrix <mat>  into upper triangular form. Note
+that  <mat> is changed. A matrix is in upper triangular form when the first
+nonzero  entry in each  row is one  and lies further  to the right than the
+first  nonzero  entry  in  the  previous  row. Furthermore, above the first
+nonzero  entry in each row all entries  are zero. Note that the matrix will
+have  trailing zero rows if  the rank of <mat>  is not maximal. The rows of
+the  resulting  matrix  span  the  same  vectorspace  than  the rows of the
+original matrix <mat>. The function returns the indices of the lines of the
+orginal  matrix  corresponding  to  the  non-zero lines of the triangulized
+matrix.
+
+|    gap> m := [ [ 0, -3, -1 ], [ -3, 0, -1 ], [ 2, -2, 0 ] ];;
+    gap> TriangulizeMat( m ); m;
+    [ 2, 1 ]
+    [ [ 1, 0, 1/3 ], [ 0, 1, 1/3 ], [ 0, 0, 0 ] ] |
+
+Note  that for large rational matrices 'TriangulizeMat' may take very long,
+because  the entries may become very large during the Gaussian elimination,
+even if the final result contains only small integers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BaseMat}
+
+'BaseMat( <mat> )'
+
+'BaseMat'  returns a  standard  base for the vector space  spanned by the
+rows of the matrix <mat>.  The standard base is in upper triangular form.
+That means that  the  first nonzero vector in each  row  is  one and lies
+further to the right than  the first nonzero  entry in the previous  row.
+Furthermore, above  the  first  nonzero entry in each row all entries are
+zero.
+
+|    gap> BaseMat( [ [ 0, -3, -1 ], [ -3, 0, -1 ], [ 2, -2, 0 ] ] );
+    [ [ 1, 0, 1/3 ], [ 0, 1, 1/3 ] ] |
+
+Note that  for  large  rational  matrices 'BaseMat'  may take very  long,
+because  the  entries   may  become   very  large   during  the  Gaussian
+elimination, even if the final result contains only small integers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NullspaceMat}
+
+'NullspaceMat( <mat> )'
+
+'NullspaceMat' returns a base for the nullspace of the matrix <mat>.  The
+nullspace is the set of vectors <vec> such that '<vec> \*\ <mat>'  is the
+zero vector.   The returned  base is the standard  base for the nullspace
+(see "BaseMat").
+
+|    gap> NullspaceMat( [ [ 2, -4, 1 ], [ 0, 0, -4 ], [ 1, -2, -1 ] ] );
+    [ [ 1, 3/4, -2 ] ] |
+
+Note that for large rational matrices 'NullspaceMat' may take very  long,
+because   the   entries   may  become  very  large  during  the  Gaussian
+elimination, even if the final result only contains small integers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SolutionMat}
+
+'SolutionMat( <mat>, <vec> )'
+
+'SolutionMat'  returns  one solution  of the equation '<x>  \*\  <mat>  =
+<vec>' or 'false' if no such solution exists.
+
+|    gap> SolutionMat( [ [ 2, -4, 1 ], [ 0, 0, -4 ], [ 1, -2, -1 ] ],
+    >                  [ 10, -20, -10 ] );
+    [ 5, 15/4, 0 ]
+    gap> SolutionMat( [ [ 2, -4, 1 ], [ 0, 0, -4 ], [ 1, -2, -1 ] ],
+    >                  [ 10, 20, -10 ] );
+    false |
+
+Note  that for large rational  matrices 'SolutionMat' may take very long,
+because   the  entries  may   become  very  large   during  the  Gaussian
+elimination, even if the final result only contains small integers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DiagonalizeMat}
+
+'DiagonalizeMat( <mat> )'
+
+'DiagonalizeMat'  transforms the  integer matrix <mat> by  multiplication
+with unimodular  (i.e., determinant +1  or -1) integer matrices  from the
+left  and from the right into diagonal form (i.e., only diagonal  entries
+are  nonzero).  Note  that  'DiagonalizeMat'  changes <mat>  and  returns
+nothing.  If  there  are  several  diagonal matrices  to  which  <mat> is
+equivalent,  it is not  specified  which one is computed, except that all
+zero entries  on  the diagonal are collected at the lower right  end (see
+"ElementaryDivisorsMat").
+
+|    gap> m := [ [ 0, -1, 1 ], [ -2, 0, -2 ], [ 2, -2, 4 ] ];;
+    gap> DiagonalizeMat( m );  m;
+    [ [ 1, 0, 0 ], [ 0, 2, 0 ], [ 0, 0, 0 ] ] |
+
+Note that for large integer matrices 'DiagonalizeMat' may take very long,
+because the entries may become very large during the computation, even if
+the final result only contains small integers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ElementaryDivisorsMat}
+
+'ElementaryDivisorsMat( <mat> )'
+
+'ElementaryDivisors' returns a list of the elementary divisors, i.e., the
+unique <d> with '<d>[<i>]'  divides '<d>[<i>+1]'  and <mat> is equivalent
+to a diagonal matrix  with the elements  '<d>[<i>]' on the  diagonal (see
+"DiagonalizeMat").
+
+|    gap> m := [ [ 0, -1, 1 ], [ -2, 0, -2 ], [ 2, -2, 4 ] ];;
+    gap> ElementaryDivisorsMat( m );
+    [ 1, 2, 0 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrintArray}
+
+'PrintArray( <mat > )'
+
+'PrintArray' displays the matrix <mat> in a pretty way.
+
+|    gap> m := [[1,2,3,4],[5,6,7,8],[9,10,11,12]];
+    [ [ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ] ]
+    gap> PrintArray( m );
+    [ [   1,   2,   3,   4 ],
+      [   5,   6,   7,   8 ],
+      [   9,  10,  11,  12 ] ]|
+

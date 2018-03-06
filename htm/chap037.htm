@@ -1,0 +1,194 @@
+<html><head><title>GAP3 Manual: 37 Matrix Groups</title></head>
+<body bgcolor="ffffff">
+<h1>37 Matrix Groups</h1>
+<P><P><P>
+A <strong>matrix group</strong> is  a group of invertable square  matrices (see  chapter
+<a href="chap034.htm">Matrices</a>).   In <strong>GAP3</strong>  you can define matrix  groups of matrices  over
+each of the fields that <strong>GAP3</strong> supports, i.e., the  rationals, cyclotomic
+extensions of the rationals, and finite fields (see chapters <a href="chap012.htm">Rationals</a>,
+<a href="chap013.htm">Cyclotomics</a>, and <a href="chap018.htm">Finite Fields</a>).
+<P>
+You  define a matrix  group in <strong>GAP3</strong> by calling  <code>Group</code>  (see  <a href="chap007.htm#SECT009">Group</a>)
+passing the generating matrices as arguments.
+<P>
+<pre>    gap> m1 := [ [ Z(3)^0, Z(3)^0,   Z(3) ],
+    >            [   Z(3), 0*Z(3),   Z(3) ],
+    >            [ 0*Z(3),   Z(3), 0*Z(3) ] ];;
+    gap> m2 := [ [   Z(3),   Z(3), Z(3)^0 ],
+    >            [   Z(3), 0*Z(3),   Z(3) ],
+    >            [ Z(3)^0, 0*Z(3),   Z(3) ] ];;
+    gap> m := Group( m1, m2 );
+    Group( [ [ Z(3)^0, Z(3)^0, Z(3) ], [ Z(3), 0*Z(3), Z(3) ],
+      [ 0*Z(3), Z(3), 0*Z(3) ] ],
+    [ [ Z(3), Z(3), Z(3)^0 ], [ Z(3), 0*Z(3), Z(3) ],
+      [ Z(3)^0, 0*Z(3), Z(3) ] ] )</pre>
+<P>
+However,  currently <strong>GAP3</strong> can only  compute  with finite  matrix groups.
+Also computations with large matrix groups are not done very efficiently.
+We hope to improve this situation in the future, but currently you should
+be careful not to try too large matrix groups.
+<P>
+Because  matrix  groups are just a special  case of  domains  all the set
+theoretic functions such as <code>Size</code> and  <code>Intersection</code>  are applicable to
+matrix  groups  (see chapter  <a href="chap004.htm">Domains</a>  and  <a href="chap037.htm#SECT001">Set  Functions for  Matrix
+Groups</a>).
+<P>
+Also matrix groups are  of course groups, so all the group functions such
+as <code>Centralizer</code> and <code>DerivedSeries</code> are applicable to matrix groups (see
+chapter <a href="chap007.htm">Groups</a> and <a href="chap037.htm#SECT002">Group Functions for Matrix Groups</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap037.htm#SECT001">Set Functions for Matrix Groups</a>
+<LI> <A HREF="chap037.htm#SECT002">Group Functions for Matrix Groups</a>
+<LI> <A HREF="chap037.htm#SECT003">Matrix Group Records</a>
+</ol>
+<A NAME="SECT001"><h2>37.1 Set Functions for Matrix Groups</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<A name = "I1"></a>
+
+<A name = "I2"></a>
+
+<A name = "I3"></a>
+
+<P>
+As already  mentioned in the introduction of  this chapter matrix  groups
+are   domains.    All   set  theoretic  functions  such   as  <code>Size</code>  and
+<code>Intersections</code>  are  thus  applicable  to  matrix groups.   This section
+describes  how  these  functions  are  implemented  for  matrix   groups.
+Functions  not  mentioned here either  inherit the default  group methods
+described  in <a href="chap007.htm#SECT114">Set Functions for Groups</a> or the default  method mentioned
+in the respective sections.
+<P>
+To compute with a matrix group <var>m</var>, <strong>GAP3</strong> computes  the operation of the
+matrix group on the  underlying vector space (more precisely the union of
+the orbits of the parent of <var>m</var>  on the standard basis vectors).  Then it
+works with the  thus  defined permutation group  <var>p</var>,  which is of course
+isomorphic  to  <var>m</var>, and  finally  translates  the  results back into the
+matrix group.
+<P>
+<P>
+<code><var>obj</var> in <var>m</var></code>
+<P>
+To test if an object <var>obj</var> lies in a matrix group <var>m</var>, <strong>GAP3</strong> first tests
+whether <var>obj</var> is a invertable square matrix of the same dimensions as the
+matrices of  <var>m</var>.   If  it is, <strong>GAP3</strong> tests  whether  <var>obj</var> permutes  the
+vectors in  the union of the orbits of <var>m</var> on the standard basis vectors.
+If it does,  <strong>GAP3</strong>  takes this permutation and tests whether it lies  in
+<var>p</var>.
+<P>
+<P>
+<code>Size( <var>m</var> )</code>
+<P>
+To compute the size of the matrix group <var>m</var>, <strong>GAP3</strong> computes the size  of
+the isomorphic permutation group <var>p</var>.
+<P>
+<P>
+<code>Intersection( <var>m1</var>, <var>m2</var> )</code>
+<P>
+To compute the intersection of two subgroups  <var>m1</var> and <var>m2</var> with a common
+parent  matrix   group  <var>m</var>,   <strong>GAP3</strong>   intersects  the  images  of   the
+corresponding  permutation subgroups  <var>p1</var>  and <var>p2</var>  of  <var>p</var>.   Then  it
+translates  the  generators  of   the  intersection  of  the  permutation
+subgroups  back to matrices.  The  intersection of  <var>m1</var> and  <var>m2</var> is the
+subgroup  of  <var>m</var> generated  by those matrices.   If <var>m1</var> and <var>m2</var> do not
+have a common parent group, or if only one  of them is a matrix group and
+the  other  is a  set of  matrices,  the  default  method  is  used  (see
+<a href="chap004.htm#SECT012">Intersection</a>).
+<P><A NAME="SECT002"><h2>37.2 Group Functions for Matrix Groups</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<A name = "I5"></a>
+
+<A name = "I6"></a>
+
+<A name = "I7"></a>
+
+<A name = "I8"></a>
+
+<A name = "I9"></a>
+
+<A name = "I10"></a>
+
+<P>
+As already mentioned  in  the introduction of this  chapter matrix groups
+are  after  all group.  All group functions  such  as  <code>Centralizer</code>  and
+<code>DerivedSeries</code>  are  thus  applicable  to  matrix groups.  This  section
+describes  how  these  functions  are  implemented  for   matrix  groups.
+Functions not mentioned here  either inherit  the  default  group methods
+described in the respective sections.
+<P>
+To compute with a  matrix group <var>m</var>, <strong>GAP3</strong> computes the operation of the
+matrix  group on the underlying vector space (more precisely, if the vector
+space is small enough, it enumerates the space and acts on the whole space.
+Otherwise it takes the union of
+the orbits of the parent of <var>m</var> on the standard basis vectors).   Then it
+works  with  the thus defined permutation  group <var>p</var>, which is of  course
+isomorphic to  <var>m</var>, and  finally  translates the results  back  into  the
+matrix group.
+<P>
+<P>
+<code>Centralizer( <var>m</var>, <var>u</var> )</code> <BR> 
+<code>Normalizer( <var>m</var>, <var>u</var> )</code> <BR> 
+<code>SylowSubgroup( <var>m</var>, <var>p</var> )</code> <BR> 
+<code>ConjugacyClasses( <var>m</var> )</code>
+<P>
+This functions  all work by solving the  problem in the permutation group
+<var>p</var> and translating the result back.
+<P>
+<P>
+<code>PermGroup( <var>m</var> )</code>
+<P>
+This function simply returns the permutation group defined above.
+<P>
+<P>
+<code>Stabilizer( <var>m</var>, <var>v</var> )</code>
+<P>
+The  stabilizer of  a vector <var>v</var> that lies in the  union of the orbits of
+the parent of <var>m</var> on  the standard basis  vectors  is computed by finding
+the stabilizer  of the corresponding point in  the permutation  group <var>p</var>
+and  translating  this back.   Other stabilizers are  computed  with  the
+default method (see <a href="chap008.htm#SECT024">Stabilizer</a>).
+<P>
+<P>
+<code>RepresentativeOperation( <var>m</var>, <var>v1</var>, <var>v2</var> )</code>
+<P>
+If <var>v1</var> and <var>v2</var> are vectors that both lie in the union of the  orbits of
+the   parent   group   of   <var>m</var>    on   the   standard   basis   vectors,
+<code>RepresentativeOperation</code> finds a permutation in <var>p</var> that takes the point
+corresponding  to <var>v1</var> to  the point corresponding to  <var>v2</var>.  If no  such
+permutation  exists, it returns <code>false</code>.   Otherwise  it  translates  the
+permutation back to a matrix.
+<P>
+<P>
+<code>RepresentativeOperation( <var>m</var>, <var>m1</var>, <var>m2</var> )</code>
+<P>
+If <var>m1</var> and <var>m2</var> are  matrices in <var>m</var>,  <code>RepresentativeOperation</code> finds a
+permutation in <var>p</var> that conjugates the permutation corresponding to  <var>m1</var>
+to the permutation corresponding to <var>m2</var>.  If no such permutation exists,
+it returns <code>false</code>.   Otherwise it  translates the permutation back to  a
+matrix.
+<P><A NAME="SECT003"><h2>37.3 Matrix Group Records</h2></a>
+<P><P><P>
+A group is  represented by  a record that  contains information about the
+group.   A matrix  group  record  contains the  following  components  in
+addition to those described in section <a href="chap007.htm#SECT118">Group Records</a>.
+<P>
+<DL><DT><code>isMatGroup</code>:<DD> <BR> 
+    always <code>true</code>.
+</DL><P>
+If a  permutation representation  for a matrix group  <var>m</var> is known it  is
+stored in the following components.
+<P>
+<DL><DT><code>permGroupP</code>:<DD> <BR> 
+    contains the permutation group representation of <var>m</var>.
+</DL><P>
+<DL><DT><code>permDomain</code>:<DD> <BR> 
+    contains the union of the orbits of the parent of <var>m</var> on the standard
+    basis vectors.
+</DL><P><a href ="chap036.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap038.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

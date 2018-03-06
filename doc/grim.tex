@@ -1,0 +1,150 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  grim.tex           GAP documentation                Robert Beals
+%%
+%A  @(#)$Id: grim.tex,v 1.1 1997/03/27 10:51:04 gap Exp $
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%H  $Log: grim.tex,v $
+%H  Revision 1.1  1997/03/27 10:51:04  gap
+%H  Added documentation for Specht, autag gliss and grim. Started smoothing
+%H  and integrating.
+%H
+%H  		SL
+%H
+%H  Revision 1.1  1997/02/03 14:47:52  gap
+%H  Adding grim package
+%H
+%H      SL
+%H
+%H  Revision 1.0
+%H  Initial revision
+%%
+\Chapter{GRIM (Groups of Rational and Integer Matrices)}
+
+\def\GRIM{{\sf GRIM}}
+
+This chapter describes the main functions of the \GRIM (Version~1.0)
+share library package for testing finiteness of rational and integer matrix
+groups.  All functions described here are written entirely in the {\GAP}
+language.
+
+Before using any of the functions described in this chapter you must load
+the package by calling the statement
+
+|    gap> RequirePackage( "grim" );
+
+    Loading  GRIM (Groups of Rational and Integer Matrices) 1.0,
+    by beals@math.arizona.edu |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions to test finiteness and integrality}
+
+The  following sections describe  the functions  used to test finiteness
+and integrality of rational matrix groups.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsFinite for rational matrix groups}
+
+'IsFinite( <G> )'
+
+The group <G>, which must consist of rational matrices,
+is tested for finiteness.
+
+A group of rational matrices is finite iff the following two conditions hold\:\
+There is a basis with respect to which all elements of <G> have integer
+entries, and <G> preserves a positive definite quadratic form.
+
+If <G> contains non-integer matrices, then IsFinite first calls
+InvariantLattice (see "InvariantLattice for rational matrix groups") to
+find a basis with respect to which all elements of <G> are integer
+matrices.
+
+IsFinite then finds a positive definite quadratic form, or determines
+that none exists.  If <G> is finite, then the quadratic form is stored
+in <G>.quadraticForm.
+
+|gap> a := [[1,1/2],[0,-1]];; G := Group(a);;
+gap> IsFinite(G);
+true
+gap> L := G.invariantLattice;;
+gap> L*a*L^(-1);
+[ [ 1, 1 ], [ 0, -1 ] ]
+gap> B := G.quadraticForm;
+[ [ 4, 1 ], [ 1, 3/2 ] ]
+gap> TransposedMat(a)*B*a;
+[ [ 4, 1 ], [ 1, 3/2 ] ]|
+
+
+This function is Las Vegas\:\ it is randomized, but the randomness only
+affects the running time, not the correctness of the output.
+(See "IsFiniteDeterministic for integer matrix groups".)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InvariantLattice for rational matrix groups}
+
+'InvariantLattice( <G> )'
+
+This function returns a lattice $L$ (given by a basis)
+which is <G>-invariant.  That is, for any $A$ in <G>,
+$L A L^{-1}$ is an integer matrix.
+
+$L$ is also stored in <G>.invariantLattice, and the conjugate
+group $L <G> L^{-1}$ is stored in <G>.integerMatrixGroup.
+
+This function finds an $L$ unless <G> contains elements of 
+non-integer trace (in which case no such $L$ exists, and
+<false> is returned).
+
+|gap> a := [[1,1/2],[0,-1]];; G := Group(a);;
+gap> L := InvariantLattice(G);;
+gap> L*a*L^(-1);
+[ [ 1, 1 ], [ 0, -1 ] ]|
+
+This function is Las Vegas\:\  it is randomized, but the
+randomization only affects the running time, not the correctness
+of the output.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsFiniteDeterministic for integer matrix groups}
+
+'IsFiniteDeterministic( <G> )'
+
+The integer matrix group <G> is tested for finiteness,
+using a deterministic algorithm.  In most cases, this
+seems to be less efficient than the Las Vegas IsFinite.
+However, the number of arithmetic steps of this algorithm
+does not depend on the size of the entries of <G>, which
+is not true of the Las Vegas version.
+
+If <G> is finite, then a <G>-invariant positive definite 
+quadratic form is stored in <G>.quadraticForm.
+
+|gap> a := [[1,1],[0,-1]];
+[ [ 1, 1 ], [ 0, -1 ] ]
+gap> G := Group(a);;
+gap> IsFiniteDeterministic(G);
+true
+gap> B := G.quadraticForm;;
+gap> B;
+[ [ 1, 1/2 ], [ 1/2, 3/2 ] ]
+gap> TransposedMat(a)*B*a;
+[ [ 1, 1/2 ], [ 1/2, 3/2 ] ]|
+
+
+See also ("IsFinite for rational matrix groups"). 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section\\|%E"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

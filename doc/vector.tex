@@ -1,0 +1,269 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  vector.tex                  GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: vector.tex,v 1.1.1.1 1996/12/11 12:36:51 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes  those  functions  that  mainly  deal  with  vectors.
+%%
+%H  $Log: vector.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:51  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.7  1993/05/04  11:42:30  fceller
+%H  fixed a spelling error
+%H
+%H  Revision 3.6  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.5  1993/02/11  17:14:10  martin
+%H  vectors may now contain records
+%H
+%H  Revision 3.4  1993/02/05  08:17:44  felsch
+%H  examples fixed
+%H
+%H  Revision 3.3  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.2  1991/07/26  09:01:07  martin
+%H  changed |\GAP\ | to |{\GAP}|
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:36:02  martin
+%H  Initial revision under RCS
+%H
+%%
+\Chapter{Vectors}%
+\index{scalars}\index{base!of vector space}\index{dimension!of vector space}
+
+A important concept in algebra  is the vector  space over a field $F$.  A
+*vector space* $V$  is a set of *vectors*, for which an addition $u +  v$
+and a multiplication by *scalars*, i.e., elements from $F$, $s v$ must be
+defined.  A *base* of $V$ is a list of vectors, such that every vector in
+$V$ can be uniquely written as  linear combination  of the  base vectors.
+If the base if finite, its size is called  the *dimension* of $V$.  Using
+a base it  can be  shown that $V$ is isomorphic to the set $n$-tuples  of
+elements with the componentwise addition and multiplication.
+
+This comment suggests the representation that is actually used in {\GAP}.
+A {\GAP}  vector is a  list without holes  whose elements all come from a
+common  field.   We call  the length   of the list  the dimension  of the
+vector.  This is a little bit lax, because the dimension is a property of
+the vector space, not of the vector, but should seldom cause confusion.
+
+The first possibility for this field are the rationals (see "Rationals").
+We call a list without holes whose elements  are all rationals a rational
+vector, which is a bit lax too, but should  again  cause  no   confusion.
+For example '[ 1/2, 0, -1/3, 2 ]' is a rational vector of dimension 4.
+
+The second possibility  are  cyclotomics (see "Cyclotomics").   Note that
+the  rationals  are the  prime field  of  cyclotomic fields and therefore
+rational  vectors are  just a  special  case of  cyclotomic vectors.   An
+example of a cyclotomic vector is '[ E(3)+E(3)\^2, 1, E(15) ]'.
+
+Third the common field may be a finite field (see "Finite Fields").  Note
+that it is not enough that  all elements are finite field elements of the
+same characteristic, the common finite field containing all elements must
+be representable  in  {\GAP}, i.e., must have  at most $2^{16}$ elements.
+An  example of such  a vector over the finite  field  $GF(3^4)$  with  81
+elements is '[ Z(3\^4)\^3, Z(3\^2)\^5, Z(3\^4)\^11 ]'.
+
+Finally  a list  all of whose elements are  records is also considered  a
+vector.  In that case the records should all have  an 'operations' record
+with  the necessary  functions '+', '-',  '\*',  '\^'.   This allows  for
+vectors  over  library  and/or user defined fields  (or rings)  such as a
+polynomial ring (see "Polynomials").
+
+The first section in this  chapter describes the operations applicable to
+vectors (see "Operations for Vectors").
+
+The  next section describes  the function that   tests if an  object is a
+vector (see "IsVector").
+
+The next section describes the function that returns a canonical multiple
+of a vector (see "NormedVector").
+
+The  last section  tells you  more  about the internal representation  of
+vectors (see "More about Vectors").
+
+Because vectors are just a special case of lists,  all the operations and
+functions for lists are applicable to vectors also (see chapter "Lists").
+This especially includes   accessing elements  of   a vector (see   "List
+Elements"), changing elements of  a  vector (see "List  Assignment"), and
+comparing vectors (see "Comparisons of Lists").
+
+Vectorspaces  are a special  category   of domains and  are described  by
+vectorspace records (see chapter "Vector Spaces").
+
+Vectors  play  an important role  for  matrices (see chapter "Matrices"),
+which are implemented as lists of vectors.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Vectors}%
+\index{operations!for vectors}
+
+'<vec1> + <vec2>'
+
+In this form the addition operator '+'  evaluates to  the sum  of the two
+vectors <vec1> and <vec2>, which must have the same  dimension and lie in
+a common field.  The sum is a new  vector where each entry  is the sum of
+the corresponding entries  of the vectors.  As an  exception it  is  also
+possible to add an integer vector to a finite field vector, in which case
+the integers are interpreted as '<scalar> \*\ <GF>.one'.
+
+'<scalar> + <vec>' \\
+'<vec> + <scalar>'
+
+In  this form '+' evaluates  to the  sum of the   scalar <scalar> and the
+vector <vec>, which must lie in a common field.  The sum is  a new vector
+where each entry is the sum of the scalar and the  corresponding entry of
+the vector.  As an exception it is also possible to add an integer scalar
+to a finite field  vector, in  which case  the integer  is interpreted as
+'<scalar> \*\ <GF>.one'.
+
+|    gap> [ 1, 2, 3 ] + [ 1/2, 1/3, 1/4 ];
+    [ 3/2, 7/3, 13/4 ]
+    gap> [ 1/2, 3/2, 1/2 ] + 1/2;
+    [ 1, 2, 1 ] |
+
+'<vec1> - <vec2>'  \\
+'<scalar> - <vec>' \\
+'<vec> - <scalar>'
+
+The difference operator '-'  returns the componentwise difference of  its
+two operands and is defined subject to the same restrictions as '+'.
+
+|    gap> [ 1, 2, 3 ] - [ 1/2, 1/3, 1/4 ];
+    [ 1/2, 5/3, 11/4 ]
+    gap> [ 1/2, 3/2, 1/2 ] - 1/2;
+    [ 0, 1, 0 ] |
+
+'<vec1> \*\ <vec2>'
+
+In this form the multiplication operator '\*' evaluates to the product of
+the two vectors <vec1> and <vec2>, which must have the same dimension and
+lie  in a common field.   The product is  the sum of  the products of the
+corresponding entries  of  the vectors.   As  an exception  it   is  also
+possible to multiply an integer vector to a finite field vector, in which
+case the integers are interpreted as '<scalar> \*\ <GF>.one'.
+
+'<scalar> \*\ <vec>' \\
+'<vec> \*\ <scalar>'
+
+In this form '\*' evaluates to the product of the scalar <scalar> and the
+vector <vec>, which must lie  in a common field.   The  product  is a new
+vector  where   each entry  is   the  product  of   the  scalar  and  the
+corresponding entry of the vector.  As an  exception it  is also possible
+to multiply an integer scalar to a finite field vector, in which case the
+integer is interpreted as '<scalar> \* <GF>.one'.
+
+|    gap> [ 1, 2, 3 ] * [ 1/2, 1/3, 1/4 ];
+    23/12
+    gap> [ 1/2, 3/2, 1/2 ] * 2;
+    [ 1, 3, 1 ] |
+
+Further operations  with vectors  as operands  are defined  by the matrix
+operations (see "Operations for Matrices").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsVector}%
+\index{test!for a vector}
+
+'IsVector( <obj> )'
+
+'IsVector' returns  'true' if <obj>, which may  be an object of arbitrary
+type,  is a vector and 'false'  else.  A vector  is a list without holes,
+whose elements all come from a common field.
+
+|    gap> IsVector( [ 0, -3, -2, 0, 6 ] );
+    true
+    gap> IsVector( [ Z(3^4)^3, Z(3^2)^5, Z(3^4)^13 ] );
+    true
+    gap> IsVector( [ 0, Z(2^3)^3, Z(2^3) ] );
+    false    # integers are not finite field elements
+    gap> IsVector( [ , 2, 3,, 5,, 7 ] );
+    false    # list that have holes are not vectors
+    gap> IsVector( 0 );
+    false    # not even a list |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NormedVector}%
+
+'NormedVector( <vec> )'
+
+'NormedVector' returns the scalar  multiple of <vec>  such that the first
+nonzero entry of <vec> is the one from the field over which the vector is
+defined.  If <vec> contains only zeroes a copy of it is returned.
+
+|    gap> NormedVector( [ 0, -3, -2, 0, 6 ] );
+    [ 0, 1, 2/3, 0, -2 ]
+    gap> NormedVector( [ 0, 0 ] );
+    [ 0, 0 ]
+    gap> NormedVector( [ Z(3^4)^3, Z(3^2)^5, Z(3^4)^13 ] );
+    [ Z(3)^0, Z(3^4)^47, Z(3^2) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Vectors}
+
+In  the  first section of this  chapter  we defined  a  vector  as a list
+without  holes   whose  elements  all come  from  a   common field.  This
+representation is quite nice to  use.  However, suppose that {\GAP} would
+have to check that a list is a  vector every time  this vector appears as
+operand in a addition or multiplication.  This would be quite wasteful.
+
+To avoid this a list that is a vector may, but need not, have an internal
+flag set that  tells the operations that  this  list is  indeed a vector.
+Then this operations do not  have to check  this operand and can  perform
+the operation  right away.  This section  tells you when a vector obtains
+this flag, so  you can write your  functions in such  a way that you make
+best use of this feature.
+
+The results of  vector  operations, i.e., binary operations  that involve
+vectors, are known by construction to be  vectors, and thus have the flag
+set upon creation.
+
+If the operand of one of the binary operation is a list that does not yet
+have the   flag set, those operations will   check  that this  operand is
+indeed a vector and set the flag if it is.  If it is not a vector and not
+a matrix an error is signalled.
+
+If the argument to 'IsVector' is a list that does not  yet have this flag
+set, 'IsVector' will  test if all elements come  from a common field.  If
+they do, 'IsVector'  will set the flag.   Thus on the one hand 'IsVector'
+is a test whether the argument is a vector.  On the other hand 'IsVector'
+can be used as a hint to {\GAP} that a certain list is indeed a vector.
+
+If you  change  a vector, that does   have this flag set,  by assignment,
+'Add', or  'Append', the vectors will loose  its flag, even if the change
+is such that the resulting list is still a vector.  However if the vector
+is a vector over a finite  field and you assign an  element from the same
+finite field  the vector will keep its  flag.  Note that changing  a list
+that is not a vector will never set the  flag, even if the resulting list
+is  a vector.  Such a vector  will obtain the flag  only if it appears as
+operand in a binary operation, or is passed to 'IsVector'.
+
+Vectors over  finite fields  have  one additional feature.   If  they are
+known  to be  vectors, not only do  they have  the flag set, but also are
+they represented differently.  This representation is much  more compact.
+Instead of storing every element separately and storing for every element
+separately in which field it lies, the field is only  stored once.   This
+representation takes up to 10 times less memory.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

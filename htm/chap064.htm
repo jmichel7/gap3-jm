@@ -1,0 +1,1425 @@
+<html><head><title>GAP3 Manual: 64 Grape</title></head>
+<body bgcolor="ffffff">
+<h1>64 Grape</h1>
+<P><P><P>
+This chapter describes the main functions  of the <strong>GRAPE</strong> (Version 2.31)
+share  library  package  for  computing  with  graphs  and  groups.   All
+functions  described  here are  written entirely in  the <strong>GAP3</strong> language,
+except for the  automorphism  group and  isomorphism  testing  functions,
+which   make   use   of   B. McKay's   \nauty   (Version 1.7)  package
+<A href="biblio.htm#Nau90"><cite>Nau90</cite></a>.
+<P>
+<strong>GRAPE</strong>  is primarily designed  for  the  construction and   analysis of
+graphs  related  to permutation groups  and finite geometries.    Special
+emphasis is placed on    the determination of regularity  properties  and
+subgraph  structure.  The  <strong>GRAPE</strong>  philosophy is  that a graph <I>&Gamma;</I>
+always  comes together with  a known  subgroup <I>G</I> of <I></I>Aut<I>(&Gamma;)</I>, and
+that <I>G</I> is  used to reduce  the  storage and CPU-time  requirements  for
+calculations with <I>&Gamma;</I> (see <A href="biblio.htm#Soi91"><cite>Soi91</cite></a>).   Of course <I>G</I> may be the
+trivial group, and in this  case <strong>GRAPE</strong>  algorithms will  perform  more
+slowly than strictly combinatorial  algorithms (although this degradation
+in performance is hopefully never more than a fixed constant factor).
+<P>
+In general <strong>GRAPE</strong>  deals with directed graphs which may have loops  but
+have  no multiple edges. However, many <strong>GRAPE</strong>  functions  only work for
+<strong>simple</strong> graphs (i.e. no  loops, and whenever <I>[x,y]</I> is an edge then  so
+is <I>[y,x]</I>), but these functions will check if an input graph is simple.
+<P>
+In <strong>GRAPE</strong>,  a graph  <I>gamma</I>  is stored as   a  record,  with mandatory
+components   <code>isGraph</code>,    <code>order</code>,        <code>group</code>,     <code>schreierVector</code>,
+<code>representatives</code>, and  <code>adjacencies</code>.   Usually, the  user  need  not be
+aware  of  this record  structure,  and is  strongly  advised only to use
+<strong>GRAPE</strong> functions to construct and modify graphs.
+<P>
+The <code>order</code> component  contains the number  of vertices of  <I>gamma</I>.  The
+vertices of <I>gamma</I>  are always <I>1,..,gamma.order</I>, but  they may also be
+given <strong>names</strong>, either  by  a  user or by  a function constructing a graph
+(e.g.    <code>InducedSubgraph</code>, <code>BipartiteDouble</code>,  <code>QuotientGraph</code>).     The
+<code>names</code> component, if  present,  records these  names.  If  the   <code>names</code>
+component is  not present (the user may,  for  example, choose to  unbind
+it),   then the names are taken   to be <I>1,...,gamma.order</I>.  The <code>group</code>
+component   records the  the  <strong>GAP3</strong>   permutation group associated  with
+<I>gamma</I>  (this  group  must  be  a subgroup  of     <I></I>Aut<I>(gamma)</I>).   The
+<code>representatives</code> component records a set  of  orbit representatives  for
+<I>gamma.group</I>  on  the vertices  of  <I>gamma</I>, with <I>gamma.adjacencies[i]</I>
+being the  set of vertices  adjacent to  <I>gamma.representatives[i]</I>.  The
+only mandatory component  which may   change once  a graph is   initially
+constructed  is <code>adjacencies</code> (when  an  edge  orbit of <I>gamma.group</I>  is
+added to, or removed from, <I>gamma</I>).  A graph  record  may also have some
+of      the     optional    components   <code>isSimple</code>,    <code>autGroup</code>,   and
+<code>canonicalLabelling</code>, which record information about that graph.
+<P>
+<strong>GRAPE</strong> has the  ability to make use of certain random group theoretical
+algorithms, which can result  in time and store savings. The use of these
+random methods may  be switched on and off by the global boolean variable
+<code>GRAPE_RANDOM</code>,  whose  default  value  is  <code>false</code> (random  methods not
+used).   Even if random methods are  used,  no function  described  below
+depends  on the correctness of such a randomly computed result. For these
+functions  the use of these random  methods only  influences the time and
+store taken. All global variables used by <strong>GRAPE</strong> start with <code>GRAPE_</code>.
+<P>
+The user who is interested in knowing more about the <strong>GRAPE</strong> system, and
+its advanced use,  should  consult  <A href="biblio.htm#Soi91"><cite>Soi91</cite></a> and the <strong>GRAPE</strong>  source
+code.
+<P>
+Before using any of the functions described in this chapter you must load
+the package by calling the statement
+<P>
+<pre>    gap> RequirePackage( "grape" );
+
+    Loading  GRAPE 2.31  (GRaph Algorithms using PErmutation groups),
+    by L.H.Soicher@qmw.ac.uk.
+    </pre>
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap064.htm#SECT001">Functions to construct and modify graphs</a>
+<LI> <A HREF="chap064.htm#SECT002">Graph</a>
+<LI> <A HREF="chap064.htm#SECT003">EdgeOrbitsGraph</a>
+<LI> <A HREF="chap064.htm#SECT004">NullGraph</a>
+<LI> <A HREF="chap064.htm#SECT005">CompleteGraph</a>
+<LI> <A HREF="chap064.htm#SECT006">JohnsonGraph</a>
+<LI> <A HREF="chap064.htm#SECT007">AddEdgeOrbit</a>
+<LI> <A HREF="chap064.htm#SECT008">RemoveEdgeOrbit</a>
+<LI> <A HREF="chap064.htm#SECT009">AssignVertexNames</a>
+<LI> <A HREF="chap064.htm#SECT010">Functions to inspect graphs, vertices and edges</a>
+<LI> <A HREF="chap064.htm#SECT011">IsGraph</a>
+<LI> <A HREF="chap064.htm#SECT012">OrderGraph</a>
+<LI> <A HREF="chap064.htm#SECT013">IsVertex</a>
+<LI> <A HREF="chap064.htm#SECT014">VertexName</a>
+<LI> <A HREF="chap064.htm#SECT015">Vertices</a>
+<LI> <A HREF="chap064.htm#SECT016">VertexDegree</a>
+<LI> <A HREF="chap064.htm#SECT017">VertexDegrees</a>
+<LI> <A HREF="chap064.htm#SECT018">IsLoopy</a>
+<LI> <A HREF="chap064.htm#SECT019">IsSimpleGraph</a>
+<LI> <A HREF="chap064.htm#SECT020">Adjacency</a>
+<LI> <A HREF="chap064.htm#SECT021">IsEdge</a>
+<LI> <A HREF="chap064.htm#SECT022">DirectedEdges</a>
+<LI> <A HREF="chap064.htm#SECT023">UndirectedEdges</a>
+<LI> <A HREF="chap064.htm#SECT024">Distance</a>
+<LI> <A HREF="chap064.htm#SECT025">Diameter</a>
+<LI> <A HREF="chap064.htm#SECT026">Girth</a>
+<LI> <A HREF="chap064.htm#SECT027">IsConnectedGraph</a>
+<LI> <A HREF="chap064.htm#SECT028">IsBipartite</a>
+<LI> <A HREF="chap064.htm#SECT029">IsNullGraph</a>
+<LI> <A HREF="chap064.htm#SECT030">IsCompleteGraph</a>
+<LI> <A HREF="chap064.htm#SECT031">Functions to determine regularity properties of graphs</a>
+<LI> <A HREF="chap064.htm#SECT032">IsRegularGraph</a>
+<LI> <A HREF="chap064.htm#SECT033">LocalParameters</a>
+<LI> <A HREF="chap064.htm#SECT034">GlobalParameters</a>
+<LI> <A HREF="chap064.htm#SECT035">IsDistanceRegular</a>
+<LI> <A HREF="chap064.htm#SECT036">CollapsedAdjacencyMat</a>
+<LI> <A HREF="chap064.htm#SECT037">OrbitalGraphIntersectionMatrices</a>
+<LI> <A HREF="chap064.htm#SECT038">Some special vertex subsets of a graph</a>
+<LI> <A HREF="chap064.htm#SECT039">ConnectedComponent</a>
+<LI> <A HREF="chap064.htm#SECT040">ConnectedComponents</a>
+<LI> <A HREF="chap064.htm#SECT041">Bicomponents</a>
+<LI> <A HREF="chap064.htm#SECT042">DistanceSet</a>
+<LI> <A HREF="chap064.htm#SECT043">Layers</a>
+<LI> <A HREF="chap064.htm#SECT044">IndependentSet</a>
+<LI> <A HREF="chap064.htm#SECT045">Functions to construct new graphs from old</a>
+<LI> <A HREF="chap064.htm#SECT046">InducedSubgraph</a>
+<LI> <A HREF="chap064.htm#SECT047">DistanceSetInduced</a>
+<LI> <A HREF="chap064.htm#SECT048">DistanceGraph</a>
+<LI> <A HREF="chap064.htm#SECT049">ComplementGraph</a>
+<LI> <A HREF="chap064.htm#SECT050">PointGraph</a>
+<LI> <A HREF="chap064.htm#SECT051">EdgeGraph</a>
+<LI> <A HREF="chap064.htm#SECT052">UnderlyingGraph</a>
+<LI> <A HREF="chap064.htm#SECT053">QuotientGraph</a>
+<LI> <A HREF="chap064.htm#SECT054">BipartiteDouble</a>
+<LI> <A HREF="chap064.htm#SECT055">GeodesicsGraph</a>
+<LI> <A HREF="chap064.htm#SECT056">CollapsedIndependentOrbitsGraph</a>
+<LI> <A HREF="chap064.htm#SECT057">CollapsedCompleteOrbitsGraph</a>
+<LI> <A HREF="chap064.htm#SECT058">NewGroupGraph</a>
+<LI> <A HREF="chap064.htm#SECT059">Vertex-Colouring and Complete Subgraphs</a>
+<LI> <A HREF="chap064.htm#SECT060">VertexColouring</a>
+<LI> <A HREF="chap064.htm#SECT061">CompleteSubgraphs</a>
+<LI> <A HREF="chap064.htm#SECT062">CompleteSubgraphsOfGivenSize</a>
+<LI> <A HREF="chap064.htm#SECT063">Functions depending on nauty</a>
+<LI> <A HREF="chap064.htm#SECT064">AutGroupGraph</a>
+<LI> <A HREF="chap064.htm#SECT065">IsIsomorphicGraph</a>
+<LI> <A HREF="chap064.htm#SECT066">An example</a>
+</ol>
+<A NAME="SECT001"><h2>64.1 Functions to construct and modify graphs</h2></a>
+<P><P><P>
+The  following sections describe  the functions  used to construct and
+modify graphs.
+<P><A NAME="SECT002"><h2>64.2 Graph</h2></a>
+<P><P><P>
+<code>Graph( <var>G</var>, <var>L</var>, <var>act</var>, <var>rel</var> )</code><BR> 
+<code>Graph( <var>G</var>, <var>L</var>, <var>act</var>, <var>rel</var>, <var>invt</var> )</code>
+<P>
+This  is the most  general  and  useful  way  of constructing a graph  in
+<strong>GRAPE</strong>.
+<P>
+First  suppose that the optional  boolean parameter <var>invt</var> is  unbound or
+has value <code>false</code>.  Then <var>L</var> should be a list of elements of a set <I>S</I> on
+which the group <var>G</var> acts (<strong>operates</strong> in <strong>GAP3</strong> language), with the action
+given by  the function <var>act</var>.   The parameter <var>rel</var>   should be a boolean
+function defining a <var>G</var>-invariant  relation on <I>S</I> (so  that for  <I>g</I>  in
+<var>G</var>,     <I>x,y</I>      in    <I>S</I>,     <I>&lt;rel&gt;(x,y)</I>   if     and    only   if
+<I>&lt;rel&gt;(<var>act</var>(x,g),<var>act</var>(y,g))</I>).  Then  function <code>Graph</code>  returns a graph
+<I>gamma</I> which has as vertex names
+<center>
+    <code>Concatenation( Orbits( <var>G</var>, <var>L</var>, <var>act</var> ) )</code>
+</center>
+(the concatenation of the  distinct orbits  of the elements  in <var>L</var> under
+<var>G</var>), and for vertices <I>v,w</I>  of <I>gamma</I>, <I>[v,w]</I>  is an edge if and only
+if
+<center>
+    <code><var>rel</var>( VertexName( <var>gamma</var>, <var>v</var> ), VertexName( <var>gamma</var>, <var>w</var> ) )</code>
+</center>
+<P>
+Now if the  parameter <var>invt</var> exists  and  has value <code>true</code>,  then  it  is
+assumed  that <var>L</var> is invariant  under <var>G</var> with respect  to  action <var>act</var>.
+Then the function <code>Graph</code> behaves as above,  except that the vertex names
+of <I>gamma</I> become (a copy of) <var>L</var>.
+<P>
+The group associated with the graph <I>gamma</I> returned is  the image of <var>G</var>
+acting via <var>act</var> on <I>gamma.names</I>.
+<P>
+For example, suppose you have an <I>n\x n</I> adjacency matrix <I>A</I> for a graph
+<I>X</I>, so that the vertices of <I>X</I> are <I>{1,...,n}</I>, and  <I>[i,j]</I> is an
+edge of <I>X</I>  if and only  if <I>A[i][j]=1</I>.  Suppose  also that  <I>G &le; </I>Aut<I>
+(X)</I> (<I>G</I> may be trivial).  Then you can make a <strong>GRAPE</strong> graph isomorphic
+to <I>X</I>  via <code>Graph( G,  [1..n], OnPoints, function(x,y) return A[x][y]=1;
+end, true );</code>
+<P>
+<pre>    gap> A := [[0,1,0],[1,0,0],[0,0,1]];
+    [ [ 0, 1, 0 ], [ 1, 0, 0 ], [ 0, 0, 1 ] ]
+    gap> G := Group( (1,2) );
+    Group( (1,2) )
+    gap> Graph( G, [1..3], OnPoints,
+    >           function(x,y) return A[x][y]=1; end,
+    >           true );
+    rec(
+      isGraph := true,
+      order := 3,
+      group := Group( (1,2) ),
+      schreierVector := [ -1, 1, -2 ],
+      adjacencies := [ [ 2 ], [ 3 ] ],
+      representatives := [ 1, 3 ],
+      names := [ 1 .. 3 ] ) </pre>
+<P>
+We now construct the Petersen graph.
+<P>
+<pre>    gap> Petersen := Graph( SymmetricGroup(5), [[1,2]], OnSets,
+    >                 function(x,y) return Intersection(x,y)=[]; end );
+    rec(
+      isGraph := true,
+      order := 10,
+      group := Group( ( 1, 2)( 6, 8)( 7, 9), ( 1, 3)( 4, 8)( 5, 9),
+        ( 2, 4)( 3, 6)( 9,10), ( 2, 5)( 3, 7)( 8,10) ),
+      schreierVector := [ -1, 1, 2, 3, 4, 3, 4, 2, 2, 4 ],
+      adjacencies := [ [ 8, 9, 10 ] ],
+      representatives := [ 1 ],
+      names := [ [ 1, 2 ], [ 2, 5 ], [ 1, 5 ], [ 2, 3 ], [ 2, 4 ],
+          [ 1, 3 ], [ 1, 4 ], [ 3, 5 ], [ 4, 5 ], [ 3, 4 ] ] ) </pre>
+<P><A NAME="SECT003"><h2>64.3 EdgeOrbitsGraph</h2></a>
+<P><P><P>
+<code>EdgeOrbitsGraph( <var>G</var>, <var>E</var> )</code> <BR> 
+<code>EdgeOrbitsGraph( <var>G</var>, <var>E</var>, <var>n</var> )</code>
+<P>
+This is a common way of constructing a graph in <strong>GRAPE</strong>.
+<P>
+This   function   returns   the   (directed)   graph  with   vertex   set
+<I>{1,...,<var>n</var>}</I>,  edge  set  <I>&cup;<sub>e&isin; <var>E</var></sub> e<sup><var>G</var></sup> </I>,   and  associated
+(permutation) group <var>G</var>, which  must  act naturally  on  <I>{1,...,<var>n</var>}</I>.
+The  parameter  <var>E</var>  should  be a  list  of edges (lists of  length 2  of
+vertices), although a  singleton edge  will be understood as an edge list
+of length 1.  The parameter <var>n</var>  may be omitted, in which case the number
+of vertices is the largest point moved by a generator of <var>G</var>.
+<P>
+Note  that <var>G</var> may  be  the trivial permutation group  (<code>Group( () )</code>  in
+<strong>GAP3</strong>  notation), in which case  the  (directed) edges  of  <var>gamma</var>  are
+simply those in the list <var>E</var>.
+<P>
+<pre>    gap> EdgeOrbitsGraph( Group((1,3),(1,2)(3,4)), [[1,2],[4,5]], 5 );
+    rec(
+      isGraph := true,
+      order := 5,
+      group := Group( (1,3), (1,2)(3,4) ),
+      schreierVector := [ -1, 2, 1, 2, -2 ],
+      adjacencies := [ [ 2, 4, 5 ], [  ] ],
+      representatives := [ 1, 5 ],
+      isSimple := false ) </pre>
+<P><A NAME="SECT004"><h2>64.4 NullGraph</h2></a>
+<P><P><P>
+<code>NullGraph( <var>G</var> )</code> <BR> 
+<code>NullGraph( <var>G</var>, <var>n</var> )</code>
+<P>
+This function  returns the  null  graph on <var>n</var>  vertices, with associated
+(permutation) group <var>G</var>.  The parameter <var>n</var> may be omitted, in which case
+the number of vertices is the largest point moved by a generator of <var>G</var>.
+<P>
+See also <a href="chap064.htm#SECT029">IsNullGraph</a>.
+<P>
+<pre>    gap> NullGraph( Group( (1,2,3) ), 4 );
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (1,2,3) ),
+      schreierVector := [ -1, 1, 1, -2 ],
+      adjacencies := [ [  ], [  ] ],
+      representatives := [ 1, 4 ],
+      isSimple := true ) </pre>
+<P><A NAME="SECT005"><h2>64.5 CompleteGraph</h2></a>
+<P><P><P>
+<code>CompleteGraph( G )</code> <BR> 
+<code>CompleteGraph( G, <var>n</var> )</code> <BR> 
+<code>CompleteGraph( G, <var>n</var>, <var>mustloops</var> )</code>
+<P>
+This  function returns a complete graph  on <var>n</var> vertices with  associated
+(permutation) group <var>G</var>. The parameter <var>n</var> may be  omitted, in which case
+the number of vertices is the largest point moved by a  generator of <var>G</var>.
+The   optional  boolean  parameter  <var>mustloops</var>  determines whether   the
+complete graph has all loops present  or no loops (default: <code>false</code> (no
+loops)).
+<P>
+See also <a href="chap064.htm#SECT030">IsCompleteGraph</a>.
+<P>
+<pre>    gap> CompleteGraph( Group( (1,2,3), (1,2) ) );
+    rec(
+      isGraph := true,
+      order := 3,
+      group := Group( (1,2,3), (1,2) ),
+      schreierVector := [ -1, 1, 1 ],
+      adjacencies := [ [ 2, 3 ] ],
+      representatives := [ 1 ],
+      isSimple := true ) </pre>
+<P><A NAME="SECT006"><h2>64.6 JohnsonGraph</h2></a>
+<P><P><P>
+<code>JohnsonGraph( <var>n</var>, <var>e</var> )</code>
+<P>
+This function  returns a graph  <I>gamma</I> isomorphic to  the Johnson graph,
+whose vertices are the <var>e</var>-subsets of <I>{1,...,<var>n</var>}</I>, with <I>x</I> joined to
+<I>y</I> if  and only if <I>|x  &cap; y| = <var>e</var>-1</I>.   The group  associated with
+<I>gamma</I>  is image  of   the the symmetric   group <I>S<sub><var>n</var></sub> </I>  acting  on the
+<var>e</var>-subsets of <I>{1,...,<var>n</var>}</I>.
+<P>
+<pre>    gap> JohnsonGraph(5,3);
+    rec(
+      isGraph := true,
+      order := 10,
+      group := Group( ( 1, 8)( 2, 9)( 4,10), ( 1, 5)( 2, 6)( 7,10),
+        ( 1, 3)( 4, 6)( 7, 9), ( 2, 3)( 4, 5)( 7, 8) ),
+      schreierVector := [ -1, 4, 3, 4, 2, 3, 4, 1, 3, 2 ],
+      adjacencies := [ [ 2, 3, 4, 5, 7, 8 ] ],
+      representatives := [ 1 ],
+      names := [ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 2, 5 ], [ 1, 3, 4 ],
+          [ 1, 3, 5 ], [ 1, 4, 5 ], [ 2, 3, 4 ], [ 2, 3, 5 ],
+          [ 2, 4, 5 ], [ 3, 4, 5 ] ],
+      isSimple := true ) </pre>
+<P><A NAME="SECT007"><h2>64.7 AddEdgeOrbit</h2></a>
+<P><P><P>
+<code>AddEdgeOrbit( <var>gamma</var>, <var>e</var> )</code> <BR> 
+<code>AddEdgeOrbit( <var>gamma</var>, <var>e</var>, <var>H</var> )</code>
+<P>
+This procedure adds the edge orbit <I>&lt;e&gt;<sup><var>gamma.group</var></sup> </I> to the edge set of
+graph <var>gamma</var>.   The  parameter  <var>e</var> must be a  sequence  of length 2  of
+vertices of  <var>gamma</var>.  If the optional third parameter <var>H</var>  is given then
+it is assumed that <I>&lt;e&gt;[2]</I> has the same orbit under <var>H</var> as it does under
+the  stabilizer  in <var>gamma.group</var>  of <I>&lt;e&gt;[1]</I>,  and  this knowledge  can
+greatly speed up the procedure.
+<P>
+Note that if <var>gamma.group</var> is trivial then this procedure simply adds the
+single edge <var>e</var> to <var>gamma</var>.
+<P>
+<pre>    gap> gamma := NullGraph( Group( (1,3), (1,2)(3,4) ) );
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (1,3), (1,2)(3,4) ),
+      schreierVector := [ -1, 2, 1, 2 ],
+      adjacencies := [ [  ] ],
+      representatives := [ 1 ],
+      isSimple := true )
+    gap> AddEdgeOrbit( gamma, [4,3] );
+    gap> gamma;
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (1,3), (1,2)(3,4) ),
+      schreierVector := [ -1, 2, 1, 2 ],
+      adjacencies := [ [ 2, 4 ] ],
+      representatives := [ 1 ],
+      isSimple := true ) </pre>
+<P><A NAME="SECT008"><h2>64.8 RemoveEdgeOrbit</h2></a>
+<P><P><P>
+<code>RemoveEdgeOrbit( <var>gamma</var>, <var>e</var> )</code> <BR> 
+<code>RemoveEdgeOrbit( <var>gamma</var>, <var>e</var>, <var>H</var> )</code>
+<P>
+This procedure removes the  edge  orbit <I>&lt;e&gt;<sup><var>gamma.group</var></sup> </I> from the edge
+set of the graph <var>gamma</var>.  The parameter <var>e</var> must be a sequence of length
+2 of vertices of <var>gamma</var>, but  if <var>e</var> is not an edge of <var>gamma</var> then this
+procedure has no  effect. If the optional  third  parameter  <var>H</var> is given
+then  it is assumed that <I>&lt;e&gt;[2]</I> has the same orbit under <var>H</var> as it does
+under the stabilizer in <var>gamma.group</var> of <I>&lt;e&gt;[1]</I>, and this knowledge can
+greatly speed up the procedure.
+<P>
+<pre>    gap> gamma := CompleteGraph( Group( (1,3), (1,2)(3,4) ) );
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (1,3), (1,2)(3,4) ),
+      schreierVector := [ -1, 2, 1, 2 ],
+      adjacencies := [ [ 2, 3, 4 ] ],
+      representatives := [ 1 ],
+      isSimple := true )
+    gap> RemoveEdgeOrbit( gamma, [4,3] );
+    gap> gamma;
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (1,3), (1,2)(3,4) ),
+      schreierVector := [ -1, 2, 1, 2 ],
+      adjacencies := [ [ 3 ] ],
+      representatives := [ 1 ],
+      isSimple := true ) </pre>
+<P><A NAME="SECT009"><h2>64.9 AssignVertexNames</h2></a>
+<P><P><P>
+<code>AssignVertexNames( <var>gamma</var>, <var>names</var> )</code>
+<P>
+This function  allows  the  user to  give  new names  to the  vertices of
+<var>gamma</var>, by specifying a list <var>names</var> of vertex names for the vertices of
+<var>gamma</var>, such that <I>&lt;names&gt;[i]</I> contains the user's name for  the <I>i</I>-th
+vertex of <var>gamma</var>.
+<P>
+A copy of <var>names</var> is assigned to <var>gamma.names</var>. See also <a href="chap064.htm#SECT014">VertexName</a>.
+<P>
+<pre>    gap> gamma := NullGraph( Group(()), 3 );
+    rec(
+      isGraph := true,
+      order := 3,
+      group := Group( () ),
+      schreierVector := [ -1, -2, -3 ],
+      adjacencies := [ [  ], [  ], [  ] ],
+      representatives := [ 1, 2, 3 ],
+      isSimple := true )
+    gap> AssignVertexNames( gamma, ["a","b","c"] );
+    gap> gamma;
+    rec(
+      isGraph := true,
+      order := 3,
+      group := Group( () ),
+      schreierVector := [ -1, -2, -3 ],
+      adjacencies := [ [  ], [  ], [  ] ],
+      representatives := [ 1, 2, 3 ],
+      isSimple := true,
+      names := [ "a", "b", "c" ] ) </pre>
+<P><A NAME="SECT010"><h2>64.10 Functions to inspect graphs, vertices and edges</h2></a>
+<P><P><P>
+The next sections describe  functions to  inspect  graphs,  vertices  and
+edges.
+<P><A NAME="SECT011"><h2>64.11 IsGraph</h2></a>
+<P><P><P>
+<code>IsGraph( <var>obj</var> )</code>
+<P>
+This boolean function  returns <code>true</code> if  and only if <var>obj</var>, which can be
+an object of arbitrary type, is a graph.
+<P>
+<pre>    gap> IsGraph( 1 );
+    false
+    gap> IsGraph( JohnsonGraph( 3, 2 ) );
+    true </pre>
+<P><A NAME="SECT012"><h2>64.12 OrderGraph</h2></a>
+<P><P><P>
+<code>OrderGraph( <var>gamma</var> )</code>
+<P>
+This  function returns  the  number  of  vertices  (order)  of the  graph
+<var>gamma</var>.
+<P>
+<pre>    gap> OrderGraph( JohnsonGraph( 4, 2 ) );
+    6 </pre>
+<P><A NAME="SECT013"><h2>64.13 IsVertex</h2></a>
+<P><P><P>
+<code>IsVertex( <var>gamma</var>, <var>v</var> )</code>
+<P>
+This  boolean  function returns <code>true</code> if  and  only if  <var>v</var> is vertex of
+<var>gamma</var>.
+<P>
+<pre>    gap> gamma := JohnsonGraph( 3, 2 );;
+    gap> IsVertex( gamma, 1 );
+    true
+    gap> IsVertex( gamma, 4 );
+    false </pre>
+<P><A NAME="SECT014"><h2>64.14 VertexName</h2></a>
+<P><P><P>
+<code>VertexName( <var>gamma</var>, <var>v</var> )</code>
+<P>
+This function returns (a copy of) the name of the vertex <var>v</var> of <var>gamma</var>.
+<P>
+See also <a href="chap064.htm#SECT009">AssignVertexNames</a>.
+<P>
+<pre>    gap> VertexName( JohnsonGraph(4,2), 6 );
+    [ 3, 4 ] </pre>
+<P><A NAME="SECT015"><h2>64.15 Vertices</h2></a>
+<P><P><P>
+<code>Vertices( <var>gamma</var> )</code>
+<P>
+This  function returns  the  vertex  set <I>{1,...,<var>gamma.order</var>}</I> of the
+graph <var>gamma</var>.
+<P>
+<pre>    gap> Vertices( JohnsonGraph( 4, 2 ) );
+    [ 1 .. 6 ] </pre>
+<P><A NAME="SECT016"><h2>64.16 VertexDegree</h2></a>
+<P><P><P>
+<code>VertexDegree( <var>gamma</var>, <var>v</var> )</code>
+<P>
+This  function  returns the  (out)degree  of the vertex <var>v</var> of  the graph
+<var>gamma</var>.
+<P>
+<pre>    gap> VertexDegree( JohnsonGraph( 3, 2 ), 1 );
+    2 </pre>
+<P><A NAME="SECT017"><h2>64.17 VertexDegrees</h2></a>
+<P><P><P>
+<code>VertexDegrees( <var>gamma</var> )</code>
+<P>
+This function returns the set of vertex (out)degrees for the graph
+<var>gamma</var>.
+<P>
+<pre>    gap> VertexDegrees( JohnsonGraph( 4, 2 ) );
+    [ 4 ] </pre>
+<P><A NAME="SECT018"><h2>64.18 IsLoopy</h2></a>
+<P><P><P>
+<code>IsLoopy( <var>gamma</var> )</code>
+<P>
+This boolean function returns <code>true</code> if and only if the graph <var>gamma</var> has
+a <strong>loop</strong>, that is, an edge of the form <I>[x,x]</I>.
+<P>
+<pre>    gap> IsLoopy( JohnsonGraph( 4, 2 ) );
+    false
+    gap> IsLoopy( CompleteGraph( Group( (1,2,3), (1,2) ), 3 ) );
+    false
+    gap> IsLoopy( CompleteGraph( Group( (1,2,3), (1,2) ), 3, true ) );
+    true </pre>
+<P><A NAME="SECT019"><h2>64.19 IsSimpleGraph</h2></a>
+<P><P><P>
+<code>IsSimpleGraph( <var>gamma</var> )</code>
+<P>
+This boolean function returns <code>true</code> if and  only if the graph <var>gamma</var> is
+<strong>simple</strong>, that is, has no loops and whenever <I>[x,y]</I>  is an edge  then so
+is <I>[y,x]</I>.
+<P>
+<pre>    gap> IsSimpleGraph( CompleteGraph( Group( (1,2,3) ), 3 ) );
+    true
+    gap> IsSimpleGraph( CompleteGraph( Group( (1,2,3) ), 3, true ) );
+    false </pre>
+<P><A NAME="SECT020"><h2>64.20 Adjacency</h2></a>
+<P><P><P>
+<code>Adjacency( <var>gamma</var>, <var>v</var> )</code>
+<P>
+This function returns (a copy of) the set of vertices of <var>gamma</var> adjacent
+to vertex <var>v</var>.  A vertex <I>w</I> is <strong>adjacent</strong>  to <var>v</var> if and only if <I>[v,w]</I>
+is an edge.
+<P>
+<pre>    gap> Adjacency( JohnsonGraph( 4, 2 ), 1 );
+    [ 2, 3, 4, 5 ]
+    gap> Adjacency( JohnsonGraph( 4, 2 ), 6 );
+    [ 2, 3, 4, 5 ] </pre>
+<P><A NAME="SECT021"><h2>64.21 IsEdge</h2></a>
+<P><P><P>
+<code>IsEdge( <var>gamma</var>, <var>e</var> )</code>
+<P>
+This  boolean function returns <code>true</code> if and  only  if <var>e</var> is an  edge of
+<var>gamma</var>.
+<P>
+<pre>    gap> IsEdge( JohnsonGraph( 4, 2 ), [ 1, 2 ] );
+    true
+    gap> IsEdge( JohnsonGraph( 4, 2 ), [ 1, 6 ] );
+    false </pre>
+<P><A NAME="SECT022"><h2>64.22 DirectedEdges</h2></a>
+<P><P><P>
+<code>DirectedEdges( <var>gamma</var> )</code>
+<P>
+This function  returns the  set of directed  (ordered) edges of the graph
+<var>gamma</var>.
+<P>
+See also <a href="chap064.htm#SECT023">UndirectedEdges</a>.
+<P>
+<pre>    gap> gamma := JohnsonGraph( 3, 2 );
+    rec(
+      isGraph := true,
+      order := 3,
+      group := Group( (1,3), (1,2) ),
+      schreierVector := [ -1, 2, 1 ],
+      adjacencies := [ [ 2, 3 ] ],
+      representatives := [ 1 ],
+      names := [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ],
+      isSimple := true )
+    gap> DirectedEdges( gamma );
+    [ [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ] ]
+    gap> UndirectedEdges( gamma );
+    [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ] </pre>
+<P><A NAME="SECT023"><h2>64.23 UndirectedEdges</h2></a>
+<P><P><P>
+<code>UndirectedEdges( <var>gamma</var> )</code>
+<P>
+This function returns the set of undirected (unordered) edges of <var>gamma</var>,
+which must be a simple graph.
+<P>
+See also <a href="chap064.htm#SECT022">DirectedEdges</a>.
+<P>
+<pre>    gap> gamma := JohnsonGraph( 3, 2 );
+    rec(
+      isGraph := true,
+      order := 3,
+      group := Group( (1,3), (1,2) ),
+      schreierVector := [ -1, 2, 1 ],
+      adjacencies := [ [ 2, 3 ] ],
+      representatives := [ 1 ],
+      names := [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ],
+      isSimple := true )
+    gap> DirectedEdges( gamma );
+    [ [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ] ]
+    gap> UndirectedEdges( gamma );
+    [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ] </pre>
+<P><A NAME="SECT024"><h2>64.24 Distance</h2></a>
+<P><P><P>
+<code>Distance( <var>gamma</var>, <var>X</var>, <var>Y</var> )</code> <BR> 
+<code>Distance( <var>gamma</var>, <var>X</var>, <var>Y</var>, <var>G</var> )</code>
+<P>
+This  function returns  the  distance  from <var>X</var>  to <var>Y</var>  in  <var>gamma</var>. The
+parameters <var>X</var>  and <var>Y</var> may  be vertices or  vertex  sets. We  define the
+<strong>distance</strong>  <I>d(<var>X</var>,<var>Y</var>)</I> from  <var>X</var> to  <var>Y</var>  to be the minimum length of a
+(directed) path joining a vertex of <var>X</var> to a vertex of <var>Y</var> if such a path
+exists, and <I>-1</I> otherwise.
+<P>
+The  optional parameter <var>G</var>,  if present, is assumed to  be a subgroup of
+<I></I>Aut<I>(<var>gamma</var>)</I> fixing  <var>X</var>  setwise.  Including  such a <var>G</var> can speed up
+the function.
+<P>
+<pre>    gap> Distance( JohnsonGraph(4,2), 1, 6 );
+    2
+    gap> Distance( JohnsonGraph(4,2), 1, 5 );
+    1 </pre>
+<P><A NAME="SECT025"><h2>64.25 Diameter</h2></a>
+<P><P><P>
+<code>Diameter( <var>gamma</var> )</code>
+<P>
+This  function  returns the  diameter of <var>gamma</var>.  A diameter of <I>-1</I>  is
+returned if <var>gamma</var> is not (strongly) connected.
+<P>
+<pre>    gap> Diameter( JohnsonGraph( 5, 3 ) );
+    2
+    gap> Diameter( JohnsonGraph( 5, 4 ) );
+    1 </pre>
+<P><A NAME="SECT026"><h2>64.26 Girth</h2></a>
+<P><P><P>
+<code>Girth( <var>gamma</var> )</code>
+<P>
+This function returns the girth of <var>gamma</var>, which must be a simple graph.
+A girth of <I>-1</I> is returned if <var>gamma</var> is a forest.
+<P>
+<pre>    gap> Girth( JohnsonGraph( 4, 2 ) );
+    3 </pre>
+<P><A NAME="SECT027"><h2>64.27 IsConnectedGraph</h2></a>
+<P><P><P>
+<code>IsConnectedGraph( <var>gamma</var> )</code>
+<P>
+This boolean function returns <code>true</code> if and only if <var>gamma</var> is (strongly)
+<strong>connected</strong>, i.e. if there is a (directed) path from <I>x</I> to <I>y</I> for every
+pair of vertices <I>x,y</I> of <var>gamma</var>.
+<P>
+<pre>    gap> IsConnectedGraph( JohnsonGraph(4,2) );
+    true
+    gap> IsConnectedGraph( NullGraph(SymmetricGroup(4)) );
+    false </pre>
+<P><A NAME="SECT028"><h2>64.28 IsBipartite</h2></a>
+<P><P><P>
+<code>IsBipartite( <var>gamma</var> )</code>
+<P>
+This boolean function  returns <code>true</code> if  and  only if the graph <var>gamma</var>,
+which  must  be simple, is <strong>bipartite</strong>, i.e.  if  the vertex  set can  be
+partitioned into two null  graphs  (which  are  called  <strong>bicomponents</strong> or
+<strong>parts</strong> of <var>gamma</var>).
+<P>
+See also <a href="chap064.htm#SECT041">Bicomponents</a>, <a href="chap064.htm#SECT051">EdgeGraph</a>, and <a href="chap064.htm#SECT054">BipartiteDouble</a>.
+<P>
+<pre>    gap> gamma := JohnsonGraph(4,2);
+    rec(
+      isGraph := true,
+      order := 6,
+      group := Group( (1,5)(2,6), (1,3)(4,6), (2,3)(4,5) ),
+      schreierVector := [ -1, 3, 2, 3, 1, 2 ],
+      adjacencies := [ [ 2, 3, 4, 5 ] ],
+      representatives := [ 1 ],
+      names := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ],
+          [ 3, 4 ] ],
+      isSimple := true )
+    gap> IsBipartite(gamma);
+    false
+    gap> delta := BipartiteDouble(gamma);
+    rec(
+      isGraph := true,
+      order := 12,
+      group := Group( ( 1, 5)( 2, 6)( 7,11)( 8,12), ( 1, 3)( 4, 6)( 7, 9)
+        (10,12), ( 2, 3)( 4, 5)( 8, 9)(10,11), ( 1, 7)( 2, 8)( 3, 9)
+        ( 4,10)( 5,11)( 6,12) ),
+      schreierVector := [ -1, 3, 2, 3, 1, 2, 4, 4, 4, 4, 4, 4 ],
+      adjacencies := [ [ 8, 9, 10, 11 ] ],
+      representatives := [ 1 ],
+      isSimple := true,
+      names := [ [ [ 1, 2 ], "+" ], [ [ 1, 3 ], "+" ], [ [ 1, 4 ], "+" ],
+          [ [ 2, 3 ], "+" ], [ [ 2, 4 ], "+" ], [ [ 3, 4 ], "+" ],
+          [ [ 1, 2 ], "-" ], [ [ 1, 3 ], "-" ], [ [ 1, 4 ], "-" ],
+          [ [ 2, 3 ], "-" ], [ [ 2, 4 ], "-" ], [ [ 3, 4 ], "-" ] ] )
+    gap> IsBipartite(delta);
+    true </pre>
+<P><A NAME="SECT029"><h2>64.29 IsNullGraph</h2></a>
+<P><P><P>
+<code>IsNullGraph( <var>gamma</var> )</code>
+<P>
+This boolean function returns <code>true</code> if and only if the graph <var>gamma</var> has
+no edges.
+<P>
+See also <a href="chap064.htm#SECT004">NullGraph</a>.
+<P>
+<pre>    gap> IsNullGraph( CompleteGraph( Group(()), 3 ) );
+    false
+    gap> IsNullGraph( CompleteGraph( Group(()), 1 ) );
+    true </pre>
+<P><A NAME="SECT030"><h2>64.30 IsCompleteGraph</h2></a>
+<P><P><P>
+<code>IsCompleteGraph( <var>gamma</var> )</code> <BR> 
+<code>IsCompleteGraph( <var>gamma</var>, <var>mustloops</var> )</code>
+<P>
+This boolean function returns  <code>true</code> if and only if the graph <var>gamma</var> is
+a complete graph.  The optional boolean  parameter <var>mustloops</var> determines
+whether all loops must be present for <var>gamma</var> to be considered a complete
+graph (default: <code>false</code> (loops are ignored)).
+<P>
+See also <a href="chap064.htm#SECT005">CompleteGraph</a>.
+<P>
+<pre>    gap> IsCompleteGraph( NullGraph( Group(()), 3 ) );
+    false
+    gap> IsCompleteGraph( NullGraph( Group(()), 1 ) );
+    true
+    gap> IsCompleteGraph( CompleteGraph(SymmetricGroup(3)), true );
+    false </pre>
+<P><A NAME="SECT031"><h2>64.31 Functions to determine regularity properties of graphs</h2></a>
+<P><P><P>
+The  following  sections   describe  functions  to  determine  regularity
+properties of graphs.
+<P><A NAME="SECT032"><h2>64.32 IsRegularGraph</h2></a>
+<P><P><P>
+<code>IsRegularGraph( <var>gamma</var> )</code>
+<P>
+This boolean function returns <code>true</code>  if and only if the graph <var>gamma</var> is
+(out)regular.
+<P>
+<pre>    gap> IsRegularGraph( JohnsonGraph(4,2) );
+    true
+    gap> IsRegularGraph( EdgeOrbitsGraph(Group(()),[[1,2]],2) );
+    false </pre>
+<P><A NAME="SECT033"><h2>64.33 LocalParameters</h2></a>
+<P><P><P>
+<code>LocalParameters( <var>gamma</var>, <var>V</var> )</code> <BR> 
+<code>LocalParameters( <var>gamma</var>, <var>V</var>, <var>G</var> )</code>
+<P>
+This function determines any  <strong>local parameters</strong>  <I>c<sub>i</sub>(<var>V</var>)</I>, <I>a<sub>i</sub>(<var>V</var>)</I>,
+or <I>b<sub>i</sub>(<var>V</var>)</I> that simple, connected  <var>gamma</var>  may have, with respect  to
+the singleton vertex or vertex set <var>V</var>  (see <A href="biblio.htm#BCN89"><cite>BCN89</cite></a>).  The function
+returns   a     list    of   triples,   whose      <I>i</I>-th   element    is
+<I>[c<sub>i-1</sub>(<var>V</var>),a<sub>i-1</sub>(<var>V</var>),b<sub>i-1</sub>(<var>V</var>)]</I>,  except  that  if some  local
+parameter does not exist then a <I>-1</I> is  put in its place.  This function
+can  be used  to determine whether  a given subset  of the  vertices of a
+graph is a distance-regular code in that graph.
+<P>
+The optional parameter <var>G</var>, if  present, is  assumed to  be a subgroup of
+<I></I>Aut<I>(<var>gamma</var>)</I> fixing <var>V</var> (setwise).  Including such a  <var>G</var> can speed up
+the function.
+<P>
+<pre>    gap> LocalParameters( JohnsonGraph(4,2), 1 );
+    [ [ 0, 0, 4 ], [ 1, 2, 1 ], [ 4, 0, 0 ] ]
+    gap> LocalParameters( JohnsonGraph(4,2), [1,6] );
+    [ [ 0, 0, 4 ], [ 2, 2, 0 ] ] </pre>
+<P><A NAME="SECT034"><h2>64.34 GlobalParameters</h2></a>
+<P><P><P>
+<code>GlobalParameters( <var>gamma</var> )</code>
+<P>
+In a similar   way  to <code>LocalParameters</code>  (see <a href="chap064.htm#SECT033">LocalParameters</a>),   this
+function   determines the <strong>global  parameters</strong>  <I>c<sub>i</sub>,a<sub>i</sub>,b<sub>i</sub></I>  of simple,
+connected  <var>gamma</var> (see <A href="biblio.htm#BCN89"><cite>BCN89</cite></a>).    The  nonexistence of  a  global
+parameter is denoted by <I>-1</I>.
+<P>
+<pre>    gap> gamma := JohnsonGraph(4,2);;
+    gap> GlobalParameters( gamma );
+    [ [ 0, 0, 4 ], [ 1, 2, 1 ], [ 4, 0, 0 ] ]
+    gap> GlobalParameters( BipartiteDouble(gamma) );
+    [ [ 0, 0, 4 ], [ 1, 0, 3 ], [ -1, 0, -1 ], [ 4, 0, 0 ] ] </pre>
+<P><A NAME="SECT035"><h2>64.35 IsDistanceRegular</h2></a>
+<P><P><P>
+<code>IsDistanceRegular( <var>gamma</var> )</code>
+<P>
+This  boolean   function  returns  <code>true</code>  if  and  only  if  <var>gamma</var>  is
+distance-regular,  i.e. <var>gamma</var>  is simple, connected, and  all  possible
+global parameters exist.
+<P>
+<pre>    gap> gamma := JohnsonGraph(4,2);;
+    gap> IsDistanceRegular( gamma );
+    true
+    gap> IsDistanceRegular( BipartiteDouble(gamma) );
+    false </pre>
+<P><A NAME="SECT036"><h2>64.36 CollapsedAdjacencyMat</h2></a>
+<P><P><P>
+<code>CollapsedAdjacencyMat( <var>G</var>, <var>gamma</var> )</code>
+<P>
+This function returns  the  collapsed adjacency matrix for <var>gamma</var>, where
+the  collapsing group  is <var>G</var>.  It is assumed  that <var>G</var> is  a subgroup of
+<I></I>Aut<I>(<var>gamma</var>)</I>.
+<P>
+The <I>(i,j)</I>-entry of the collapsed adjacency matrix  equals the number of
+edges in  <I>{ [x,y] | y &isin; j</I>-th <var>G</var>-orbit <I>}</I>, where  <I>x</I> is  a fixed
+vertex in the <I>i</I>-th <var>G</var>-orbit.
+<P>
+See also <a href="chap064.htm#SECT037">OrbitalGraphIntersectionMatrices</a>.
+<P>
+<pre>    gap> gamma := JohnsonGraph(4,2);;
+    gap> G := Stabilizer( gamma.group, 1 );;
+    gap> CollapsedAdjacencyMat( G, gamma );
+    [ [ 0, 4, 0 ], [ 1, 2, 1 ], [ 0, 4, 0 ] ] </pre>
+<P><A NAME="SECT037"><h2>64.37 OrbitalGraphIntersectionMatrices</h2></a>
+<P><P><P>
+<code>OrbitalGraphIntersectionMatrices( <var>G</var> )</code> <BR> 
+<code>OrbitalGraphIntersectionMatrices( <var>G</var>, <var>H</var> )</code>
+<P>
+This  function returns a sequence of intersection  matrices corresponding
+to  the orbital  graphs for the  transitive  permutation  group  <var>G</var>.  An
+intersection matrix for an  orbital  graph <var>gamma</var> for <var>G</var> is a collapsed
+adjacency matrix of <var>gamma</var>,  collapsed with respect to the stabilizer in
+<var>G</var> of a point.
+<P>
+If  the optional  parameter  <var>H</var> is  given then it  is assumed to be  the
+stabilizer  in <var>G</var> of the point 1,  and this information can speed up the
+function.
+<P>
+See also <a href="chap064.htm#SECT036">CollapsedAdjacencyMat</a>.
+<P>
+<pre>    gap> OrbitalGraphIntersectionMatrices( SymmetricGroup(7) );
+    [ [ [ 1, 0 ], [ 0, 1 ] ], [ [ 0, 6 ], [ 1, 5 ] ] ] </pre>
+<P><A NAME="SECT038"><h2>64.38 Some special vertex subsets of a graph</h2></a>
+<P><P><P>
+The following sections describe functions for special vertex subsets of a
+graph.
+<P><A NAME="SECT039"><h2>64.39 ConnectedComponent</h2></a>
+<P><P><P>
+<code>ConnectedComponent( <var>gamma</var>, <var>v</var> )</code>
+<P>
+This function  returns the set  of all vertices  in <var>gamma</var> which  can be
+reached by a path starting at the vertex  <var>v</var>.  The graph <var>gamma</var> must be 
+simple.
+<P>
+See also <a href="chap064.htm#SECT040">ConnectedComponents</a>.
+<P>
+<pre>    gap> ConnectedComponent( NullGraph( Group((1,2)) ), 2 );
+    [ 2 ]
+    gap> ConnectedComponent( JohnsonGraph(4,2), 2 );
+    [ 1, 2, 3, 4, 5, 6 ] </pre>
+<P><A NAME="SECT040"><h2>64.40 ConnectedComponents</h2></a>
+<P><P><P>
+<code>ConnectedComponents( <var>gamma</var> )</code>
+<P>
+This  function returns  a  list  of  the  vertex  sets  of  the connected
+components of <var>gamma</var>, which must be a simple graph.
+<P>
+See also <a href="chap064.htm#SECT039">ConnectedComponent</a>.
+<P>
+<pre>    gap> ConnectedComponents( NullGraph( Group((1,2,3,4)) ) );
+    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ] ]
+    gap> ConnectedComponents( JohnsonGraph(4,2) );
+    [ [ 1, 2, 3, 4, 5, 6 ] ] </pre>
+<P><A NAME="SECT041"><h2>64.41 Bicomponents</h2></a>
+<P><P><P>
+<code>Bicomponents( <var>gamma</var> )</code>
+<P>
+If the graph  <var>gamma</var>, which must be simple,  is bipartite, this function
+returns  a length 2 list  of  bicomponents or parts of <var>gamma</var>, otherwise
+the empty list is returned.
+<P>
+Note: if  <var>gamma</var>  is  not  connected  then  its  bicomponents  are not
+necessarily uniquely determined.  See also <a href="chap064.htm#SECT028">IsBipartite</a>.
+<P>
+<pre>    gap> Bicomponents( NullGraph(SymmetricGroup(4)) );
+    [ [ 1, 2, 3 ], [ 4 ] ]
+    gap> Bicomponents( JohnsonGraph(4,2) );
+    [  ] </pre>
+<P><A NAME="SECT042"><h2>64.42 DistanceSet</h2></a>
+<P><P><P>
+<code>DistanceSet( <var>gamma</var>, <var>distances</var>, <var>V</var> )</code> <BR> 
+<code>DistanceSet( <var>gamma</var>, <var>distances</var>, <var>V</var>, <var>G</var> )</code>
+<P>
+This function  returns the  set  of  vertices <I>w</I> of  <var>gamma</var>,  such that
+<I>d(<var>V</var>,w)</I> is in <var>distances</var> (a list or singleton distance).
+<P>
+The optional  parameter <var>G</var>, if  present, is assumed to be  a subgroup of
+<I></I>Aut<I>(<var>gamma</var>)</I>  fixing <var>V</var> setwise.  Including  such a <var>G</var> can speed  up
+the function.
+<P>
+<pre>    gap> DistanceSet( JohnsonGraph(4,2), 1, [1,6] );
+    [ 2, 3, 4, 5 ] </pre>
+<P><A NAME="SECT043"><h2>64.43 Layers</h2></a>
+<P><P><P>
+<code>Layers( <var>gamma</var>, <var>V</var> )</code> <BR> 
+<code>Layers( <var>gamma</var>, <var>V</var>, <var>G</var> )</code>
+<P>
+This function returns a list whose <I>i</I>-th element is  the set of vertices
+of  <var>gamma</var> at distance  <I>i-1</I>  from <var>V</var>, which may be a vertex  set or a
+singleton vertex.
+<P>
+The optional  parameter  <var>G</var>, if present, is assumed to  be a subgroup of
+<I></I>Aut<I>(<var>gamma</var>)</I> which fixes <var>V</var>  setwise.  Including such a <var>G</var> can speed
+up the function.
+<P>
+<pre>    gap> Layers( JohnsonGraph(4,2), 6 );
+    [ [ 6 ], [ 2, 3, 4, 5 ], [ 1 ] ] </pre>
+<P><A NAME="SECT044"><h2>64.44 IndependentSet</h2></a>
+<P><P><P>
+<code>IndependentSet( <var>gamma</var> )</code> <BR> 
+<code>IndependentSet( <var>gamma</var>, <var>indset</var> )</code> <BR> 
+<code>IndependentSet( <var>gamma</var>, <var>indset</var>, <var>forbidden</var> )</code>
+<P>
+Returns a  (hopefully  large)  independent set  (coclique) of  the  graph
+<var>gamma</var>, which must be simple.  At present, a <strong>greedy</strong> algorithm is used.
+The returned independent set will  contain  the (assumed) independent set
+<var>indset</var>  (default: <code>[]</code>),  and  not contain any element of <var>forbidden</var>
+(default: <code>[]</code>, in which case the returned independent set is maximal).
+An  error is  signalled  if  <var>indset</var>  and  <var>forbidden</var>  have non-trivial
+intersection.
+<P>
+<pre>    gap> IndependentSet( JohnsonGraph(4,2), [3] );
+    [ 3, 4 ] </pre>
+<P><A NAME="SECT045"><h2>64.45 Functions to construct new graphs from old</h2></a>
+<P><P><P>
+The  following sections describe  functions to construct new  graphs from
+old ones.
+<P><A NAME="SECT046"><h2>64.46 InducedSubgraph</h2></a>
+<P><P><P>
+<code>InducedSubgraph( <var>gamma</var>, <var>V</var> )</code> <BR> 
+<code>InducedSubgraph( <var>gamma</var>, <var>V</var>, <var>G</var> )</code>
+<P>
+This function returns the subgraph of <var>gamma</var> induced on the  vertex list
+<var>V</var> (which must not contain  repeated  elements).  If the  optional third
+parameter  <var>G</var> is  given,  then it is assumed that <var>G</var> fixes <var>V</var> setwise,
+and is a group of automorphisms of the induced subgraph when restriced to
+<var>V</var>.   This  knowledge is then used  to give an  associated group  to the
+induced subgraph. If  no such  <var>G</var> is given then the  associated group is
+trivial.
+<P>
+<pre>    gap> gamma := JohnsonGraph(4,2);;
+    gap> S := [2,3,4,5];;
+    gap> InducedSubgraph( gamma, S, Stabilizer(gamma.group,S,OnSets) );
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (2,3), (1,2)(3,4) ),
+      schreierVector := [ -1, 2, 1, 2 ],
+      adjacencies := [ [ 2, 3 ] ],
+      representatives := [ 1 ],
+      isSimple := true,
+      names := [ [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ] ] ) </pre>
+<P><A NAME="SECT047"><h2>64.47 DistanceSetInduced</h2></a>
+<P><P><P>
+<code>DistanceSetInduced( <var>gamma</var>, <var>distances</var>, <var>V</var> )</code> <BR> 
+<code>DistanceSetInduced( <var>gamma</var>, <var>distances</var>, <var>V</var>, <var>G</var> )</code>
+<P>
+This  function  returns the  subgraph  of <var>gamma</var>  induced on  the set of
+vertices <I>w</I> of <var>gamma</var> such that <I>d(<var>V</var>,w)</I> is in <var>distances</var> (a list or
+singleton distance).
+<P>
+The optional  parameter <var>G</var>,  if present, is assumed to be a subgroup  of
+<I></I>Aut<I>(<var>gamma</var>)</I>  fixing <var>V</var> setwise.   Including such a  <var>G</var> can speed up
+the function.
+<P>
+<pre>    gap> DistanceSetInduced( JohnsonGraph(4,2), [0,1], [1] );
+    rec(
+      isGraph := true,
+      order := 5,
+      group := Group( (2,3)(4,5), (2,5)(3,4) ),
+      schreierVector := [ -1, -2, 1, 2, 2 ],
+      adjacencies := [ [ 2, 3, 4, 5 ], [ 1, 3, 4 ] ],
+      representatives := [ 1, 2 ],
+      isSimple := true,
+      names := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ] ] ) </pre>
+<P><A NAME="SECT048"><h2>64.48 DistanceGraph</h2></a>
+<P><P><P>
+<code>DistanceGraph( <var>gamma</var>, <var>distances</var> )</code>
+<P>
+This function  returns the  graph <var>delta</var>,  with the same  vertex set  as
+<var>gamma</var>, such that <I>[x,y]</I> is  an edge of <var>delta</var> if and only if <I>d(x,y)</I>
+(in <var>gamma</var>) is in the list <var>distances</var>.
+<P>
+<pre>    gap> DistanceGraph( JohnsonGraph(4,2), [2] );
+    rec(
+      isGraph := true,
+      order := 6,
+      group := Group( (1,5)(2,6), (1,3)(4,6), (2,3)(4,5) ),
+      schreierVector := [ -1, 3, 2, 3, 1, 2 ],
+      adjacencies := [ [ 6 ] ],
+      representatives := [ 1 ],
+      names := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ],
+          [ 3, 4 ] ],
+      isSimple := true )
+    gap> ConnectedComponents(last);
+    [ [ 1, 6 ], [ 2, 5 ], [ 3, 4 ] ] </pre>
+<P><A NAME="SECT049"><h2>64.49 ComplementGraph</h2></a>
+<P><P><P>
+<code>ComplementGraph( <var>gamma</var> )</code> <BR> 
+<code>ComplementGraph( <var>gamma</var>, <var>comploops</var> )</code>
+<P>
+This  function returns the complement of the graph <var>gamma</var>.  The optional
+boolean  parameter <var>comploops</var>  determines whether or not  loops/nonloops
+are   complemented   (default:   <code>false</code>   (loops/nonloops    are   not
+complemented)).
+<P>
+<pre>    gap> ComplementGraph( NullGraph(SymmetricGroup(3)) );
+    rec(
+      isGraph := true,
+      order := 3,
+      group := Group( (1,3), (2,3) ),
+      schreierVector := [ -1, 2, 1 ],
+      adjacencies := [ [ 2, 3 ] ],
+      representatives := [ 1 ],
+      isSimple := true )
+    gap> IsLoopy(last);
+    false
+    gap> IsLoopy(ComplementGraph(NullGraph(SymmetricGroup(3)),true));
+    true </pre>
+<P><A NAME="SECT050"><h2>64.50 PointGraph</h2></a>
+<P><P><P>
+<code>PointGraph( <var>gamma</var> )</code> <BR> 
+<code>PointGraph( <var>gamma</var>, <var>v</var> )</code>
+<P>
+Assuming that <var>gamma</var>  is simple, connected, and bipartite, this function
+returns   the  induced   subgraph   on   the   connected   component   of
+<code>DistanceGraph(<var>gamma</var>,2)</code>   containing  the   vertex   <var>v</var>  (default:
+<I>&lt;v&gt;=1</I>).
+<P>
+Thus, if <var>gamma</var> is the incidence graph  of a connected geometry, and <var>v</var>
+represents a point, then the point graph of the geometry is returned.
+<P>
+<pre>    gap> BipartiteDouble( CompleteGraph(SymmetricGroup(4)) );;
+    gap> PointGraph(last);
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (3,4), (2,4), (1,4) ),
+      schreierVector := [ -1, 2, 1, 3 ],
+      adjacencies := [ [ 2, 3, 4 ] ],
+      representatives := [ 1 ],
+      isSimple := true,
+      names := [ [ 1, "+" ], [ 2, "+" ], [ 3, "+" ], [ 4, "+" ] ] )
+    gap> IsCompleteGraph(last);
+    true </pre>
+<P><A NAME="SECT051"><h2>64.51 EdgeGraph</h2></a>
+<P><P><P>
+<code>EdgeGraph( <var>gamma</var> )</code>
+<P>
+This function returns the edge graph, also called the line  graph, of the
+simple graph <var>gamma</var>.
+<P>
+This <strong>edge graph</strong> <var>delta</var> has the unordered edges of <var>gamma</var> as vertices,
+and <I>e</I> is joined to <I>f</I> in <var>delta</var> precisely when <I>|e&cap; f|=1</I>.
+<P>
+<pre>    gap> EdgeGraph( CompleteGraph(SymmetricGroup(5)) );
+    rec(
+      isGraph := true,
+      order := 10,
+      group := Group( ( 1, 7)( 2, 9)( 3,10), ( 1, 4)( 5, 9)( 6,10),
+        ( 2, 4)( 5, 7)( 8,10), ( 3, 4)( 6, 7)( 8, 9) ),
+      schreierVector := [ -1, 3, 4, 2, 3, 4, 1, 4, 2, 2 ],
+      adjacencies := [ [ 2, 3, 4, 5, 6, 7 ] ],
+      representatives := [ 1 ],
+      isSimple := true,
+      names := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 2, 3 ],
+          [ 2, 4 ], [ 2, 5 ], [ 3, 4 ], [ 3, 5 ], [ 4, 5 ] ] ) </pre>
+<P><A NAME="SECT052"><h2>64.52 UnderlyingGraph</h2></a>
+<P><P><P>
+<code>UnderlyingGraph( <var>gamma</var> )</code>
+<P>
+This function returns the underlying graph <var>delta</var> of <var>gamma</var>.  The graph
+<var>delta</var> has the  same vertex  set  as  <var>gamma</var>, and  has  an edge <I>[x,y]</I>
+precisely  when <var>gamma</var> has  an  edge <I>[x,y]</I>  or an edge  <I>[y,x]</I>.  This
+function also sets the <code>isSimple</code> components of <var>gamma</var> and <var>delta</var>.
+<P>
+<pre>    gap> gamma := EdgeOrbitsGraph( Group((1,2,3,4)), [1,2] );
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (1,2,3,4) ),
+      schreierVector := [ -1, 1, 1, 1 ],
+      adjacencies := [ [ 2 ] ],
+      representatives := [ 1 ],
+      isSimple := false )
+    gap> UnderlyingGraph(gamma);
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (1,2,3,4) ),
+      schreierVector := [ -1, 1, 1, 1 ],
+      adjacencies := [ [ 2, 4 ] ],
+      representatives := [ 1 ],
+      isSimple := true ) </pre>
+<P><A NAME="SECT053"><h2>64.53 QuotientGraph</h2></a>
+<P><P><P>
+<code>QuotientGraph( <var>gamma</var>, <var>R</var> )</code>
+<P>
+Let <I>S</I> be  the smallest <var>gamma.group</var>-invariant  equivalence relation on
+the vertices of <var>gamma</var>, such  that <I>S</I> contains  the relation <var>R</var> (which
+should  be a  list  of ordered  pairs (length  2  lists) of  vertices  of
+<var>gamma</var>).  Then this function returns  a graph isomorphic to the quotient
+<var>delta</var> of  the  graph <var>gamma</var>, defined  as   follows.   The vertices  of
+<var>delta</var> are  the equivalence classes of <I>S</I>,  and <I>[X,Y]</I> is an  edge  of
+<var>delta</var> if and only if <I>[x,y]</I> is  an edge of <var>gamma</var>  for some <I>x&isin; X</I>,
+<I>y&isin; Y</I>.
+<P>
+<pre>    gap> gamma := JohnsonGraph(4,2);;
+    gap> QuotientGraph( gamma, [[1,6]] );
+    rec(
+      isGraph := true,
+      order := 3,
+      group := Group( (1,2), (1,3), (2,3) ),
+      schreierVector := [ -1, 1, 2 ],
+      adjacencies := [ [ 2, 3 ] ],
+      representatives := [ 1 ],
+      isSimple := true,
+      names := [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 3 ], [ 2, 4 ] ],
+          [ [ 1, 4 ], [ 2, 3 ] ] ] ) </pre>
+<P><A NAME="SECT054"><h2>64.54 BipartiteDouble</h2></a>
+<P><P><P>
+<code>BipartiteDouble( <var>gamma</var> )</code>
+<P>
+This function  returns the  bipartite  double  of the graph  <var>gamma</var>,  as
+defined in <A href="biblio.htm#BCN89"><cite>BCN89</cite></a>.
+<P>
+<pre>    gap> gamma := JohnsonGraph(4,2);
+    rec(
+      isGraph := true,
+      order := 6,
+      group := Group( (1,5)(2,6), (1,3)(4,6), (2,3)(4,5) ),
+      schreierVector := [ -1, 3, 2, 3, 1, 2 ],
+      adjacencies := [ [ 2, 3, 4, 5 ] ],
+      representatives := [ 1 ],
+      names := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ],
+          [ 3, 4 ] ],
+      isSimple := true )
+    gap> IsBipartite(gamma);
+    false
+    gap> delta := BipartiteDouble(gamma);
+    rec(
+      isGraph := true,
+      order := 12,
+      group := Group( ( 1, 5)( 2, 6)( 7,11)( 8,12), ( 1, 3)( 4, 6)( 7, 9)
+        (10,12), ( 2, 3)( 4, 5)( 8, 9)(10,11), ( 1, 7)( 2, 8)( 3, 9)
+        ( 4,10)( 5,11)( 6,12) ),
+      schreierVector := [ -1, 3, 2, 3, 1, 2, 4, 4, 4, 4, 4, 4 ],
+      adjacencies := [ [ 8, 9, 10, 11 ] ],
+      representatives := [ 1 ],
+      isSimple := true,
+      names := [ [ [ 1, 2 ], "+" ], [ [ 1, 3 ], "+" ], [ [ 1, 4 ], "+" ],
+          [ [ 2, 3 ], "+" ], [ [ 2, 4 ], "+" ], [ [ 3, 4 ], "+" ],
+          [ [ 1, 2 ], "-" ], [ [ 1, 3 ], "-" ], [ [ 1, 4 ], "-" ],
+          [ [ 2, 3 ], "-" ], [ [ 2, 4 ], "-" ], [ [ 3, 4 ], "-" ] ] )
+    gap> IsBipartite(delta);
+    true </pre>
+<P><A NAME="SECT055"><h2>64.55 GeodesicsGraph</h2></a>
+<P><P><P>
+<code>GeodesicsGraph( <var>gamma</var>, <var>x</var>, <var>y</var> )</code>
+<P>
+This  function  returns the  the  graph induced  on the  set of geodesics
+between vertices  <var>x</var> and  <var>y</var>,  but  not  including  <var>x</var>  or  <var>y</var>.  This
+function is only for a simple graph <var>gamma</var>.
+<P>
+<pre>    gap> GeodesicsGraph( JohnsonGraph(4,2), 1, 6 );
+    rec(
+      isGraph := true,
+      order := 4,
+      group := Group( (1,3)(2,4), (1,4)(2,3), (1,3,4,2) ),
+      schreierVector := [ -1, 2, 1, 2 ],
+      adjacencies := [ [ 2, 3 ] ],
+      representatives := [ 1 ],
+      isSimple := true,
+      names := [ [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ] ] )
+    gap> GlobalParameters(last);
+    [ [ 0, 0, 2 ], [ 1, 0, 1 ], [ 2, 0, 0 ] ] </pre>
+<P><A NAME="SECT056"><h2>64.56 CollapsedIndependentOrbitsGraph</h2></a>
+<P><P><P>
+<code>CollapsedIndependentOrbitsGraph( <var>G</var>, <var>gamma</var> )</code> <BR> 
+<code>CollapsedIndependentOrbitsGraph( <var>G</var>, <var>gamma</var>, <var>N</var> )</code>
+<P>
+Given a subgroup <var>G</var> of the automorphism group of the graph <var>gamma</var>, this
+function returns a graph isomorphic to  <var>delta</var>, defined as follows.  The
+vertices of <var>delta</var> are those <var>G</var>-orbits of  the vertices of <var>gamma</var> that
+are independent sets,  and  <I>x</I> is <strong>not</strong> joined to <I>y</I> in <var>delta</var>  if and
+only if <I>x&cup; y</I> is an independent set in <var>gamma</var>.
+<P>
+If the optional  parameter  <I>N</I>  is given,  then  it is  assumed to be  a
+subgroup  of  <I></I>Aut<I>(<var>gamma</var>)</I> preserving  the  set  of <var>G</var>-orbits  of the
+vertices of  <var>gamma</var>  (for  example,  the normalizer in  <var>gamma.group</var> of
+<var>G</var>).  This information can make the function more efficient.
+<P>
+<pre>    gap> G := Group( (1,2) );;
+    gap> gamma := NullGraph( SymmetricGroup(3) );;
+    gap> CollapsedIndependentOrbitsGraph( G, gamma );
+    rec(
+      isGraph := true,
+      order := 2,
+      group := Group( () ),
+      schreierVector := [ -1, -2 ],
+      adjacencies := [ [  ], [  ] ],
+      representatives := [ 1, 2 ],
+      isSimple := true,
+      names := [ [ 1, 2 ], [ 3 ] ] ) </pre>
+<P><A NAME="SECT057"><h2>64.57 CollapsedCompleteOrbitsGraph</h2></a>
+<P><P><P>
+<code>CollapsedCompleteOrbitsGraph( <var>G</var>, <var>gamma</var> )</code> <BR> 
+<code>CollapsedCompleteOrbitsGraph( <var>G</var>, <var>gamma</var>, <var>N</var> )</code>
+<P>
+Given  a  subgroup <var>G</var> of  the   automorphism  group of the simple  graph
+<var>gamma</var>, this function returns a graph isomorphic  to <var>delta</var>, defined as
+follows.  The vertices of <var>delta</var> are those <var>G</var>-orbits of the vertices of
+<var>gamma</var> on  which complete subgraphs are  induced in <var>gamma</var>, and  <I>x</I> is
+joined to <I>y</I> in  <var>delta</var> if and  only if <I>x&ne;y</I>  and the  subgraph of
+<var>gamma</var> induced on <I>x&cup; y</I> is a complete graph.
+<P>
+If the optional  parameter  <var>N</var>  is given, then  it is assumed  to  be  a
+subgroup of  <I></I>Aut<I>(<var>gamma</var>)</I>  preserving  the  set of  <var>G</var>-orbits  of the
+vertices  of  <var>gamma</var> (for  example,  the normalizer in  <var>gamma.group</var> of
+<var>G</var>).  This information can make the function more efficient.
+<P>
+<pre>    gap> G := Group( (1,2) );;
+    gap> gamma := NullGraph( SymmetricGroup(3) );;
+    gap> CollapsedCompleteOrbitsGraph( G, gamma );
+    rec(
+      isGraph := true,
+      order := 1,
+      group := Group( () ),
+      schreierVector := [ -1 ],
+      adjacencies := [ [  ] ],
+      representatives := [ 1 ],
+      names := [ [ 3 ] ],
+      isSimple := true )
+    gap> gamma := CompleteGraph( SymmetricGroup(3) );;
+    gap> CollapsedCompleteOrbitsGraph( G, gamma );
+    rec(
+      isGraph := true,
+      order := 2,
+      group := Group( () ),
+      schreierVector := [ -1, -2 ],
+      adjacencies := [ [ 2 ], [ 1 ] ],
+      representatives := [ 1, 2 ],
+      names := [ [ 1, 2 ], [ 3 ] ],
+      isSimple := true ) </pre>
+<P><A NAME="SECT058"><h2>64.58 NewGroupGraph</h2></a>
+<P><P><P>
+<code>NewGroupGraph( <var>G</var>, <var>gamma</var> )</code>
+<P>
+This  function returns a  copy <var>delta</var> of <var>gamma</var>,  except that the group
+associated with  <var>delta</var> is <var>G</var>, which is a assumed to be  a subgroup  of
+<I></I>Aut<I>(<var>delta</var>)</I>.
+<P>
+Note that the result of  some functions  of  a graph  depend on the group
+associated  with  that graph  (which must always  be  a  subgroup  of the
+automorphism group of the graph).
+<P>
+<pre>    gap> gamma := JohnsonGraph(4,2);;
+    gap> aut := AutGroupGraph(gamma);
+    Group( (3,4), (2,3)(4,5), (1,2)(5,6) )
+    gap> Size(gamma.group);
+    24
+    gap> Size(aut);
+    48
+    gap> delta := NewGroupGraph( aut, gamma );;
+    gap> Size(delta.group);
+    48
+    gap> IsIsomorphicGraph( gamma, delta );
+    true </pre>
+<P><A NAME="SECT059"><h2>64.59 Vertex-Colouring and Complete Subgraphs</h2></a>
+<P><P><P>
+The following   sections  describe  functions  for   vertex-colouring  or
+constructing complete subgraphs of given graphs.
+<P><A NAME="SECT060"><h2>64.60 VertexColouring</h2></a>
+<P><P><P>
+<code>VertexColouring( <var>gamma</var> )</code>
+<P>
+This  function  returns  a proper  vertex-colouring  <I>C</I>  for  the  graph
+<var>gamma</var>, which must be simple.
+<P>
+This <strong>proper vertex-colouring</strong> <I>C</I> is a list  of natural numbers, indexed
+by  the  vertices of <var>gamma</var>, and  has the  property that <I>C[i]&ne;C[j]</I>
+whenever <I>[i,j]</I> is an edge of <var>gamma</var>.  At  present a <strong>greedy</strong> algorithm
+is used.
+<P>
+<pre>    gap> VertexColouring( JohnsonGraph(4,2) );
+    [ 1, 2, 3, 3, 2, 1 ] </pre>
+<P><A NAME="SECT061"><h2>64.61 CompleteSubgraphs</h2></a>
+<P><P><P>
+<code>CompleteSubgraphs( <var>gamma</var> )</code> <BR> 
+<code>CompleteSubgraphs( <var>gamma</var>, <var>k</var> )</code> <BR> 
+<code>CompleteSubgraphs( <var>gamma</var>, <var>k</var>, <var>alls</var> )</code>
+<P>
+This function returns a set <I>K</I>  of complete subgraphs of <var>gamma</var>,  which
+must be a simple graph.  A complete subgraph is represented by its vertex
+set.   If  <I>&lt;k&gt; &gt; -1</I>  then the  elements of <I>K</I>  each  have  size  <var>k</var>,
+otherwise the  elements  of <I>K</I> represent  maximal complete subgraphs  of
+<var>gamma</var>.  The default for <var>k</var> is <I>-1</I>, i.e. maximal complete subgraphs.
+<P>
+The   optional  boolean  parameter  <var>alls</var>  controls  how  many  complete
+subgraphs are returned.  If <var>alls</var> is <code>true</code> (the default), then <I>K</I> will
+contain (perhaps properly) a  set of  <var>gamma.group</var> orbit-representatives
+of  the size <var>k</var>  (if <I>&lt;k&gt;  &gt; -1</I>) or  maximal (if  <I>&lt;k&gt;  &lt; 0</I>) complete
+subgraphs of <var>gamma</var>.
+<P>
+If <var>alls</var> is <code>false</code> then <I>K</I> will contain at most one element.   In this
+case, if <I>&lt;k&gt; &lt; 0</I> then <I>K</I>  will  contain  just  one  maximal  complete
+subgraph, and if <I>&lt;k&gt; &gt; -1</I> then <I>K</I> will contain  a complete subgraph of
+size <var>k</var> if and only if such a subgraph is contained in <var>gamma</var>.
+<P>
+<pre>    gap> gamma := JohnsonGraph(5,2);;
+    gap> CompleteSubgraphs(gamma);
+    [ [ 1, 2, 3, 4 ], [ 1, 2, 5 ] ]
+    gap> CompleteSubgraphs(gamma,2,false);
+    [ [ 1, 2 ] ] </pre>
+<P><A NAME="SECT062"><h2>64.62 CompleteSubgraphsOfGivenSize</h2></a>
+<P><P><P>
+<code>CompleteSubgraphsOfGivenSize( <var>gamma</var>, <var>k</var> )</code> <BR> 
+<code>CompleteSubgraphsOfGivenSize( <var>gamma</var>, <var>k</var>, <var>alls</var> )</code> <BR> 
+<code>CompleteSubgraphsOfGivenSize( <var>gamma</var>, <var>k</var>, <var>alls</var>, <var>maxi</var> )</code> <BR> 
+<code>CompleteSubgraphsOfGivenSize( <var>gamma</var>, <var>k</var>, <var>alls</var>, <var>maxi</var>, <var>colnum</var> )</code>
+<P>
+Let <var>gamma</var> be a simple graph and <I>&lt;k&gt; &gt; 0</I>.  This function returns a set
+<I>K</I> of complete subgraphs of size <var>k</var> of <var>gamma</var>, if such subgraphs exist
+(else the empty set is returned).  A complete subgraph  is represented by
+its vertex set.  This function is more efficient for its purpose than the
+more general function <code>CompleteSubgraphs</code>.
+<P>
+The  boolean  parameter  <var>alls</var>  is used  to  control  how many  complete
+subgraphs are returned.  If <var>alls</var> is true  (the  default), then <I>K</I> will
+contain (perhaps properly) a set  of <var>gamma.group</var>  orbit-representatives
+of the  size  <var>k</var> complete subgraphs of <var>gamma</var>.  If <var>alls</var> is false then
+<I>K</I> will contain at most one element, and will contain one element if and
+only if <var>gamma</var> contains a complete subgraph of size <var>k</var>.
+<P>
+If the boolean parameter <var>maxi</var> is bound and  has value true, then  it is
+assumed that all complete subgraphs of size <var>k</var> of <var>gamma</var> are maximal.
+<P>
+If  the  optional rational parameter  <var>colnum</var> is  given, then a sensible
+value is
+<center>
+    <code>OrderGraph(<var>gamma</var>)/Length(Set(VertexColouring(<var>gamma</var>)))</code>.
+</center>
+<P>
+The use of this parameter may speed up the function.
+<P>
+<pre>    gap> gamma := JohnsonGraph(5,2);;
+    gap> CompleteSubgraphsOfGivenSize(gamma,5);
+    [  ]
+    gap> CompleteSubgraphsOfGivenSize(gamma,4,true,true);
+    [ [ 1, 2, 3, 4 ] ]
+    gap> gamma := NewGroupGraph( Group(()), gamma );;
+    gap> CompleteSubgraphsOfGivenSize(gamma,4,true,true);
+    [ [ 1, 2, 3, 4 ], [ 1, 5, 6, 7 ], [ 2, 5, 8, 9 ], [ 3, 6, 8, 10 ],
+      [ 4, 7, 9, 10 ] ] </pre>
+<P><A NAME="SECT063"><h2>64.63 Functions depending on nauty</h2></a>
+<P><P><P>
+For convenience,  <strong>GRAPE</strong> provides  a (somewhat primitive)  interface to
+Brendan  McKay's  \nauty (Version 1.7) package  (see <A href="biblio.htm#Nau90"><cite>Nau90</cite></a>) for
+calculating  automorphism  groups  of vertex-coloured  graphs,   and  for
+testing graph isomorphism.
+<P><A NAME="SECT064"><h2>64.64 AutGroupGraph</h2></a>
+<P><P><P>
+<code>AutGroupGraph( <var>gamma</var> )</code> <BR> 
+<code>AutGroupGraph( <var>gamma</var>, <var>colouring</var> )</code>
+<P>
+The first version of this function returns the  automorphism group of the
+(directed) graph <var>gamma</var>, using \nauty.
+<P>
+In the second version, <var>colouring</var> is a vertex-colouring  of <var>gamma</var>, and
+the subgroup of <I></I>Aut<I>(<var>gamma</var>)</I> preserving this  colouring  is  returned.
+Here, a colouring should be given as a list of sets, forming a partion of
+the vertices.   The  set for the last colour may be omitted. Note that we
+do not require that adjacent vertices have different colours.
+<P>
+<pre>    gap> gamma := JohnsonGraph(4,2);;
+    gap> Size(AutGroupGraph(gamma));
+    48
+    gap> Size(AutGroupGraph(gamma,[[1,6]]));
+    16 </pre>
+<P><A NAME="SECT065"><h2>64.65 IsIsomorphicGraph</h2></a>
+<P><P><P>
+<code>IsIsomorphicGraph( <var>gamma1</var>, <var>gamma2</var> )</code>
+<P>
+This boolean function  uses the \nauty program  to test the isomorphism
+of <var>gamma1</var>  with <var>gamma2</var>.  The value <code>true</code> is  returned if and only if
+the graphs are isomorphic (as directed, uncoloured graphs).
+<P>
+This  function creates or  uses the record component <code>canonicalLabelling</code>
+of a graph.  As noted  in <A href="biblio.htm#Nau90"><cite>Nau90</cite></a>, a  canonical  labelling given  by
+\nauty  can  depend   on  the version   of  \nauty  (Version 1.7   in
+<strong>GRAPE</strong> 2.31),  certain parameters of  \nauty  (always set the same by 
+<strong>GRAPE</strong> 2.31),  and  the  compiler  and  computer  used.  If you use the 
+<code>canonicalLabelling</code> component  (say by using  <code>IsIsomorphicGraph</code>)  of a 
+graph stored on a file, then you must be sure that this field was created 
+in the same environment in which you are presently computing. If in doubt,  
+unbind the <code>canonicalLabelling</code> component  of  the  graph  before  testing 
+isomorphism.
+<P>
+<pre>    gap> gamma := JohnsonGraph(7,4);;
+    gap> delta := JohnsonGraph(7,3);;
+    gap> IsIsomorphicGraph( gamma, delta );
+    true </pre>
+<P><A NAME="SECT066"><h2>64.66 An example</h2></a>
+<P><P><P>
+We conclude this chapter with a simple example to  illustrate further the
+use of <strong>GRAPE</strong>.
+<P>
+In this example we construct the  Petersen graph <I>P</I>, and its  edge graph
+(often  called line graph)  <I>EP</I>.  We compute  the (global) parameters of
+<I>EP</I>, and so verify that <I>EP</I> is distance-regular (see <A href="biblio.htm#BCN89"><cite>BCN89</cite></a>).  We
+also show that  there is just  one orbit  of 1-factors  of  <I>P</I> under the
+automorphism  group of <I>P</I> (but you  should read the documentation of the
+function <code>CompleteSubgraphsOfGivenSize</code> to see exactly what that function
+does).
+<P>
+<pre>    gap> P := Graph( SymmetricGroup(5), [[1,2]], OnSets,
+    >          function(x,y) return Intersection(x,y)=[]; end );
+    rec(
+      isGraph := true,
+      order := 10,
+      group := Group( ( 1, 2)( 6, 8)( 7, 9), ( 1, 3)( 4, 8)( 5, 9),
+        ( 2, 4)( 3, 6)( 9,10), ( 2, 5)( 3, 7)( 8,10) ),
+      schreierVector := [ -1, 1, 2, 3, 4, 3, 4, 2, 2, 4 ],
+      adjacencies := [ [ 8, 9, 10 ] ],
+      representatives := [ 1 ],
+      names := [ [ 1, 2 ], [ 2, 5 ], [ 1, 5 ], [ 2, 3 ], [ 2, 4 ],
+          [ 1, 3 ], [ 1, 4 ], [ 3, 5 ], [ 4, 5 ], [ 3, 4 ] ] )
+    gap> Diameter(P);
+    2
+    gap> Girth(P);
+    5
+    gap> EP := EdgeGraph(P);
+    rec(
+      isGraph := true,
+      order := 15,
+      group := Group( ( 1, 4)( 2, 5)( 3, 6)(10,11)(12,13)(14,15), ( 1, 7)
+        ( 2, 8)( 3, 9)(10,15)(11,13)(12,14), ( 2, 3)( 4, 7)( 5,10)( 6,11)
+        ( 8,12)( 9,14), ( 1, 3)( 4,12)( 5, 8)( 6,13)( 7,10)( 9,15) ),
+      schreierVector := [ -1, 3, 4, 1, 3, 1, 2, 3, 2, 4, 1, 4, 1, 2, 2 ],
+      adjacencies := [ [ 2, 3, 13, 15 ] ],
+      representatives := [ 1 ],
+      isSimple := true,
+      names := [ [ [ 1, 2 ], [ 3, 5 ] ], [ [ 1, 2 ], [ 4, 5 ] ],
+          [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 3 ], [ 2, 5 ] ],
+          [ [ 1, 4 ], [ 2, 5 ] ], [ [ 2, 5 ], [ 3, 4 ] ],
+          [ [ 1, 5 ], [ 2, 3 ] ], [ [ 1, 5 ], [ 2, 4 ] ],
+          [ [ 1, 5 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ],
+          [ [ 2, 3 ], [ 4, 5 ] ], [ [ 1, 3 ], [ 2, 4 ] ],
+          [ [ 2, 4 ], [ 3, 5 ] ], [ [ 1, 3 ], [ 4, 5 ] ],
+          [ [ 1, 4 ], [ 3, 5 ] ] ] )
+    gap> GlobalParameters(EP);
+    [ [ 0, 0, 4 ], [ 1, 1, 2 ], [ 1, 2, 1 ], [ 4, 0, 0 ] ]
+    gap> CompleteSubgraphsOfGivenSize(ComplementGraph(EP),5);
+    [ [ 1, 5, 9, 11, 12 ] ] </pre>
+<P><a href ="chap063.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap065.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

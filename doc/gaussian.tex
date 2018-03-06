@@ -1,0 +1,396 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  gaussian.tex                GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: gaussian.tex,v 1.1.1.1 1996/12/11 12:36:45 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes Gaussian integers and rationals and their  functions.
+%%
+%H  $Log: gaussian.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:45  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.6  1993/03/11  10:33:40  fceller
+%H  added 'EuclideanQuotient', 'EuclideanRemainder' and 'QuotientRemainder'
+%H
+%H  Revision 3.5  1993/02/01  13:25:57  felsch
+%H  example fixed
+%H
+%H  Revision 3.4  1992/04/06  16:54:53  martin
+%H  fixed some more typos
+%H
+%H  Revision 3.3  1992/04/02  21:06:23  martin
+%H  changed *domain functions* to *set theoretic functions*
+%H
+%H  Revision 3.2  1992/03/11  15:51:46  sam
+%H  renamed chapter "Number Fields" to "Subfields of Cyclotomic Fields"
+%H
+%H  Revision 3.1  1992/01/08  11:41:10  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Gaussians}%
+\index{type!gaussian rationals}
+\index{type!gaussian integers}
+
+If we adjoin a square root of -1, usually denoted by $i$, to the field of
+rationals we obtain a field that is an extension of degree 2.  This field
+is called the *Gaussian rationals* and its ring of integers is called the
+*Gaussian integers*, because C.F. Gauss was the first to study them.
+
+In {\GAP} Gaussian rationals are written in the  form '<a>  + <b>\*E(4)',
+where <a> and  <b> are rationals,  because 'E(4)'  is {\GAP}\'s name  for
+$i$.  Because 1 and $i$ form an integral base  the Gaussian  integers are
+written in the form '<a> + <b>\*E(4)', where <a> and <b> are integers.
+
+The first sections in this  chapter describe the operations applicable to
+Gaussian rationals (see "Comparisons  of  Gaussians" and "Operations  for
+Gaussians").
+
+The next sections describe the functions that test whether an object is a
+Gaussian rational or integer (see "IsGaussRat" and "IsGaussInt").
+
+The {\GAP} object 'GaussianRationals' is the field domain of all Gaussian
+rationals,  and the object 'GaussianIntegers'  is the ring domain of  all
+Gaussian  integers.  All  set theoretic functions are applicable to those
+two domains (see chapter "Domains" and "Set Functions for Gaussians").
+
+The Gaussian rationals form a field so all field functions, e.g., 'Norm',
+are  applicable to the domain  'GaussianRationals'  and its elements (see
+chapter "Fields" and "Field Functions for Gaussian Rationals").
+
+The Gaussian integers  form a Euclidean ring so all ring functions, e.g.,
+'Factors', are applicable to  'GaussianIntegers'  and its  elements  (see
+chapter   "Rings",   "Ring   Functions  for   Gaussian   Integers",   and
+"TwoSquares").
+
+The field of Gaussian  rationals is  just a  special  case of  cyclotomic
+fields,  so everything that applies to  those fields also  applies  to it
+(see chapters "Cyclotomics" and "Subfields of Cyclotomic Fields").
+
+All functions are in the library file 'LIBNAME/\"gaussian.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Gaussians}%
+\index{equality!of gaussians}%
+\index{ordering!of gaussians}
+
+'<x> = <y>' \\
+'<x> \<> <y>'
+
+The  equality operator evaluates  to 'true' if  the two Gaussians <x> and
+<y> are  equal, and to 'false' otherwise.   The inequality operator '\<>'
+evaluates to 'true' if the  two Gaussians <x> and <y>  are not equal, and
+to 'false' otherwise.  It is also possible  to compare a Gaussian with an
+object of another type, of course they are never equal.
+
+Two Gaussians '<a>  +  <b>\*E(4)' and  '<c> + <d>\*E(4)'   are considered
+equal if '<a> = <c>' and '<b> = <d>'.
+
+|    gap> 1 + E(4) = 2 / (1 - E(4));
+    true
+    gap> 1 + E(4) = 1 - E(4);
+    false
+    gap> 1 + E(4) = E(6);
+    false |
+
+'<x> \< <y>' \\
+'<x> \<= <y>' \\
+'<x> > <y>' \\
+'<x> >= <y>'
+
+The operators  '\<',  '\<=', '>',  and  '>='  evaluate to  'true' if  the
+Gaussian  <x> is  less  than, less  than or equal   to, greater than, and
+greater  than or equal to  the  Gaussian <y>,  and  to 'false' otherwise.
+Gaussians can   also be compared  to objects   of other types,  they  are
+smaller than anything else, except other cyclotomics (see "Comparisons of
+Cyclotomics").
+
+A Gaussian '<a>  +  <b>\*E(4)' is considered  less  than another Gaussian
+'<c> + <d>\*E(4)' if <a> is less than <c>, or if <a> is  equal to <c> and
+<b> is less than <d>.
+
+|    gap> 1 + E(4) < 2 + E(4);
+    true
+    gap> 1 + E(4) < 1 - E(4);
+    false
+    gap> 1 + E(4) < 1/2;
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Gaussians}%
+\index{sum!of gaussians}\index{difference!of gaussians}%
+\index{product!of gaussians}\index{quotient!of gaussians}%
+\index{power!of gaussians}
+
+'<x>  +  <y>' \\
+'<x>  -  <y>' \\
+'<x> \*\ <y>' \\
+'<x>  /  <y>'
+
+The  operators '+', '-', '\*', and  '/' evaluate  to the sum, difference,
+product, and quotient of the two Gaussians <x> and <y>.  Of course either
+operand  may also be an  ordinary rational (see "Rationals"), because the
+rationals are embedded  into the Gaussian rationals.   On  the other hand
+the Gaussian  rationals  are embedded  into other   cyclotomic fields, so
+either operand may also be a cyclotomic (see "Cyclotomics").  Division by
+0 is as usual an error.
+
+'<x> \^\ <n>'
+
+The operator '\^' evaluates to the  <n>-th power of the Gaussian rational
+<x>.  If  <n> is positive, the power  is defined as  the <n>-fold product
+'<x>\*<x>\*...<x>';   if <n> is    negative,   the power is  defined   as
+'(1/<x>)\^(-<n>)'; and if <n> is zero, the power is 1, even if <x> is 0.
+
+|    gap> (1 + E(4)) * (E(4) - 1);
+    -2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsGaussRat}%
+\index{test!for gaussian rational}
+
+'IsGaussRat( <obj> )'
+
+'IsGaussRat' returns 'true' if <obj>, which may be an object of arbitrary
+type, is a Gaussian rational and 'false' otherwise.  Will signal an error
+if <obj> is an unbound variable.
+
+|    gap> IsGaussRat( 1/2 );
+    true
+    gap> IsGaussRat( E(4) );
+    true
+    gap> IsGaussRat( E(6) );
+    false
+    gap> IsGaussRat( true );
+    false |
+
+'IsGaussInt' can be used to test whether an object is a  Gaussian integer
+(see "IsGaussInt").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsGaussInt}%
+\index{test!for gaussian integer}
+
+'IsGaussInt( <obj> )'
+
+'IsGaussInt' returns 'true' if <obj>, which may be an object of arbitrary
+type, is  a Gaussian integer, and  false otherwise.  Will signal an error
+if <obj> is an unbound variable.
+
+|    gap> IsGaussInt( 1 );
+    true
+    gap> IsGaussInt( E(4) );
+    true
+    gap> IsGaussInt( 1/2 + 1/2*E(4) );
+    false
+    gap> IsGaussInt( E(6) );
+    false |
+
+'IsGaussRat' can be used to test whether an object is a Gaussian rational
+(see "IsGaussRat").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Functions for Gaussians}%
+\index{membership test!for gaussians}\index{in!for gaussians}%
+\index{Random!for gaussians}%
+
+As  already mentioned in the  introduction of  this  chapter the  objects
+'GaussianRationals'  and 'GaussianIntegers' are the  domains of  Gaussian
+rationals and integers respectively.  All  set theoretic functions, i.e.,
+'Size' and 'Intersection',  are applicable to  these  domains  and  their
+elements (see chapter "Domains").  There does not seem to be an important
+use of  this however.  All functions not  mentioned here are  not treated
+specially, i.e., they are implemented by the  default function  mentioned
+in the respective section.
+
+\vspace{5mm}
+'in'
+
+The  membership test   for     Gaussian rationals  is  implemented    via
+'IsGaussRat' ("IsGaussRat").  The  membership test for  Gaussian integers
+is implemented via 'IsGaussInt' (see "IsGaussInt").
+
+\vspace{5mm}
+'Random'
+
+A random Gaussian rational '<a> + <b>\*E(4)' is computed by combining two
+random  rationals  <a>  and  <b>  (see  "Set  Functions  for Rationals").
+Likewise  a  random  Gaussian  integer '<a> +  <b>\*E(4)' is  computed by
+combining  two random  integers  <a>  and  <b> (see  "Set  Functions  for
+Integers").
+
+|    gap> Size( GaussianRationals );
+    "infinity"
+    gap> Intersection( GaussianIntegers, [1,1/2,E(4),-E(6),E(4)/3] );
+    [ 1, E(4) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Field Functions for Gaussian Rationals}%
+\index{Conjugates!for gaussians}%
+\index{Norm!for gaussians}%
+\index{Trace!for gaussians}
+
+As already mentioned  in the introduction of this chapter,  the domain of
+Gaussian  rationals  is a  field.   Therefore  all  field  functions  are
+applicable to this domain and  its elements (see chapter "Fields").  This
+section gives  further comments on the definitions and implementations of
+those  functions  for  the the  Gaussian  rationals.   All  functions not
+mentioned here are not  treated specially, i.e., they are implemented  by
+the default function mentioned in the respective section.
+
+\vspace{5mm}
+'Conjugates'
+
+The  field  of Gaussian  rationals  is  an  extension of degree 2 of  the
+rationals,  its prime field.  Therefore there is one further conjugate of
+every element '<a> + <b>\*E(4)', namely '<a> - <b>\*E(4)'.
+
+\vspace{5mm}
+'Norm', 'Trace'
+
+According to the definition  of conjugates above, the  norm of a Gaussian
+rational    '<a> + <b>\*E(4)'  is  '<a>\^2  + <b>\^2'   and  the trace is
+'2\*<a>'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ring Functions for Gaussian Integers}%
+\index{IsUnit!for gaussians}\index{Units!for gaussians}%
+\index{IsAssociated!for gaussians}\index{Associates!for gaussians}%
+\index{StandardAssociate!for gaussians}%
+\index{EuclideanDegree!for gaussians}%
+\index{EuclideanRemainder!for gaussians}%
+\index{EuclideanQuotient!for gaussians}%
+\index{QuotientRemainder!for gaussians}%
+\index{IsPrime!for gaussians}\index{IsIrreducible!for gaussians}%
+\index{Factors!for gaussians}
+
+As already mentioned in  the introduction to  this chapter,  the  ring of
+Gaussian integers  is a Euclidean ring.  Therefore all ring functions are
+applicable to this  ring and  its  elements (see chapter "Rings").   This
+section gives further comments on  the definitions and implementations of
+those functions for the Gaussian integers.   All functions  not mentioned
+here are not treated specially, i.e., they are implemented by the default
+function mentioned in the respective section.
+
+\vspace{5mm}
+'IsUnit', 'Units', 'IsAssociated', 'Associates'
+
+The units of 'GaussianIntegers' are '[ 1, E(4), -1, -E(4) ]'.
+
+\vspace{5mm}
+'StandardAssociate'
+
+The standard associate  of  a  Gaussian  integer  <x> is the   associated
+element <y> of <x> that lies in the first  quadrant of the complex plane.
+That  is <y>  is  that element  from '<x> \*\ [1,-1,E(4),-E(4)]' that has
+positive real part and nonnegative imaginary part.
+
+\vspace{5mm}
+'EuclideanDegree'
+
+The Euclidean degree of a Gaussian  integer <x> is the product of <x> and
+its complex conjugate.
+
+\vspace{5mm}
+'EuclideanRemainder'
+
+Define the integer part <i> of the quotient of  <x>  and <y> as the point
+of  the lattice spanned by 1  and 'E(4)' that  lies next to the  rational
+quotient of <x> and <y>, rounding towards the origin if there are several
+such  points.  Then 'EuclideanRemainder( <x>, <y> )' is defined as '<x> -
+<i> \*\ <y>'.  With this definition the ordinary Euclidean algorithm  for
+the greatest common divisor works, whereas it does not work if you always
+round towards the origin.
+
+\vspace{5mm}
+'EuclideanQuotient'
+
+The  Euclidean quotient of two  Gaussian integers  <x>  and  <y>  is  the
+quotient of $w$ and <y>, where $w$  is the difference between <x> and the
+Euclidean remainder of <x> and <y>.
+
+\vspace{5mm}
+'QuotientRemainder'
+
+'QuotientRemainder' uses 'EuclideanRemainder' and 'EuclideanQuotient'.
+
+\vspace{5mm}
+'IsPrime', 'IsIrreducible'
+
+Since the Gaussian integers are a Euclidean ring, primes and irreducibles
+are equivalent.  The primes are the elements '1 + E(4)' and '1 - E(4)' of
+norm 2, the elements  '<a> + <b>\*E(4)'  and  '<a> - <b>\*E(4)'  of  norm
+'<p> = <a>\^2 + <b>\^2' with <p> a  rational prime congruent  to 1 mod 4,
+and the elements <p> of norm '<p>\^2' with <p> a rational prime congruent
+to 3 mod 4.
+
+\vspace{5mm}
+'Factors'
+
+The list returned by 'Factors'  is sorted according to  the norms of  the
+primes, and among those of equal norm with respect to '\<'.  All elements
+in  the  list  are  standard  associates,  except  the  first,  which  is
+multiplied by a unit as necessary.
+
+The  above characterization already shows  how one  can factor a Gaussian
+integer.  First  compute the norm of the  element, factor this  norm over
+the rational integers and then split 2 and the  primes congruent to 1 mod
+4 with 'TwoSquares' (see "TwoSquares").
+
+|    gap> Factors( GaussianIntegers, 30 );
+    [ -1-E(4), 1+E(4), 3, 1+2*E(4), 2+E(4) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TwoSquares}%
+\index{representation!as a sum of two squares}
+
+'TwoSquares( <n> )'
+
+'TwoSquares' returns a list of two integers $x\<=y$  such that the sum of
+the squares of $x$ and $y$ is equal to the nonnegative integer <n>, i.e.,
+$n = x^2+y^2$.  If no such representation exists 'TwoSquares' will return
+'false'.  'TwoSquares' will return a representation  for which the gcd of
+$x$ and  $y$  is  as small  as  possible.    If there are    several such
+representations, it is not specified which one 'TwoSquares' returns.
+
+Let $a$ be the product of all maximal powers of primes of the form $4k+3$
+dividing  $n$.  A representation of $n$ as a sum of two squares exists if
+and only if $a$ is a perfect square.  Let $b$ be the maximal power of $2$
+dividing  $n$, or  its  half, whichever is a  perfect  square.   Then the
+minimal possible gcd of $x$ and $y$ is the square root $c$ of $a b$.  The
+number  of  different minimal representations with $x\<=y$  is $2^{l-1}$,
+where $l$ is the number of different prime factors  of the form $4k+1$ of
+$n$.
+
+|    gap> TwoSquares( 5 );
+    [ 1, 2 ]
+    gap> TwoSquares( 11 );
+    false        # no representation exists
+    gap> TwoSquares( 16 );
+    [ 0, 4 ]
+    gap> TwoSquares( 45 );
+    [ 3, 6 ]        # 3 is the minimal possible gcd because 9 divides 45
+    gap> TwoSquares( 125 );
+    [ 2, 11 ]        # not [ 5, 10 ] because this has not minimal gcd
+    gap> TwoSquares( 13*17 );
+    [ 5, 14 ]        # [10,11] would be the other possible representation
+    gap> TwoSquares( 848654483879497562821 );
+    [ 6305894639, 28440994650 ]        # 848654483879497562821 is prime |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

@@ -1,0 +1,200 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  unknown.tex                 GAP documentation               Thomas Breuer
+%%
+%A  @(#)$Id: unknown.tex,v 1.1.1.1 1996/12/11 12:36:51 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%H  $Log: unknown.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:51  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.7  1993/02/18  13:40:55  felsch
+%H  more examples fixed
+%H
+%H  Revision 3.6  1993/02/12  15:50:48  felsch
+%H  examples adjusted to line length 72
+%H
+%H  Revision 3.5  1993/02/11  17:46:09  martin
+%H  changed '@' to '&'
+%H
+%H  Revision 3.4  1993/02/07  13:23:35  felsch
+%H  more examples fixed
+%H
+%H  Revision 3.3  1993/02/01  13:58:52  felsch
+%H  examples fixed
+%H
+%H  Revision 3.2  1992/11/30  15:36:30  fceller
+%H  changed text aligment so that the online help works
+%H
+%H  Revision 3.1  1991/12/27  16:46:58  sam
+%H  initial revision under RCS
+%%
+\Chapter{Unknowns}%
+\index{data type!unknown}
+
+Sometimes  the  result  of  an   operation  does  not  allow   further
+computations with it.  In many cases, then an error is signalled,  and
+the computation is stopped.
+
+This is not  appropriate  for some applications  in  character theory.
+For example,  if a  character shall be induced  up (see "Induced") but
+the subgroup fusion is only a parametrized map  (see chapter "Maps and
+Parametrized  Maps"), there  are  positions where  the  value  of  the
+induced character are not known, and other values which are determined
+by the fusion map\:
+
+|    gap> m11:= CharTable( "M11" );; m12:= CharTable( "M12" );;
+    gap> fus:= InitFusion( m11, m12 );
+    [ 1, [ 2, 3 ], [ 4, 5 ], [ 6, 7 ], 8, [ 9, 10 ], [ 11, 12 ],
+      [ 11, 12 ], [ 14, 15 ], [ 14, 15 ] ]
+    gap> Induced(m11,m12,Sublist(m11.irreducibles,[ 6 .. 9 ]),fus);
+    &I Induced: subgroup order not dividing sum in character 1 at class 4
+    &I Induced: subgroup order not dividing sum in character 1 at class 5
+    &I Induced: subgroup order not dividing sum in character 1 at class 14
+    &I Induced: subgroup order not dividing sum in character 1 at class 15
+    &I Induced: subgroup order not dividing sum in character 2 at class 4
+    &I Induced: subgroup order not dividing sum in character 2 at class 5
+    &I Induced: subgroup order not dividing sum in character 2 at class 14
+    &I Induced: subgroup order not dividing sum in character 2 at class 15
+    &I Induced: subgroup order not dividing sum in character 3 at class 2
+    &I Induced: subgroup order not dividing sum in character 3 at class 3
+    &I Induced: subgroup order not dividing sum in character 3 at class 4
+    &I Induced: subgroup order not dividing sum in character 3 at class 5
+    &I Induced: subgroup order not dividing sum in character 3 at class 9
+    &I Induced: subgroup order not dividing sum in character 3 at class 10
+    &I Induced: subgroup order not dividing sum in character 4 at class 2
+    &I Induced: subgroup order not dividing sum in character 4 at class 3
+    &I Induced: subgroup order not dividing sum in character 4 at class 6
+    &I Induced: subgroup order not dividing sum in character 4 at class 7
+    &I Induced: subgroup order not dividing sum in character 4 at class 11
+    &I Induced: subgroup order not dividing sum in character 4 at class 12
+    &I Induced: subgroup order not dividing sum in character 4 at class 14
+    &I Induced: subgroup order not dividing sum in character 4 at class 15
+    [ [ 192, 0, 0, Unknown(9), Unknown(12), 0, 0, 2, 0, 0, 0, 0, 0,
+          Unknown(15), Unknown(18) ], 
+      [ 192, 0, 0, Unknown(27), Unknown(30), 0, 0, 2, 0, 0, 0, 0, 0,
+          Unknown(33), Unknown(36) ], 
+      [ 528, Unknown(45), Unknown(48), Unknown(51), Unknown(54), 0, 0, 
+          -2, Unknown(57), Unknown(60), 0, 0, 0, 0, 0 ], 
+      [ 540, Unknown(75), Unknown(78), 0, 0, Unknown(81), Unknown(84), 0, 
+          0, 0, Unknown(87), Unknown(90), 0, Unknown(93), Unknown(96) ] ]|
+
+For this  and other  situations,  in  \GAP\ there  is  the  data  type
+*unknown*.   Objects  of this type, further on  called *unknowns*, may
+stand for any cyclotomic (see "Cyclotomics").
+
+Unknowns are  parametrized by positive integers.  When a \GAP\ session
+is started, no unknowns do exist.
+
+The only ways to create unknowns are to call  "Unknown" 'Unknown' or a
+function that calls it, or to do arithmetical operations with unknowns
+(see "Operations for Unknowns").
+
+Two properties should be noted\:
+
+Lists  of cyclotomics and unknowns are  no vectors, so cannot be added
+or multiplied like vectors; as a  consequence, unknowns never occur in
+matrices.
+
+\GAP\ objects  which are printed to files will contain fixed unknowns,
+i.e., function calls 'Unknown(  <n> )'  instead of 'Unknown()',  so be
+careful to read files printed in different  sessions, since  there may
+be the same unknown at different places.
+
+The rest  of this  chapter  contains  informations  about the  unknown
+constructor  (see   "Unknown"),  the  characteristic   function   (see
+"IsUnknown"),  and  comparison  of  and  arithmetical  operations  for
+unknowns  (see "Comparisons  of Unknowns", "Operations for Unknowns");
+more is not yet known about unknowns.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Unknown}
+
+'Unknown()'\\
+'Unknown( <n> )'
+
+'Unknown()'  returns  a new unknown value, i.e. the first  one that is
+larger than all unknowns which exist in the actual \GAP\ session.
+
+'Unknown(  <n>  )' returns the  <n>-th  unknown;  if it did not  exist
+already, it is created.
+
+|    gap> Unknown(); Unknown(2000); Unknown();
+    Unknown(97)     # There were created already 96 unknowns.
+    Unknown(2000)
+    Unknown(2001)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsUnknown}
+
+'IsUnknown( <obj> )'
+
+returns  'true' if  <obj>  is  an  object of type unknown, and 'false'
+otherwise.  Will signal an error if <obj> is an unbound variable.
+
+|    gap> IsUnknown( Unknown ); IsUnknown( Unknown() );
+    false
+    true
+    gap> IsUnknown( Unknown(2) );
+    true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Unknowns}
+
+To compare  unknowns with  other objects,  the operators  '\<', '\<=',
+'=', '>=',  '>' and '\<>' can be used.  The  result will  be 'true' if
+the first  operand is  smaller,  smaller or equal,  equal,  larger  or
+equal, larger, or inequal, respectively, and 'false' otherwise.
+
+We have 'Unknown( <n> ) >= Unknown( <m> )' if and only if '<n> >= <m>'
+holds; unknowns are larger than cyclotomics and finite field elements,
+unknowns  are  smaller than  all  objects  which are not  cyclotomics,
+finite field elements or unknowns.
+
+|    gap> Unknown() >= Unknown();
+    false
+    gap> Unknown(2) < Unknown(3);
+    true
+    gap> Unknown() > 3;
+    true
+    gap> Unknown() > Z(8);
+    false
+    gap> Unknown() > E(3);
+    true
+    gap>  Unknown() > [];
+    false|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Unknowns}
+
+The  operators  '+',  '-',  '\*'  and   '/'  are  used  for  addition,
+subtraction, multiplication and division of  unknowns and cyclotomics.
+The  result  will be  a  new unknown  except  in one of  the following
+cases\:
+
+Multiplication  with zero yields zero, and multiplication  with one or
+addition of zero yields the old unknown.
+
+|    gap> Unknown() + 1; Unknown(2) + 0; last * 3; last * 1; last * 0;
+    Unknown(2010)
+    Unknown(2)
+    Unknown(2011)
+    Unknown(2011)
+    0|
+
+*Note* that division by an unknown causes  an error, since an  unknown
+might stand for zero.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section\\|%E"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%

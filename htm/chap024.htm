@@ -1,0 +1,458 @@
+<html><head><title>GAP3 Manual: 24 Words in Finite Polycyclic Groups</title></head>
+<body bgcolor="ffffff">
+<h1>24 Words in Finite Polycyclic Groups</h1>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+Ag words  are  the  <strong>GAP3</strong>  datatype  for  elements of finite  polycyclic
+groups.  Unlike permutations, which are all considered to be  elements of
+one  large symmetric group,  each  ag word belongs to  a specified group.
+Only ag words of the same finite polycyclic group can be multiplied.
+<P>
+The following  sections describe  ag words  and their parent  groups (see
+<a href="chap024.htm#SECT001">More  about Ag  Words</a>),   how  ag  words  are  compared (see  <a href="chap024.htm#SECT002">Ag  Word
+Comparisons</a>), functions for ag words and some low level functions for ag
+words (starting at <a href="chap024.htm#SECT003">CentralWeight</a> and <a href="chap024.htm#SECT009">CanonicalAgWord</a>).
+<P>
+For operations  and functions defined  for group elements  in general see
+<a href="chap007.htm#SECT002">Comparisons of Group Elements</a>, <a href="chap007.htm#SECT003">Operations for Group Elements</a>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap024.htm#SECT001">More about Ag Words</a>
+<LI> <A HREF="chap024.htm#SECT002">Ag Word Comparisons</a>
+<LI> <A HREF="chap024.htm#SECT003">CentralWeight</a>
+<LI> <A HREF="chap024.htm#SECT004">CompositionLength</a>
+<LI> <A HREF="chap024.htm#SECT005">Depth</a>
+<LI> <A HREF="chap024.htm#SECT006">IsAgWord</a>
+<LI> <A HREF="chap024.htm#SECT007">LeadingExponent</a>
+<LI> <A HREF="chap024.htm#SECT008">RelativeOrder</a>
+<LI> <A HREF="chap024.htm#SECT009">CanonicalAgWord</a>
+<LI> <A HREF="chap024.htm#SECT010">DifferenceAgWord</a>
+<LI> <A HREF="chap024.htm#SECT011">ReducedAgWord</a>
+<LI> <A HREF="chap024.htm#SECT012">SiftedAgWord</a>
+<LI> <A HREF="chap024.htm#SECT013">SumAgWord</a>
+<LI> <A HREF="chap024.htm#SECT014">ExponentAgWord</a>
+<LI> <A HREF="chap024.htm#SECT015">ExponentsAgWord</a>
+</ol>
+<A NAME="SECT001"><h2>24.1 More about Ag Words</h2></a>
+<P><P><P>
+Let <I>G</I> be a group and <I>G  = G<sub>0</sub> &gt;  G<sub>1</sub> &gt; ...  &gt;  G<sub>n</sub> = 1</I> be a subnormal
+series of <I>G  &ne; 1</I> with finite cyclic factors, i.e., <I>G<sub>i</sub> \lhd G<sub>i-1</sub></I>
+for all <I>i=1, ..., n</I> and <I>G<sub>i-1</sub> = &lang; G<sub>i</sub>, g<sub>i</sub> &rang;</I>.  Then <I>G</I>
+will  be  called  an  <strong>ag group</strong>  <A name = "I1"></a>
+  with  <strong>AG  generating
+sequence</strong>  <A name = "I2"></a>
+  or,  for short,  <strong>AG system</strong>
+<A name = "I3"></a>
+ <I>(g<sub>1</sub>,  ..., g<sub>n</sub>)</I>. Let <I>o<sub>i</sub></I> be the  order of <I>G<sub>i-1</sub>
+/ G<sub>i</sub></I>. If all <I>o<sub>1</sub>, ..., o<sub>n</sub></I> are primes the system <I>(g<sub>1</sub>, ..., g<sub>n</sub>)</I> is
+called a  <strong>PAG system</strong>  <A name = "I4"></a>
+.  With respect to  a given  AG
+system the group <I>G</I> has a so called <strong>power-commutator presentation</strong>
+<P>
+<center>
+  \begintabularlcll
+    <I>g<sub>i</sub><sup>o<sub>i</sub></sup></I> & <I>=</I> & <I>w<sub>ii</sub>(g<sub>i+1</sub>,..., g<sub>n</sub>)</I> &
+      for <I>1 &le; i &le; n</I>,<BR> 
+    <I>[g<sub>i</sub>,g<sub>j</sub>]</I> & <I>=</I> & <I>w<sub>ij</sub>(g<sub>j+1</sub>,...,g<sub>n</sub>)</I> &
+      for <I>1 &le; j&lt; i &le; n</I><BR> 
+  \endtabular
+</center>
+<P>
+and a so called <strong>power-conjugate presentation</strong>
+<P>
+<center>
+  \begintabularlcll
+    <I>g<sub>i</sub><sup>o<sub>i</sub></sup></I> & <I>=</I> & <I>w<sub>ii</sub>(g<sub>i+1</sub>,..., g<sub>n</sub>)</I> & 
+      for <I>1 &le; i &le; n</I>,<BR> 
+    <I>g<sub>i</sub><sup>g<sub>j</sub></sup></I> & <I>=</I> & <I>w<sup>&prime;</sup><sub>ij</sub>(g<sub>j+1</sub>,...,g<sub>n</sub>)</I> &
+      for <I>1 &le; j&lt; i &le; n</I>.<BR> 
+  \endtabular
+</center>
+<P>
+For both kinds of presentations we shall use  the term <strong>AG presentation</strong>.
+Each element <I>g</I> of <I>G</I> can be expressed uniquely in the form
+<P>
+<center>
+  \begintabularcc
+    <I>g = g<sub>1</sub><sup>&nu;<sub>1</sub></sup>* ...* g<sub>n</sub><sup>&nu;<sub>n</sub></sup></I> & for <I>0  &le; &nu;<sub>i</sub> &lt; o<sub>i</sub></I>.
+  \endtabular
+</center>
+<P>
+We call the composition series <I>G<sub>0</sub> &gt; G<sub>1</sub> &gt; ... &gt; G<sub>n</sub></I> the <strong>AG series</strong> of
+<I>G</I> and define <I>&nu;<sub>i</sub>( g ) := &nu;<sub>i</sub></I>.  If  <I>&nu;<sub>i</sub> = 0</I> for  <I>i = 1, ...,
+k-1</I> and <I>&nu;<sub>k</sub>   &ne; 0</I>, we call <I>&nu;<sub>k</sub></I>  the <strong>leading exponent</strong> and <I>k</I>
+the <strong>depth</strong> of <I>g</I> and denote them by <I>&nu;<sub>k</sub> =: &lambda;( g )</I> and <I>k =:
+&delta;( g )</I>.  We call <I>o<sub>k</sub></I> the <strong>relative order</strong> of <I>g</I>.
+<P>
+Each element <I>g</I> of <I>G</I> is called <strong>ag  word</strong> and we  say  that <I>G</I> is the
+parent group of <I>g</I>.  A  parent group   is constructed in   <strong>GAP3</strong>  using
+<code>AgGroup</code> (see <a href="chap025.htm#SECT025">AgGroup</a>) or <code>AgGroupFpGroup</code> (see <a href="chap025.htm#SECT027">AgGroupFpGroup</a>).
+<P>
+Our standard example in the following sections is  the symmetric group of
+degree 4, defined by  the following sequence of <strong>GAP3</strong>  statements.   You
+should   enter  them  before running  any   example.    For  details   on
+<code>AbstractGenerators</code> see <a href="chap022.htm#SECT001">AbstractGenerator</a>.
+<P>
+<pre>    gap> a  := AbstractGenerator( "a" );;  # (1,2)
+    gap> b  := AbstractGenerator( "b" );;  # (1,2,3)
+    gap> c  := AbstractGenerator( "c" );;  # (1,3)(2,4)
+    gap> d  := AbstractGenerator( "d" );;  # (1,2)(3,4)
+    gap> s4 := AgGroupFpGroup( rec(
+    >        generators := [ a, b, c, d ],
+    >        relators   := [ a^2, b^3, c^2, d^2, Comm( b, a ) / b,
+    >                        Comm( c, a ) / d, Comm( d, a ),
+    >                        Comm( c, b ) / ( c*d ), Comm( d, b ) / c,
+    >                        Comm( d, c ) ] ) );
+    Group( a, b, c, d )
+    gap> s4.name := "s4";;
+    gap> a := s4.generators[1];; b := s4.generators[2];;
+    gap> c := s4.generators[3];; d := s4.generators[4];; </pre>
+<P><A NAME="SECT002"><h2>24.2 Ag Word Comparisons</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<A name = "I6"></a>
+
+<P>
+<code><var>g</var> < <var>h</var></code> <BR> 
+<code><var>g</var> <= <var>h</var></code> <BR> 
+<code><var>g</var> >= <var>h</var></code> <BR> 
+<code><var>g</var> > <var>h</var></code>
+<P>
+The operators <code><</code>, <code>></code>, <code><=</code> and <code>>=</code> return  <code>true</code> if <var>g</var> is strictly
+less,  strictly greater, not  greater, not less, respectively,  than <var>h</var>.
+Otherwise they return <code>false</code>.
+<P>
+If <var>g</var> and <var>h</var> have a common parent group they  are compared with respect
+to the AG series of this group.  If  two ag words have  different depths,
+the  one with the  higher depth is  less than the   other one.  If two ag
+words have the same  depth but different leading  exponents, the one with
+the smaller leading exponent is less  than  the other one.  Otherwise the
+leading generator is removed in both ag words and  the remaining ag words
+are compared.
+<P>
+If <var>g</var>  and <var>h</var> do  not have a common parent  group, then the composition
+lengths of the parent groups are compared.
+<P>
+You  can  compare  ag words with objects of other types.  Field elements,
+unkowns, permutations and abstract  words  are  smaller  than  ag  words.
+Objects of other types, i.e., functions, lists and records are larger.
+<P>
+<pre>    gap> 123/47 &lt; a;
+    true
+    gap> (1,2,3,4) &lt; a;
+    true
+    gap> [1,2,3,4] &lt; a;
+    false
+    gap> true &lt; a;
+    false
+    gap> rec() &lt; a;
+    false
+    gap> c &lt; a;
+    true
+    gap> a*b &lt; a*b^2;
+    true </pre>
+<P><A NAME="SECT003"><h2>24.3 CentralWeight</h2></a>
+<P><P><P>
+<code>CentralWeight( <var>g</var> )</code>
+<P>
+<code>CentralWeight</code>  returns  the central  weight  of an  ag  word  <var>g</var>, with
+respect to the central  series used  in  the combinatorial  collector, as
+integer.
+<P>
+This presumes  that  <var>g</var>  belongs  to   a parent  group   for   which the
+combinatorial collector is used. See <a href="chap025.htm#SECT033">ChangeCollector</a> for details.
+<P>
+If <var>g</var> is the identity, 0 is returned.
+<P>
+Note that   <code>CentralWeight</code>   allows  records  that mimic   ag  words  as
+arguments.
+<P>
+<pre>    gap> d8 := AgGroup( Subgroup( s4, [ a, c, d ] ) );
+    Group( g1, g2, g3 )
+    gap> ChangeCollector( d8, "combinatorial" );
+    gap> List( d8.generators, CentralWeight );
+    [ 1, 1, 2 ] </pre>
+<P><A NAME="SECT004"><h2>24.4 CompositionLength</h2></a>
+<P><P><P>
+<code>CompositionLength( <var>g</var> )</code>
+<P>
+Let <I>G</I> be the parent group of the ag word <var>g</var>.  Then <code>CompositionLength</code>
+returns the length of the AG series of <I>G</I> as integer.
+<P>
+Note  that <code>CompositionLength</code> allows records  that mimic   ag  words  as
+arguments.
+<P>
+<pre>    gap> CompositionLength( c );
+    5 </pre>
+<P><A NAME="SECT005"><h2>24.5 Depth</h2></a>
+<P><P><P>
+<code>Depth( <var>g</var> )</code>
+<P>
+<code>Depth</code> returns the depth of an ag word <var>g</var> with respect to the AG series
+of its parent group as integer.
+<P>
+Let <I>G</I> be the parent  group of <var>g</var> and  <I>G=G<sub>0</sub>  &gt; ...  &gt; G<sub>n</sub>={1}</I>  the
+AG series of <I>G</I>.  Let <I>&delta;</I> be the maximal positive integer such that
+<var>g</var> is an element of <I>G<sub>&delta;-1</sub></I>. Then <I>&delta;</I> is the <strong>depth</strong> of <var>g</var>.
+<P>
+Note that <code>Depth</code> allows record that mimic  ag  words as arguments.
+<P>
+<pre>    gap> Depth( a );
+    1
+    gap> Depth( d );
+    4
+    gap> Depth( a^0 );
+    5 </pre>
+<P><A NAME="SECT006"><h2>24.6 IsAgWord</h2></a>
+<P><P><P>
+<code>IsAgWord( <var>obj</var> )</code>
+<P>
+<code>IsAgWord</code> returns <code>true</code> if <var>obj</var>, which can be  an arbitrary object, is
+an ag word and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsAgWord( 5 );
+    false
+    gap> IsAgWord( a );
+    true </pre>
+<P><A NAME="SECT007"><h2>24.7 LeadingExponent</h2></a>
+<P><P><P>
+<code>LeadingExponent( <var>g</var> )</code>
+<P>
+<code>LeadingExponent</code>  returns  the leading  exponent  of  an ag word  <var>g</var> as
+integer.
+<P>
+Let <I>G</I> be the parent group of <var>g</var> and <I>(g<sub>1</sub>, ..., g<sub>n</sub>)</I> the AG system of
+<I>G</I> and let <I>o<sub>i</sub></I> be the relative order  of <I>g<sub>i</sub></I>.  Then the  element <var>g</var>
+can be  expressed uniquely in the form <I>g<sub>1</sub><sup>&nu;<sub>1</sub></sup>*  ...* g<sub>n</sub><sup>&nu;<sub>n</sub></sup></I>
+for  integers <I>&nu;<sub>i</sub></I> such  that <I>0   &le; &nu;<sub>i</sub>  &lt;  o<sub>i</sub></I>.   The <strong>leading
+exponent</strong> of <var>g</var> is the first nonzero <I>&nu;<sub>i</sub></I>.
+<P>
+If <var>g</var> is the identity 0 is returned.
+<P>
+Although  <code>ExponentAgWord(   <var>g</var>, Depth( <var>g</var>   ) )</code>  returns  the leading
+exponent of <var>g</var>, too, this function is faster and is able  to  handle the
+identity.
+<P>
+Note  that  <code>LeadingExponent</code> allows  records   that  mimic ag   words as
+arguments.
+<P>
+<pre>    gap> LeadingExponent( a * b^2 * c^2 * d );
+    1
+    gap> LeadingExponent( b^2 * c^2 * d );
+    2 </pre>
+<P><A NAME="SECT008"><h2>24.8 RelativeOrder</h2></a>
+<P><P><P>
+<code>RelativeOrder( <var>g</var> )</code>
+<P>
+<code>RelativeOrder</code> returns the relative order of an ag word <var>g</var> as integer.
+<P>
+Let <I>G</I> be  the parent group of <var>g</var>  and <I>G=G<sub>0</sub>  &gt; ... &gt;   G<sub>n</sub>={1}</I> the
+AG series of <I>G</I>.  Let <I>&delta;</I> be the maximal positive integer such that
+<var>g</var> is an element of <I>G<sub>&delta;-1</sub></I>.  The <strong>relative  order</strong> of <var>g</var> is the
+index of  <I>G<sub>&delta;+1</sub></I> in  <I>G<sub>&delta;</sub></I>,   that   is  the  order  of  the
+factor group <I>G<sub>&delta;</sub>/G<sub>&delta;+1</sub></I>.
+<P>
+If <var>g</var> is the identity 1 is returned.
+<P>
+Note that <code>RelativeOrder</code> allows records that mimic agwords as arguments.
+<P>
+<pre>    gap> RelativeOrder( a );
+    2
+    gap> RelativeOrder( b );
+    3
+    gap> RelativeOrder( b^2 * c * d );
+    3 </pre>
+<P><A NAME="SECT009"><h2>24.9 CanonicalAgWord</h2></a>
+<P><P><P>
+<code>CanonicalAgWord( <var>U</var>, <var>g</var> )</code>
+<P>
+Let <var>U</var> be an ag  group with  parent group <I>G</I>, let <var>g</var> be an element  of
+<I>G</I>. Let  <I>(u<sub>1</sub>, ..., u<sub>m</sub>)</I> be  an  induced generating  system of <var>U</var> and
+<I>(g<sub>1</sub>,  ...,  g<sub>n</sub>)</I>  be  a  canonical  generating  system  of  <I>G</I>.  Then
+<code>CanonicalAgWord</code> returns a word  <I>x = <var>g</var> * u = g<sub>i<sub>1</sub></sub><sup>e<sub>1</sub></sup> * ... *
+g<sub>i<sub>k</sub></sub><sup>e<sub>k</sub></sup></I> such that <I>u&isin; <var>U</var></I> and no <I>i<sub>j</sub></I> is equal to the depth of
+any generator <I>u<sub>l</sub></I>.
+<P>
+<pre>    gap> v4 := MergedCgs( s4, [ a*b^2, c*d ] );
+    Subgroup( s4, [ a*b^2, c*d ] )
+    gap> CanonicalAgWord( v4, a*c );
+    b^2*d
+    gap> CanonicalAgWord( v4, a*b*c*d );
+    b
+    gap> (a*b*c*d) * (a*b^2);
+    b*c*d
+    gap> last * (c*d);
+    b </pre>
+<P><A NAME="SECT010"><h2>24.10 DifferenceAgWord</h2></a>
+<P><P><P>
+<code>DifferenceAgWord( <var>u</var>, <var>v</var> )</code>
+<P>
+<code>DifferenceAgWord</code> returns an ag word  <I>s</I> representing the difference of
+the exponent vectors of <var>u</var> and <var>v</var>.
+<P>
+Let <I>G</I> be the parent group of <var>u</var> and <var>v</var>.  Let <I>(g<sub>1</sub>, ..., g<sub>n</sub>)</I> be the
+AG system of <I>G</I>  and <I>o<sub>i</sub></I> be the relative order or <I>g<sub>i</sub></I>.  Then <var>u</var> can
+be expressed uniquely as <I>g<sub>1</sub><sup>u<sub>1</sub></sup>* ...* g<sub>n</sub><sup>u<sub>n</sub></sup></I> for integers <I>u<sub>i</sub></I>
+between <I>0</I> and <I>o<sub>i</sub>-1</I> and <var>v</var> can be expressed uniquely as <I>g<sub>1</sub><sup>v<sub>1</sub></sup>*
+...*  g<sub>n</sub><sup>v<sub>n</sub></sup></I>  for integers  <I>v<sub>i</sub></I>  between  <I>0</I>  and  <I>o<sub>i</sub>-1</I>.   The
+function  <code>DifferenceAgWord</code> returns an  ag word <I>s  = g<sub>1</sub><sup>s<sub>1</sub></sup>*  ...*
+g<sub>n</sub><sup>s<sub>n</sub></sup></I> with integer  <I>s<sub>i</sub></I>  such that <I>0  &le;  s<sub>i</sub> &lt;  o<sub>i</sub></I> and  <I>s<sub>i</sub>
+&equiv; u<sub>i</sub> - v<sub>i</sub></I> mod <I>o<sub>i</sub></I>.
+<P>
+<pre>    gap> DifferenceAgWord( a * b, a );
+    b
+    gap> DifferenceAgWord( a, b );
+    a*b^2 
+    gap> z27 := CyclicGroup( AgWords, 27 );
+    Group( c27_1, c27_2, c27_3 )
+    gap> x := z27.1 * z27.2;
+    c27_1*c27_2
+    gap> x * x;
+    c27_1^2*c27_2^2
+    gap> DifferenceAgWord( x, x );
+    IdAgWord </pre>
+<P><A NAME="SECT011"><h2>24.11 ReducedAgWord</h2></a>
+<P><P><P>
+<code>ReducedAgWord( <var>b</var>, <var>x</var> )</code>
+<P>
+Let  <var>b</var> and <var>x</var>  be ag  words of the   same depth, then  <code>ReducedAgWord</code>
+returns an ag word <var>a</var> such that <var>a</var> is an element of  the coset <I>U <var>b</var></I>,
+where <I>U</I> is  the  cyclic group generated  by  <var>x</var>, and <var>a</var> has  a higher
+depth than <var>b</var> and <var>x</var>.
+<P>
+Note that the relative order of <var>b</var> and <var>x</var> must be a prime.
+<P>
+Let <I>p</I> be the relative order  of <var>b</var> and  <var>x</var>.  Let <I>&beta;</I> and <I>&xi;</I> be
+the leading exponent of <I>b</I> and  <I>x</I> respectively.   Then  there exits an
+integer <I>i</I> such that <I>&xi; * i = &beta;</I> modulo  <I>p</I>.  We  can set <I>&lt;a&gt; =
+<var>x</var><sup>-i</sup> <var>b</var></I>.
+<P>
+Typically this function is used when  <var>b</var>  and  <var>x</var> occur in a generating
+set of a subgroup <I>W</I>.  Then b can be replaced by  <var>a</var>  in the generating
+set of <var>W</var>, but <var>a</var> and <var>x</var> have different depth.
+<P>
+<pre>    gap> ReducedAgWord( a*b^2*c, a );
+    b^2*c
+    gap> ReducedAgWord( last, b );
+    c </pre>
+<P><A NAME="SECT012"><h2>24.12 SiftedAgWord</h2></a>
+<P><P><P>
+<code>SiftedAgWord( <var>U</var>, <var>g</var> )</code>
+<P>
+<code>SiftedAgWord</code> tries to sift  an ag word <var>g</var>, which must be an element of
+the parent group of an ag group <var>U</var>, through an induced generating system
+of <var>U</var>. <code>SiftedAgWord</code> returns the remainder of this shifting process.
+<P>
+The identity is returned if and only if <var>g</var> is an element of <var>U</var>.
+<P>
+Let  <I>u<sub>1</sub>, ..., u<sub>m</sub></I>  be an induced  generating system of  <var>U</var>.  If there
+exists an <I>u<sub>i</sub></I> such that <I>u<sub>i</sub></I> and <var>g</var> have the  same depth, then <var>g</var> is
+reduced  with <I>u<sub>i</sub></I> using   <code>ReducedAgWord</code> (see  <a href="chap024.htm#SECT011">ReducedAgWord</a>).   The
+process is repeated until no <I>u<sub>i</sub></I> can be found or the  <var>g</var> is reduced to
+the identity.
+<P>
+<code>SiftedAgWord</code> allows factor group arguments.  See <a href="chap025.htm#SECT057">Factor  Groups of Ag
+Groups</a> for details.
+<P>
+Note that <code>SiftedAgGroup</code> adds a record component <code><var>U</var>.shiftInfo</code> to the
+ag group record of <var>U</var>.  This entry is used by  subsequent calls with the
+same ag group in order to speed up  computation.  If you  ever change the
+component <code><var>U</var>.igs</code> by  hand,  not  using  <code>Normalize</code>, you must   unbind
+<code><var>U</var>.shiftInfo</code>, otherwise all following  results of <code>SiftedAgWord</code> will
+be corrupted.
+<P>
+<pre>    gap> s3 := Subgroup( s4, [ a, b ] );
+    Subgroup( s4, [ a, b ] )
+    gap> SiftedAgWord( s3, a * b^2 * c );
+    c </pre>
+<P><A NAME="SECT013"><h2>24.13 SumAgWord</h2></a>
+<P><P><P>
+<code>SumAgWord( <var>u</var>, <var>v</var> )</code>
+<P>
+<code>SumAgWord</code> returns an ag  word <I>s</I> representing the  sum of the exponent
+vectors of <var>u</var> and <var>v</var>.
+<P>
+Let <I>G</I> be the parent group of <var>u</var> and <var>v</var>.  Let <I>(g<sub>1</sub>, ..., g<sub>n</sub>)</I> be the
+AG system of <I>G</I> and <I>o<sub>i</sub></I> be the relative order or <I>g<sub>i</sub></I>.  Then  <var>u</var> can
+be expressed uniquely as <I>g<sub>1</sub><sup>u<sub>1</sub></sup>* ...* g<sub>n</sub><sup>u<sub>n</sub></sup></I> for integers <I>u<sub>i</sub></I>
+between <I>0</I> and <I>o<sub>i</sub>-1</I> and <var>v</var> can be expressed uniquely as <I>g<sub>1</sub><sup>v<sub>1</sub></sup>*
+...*  g<sub>n</sub><sup>v<sub>n</sub></sup></I> for integers  <I>v<sub>i</sub></I>  between  <I>0</I>  and  <I>o<sub>i</sub>-1</I>.   Then
+<code>SumAgWord</code>  returns an ag word  <I>s =  g<sub>1</sub><sup>s<sub>1</sub></sup>*  ...* g<sub>n</sub><sup>s<sub>n</sub></sup></I> with
+integer <I>s<sub>i</sub></I>  such that <I>0  &le; s<sub>i</sub> &lt; o<sub>i</sub></I> and  <I>s<sub>i</sub> &equiv; u<sub>i</sub>  + v<sub>i</sub></I>
+mod <I>o<sub>i</sub></I>.
+<P>
+<pre>    gap> SumAgWord( b, a );
+    a*b
+    gap> SumAgWord( a*b, a );
+    b
+    gap> RelativeOrderAgWord( a );
+    2 
+    gap> z27 := CyclicGroup( AgWords, 27 );
+    Group( c27_1, c27_2, c27_3 )
+    gap> x := z27.1 * z27.2;
+    c27_1*c27_2
+    gap> y := x ^ 2;
+    c27_1^2*c27_2^2
+    gap> x * y;
+    c27_2*c27_3
+    gap> SumAgWord( x, y );
+    IdAgWord </pre>
+<P><A NAME="SECT014"><h2>24.14 ExponentAgWord</h2></a>
+<P><P><P>
+<code>ExponentAgWord( <var>g</var>, <var>k</var> )</code>
+<P>
+<code>ExponentAgWord</code> returns  the exponent of the <var>k</var>.th generator in  an  ag
+word <var>g</var> as integer,  where <var>k</var>  refers to the numbering of generators of
+the parent group of <var>g</var>.
+<P>
+Let <I>G</I> be the parent group of <var>g</var> and <I>(g<sub>1</sub>, ..., g<sub>n</sub>)</I> the AG system of
+<I>G</I> and let <I>o<sub>i</sub></I> be the  relative order  of <I>g<sub>i</sub></I>.  Then the element <var>g</var>
+can be  expressed uniquely in the form <I>g<sub>1</sub><sup>&nu;<sub>1</sub></sup>* ...*  g<sub>n</sub><sup>&nu;<sub>n</sub></sup></I>
+for integers  <I>&nu;<sub>i</sub></I>  between  <I>0</I>  and <I>o<sub>i</sub>-1</I>.  The <strong>exponent</strong>  of the
+<var>k</var>.th generator is <I>&nu;<sub><var>k</var></sub></I>.
+<P>
+See also <a href="chap024.htm#SECT015">ExponentsAgWord</a> and <a href="chap025.htm#SECT073">Exponents</a>.
+<P>
+<pre>    gap> ExponentAgWord( a * b^2 * c^2 * d, 2 );
+    2
+    gap> ExponentAgWord( a * b^2 * c^2 * d, 4 );
+    1
+    gap> ExponentAgWord( a * b^2 * c^2 * d, 3 );
+    0
+    gap> a * b^2 * c^2 * d;
+    a*b^2*d </pre>
+<P><A NAME="SECT015"><h2>24.15 ExponentsAgWord</h2></a>
+<P><P><P>
+<code>ExponentsAgWord( <var>g</var> )</code><BR> 
+<code>ExponentsAgWord( <var>g</var>, <var>s</var>, <var>e</var> )</code><BR> 
+<code>ExponentsAgWord( <var>g</var>, <var>s</var>, <var>e</var>, <var>root</var> )</code>
+<P>
+In its first form <code>ExponentsAgWord</code> returns  the exponent vector of an ag
+word <var>g</var>, with respect to the AG system of the supergroup of <var>g</var>, as list
+of integers.  In the second form <code>ExponentsAgWord</code> returns the sublist of
+the  exponent  vector  of <var>g</var>  starting   at position  <var>s</var> and  ending at
+position <var>e</var>   as list of integers.  In   the third  form the  vector  is
+returned as list of finite field elements  over the same finite  field as
+<var>root</var>.
+<P>
+Let <I>G</I> be the parent group of <var>g</var> and <I>(g<sub>1</sub>, ..., g<sub>n</sub>)</I> the AG system of
+<I>G</I> and let <I>o<sub>i</sub></I> be the relative order  of <I>g<sub>i</sub></I>.  Then  the element <var>g</var>
+can  be expressed uniquely in the  form <I>g<sub>1</sub><sup>&nu;<sub>1</sub></sup>* ...* g<sub>n</sub><sup>&nu;<sub>n</sub></sup></I>
+for integers <I>&nu;<sub>i</sub></I> between <I>0</I> and <I>o<sub>i</sub>-1</I>.  The exponent vector of <var>g</var>
+is the list <code>[<I>&nu;<sub>1</sub></I>, ..., <I>&nu;<sub>n</sub></I>]</code>.
+<P>
+Note that you must use <code>Exponents</code> if  you want to  get the exponent list
+of <var>g</var>  with  respect not  to  the parent  group  of <var>g</var>  but  to a given
+subgroup, which contains <var>g</var>.  See <a href="chap025.htm#SECT073">Exponents</a> for details.
+<P>
+<pre>    gap> ExponentsAgWord( a * b^2 * c^2 * d );
+    [ 1, 2, 0, 1 ]
+    gap> a * b^2 * c^2 * d;
+    a*b^2*d </pre>
+<P><a href ="chap023.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap025.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

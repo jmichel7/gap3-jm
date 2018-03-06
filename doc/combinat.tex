@@ -1,0 +1,904 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  combinat.tex                GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: combinat.tex,v 1.1.1.1 1996/12/11 12:36:44 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the functions that mainly  deal  with  combinatorics.
+%%
+%H  $Log: combinat.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:44  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.13.1.1  1995/07/13  09:52:08  vfelsch
+%H  entered improvements suggested by a GAP user
+%H
+%H  Revision 3.13  1993/05/04  11:43:16  fceller
+%H  fixed a spelling error
+%H
+%H  Revision 3.12  1993/02/19  11:30:42  gap
+%H  removed overfull hboxes
+%H
+%H  Revision 3.11  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.10  1993/02/12  12:01:43  felsch
+%H  examples adjusted to line length 72
+%H
+%H  Revision 3.9  1993/02/09  13:56:41  felsch
+%H  examples fixed
+%H
+%H  Revision 3.8  1992/04/27  11:55:51  martin
+%H  replaced '\size{<set>}' with '\|<set>\|'
+%H
+%H  Revision 3.7  1992/03/27  16:17:37  martin
+%H  fixed the citation
+%H
+%H  Revision 3.6  1992/03/13  14:57:45  goetz
+%H  added some functions from 'charsymm.tex'.
+%H
+%H  Revision 3.5  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.4  1991/07/22  14:52:20  martin
+%H  added 'RestrictedPartitions'
+%H
+%H  Revision 3.3  1991/07/21  12:01:00  martin
+%H  changed 'Partitions' to return partitions in standard form
+%H
+%H  Revision 3.2  1991/07/01  13:00:00  martin
+%H  added 'Bell'
+%H
+%H  Revision 3.1  1991/06/28  11:22:00  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:28:53  martin
+%H  Initial revision under RCS
+%H
+%%
+\Chapter{Combinatorics}%
+\index{selections}\index{partitions}
+
+This chapter  describes the functions that   deal with combinatorics.  We
+mainly concentrate on two areas.  One  is about *selections*, that is the
+ways one   can  select   elements from  a   set.    The  other  is  about
+*partitions*, that is the ways one can partition a set  into the union of
+pairwise disjoint subsets.
+
+First  this package contains  various  functions that are related  to the
+number of  selections from a set  (see "Factorial", "Binomial") or to the
+number  of  partitions of a  set  (see "Bell", "Stirling1", "Stirling2").
+Those numbers satisfy literally thousands of identities,  which  we do no
+mention in this document, for a thorough treatment see \cite{GKP90}.
+
+Then this package contains functions to compute the selections from a set
+(see "Combinations"),  ordered selections, i.e.,   selections where   the
+order in which you select the elements is important (see "Arrangements"),
+selections with repetitions,  i.e., you  are allowed to   select the same
+element more than once  (see  "UnorderedTuples") and  ordered  selections
+with repetitions (see "Tuples").
+
+As special  cases of ordered  combinations there are functions to compute
+all permutations (see "PermutationsList"),  all fixpointfree permutations
+(see "Derangements") of a list.
+
+This package also contains functions to  compute partitions of a set (see
+"PartitionsSet"), partitions of  an integer  into   the sum of   positive
+integers      (see    "Partitions",  "RestrictedPartitions") and  ordered
+partitions of  an  integer  into   the  sum  of positive integers    (see
+"OrderedPartitions").
+
+Moreover,  it provides three  functions to compute Fibonacci numbers (see
+"Fibonacci"), Lucas sequences  (see  "Lucas"), or Bernoulli  numbers (see
+"Bernoulli").
+
+Finally, there  is a function to  compute the number of permutations that
+fit a given 1-0 matrix (see "Permanent").
+
+All these functions are in the file '\"LIBNAME/combinat.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Factorial}
+
+'Factorial( <n> )'
+
+'Factorial'  returns the *factorial*  $n!$  of the positive  integer <n>,
+which is defined as the product $1 \* 2 \* 3 \* .. \* n$.
+
+$n!$ is the  number of permutations of a set of $n$ elements.  $1/n!$  is
+the coefficient  of  $x^n$  in  the  formal series  $e^x$, which  is  the
+generating function for factorial.
+
+|    gap> List( [0..10], Factorial );
+    [ 1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800 ]
+    gap> Factorial( 30 );
+    265252859812191058636308480000000 |
+
+'PermutationsList'  (see   "PermutationsList") computes  the  set  of all
+permutations of a list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Binomial}%
+\index{coefficient!binomial}\index{number!binomial}
+
+'Binomial( <n>, <k> )'
+
+'Binomial' returns the *binomial coefficient* ${n \choose k}$ of integers
+<n> and <k>, which  is defined as $n!  / (k!  (n-k)!)$ (see "Factorial").
+We define ${0 \choose 0} = 1$, ${n \choose  k} = 0$  if $k\<0$ or $n\<k$,
+and ${n \choose k} = (-1)^k {-n+k-1  \choose  k}$ if  $n \<  0$, which is
+consistent with ${n \choose k} = {n-1 \choose k} + {n-1 \choose k-1}$.
+
+${n \choose k}$ is the number of combinations with  $k$  elements,  i.e.,
+the number of subsets with $k$ elements, of  a  set  with  $n$  elements.
+${n \choose k}$  is the coefficient of the  term $x^k$ of the  polynomial
+$(x + 1)^n$, which is the generating function for ${n \choose \*}$, hence
+the name.
+
+|    gap> List( [0..4], k->Binomial( 4, k ) );
+    [ 1, 4, 6, 4, 1 ]    # Knuth calls this the trademark of Binomial
+    gap> List( [0..6], n->List( [0..6], k->Binomial( n, k ) ) );;
+    gap> PrintArray( last );
+    [ [   1,   0,   0,   0,   0,   0,   0 ],    # the lower triangle is
+      [   1,   1,   0,   0,   0,   0,   0 ],    # called Pascal\'s triangle
+      [   1,   2,   1,   0,   0,   0,   0 ],
+      [   1,   3,   3,   1,   0,   0,   0 ],
+      [   1,   4,   6,   4,   1,   0,   0 ],
+      [   1,   5,  10,  10,   5,   1,   0 ],
+      [   1,   6,  15,  20,  15,   6,   1 ] ]
+    gap> Binomial( 50, 10 );
+    10272278170 |
+
+'NrCombinations' (see "Combinations") is the generalization of 'Binomial'
+for multisets.  'Combinations' (see "Combinations")  computes the set  of
+all combinations of a multiset.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Bell}%
+\index{number!Bell}
+
+'Bell( <n> )'
+
+'Bell' returns the *Bell number* $B(n)$.  The Bell numbers are defined by
+$B(0)=1$ and the recurrence $B(n+1) = \sum_{k=0}^{n}{{n \choose k}B(k)}$.
+
+$B(n)$ is the  number of ways to  partition a  set of <n>   elements into
+pairwise disjoint  nonempty subsets  (see "PartitionsSet").  This implies
+of  course that   $B(n) =  \sum_{k=0}^{n}{S_2(n,k)}$  (see  "Stirling2").
+$B(n)/n!$ is the coefficient of  $x^n$ in the formal series  $e^{e^x-1}$,
+which is the generating function for $B(n)$.
+
+|    gap> List( [0..6], n -> Bell( n ) );
+    [ 1, 1, 2, 5, 15, 52, 203 ]
+    gap> Bell( 14 );
+    190899322 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Stirling1}%
+\index{Stirling number of the first kind}%
+\index{number!Stirling, of the first kind}
+
+'Stirling1( <n>, <k> )'
+
+'Stirling1' returns the *Stirling number of the first kind* $S_1(n,k)$ of
+the integers <n> and <k>.  Stirling numbers of the first kind are defined
+by $S_1(0,0)  = 1$, $S_1(n,0) =  S_1(0,k) = 0$  if  $n, k \<> 0$  and the
+recurrence $S_1(n,k) = (n-1) S_1(n-1,k) + S_1(n-1,k-1)$.
+
+$S_1(n,k)$ is the number  of permutations of  <n> points with <k> cycles.
+Stirling numbers of  the first kind  appear as coefficients in the series
+$n! {x \choose n} = \sum_{k=0}^{n}{S_1(n,k) x^k}$ which is the generating
+function for Stirling numbers of the first kind.  Note  the similarity to
+$x^n =  \sum_{k=0}^{n}{S_2(n,k) k!  {x  \choose k}}$  (see  "Stirling2").
+Also the definition of $S_1$ implies $S_1(n,k) = S_2(-k,-n)$ if $n,k\<0$.
+There are  many  formulae relating Stirling numbers of  the first kind to
+Stirling numbers of the second kind, Bell numbers, and Binomial numbers.
+
+|    gap> List( [0..4], k->Stirling1( 4, k ) );
+    [ 0, 6, 11, 6, 1 ]    # Knuth calls this the trademark of $S_1$
+    gap> List( [0..6], n->List( [0..6], k->Stirling1( n, k ) ) );;
+    gap> PrintArray( last );
+    [ [    1,    0,    0,    0,    0,    0,    0 ],    # Note the similarity
+      [    0,    1,    0,    0,    0,    0,    0 ],    # with Pascal\'s
+      [    0,    1,    1,    0,    0,    0,    0 ],    # triangle for the
+      [    0,    2,    3,    1,    0,    0,    0 ],    # Binomial numbers
+      [    0,    6,   11,    6,    1,    0,    0 ],
+      [    0,   24,   50,   35,   10,    1,    0 ],
+      [    0,  120,  274,  225,   85,   15,    1 ] ]
+    gap> Stirling1(50,10);
+    101623020926367490059043797119309944043405505380503665627365376 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Stirling2}%
+\index{Stirling number of the second kind}%
+\index{number!Stirling, of the second kind}
+
+'Stirling2( <n>, <k> )'
+
+'Stirling2' returns the *Stirling number of  the  second kind* $S_2(n,k)$
+of the integers <n>  and <k>.  Stirling  numbers  of the second  kind are
+defined by $S_2(0,0) = 1$, $S_2(n,0) = S_2(0,k) = 0$ if $n,  k \<> 0$ and
+the recurrence $S_2(n,k) = k S_2(n-1,k) + S_2(n-1,k-1)$.
+
+$S_2(n,k)$ is the number of ways to partition a set of <n>  elements into
+<k> pairwise disjoint nonempty  subsets  (see "PartitionsSet").  Stirling
+numbers of the second kind  appear as  coefficients  in the  expansion of
+$x^n = \sum_{k=0}^{n}{S_2(n,k) k!  {x  \choose k}}$.  Note the similarity
+to $n! {x \choose  n} = \sum_{k=0}^{n}{S_1(n,k) x^k}$ (see  "Stirling1").
+Also the definition of $S_2$ implies $S_2(n,k) = S_1(-k,-n)$ if $n,k\<0$.
+There are many formulae relating  Stirling numbers of  the second kind to
+Stirling numbers of the first kind, Bell numbers, and Binomial numbers.
+
+|    gap> List( [0..4], k->Stirling2( 4, k ) );
+    [ 0, 1, 7, 6, 1 ]    # Knuth calls this the trademark of $S_2$
+    gap> List( [0..6], n->List( [0..6], k->Stirling2( n, k ) ) );;
+    gap> PrintArray( last );
+    [ [   1,   0,   0,   0,   0,   0,   0 ],    # Note the similarity with
+      [   0,   1,   0,   0,   0,   0,   0 ],    # Pascal\'s triangle for
+      [   0,   1,   1,   0,   0,   0,   0 ],    # the Binomial numbers
+      [   0,   1,   3,   1,   0,   0,   0 ],
+      [   0,   1,   7,   6,   1,   0,   0 ],
+      [   0,   1,  15,  25,  10,   1,   0 ],
+      [   0,   1,  31,  90,  65,  15,   1 ] ]
+    gap> Stirling2( 50, 10 );
+    26154716515862881292012777396577993781727011 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Combinations}%
+\index{NrCombinations}\index{powerset}\index{subsets}
+
+'Combinations( <mset> )' \\
+'Combinations( <mset>, <k> )'
+
+'NrCombinations( <mset> )' \\
+'NrCombinations( <mset>, <k> )'
+
+In the  first form 'Combinations' returns the  set of all combinations of
+the multiset  <mset>.  In the  second form 'Combinations' returns the set
+of all combinations of the multiset <mset> with <k> elements.
+
+In the first form 'NrCombinations'  returns the number of combinations of
+the multiset  <mset>.   In the  second form  'NrCombinations' returns the
+number of combinations of the multiset <mset> with <k> elements.
+
+A *combination* of  <mset> is an  unordered selection without repetitions
+and is represented by a sorted sublist of <mset>.   If <mset> is a proper
+set, there  are  ${\|mset\| \choose  k}$  (see  "Binomial")  combinations
+with <k> elements, and the set of all combinations is just the *powerset*
+of <mset>, which contains all   *subsets* of <mset>  and has  cardinality
+$2^{\|mset\|}$.
+
+|    gap> Combinations( [1,2,2,3] );
+    [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 2 ], [ 1, 2, 2, 3 ], [ 1, 2, 3 ],
+      [ 1, 3 ], [ 2 ], [ 2, 2 ], [ 2, 2, 3 ], [ 2, 3 ], [ 3 ] ]
+    gap> NrCombinations( [1..52], 5 );
+    2598960    # number of different hands in a game of poker |
+
+The   function 'Arrangements'   (see  "Arrangements")   computes  ordered
+selections without repetitions, 'UnorderedTuples' (see "UnorderedTuples")
+computes  unordered  selections  with   repetitions  and 'Tuples'    (see
+"Tuples") computes ordered selections with repetitions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Arrangements}
+
+'Arrangements( <mset> )' \\
+'Arrangements( <mset>, <k> )'
+
+'NrArrangements( <mset> )' \\
+'NrArrangements( <mset>, <k> )'
+
+In the first form  'Arrangements' returns the  set of arrangements of the
+multiset  <mset>.   In the second  form 'Arrangements' returns the set of
+all arrangements with <k> elements of the multiset <mset>.
+
+In the first form 'NrArrangements' returns the  number of arrangements of
+the  multiset <mset>.   In  the second form  'NrArrangements' returns the
+number of arrangements with <k> elements of the multiset <mset>.
+
+An  *arrangement* of <mset>  is an ordered selection  without repetitions
+and is represented by a list that contains only elements from <mset>, but
+maybe  in a different  order.   If <mset>  is  a proper  set   there  are
+$\|mset\|!  /  (\|mset\|-k)!$ (see  "Factorial")  arrangements  with  <k>
+elements.
+
+As an example of arrangements of a multiset, think  of the game Scrabble.
+Suppose you have the six characters of the word 'settle'  and you have to
+make a four letter word.  Then the possibilities are given by
+
+|    gap> Arrangements( ["s","e","t","t","l","e"], 4 );
+    [ [ "e", "e", "l", "s" ], [ "e", "e", "l", "t" ],
+      [ "e", "e", "s", "l" ], [ "e", "e", "s", "t" ],
+      # 96 more possibilities
+      [ "t", "t", "s", "e" ], [ "t", "t", "s", "l" ] ] |
+
+Can you find the five proper English words, where 'lets' does  not count?
+Note that the fact that the  list  returned by 'Arrangements' is a proper
+set means in this example that the possibilities are  listed in  the same
+order as they appear in the dictionary.
+
+|    gap> NrArrangements( ["s","e","t","t","l","e"] );
+    523 |
+
+The   function  'Combinations'  (see  "Combinations")  computes unordered
+selections without repetitions, 'UnorderedTuples' (see "UnorderedTuples")
+computes  unordered   selections  with   repetitions  and  'Tuples'  (see
+"Tuples") computes ordered selections with repetitions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{UnorderedTuples}%
+\index{NrUnorderedTuples}
+
+'UnorderedTuples( <set>, <k> )'
+
+'NrUnorderedTuples( <set>, <k> )'
+
+'UnorderedTuples' returns the  set of all  unordered tuples of length <k>
+of the set <set>.
+
+'NrUnorderedTuples' returns the number of unordered  tuples of length <k>
+of the set <set>.
+
+An *unordered tuple* of length <k> of <set> is a unordered selection with
+repetitions  of <set> and  is represented by a sorted  list of length <k>
+containing  elements  from  <set>.   There  are ${\|set\|+k-1 \choose k}$
+(see "Binomial") such unordered tuples.
+
+Note that the fact that 'UnOrderedTuples' returns a set  implies that the
+last  index runs   fastest.   That means the   first  tuple  contains the
+smallest element from <set>   <k> times,  the  second tuple  contains the
+smallest element of <set> at all  positions except at the last positions,
+where it contains the second smallest element from <set> and so on.
+
+As an example for unordered tuples think of a poker-like game played with
+5  dice.  Then each possible hand corresponds to an  unordered five-tuple
+from the set [1..6]
+
+|    gap> NrUnorderedTuples( [1..6], 5 );
+    252
+    gap> UnorderedTuples( [1..6], 5 );
+    [ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 1, 2 ], [ 1, 1, 1, 1, 3 ],
+      [ 1, 1, 1, 1, 4 ], [ 1, 1, 1, 1, 5 ], [ 1, 1, 1, 1, 6 ],
+      # 99 more tuples
+      [ 1, 3, 4, 5, 6 ], [ 1, 3, 4, 6, 6 ], [ 1, 3, 5, 5, 5 ],
+      # 99 more tuples
+      [ 3, 3, 4, 4, 5 ], [ 3, 3, 4, 4, 6 ], [ 3, 3, 4, 5, 5 ],
+      # 39 more tuples
+      [ 5, 5, 6, 6, 6 ], [ 5, 6, 6, 6, 6 ], [ 6, 6, 6, 6, 6 ] ] |
+
+The function  'Combinations'  (see  "Combinations")   computes  unordered
+selections  without  repetitions,    'Arrangements' (see  "Arrangements")
+computes ordered   selections without  repetitions   and   'Tuples'  (see
+"Tuples") computes ordered selections with repetitions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Tuples}%
+\index{NrTuples}
+
+'Tuples( <set>, <k> )'
+
+'NrTuples( <set>, <k> )'
+
+'Tuples' returns the set of all ordered tuples  of length <k> of  the set
+<set>.
+
+'NrTuples' returns the number of all ordered tuples  of length <k> of the
+set <set>.
+
+An *ordered tuple* of  length <k> of <set> is  an ordered selection  with
+repetition and is represented by a list of length <k> containing elements
+of <set>.  There are $\|set\|^k$ such ordered tuples.
+
+Note that the fact  that 'Tuples' returns  a  set implies that   the last
+index runs  fastest.  That means  the first tuple   contains the smallest
+element from <set> <k>  times,  the  second tuple  contains the  smallest
+element of <set> at all positions except at the  last positions, where it
+contains the second smallest element from <set> and so on.
+
+|    gap> Tuples( [1,2,3], 2 );
+    [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], 
+      [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ]
+    gap> NrTuples( [1..10], 5 );
+    100000 |
+
+'Tuples(<set>,<k>)' can also be viewed  as the <k>-fold cartesian product
+of <set> (see "Cartesian").
+
+The  function  'Combinations'  (see  "Combinations")  computes  unordered
+selections  without   repetitions,  'Arrangements'  (see  "Arrangements")
+computes ordered selections without repetitions, and finally the function
+'UnorderedTuples' (see "UnorderedTuples")  computes unordered  selections
+with repetitions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermutationsList}%
+\index{NrPermutationsList}\index{permutations!list}
+
+'PermutationsList( <mset> )'
+
+'NrPermutationsList( <mset> )'
+
+'PermutationsList' returns the   set   of permutations of    the multiset
+<mset>.
+
+'NrPermutationsList' returns the  number of permutations  of the multiset
+<mset>.
+
+A *permutation* is represented by a  list  that contains exactly the same
+elements as  <mset>,  but possibly in   different order.  If <mset>  is a
+proper  set there are $\|mset\| !$ (see "Factorial")  such  permutations.
+Otherwise if the  first elements appears $k_1$  times, the second element
+appears  $k_2$  times   and   so  on,  the  number   of   permutations is
+$\|mset\|! /  (k_1! k_2! ..)$,  which  is  sometimes  called  multinomial
+coefficient.
+
+|    gap> PermutationsList( [1,2,3] );
+    [ [ 1, 2, 3 ], [ 1, 3, 2 ], [ 2, 1, 3 ], [ 2, 3, 1 ], [ 3, 1, 2 ],
+      [ 3, 2, 1 ] ]
+    gap> PermutationsList( [1,1,2,2] );
+    [ [ 1, 1, 2, 2 ], [ 1, 2, 1, 2 ], [ 1, 2, 2, 1 ], [ 2, 1, 1, 2 ],
+      [ 2, 1, 2, 1 ], [ 2, 2, 1, 1 ] ]
+    gap> NrPermutationsList( [1,2,2,3,3,3,4,4,4,4] );
+    12600 |
+
+The function 'Arrangements' (see "Arrangements") is the generalization of
+'PermutationsList'   that  allows  you  to specify   the  size   of   the
+permutations.  'Derangements' (see "Derangements") computes  permutations
+that have no fixpoints.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Derangements}%
+\index{NrDerangements}\index{permutations!fixpointfree}
+
+'Derangements( <list> )'
+
+'NrDerangements( <list> )'
+
+'Derangements' returns the set of all derangements of the list <list>.
+
+'NrDerangements' returns the number of derangements of the list <list>.
+
+A   *derangement* is  a   fixpointfree  permutation  of   <list>   and is
+represented by a list that contains exactly the  same elements as <list>,
+but in such  an order  that the  derangement has at  no position the same
+element as  <list>.  If the  list  <list> contains no element twice there
+are  exactly  $\|list\|!  (1/2!   -  1/3!    +  1/4!  -  ..   (-1)^n/n!)$
+derangements.
+
+Note that the  ratio 'NrPermutationsList([1..n])/NrDerangements([1..n])',
+which  is  $n!  /  (n!   (1/2!  -  1/3!  + 1/4!  - .. (-1)^n/n!))$  is an
+approximation for the base of the natural logarithm  $e =  2.7182818285$,
+which is correct to about $n$ digits.
+
+As an  example of  derangements suppose    that  you have  to  send  four
+different letters  to   four  different  people.    Then  a   derangement
+corresponds  to a way  to send those letters such  that no letter reaches
+the intended person.
+
+|    gap> Derangements( [1,2,3,4] );
+    [ [ 2, 1, 4, 3 ], [ 2, 3, 4, 1 ], [ 2, 4, 1, 3 ], [ 3, 1, 4, 2 ],
+      [ 3, 4, 1, 2 ], [ 3, 4, 2, 1 ], [ 4, 1, 2, 3 ], [ 4, 3, 1, 2 ],
+      [ 4, 3, 2, 1 ] ]
+    gap> NrDerangements( [1..10] );
+    1334961
+    gap> Int( 10^7*NrPermutationsList([1..10])/last );
+    27182816
+    gap> Derangements( [1,1,2,2,3,3] );
+    [ [ 2, 2, 3, 3, 1, 1 ], [ 2, 3, 1, 3, 1, 2 ], [ 2, 3, 1, 3, 2, 1 ],
+      [ 2, 3, 3, 1, 1, 2 ], [ 2, 3, 3, 1, 2, 1 ], [ 3, 2, 1, 3, 1, 2 ],
+      [ 3, 2, 1, 3, 2, 1 ], [ 3, 2, 3, 1, 1, 2 ], [ 3, 2, 3, 1, 2, 1 ],
+      [ 3, 3, 1, 1, 2, 2 ] ]
+    gap> NrDerangements( [1,2,2,3,3,3,4,4,4,4] );
+    338 |
+
+The function  'PermutationsList'  (see  "PermutationsList")  computes all
+permutations of a list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PartitionsSet}%
+\index{NrPartitionsSet}\index{partitions!of a set}
+
+'PartitionsSet( <set> )' \\
+'PartitionsSet( <set>, <k> )'
+
+'NrPartitionsSet( <set> )' \\
+'NrPartitionsSet( <set>, <k> )'
+
+In  the first  form  'PartitionsSet'  returns the  set  of  all unordered
+partitions of the set <set>.   In the second form 'PartitionsSet' returns
+the set of  all unordered partitions of the  set <set> into  <k> pairwise
+disjoint nonempty sets.
+
+In  the first  form  'NrPartitionsSet' returns   the number of  unordered
+partitions of   the  set <set>.   In  the  second  form 'NrPartitionsSet'
+returns  the number of  unordered  partitions of  the  set <set> into <k>
+pairwise disjoint nonempty sets.
+
+An *unordered partition* of <set> is  a set of pairwise disjoint nonempty
+sets with union <set>  and is represented by  a sorted list of such sets.
+There are $B( \|set\| )$ (see "Bell") partitions of  the  set  <set>  and
+$S_2( \|set\|, k )$ (see "Stirling2") partitions with <k> elements.
+
+|    gap> PartitionsSet( [1,2,3] );
+    [ [ [ 1 ], [ 2 ], [ 3 ] ], [ [ 1 ], [ 2, 3 ] ], [ [ 1, 2 ], [ 3 ] ],
+      [ [ 1, 2, 3 ] ], [ [ 1, 3 ], [ 2 ] ] ]
+    gap> PartitionsSet( [1,2,3,4], 2 );
+    [ [ [ 1 ], [ 2, 3, 4 ] ], [ [ 1, 2 ], [ 3, 4 ] ],
+      [ [ 1, 2, 3 ], [ 4 ] ], [ [ 1, 2, 4 ], [ 3 ] ],
+      [ [ 1, 3 ], [ 2, 4 ] ], [ [ 1, 3, 4 ], [ 2 ] ],
+      [ [ 1, 4 ], [ 2, 3 ] ] ]
+    gap> NrPartitionsSet( [1..6] );
+    203
+    gap> NrPartitionsSet( [1..10], 3 );
+    9330 |
+
+Note  that 'PartitionsSet' does currently  not support multisets and that
+there is currently no ordered counterpart.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Partitions}%
+\index{NrPartitions}\index{partitions!of an integer}
+
+'Partitions( <n> )' \\
+'Partitions( <n>, <k> )'
+
+'NrPartitions( <n> )' \\
+'NrPartitions( <n>, <k> )'
+
+In  the  first  form 'Partitions'   returns  the set  of all  (unordered)
+partitions of the positive integer  <n>.  In the second form 'Partitions'
+returns the set of all (unordered) partitions of the positive integer <n>
+into sums with <k> summands.
+
+In   the first form  'NrPartitions'  returns   the number of  (unordered)
+partitions    of  the   positive integer   <n>.     In   the second  form
+'NrPartitions' returns the     number of (unordered) partitions  of   the
+positive integer <n> into sums with <k> summands.
+
+An *unordered partition* is an  unordered sum $n =  p_1+p_2 +..+ p_k$  of
+positive integers and is represented by the list  $p = [p_1,p_2,..,p_k]$,
+in nonincreasing order, i.e., $p_1>=p_2>=..>=p_k$.  We write $p\vdash n$.
+There   are approximately $E^{\pi \sqrt{2/3 n}}    / {4 \sqrt{3} n}$ such
+partitions.
+
+It  is possible to  associate with every partition  of the integer  <n> a
+conjugacy class of permutations in the symmetric group on <n>  points and
+vice  versa.   Therefore $p(n) \:=   NrPartitions(n)$  is  the  number of
+conjugacy classes of the symmetric group on <n> points.
+
+Ramanujan found the identities $p(5i+4) = 0$ mod 5, $p(7i+5) = 0$  mod  7
+and  $p(11i+6) = 0$ mod 11 and many  other  fascinating  things about the
+number of partitions.
+
+Do not call 'Partitions' with an <n> much larger than 40, in  which  case
+there are 37338 partitions, since the list will simply become too large.
+
+|    gap> Partitions( 7 );
+    [ [ 1, 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1, 1 ], [ 2, 2, 1, 1, 1 ],
+      [ 2, 2, 2, 1 ], [ 3, 1, 1, 1, 1 ], [ 3, 2, 1, 1 ], [ 3, 2, 2 ],
+      [ 3, 3, 1 ], [ 4, 1, 1, 1 ], [ 4, 2, 1 ], [ 4, 3 ], [ 5, 1, 1 ],
+      [ 5, 2 ], [ 6, 1 ], [ 7 ] ]
+    gap> Partitions( 8, 3 );
+    [ [ 3, 3, 2 ], [ 4, 2, 2 ], [ 4, 3, 1 ], [ 5, 2, 1 ], [ 6, 1, 1 ] ]
+    gap> NrPartitions( 7 );
+    15
+    gap> NrPartitions( 100 );
+    190569292 |
+
+The function 'OrderedPartitions' (see "OrderedPartitions") is the ordered
+counterpart of 'Partitions'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrderedPartitions}%
+\index{NrOrderedPartitions}%
+\index{partitions!ordered, of an integer}%
+\index{partitions!improper, of an integer}%
+
+'OrderedPartitions( <n> )' \\
+'OrderedPartitions( <n>, <k> )'
+
+'NrOrderedPartitions( <n> )' \\
+'NrOrderedPartitions( <n>, <k> )'
+
+In the  first  form 'OrderedPartitions'  returns the  set  of all ordered
+partitions  of  the  positive    integer  <n>.    In  the   second   form
+'OrderedPartitions' returns the  set  of  all ordered partitions  of  the
+positive integer <n> into sums with <k> summands.
+
+In the first form  'NrOrderedPartitions'  returns the number of   ordered
+partitions  of  the   positive   integer   <n>.   In the    second   form
+'NrOrderedPartitions' returns  the number  of ordered  partitions  of the
+positive integer <n> into sums with <k> summands.
+
+An *ordered partition* is an ordered sum $n = p_1 + p_2 + ..   +  p_k$ of
+positive integers and is represented by the list $[ p_1, p_2, .., p_k ]$.
+There are  totally $2^{n-1}$ ordered  partitions  and ${n-1 \choose k-1}$
+(see "Binomial") partitions with <k> summands.
+
+Do not call 'OrderedPartitions' with an <n>  larger  than  15,  the  list
+will simply become too large.
+
+|    gap> OrderedPartitions( 5 );
+    [ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 2 ], [ 1, 1, 2, 1 ], [ 1, 1, 3 ],
+      [ 1, 2, 1, 1 ], [ 1, 2, 2 ], [ 1, 3, 1 ], [ 1, 4 ], [ 2, 1, 1, 1 ],
+      [ 2, 1, 2 ], [ 2, 2, 1 ], [ 2, 3 ], [ 3, 1, 1 ], [ 3, 2 ], 
+      [ 4, 1 ], [ 5 ] ]
+    gap> OrderedPartitions( 6, 3 );
+    [ [ 1, 1, 4 ], [ 1, 2, 3 ], [ 1, 3, 2 ], [ 1, 4, 1 ], [ 2, 1, 3 ],
+      [ 2, 2, 2 ], [ 2, 3, 1 ], [ 3, 1, 2 ], [ 3, 2, 1 ], [ 4, 1, 1 ] ]
+    gap> NrOrderedPartitions(20);
+    524288 |
+
+The function 'Partitions' (see "Partitions") is the unordered counterpart
+of 'OrderedPartitions'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RestrictedPartitions}%
+\index{NrRestrictedPartitions}%
+\index{partitions!restricted, of an integer}
+
+'RestrictedPartitions( <n>, <set> )' \\
+'RestrictedPartitions( <n>, <set>, <k> )'
+
+'NrRestrictedPartitions( <n>, <set> )' \\
+'NrRestrictedPartitions( <n>, <set>, <k> )'
+
+In the   first  form  'RestrictedPartitions'   returns   the set   of all
+restricted  partitions of the positive integer  <n>  with the summands of
+the   partition  coming  from the    set  <set>.   In    the second  form
+'RestrictedPartitions' returns the set of all  partitions of the positive
+integer <n> into   sums  with <k>  summands   with the summands  of   the
+partition coming from the set <set>.
+
+In  the first  form    'NrRestrictedPartitions'  returns the  number   of
+restricted partitions of  the   positive integer <n>  with  the  summands
+coming from the  set <set>.  In  the second form 'NrRestrictedPartitions'
+returns the number of restricted  partitions of the positive integer  <n>
+into sums  with <k> summands  with the  summands  of the partition coming
+from the set <set>.
+
+A *restricted partition* is like an ordinary partition (see "Partitions")
+an  unordered  sum $n =  p_1+p_2 +..+  p_k$ of  positive  integers and is
+represented by the list  $p =  [p_1,p_2,..,p_k]$, in nonincreasing order.
+The difference is that  here  the $p_i$ must   be elements from the   set
+<set>, while for ordinary partitions they may be elements from '[1..n]'.
+
+|    gap> RestrictedPartitions( 8, [1,3,5,7] );
+    [ [ 1, 1, 1, 1, 1, 1, 1, 1 ], [ 3, 1, 1, 1, 1, 1 ], [ 3, 3, 1, 1 ],
+      [ 5, 1, 1, 1 ], [ 5, 3 ], [ 7, 1 ] ]
+    gap> NrRestrictedPartitions( 50, [1,5,10,25,50] );
+    50 |
+
+The last example tells us that there are 50 ways to return 50 cent change
+using 1, 5, 10 cent coins, quarters and halfdollars.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SignPartition}
+
+'SignPartition( <pi> )'
+
+returns the sign of a permutation with cycle structure <pi>.
+
+|    gap> SignPartition([6,5,4,3,2,1]);
+    -1|
+
+This function actually describes  a homomorphism of  the  symmetric group
+$S_n$ into  the  cyclic group of order  2,  whose  kernel  is exactly the
+alternating  group $A_n$  (see "SignPerm").  Partitions  of  sign  1  are
+called *even* partitions while partitions of sign $-1$ are called *odd*.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AssociatedPartition}
+
+'AssociatedPartition( <pi> )'
+
+returns the associated partition of the partition <pi>.
+
+|    gap> AssociatedPartition([4,2,1]);
+    [ 3, 2, 1, 1 ]
+    gap> AssociatedPartition([6]);
+    [ 1, 1, 1, 1, 1, 1 ]|
+
+The  *associated  partition*  of a  partition  <pi> is  defined to be the
+partition belonging to the transposed of the Young diagram of <pi>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BetaSet}%
+
+'BetaSet( <p> )'
+
+Here  <p>  is  a  partition  (a  non-increasing list of positive integers).
+'BetaSet' returns the corresponding nomalized Beta set.
+
+|    gap> BetaSet([3,3,1]);
+      [ 1, 4, 5 ]|
+
+A  beta-set is a  set of positive  integers, up to  the *shift* equivalence
+relation.  This  equivalence  relation  is  the  transitive  closure of the
+elementary  equivalence of $[s_1,\ldots,s_n]$ and $[0,1+s_1,\ldots,1+s_n]$.
+An equivalence class has exactly one member which does not contain $0$\: it
+is  called the normalized beta-set.  To a partition $p_1\ge p_2\ge\ldots\ge
+p_n>0$  is  associated  a  beta-set,  whose  normalized  representative  is
+$p_n,p_{n-1}+1,\ldots,p_1+n-1$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{Dominates} 
+
+'Dominates(<$\mu$>, <$\nu$>)'
+
+The  dominance  ordering  is  an  important partial order in representation
+theory.    'Dominates(<$\mu$>,   <$\nu$>)'   returns   'true'   if   either
+<$\mu$>=<$\nu$> or for all $i\ge 1$,
+$\sum_{j=1}^i\mu_j\ge\sum_{j=1}^i\nu_j$, and 'false' otherwise.
+
+|gap> Dominates([5,4],[4,4,1]);
+true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PowerPartition}\index{symmetric group!powermap}
+
+'PowerPartition( <pi>, <k> )'
+
+returns the  partition corresponding to the <k>-th power of a permutation
+with cycle structure <pi>.
+
+|    gap> PowerPartition([6,5,4,3,2,1], 3);
+    [ 5, 4, 2, 2, 2, 2, 1, 1, 1, 1 ]|
+
+Each part $l$ of <pi> is replaced by $d = \gcd(l, k)$ parts $l/d$.  So if
+<pi> is a partition of $n$ then $<pi>^{<k>}$ also is a partition of  $n$.
+'PowerPartition'  describes  the  powermap  of  symmetric   groups.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PartitionTuples}
+\index{PartitionTuples}%
+\index{NrPartitionTuples}
+
+'PartitionTuples( <n>, <r> )'
+
+'NrPartitionTuples( <n>, <r> )'
+
+'PartitionTuples(  <n>,  <r>  )'  returns  the  list  of all <r>--tuples of
+partitions  that together  partition <n>.  'NrPartitionTuples' just returns
+their number.
+
+|    gap> PartitionTuples(3, 2);
+    [ [ [ 1, 1, 1 ], [  ] ], [ [ 1, 1 ], [ 1 ] ], [ [ 1 ], [ 1, 1 ] ],
+      [ [  ], [ 1, 1, 1 ] ], [ [ 2, 1 ], [  ] ], [ [ 1 ], [ 2 ] ],
+      [ [ 2 ], [ 1 ] ], [ [  ], [ 2, 1 ] ], [ [ 3 ], [  ] ],
+      [ [  ], [ 3 ] ] ]
+    gap> NrPartitionTuples(3,2);
+    10|
+
+<r>--tuples  of partitions describe the  classes  and  the  characters of
+wreath products of groups with  <r> conjugacy classes with the  symmetric
+group $S_n$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Fibonacci}%
+\index{sequence!fibonacci}
+
+'Fibonacci( <n> )'
+
+'Fibonacci'  returns  the <n>th number  of the *Fibonacci sequence*.  The
+Fibonacci sequence $F_n$ is defined by the initial conditions $F_1=F_2=1$
+and  the recurrence relation  $F_{n+2} = F_{n+1}  + F_{n}$.  For negative
+$n$  we  define $F_n = (-1)^{n+1}  F_{-n}$, which  is consistent with the
+recurrence relation.
+
+Using generating functions one can prove that $F_n = \phi^n  - 1/\phi^n$,
+where  $\phi$ is $(\sqrt{5} + 1)/2$, i.e., one root of $x^2 - x - 1 = 0$.
+Fibonacci  numbers have  the  property $Gcd( F_m,  F_n ) = F_{Gcd(m,n)}$.
+But a pair of Fibonacci numbers requires more division steps in Euclid\'s
+algorithm (see "Gcd") than any  other  pair of integers of the same size.
+'Fibonnaci(<k>)' is the special case 'Lucas(1,-1,<k>)[1]' (see "Lucas").
+
+|    gap> Fibonacci( 10 );
+    55
+    gap> Fibonacci( 35 );
+    9227465
+    gap> Fibonacci( -10 );
+    -55 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Lucas}%
+\index{sequence!lucas}
+
+'Lucas( <P>, <Q>, <k> )'
+
+'Lucas' returns the <k>-th values of the *Lucas sequence* with parameters
+<P> and <Q>, which must be integers, as a list of three integers.
+
+Let $\alpha, \beta$ be the two roots of  $x^2 - P x + Q$  then we  define\\
+$Lucas( P, Q, k )[1] = U_k = (\alpha^k - \beta^k) / (\alpha - \beta)$ and\\
+$Lucas( P, Q, k )[2] = V_k = (\alpha^k + \beta^k)$  and as  a convenience\\
+$Lucas( P, Q, k )[3] = Q^k$.
+
+The following recurrence relations are easily derived from the definition\\
+$U_0 = 0, U_1 = 1, U_k = P U_{k-1} - Q U_{k-2}$ and \\
+$V_0 = 2, V_1 = P, V_k = P V_{k-1} - Q V_{k-2}$. \\
+Those relations are actually used to define 'Lucas' if $\alpha = \beta$.
+
+Also the more complex relations used in 'Lucas' can be easily derived\\
+$U_{2k} = U_k V_k,        U_{2k+1} = (P U_{2k} + V_{2k}) / 2$ and \\
+$V_{2k} = V_k^2 - 2 Q^k,  V_{2k+1} = ((P^2-4Q) U_{2k} + P V_{2k}) / 2$.
+
+'Fibonnaci(<k>)' (see "Fibonacci") is simply 'Lucas(1,-1,<k>)[1]'.  In an
+abuse of notation, the sequence  'Lucas(1,-1,<k>)[2]' is sometimes called
+the Lucas sequence.
+
+|    gap> List( [0..10], i->Lucas(1,-2,i)[1] );
+    [ 0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341 ]    # $2^k - (-1)^k)/3$
+    gap> List( [0..10], i->Lucas(1,-2,i)[2] );
+    [ 2, 1, 5, 7, 17, 31, 65, 127, 257, 511, 1025 ]    # $2^k + (-1)^k$
+    gap> List( [0..10], i->Lucas(1,-1,i)[1] );
+    [ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]    # Fibonacci sequence
+    gap> List( [0..10], i->Lucas(2,1,i)[1] );
+    [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]    # the roots are equal |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Bernoulli}%
+\index{sequence!bernoulli}
+
+'Bernoulli( <n> )'
+
+'Bernoulli' returns the <n>-th *Bernoulli number* $B_n$, which is defined
+by $B_0 = 1$ and $B_n = -\sum_{k=0}^{n-1}{{n+1 \choose k} B_k}/(n+1)$.
+
+$B_n/n!$ is the coefficient of $x^n$  in the power series of $x/{e^x-1}$.
+Except for $B_1=-1/2$ the Bernoulli numbers for odd indices $m$ are zero.
+
+|    gap> Bernoulli( 4 );
+    -1/30
+    gap> Bernoulli( 10 );
+    5/66
+    gap> Bernoulli( 12 );
+    -691/2730    # there is no simple pattern in Bernoulli numbers
+    gap> Bernoulli( 50 );
+    495057205241079648212477525/66    # and they grow fairly fast |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Permanent}
+
+'Permanent( <mat> )'
+
+'Permanent' returns the *permanent* of the matrix  <mat>.  The  permanent
+is defined by $\sum_{p \in Symm(n)}{\prod_{i=1}^{n}{mat[i][i^p]}}$.
+
+Note the similarity of the definition of  the permanent to the definition
+of the determinant.  In  fact the only  difference is the missing sign of
+the permutation.  However the  permanent is quite unlike the determinant,
+for example   it is  not  multilinear or  alternating.  It   has  however
+important combinatorical properties.
+
+|    gap> Permanent( [[0,1,1,1],
+    >                [1,0,1,1],
+    >                [1,1,0,1],
+    >                [1,1,1,0]] );
+    9    # inefficient way to compute 'NrDerangements([1..4])'
+    gap> Permanent( [[1,1,0,1,0,0,0],
+    >                [0,1,1,0,1,0,0],
+    >                [0,0,1,1,0,1,0],
+    >                [0,0,0,1,1,0,1],
+    >                [1,0,0,0,1,1,0],
+    >                [0,1,0,0,0,1,1],
+    >                [1,0,1,0,0,0,1]] );
+    24    # 24 permutations fit the projective plane of order 2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

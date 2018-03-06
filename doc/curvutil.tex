@@ -1,0 +1,230 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  curvutil.tex      VKCURVE documentation    David Bessis,  Jean Michel
+%%
+%Y  Copyright (C) 2001-2002  University  Paris VII.
+%%
+%%  This  file  introduces the VKCURVE package.
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\VKCURVE{{\sf VKCURVE}}
+\def\CHEVIE{{\sf CHEVIE}}
+\Chapter{Some VKCURVE utility functions}
+
+We document here various utility functions defined by \VKCURVE\ package
+and which may be useful also in other contexts.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BigNorm}
+\index{BigNorm}
+
+'BigNorm(<c>)'
+
+Given a 'complex' number <c> with  real part <r> and imaginary part <j>,
+returns a \"cheap substitute\" to the norm of <c> given by $|r|+|j|$.
+
+|    gap> BigNorm(Complex(-1,-1));
+    2|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DecimalLog}
+\index{DecimalLog}
+
+'DecimalLog(<r>)'
+
+Given a rational  number <r>, returns an integer <k>  such that $10^k\<
+|r| \le 10^{k+1}$.
+
+|    gap> List([1,1/10,1/2,2,10],DecimalLog);
+    [ -1, -2, -1, 0, 1 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ComplexRational}
+\index{ComplexRational}
+
+'ComplexRational(<c>)'
+
+<c> is a cyclotomic or a 'Complex' number with 'Decimal' or real cyclotomic
+real  and imaginary parts. This function returns the corresponding rational
+complex number.
+
+|    gap> evalf(E(3)/3);
+    -0.1666666667+0.2886751346I
+    gap> ComplexRational(last);
+    -16666666667/100000000000+28867513459/100000000000I
+    gap> ComplexRational(E(3)/3);
+    -1/6+28867513457/100000000000I|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Dispersal}
+\index{Dispersal}
+
+'Dispersal(v)'
+
+<v> is a list of 'complex' numbers representing points in the real plane.
+The result is a pair whose first element is the minimum distance between
+two elements of <v>, and the second is a pair of indices '[i,j]' such that
+'v[i]', 'v[j]' achieves this minimum distance.
+
+|    gap> Dispersal([Complex(1,1),Complex(0),Complex(1)]);
+    [ 1, [ 1, 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ConjugatePresentation}
+\index{ConjugatePresentation}
+
+'ConjugatePresentation(<p> [,<conjugation>])'
+
+This  program modifies  a  presentation by  conjugating  a generator  by
+another. The conjugaction to apply is  described by a length-3 string of
+the same style  as the result of 'DisplayPresentation',  that is '\"abA\"'
+means replace  the second generator by  its conjugate by the  first, and
+'\"Aba\"' means replace it by its conjugate by the inverse of the first.
+
+|    gap> F:=FreeGroup(4);;
+    gap> p:=PresentationFpGroup(F/[F.4*F.1*F.2*F.3*F.4*F.1^-1*F.4^-1*
+    > F.3^-1*F.2^-1*F.1^-1,F.4*F.1*F.2*F.3*F.4*F.2*F.1^-1*F.4^-1*F.3^-1*
+    > F.2^-1*F.1^-1*F.3^-1,F.2*F.3*F.4*F.1*F.2*F.3*F.4*F.3^-1*F.2^-1*
+    > F.4^-1*F.3^-1*F.2^-1*F.1^-1*F.4^-1]);
+    gap> DisplayPresentation(p);
+    1: dabcd=abcda
+    2: dabcdb=cabcda
+    3: bcdabcd=dabcdbc
+    gap> DisplayPresentation(ConjugatePresentation(p,"cdC"));
+    #I  there are 4 generators and 3 relators of total length 36
+    1: cabdca=dcabdc
+    2: dcabdc=bdcabd
+    3: cabdca=abdcab|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TryConjugatePresentation}
+\index{TryConjugatePresentation}
+
+'TryConjugatePresentation(<p> [,<goal> [,<printlevel>]])'
+
+This  program   tries  to  simplify  group   presentations  by  applying
+conjugations to the generators. The algorithm depends on random numbers,
+and on  tree-searching, so is  not reproducible. By default  the program
+stops as  soon as a shorter  presentation is found. Sometimes  this does
+not  give the  desired  presentation.  One can  give  a second  argument
+<goal>, then  the program will only  stop when a presentation  of length
+less than  <goal> is found. Finally,  a third argument can  be given and
+then  all presentations  the  programs  runs over  which  are of  length
+less  than  or  equal  to  this  argument  are  displayed.  Due  to  the
+non-deterministic  nature  of the  program,  it  may  be useful  to  run
+it  several times  on  the  same input.  Upon  failure  (to improve  the
+presentation), the program returns <p>.
+
+|    gap> Display(p);
+    1: ba=ab
+    2: dbd=bdb
+    3: cac=aca
+    4: bcb=cbc
+    5: dAca=Acad
+    6: dcdc=cdcd
+    7: adad=dada
+    8: dcDbdc=bdcbdB
+    9: dcdadc=adcdad
+    10: adcDad=dcDadc
+    11: BcccbdcAb=dcbACdddc
+    gap> p:=TryConjugatePresentation(p); 
+    #I  there are 4 generators and 11 relators of total length 100
+    #I  there are 4 generators and 11 relators of total length 120
+    #I  there are 4 generators and 10 relators of total length 100
+    #I  there are 4 generators and 11 relators of total length 132
+    #I  there are 4 generators and 11 relators of total length 114
+    #I  there are 4 generators and 11 relators of total length 110
+    #I  there are 4 generators and 11 relators of total length 104
+    #I  there are 4 generators and 11 relators of total length 114
+    #I  there are 4 generators and 11 relators of total length 110
+    #I  there are 4 generators and 11 relators of total length 104
+    #I  there are 4 generators and 8 relators of total length 76
+    #I  there are 4 generators and 8 relators of total length 74
+    #I  there are 4 generators and 8 relators of total length 72
+    #I  there are 4 generators and 8 relators of total length 70
+    #I  there are 4 generators and 7 relators of total length 52
+    # d-$>$adA gives length 52
+    << presentation with 4 gens and 7 rels of total length 52 >>
+    gap> Display(p); 
+    1: ba=ab
+    2: dc=cd
+    3: aca=cac
+    4: dbd=bdb
+    5: bcb=cbc
+    6: adad=dada
+    7: aBcADbdac=dBCacbdaB
+    gap> TryConjugatePresentation(p,48);
+    #I  there are 4 generators and 7 relators of total length 54
+    #I  there are 4 generators and 7 relators of total length 54
+    #I  there are 4 generators and 7 relators of total length 60
+    #I  there are 4 generators and 7 relators of total length 60
+    #I  there are 4 generators and 7 relators of total length 48
+    # d-$>$bdB gives length 48
+    << presentation with 4 gens and 7 rels of total length 48 >>
+    gap> Display(last);
+    1: ba=ab
+    2: bcb=cbc
+    3: cac=aca
+    4: dbd=bdb
+    5: cdc=dcd
+    6: adad=dada
+    7: dAbcBa=bAcBad|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FindRoots}
+\index{FindRoots}
+
+'FindRoots(<p>, <approx>)'
+
+<p>  should be a univariate 'Mvp'  with cyclotomic or 'Complex' rational or
+decimal  coefficients or  a list  of cyclotomics  or 'Complex' rationals or
+decimals  which represents  the coefficients  of a  complex polynomial. The
+function  returns  'Complex'  rational  approximations  to the roots of <p>
+which  are  better  than  <approx>  (a  positive rational). Contrary to the
+functions  'SeparateRoots', etc... described in  the previous chapter, this
+function handles quite well polynomials with multiple roots. We rely on the
+algorithms explained in detail in \cite{HSS01}.
+
+|    gap> FindRoots((x-1)^5,1/100000000000);
+    [ 6249999999993/6250000000000+29/12500000000000I, 
+      12499999999993/12500000000000-39/12500000000000I, 
+      12500000000023/12500000000000+11/6250000000000I, 
+      12500000000023/12500000000000+11/6250000000000I, 
+      312499999999/312500000000-3/6250000000000I ]
+    gap> evalf(last);
+    [ 1, 1, 1, 1, 1 ]
+    gap> FindRoots(x^3-1,1/10);            
+    [ -1/2-108253175473/125000000000I, 1, -1/2+108253175473/125000000000I ]
+    gap> evalf(last);
+    [ -0.5-0.8660254038I, 1, -0.5+0.8660254038I ]
+    gap> List(last,x->x^3);
+    [ 1, 1, 1 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cut}
+\index{Cut}
+
+'Cut(<string s> [, opt])'
+
+The  first argument is a string, and the second one a record of options, if
+not  given taken equal to 'rec()'. This function prints its string argument
+<s> on several lines not exceeding <opt.width>; if not given <opt.width> is
+taken  to be equal  'SizeScreen[1]-2'. This is  similar to how \GAP\ prints
+strings, excepted no continuation line characters are printed. The user can
+specify  after which  characters to  cut the  string by  specifying a field
+'opt.places';  the defaut is 'opt.places=\",\"',  but some other characters
+can  be used ---  for instance a  good choice for  printing big polynomials
+could  be '\"+-\"'. If a field 'opt.file'  is given, the result is appended
+to  that file  instead of  written to  standard output;  this may  be quite
+useful for dumping some \GAP\ values to a file for later re-reading.
+
+|    gap> Cut("an, example, with, plenty, of, commas\n",rec(width:=10));
+    an,
+    example,
+    with,
+    plenty,
+    of,
+    commas
+    gap>|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

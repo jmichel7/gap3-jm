@@ -1,0 +1,409 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  sisyphos.tex                GAP documentation            Martin Wursthorn
+%%
+%A  @(#)$Id: sisyphos.tex,v 1.1.1.1 1996/12/11 12:36:50 werner Exp $
+%%
+%Y  Copyright (C)  1993,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%H  $Log: sisyphos.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:50  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.4  1994/06/10  02:49:26  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.3  1994/05/13  15:56:31  sam
+%H  added description of 'NormalizedUnitsGroupRing'
+%H
+%H  Revision 3.2  1993/11/10  10:00:14  sam
+%H  added description of a function, minor changes
+%H
+%H  Revision 3.1  1993/10/27  10:44:59  martin
+%H  initial revision under RCS
+%H
+%%
+\def\SISYPHOS{\sc Sisyphos}
+\Chapter{Sisyphos}
+
+This chapter describes the {\GAP} accessible functions of the {\SISYPHOS}
+(Version~0.6) share library package for computing with modular group
+algebras of $p$-groups,
+namely a function to convert a $p$-group into {\SISYPHOS}
+readable format (see "PrintSisyphosInputPGroup"), several functions that
+compute automorphism groups of $p$-groups (see "SAutomorphisms"),
+functions that compute normalized
+automorphism groups as polycyclically presented groups
+(see "AgNormalizedAutomorphisms", "AgNormalizedOuterAutomorphisms"),
+functions that test two $p$-groups for isomorphism (see "IsIsomorphic")
+and compute isomorphisms between $p$-groups (see "Isomorphisms"),
+and a function to compute the element list of an automorphism group that
+is given by generators (see "AutomorphismGroupElements").
+
+The {\SISYPHOS} functions for group rings are not yet available, with
+the only exception of a function that computed the group of normalized
+units (see "NormalizedUnitsGroupRing").
+
+The algorithms require presentations that are compatible with a 
+characteristic series of the group with elementary abelian factors, e.g.\ 
+the $p$-central series.
+If necessary such a presentation is computed secretly using the 
+$p$-central series, the
+computations are done using this presentation, and then the results are
+carried back to the original presentation.  The check of compatibility
+is done by the function 'IsCompatiblePCentralSeries' (see 
+"IsCompatiblePCentralSeries").
+The component 'isCompatiblePCentralSeries' of the group will be either 'true'
+or 'false' then.
+If you know in advance that your group is compatible with a series of the 
+kind required, e.g.\ the Jennings-series, 
+you can avoid the check by setting this flag to 'true' by hand.
+
+Before using any of the functions described in this chapter you must load
+the package by calling the statement
+
+|    gap> RequirePackage( "sisyphos" ); |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrintSISYPHOSWord}
+
+'PrintSISYPHOSWord( <P>, <a> )'
+
+For a polycyclically presented group <P> and an element <a> of <P>,
+'PrintSISYPHOSWord( <P> ,<a> )' prints a string that encodes <a> in the
+input format of the {\SISYPHOS} system.
+
+The string '\"1\"' means the identity element, the other elements are
+products of powers of generators, the <i>-th generator is given the
+name 'g<i>'.
+
+|    gap> g := SolvableGroup ( "D8" );;
+    gap> PrintSISYPHOSWord ( g, g.2*g.1 ); Print( "\n" );
+    g1*g2*g3 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrintSisyphosInputPGroup}
+
+'PrintSisyphosInputPGroup( <P>, <name>, <type> )'
+
+prints the presentation of the finite $p$-group <P> in a format readable
+by the {\SISYPHOS} system.  <P> must be a polycyclically or freely
+presented group.
+
+In {\SISYPHOS}, the group will be named <name>.
+If <P> is polycyclically presented the <i>-th generator gets the name
+'g<i>'.
+In the case of a free presentation the names of the generators are not
+changed; note that {\SISYPHOS} accepts only generators names beginning
+with a letter followed by a sequence of letters, digits,underscores
+and dots.
+
+<type> must be either '\"pcgroup\"' or the prime dividing the order of
+<P>.
+In the former case the {\SISYPHOS} object has type 'pcgroup', <P> must
+be polycyclically presented for that.
+In the latter case a {\SISYPHOS} object of type 'group' is created.
+For avoiding computations in freely presented groups, is *neither*
+checked that the presentation describes a $p$-group, *nor* that the
+given prime really divides the group order.
+
+See the {\SISYPHOS} manual~\cite{Wur93} for details.
+
+|    gap> g:= SolvableGroup( "D8" );;
+    gap> PrintSisyphosInputPGroup( g, "d8", "pcgroup" );
+    d8 = pcgroup(2,
+    gens(
+    g1,
+    g2,
+    g3),
+    rels(
+    g1^2 = 1,
+    g2^2 = 1,
+    g3^2 = 1,
+    [g2,g1] = g3));
+    gap> q8 := FreeGroup ( 2 );;
+    gap> q8.relators := [q8.1^4,q8.2^2/q8.1^2,Comm(q8.2,q8.1)/q8.1^2];;
+    gap> PrintSisyphosInputPGroup ( q8, "q8", 2 );
+    &I  PQuotient: class 1 : 2
+    &I  PQuotient: Runtime : 0
+    q8 = group (minimal,
+    2,
+    gens(
+    f.1,
+    f.2),
+    rels(
+    f.1^4,
+    f.2^2*f.1^-2,
+    f.2^-1*f.1^-1*f.2*f.1^-1)); |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCompatiblePCentralSeries}
+
+'IsCompatiblePCentralSeries( <G> )'
+
+If the component '<G>.isCompatiblePCentralSeries' of the polycyclically 
+presented $p$-group '<G>' is bound, its value is 
+returned, otherwise the exponent-$p$-central series of '<G>' is computed 
+and compared to the given presentation. If the generators of each term of 
+this series form a subset of the generators of '<G>' the component 
+'<G>.isCompatiblePCentralSeries' is set to 'true', otherwise to 'false'. 
+This value is then returned by the function. 
+
+|    gap> g:= SolvableGroup( "D8" );;
+    gap> IsCompatiblePCentralSeries ( g );
+    true
+    gap> a := AbstractGenerators ( "a", 5 );;
+    gap> h := AgGroupFpGroup ( rec (
+    > generators := a,
+    > relators := 
+    > [a[1]^2/(a[3]*a[5]),a[2]^2/a[3],a[3]^2/(a[4]*a[5]),a[4]^2,a[5]^2]));;
+    gap> h.name := "H";;
+    gap> IsCompatiblePCentralSeries ( h );
+    false
+    gap> PCentralSeries ( h, 2 );
+    [ H, Subgroup( H, [ a3, a4, a5 ] ), Subgroup( H, [ a4*a5 ] ), 
+      Subgroup( H, [  ] ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SAutomorphisms}\index{Automorphisms of $p$-groups}%
+\index{OuterAutomorphisms}\index{NormalizedAutomorphisms}%
+\index{NormalizedOuterAutomorphisms}
+
+'SAutomorphisms( <P> )'\\
+'OuterAutomorphisms( <P> )'\\
+'NormalizedAutomorphisms( <P> )'\\
+'NormalizedOuterAutomorphisms( <P> )'
+
+all return a record with components
+
+'sizeOutG':\\     the size of the group of outer automorphisms of <P>,
+
+'sizeInnG':\\     the size of the group of inner automorphisms of <P>,
+
+'sizeAutG':\\     the size of the full automorphism group of <P>,
+
+'generators':\\   a list of group automorphisms that
+                  generate the group of all, outer,
+                  normalized or normalized outer automorphisms of the
+                  polycyclically presented $p$-group <P>, respectively.
+                  In the case of outer or normalized outer automorphisms,
+                  this list consists of preimages in $Aut($<P>$)$ of a
+                  generating set for $Aut($<P>$)/Inn($<P>$)$ or
+                  $Aut_n($<P>$)/Inn($<P>$)$, respectively.
+
+|    gap> g:= SolvableGroup( "Q8" );;
+    gap> SAutomorphisms( g );
+    rec(
+    sizeAutG := 24,
+    sizeInnG := 4,
+    sizeOutG := 6,
+    generators := 
+    [ GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ b, a, c ] ), 
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a*b, b, c ] ), 
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a, b*c, c ] ), 
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a*c, b, c ] ) ] )
+    gap> OuterAutomorphisms( g );
+    rec(
+    sizeAutG := 24,
+    sizeInnG := 4,
+    sizeOutG := 6,
+    generators := 
+    [ GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ b, a, c ] ), 
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a*b, b, c ] ) ] ) |
+
+*Note*\:\ If the component '<P>.isCompatiblePCentralSeries' is not bound
+it is computed using 'IsCompatiblePCentralSeries'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AgNormalizedAutomorphisms}
+
+'AgNormalizedAutomorphisms( <P> )'
+
+returns a polycyclically presented group isomorphic to the group of
+all normalized automorphisms of the polycyclically presented $p$-group <P>.
+
+|    gap> g:= SolvableGroup( "D8" );;
+    gap> aut:= AgNormalizedAutomorphisms( g );
+    Group( g0, g1 )
+    gap> Size( aut );
+    4 |
+
+*Note*\:\ If the component '<P>.isCompatiblePCentralSeries' is not bound
+it is computed using 'IsCompatiblePCentralSeries'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AgNormalizedOuterAutomorphisms}
+
+'AgNormalizedOuterAutomorphisms( <P> )'
+
+returns a polycyclically presented group isomorphic to the group of
+normalized outer automorphisms of the polycyclically presented $p$-group <P>.
+
+|    gap> g:= SolvableGroup( "D8" );;
+    gap> aut:= AgNormalizedOuterAutomorphisms( g );
+    Group( IdAgWord ) |
+
+*Note*\:\ If the component '<P>.isCompatiblePCentralSeries' is not bound
+it is computed using 'IsCompatiblePCentralSeries'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsIsomorphic}
+
+'IsIsomorphic( <P1>, <P2> )'
+
+returns 'true' if the polycyclically or freely presented $p$-group <P1> and  
+the polycyclically presented $p$-group <P2> are isomorphic,
+'false' otherwise.
+
+|    gap> g:= SolvableGroup( "D8" );;
+    gap> nonab:= AllTwoGroups( Size, 8, IsAbelian, false );
+    [ Group( a1, a2, a3 ), Group( a1, a2, a3 ) ]
+    gap> List( nonab, x -> IsIsomorphic( g, x ) );
+    [ true, false ] |
+
+(The function 'Isomorphisms' returns isomorphisms in case the groups are
+isomorphic.)
+
+*Note*\:\ If the component '<P2>.isCompatiblePCentralSeries' is not bound
+it is computed using 'IsCompatiblePCentralSeries'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Isomorphisms}
+
+'Isomorphisms( <P1>, <P2> )'
+
+If the polycyclically or freely presented $p$-groups <P1> and the 
+polycyclically presented $p$-group <P2> are not isomorphic,
+'Isomorphisms' returns 'false'.
+Otherwise a record is returned that encodes the isomorphisms from <P1> to
+<P2>; its components are
+
+'epimorphism':\\  a list of images of '<P1>.generators' that defines an
+                  isomorphism from <P1> to <P2>,
+
+'generators':\\   a list of image lists which encode automorphisms that
+                  together with the inner automorphisms generate the full
+                  automorphism group of <P2>
+
+'sizeOutG':\\     size of the group of outer automorphisms of <P2>,
+
+'sizeInnG':\\     size of the group of inner automorphisms of <P2>,
+
+'sizeOutG':\\     size of the full automorphism group of <P2>.
+
+|    gap> g:= SolvableGroup( "Q8" );;
+    gap> nonab:= AllTwoGroups( Size, 8, IsAbelian, false );
+    [ Group( a1, a2, a3 ), Group( a1, a2, a3 ) ]
+    gap> nonab[2].name:= "im";;
+    gap> Isomorphisms( g, nonab[2] );
+    rec(
+    sizeAutG := 24,
+    sizeInnG := 4,
+    sizeOutG := 6,
+    epimorphism := [ a1, a2, a3 ],
+    generators := 
+    [ GroupHomomorphismByImages( im, im, [ a1, a2, a3 ], [ a2, a1, a3 ] ),
+      GroupHomomorphismByImages( im, im, [ a1, a2, a3 ], [ a1*a2, a2, a3
+         ] ) ] ) |
+
+(The function 'IsIsomorphic' tests for isomorphism of $p$-groups.)
+
+*Note*\:\ If the component '<P2>.isCompatiblePCentralSeries' is not bound
+it is computed using 'IsCompatiblePCentralSeries'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CorrespondingAutomorphism}
+
+'CorrespondingAutomorphism( <G>, <w> )'
+
+If <G> is a polycyclically presented group of automorphisms of a group $P$
+as returned by 'AgNormalizedAutomorphisms' (see
+"AgNormalizedAutomorphisms") or
+'AgNormalizedOuterAutomorphisms' (see "AgNormalizedOuterAutomorphisms"),
+and <w> is an element of <G> then the automorphism of $P$ corresponding to
+<w> is returned.
+
+|    gap> g:= TwoGroup( 64, 173 );;
+    gap> g.name := "G173";;
+    gap> autg := AgNormalizedAutomorphisms ( g );
+    Group( g0, g1, g2, g3, g4, g5, g6, g7, g8 )
+    gap> CorrespondingAutomorphism ( autg, autg.2*autg.1^2 );
+    GroupHomomorphismByImages( G173, G173, [ a1, a2, a3, a4, a5, a6 ],
+    [ a1, a2*a4, a3*a6, a4*a6, a5, a6 ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AutomorphismGroupElements}
+
+'AutomorphismGroupElements( <A> )'
+
+<A> must be an automorphism record as returned by one of the automorphism
+routines or a list consisting of automorphisms of a $p$-group $P$.
+
+In the first case a list of all elements of $Aut(P)$ or $Aut_n(P)$ is
+returned, if <A> has been created by 'SAutomorphisms'
+or 'NormalizedAutomorphisms' (see "SAutomorphisms"),
+respectively, or a list of coset representatives of $Aut(P)$ or $Aut_n(P)$
+modulo $Inn(P)$, if <A> has been created by 'OuterAutomorphisms'
+or 'NormalizedOuterAutomorphisms' (see "SAutomorphisms"), respectively.
+
+In the second case the list of all elements of the subgroup of $Aut(P)$
+generated by <A> is returned.
+
+|    gap> g:= SolvableGroup( "Q8" );;
+    gap> outg:= OuterAutomorphisms( g );;
+    gap> AutomorphismGroupElements( outg );
+    [ GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a, b, c ] ),
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ b, a, c ] ),
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a*b, b, c ] ),
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a*b*c, a, c ] ),
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ b, a*b, c ] ),
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a, a*b*c, c ] ) ]
+    gap> l:= [ outg.generators[2] ];
+    [ GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a*b, b, c ] ) ]
+    gap> AutomorphismGroupElements( l );
+    [ GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a, b, c ] ),
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a*b, b, c ] ),
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a*c, b, c ] ),
+      GroupHomomorphismByImages( Q8, Q8, [ a, b, c ], [ a*b*c, b, c ] ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NormalizedUnitsGroupRing}
+
+'NormalizedUnitsGroupRing( <P> )' \\
+'NormalizedUnitsGroupRing( <P>, <n> )'
+
+When called with a polycyclicly presented $p$-group <P>, the group
+of normalized units of the group ring $FP$ of <P> over the field $F$
+with $p$ elements is returned.
+
+If a second argument <n> is given, the group of normalized units of
+$FP / I^n$ is returned, where $I$ denotes the augmentation ideal of
+$FP$.
+
+The returned group is represented as polycyclicly presented group.
+
+|    gap> g:= SolvableGroup( "D8" );;
+    gap> NormalizedUnitsGroupRing( g, 1 );
+    &D use multiplication table
+    Group( IdAgWord )
+    gap> NormalizedUnitsGroupRing( g, 2 );
+    &D use multiplication table
+    Group( g1, g2 )
+    gap> NormalizedUnitsGroupRing( g, 3 );
+    &D use multiplication table
+    Group( g1, g2, g3, g4 )
+    gap> NormalizedUnitsGroupRing( g );
+    &D use multiplication table
+    Group( g1, g2, g3, g4, g5, g6, g7 ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%

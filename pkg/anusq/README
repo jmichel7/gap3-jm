@@ -1,0 +1,381 @@
+*****************************************************************************
+**
+*A  README                      ANU SQ                      Alice C. Niemeyer
+**
+*Y  Copyright 1994,  Department of Mathematics,   ANU,   ACT 0200,  Australia
+**
+**
+** (last modified 9. May 1994)
+**
+
+
+
+                   The ANU Soluble Quotient Program
+                   =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+0) Contents
+-----------
+
+      1) Finite Soluble Quotients
+      2) About this Version
+      3) How to install the ANU SQ
+      4) How to use the ANU SQ
+      5) The input format for presentations
+      6) The output of the ANU SQ
+      7) Example 
+      8) Contact addresses
+
+1) Finite Soluble Quotients
+---------------------------
+
+The task and the details of the Australian National University Soluble
+Quotient  Program (ANU  SQ) are  described in  the  files sq1.dvi  and
+sq2.dvi.   These  files contain preprints  of  the  papers  "Computing
+finite  soluble  quotients"  to  appear  in  the  proceedings  of  the
+conference on Computational Algebra and Number Theory, 1992, in Sydney
+and "A finite soluble  quotient algorithm" submitted to the Journal of
+Symbolic Computation.
+
+
+2) About this Version
+---------------------
+
+This directory contains Version  1.0 (May  1994) of the  ANU SQ.  This
+is  an  implementation of the algorithm described in "Computing finite
+soluble quotients" in C.  This implementation  has been developed in a
+Unix  environment and Unix  is currently  the  only  operating  system
+supported.   It runs  on a  number of  different Unix  versions,  e.g.
+SunOS 4.x, SunOS 5.3 and Ultrix.
+
+This directory contains the following directories and files:
+ 
+          README
+          examples
+          gap
+          src
+          testSq
+          doc
+ 
+The file `README' is  this  file.  The directory `examples' contains a
+collection  of example input  files for  the soluble quotient program.
+The directory `gap' contains the  GAP interface  to  the  ANU SQ.  The
+program system GAP is developed by Martin Schoenert et al. at the RWTH
+Aachen, Germany.  The directory `src' contains the source code for the
+ANU SQ and the file `testSq' can be run to test if the installation of
+the ANU SQ is working properly (see  next section). It uses the groups
+in the directory `examples'.  The  directory doc contains  the dvi and
+ps files for sq1.dvi and sq2.dvi.
+
+
+3) How to install the ANU SQ
+----------------------------
+
+ The ANU SQ  requires  a program  called  vector enumerator written by
+S.A.  Linton, see S.A.  Linton (1993)  "On Vector Enumeration", Linear
+Algebra  and  Applications,  192:235--248  or  S.A.    Linton,  (1991)
+``Constructing Matrix Representations  of Finitely Presented Groups'',
+J.\ Symbolic Comput.,  12 (4 \&  5)427--438.  A  version of the vector
+enumerator can  be obtained from the same place as this version of the
+ANU SQ was obtained.  It is necessary to install the vector enumerator
+first.   See  the  README  file in  the  distribution  of  the  vector
+enumerator for instructions on its installation.  Note that the ANU SQ
+only requires  the installation of the program 'me' out of the  vector
+enumeration  package  and not the programs 'qme' and 'zme' (thus it is
+not necessary to install the GNU  multi-precision integer software GMP
+in order to use the vector enumerator for the ANU SQ).
+
+Once the vector enumerator is installed change into the directory 'src'
+and edit the file 'Makefile'. The following options can be defined for
+the C-compiler.  
+
+                SYS_BSD SYS_USG SYS_ALPHA
+                VEPATH
+                CHAT
+                TAILS 
+                COLLECT
+
+The  option SYS_BSD  is  for BSD-like systems  (SunOS 4.x), the option
+SYS_USG  is  for  System  V-like  systems  (SunOS 5.3) and  the option
+SYS_ALPHA is for DEC/Alpha OSF1.  For other Unix systems do not define
+any option.
+
+The variable VEPATH  in the Makefile has to be set to the path to the
+executable of the vector enumerator.
+
+The value of CHAT determines the  amount of information printed during
+the  execution of  the program.   Its value  can be  overwritten by an
+option. See  Section 4) for information on CHAT.
+
+The  option TAILS determines how a covering  presentation is computed.
+In case TAILS is defined, the program uses some savings in the numbers
+of new generators to be defined,  in  case the  group is extended by a
+$p$-group more than once. The savings are those that can be applied to
+prime  quotient algorithms. See "An algorithm for computing quotients
+of prime-power order for finitely presented groups and its implementation
+in GAP" by Celler, Newman, Nickel, Niemeyer (1993), Mathematics Research
+Report 027-93, Australian National University, for details.
+
+If the  option  COLLECT is  defined  the  words  passed to the  vector
+enumerator are normal, otherwise they might not be normal.
+
+After changing Makefile to  your liking start the compilation of  the
+ANU SQ by typing
+ 
+        make
+ 
+A compiled version of the program named  `Sq'  is then placed into the
+directory `src'.    If  there are  any warnings   or  even fatal error
+messages during  the compilation process,  please send a copy  to  the
+address at the  end of  this document together  with information about
+your operating system, the compiler you used and any changes you might
+have made to the source code. I will have a look  at your problems and
+try to fix them.
+ 
+After  the compilation  has  completed you can check if the  ANU SQ is
+running properly on your system.  Go  back to the parent directory and
+type
+ 
+    testSq
+ 
+The file testSq runs some  computations and compares their output with
+the output files in  the directory `examples'.  If testSq reports  any
+errors, please follow the instruction that testSq prints out. 
+WARNING :      testSq expects the SQ to be compiled withouth the TAILS
+flag set. If the TAILS is defined the output presentations will differ
+from the  presentations listed in  the example  directory and the test 
+will not succeed. 
+
+ 
+4) How to use the ANU SQ
+------------------------
+
+The ANU SQ is started by typing
+
+        Sq
+or
+
+        Sq -p <n>
+ 
+where n is a number between 0 and 7.
+ 
+The program then expects a presentation as input. The input format for
+presentations is described below. After the presentation is given, the
+program  expects a  list  of  integers specifying  an  L-series.   The
+definition of  an  L-series  is  given  in "Computing  finite  soluble
+quotients" and "A  finite  soluble quotient  algorithm".  If L is  the
+series [ (p_1, n_1), (p_2, n_2), ..., (p_k,  n_k) ]  then the L-series
+is specified in the input after the presentation as
+p_1 n_1
+p_2 n_2 
+   .
+   .
+   .
+p_k n_k
+
+The option  -p determines the  level  of  information  printed  during
+execution  of the program. It overwrites any preset values of CHAT. If
+-p is followed by one of the numbers given below  it has the following
+effect :
+
+     0    no chatting during program execution 
+     1    the program will indicate which prime is currently used
+          and the dimension of the computed module
+     2    1 and the program will mark the begin of the execution
+          of the following basic steps in the algorithm
+             - Call to AddDefinitions() which adds new generators
+             - Call to Consistency(), the consistency check function
+             - Call to LiftEpimorphism(), to lift the epimorphism
+             - Call to the vector enumerator
+             - Call to UpdatePresentation, the function which updates
+                     the presentation according to ve-output
+     3    1, 2 and the presentation at the end of a completion 
+          of pStep() is printed
+     4    1, 2 and the relations computed in Consistency() and 
+          LiftEpimorphism() are printed
+     5    1, 2, 3 and 4
+     6    5 and prints presentation at the beginning of each pStep
+     7    everything
+
+Everything which is printed and is not in GAP input format is preceded
+by '#I', and thus is a GAP comment.
+
+ 
+5) The input format for presentations
+-------------------------------------
+ 
+The input format for presentations used in the ANU SQ has been defined
+by Werner Nickel. The  ANU  SQ uses a  scanner that he has written for
+his  ANU NQ program (available by anonymous fpt from pell.anu.edu.au).
+The  following is an extract from his description  of the input format
+for presentation in his description of the ANU NQ.
+ 
+The input format  for  finite presentations  resembles  the  way  many
+people  write down a presentation on paper.  Here are some examples of
+presentations that the ANU NQ (and ANU SQ) accepts:
+
+    < a, b | >                       # free group of rank 2
+ 
+    < a, b, c | [a,b,c],             # a left normed commutator
+                [b,c,c,c]^6,         # another one raised to a power
+                a^2 = c^-3*a^2*c^3,  # a relation
+                a^(b*c) = a,         # a conjugate relation
+               (a*[b,(a*c)])^6       # something that looks complicated
+    >
+ 
+A presentation starts  with   '<' followed be  a  list   of generators
+separated by  commas.  Generator  names are strings  that contain only
+upper and lower case letters, digits, dots and underscores and that do
+not start with a digit.  The list of generator names is separated from
+the   list of relators/relations   by  the symbol  '|'.  Relators  and
+relations  are separated  by  commas and  can   be  mixed arbitrarily.
+Parentheses can be  used  in order  to  group subexpressions together.
+Square brackets can be used in order  to form left normed commutators.
+The symbols  '*'  and '^' can be  used  to   form products and powers,
+respectively. The  presentation   finishes  with  the  symbol '>'.   A
+comment  starts with the symbol  '#' and  finishes at  the  end of the
+line.  The file src/presentation.c contains a complete grammar for the
+presentations accepted by the ANU NQ (and ANU SQ).
+
+
+6) The output of the ANU SQ
+---------------------------
+
+The ANU SQ  prints a consistent power conjugate  presentation  for the
+specified  finite  soluble quotient of the  given  finitely  presented
+group onto  standard output. The presentation is in GAP format and can
+be read into GAP.
+
+7) Example 
+----------
+
+               Sq -p1 
+< x1, x2 | 
+    x1*x2*x1*x2^-5,
+    x1^4*x2^-1*x1*x2^-4*x2^-5*x1^-1*x2
+>
+2 1
+3 1
+2 2
+3 1
+
+
+The output of this run is 
+
+#I First step : 1 dimensions
+
+#I pStep( 3 )
+#I Read Input
+#I Done submodule generators
+#I Starting weight 2 in define mode, 1 alive out of 3
+#I Starting weight 3 in define mode, 1 alive out of 3
+#I Starting weight 4 in define mode, 1 alive out of 3
+#I Starting weight 5 in define mode, 1 alive out of 3
+#I Closed, 3 rows defined
+#I Packing 3 to 1
+#I 1 live dimensions
+#I   runtime       : 20 msec
+
+#I pStep( 2 )
+#I Read Input
+#I Packing 31 to 3
+#I Done submodule generators
+#I Starting weight 2 in define mode, 2 alive out of 5
+#I Starting weight 3 in define mode, 2 alive out of 5
+#I Starting weight 4 in define mode, 2 alive out of 5
+#I Starting weight 5 in define mode, 2 alive out of 5
+#I Closed, 5 rows defined
+#I Packing 5 to 2
+#I 2 live dimensions
+#I   runtime       : 40 msec
+
+#I pStep( 2 )
+#I Read Input
+#I Packing 64 to 29
+#I Packing 37 to 1
+#I Done submodule generators
+#I Starting weight 2 in define mode, 1 alive out of 8
+#I Starting weight 3 in define mode, 1 alive out of 8
+#I Starting weight 4 in define mode, 1 alive out of 8
+#I Closed, 8 rows defined
+#I Packing 8 to 1
+#I 1 live dimensions
+#I   runtime       : 90 msec
+
+#I pStep( 3 )
+#I Read Input
+#I Done submodule generators
+#I Starting weight 2 in define mode, 278 alive out of 519
+#I Starting weight 3 in define mode, 232 alive out of 521
+#I Starting weight 4 in define mode, 2 alive out of 878
+#I Starting weight 5 in define mode, 2 alive out of 878
+#I Starting weight 6 in define mode, 2 alive out of 878
+#I Closed, 878 rows defined
+#I Packing 878 to 2
+#I 2 live dimensions
+#I   runtime       : 640 msec
+#I 
+#I 
+#I    A Soluble Quotient Program (Version 1.0, March 1994)
+#I          Calculating a soluble quotient
+#I 
+#I    Program:       ./Sq
+#I    Machine:       wilton
+#I    Printlevel:    1
+#I
+#I    Runtime of the program (in msec): 
+#I
+#I    class        time      time in SQ    time in VE
+#I      1            10            10
+#I      2            30            10            20
+#I      3            50            10            40
+#I      4           140            50            90
+#I      5           750           110           640
+#I               ------        ------        ------
+#I                  980           190           790
+#I               (total)
+#I
+#I    total size  of SQ  : 32768 byte
+
+a1 := AbstractGenerator("a1");
+a2 := AbstractGenerator("a2");
+a3 := AbstractGenerator("a3");
+a4 := AbstractGenerator("a4");
+a5 := AbstractGenerator("a5");
+a6 := AbstractGenerator("a6");
+a7 := AbstractGenerator("a7");
+SqPresentation := rec(
+      generators := [ a1, a2, a3, a4, a5, a6, a7],
+      relators := [
+a1^2/(a3),  
+a2^a1/(a2^2*a4),  a2^3/(a5),  
+a3^a1/(a3),  a3^a2/(a3*a4*a5*a6),  a3^2/(a5*a7),  
+a4^a1/(a3*a4*a7), a4^a2/(a3*a6^2*a7), a4^a3/(a4*a5*a7^2), a4^2/(a5*a6^2*a7^2),
+a5^a1/(a5*a6*a7), a5^a2/(a5),  a5^a3/(a5*a6),  a5^a4/(a5*a7),  a5^2,  
+a6^a1/(a6*a7^2), a6^a2/(a6^2), a6^a3/(a6^2*a7^2), a6^a4/(a7^2), a6^a5/(a6^2),
+                                                                        a6^3,  
+a7^a1/(a6^2), a7^a2/(a6^2*a7^2), a7^a3/(a6^2*a7), a7^a4/(a6), a7^a5/(a7^2),
+                                                           a7^a6/(a7),  a7^3,  
+]
+# Definitions
+# a3 <- a1^2
+# a4 <- a2^a1
+# a5 <- a2^3
+# a6 <- a3^a2
+# a7 <- a3^2
+# Epimorphism : phi( 1 ) :=  a1 phi( 2 ) :=  a2 
+)
+
+
+8) Contact addresses
+--------------------
+Please notify me if you have any problems. Comments and suggestions are
+very welcome, my email address is 
+ 
+	          alice@maths.uwa.edu.au
+
+
+=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+Alice C. Niemeyer      =@\___/         Department of Mathematics 
+alice@maths.uwa.edu.au   \_ (          University of Western Australia
++61-9-380 3890           .| .|         Nedlands,  WA 6009,   Australia. 

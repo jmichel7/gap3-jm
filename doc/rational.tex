@@ -1,0 +1,291 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  rational.tex                GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: rational.tex,v 1.1.1.1 1996/12/11 12:36:49 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the rational datatype,  its operations and functions.
+%%
+%H  $Log: rational.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:49  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.6  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.5  1992/04/06  16:40:34  martin
+%H  fixed some more typos
+%H
+%H  Revision 3.4  1992/04/02  21:06:23  martin
+%H  changed *domain functions* to *set theoretic functions*
+%H
+%H  Revision 3.3  1992/03/19  15:57:34  martin
+%H  renamed chapter "Number Fields" to "Subfields of Cyclotomic Fields"
+%H
+%H  Revision 3.2  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:33:12  martin
+%H  Initial revision under RCS
+%H
+%%
+\Chapter{Rationals}%
+\index{type!rationals}
+
+The *rationals*  form  a very important field.  On the one hand it is the
+quotient field of the integers (see "Integers").  On the other hand it is
+the prime field of the fields of characteristic zero  (see "Subfields  of
+Cyclotomic Fields").
+
+The former comment suggests the representation actually used.  A rational
+is  represented   as   a   pair   of  integers,  called  *numerator*  and
+*denominator*.   Numerator  and  denominator are  *reduced*, i.e.,  their
+greatest common divisor is 1.  If  the denominator  is 1, the rational is
+in fact an integer and is represented as such.   The numerator holds  the
+sign of the rational, thus the denominator is always positive.
+
+Because the underlying integer arithmetic can compute with arbitrary size
+integers, the  rational arithmetic is  always  exact, even  for rationals
+whose numerators and denominators have thousands of digits.
+
+|    gap> 2/3;
+    2/3
+    gap> 66/123;
+    22/41    # numerator and denominator are made relatively prime
+    gap> 17/-13;
+    -17/13    # the numerator carries the sign
+    gap> 121/11;
+    11    # rationals with denominator 1 (after cancelling) are integers|
+
+The first sections of  this chapter  describe  the  functions  that  test
+whether an object  is a rational (see "IsRat"), and select the  numerator
+and denominator of a rational (see "Numerator", "Denominator").
+
+The next sections describe  the rational operations (see "Comparisons  of
+Rationals", and "Operations for Rationals").
+
+The {\GAP} object 'Rationals' is the field domain  of all rationals.  All
+set  theoretic  functions  are applicable  to  this  domain (see  chapter
+"Domains"  and "Set  Functions for  Rationals").  Since 'Rationals' is  a
+field all  field  functions are also  applicable  to this domain  and its
+elements (see chapter "Fields" and "Field Functions for Rationals").
+
+All external functions are defined in the file '\"LIBNAME/rational.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRat}%
+\index{test!for a rational}
+
+'IsRat( <obj> )'
+
+'IsRat' returns 'true' if <obj>,  which can be  an arbitrary object, is a
+rational and 'false' otherwise.   Integers are rationals with denominator
+1,   thus 'IsRat' returns  'true' for  integers.   'IsRat' will signal an
+error if <obj> is an unbound variable or a procedure call.
+
+|    gap> IsRat( 2/3 );
+    true
+    gap> IsRat( 17/-13 );
+    true
+    gap> IsRat( 11 );
+    true
+    gap> IsRat( IsRat );
+    false    # 'IsRat' is a function, not a rational |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Numerator}%
+\index{numerator!of a rational}
+
+'Numerator( <rat> )'
+
+'Numerator'  returns  the numerator of the rational <rat>.   Because  the
+numerator holds the sign of the rational it may be any integer.  Integers
+are rationals  with  denominator  1, thus  'Numerator'  is  the  identity
+function for integers.
+
+|    gap> Numerator( 2/3 );
+    2
+    gap> Numerator( 66/123 );
+    22    # numerator and denominator are made relatively prime
+    gap> Numerator( 17/-13 );
+    -17    # the numerator holds the sign of the rational
+    gap> Numerator( 11 );
+    11    # integers are rationals with denominator 1 |
+
+'Denominator' (see "Denominator") is the counterpart to 'Numerator'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Denominator}%
+\index{denominator!of a rational}
+
+'Denominator( <rat> )'
+
+'Denominator' returns the denominator of the rational <rat>.  Because the
+numerator  holds the  sign of  the rational  the denominator  is always a
+positive integer.   Integers are rationals  with  the denominator 1, thus
+'Denominator' returns 1 for integers.
+
+|    gap> Denominator( 2/3 );
+    3
+    gap> Denominator( 66/123 );
+    41    # numerator and denominator are made relatively prime
+    gap> Denominator( 17/-13 );
+    13    # the denominator holds the sign of the rational
+    gap> Denominator( 11 );
+    1    # integers are rationals with denominator 1 |
+
+'Numerator' (see "Numerator") is the counterpart to 'Denominator'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Floor}
+\index{Floor}
+
+'Floor(<r>)'
+
+This function returns the largest integer smaller or equal to <r>.
+
+|    gap> Floor(-2/3);
+    -1
+    gap> Floor(2/3);
+    0|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Mod1}
+\index{Mod1}
+
+'Mod1(<r>)'
+
+The  argument should  be a  rational or  a list.  If <r>  is a rational, it
+returns '(Numerator(<r>) mod Denominator(<r>))/Denominator(r)'. If <r> is a
+list, it returns 'List(<r>,Mod1)'. This function is very useful for working
+in $\Q/\Z$.
+
+|    gap> Mod1([-2/3,-1,7/4,3]);
+    [ 1/3, 0, 3/4, 0 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Rationals}%
+\index{comparisons!of rationals}
+
+'<q1> = <q2>' \\
+'<q1> \<> <q2>'
+
+The  equality operator '=' evaluates to  'true' if the two rationals <q1>
+and <q2> are  equal  and to 'false'  otherwise.  The  inequality operator
+'\<>' evaluates to   'true' if the  two rationals  <q1> and  <q2> are not
+equal and to 'false' otherwise.
+
+|    gap> 2/3 = -4/-6;
+    true
+    gap> 66/123 <> 22/41;
+    false
+    gap> 17/13 = 11;
+    false |
+
+'<q1> \<\ <q2>' \\
+'<q1> \<= <q2>' \\
+'<q1> > <q2>'   \\
+'<q1> >= <q2>'
+
+The operators  '\<',  '\<=', '>',  and  '=>' evaluate  to  'true' if  the
+rational  <q1> is  less  than, less than or equal to,  greater than,  and
+greater than or equal to the rational <q2> and to 'false' otherwise.
+
+One rational $q_1 = n_1/d_1$ is less than  another $q_2 = n_2/d_2$ if and
+only if  $n_1 d_2 \< n_2 d_2$.  This  definition is of  course only valid
+because the  denominator of rationals  is always  defined to be positive.
+This   definition   also extends   to the comparison   of  rationals with
+integers, which are   interpreted   as  rationals with    denominator  1.
+Rationals can also  be compared  with objects of  other  types.  They are
+smaller than objects of any other type by definition.
+
+|    gap> 2/3 < 22/41;
+    false
+    gap> -17/13 < 11;
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Rationals}%
+\index{operations!for rationals}
+
+'<q1> + <q2>'   \\
+'<q1> - <q2>'   \\
+'<q1> \*\ <q2>' \\
+'<q1> / <q2>'
+
+The operators '+',  '-',  '\*' and '/' evaluate to the  sum,  difference,
+product, and  quotient  of  the  two  rationals  <q1>  and <q2>.  For the
+quotient  '/'  <q2>  must of course be  nonzero, otherwise  an  error  is
+signalled.   Either  operand  may  also  be  an  integer  <i>,  which  is
+interpreted  as a  rational  with  denominator  1.   The result of  those
+operations is always reduced.  If, after  the  reduction, the denominator
+is 1, the rational is in fact an integer, and is represented as such.
+
+|    gap> 2/3 + 4/5;
+    22/15
+    gap> 7/6 * 2/3;
+    7/9    # note how the result is cancelled
+    gap> 67/6 - 1/6;
+    11    # the result is an integer |
+
+'<q> \^\ <i>'
+
+The powering operator '\^' returns the <i>-th power  of the rational <q>.
+<i> must  be an integer.   If the  exponent <i>  is  zero, '<q>\^<i>'  is
+defined as 1; if <i>  is positive, '<q>\^<i>' is  defined as the <i>-fold
+product '<q>\*<q>\*..\*<q>'; finally, if  <i> is negative, '<q>\^<i>'  is
+defined as '(1/<q>)\^-<i>'.  In this case <q> must of course be nonzero.
+
+|    gap> (2/3) ^ 3;
+    8/27
+    gap> (-17/13) ^ -1;
+    -13/17    # note how the sign switched
+    gap> (1/2) ^ -2;
+    4 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Functions for Rationals}%
+
+As  was already mentioned in the introduction of this  chapter the {\GAP}
+object 'Rationals' is the  domain of all  rationals.  All  set  theoretic
+functions,  e.g.,  'Intersection'  and  'Size',  are  applicable to  this
+domain.
+
+|    gap> Intersection( Rationals, [ E(4)^0, E(4)^1, E(4)^2, E(4)^3 ] );
+    [ -1, 1 ]    # 'E(4)' is the complex square root of -1
+    gap> Size( Rationals );
+    "infinity" |
+
+This does not seem to be very useful.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Field Functions for Rationals}%
+
+As was already mentioned  in the introduction  of this chapter the {\GAP}
+object 'Rationals'  is the field of all  rationals.  All field functions,
+e.g., 'Norm' and 'MinPol' are applicable to this domain and its elements.
+However, since  the field of  rationals  is the  prime  field, all  those
+functions are trivial.  Therefore, 'Conjugates( Rationals, <q> )' returns
+'[ <q> ]', 'Norm( Rationals, <q> )' and 'Trace(  Rationals, <q> )' return
+<q>, and 'CharPol( Rationals, <q> )' and  'MinPol( Rationals, <q> )' both
+return '[ -<q>, 1 ]'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

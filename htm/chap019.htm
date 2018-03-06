@@ -1,0 +1,880 @@
+<html><head><title>GAP3 Manual: 19 Polynomials</title></head>
+<body bgcolor="ffffff">
+<h1>19 Polynomials</h1>
+<P><P><P>
+Let  <I>R</I>  be  a  commutative  ring-with-one.    A  <strong>(univariate)  Laurent
+polynomial</strong>  over <I>R</I> is a  sequence  <I>(..., c<sub>-1</sub>, c<sub>0</sub>,  c<sub>1</sub>, ...)</I>  of
+elements of <I>R</I> such  that only  finitely many are non-zero.  For a  ring
+element <I>r</I> of <I>R</I> and polynomials <I>f = (..., f<sub>-1</sub>, f<sub>0</sub>, f<sub>1</sub>, ...)</I> and
+<I>g = (...,  g<sub>-1</sub>,  g<sub>0</sub>,  g<sub>1</sub>, ...)</I> we define <I>f +  g = (..., f<sub>-1</sub>  +
+g<sub>-1</sub>, f<sub>0</sub>+g<sub>0</sub>, f<sub>1</sub>+g<sub>1</sub>, ...)</I> , <I>r. f = (...,  r  f<sub>-1</sub>,  r f<sub>0</sub>, r
+f<sub>1</sub>, ...)</I>, and <I>f * g = (..., s<sub>-1</sub>, s<sub>0</sub>, s<sub>1</sub>, ...)</I>, where <I>s<sub>k</sub> = ...
++  f<sub>i</sub> g<sub>k-i</sub> + ...</I>.  Note that  <I>s<sub>k</sub></I> is well-defined as only finitely
+many <I>f<sub>i</sub></I> and <I>g<sub>i</sub></I> are non-zero.  We call  the largest integers <I>d(f)</I>,
+such that  <I>f<sub>d(f)</sub></I>  is  non-zero, the <strong>degree</strong> of <I>f</I>, <I>f<sub>i</sub></I> the <strong>i.th
+coefficient</strong> of <I>f</I>,  and <I>f<sub>d(f)</sub></I> the leading coefficient of <I>f</I>.   If
+the  smallest  integer  <I>v(f),</I>  such  that <I>f<sub>v(f)</sub></I>  is  non-zero,  is
+negative, we say that <I>f</I> has a pole of order <I>v</I> at  0, otherwise we say
+that <I>f</I> has  a root of  order  <I>v</I>  at 0.  We  call  <I>R</I>  the <strong>base  (or
+coefficient) ring</strong>  of <I>f</I>. If  <I>f  = (..., 0, 0, 0, ...)</I> we set <I>d(f) =
+-1</I> and <I>v(f) = 0</I>.
+<P>
+The set of  all Laurent polynomials <I>L(R)</I> over a ring <I>R</I> together  with
+above  definitions  of  <I>+</I>  and  <I>*</I>  is  again  a  ring, the  <strong>Laurent
+polynomial ring</strong> over  <I>R</I>, and <I>R</I> is  called the <strong>base ring</strong> of <I>L(R)</I>.
+The  subset  of  all  polynomials <I>f</I>  with non-negative  <I>v(f)</I>  forms a
+subring <I>P(R)</I>  of  <I>L(R)</I>,  the <strong>polynomial  ring</strong> over <I>R</I>.  If <I>R</I>  is
+indeed  a  field then  both  rings <I>L(R)</I> and <I>P(R)</I> are Euclidean.  Note
+that <I>L(R)</I> and <I>P(R)</I> have different Euclidean degree functions.  If <I>f</I>
+is  an element of  <I>P(R)</I> then the Euclidean degree of  <I>f</I> is simply the
+degree of <I>f</I>.   If  <I>f</I> is viewed  as  an  element  of  <I>L(R)</I>  then the
+Euclidean  degree is the difference between <I>d(f)</I> and <I>v(f)</I>.  The units
+of <I>P(R)</I>  are  just  the units of <I>R</I>, while the units of <I>L(R)</I> are the
+polynomials <I>f</I> such that <I>v(f) = d(f)</I> and <I>f<sub>d(f)</sub></I> is a unit in <I>R</I>.
+<P>
+<strong>GAP3</strong> uses the above definition  of  polynomials.   This  definition has
+some advantages and some drawbacks.  First of all, the  polynomial <I>(...,
+x<sub>0</sub> = 0, x<sub>1</sub> = 1, x<sub>2</sub> = 0, ...)</I> is commonly denoted by <I>x</I> and is called
+an indeterminate over  <I>R</I>, <I>(..., c<sub>-1</sub>, c<sub>0</sub>, c<sub>1</sub>, ...)</I>  is written as
+<I>...   + c<sub>-1</sub>  x<sup>-1</sup> + c<sub>0</sub>  + c<sub>1</sub> x + c<sub>2</sub>  x<sup>2</sup> + ...</I>, and  <I>P(R)</I>  as
+<I>R[x]</I> (note  that the  way <strong>GAP3</strong>  outputs a  polynomial  resembles this
+definition).  But if we introduce  a  second indeterminate <I>y</I> it is  not
+obvious whether the product <I>xy</I> lies in <I>(R[x])[y]</I>, the polynomial ring
+in <I>y</I>  over the polynomial ring in <I>x</I>, in <I>(R[y])[x]</I>, in <I>R[x,y]</I>, the
+polynomial ring in two  indeterminates, or  in  <I>R[y,x]</I> (which should be
+equal to <I>R[x,y]</I>).  Using the  first  definition we would define <I>y</I>  as
+indeterminate over <I>R[x]</I> and we know then that <I>xy</I> lies in <I>(R[x])[y]</I>.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> Rx := LaurentPolynomialRing(Rationals);;
+    gap> y := Indeterminate(Rx);; y.name := "y";;
+    gap> y^2 + x;
+    y^2 + (x)
+    gap> last^2;
+    y^4 + (2*x)*y^2 + (x^2)
+    gap> last + x;
+    y^4 + (2*x)*y^2 + (x^2 + x)
+    gap> (x^2 + x + 1) * y^2 + y + 1;
+    (x^2 + x + 1)*y^2 + y + (x^0)
+    gap> x * y;
+    (x)*y
+    gap> y * x;
+    (x)*y
+    gap> 2 * x;
+    2*x
+    gap> x * 2;
+    2*x </pre>
+<P>
+Note that <strong>GAP3</strong>  does <strong>not</strong> embed the base ring of a polynomial into the
+polynomial ring. The trivial polynomial and the zero of the base ring are
+always different.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> Rx := LaurentPolynomialRing(Rationals);;
+    gap> y := Indeterminate(Rx);; y.name := "y";;
+    gap> 0 = 0*x;
+    false
+    gap> nx := 0*x;     # a polynomial over the rationals
+    0*x^0
+    gap> ny := 0*y;     # a polynomial over a polynomial ring
+    0*y^0
+    gap> nx = ny;       # different base rings
+    false </pre>
+<P>
+The result <code>0*x</code> <I> &ne;</I> <code>0*y</code> is probably not what you expect or want. In
+order to compute with two indeterminates over <I>R</I> you must embed <I>x</I> into
+<I>R[x][y]</I>.
+<P>
+<pre>    gap> x  := Indeterminate(Rationals);; x.name := "x";;
+    gap> Rx := LaurentPolynomialRing(Rationals);;
+    gap> y  := Indeterminate(Rx);; y.name := "y";;
+    gap> x  := x * y^0;                                  
+    x*y^0
+    gap> 0*x = 0*y;
+    true </pre>
+<P>
+The other point which might be startling is that we require the supply of
+a base ring  for a polynomial. But  this guarantees that <code>Factor</code> gives a
+predictable result.
+<P>
+<pre>    gap> f5 := GF(5);; f5.name := "f5";;
+    gap> f25 := GF(25);; f25.name := "f25";;
+    gap> Polynomial( f5, [3,2,1]*Z(5)^0 ); 
+    Z(5)^0*(X(f5)^2 + 2*X(f5) + 3)
+    gap> Factors(last);
+    [ Z(5)^0*(X(f5)^2 + 2*X(f5) + 3) ]
+    gap> Polynomial( f25, [3,2,1]*Z(5)^0 );
+    X(f25)^2 + Z(5)*X(f25) + Z(5)^3
+    gap> Factors(last);
+    [ X(f25) + Z(5^2)^7, X(f25) + Z(5^2)^11 ]</pre>
+<P>
+The   first  sections  describe  how  polynomials  are  constructed  (see
+<a href="chap019.htm#SECT002">Indeterminate</a>, <a href="chap019.htm#SECT003">Polynomial</a>, and <a href="chap019.htm#SECT004">IsPolynomial</a>).
+<P>
+The  next sections describe the operations applicable to polynomials (see
+<a href="chap019.htm#SECT005">Comparisons of Polynomials</a> and <a href="chap019.htm#SECT006">Operations for Polynomials</a>).
+<P>
+The next sections describe the functions for polynomials  (see  <a href="chap019.htm#SECT007">Degree</a>,
+<a href="chap019.htm#SECT012">Derivative</a> and <a href="chap019.htm#SECT011">Value</a>).
+<P>
+The next sections describe functions that construct certain polynomials
+(see <a href="chap019.htm#SECT014">ConwayPolynomial</a>, <a href="chap019.htm#SECT015">CyclotomicPolynomial</a>).
+<P>
+The  next  sections describe the  functions  for constructing the Laurent
+polynomial  ring   <I>L(R)</I>   and   the   polynomial   ring   <I>P(R)</I>   (see
+<a href="chap019.htm#SECT016">PolynomialRing</a> and <a href="chap019.htm#SECT018">LaurentPolynomialRing</a>).
+<P>
+The  next  sections  describe the ring  functions  applicable  to Laurent
+polynomial rings. (see <a href="chap019.htm#SECT020">Ring  Functions for Polynomial  Rings</a> and  <a href="chap019.htm#SECT021">Ring
+Functions for Laurent Polynomial Rings</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap019.htm#SECT001">Multivariate Polynomials</a>
+<LI> <A HREF="chap019.htm#SECT002">Indeterminate</a>
+<LI> <A HREF="chap019.htm#SECT003">Polynomial</a>
+<LI> <A HREF="chap019.htm#SECT004">IsPolynomial</a>
+<LI> <A HREF="chap019.htm#SECT005">Comparisons of Polynomials</a>
+<LI> <A HREF="chap019.htm#SECT006">Operations for Polynomials</a>
+<LI> <A HREF="chap019.htm#SECT007">Degree</a>
+<LI> <A HREF="chap019.htm#SECT008">Valuation</a>
+<LI> <A HREF="chap019.htm#SECT009">LeadingCoefficient</a>
+<LI> <A HREF="chap019.htm#SECT010">Coefficient</a>
+<LI> <A HREF="chap019.htm#SECT011">Value</a>
+<LI> <A HREF="chap019.htm#SECT012">Derivative</a>
+<LI> <A HREF="chap019.htm#SECT013">InterpolatedPolynomial</a>
+<LI> <A HREF="chap019.htm#SECT014">ConwayPolynomial</a>
+<LI> <A HREF="chap019.htm#SECT015">CyclotomicPolynomial</a>
+<LI> <A HREF="chap019.htm#SECT016">PolynomialRing</a>
+<LI> <A HREF="chap019.htm#SECT017">IsPolynomialRing</a>
+<LI> <A HREF="chap019.htm#SECT018">LaurentPolynomialRing</a>
+<LI> <A HREF="chap019.htm#SECT019">IsLaurentPolynomialRing</a>
+<LI> <A HREF="chap019.htm#SECT020">Ring Functions for Polynomial Rings</a>
+<LI> <A HREF="chap019.htm#SECT021">Ring Functions for Laurent Polynomial Rings</a>
+</ol>
+<A NAME="SECT001"><h2>19.1 Multivariate Polynomials</h2></a>
+<P><P><P>
+As  explained  above,  each  ring   <I>R</I>  has  exactly  one  indeterminate
+associated with  <I>R</I>.  In order to construct a  polynomial  ring with two
+indeterminates  over <I>R</I>  you  must first  construct the polynomial  ring
+<I>P(R)</I> and then the polynomial ring over <I>P(R)</I>.
+<P>
+<pre>    gap> x  := Indeterminate(Integers);; x.name := "x";;
+    gap> Rx := PolynomialRing(Integers);;
+    gap> y  := Indeterminate(Rx);; y.name := "y";;
+    gap> x  := y^0 * x;
+    x*y^0
+    gap> f := x^2*y^2 + 3*x*y + x + 4*y;
+    (x^2)*y^2 + (3*x + 4)*y + (x)
+    gap> Value( f, 4 );
+    16*x^2 + 13*x + 16
+    gap> Value( last, -2 );
+    54
+    gap> (-2)^2 * 4^2 + 3*(-2)*4 + (-2) + 4*4;
+    54 </pre>
+<P>
+We  plan  to add support for (proper) multivariate polynomials  in one of
+the next releases of <strong>GAP3</strong>.
+<P><A NAME="SECT002"><h2>19.2 Indeterminate</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>Indeterminate( <var>R</var> )</code><BR> 
+<code>X( <var>R</var> )</code>
+<P>
+<code>Indeterminate</code> returns the polynomial <I>(..., x<sub>0</sub> = 0, x<sub>1</sub> = 1, x<sub>2</sub> =  0,
+...)</I> over <var>R</var>, which must be a commutative ring-with-one or a field.
+<P>
+Note  that you can assign a name to the indeterminate,  in which case all
+polynomials over  <I>R</I> are printed using this name. Keep in mind  that for
+each ring there is exactly one indeterminate.
+<P>
+<pre>    gap> x := Indeterminate( Integers );; x.name := "x";;
+    gap> f := x^10 + 3*x - x^-1;        
+    x^10 + 3*x - x^(-1)
+    gap> y := Indeterminate( Integers );;    # this is <code>x</code>
+    gap> y.name := "y";;
+    gap> f;    # so <code>f</code> is also printed differently from now on
+    y^10 + 3*y - y^(-1)</pre>
+<P><A NAME="SECT003"><h2>19.3 Polynomial</h2></a>
+<P><P><P>
+<code>Polynomial( <var>R</var>, <var>l</var> )</code><BR> 
+<code>Polynomial( <var>R</var>, <var>l</var>, <var>v</var> )</code>
+<P>
+<var>l</var>  must  be  a  list  of  coefficients  of  the  polynomial  <I>f</I> to  be
+constructed, namely <I>(..., f<sub><var>v</var></sub>  = <var>l</var>[1], f<sub><var>v</var>+1</sub> = <var>l</var>[2], ...)</I> over
+<var>R</var>, which must be a  commutative ring-with-one or  a field.  The default
+for <var>v</var> is 0. <code>Polynomial</code> returns this polynomial <I>f</I>.
+<P>
+For  interactive  calculation  it   might  by  easier  to  construct  the
+indeterminate over <var>R</var> and construct  the polynomial using <code>^</code>, <code>+</code>  and
+<code>*</code>.
+<P>
+<pre>    gap> x := Indeterminate( Integers );;
+    gap> x.name := "x";;
+    gap> f := Polynomial( Integers, [1,2,0,0,4] );
+    4*x^4 + 2*x + 1
+    gap> g := 4*x^4 + 2*x + 1;
+    4*x^4 + 2*x + 1 </pre>
+<P><A NAME="SECT004"><h2>19.4 IsPolynomial</h2></a>
+<P><P><P>
+<code>IsPolynomial( <var>obj</var> )</code>
+<P>
+<code>IsPolynomial</code> returns <code>true</code>  if <var>obj</var>,  which can  be  an object  of
+arbitrary type, is  a  polynomial and  <code>false</code> otherwise. The function
+will signal an error if <var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsPolynomial( 1 );
+    false
+    gap> IsPolynomial( Indeterminate(Integers) );
+    true</pre>
+<P><A NAME="SECT005"><h2>19.5 Comparisons of Polynomials</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code><var>f</var> =   <var>g</var></code> <BR> 
+<code><var>f</var> <> <var>g</var></code>
+<P>
+The equality operator <code>=</code>  evaluates to <code>true</code> if the polynomials <var>f</var> and
+<var>g</var> are equal, and  to <code>false</code> otherwise.  The inequality operator  <code><></code>
+evaluates to <code>true</code> if the polynomials <var>f</var> and <var>g</var>  are not equal, and to
+<code>false</code>  otherwise.
+<P>
+Note that polynomials are equal if and  only  if their coefficients <strong>and</strong>
+their base  rings are  equal.  Polynomials  can  also  be  compared  with
+objects of other types.  Of course they are never equal.
+<P>
+<pre>    gap> f := Polynomial( GF(5^3), [1,2,3]*Z(5)^0 );
+    Z(5)^3*X(GF(5^3))^2 + Z(5)*X(GF(5^3)) + Z(5)^0
+    gap> x := Indeterminate(GF(25));;
+    gap> g := 3*x^2 + 2*x + 1;
+    Z(5)^3*X(GF(5^2))^2 + Z(5)*X(GF(5^2)) + Z(5)^0
+    gap> f = g;
+    false
+    gap> x^0 = Z(25)^0;
+    false</pre>
+<P>
+<code><var>f</var> < <var>g</var></code> <BR> 
+<code><var>f</var> <= <var>g</var></code> <BR> 
+<code><var>f</var> >   <var>g</var></code> <BR> 
+<code><var>f</var> >=  <var>g</var></code>
+<P>
+The  operators <code><</code>, <code><=</code>,  <code>></code>,  and <code>>=</code>  evaluate  to <code>true</code>  if  the
+polynomial <var>f</var>  is less than,  less than  or  equal  to, greater than, or
+greater than or equal to the polynomial <var>g</var>, and to <code>false</code> otherwise.
+<P>
+A polynomial  <var>f</var> is  less than <var>g</var> if <I>v(<var>f</var>)</I> is less than <I>v(<var>g</var>)</I>, or
+if <I>v(<var>f</var>)</I> and <I>v(<var>g</var>)</I>  are equal and <I>d(<var>f</var>)</I>  is less  than <I>d(<var>g</var>)</I>.
+If <I>v(<var>f</var>)</I> is equal to  <I>v(<var>g</var>)</I> and  <I>d(<var>f</var>)</I> is equal to <I>d(<var>g</var>)</I>  the
+coefficient lists of <var>f</var> and <var>g</var> are compared.
+<P>
+<pre>    gap> x := Indeterminate(Integers);; x.name := "x";;
+    gap> (1 + x^2 + x^3)*x^3 &lt; (2 + x^2 + x^3);
+    false
+    gap> (1 + x^2 + x^4) &lt; (2 + x^2 + x^3);    
+    false
+    gap> (1 + x^2 + x^3) &lt; (2 + x^2 + x^3);
+    true</pre>
+<P><A NAME="SECT006"><h2>19.6 Operations for Polynomials</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+The following  operations  are  always available  for  polynomials.   The
+operands must  have a  common  base  ring, no  implicit  conversions  are
+performed.
+<P>
+<code><var>f</var> + <var>g</var></code>
+<P>
+The operator  <code>+</code>  evaluates to the sum of the polynomials <var>f</var>  and  <var>g</var>,
+which must be polynomials over a common base ring.
+<P>
+<pre>    gap> f := Polynomial( GF(2), [Z(2), Z(2)] );
+    Z(2)^0*(X(GF(2)) + 1)
+    gap> f + f;
+    0*X(GF(2))^0
+    gap> g := Polynomial( GF(4), [Z(2), Z(2)] );
+    X(GF(2^2)) + Z(2)^0
+    gap> f + g;
+    Error, polynomials must have the same ring</pre>
+<P>
+<code><var>f</var> + <var>scl</var></code> <BR> 
+<code><var>scl</var> + <var>f</var></code>
+<P>
+The operator <code>+</code>  evaluates to  the  sum of the  polynomial  <var>f</var>  and the
+scalar <var>scl</var>, which must lie in the base ring of <var>f</var>.
+<P>
+<pre>    gap> x := Indeterminate( Integers );; x.name := "x";;
+    gap> h := Polynomial( Integers, [1,2,3,4] );
+    4*x^3 + 3*x^2 + 2*x + 1
+    gap> h + 1;
+    4*x^3 + 3*x^2 + 2*x + 2
+    gap> 1/2 + h;
+    Error, &lt;l> must lie in the base ring of &lt;r></pre>
+<P>
+<code><var>f</var> - <var>g</var></code>
+<P>
+The operator <code>-</code> evaluates  to  the difference of the polynomials <var>f</var> and
+<var>g</var>, which must be polynomials over a common base ring.
+<P>
+<pre>    gap> x := Indeterminate( Integers );; x.name := "x";;
+    gap> h := Polynomial( Integers, [1,2,3,4] );
+    4*x^3 + 3*x^2 + 2*x + 1
+    gap> h - 2*h;
+    -4*x^3 - 3*x^2 - 2*x - 1</pre>
+<P>
+<code><var>f</var> - <var>scl</var></code> <BR> 
+<code><var>scl</var> - <var>f</var></code>
+<P>
+The operator <code>-</code> evaluates  to the difference of  the  polynomial <var>f</var> and
+the scalar <var>scl</var>, which must lie in the base ring of <var>f</var>.
+<P><P>
+<pre>    gap> x := Indeterminate( Integers );; x.name := "x";;
+    gap> h := Polynomial( Integers, [1,2,3,4] );
+    4*x^3 + 3*x^2 + 2*x + 1
+    gap> h - 1;
+    4*x^3 + 3*x^2 + 2*x
+    gap> 1 - h;
+    -4*x^3 - 3*x^2 - 2*x</pre>
+<P>
+<code><var>f</var> * <var>g</var></code>
+<P>
+The operator <code>*</code> evaluates to the product of the two polynomials <var>f</var> and
+<var>g</var>, which must be polynomial over a common base ring.
+<P>
+<pre>    gap> x := Indeterminate(Integers);; x.name := "x";;
+    gap> h := 4*x^3 + 3*x^2 + 2*x + 1;
+    4*x^3 + 3*x^2 + 2*x + 1
+    gap> h * h;
+    16*x^6 + 24*x^5 + 25*x^4 + 20*x^3 + 10*x^2 + 4*x + 1</pre>
+<P>
+<code><var>f</var> * <var>scl</var></code> <BR> 
+<code><var>scl</var> * <var>f</var></code>
+<P>
+The operator <code>*</code> evaluates to the product of the polynomial <var>f</var>  and the
+scalar <var>scl</var>, which must lie in the base ring of <var>f</var>.
+<P>
+<pre>    gap> f := Polynomial( GF(2), [Z(2), Z(2)] );
+    Z(2)^0*(X(GF(2)) + 1)
+    gap> f - Z(2);
+    X(GF(2))
+    gap> Z(4) - f;
+    Error, &lt;l> must lie in the base ring of &lt;r></pre>
+<P>
+<code><var>f</var> ^ <var>n</var></code>
+<P>
+The operator <code>^</code> evaluates the the <var>n</var>-th power  of the  polynomial <var>f</var>.
+If <var>n</var> is negative <code>^</code>  will try to invert <var>f</var> in the Laurent polynomial
+ring ring.
+<P>
+<pre>    gap> x := Indeterminate(Integers);; x.name := "x";;
+    gap> k := x - 1 + x^-1;
+    x - 1 + x^(-1)
+    gap> k ^ 3;
+    x^3 - 3*x^2 + 6*x - 7 + 6*x^(-1) - 3*x^(-2) + x^(-3)
+    gap> k^-1;
+    Error, cannot invert &lt;l> in the laurent polynomial ring</pre>
+<P>
+<code><var>f</var> / <var>scl</var></code>
+<P>
+The operator  <code>/</code> evaluates to  the product of the polynomial <var>f</var> and the
+inverse  of the scalar  <var>scl</var>, which  must be  invertable in  its default
+ring.
+<P>
+<pre>    gap> x := Indeterminate(Integers);; x.name := "x";;
+    gap> h := 4*x^3 + 3*x^2 + 2*x + 1;
+    4*x^3 + 3*x^2 + 2*x + 1
+    gap> h / 3;
+    (4/3)*x^3 + x^2 + (2/3)*x + (1/3) </pre>
+<P>
+<code><var>scl</var> / <var>f</var></code>
+<P>
+The  operator <code>/</code> evaluates to  the  product of the scalar <var>scl</var>  and the
+inverse of the  polynomial <var>f</var>, which  must  be invertable in its Laurent
+ring.
+<P>
+<pre>    gap> x := Indeterminate(Integers);; x.name := "x";;
+    gap> 30 / x;
+    30*x^(-1)
+    gap> 3 / (1+x);
+    Error, cannot invert &lt;l> in the laurent polynomial ring </pre>
+<P>
+<code><var>f</var> / <var>g</var></code>
+<P>
+The operator <code>/</code> evaluates to the quotient of the two polynomials <var>f</var> and
+<var>g</var>, if such quotient exists  in the  Laurent polynomial ring.  Otherwise
+<code>/</code> signals an error.
+<P>
+<pre>    gap> x := Indeterminate(Integers);; x.name := "x";;
+    gap> f := (1+x+x^2) * (3-x-2*x^2);
+    -2*x^4 - 3*x^3 + 2*x + 3
+    gap> f / (1+x+x^2);
+    -2*x^2 - x + 3
+    gap> f / (1+x);
+    Error, cannot divide &lt;l> by &lt;r> </pre>
+<P><A NAME="SECT007"><h2>19.7 Degree</h2></a>
+<P><P><P>
+<code>Degree( <var>f</var> )</code>
+<P>
+<code>Degree</code> returns the degree <I>d<sub><var>f</var></sub> </I> of <I>f</I> (see <a href="chap019.htm">Polynomials</a>).
+<P>
+Note that  this  is only equal to  the Euclidean degree in the polynomial
+ring <I>P(R)</I>. It is not equal in the Laurent polynomial ring <I>L(R)</I>.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> Degree( x^10 + x^2 + 1 );
+    10
+    gap> EuclideanDegree( x^10 + x^2 + 1 );
+    10      # the default ring is the polynomial ring
+    gap> Degree( x^-10 + x^-11 );
+    -10
+    gap> EuclideanDegree( x^-10 + x^-11 );
+    1       # the default ring is the Laurent polynomial ring</pre>
+<P><A NAME="SECT008"><h2>19.8 Valuation</h2></a>
+<P><P><P>
+<code>Valuation( <var>f</var> )</code>
+<P>
+<code>Valuation</code> returns the valuation <I>f</I> (see <a href="chap019.htm">Polynomials</a>).
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> Valuation( x^10 + x^2 + 1 );
+    0
+    gap> Valuation( x^10 + x^2);
+    2
+    gap> Valuation( x^-10 + x^-11 );
+    -11</pre>
+<P><A NAME="SECT009"><h2>19.9 LeadingCoefficient</h2></a>
+<P><P><P>
+<code>LeadingCoefficient( <var>f</var> )</code>
+<P>
+<code>LeadingCoefficient</code> returns the  last non-zero  coefficient  of <var>f</var> (see
+<a href="chap019.htm">Polynomials</a>).
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> LeadingCoefficient( 3*x^2 + 2*x + 1);
+    3 </pre>
+<P><A NAME="SECT010"><h2>19.10 Coefficient</h2></a>
+<P><P><P>
+<code>Coefficient( <var>f</var>, <var>i</var>)</code>
+<P>
+<code>Coefficient</code> returns the <var>i</var>-th coefficient of <var>f</var> (see <a href="chap019.htm">Polynomials</a>).
+<P>
+for  other objects the function looks if  <var>f</var> has a <code>Coefficient</code> method in
+its operations record and then returns <code>f.operations.Coefficient(f,i)</code>.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> Coefficient(3*x^2 + 2*x, 2);
+    3
+    gap> Coefficient(3*x^2 + 2*x, 1);
+    2
+    gap> Coefficient(3*x^2 + 2*x, 0);
+    0</pre>
+<P><A NAME="SECT011"><h2>19.11 Value</h2></a>
+<P><P><P>
+<code>Value( <var>f</var>, <var>w</var> )</code>
+<P>
+Let <var>f</var> be  a Laurent  polynomial <I>(..., f<sub>-1</sub>, f<sub>0</sub>,  f<sub>1</sub>,  ...)</I>.  Then
+<code>Value</code> returns the finite sum <I>... +  f<sub>-1</sub> <var>w</var><sup>-1</sup> + f<sub>0</sub> <var>w</var><sup>0</sup> +  f<sub>1</sub>
+<var>w</var> + ...</I>.
+<P>
+Note that <var>x</var> need not be contained in the base ring of <var>f</var>.
+<P>
+<pre>    gap> x := Indeterminate(Integers);; x.name := "x";;
+    gap> k := -x + 1;
+    -x + 1
+    gap> Value( k, 2 );
+    -1
+    gap> Value( k, [[1,1],[0,1]] );
+    [ [ 0, -1 ], [ 0, 0 ] ]</pre>
+<P><A NAME="SECT012"><h2>19.12 Derivative</h2></a>
+<P><P><P>
+<code>Derivative( <var>f</var> )</code>
+<P>
+If <var>f</var> is a Laurent  polynomial <I>(..., f<sub>-1</sub>,  f<sub>0</sub>,  f<sub>1</sub>,  ...)</I>, then
+<code>Derivative</code> returns the polynomial <I>g = (..., g<sub>i-1</sub> = i* f<sub>i</sub>, ... )</I>.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> Derivative( x^10 + x^-11 );
+    10*x^9 - 11*x^(-12)
+    gap> y := Indeterminate(GF(5));; y.name := "y";;    
+    gap> Derivative( y^10 + y^-11 );
+    Z(5)^2*y^(-12)</pre>
+<P>
+In a second form <var>f</var> is a list interpreted as the coefficients of a
+polynomial; then <code>Derivative</code> returns the coefficients of the derivative
+polynomial, that is the list <code>[f[2],2*f[3],..]</code>.
+<P>
+<pre>    gap> Derivative([1,2,1,2,1,2]);
+    [ 2, 2, 6, 4, 10 ]</pre>
+<P><A NAME="SECT013"><h2>19.13 InterpolatedPolynomial</h2></a>
+<P><P><P>
+<code>InterpolatedPolynomial( <var>R</var>, <var>x</var>, <var>y</var> )</code>
+<P>
+<code>InterpolatedPolynomial</code>  returns the unique   polynomial of  degree less
+than <I>n</I> which has value <I>y[i]</I> at <I>x[i]</I> for  all <I>i=1,...,n</I>, where <var>x</var>
+and <var>y</var> must  be lists of elements  of the ring or  field <var>R</var>, if such  a
+polynomial exists.  Note that the elements in <var>x</var> must be distinct.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> p := InterpolatedPolynomial( Rationals, [1,2,3,4], [3,2,4,1] );
+    (-4/3)*x^3 + (19/2)*x^2 + (-121/6)*x + 15
+    gap> List( [1,2,3,4], x -> Value(p,x) );
+    [ 3, 2, 4, 1 ] 
+    gap> Unbind( x.name ); </pre>
+<P><A NAME="SECT014"><h2>19.14 ConwayPolynomial</h2></a>
+<P><P><P>
+<code>ConwayPolynomial( <var>p</var>, <var>n</var> )</code>
+<P>
+returns the Conway polynomial of the finite field <I>GF(p<sup>n</sup>)</I> as
+polynomial over the Rationals.
+<P>
+The <strong>Conway polynomial</strong> <I>&Phi;<sub>n,p</sub></I> of <I>GF(p<sup>n</sup>)</I> is defined by the
+following properties.
+<P>
+First define an ordering of polynomials of degree <I>n</I> over <I>GF(p)</I> as
+follows.
+<P>
+<I>f = &sum;<sub>i=0</sub><sup>n</sup> (-1)<sup>i</sup> f<sub>i</sub> x<sup>i</sup></I> is smaller than
+<I>g = &sum;<sub>i=0</sub><sup>n</sup> (-1)<sup>i</sup> g<sub>i</sub> x<sup>i</sup></I> if and only if there is an index
+<I>m  &le; n</I> such that <I>f<sub>i</sub> = g<sub>i</sub></I> for all <I>i &gt; m</I>, and
+<I><sup>~</sup>f<sub>m</sub> &lt; <sup>~</sup>g<sub>m</sub></I>, where <I><sup>~</sup>c</I> denotes the integer
+value in <I>{ 0, 1, ..., p-1 }</I> that is mapped to <I>c&isin; GF(p)</I> under
+the canonical epimorphism that maps the integers onto <I>GF(p)</I>.
+<P>
+<I>&Phi;<sub>n,p</sub></I> is primitive over <I>GF(p)</I>, that is, it is irreducible,
+monic, and is the minimal polynomial of a primitive element of
+<I>GF(p<sup>n</sup>)</I> over <I>GF(p)</I>.
+<P>
+For all divisors <I>d</I> of <I>n</I> the compatibility condition
+<I>&Phi;<sub>d,p</sub>( x<sup>(p<sup>n</sup>-1)/(p<sup>m</sup>-1)</sup> ) &equiv; 0 (</i>mod<i> &Phi;<sub>n,p</sub>(x))</I>
+holds.
+<P>
+With respect to the ordering defined above, <I>&Phi;<sub>n,p</sub></I> shall be
+minimal.
+<P>
+<pre>    gap> ConwayPolynomial( 7, 3 );
+    X(Rationals)^3 + 6*X(Rationals)^2 + 4
+    gap> ConwayPolynomial( 41, 3 );
+    X(Rationals)^3 + X(Rationals) + 35 </pre>
+<P>
+The global list <code>CONWAYPOLYNOMIALS</code> contains Conway polynomials for small
+values of <var>p</var> and <var>n</var>.
+Note that the computation of Conway polynomials may be very expensive,
+especially if <var>n</var> is not a prime.
+<P><A NAME="SECT015"><h2>19.15 CyclotomicPolynomial</h2></a>
+<P><P><P>
+<code>CyclotomicPolynomial( <var>R</var>, <var>n</var> )</code>
+<P>
+returns the <var>n</var>-th cyclotomic polynomial over the field <var>R</var>.
+<P>
+<pre>    gap> CyclotomicPolynomial( GF(2), 6 );
+    Z(2)^0*(X(GF(2))^2 + X(GF(2)) + 1)
+    gap> CyclotomicPolynomial( Rationals, 5 );
+    X(Rationals)^4 + X(Rationals)^3 + X(Rationals)^2 + X(Rationals) + 1 </pre>
+<P>
+In every <strong>GAP3</strong> session the computed cyclotomic polynomials are stored in
+the global list <code>CYCLOTOMICPOLYNOMIALS</code>.
+<P><A NAME="SECT016"><h2>19.16 PolynomialRing</h2></a>
+<P><P><P>
+<code>PolynomialRing( <var>R</var> )</code>
+<P>
+<code>PolynomialRing</code> returns the ring of all polynomials  over a field <var>R</var> or
+ring-with-one <var>R</var>.
+<P>
+<pre>    gap> f2 := GF(2);;                
+    gap> R := PolynomialRing( f2 );
+    PolynomialRing( GF(2) )
+    gap> Z(2) in R;
+    false
+    gap> Polynomial( f2, [Z(2),Z(2)] ) in R;
+    true
+    gap> Polynomial( GF(4), [Z(2),Z(2)] ) in R;
+    false
+    gap> R := PolynomialRing( GF(2) );
+    PolynomialRing( GF(2) )</pre>
+<P><A NAME="SECT017"><h2>19.17 IsPolynomialRing</h2></a>
+<P><P><P>
+<code>IsPolynomialRing( <var>domain</var> )</code>
+<P><P>
+<code>IsPolynomialRing</code>  returns <code>true</code>  if  the object  <var>domain</var>  is  a  ring
+record,  representing  a  polynomial  ring  (see  <a href="chap019.htm#SECT016">PolynomialRing</a>),  and
+<code>false</code> otherwise.
+<P>
+<pre>    gap> IsPolynomialRing( Integers );                  
+    false
+    gap> IsPolynomialRing( PolynomialRing( Integers ) );
+    true
+    gap> IsPolynomialRing( LaurentPolynomialRing( Integers ) );
+    false </pre>
+<P><A NAME="SECT018"><h2>19.18 LaurentPolynomialRing</h2></a>
+<P><P><P>
+<code>LaurentPolynomialRing( <var>R</var> )</code>
+<P>
+<code>LaurentPolynomialRing</code>  returns the ring of all Laurent polynomials over
+a field <var>R</var> or ring-with-one <var>R</var>.
+<P>
+<pre>    gap> f2 := GF(2);;
+    gap> R := LaurentPolynomialRing( f2 );
+    LaurentPolynomialRing( GF(2) )
+    gap> Z(2) in R;
+    false
+    gap> Polynomial( f2, [Z(2),Z(2)] ) in R;   
+    true
+    gap> Polynomial( GF(4), [Z(2),Z(2)] ) in R;
+    false
+    gap> Indeterminate(f2)^-1 in R;
+    true</pre>
+<P><A NAME="SECT019"><h2>19.19 IsLaurentPolynomialRing</h2></a>
+<P><P><P>
+<code>IsLaurentPolynomialRing( <var>domain</var> )</code>
+<P>
+<code>IsLaurentPolynomialRing</code> returns <code>true</code> if the object <var>domain</var> is a ring
+record,    representing     a    Laurent     polynomial     ring     (see
+<a href="chap019.htm#SECT018">LaurentPolynomialRing</a>), and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsPolynomialRing( Integers );                  
+    false
+    gap> IsLaurentPolynomialRing( PolynomialRing( Integers ) );
+    false
+    gap> IsLaurentPolynomialRing( LaurentPolynomialRing( Integers ) );
+    true </pre>
+<P><A NAME="SECT020"><h2>19.20 Ring Functions for Polynomial Rings</h2></a>
+<P><P><P>
+As was already noted in the introduction to this chapter polynomial rings
+are rings, so all ring functions (see chapter <a href="chap005.htm">Rings</a>) are  applicable to
+polynomial rings.  This section comments on the implementation  of  those
+functions.
+<P>
+Let <I>R</I> be  a  commutative ring-with-one or  a field and  let <var>P</var>  be the
+polynomial ring over <I>R</I>.
+<P>
+<P>
+<code>EuclideanDegree( <var>P</var>, <var>f</var> )</code>
+<A name = "I3"></a>
+
+<P>
+<var>P</var> is an Euclidean ring if  and only if <I>R</I>  is field. In this case  the
+Euclidean  degree  of <var>f</var> is simply the degree  of  <var>f</var>.  If <I>R</I> is not a
+field then the function signals an error.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> EuclideanDegree( x^10 + x^2 + 1 );
+    10
+    gap> EuclideanDegree( x^0 );
+    0 </pre>
+<P>
+<P>
+<code>EuclideanRemainder( <var>P</var>, <var>f</var>, <var>g</var> )</code>
+<A name = "I4"></a>
+
+<P>
+<var>P</var> is an Euclidean ring if and only if <I>R</I>  is field. In this case it is
+possible to divide <var>f</var> by <var>g</var> with remainder.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> EuclideanRemainder( (x+1)*(x+2)+5, x+1 );
+    5*x^0 </pre>
+<P>
+<P>
+<code>EuclideanQuotient( <var>P</var>, <var>f</var>, <var>g</var> )</code>
+<A name = "I5"></a>
+
+<P>
+<var>P</var> is an Euclidean ring if and only if <I>R</I>  is field. In this case it is
+possible to divide <var>f</var> by <var>g</var> with remainder.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> EuclideanQuotient( (x+1)*(x+2)+5, x+1 ); 
+    x + 2 </pre>
+<P>
+<P>
+<code>QuotientRemainder( <var>P</var>, <var>f</var>, <var>g</var> )</code>
+<A name = "I6"></a>
+
+<P>
+<var>P</var> is an Euclidean ring if and only if <I>R</I>  is field. In this case it is
+possible to divide <var>f</var> by <var>g</var> with remainder.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> QuotientRemainder( (x+1)*(x+2)+5, x+1 );
+    [ x + 2, 5*x^0 ] </pre>
+<P>
+<P>
+<code>Gcd( <var>P</var>, <var>f</var>, <var>g</var> )</code>
+<A name = "I7"></a>
+
+<P>
+<var>P</var> is an Euclidean ring  if and only if <I>R</I>  is field. In this case  you
+can compute the greatest common divisor of <var>f</var> and <var>g</var> using <code>Gcd</code>.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> g := x^2 + 2*x + 1;;
+    gap> h := x^2 - 1;;
+    gap> Gcd( g, h );
+    x + 1
+    gap> GcdRepresentation( g, h );
+    [ 1/2*x^0, -1/2*x^0 ]
+    gap> g * (1/2) * x^0 - h * (1/2) * x^0;
+    x + 1 </pre>
+<P>
+<P>
+<code>Factors( <var>P</var>, <var>f</var> )</code>
+<A name = "I8"></a>
+
+<P>
+This method is implemented for polynomial rings <var>P</var> over a domain <I>R</I>, where
+<I>R</I> is either a finite field, the rational numbers, or an algebraic
+extension of either one.
+If char <I>R</I> is a prime, <var>f</var>  is  factored using  a  Cantor-Zassenhaus
+algorithm.
+<P>
+<pre>    gap> f5 := GF(5);; f5.name := "f5";;
+    gap> x  := Indeterminate(f5);; x.name := "x";;
+    gap> g := x^20 + x^8 + 1;
+    Z(5)^0*(x^20 + x^8 + 1)
+    gap> Factors(g);
+    [ Z(5)^0*(x^8 + 4*x^4 + 2), Z(5)^0*(x^12 + x^8 + 4*x^4 + 3) ]</pre>
+<P>
+If char <I>R</I> is 0, a quadratic Hensel lift is used.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> f:=x^105-1;
+    x^105 - 1
+    gap> Factors(f);
+    [ x - 1, x^2 + x + 1, x^4 + x^3 + x^2 + x + 1, 
+      x^6 + x^5 + x^4 + x^3 + x^2 + x + 1, 
+      x^8 - x^7 + x^5 - x^4 + x^3 - x + 1, 
+      x^12 - x^11 + x^9 - x^8 + x^6 - x^4 + x^3 - x + 1, 
+      x^24 - x^23 + x^19 - x^18 + x^17 - x^16 + x^14 - x^13 + x^12 - x^
+        11 + x^10 - x^8 + x^7 - x^6 + x^5 - x + 1, 
+      x^48 + x^47 + x^46 - x^43 - x^42 - 2*x^41 - x^40 - x^39 + x^36 + x^
+        35 + x^34 + x^33 + x^32 + x^31 - x^28 - x^26 - x^24 - x^22 - x^
+        20 + x^17 + x^16 + x^15 + x^14 + x^13 + x^12 - x^9 - x^8 - 2*x^
+        7 - x^6 - x^5 + x^2 + x + 1 ]</pre>
+<P>
+As <var>f</var> is  an element  of <var>P</var> if and only  if the base ring of
+<var>f</var> is <I>R</I> you  must embed the polynomial into the polynomial ring <var>P</var> if
+it is written as polynomial over a subring.
+<P>
+<pre>    gap> f25 := GF(25);; Indeterminate(f25).name := "y";;
+    gap> l := Factors( EmbeddedPolynomial( PolynomialRing(f25), g ) );   
+    [ y^4 + Z(5^2)^13, y^4 + Z(5^2)^17, y^6 + Z(5)^3*y^2 + Z(5^2)^3, 
+      y^6 + Z(5)^3*y^2 + Z(5^2)^15 ]
+    gap> l[1] * l[2];
+    y^8 + Z(5)^2*y^4 + Z(5)
+    gap> l[3] * l[4];
+    y^12 + y^8 + Z(5)^2*y^4 + Z(5)^3 </pre>
+<P><P>
+<P>
+<code>StandardAssociate( <var>P</var>, <var>f</var> )</code>
+<A name = "I9"></a>
+
+<P>
+For a  ring <I>R</I> the standard associate <I>a</I>  of  <var>f</var>  is a multiple of <var>f</var>
+such  that the leading  coefficient of <var>a</var> is the  standard associate  in
+<I>R</I>. For  a field <I>R</I> the standard associate  <I>a</I> of <var>f</var> is a multiple of
+<var>f</var> such that the leading coefficient of <var>a</var> is 1.
+<P>
+<pre>    gap> x := Indeterminate(Integers);; x.name := "x";; 
+    gap> StandardAssociate( -2 * x^3 - x );
+    2*x^3 + x</pre>
+<P><A NAME="SECT021"><h2>19.21 Ring Functions for Laurent Polynomial Rings</h2></a>
+<P><P><P>
+As  was  already  noted  in the  introduction  to  this  chapter  Laurent
+polynomial rings are rings,  so all ring functions (see chapter  <a href="chap005.htm">Rings</a>)
+are applicable  to  polynomial  rings.   This  section  comments  on  the
+implementation of those functions.
+<P>
+Let <I>R</I> be a commutative ring-with-one or a  field  and  let <var>P</var>  be  the
+polynomial ring over <I>R</I>.
+<P>
+<P>
+<code>EuclideanDegree( <var>P</var>, <var>f</var> )</code>
+<A name = "I10"></a>
+
+<P>
+<var>P</var> is  an Euclidean ring if and only  if <I>R</I> is field. In  this case the
+Euclidean  degree of <var>f</var> is  the  difference of <I>d(f)</I>  and  <I>v(f)</I>  (see
+<a href="chap019.htm">Polynomials</a>). If <I>R</I> is not a field then the function signals an error.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> LR := LaurentPolynomialRing(Rationals);;
+    gap> EuclideanDegree( LR, x^10 + x^2 );
+    8
+    gap> EuclideanDegree( LR, x^7 );
+    0
+    gap> EuclideanDegree( x^7 );
+    7
+    gap> EuclideanDegree( LR, x^2 + x^-2 );
+    4
+    gap> EuclideanDegree( x^2 + x^-2 );
+    4 </pre>
+<P>
+<P>
+<code>Gcd( <var>P</var>, <var>f</var>, <var>g</var> )</code>
+<A name = "I11"></a>
+
+<P>
+<var>P</var> is an Euclidean ring  if and only if <I>R</I>  is field. In this case  you
+can compute the greatest common divisor of <var>f</var> and <var>g</var> using <code>Gcd</code>.
+<P>
+<pre>    gap> x := Indeterminate(Rationals);; x.name := "x";;
+    gap> LR := LaurentPolynomialRing(Rationals);;
+    gap> g := x^3 + 2*x^2 + x;;
+    gap> h := x^3 - x;;
+    gap> Gcd( g, h );
+    x^2 + x
+    gap> Gcd( LR, g, h );
+    x + 1     # <code>x</code> is a unit in <code>LR</code>
+    gap> GcdRepresentation( LR, g, h );
+    [ (1/2)*x^(-1), (-1/2)*x^(-1) ] </pre>
+<P>
+<P>
+<code>Factors( <var>P</var>, <var>f</var> )</code>
+<A name = "I12"></a>
+
+<P>
+This method is only implemented for a Laurent  polynomial ring <var>P</var> over a
+finite field <I>R</I>.  In this case <var>f</var> is factored using a Cantor-Zassenhaus
+algorithm.  As <var>f</var>  is an element  of <var>P</var> if and only if the base ring of
+<var>f</var> is <I>R</I> you must embed the polynomial into the polynomial  ring <var>P</var> if
+it is written as polynomial over a subring.
+<P>
+<pre>    gap> f5 := GF(5);; f5.name := "f5";;
+    gap> x  := Indeterminate(f5);; x.name := "x";;
+    gap> g := x^10 + x^-2 + x^-10;
+    Z(5)^0*(x^10 + x^(-2) + x^(-10))
+    gap> Factors(g);
+    [ Z(5)^0*(x^(-2) + 4*x^(-6) + 2*x^(-10)),
+      Z(5)^0*(x^12 + x^8 + 4*x^4 + 3) ]
+    gap> f25 := GF(25);; Indeterminate(f25).name := "y";;
+    gap> gg := EmbeddedPolynomial( LaurentPolynomialRing(f25), g );
+    y^10 + y^(-2) + y^(-10)
+    gap> l := Factors( gg );
+    [ y^(-6) + Z(5^2)^13*y^(-10), y^4 + Z(5^2)^17,
+      y^6 + Z(5)^3*y^2 + Z(5^2)^3, y^6 + Z(5)^3*y^2 + Z(5^2)^15 ]
+    gap> l[1] * l[2];
+    y^(-2) + Z(5)^2*y^(-6) + Z(5)*y^(-10)
+    gap> l[3]*[4];
+    [ Z(5)^2*y^6 + Z(5)*y^2 + Z(5^2)^15 ]</pre>
+<P>
+<P>
+<code>StandardAssociate( <var>P</var>, <var>f</var> )</code>
+<A name = "I13"></a>
+
+<P>
+For a ring <I>R</I> the standard  associate <I>a</I>  of  <var>f</var> is a multiple of  <var>f</var>
+such that the leading coefficient of <var>a</var> is the standard associate in <I>R</I>
+and <I>v(<var>a</var>)</I> is zero. For a field <I>R</I> the  standard  associate <I>a</I> of <var>f</var>
+is a multiple of <var>f</var> such  that the leading coefficient  of <var>a</var>  is 1 and
+<I>v(<var>a</var>)</I> is zero.
+<P>
+<pre>    gap> x := Indeterminate(Integers);; x.name := "x";;
+    gap> LR := LaurentPolynomialRing(Integers);;
+    gap> StandardAssociate( LR, -2 * x^3 - x );
+    2*x^2 + 1</pre>
+<P><a href ="chap018.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap020.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

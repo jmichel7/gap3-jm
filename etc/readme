@@ -1,0 +1,1020 @@
+Introduction
+============
+
+    GAP  is  a  system  for computational  discrete  algebra,  which we  have
+    developed  with  particular  emphasis on  computational group theory, but
+    which has already proved useful also in  other areas.  The name GAP is an
+    acronym for *Groups, Algorithms, and Programming*.  This  (long) document
+    announces the availability of GAP version 3 release 4, GAP 3.4 for short.
+    It is an *advertisement* for GAP, but not a *commercial*, since  we  give
+    GAP away for free.
+
+    This document begins with the section "Announcement", which  contains the
+    announcement proper.  The next section "Analyzing Rubik's Cube with  GAP"
+    contains  an  extensive example.  This example is  followed by  a general
+    discussion  of GAP's  capabilities  in  the section "An Overview of GAP".
+    The section "What's New in 3.4.4" tells you about the new features in GAP
+    3.4.4. The section "Copyright" states the terms under which you can  copy
+    GAP.  The  next  sections  "How  to  get  GAP" and  "How  to install GAP"
+    describe  how you can get GAP running on your computer.  Then we tell you
+    about our plans for the future in the section  "The  Future of GAP".  The
+    final section "The GAP Forum" introduces the GAP forum, where  interested
+    users can discuss GAP related topics by e-mail messages.
+
+
+Announcement
+============
+                                                            Il est trop tard,
+                                                                  maintenant,
+                                                  il sera toujours trop tard.
+                                                                Heureusement!
+                                                         (A. Camus, La chute)
+
+
+                 ########            Lehrstuhl D fuer Mathematik
+               ###    ####           RWTH Aachen
+              ##         ##
+             ##          #             #######            #########
+            ##                        #      ##          ## #     ##
+            ##           #           #       ##             #      ##
+            ####        ##           ##       #             #      ##
+             #####     ###           ##      ##             ##    ##
+               ######### #            #########             #######
+                         #                                  #
+                        ##           Version 3              #
+                       ###           Release 4.4            #
+                      ## #           18 Apr 97              #
+                     ##  #
+                    ##   #  Alice Niemeyer, Werner Nickel,  Martin Schoenert
+                   ##    #  Johannes Meier, Alex Wegner,    Thomas Bischops
+                  ##     #  Frank Celler,   Juergen Mnich,  Udo Polis
+                  ###   ##  Thomas Breuer,  Goetz Pfeiffer, Hans U. Besche
+                   ######   Volkmar Felsch, Heiko Theissen, Alexander Hulpke 
+                            Ansgar Kaup,    Akos Seress,    Erzsebet Horvath
+                            Bettina Eick
+
+
+    Lehrstuhl D  f"ur Mathematik, RWTH Aachen,  announces the availability of
+    GAP version 3  release 4.4,  This  is the  fourth
+    publicly  available  release  of   GAP  since  version  3.1,  which   was
+    distributed since April 1992.
+
+
+Analyzing Rubik's Cube with GAP
+===============================
+                                   Ideal Toy Company stated on the package of
+                            the original Rubik cube that there were more than
+                         three billion possible states the cube could attain.
+                            It's analogous to Mac Donald's proudly announcing
+                                  that they've sold more than 120 hamburgers.
+                                                   (J. A. Paulos, Innumeracy)
+
+    To show you what GAP can do a short example is probably best.  If you are
+    not interested in this example skip to the  section "An Overview of GAP".
+
+    For the example we consider the group of transformations of Rubik's magic
+    cube.  If we number the faces of this cube as follows
+
+                         +--------------+
+                         |  1    2    3 |
+                         |  4  top    5 |
+                         |  6    7    8 |
+          +--------------+--------------+--------------+--------------+
+          |  9   10   11 | 17   18   19 | 25   26   27 | 33   34   35 |
+          | 12  left  13 | 20 front  21 | 28 right  29 | 36  rear  37 |
+          | 14   15   16 | 22   23   24 | 30   31   32 | 38   39   40 |
+          +--------------+--------------+--------------+--------------+
+                         | 41   42   43 |
+                         | 44 bottom 45 |
+                         | 46   47   48 |
+                         +--------------+
+
+    then the  group is  generated by the following  generators, corresponding
+    to the six faces of the cube  (the two  semicolons tell GAP  not to print
+    the result, which is identical to the input here).
+
+      gap> cube := Group(
+      >   ( 1, 3, 8, 6)( 2, 5, 7, 4)( 9,33,25,17)(10,34,26,18)(11,35,27,19),
+      >   ( 9,11,16,14)(10,13,15,12)( 1,17,41,40)( 4,20,44,37)( 6,22,46,35),
+      >   (17,19,24,22)(18,21,23,20)( 6,25,43,16)( 7,28,42,13)( 8,30,41,11),
+      >   (25,27,32,30)(26,29,31,28)( 3,38,43,19)( 5,36,45,21)( 8,33,48,24),
+      >   (33,35,40,38)(34,37,39,36)( 3, 9,46,32)( 2,12,47,29)( 1,14,48,27),
+      >   (41,43,48,46)(42,45,47,44)(14,22,30,38)(15,23,31,39)(16,24,32,40)
+      > );;
+
+    First we want to know the size of this group.
+
+      gap> Size( cube );
+      43252003274489856000
+
+    Since this is a little bit unhandy, let us factorize this number.
+
+      gap> Collected( Factors( last ) );
+      [ [ 2, 27 ], [ 3, 14 ], [ 5, 3 ], [ 7, 2 ], [ 11, 1 ] ]
+
+    (The result tells us that the size is 2^27 3^14 5^3 7^2 11.)
+
+    Next let us investigate the operation of the group on the 48 points.
+
+      gap> orbits := Orbits( cube, [1..48] );
+      [ [ 1, 3, 17, 14, 8, 38, 9, 41, 19, 48, 22, 6, 30, 33, 43, 11, 46,
+            40, 24, 27, 25, 35, 16, 32 ],
+        [ 2, 5, 12, 7, 36, 10, 47, 4, 28, 45, 34, 13, 29, 44, 20, 42,
+            26, 21, 37, 15, 31, 18, 23, 39 ] ]
+
+    The  first orbit contains the points at the corners, the second  those at
+    the edges; clearly the group cannot move a point at a corner onto a point
+    at an edge.
+
+    So to  investigate the cube group  we first investigate  the operation on
+    the corner points.  Note that  the constructed group that describes  this
+    operation  will  operate  on the set   [1..24], not  on the  original set
+    [1,3,17,14,8,38,9,41,19,48,22,6,30,33,43,11,46,40,24,27,25,35,16,32].
+
+      gap> cube1 := Operation( cube, orbits[1] );
+      Group( ( 1, 2, 5,12)( 3, 7,14,21)( 9,16,22,20),
+             ( 1, 3, 8,18)( 4, 7,16,23)(11,17,22,12),
+             ( 3, 9,19,11)( 5,13, 8,16)(12,21,15,23),
+             ( 2, 6,15, 9)( 5,14,10,19)(13,21,20,24),
+             ( 1, 4,10,20)( 2, 7,17,24)( 6,14,22,18),
+             ( 4,11,13, 6)( 8,15,10,17)(18,23,19,24) )
+      gap> Size( cube1 );
+      88179840
+
+    Now this group obviously operates transitively, but let us  test  whether
+    it is also primitive.
+
+      gap> corners := Blocks( cube1, [1..24] );
+      [ [ 1, 7, 22 ], [ 2, 14, 20 ], [ 3, 12, 16 ], [ 4, 17, 18 ],
+        [ 5, 9, 21 ], [ 6, 10, 24 ], [ 8, 11, 23 ], [ 13, 15, 19 ] ]
+
+    Those eight  blocks correspond to  the eight corners of  the cube; on the
+    one hand the group permutes those and on the  other hand it  permutes the
+    three points at each corner cyclically.
+
+    So the obvious thing to do is to  investigate the operation  of the group
+    on the eight corners.
+
+      gap> cube1b := Operation( cube1, corners, OnSets );
+      Group( (1,2,5,3), (1,3,7,4), (3,5,8,7),
+             (2,6,8,5), (1,4,6,2), (4,7,8,6) )
+      gap> Size( cube1b );
+      40320
+
+    Now a permutation group of degree 8 that has order 40320 must be the full
+    symmetric group S(8) on eight points.
+
+    The next thing then  is to investigate  the  kernel  of this operation on
+    blocks, i.e.,  the  subgroup of  'cube1'  of those elements that  fix the
+    blocks setwise.
+
+      gap> blockhom1 := OperationHomomorphism( cube1, cube1b );;
+      gap> Factors( Size( Kernel( blockhom1 ) ) );
+      [ 3, 3, 3, 3, 3, 3, 3 ]
+      gap> IsElementaryAbelian( Kernel( blockhom1 ) );
+      true
+
+    We can  show that the product of  this elementary  abelian group 3^7 with
+    the S(8) is semidirect by finding a complement, i.e., a subgroup that has
+    trivial intersection with the kernel  and that generates 'cube1' together
+    with the kernel.
+
+      gap> cmpl1 := Stabilizer( cube1, [1,2,3,4,5,6,8,13], OnSets );;
+      gap> Size( cmpl1 );
+      40320
+      gap> Size( Intersection( cmpl1, Kernel( blockhom1 ) ) );
+      1
+      gap> Closure( cmpl1, Kernel( blockhom1 ) ) = cube1;
+      true
+
+    There is even a more elegant way to show that 'cmpl1' is a complement.
+
+      gap> IsIsomorphism( OperationHomomorphism( cmpl1, cube1b ) );
+      true
+
+    Of course,  theoretically  it is  clear  that 'cmpl1'   must  indeed be a
+    complement.
+
+    In  fact we  know that  'cube1' is a  subgroup of index 3 in  the  wreath
+    product of a  cyclic 3 with S(8).  This  missing index 3 tells us that we
+    do  not have total freedom in turning the  corners.  The  following tests
+    show  that whenever we  turn one  corner clockwise we  must  turn another
+    corner counterclockwise.
+
+      gap> (1,7,22) in cube1;
+      false
+      gap> (1,7,22)(2,20,14) in cube1;
+      true
+
+    More or less the same things happen when we consider the operation of the
+    cube group on the edges.
+
+      gap> cube2 := Operation( cube, orbits[2] );;
+      gap> Size( cube2 );
+      980995276800
+      gap> edges := Blocks( cube2, [1..24] );
+      [ [ 1, 11 ], [ 2, 17 ], [ 3, 19 ], [ 4, 22 ], [ 5, 13 ], [ 6, 8 ],
+        [ 7, 24 ], [ 9, 18 ], [ 10, 21 ], [ 12, 15 ], [ 14, 20 ], [ 16, 23 ] ]
+      gap> cube2b := Operation( cube2, edges, OnSets );;
+      gap> Size( cube2b );
+      479001600
+      gap> blockhom2 := OperationHomomorphism( cube2, cube2b );;
+      gap> Factors( Size( Kernel( blockhom2 ) ) );
+      [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
+      gap> IsElementaryAbelian( Kernel( blockhom2 ) );
+      true
+      gap> cmpl2 := Stabilizer(cube2,[1,2,3,4,5,6,7,9,10,12,14,16],OnSets);;
+      gap> IsIsomorphism( OperationHomomorphism( cmpl2, cube2b ) );
+      true
+
+    This time we get a semidirect  product  of a 2^11 with an S(12), namely a
+    subgroup of index 2 of the wreath product of a cyclic 2 with S(12).  Here
+    the missing index 2 tells us again that we  do not  have total freedom in
+    turning the edges.   The following tests show  that whenever  we flip one
+    edge we must also flip another edge.
+
+      gap> (1,11) in cube2;
+      false
+      gap> (1,11)(2,17) in cube2;
+      true
+
+    Since 'cube1' and  'cube2' are the groups  describing the actions  on the
+    two orbits of 'cube', it is clear  that 'cube'  is a subdirect product of
+    those  groups, i.e., a  subgroup of the direct  product.    Comparing the
+    sizes  of 'cube1',  'cube2',  and  'cube' we   see that 'cube'  must be a
+    subgroup of index 2 in the direct product of those two groups.
+
+      gap> Size( cube );
+      43252003274489856000
+      gap> Size( cube1 ) * Size( cube2 );
+      86504006548979712000
+
+    This final missing index 2 tells us that we cannot operate on corners and
+    edges totally independently.  The following  tests show that whenever  we
+    exchange a  pair of  corners we must also  exchange a  pair of edges (and
+    vice versa).
+
+      gap> (17,19)(11,8)(6,25) in cube;
+      false
+      gap> (7,28)(18,21) in cube;
+      false
+      gap> (17,19)(11,8)(6,25)(7,28)(18,21) in cube;
+      true
+
+    Finally let us compute the centre of the cube group, i.e.,  the  subgroup
+    of those operations that  can be performed  either before  or  after  any
+    other operation with the same result.
+
+      gap> Centre( cube );
+      Subgroup( cube, [ ( 2,34)( 4,10)( 5,26)( 7,18)(12,37)(13,20)
+                        (15,44)(21,28)(23,42)(29,36)(31,45)(39,47) ] )
+
+    We  see that  the centre  contains  one  nontrivial element, namely   the
+    operation that flips all 12 edges simultaneously.
+
+    This concludes our  example.  Of course,  GAP  can do much more, and  the
+    next section gives an overview   of its capabilities, but   demonstrating
+    them all would take too much room.
+
+
+An Overview of GAP
+==================
+                                                      Though this be madness,
+                                                    yet there is method in't.
+                                                     (W. Shakespeare, Hamlet)
+
+    GAP consists of several parts: the kernel, the  library of functions, the
+    library of groups and related data, and the documentation.
+
+    The  *kernel* implements an automatic  memory management,  a  PASCAL-like
+    programming  language,  also  called  GAP,  with  special  datatypes  for
+    computations  in group theory, and an interactive programming environment
+    to run programs written in the GAP programming language.
+
+    The automatic  *memory management* allows  programmers  to concentrate on
+    implementing the algorithm without  needing  to care about allocation and
+    deallocation  of memory.   It   includes   a  garbage   collection   that
+    automatically throws away objects that are no longer accessible.
+
+    The GAP programming language supports a number  of datatypes for elements
+    of fields.  *Integers* can be  arbitrarily large, and  are implemented in
+    such  a  way that operations  with  small   integers are reasonably fast.
+    Building on this large-integer  arithmetic GAP supports  *rationals*  and
+    elements  from *cyclotomic  fields*.   Also GAP allows  one to  work with
+    elements from *finite fields* of size (at present) at most 2^16.
+
+    The  special datatypes of  group elements are *permutations*,  *matrices*
+    over the  rationals, cyclotomic  fields, and  finite  fields,  *words  in
+    abstract generators*, and *words in solvable groups*.
+
+    GAP also contains  a very flexible  *list* datatype.  A list is  simply a
+    collection of objects  that allows you to access  the components using an
+    integer position.  Lists grow automatically when you add new elements  to
+    them.  Lists are used to represent sets,  vectors, and matrices.  A *set*
+    is represented   by a  sorted  list without  duplicates.   A   list whose
+    elements all lie in a common field  is a *vector*.  A  list of vectors of
+    the same length over a common field is a  *matrix*.  Since sets, vectors,
+    and matrices are lists, all list operations and functions are applicable.
+    You can, for example, find a certain element in a vector with the general
+    function  'Position'.   There    are   also   *ranges*,  i.e., lists   of
+    consecutive  integers, and  *boolean lists*,  i.e., lists containing only
+    'true'  and 'false'.  Vectors, ranges,   and boolean lists  have  special
+    internal representations to ensure efficient operations and memory usage.
+    For example, a boolean list requires only one bit per element.
+
+    *Records*   in GAP are   similar  to   lists,  except that accessing  the
+    components of a record is done using a name instead of an index.  Records
+    are used to collect objects of different types,  while lists usually only
+    contain elements of one type.  Records are for example  used to represent
+    groups and   other  domains; there  is  *no*  group datatype  in  the GAP
+    language .  Because of this all information  that GAP knows about a group
+    is also accessible to you by simply investigating the record.
+
+    The control structures of GAP are PASCAL-like.  GAP  has *if* statements,
+    *while*,  *repeat*,  and  *for* loops.  The for   loop  is  a little  bit
+    uncommon in that it always loops over the elements of a  list.  The usual
+    semantics can be obtained by looping over the elements of a range.  Using
+    those building   blocks you can  write   *functions*.   Functions  can be
+    recursive, and are first class objects in the sense that you  can collect
+    functions in  lists, pass them as  arguments to other  functions and also
+    return them.
+
+    It  is important to  note  that GAP has dynamic  typing instead of static
+    typing.  That means that the datatype is a property of the object, not of
+    the variable.  This allows you to  write general  functions.  For example
+    the generic  function that computes an orbit  can be  used to compute the
+    orbit of  an  integer under a permutation group,  the  orbit of a  vector
+    under a matrix group, the conjugacy class of  a group element,  and  many
+    more.
+
+    The  kernel also implements an *interactive  environment* that allows you
+    to use GAP.  This environment supports debugging;  in case of  an error a
+    break loop is entered in which you can investigate the problem, and maybe
+    correct it  and continue.   You also have online  access  to the  manual,
+    though sections  that  contain larger formulas  do not look nice   on the
+    screen.
+
+    The *library of  functions*,  simply called   library  in  the following,
+    contains implementations  of various group theoretical algorithms written
+    in the GAP language.  Because all the group  theoretical functions are in
+    this library it is easy for you to look  at  them  to find  out  how they
+    work, and change them if they do almost, but not quite, what you want.
+
+    The whole   library is   centered around the   concept  of   domains  and
+    categories.  A *domain* is a structured set, e.g., a group is a domain as
+    is the ring of Gaussian integers.  Each  domain in GAP  belongs to one or
+    more *categories*, which are simply sets of domains, e.g., the set of all
+    groups forms a category.  The categories in which a domain lies determine
+    the functions that are applicable to this domain and its elements.
+
+    To each  domain belongs a set of  functions,  in a  so called  operations
+    record, that are called by dispatchers  like 'Size'.   For example, for a
+    permutation group  <G>, '<G>.operations.Size' is a  function implementing
+    the Schreier Sims algorithm.  Thus  if  you have any domain  <D>,  simply
+    calling 'Size( <D> )' will return the size of the domain <D>, computed by
+    an  appropriate function.   Domains *inherit*  such functions from  their
+    category,  unless they redefine  them.   For example,  for  a permutation
+    group  <G>,  the derived subgroup will  be  computed by the generic group
+    function, which computes the normal closure of  the subgroup generated by
+    the commutators of the generators.
+
+    Of course the most important category is the category of *groups*.  There
+    are  about  100  functions applicable  to  groups.  These include general
+    functions  such  as  'Centralizer'  and  'SylowSubgroup', functions  that
+    compute series of subgroups such as 'LowerCentralSeries', a function that
+    computes the whole lattice of subgroups, functions  that test  predicates
+    such  as 'IsSimple',  functions that  are related  to the  operations  of
+    groups  such as 'Stabilizer', and many more.  Most of these functions are
+    applicable to all  groups,  e.g., permutation groups,  finite  polycyclic
+    groups, factor groups, direct products of  arbitrary groups, and even new
+    types of groups that you create by simply specifying how the elements are
+    multiplied and inverted (actually  it is not quite so simple, but you can
+    do it).
+
+    Where  the general  functions that are applicable to  all  groups are not
+    efficient enough,  we  have  tried  to  overlay them  by  more  efficient
+    functions for special types of groups.  The prime example is the category
+    of   *permutation   groups*,    which   overlays   'Size',    'Elements',
+    'Centralizer', 'Normalizer', 'SylowSubgroup', and a few more functions by
+    functions  that  employ  stabilizer chains  and  backtracking algorithms.
+    Also many  of  the  functions  that  deal with operations  of groups  are
+    overlayed for permutation groups for the operation of a permutation group
+    on integers or lists of integers.
+
+    Special  functions for *finitely presented  groups* include  functions to
+    find the  index of  a  subgroup via a Todd-Coxeter coset  enumeration, to
+    compute  the  abelian  invariants of  the  commutator  factor  group,  to
+    intersect two subgroups, to find the  normalizer  of a  subgroup, to find
+    all  subgroups of  small index, and to compute and simplify presentations
+    for  subgroups.   Of  course it is possible  to go to a permutation group
+    operating  on  the cosets  of  a subgroup and  then  to  work  with  this
+    permutation group.
+
+    For   *finite   polycyclic  groups*   a  special   kind  of  presentation
+    corresponding to a  composition  series  is used.   Such  a  presentation
+    implies  a  canonical  form  for the  elements  and thus allows efficient
+    operations with the elements of such a group.  This  presentation is used
+    to make  functions such  as 'Centralizer',  'Normalizer', 'Intersection',
+    and  'ConjugacyClasses' very efficient.   GAP's  capabilities for  finite
+    polycyclic groups  exceed  those of the computer system SOGOS (which  was
+    developed at Lehrstuhl D f"ur Mathematik for the last decade).
+
+    There  is  also  support for  *mappings* and *homomorphisms*.  Since they
+    play such a  ubiquitous role in mathematics, it is only natural that they
+    should also play an important role  in a system like GAP.   Mappings  and
+    homomorphisms  are objects in  their own right in GAP.   You can apply  a
+    mapping to an element of its source, multiply mappings (provided that the
+    range of the first  is a  subset of  the  source of  the second),  invert
+    mappings (even if what you get is  a multi-valued mapping), and perform a
+    few more operations.   Important examples are  the  'NaturalHomomorphism'
+    onto  a  factor group,  'OperationsHomomorphism'  mapping  a  group  that
+    operates  on a set of <n> elements into the symmetric  group on [1..<n>],
+    'Embeddings' into  products of groups,  'Projections'  from  products  of
+    groups onto the components,  and the  general 'GroupHomomorphismByImages'
+    for which you only specify the images of a set of generators.
+
+    The  library contains a  package for handling  character tables of finite
+    groups.  This  includes almost  all possibilities of the computer  system
+    CAS (which was  developed  at  Lehrstuhl  D  f"ur  Mathematik in the last
+    decade), and  many  new functions.  You can  compute character  tables of
+    groups, or construct  character  tables  using other  tables, or  do some
+    calculations  within  known  character  tables.   You  can, for  example,
+    compute a list of candidates for permutation characters.  Of course there
+    are many character tables in the data library.
+
+    For  large integers  we now  also  have a  package for *elementary number
+    theory*.  There  are functions in this package to test primality,  factor
+    integers of  reasonable  size,  compute the  size phi(<n>)  of the  prime
+    residue group modulo an integer <n>, compute roots modulo an integer <n>,
+    etc.  Also based on this there  is  a package  to do  calculations in the
+    ring of Gaussian integers.
+
+    The library  also includes a package for  *combinatorics*.  This contains
+    functions to find all selections of various flavours of the elements of a
+    set, e.g., 'Combinations' and 'Tuples', or the number of such selections,
+    e.g., 'Binomial'.  Other functions  are related to  partitions of sets or
+    integers, e.g., 'PartitionsSet' and 'RestrictedPartitions', or the number
+    of   such, e.g., 'NrPartitions'    and  'Bell'.   It  also contains  some
+    miscellaneous functions such as 'Fibonacci' and 'Bernoulli'.
+
+
+THE FOLLOWING TWO PARAGRAPHS ARE OUTDATED! CONSULT THE WEB PAGES FOR DETAILS!
+
+    The  *data library* at present contains  the primitive permutation groups
+    of degree up to 50 from  C. Sims, the 2-groups  of size dividing 256 from
+    E. A. O'Brien and  M. F. Newman,  the 3-groups of size dividing  729 from
+    E. A. O'Brien and  C. Rhodes,  the solvable groups of size up to 100 from
+    M. Hall,  J. K. Senior,  R. Laue, and J. Neub"user, a library of solvable
+    irreducible matrix groups from  M. Short,  a library of transitive groups
+    by  G. Butler  and  J. McKay,  a library  of  crystallographic groups  by
+    H. Brown,  R. B"ulow,  J. Neub"user,  H. Wondratschek, and H. Zassenhaus,
+    a library of (at present 750)  ordinary character tables including all of
+    the ATLAS, a library of (at present 1395) modular character tables, and a
+    library of  tables of marks for  various groups.  We   plan to extend the
+    data library with more data in the future.
+
+    Together with GAP 3.4 we now distribute several *share library packages*.
+    Such packages  have been contributed  by other authors, but the copyright
+    remains with the  author.  Currently there  are ten packages in the share
+    library.  The *ANU PQ* package, written by  E.A. O'Brien, consists of a C
+    program implementing a <p>-quotient  and a <p>-group generation algorithm
+    and an isomorphism testing  algorithm   and functions to  interface  this
+    program with GAP.  The *NQ* package, written by  W. Nickel, consists of a
+    C program   implementing an algorithm  to compute  nilpotent quotients of
+    finitely presented groups  and a function to call  this program from GAP.
+    The  *Weyl* package,  written by  M. Geck,  contains functions to compute
+    with finite Weyl groups, associated (Iwahori-)  Hecke algebras, and their
+    representations.  The *Grape* package, written by L. Soicher, consists of
+    functions to  work with graphs,  and contains also  functions to call the
+    program 'nauty', written by  B. McKay, which computes automorphism groups
+    of graphs.  The *XGAP* package, written by  F. Celler and  S. Keitemeier,
+    allows the user to run  GAP under the X window  system and e.g. work with
+    subgroup  lattices  interactively.   The *Sisyphos*   package, written by
+    M. Wursthorn,  consists  of  a program  that computes   automorphisms  of
+    <p>-groups  and functions  to    interface the program    with GAP.   The
+    *Meataxe* package, written by  M. Ringe, consists  of programs to compute
+    with large  matrices and functions to interface  those programs with GAP,
+    so  that you can compute with  such matrices in   GAP without being aware
+    that  external  programs  are  used.   The  *Vector Enumerator*  package,
+    written by  S. Linton,  consists of  a program  that computes the  matrix
+    algebra representation of a finitely presented algebra on a quotient of a
+    free modul for this  algebra.  The *Smash*  package, written by  D. Holt,
+    C. Leedham-Green,  E. A. O'Brien,  S. Rees, and  F. Celler,  consists  of
+    functions that  allow the   investigation  of matrix  groups over  finite
+    fields and of G-modules.  The *ANU SQ*  package, written by  A. Niemeyer,
+    consists of a program to compute solvable quotients of finitely presented
+    groups, and functions to interface this program with GAP.
+
+
+What's new in 3.4.4
+===================
+
+        -- and what is still the same?
+
+
+Compared to GAP 3.4.3 the size of GAP 3.4.4 has more than doubled. This sounds
+impressive but is  also a bit frightening.   This document lists  the  changes
+from version 3.4 patchlevel 3 to 3.4 patchlevel  4 and explains which parts of
+GAP 3.43 have hardly (or not) changed at all.
+
+The first fact about GAP 3.4.4 and perhaps the  most important one is that the
+kernel has remained  almost untouched.  Two bugs have  been  fixed.  Both bugs
+are  not  dangerous in the  sense that  they  could not produce  wrong results
+without warning.  Therefore, it is not strictly necessary to recompile the GAP
+kernel when you upgrade your GAP installation  from 3.4.3 to 3.4.4.  The first
+bug affects the break  loop -- it was possible  in 3.4.3 to access  incomplete
+GAP data structures from within the break loop.  In most cases this causes GAP
+to crash.  The second  bug affected the order   of evaluation of  arguments to
+internal list functions and could also lead to a crash of GAP.
+
+The following lists the  subdirectories  in GAP 3.4.3  and GAP  3.4.4 together
+with their sizes to  give some impression  of why GAP  3.4.4 is so much bigger
+than  GAP 3.4.3.  Note  that there are some  directories which are  new in GAP
+3.4.4.
+
+     Directory  3.4.3       3.4.4
+   --------------------------------
+        doc      3321       10053
+        etc      2506        2559
+        grp      2672        6776
+        lib      6009        4792
+        pkg     12492       38639
+        src      3738        3747
+        tbl      9406        9598
+        thr        50          53
+        tom      1451        1430
+        two      2294        2259
+        htm                  5321       HTML version of the manual
+        sml                 12470       groups of order less than 1000
+        tst                    67       test files
+        utl                   400       unzoo & patch
+
+
+The Macintosh version
+---------------------
+
+Burkhard H"oflings  port  of GAP for  MacOS has  been integrated  into the GAP
+distribution.  It needs files in addition to the files in src which are in the
+a subdirectory called macsrc.
+
+Changes to the GAP library
+--------------------------
+
+Since the release of GAP 3.4.3 29 bugs in the GAP library have been identified
+and fixed.  The bug fixes were sent to the GAP-Forum.  All these bug fixes are
+incorporated into GAP 3.4.4.
+
+In addition to  that, the functionality of  the GAP library has  been improved
+and extended.  Comparing the files init.g in GAP 3.4.3  and GAP 3.4.4 giives a
+quick overview over new functions.
+
+The changes to the library include: 
+
+The Tietze transformation  package has been  extended and now allows  to track
+the history of  generators through a series  of Tietze  transformations and to
+protect individual generators from being removed.
+
+New routines for working with matrix groups over finite fields (by
+Frank Luebeck) which drastically improve the performance.
+
+Speedups to the list handling routines by using more kerner functions
+(by Jean Michel)
+
+Several improvements and bugfixes in the routines for handling and
+constructing character tables.
+
+Routines for constructing character tables by the use of Clifford matrices
+(by Ute Schiffer)
+
+Improval of the routines for constructing special Ag systems.
+
+Improved and streamlined code for the isomorphism and automorphisms search
+routines.
+
+Improvements of the algorithms for polynomial factorization.
+
+
+Changes to the documentation
+----------------------------
+
+Manuals for the  new share  packages have  been included  and manuals for  the
+updated share package have  been  replaced.  The  complete  GAP manual is  now
+about 1600 pages long -- probably too much  to print it all.   There is now an
+HTML version of the manual in the subdirectory htm.
+
+
+Changes to the data libraries
+-----------------------------
+
+The data libraries have been extended
+
+        -- to the transitive groups of degree less than 24, 
+        -- by the groups of order less than 1000
+           (except those of order 512 and 768) 
+        -- by new character tables
+
+The new transitive groups are included in  the subdirectory grp. The groups of
+order less  than 1000 are  in the  new subdirectory  sml.   The changes to the
+character tables affect the subdirectory tbl.
+
+The tables of markes (subdirectory tom), the library of 3-groups (thr) and the
+library of 2-groups (two)  are identical with  the respective libraries in GAP
+3.4.3.
+
+
+Changes to the share packages
+-----------------------------
+Various  share packages have  been added or  replaced older versions.  Details
+can be found in the respective sections of the manual.
+
+  Directory         Status        Superseded by           Replaced
+--------------------------------------------------------------------------
+    anupq           updated
+    anusq
+    autag           new
+    chevie          new                                      weyl
+    cohomolo
+    cryst           new
+    dce
+    gliss           new
+    grape           updated
+    grim            new
+    guava           updated
+    kbmag           new
+    matrix                                                  smash
+    meataxe
+    nq
+    pcqa            new
+    sisyphos
+    specht          new
+    ve
+    xgap
+    xmod            new
+    
+    smash                           matrix
+    weyl                            chevie
+    
+
+
+Copyright
+=========
+                                     Ceterum censeo:
+                                       Nobody has ever paid a licence fee
+                                         for using a proof
+                                       that shows Sylow's subgroups to exist.
+                                       Nobody should ever pay a licence fee
+                                         for using a program
+                                       that computes Sylow's subgroups.
+                                                               (J. Neub"user)
+
+    GAP is
+
+        Copyright (C)  1997 by Lehrstuhl D f"ur Mathematik
+        RWTH,  Templergraben 64,  D 52056 Aachen,  Germany
+
+    GAP can be copied and distributed freely for any non-commercial purpose.
+
+    GAP  is *not* in the  public domain, however.   In particular you are not
+    allowed to incorporate GAP or parts thereof into a commercial product.
+
+    If you copy GAP for somebody else, you  may ask this person for refund of
+    your  expenses.  This should cover cost of  media, copying and  shipping.
+    You are not allowed to ask for more than this.  In any case you must give
+    a copy of this copyright notice along with the program.
+
+    You are permitted to modify and redistribute GAP, but you are not allowed
+    to   restrict  further  redistribution.   That   is  to  say  proprietary
+    modifications will not be allowed.  We want all versions of GAP to remain
+    free.
+
+    If you  modify any  part of GAP and redistribute  it,  you must supply  a
+    'README' document.  This  should specify what  modifications you made  in
+    which  files.   We do  not want to take  credit  or  be  blamed  for your
+    modifications.
+
+    Of course  we are interested in all of your modifications.  In particular
+    we would like to see bug-fixes, improvements and new functions.  So again
+    we would appreciate it if you would inform us about all modifications you
+    make.
+
+    GAP is distributed by us without any warranty, to the extent permitted by
+    applicable state law.  We distribute GAP *as is* without warranty of  any
+    kind,  either  expressed  or implied, including, but not limited  to, the
+    implied  warranties  of merchantability  and  fitness  for  a  particular
+    purpose.
+
+    The entire risk as to the quality  and performance of the program is with
+    you.   Should GAP prove defective, you  assume the cost  of all necessary
+    servicing, repair or correction.
+
+    In no case unless required  by  applicable  law will we, and/or any other
+    party who may modify and redistribute GAP as  permitted above,  be liable
+    to you for damages, including lost profits, lost monies or other special,
+    incidental  or consequential damages  arising out of the use or inability
+    to use GAP.
+
+    The system dependent part  for IBM PCs with MS-DOS  was written by  Steve
+    Linton ('sal@cs.st-and.ac.uk', 'http://www-theory.cs.st-and.ac.uk/~sal').
+    The system dependent part for  IBM PCs  with OS/2  was written by  Harald
+    Boegeholz ('hwb@mathematik.uni-stuttgart.de').  The system dependent part
+    for VAXen with VMS  was written by Paul Doyle ('csedoyle@bodkin.ucg.ie').
+    The system dependent part for the Macintosh with Mac Programmers Workshop
+    (MPW) was  written by  Dave Bayer ('dab@shire.math.columbia.edu').
+    The port for the Macintosh for use with CodeWarrior 11 was written by
+    Burkhard H"ofling ('hofling@maths.anu.edu.au').  Many
+    thanks to them for assigning the copyright to Lehrstuhl D f"ur Mathematik
+    and/or allowing us to distribute their code.
+
+    Some of the executables come  with additional copyright notices.   Please
+    check the files that come with the executables.
+
+
+How to get GAP
+==============
+
+    GAP is distributed  *free of  charge*.  You can obtain it   via 'ftp' and
+    give it away to your colleagues.
+
+    If you get GAP, we would  appreciate it if  you could notify us, e.g., by
+    sending a  short e-mail  message to 'gap@math.rwth-aachen.de', containing
+    your full name and address, so that we have a rough idea of the number of
+    users.  We  also hope that  this number will  be large enough to convince
+    various agencies that GAP is a project worthy of (financial) support.  If
+    you publish some result  that  was partly obtained  using GAP,  we  would
+    appreciate it if you would cite GAP, just as you would cite another paper
+    that  you used.  Again we  would appreciate if  you could inform us about
+    such a paper.
+
+    We  distribute  the *full  source* for everything,    the C code  for the
+    kernel,  the GAP code for  the library, and the  {\LaTeX} code for the
+    manual, which has  at  present about 1600    pages.  So it should be   no
+    problem to get GAP,  even if you  have  a rather uncommon system.   Of
+    course, ports to non UNIX systems may require some work.  We already have
+    ports  for  IBM  PC  compatibles  with  an  Intel processor under MS-DOS,
+    Windows,  or OS/2, for  the Atari ST under  TOS and Apple Macintosh using
+    the CodeWarrior compiler.   Note that about 8  MByte  of main  memory and
+    about 20MB of   disk space are  required to  run GAP.  A  full  GAP
+    installation, including all share packages and  data libraries can use up
+    to 100MB of disk space.
+
+    The  easiest way to   get GAP 3.4 for  most  users is probably via the
+    World   Wide     Web. The    main   GAP Web     site     is  found  at
+    http://www-gap.dcs.st-and.ac.uk/~gap.
+
+    There are three *mirror sites* updated automatically each night, at:
+    http://www.math.rwth-aachen.de/LDFM/GAP
+    http://www.ccs.neu.edu/Cobwebs/GAP and
+    http://wwwmaths.anu.edu.au/algebra/GAP/WWW. 
+
+    At these sites you  can  browse this manual,  download the  system and
+    contributed  extensions, read past postings   to the GAP forum, and
+    find  out about authors  of  and contributors to GAP,  publications
+    that cited GAP and GAP related events.
+
+    GAP 3.4 can also be obtained by anonymous *ftp* from the following
+    servers.
+
+    'ftp-gap.dcs.st-and.ac.uk':
+	    School of Mathematical and Computational Sciences,
+	    University of St Andrews, Scotland
+	    directory '/pub/gap/gap/'.
+
+    'ftp.math.rwth-aachen.de':
+	    Lehrstuhl D fur Mathematik, RWTH Aachen, Germany,
+	    directory '/pub/gap/'.
+
+    'math.ucla.edu':
+	    Math. Dept., Univ. of California at Los Angeles,
+	    directory '/pub/gap/'.
+
+    'wuarchive.wustl.edu':
+	    Math. Archives, Washington Univ. at St. Louis,
+	    directory '/edu/math/software/multi-platform/gap'.
+
+    'dehn.mth.pdx.edu':
+	    PSU Mathematics Department, Portland State Univ.,
+	    directory '/mirror/gap/'
+
+    'pell.anu.edu.au':
+	    School of Mathematical Sciences, Australian National Univ.,
+	    Canberra,
+	    directory '/pub/algebra/gap/'.
+
+    'ftp' to the server *closest*  to you, login as  user 'ftp' and give your
+    full e-mail address as password.  Remember when you transmit the files to
+    set the file transfer  type to *binary  image*,  otherwise you will  only
+    receive   unusable garbage.  Those   servers will always  have the latest
+    version of GAP available.
+
+    The 'ftp' directory contains the   following files.  Please check   first
+    which files you need, to avoid transferring those that you don't need.
+
+    'README':
+	    the file you are currently reading.
+
+    'gap3r4p4.zoo':
+	    This  file contains the  *complete*  distribution
+	    of GAP version 3 release 4  current patchlevel 4.
+	    It is a 'zoo' archive approximately  18 MByte large.
+
+    'unzoo.c':
+	    A simple 'zoo' archive extractor, which should be
+	    used  to  unpack  the  distribution.  The 'utils'
+	    subdirectory contains ready  compiled executables
+	    for common systems.
+
+    More files are in the following *subdirectories*:
+
+    'bin':
+	    This directory contains *executables* for systems
+	    that dont come with a C compiler or where another
+	    C compiler  produces  a  faster  executable.  The
+	    file 'FILES' tells you  which  executables  are
+	    here.
+
+    'split':
+	    This directory contains the complete distribution
+	    of GAP 3r4p4 in several archives.  This allows
+	    you to get only the  parts  that  you  are really
+	    interested in.  The 'FILES' file tells you  which
+	    archive contains what.
+
+    'utils':
+	    This directory contains  several  utilities  that
+	    you may need to get or upgrade GAP, e.g., 'unzoo'
+	    and  'patch'.  The  'FILES'  file tells you which
+	    files are here.
+
+
+How to install GAP
+==================
+
+    The file 'doc/install.tex'  contains extensive installation instructions.
+    If however, you are one of those who never read manuals,  here is a quick
+    installation guide.
+
+    Ho to install GAP on an IBM PC, Apple Mac, Atari ST, DEC VAX, or DEC AXP
+    ------------------------------------------------------------------------
+
+    First go to a directory where  you  want to install    GAP , e.g., 'c:'.
+    GAP  will  be  installed in a subdirectory 'gap3r4p4' of this directory.
+    You can later move   GAP  to another  location, for example you can first
+    install it in 'd:\tmp' and once it works move it to 'c:'.
+
+    Get the GAP distribution  onto your computer.   One usual way would be to
+    get   the  distribution with  'ftp'  onto some  UNIX   workstation and to
+    download it from  there onto your  computer,  for example  with 'kermit'.
+    Remember that the distribution consists of binary files and that you must
+    transmit them in binary mode.  Another possibility is  that you got a set
+    of floppy disks.
+
+    In any case you need the distribution 'gap3r4p4.zoo', the appropriate zoo
+    archive  extractor, e.g., 'unzoo.exe',   which is  in  the
+    subdirectory 'util/' on the 'ftp' server, and the appropriate executable,
+    e.g., 'gapdjg.zoo', which is in the subdirectory 'bin/'.
+    You may have to get the latter 2 files from 'samson.math.rwth-aachen.de',
+    because some  'ftp' servers may not keep  it.  We recommend that  you use
+    'unzoo' even if  you already have 'zoo'  on your system, because  'unzoo'
+    automatically translates text files to the appropriate local format.
+
+    Unpack the executable and the distribution with the command
+
+        unzoo -x -o bin3r4p4.zoo
+        unzoo -x -o gap3r4p4.zoo
+
+    Now change    into  the 'gap3r4p4\bin'     subdirectory  and follow  the
+    instructions in the appropriate readme file, e.g., 'README.DOS'.
+
+    How to install GAP on a UNIX computer
+    -------------------------------------
+
+    First go to a directory where you want to install GAP,   e.g.,  your home
+    directory or '/usr/local/lib/'.  GAP will  be installed in a subdirectory
+    called 'gap3r4p4/' of this directory.  You can later move  GAP to another
+    location, for example you can first install it in your home directory and
+    once it works move it to '/usr/local/lib/'.
+
+    Get the distribution 'gap3r4p4.zoo'  and the source for  the zoo  archive
+    extractor 'unzoo.c'.  How  you can get those  files is  described  in the
+    section "How to   get GAP".   The usual  way  would  be to  get it   with
+    'ftp'onto  your machine.    Remember  that the  distribution consists  of
+    binary files and that you must transmit them in binary mode.
+
+    Compile the zoo archive extractor 'unzoo' with the command
+
+        cc  -o unzoo  -DSYS_IS_UNIX  -O unzoo.c
+
+    Unpack the distribution with the command
+
+        unzoo -x -o gap3r4p4.zoo
+
+    Change   into the  source directory  'gap3r4p4/src/',  print the list  of
+    possible targets  with the command  'make',  select the  target that fits
+    best, and then compile the kernel with the command
+
+        make  <target>
+        cp gap ../bin
+
+    Alternatively we provide ready compiled executables for  the some popular
+    systems on our 'ftp' server in the 'bin/' subdirectory.
+
+    Change into  the directory 'gap3r4p4/bin/' and  edit the script 'gap.sh',
+    which starts GAP, according to the instructions in  this file.  Then copy
+    this script to  a directory in your search path, e.g., '~/bin/', with the
+    command
+
+        cp gap.sh ~/bin/gap
+
+    When you  later move GAP   to another location  you  must  only edit this
+    script.
+
+    Try something in GAP,  e.g., the following exercises GAP quite a bit
+
+        gap> m11 := Group((1,2,3,4,5,6,7,8,9,10,11),(3,7,11,8)(4,10,5,6));;
+        gap> Number( ConjugacyClasses( m11 ) );
+
+    The result should be 10.
+
+    The full   manual is, to put  it  mildly,  now  rather long  (almost 1600
+    pages).  For  this  reason, it  may  be  more convenient   just to *print
+    selected  chapters*. This can  be  done  using  the  \includeonly LaTeX
+    command,  which  is  present in    'manual.tex'  (around line 240),   but
+    commented out. To use  this, you must first  *LaTeX the whole  manual* as
+    normal, to  obtain  the complete set of   '.aux' files and determine  the
+    pages and numbers of  all the chapters  and sections. After that, you can
+    edit 'manual.tex' to uncomment  the \includeonly command and select the
+    chapters you want. A good start can be to include only the first chapter,
+    from  the    file  'aboutgap.tex',   by     editing the  line   to   read
+    \includeonly{aboutgap}.  The  next step is  to LaTeX  the manual again.
+    This time only the   selected chapter(s) and  the  table of contents  and
+    indices will be  processed, producing a  shorter 'dvi' file  that you can
+    print by whatever means applies locally.
+
+    you@ernie:~/gap3r4p4/doc > latex manual
+    # many messages about undefined references, 1600 pages output	
+    you@ernie:~/gap3r4p4/doc > vi manual.tex
+    # edit line 241 to include only 'aboutgap'
+    you@ernie:~/gap3r4p4/doc > latex manual
+    # pages 0-196 and 1503-1553 only output no warnings
+    you@ernie:~/gap3r4p4/doc > ls -l manual.dvi
+    -rw-rw-r--   1 you     1277496 Apr  3 14:48 manual.dvi
+    # the full manual is nearly 5MB
+    you@ernie:~/gap3r4p4/doc > lp -d manual.dvi
+ 
+Thats  all, finally you  are  done.  We  hope  that you  will enjoy using
+{\GAP}.  If you have problems, do not hesitate to contact us.
+
+
+The Future of GAP
+=================
+                                                 See ye not all these things?
+                                                       Verily I say unto you,
+                                                 there shall not be left here
+                                                      one stone upon another,
+                                               that shall not be thrown down.
+                                                               (Matthew 24:2)
+
+    Clearly  GAP will  contain  bugs, as  any  system of  this  size,  though
+    currently we know none.   Also there are  things that we  feel  are still
+    missing, and that we would like to include into GAP.  We will continue to
+    improve and extend GAP.  We will release new versions quite regulary now,
+    and about three or  four upgrades a year are planned.   Make sure to  get
+    these, since they will in particular contain bug-fixes.
+
+    We are committed  however,  to staying  upward compatible  from now on in
+    future releases.   That means  that  everything  that works now will also
+    work in those future releases.   This is different from the quite radical
+    step from GAP 2.4 to GAP 3.1, in which almost everything was changed.
+
+    Of course, we have ideas about what we want to have in future versions of
+    GAP.   However  we   are  also   looking  forward  to  your  comments  or
+    suggestions.
+
+
+The GAP Forum
+=============
+
+    We have also established a  GAP forum, where interested users can discuss
+    GAP related topics by e-mail.  In particular this  forum is for questions
+    about GAP, general comments, bug  reports, and maybe bug  fixes.  We, the
+    developers  of  GAP,  will  read  this  forum  and  answer questions  and
+    comments, and distribute bug fixes.  Of course others are also invited to
+    answer questions,  etc.  We will also announce future  releases of GAP on
+    this forum.   So  in order to be informed about bugs and  their  fixes as
+    well as about additions to GAP we recommend that you subscribe to the GAP
+    forum.
+
+    To subscribe send a message to 'miles@math.rwth-aachen.de' containing the
+    line 'subscribe gap-forum <your-name>', where  <your-name> should be your
+    full name, not your e-mail address.  You will receive an acknowledgement,
+    and from then on all messages sent to 'gap-forum@math.rwth-aachen.de'.
+
+    'miles@math.rwth-aachen.de' also  accepts the  following requests: 'help'
+    for  a short  help  on  how  to  use 'miles',  'unsubscribe gap-forum' to
+    unsubscribe again, 'recipients gap-forum' to get a list of subscribers.
+
+    If you have technical or installation problems, we suggest that you write
+    to 'gap-trouble@math.rwth-aachen.de' instead  of  the GAP forum,  as such
+    discussions are usually not very interesting for a larger audience.  Your
+    e-mail message will be  read by several people  here, and we shall try to
+    provide support.

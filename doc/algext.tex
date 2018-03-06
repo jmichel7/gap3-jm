@@ -1,0 +1,423 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  algext.tex                  GAP documentation            Alexander Hulpke
+%%
+%A  @(#)$Id: algext.tex,v 1.2 1997/01/21 14:33:34 gap Exp $
+%%
+%Y  Copyright (C)  1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes algebraic extensions.
+%%
+%H  $Log: algext.tex,v $
+%H  Revision 1.2  1997/01/21 14:33:34  gap
+%H  vfelsch removed mentioning degree 15 and
+%H  fixed some examples, in particular for DecomPoly
+%H
+%H  Revision 1.1.1.1  1996/12/11 12:36:42  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.1  1994/08/31  12:14:02  mschoene
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Algebraic extensions of fields}
+\index{Field Extensions}
+
+If we adjoin a root $\alpha$ of an irreducible polynomial $p \in K[x]$ to
+the field $K$ we get an *algebraic extension* $K(\alpha)$, which is again
+a field.  By Kronecker\'s construction, we may identify $K(\alpha)$ with
+the factor ring $K[x]/(p)$, an identification that also provides a method
+for computing in these extension fields.
+
+Currently \GAP\ only allows extension fields of fields $K$, when $K$
+itself is not an extension field.
+
+As it is planned to modify the representation of field extensions to
+unify vector space structures and to speed up computations, {\bf All
+information in this chapter is subject to change in future versions}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AlgebraicExtension}
+
+'AlgebraicExtension( <pol> )'
+
+constructs the algebraic extension <L> corresponding to the polynomial
+<pol>.  <pol> must be an irreducible polynomial defined over a
+``defining\'\' field <K>.  The elements of <K> are embedded into <L> in
+the canonical way.  As <L> is a field, all field functions are applicable
+to <L>.  Similarly, all field element functions apply to the elements of
+<L>.
+
+<L> is considered implicitely to be a field over the subfield <K>.  This
+means, that functions like 'Trace' and 'Norm' relative to subfields are
+not supported.
+
+|    gap> x:=X(Rationals);;x.name:="x";;
+    gap> p:=x^4+3*x^2+1;
+    x^4 + 3*x^2 + 1
+    gap> e:=AlgebraicExtension(p);
+    AlgebraicExtension(Rationals,x^4 + 3*x^2 + 1)
+    gap> e.name:="e";;
+    gap> IsField(e);
+    true
+    gap> y:=X(GF(2));;y.name:="y";;
+    gap> q:=y^2+y+1;
+    Z(2)^0*(y^2 + y + 1)
+    gap> f:=AlgebraicExtension(q);
+    AlgebraicExtension(GF(2),Z(2)^0*(y^2 + y + 1))|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAlgebraicExtension}
+\index{test!for algebraic extension}
+
+'IsAlgebraicExtension( <D> )'
+
+'IsAlgebraicExtension' returns 'true' if the object <D> is an algebraic
+field extension and 'false' otherwise.
+
+More  precisely, 'IsAlgebraicExtension'  tests whether  <D> is an algebraic
+field  extension  record  (see  "Algebraic  Extension  Records").  So,  for
+example,   a  matrix   ring  may   in  fact   be  a  field  extension,  yet
+'IsAlgebraicExtension' would return 'false'.
+
+|    gap> IsAlgebraicExtension(e);
+    true
+    gap> IsAlgebraicExtension(Rationals);
+    false|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RootOf}
+\index{primitive element}
+
+'RootOf( <pol> )'
+
+returns a root of the irreducible polynomial <pol> as element of the
+corresponding extension field 'AlgebraicExtension(<pol>)'.  This root is
+called the *primitive element* of this extension.
+
+% No assumptions on *which* root (as a complex number) is selected can
+% be made.
+
+|    gap> r:=RootOf(p);
+    RootOf(x^4 + 3*x^2 + 1)
+    gap> r.name:="alpha";;|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebraic Extension Elements}
+\index{type!algebraic elements}
+\index{Operations for algebraic elements}
+
+According  to  Kronecker\'s  construction,  the  elements  of  an algebraic
+extension are considered to be polynomials in the primitive element. Unless
+they  are already in the defining field (in which case they are represented
+as  elements of this field), they are  represented by records in \GAP\ (see
+"Extension  Element  Records").  These  records  contain a representation a
+polynomial  in the primitive  element. The extension  corresponding to this
+primitive element is the default field for the algebraic element.
+
+The usual field operations are applicable to algebraic elements.
+
+|    gap> r^3/(r^2+1);
+    -1*alpha^3-1*alpha
+    gap> DefaultField(r^2);
+    e|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set functions for Algebraic Extensions}
+\index{membership test!for algebraic extensions}
+\index{in!for algebraic Elements}
+\index{Random!for algebraic Extensions}
+
+As algebraic extensions are fields, all set theoretic functions are
+applicable to algebraic elements.  The following two routines are treated
+specially\:
+
+\vspace{5mm}
+'in'
+
+tests,  whether a given object is  contained in an algebraic extension. The
+base  field  is  embedded  in  the  natural  way  into  the  extension. Two
+extensions are considered to be distinct, even if the minimal polynomial of
+one has a root in the other one.
+
+|    gap> r in e;5 in e;
+    true
+    true
+    gap> p1:=Polynomial(Rationals,MinPol(r^2));
+    x^2 + 3*x + 1
+    gap> r2:=RootOf(p1);
+    RootOf(x^2 + 3*x + 1)
+    gap> r2 in e;
+    false|
+
+\vspace{5mm}
+'Random'
+
+A random algebraic element is computed by taking a linear combination of the
+powers of the primitive element with random coefficients from the ground
+field.
+
+|    gap> ran:=Random(e);
+    -1*alpha^3-4*alpha^2|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsNormalExtension}
+\index{test!for normal extension}
+
+'IsNormalExtension(<L>)'
+%'IsNormalExtension(<L>,<K>)'
+
+An algebraic extension field is called a *normal extension*, if it is a
+splitting field of the defining polynomial.  The second version returns
+whether <L> is a normal extension of <K>.  The first version returns
+whether <L> is a normal extension of its definition field.
+
+|    gap> IsNormalExtension(e);
+    true
+    gap> p2:=x^4+x+1;;
+    gap> e2:=AlgebraicExtension(p2);
+    AlgebraicExtension(Rationals,x^4 + x + 1)
+    gap> IsNormalExtension(e2);
+    false|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MinpolFactors}
+
+'MinpolFactors( <L> )'
+
+returns the factorization of the defining polynomial of <L> over <L>.
+
+|    gap> X(e).name:="X";;
+    gap> MinpolFactors(e);
+    [ X + (-1*alpha), X + (-1*alpha^3-3*alpha), X + (alpha), 
+      X + (alpha^3+3*alpha) ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GaloisGroup for Extension Fields}
+\index{Galois group!of an extension field}
+\index{automorphism group!of an extension field}
+
+'GaloisGroup( <L> )'
+
+returns the Galois group of the field <L> if <L> is a normal extension
+and issues an error if not.  The Galois group is a group of extension
+automorphisms (see "ExtensionAutomorphism").
+
+The computation of a Galois group is computationally relatively hard,
+and can take significant time.
+
+|    gap> g:=GaloisGroup(f);
+    Group( ExtensionAutomorphism(AlgebraicExtension(GF(2),Z(2)^0*(y^
+    2 + y + 1)),RootOf(Z(2)^0*(y^2 + y + 1))+Z(2)^0) )
+    gap> h:=GaloisGroup(e);
+    Group( ExtensionAutomorphism(e,alpha^3+
+    3*alpha), ExtensionAutomorphism(e,-1*alpha), ExtensionAutomorphism(e,
+    -1*alpha^3-3*alpha) )
+    gap> Size(h);
+    4
+    gap> AbelianInvariants(h);
+    [ 2, 2 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ExtensionAutomorphism}
+\index{field homomorphisms!of algebraic extensions}
+
+'ExtensionAutomorphism( <L>, <img> )'
+
+is the automorphism of the extension <L>, that maps the primitive root of
+<L> to <img>.  As it is a field automorphism, section "Field
+Homomorphisms" applies.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Field functions for Algebraic Extensions}
+\index{Norm!for algebraic extensions}
+\index{Trace!for algebraic extensions}
+\index{DefaultField!for algebraic extensions}
+\index{Field!for algebraic extensions}
+
+As already mentioned, algebraic extensions are fields.  Thus all field
+functions like 'Norm' and 'Trace' are applicable.
+
+|    gap> Trace(r^4+2*r);
+    14
+    gap> Norm(ran);
+    305|
+
+'DefaultField' always returns the algebraic extension, which contains the
+primitive element by which the number is represented, see "Algebraic
+Extension Elements".
+
+|    gap> DefaultField(r^2);
+    e|
+
+As subfields are not yet supported, 'Field' will issue an error, if
+several elements are given, or if the element is not a primitive element
+for its default field.
+
+You can create a polynomial ring over an algebraic extension to which all
+functions described in "Ring Functions for Polynomial Rings" can be
+applied, for example you can factor polynomials.  Factorization is done
+--- depending on the polynomial --- by factoring the squarefree norem or
+using a hensel lift (with possibly added lattice reduction) as described
+in \cite{Abb89}, using bounds from \cite{BTW93}.
+
+|    gap> X(e).name:="X";;
+    gap> p1:=EmbeddedPolynomial(PolynomialRing(e),p1);
+    X^2 + 3*X + 1
+    gap> Factors(p1);
+    [ X + (-1*alpha^2), X + (alpha^2+3) ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebraic Extension Records}
+\index{record fields!for algebraic extension fields}
+
+Since every algebraic extension is a field, it is represented as a
+record.  This record contains all components, a field record will contain
+(see "Field Records").  Additionally, it contains the components
+'isAlgebraicExtension', 'minpol', 'primitiveElm' and may contain the
+components 'isNormalExtension', 'minpolFactors' and 'galoisType'.
+
+'isAlgebraicExtension': \\
+    is always 'true'. This indicates that <F> is an algebraic extension.
+
+'minpol': \\
+    is the defining polynomial of <F>.
+
+'primitiveElm': \\
+    contains 'RootOf(<F>.minpol)'.
+
+'isNormalExtension': \\
+     indicates, whether <F> is a normal extension field.
+
+'minpolFactors': \\
+    contains a factorization of '<F>.minpol' over <F>.
+
+'galoisType': \\
+    contains the Galois type of the normal closure of <F>.
+    See section "GaloisType".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Extension Element Records}
+\index{record fields!for extension elements}
+
+Elements of an algebraic extension are represented by a record.  The
+record for the element <e> of <L> contains the components
+'isAlgebraicElement', 'domain' and 'coefficients'\:
+
+'isAlgebraicElement': \\
+    is always 'true', and indicates, that <e> is an algebraic element.
+
+'domain': \\
+    contains <L>.
+
+'coefficients': \\
+    contains the coefficients of <e> as a polynomial in the primitive
+    root of <L>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAlgebraicElement}
+\index{test!for algebraic element}
+
+'IsAlgebraicElement( <obj> )'
+
+returns 'true' if obj is an algebraic element, i.e., an element of an
+algebraic extension, that is not in the defining field, and 'false'
+otherwise.
+
+|    gap> IsAlgebraicElement(r);
+    true
+    gap> IsAlgebraicElement(3);
+    false|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebraic extensions of the Rationals}
+
+The following sections describe functions that are specific to algebraic
+extensions of ${Q\mskip-11mu\prime\,\,}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DefectApproximation}
+\index{defect}
+
+'DefectApproximation( <L> )'
+
+computes a multiple of the defect of the basis of <L>, given by the
+powers of the primitive element.  The *defect* indicates, which
+denominator is necessary in the coefficients, to express algebraic
+integers in <L> as a linear combination of the base of <L>.
+'DefectApproximation' takes the maximal square in the discriminant as a
+first approximation, and then uses Berwicks and Hesses method (see
+\cite{Bra89}) to improve this approximation.  The number returned is not
+neccessarily the defect, but may be a proper multiple of it.
+
+|    gap> DefectApproximation(e);
+    1|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GaloisType}
+\index{Galois}
+
+'GaloisType( <L> )' \\
+'Galois( <f> )'
+
+The first version returns the number of the permutation isomorphism type
+of the Galois group of the normal closure of <L>, considered as a
+transitive permutation group of the roots of the defining polynomial (see
+"The Transitive Groups Library").  The second version returns the Galois
+type of the splitting field of <f>.  Identification is done by factoring
+appropriate Galois resolvents as proposed in \cite{MS85}.  This function
+is provided for rational polynomials of degree up to 15.  However, it may
+be not feasible to call this function for polynomials of degree 14 or 15,
+as the involved computations may be enormous.  For some polynomials of
+degree 14, a complete discrimination is not yet possible, as it would
+require computations, that are not feasible with current factoring
+methods.
+
+|    gap> GaloisType(e);
+    2
+    gap> TransitiveGroup(e.degree,2);
+    E(4) = 2[x]2|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ProbabilityShapes}
+
+'ProbabilityShapes( <pol> )'
+
+returns a list of numbers, which contains most likely the isomorphism
+type of the galois group of <pol> (see "GaloisType").  This routine only
+applies the cycle structure test according to Tschebotareff\'s theorem.
+Accordingly, it is very fast, but the result is not guaranteed to be
+correct.
+
+|    gap> ProbabilityShapes(e.minpol);
+    [ 2 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DecomPoly}
+\index{decomposition!of polynomials}
+\index{ideal decomposition}
+
+'DecomPoly( <pol> )'\\
+'DecomPoly( <pol>, \"all\" )'
+
+returns an ideal decomposition of the polynomial <pol>.  An ideal
+decomposition is given by two polynomials <g> and <h>, such that $pol$
+divides $(g\circ h)$.  By the Galois correspondence any ideal
+decomposition corresponds to a block system of the Galois group.  The
+polynomial <g> defines a subfield $K(\beta)$ of $K(\alpha)$ with
+$h(\alpha)=\beta$.  The first form finds one ideal decomposition, while
+the second form finds all possible different ideal decompositions
+(i.e. all subfields).
+
+|    gap> d:=DecomPoly(e.minpol);
+    [ x^2 + 5, x^3 + 4*x ]
+    gap> p:=x^6+108;;
+    gap> d:=DecomPoly(p,"all");
+    [ [ x^2 + 108, x^3 ], [ x^3 + 108, x^2 ], 
+      [ x^3 - 186624, x^5 + 6*x^2 ], [ x^3 + 186624, x^5 - 6*x^2 ] ]
+    gap> Value(d[1][1],d[1][2]);
+    x^6 + 108|
+
+
+

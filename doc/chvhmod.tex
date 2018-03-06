@@ -1,0 +1,165 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvhmod.tex       CHEVIE documentation       Meinolf Geck, Frank Luebeck,
+%A                                                Jean Michel, G"otz Pfeiffer
+%%
+%Y  Copyright (C) 1992 - 1996  Lehrstuhl D f\"ur Mathematik, RWTH Aachen, IWR
+%Y  der Universit\"at Heidelberg, University of St. Andrews, and   University
+%Y  Paris VII.
+%%
+%%  This  file  contains  the  description  of  the  GAP functions of CHEVIE
+%%  dealing with Hecke modules.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{Parabolic modules for Iwahori-Hecke algebras}
+
+Let $H$  be the  Hecke algebra  of the Coxeter  group $W$  with Coxeter
+generating set  $S$, and let $I$  be a subset  of $S$. Let $\chi$  be a
+one-dimensional  character of  the parabolic  subalgebra $H_I$  of $H$.
+Then $H\otimes_{H_I}\chi$  (the induced  representation of  $\chi$ from
+$H_I$  to  $H$)  is  naturally  a  $H$-module,  with  a  natural  basis
+$MT_w=T_w\otimes 1$ indexed  by the reduced-$I$ elements  of $W$ (i.e.,
+those elements $w$ such that $l(ws)>l(w)$ for any $s\in I$).
+
+The module  action of  an generator  $T_s$ of  $H$ which  satisfies the
+quadratic  relation  $(T_s-p_s)(T_s-q_s)=0$  is  given  in  this  basis
+by\:  $$T_s\cdot MT_w=\left\{\begin{array}{cl}
+\chi(T_{w^{-1}sw})MT_w,&
+\text{if  $sw$ is  not reduced-$I$ (then $w^{-1}sw\in  I$).}\\
+-p_s q_sMT_{sw}+(p_s+q_s)MT_w,&
+\text{if $sw\<w$ is reduced-$I$.}\\
+MT_{sw},& \text{if $sw>w$ is reduced-$I$.}\\
+\end{array}\right.$$
+
+Kazhdan-Lusztig bases of  an Hecke module are also defined  in the same
+circumstances when Kazhdan-Lusztig bases of the algebra can be defined,
+but only the case  of the base 'C\'' for $\chi$  the sign character has
+been implemented for now.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Construction of Hecke module elements of the $MT$ basis}
+\index{ModuleBasis}
+
+'ModuleBasis( <H>, \"MT\"  [, <I> [,<chi>]] )'
+
+<H> should  be an  Iwahori-Hecke algebra  of a  Coxeter group  <W> with
+Coxeter generating set <S>, <I> should be a subset of <S> (specified by
+a list of  the names of the  generators in <I>), and <chi>  should be a
+one-dimensional character of the parabolic subalgebra of <H> determined
+by <I>, represented by the list of its values on $\{T_s\}_{s\in I}$ (if
+<chi>  takes the  same  value on  all  generators of  $H_I$  it can  be
+represented by a single value).
+
+The result is a function which can be used to make elements of the 'MT'
+basis of the Hecke module associated to <I> and <chi>.
+
+If  omitted,  <I>  is  assumed to  be  the  first  'W.semiSimpleRank-1'
+generators of $W$ (this makes sense for an affine Weyl group where they
+generate the corresponding linear Weyl group), and <chi> is taken to be
+equal to $-1$ (which specifies the sign character of $H$).
+
+It  is convenient  to assign  this function  with a  shorter name  when
+computing with elements of the Hecke  module. In what follows we assume
+that we have done the assignment\:\
+
+|    gap> W:=CoxeterGroup("A",2);;Wa:=Affine(W);;
+    gap> q:=X(Rationals);;q.name:="q";;
+    gap> H:=Hecke(Wa,q);
+    Hecke(~A2,q)
+    gap> MT:=ModuleBasis(H,"MT");
+    function ( arg ) ... end|
+
+'MT( <w> )'
+
+Here  <w> is  an element  of the  Coxeter group  'Group(H)'. The  basis
+element  $MT_w$ is  returned if  $w$ is  reduced-<I>, and  otherwise an
+error is signaled.
+
+
+'MT( <elts>, <coeffs>)'
+
+In this form, 'elts' is a list of elements of 'Group(H)' and 'coeffs' a
+list  of coefficients  which  should be  of the  same  length 'k'.  The
+element 'Sum([1..k],i->coeffs[i]\*MT(elts[i]))' is returned.
+
+'MT( <list> )'
+
+'MT( <s1>, .., <sn> )'
+
+In  the above  two  forms, the  \GAP\  list <list>  or  the \GAP\  list
+'[<s1>,..,<sn>]'  represents the  Coxeter word  for an  element <w>  of
+'Group(H)'. The basis element $MT_w$ is returned if $w$ is reduced-<I>,
+and otherwise an error is signaled.
+
+The way elements of the Hecke module are printed depends on
+'CHEVIE.PrintHecke'.   If   'CHEVIE.PrintHecke=rec(GAP:=true)',   they  are
+printed  in a way which  can be input back  in \GAP. When you load \CHEVIE,
+the 'PrintHecke' is initially set to 'rec()'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Construction of Hecke module elements of the primed $MC$ basis}
+
+'ModuleBasis( <H>, \"MC\'\" [, <I>] )'
+
+<H> should be  an Iwahori-Hecke algebra with all parameters  a power of
+the same indeterminate  of a Coxeter group <W>  with Coxeter generating
+set <S> and <I>  should be a subset of <S> (specified by  a list of the
+names of the  generators in <I>). The character <chi>  does not have to
+be specified since in this case only <chi>'=-1' has been implemented.
+
+If  omitted,  <I>  is  assumed to  be  the  first  'W.semiSimpleRank-1'
+generators of $W$ (this makes sense for an affine Weyl group where they
+generate the corresponding linear Weyl group).
+
+The result  is a  function which can  be used to  make elements  of the
+'MC\''  basis of  the  Hecke  module associated  to  <I>  and the  sign
+character.  In  this particular  case,  the  $MC^\prime$ basis  can  be
+defined for  an reduced-$I$ element $w$  in terms of the  $MT$ basis by
+$MC^\prime_w=C^\prime_w MT_1$.
+
+|    gap> H:=Hecke(Wa,q^2);
+    Hecke(~A2,q^2)
+    gap> MC:=ModuleBasis(H,"MC'");
+    #warning: MC\' basis: q chosen as 2nd root of q\^2
+    function ( arg ) ... end|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{Operations for Hecke module elements}
+
+'+', '-':\\ one can add or subtract two Hecke module elements.
+
+'<Basis>(<x>)':\\ this  call will convert  Hecke module element  <x> to
+basis  '<Basis>'. With  the  same initializations  as  in the  previous
+sections, we have\:
+
+|    gap> MT:=ModuleBasis(H,"MT");;
+    gap> MC(MT(1,2,3));
+    -MC'()+qMC'(3)-q^2MC'(1,3)-q^2MC'(2,3)+q^3MC'(1,2,3)|
+
+'\*':\\  one  can  multiply  on   the  left  an  Hecke  module  element
+by  an  element of  the  corresponding  Hecke  algebra. With  the  same
+initializations as in the previous sections, we have\:
+
+|    gap> H:=Hecke(Wa,q);
+    Hecke(~A2,q)
+    gap> MT:=ModuleBasis(H,"MT");;
+    gap> T:=Basis(H,"T");
+    function ( arg ) ... end
+    gap> T(1)*MT(1,2,3);
+    qMT(2,3)+(q-1)MT(1,2,3)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{CreateHeckeModuleBasis}
+\index{CreateHeckeModuleBasis}
+
+'CreateHeckeModuleBasis(<basis>, <ops>, <algebraops>)'
+
+This function is completely parallel to the function 'CreateHeckeBasis'.
+See the description  of this last function. The only  difference is that
+it is not '<ops>.T' which is  required to be bound, but '<ops>.MT' which
+should contain  a function which takes  an element in the  basis <basis>
+and converts it to the 'MT' basis.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

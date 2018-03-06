@@ -1,0 +1,214 @@
+<html><head><title>GAP3 Manual: 104 CHEVIE String and Formatting functions</title></head>
+<body bgcolor="ffffff">
+<h1>104 CHEVIE String and Formatting functions</h1>
+<P><P><P>
+<strong>CHEVIE</strong> enhances the facilities of <strong>GAP3</strong>3 for formatting and displaying
+objects.
+<P>
+First,  it provides  some useful  string functions,  such as <code>Replace</code>, and
+<code>IntListToString</code>.
+<P>
+Second,  it enforces a general  policy on how to  format and print objects.
+The  most  basic  method  which  should  be  provided  for an object is the
+<code>Format</code>  method. This  is a  method whose  second argument  is a record of
+options  to  control  printing/formatting  the  object.  When  the  second
+argument  is absent,  or equivalently  the empty  record, one  has the most
+basic formatting, which is used to make the <code>Display</code> method of the object.
+When  the option  <code>GAP</code> is  set (that  is the  record second argument has a
+field  <code>GAP</code>), the output should  be a form which  can, as far as possible,
+read  back in <strong>GAP3</strong>. This  output is what is  used by default in the methods
+<code>String</code> and <code>Print</code>.
+<P>
+In  addition to the  above options, most  <strong>CHEVIE</strong> objects also provide the
+formatting  options <code>TeX</code> (resp.  <code>LaTeX</code>), to output  strings suitable for
+TeX  or LaTeX  typesetting. The  objects for  which this  makes sense (like
+polynomials)  provide  a  <code>Maple</code>  option  for  formatting to create output
+readable by Maple.
+<P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap104.htm#SECT001">Replace</a>
+<LI> <A HREF="chap104.htm#SECT002">IntListToString</a>
+<LI> <A HREF="chap104.htm#SECT003">FormatTable</a>
+<LI> <A HREF="chap104.htm#SECT004">Format</a>
+</ol>
+<A NAME="SECT001"><h2>104.1 Replace</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>Replace( <var>s</var> [, <var>s1</var>, <var>r1</var> [, <var>s2</var>, <var>r2</var> [...]]])</code>
+<P>
+Replaces in list <var>s</var> all (non-overlapping) occurrences of sublist <var>s1</var> by
+list <var>r1</var>, then all occurrences of <var>s2</var> by <var>r2</var>, etc...
+<P>
+<pre>    gap> Replace("aabaabaabbb","aabaa","c","cba","def","bbb","ult");
+    "default"</pre>
+<P><A NAME="SECT002"><h2>104.2 IntListToString</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>IntListToString( <var>part</var> [, <var>brackets</var>] )</code>
+<P>
+<var>part</var>  must be a list  of positive integers. If all  of them are smaller
+than 10 then a string of digits corresponding to the entries of <var>part</var> is
+returned.  If  an entry is  <I> &ge; 10</I>  then  the elements of  <var>part</var>  are
+converted to strings, concatenated  with separating commas and the result
+surrounded by brackets.  By default <code>()</code> brackets  are used.  This may be
+changed  by giving  as  second argument a  length   two string specifying
+another kind of brackets.
+<P>
+<pre>    gap> IntListToString( [ 4, 2, 2, 1, 1 ] );
+    "42211"
+    gap> IntListToString( [ 14, 2, 2, 1, 1 ] );
+    "(14,2,2,1,1)"
+    gap> IntListToString( [ 14, 2, 2, 1, 1 ], "{}" );
+    "{14,2,2,1,1}" </pre>
+<P><A NAME="SECT003"><h2>104.3 FormatTable</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>FormatTable( <var>table</var>, <var>options</var> )</code>
+<P>
+This is a general routine to format a table (a rectangular array, that is a
+list of lists of the same length).
+<P>
+<DL><DT>The option is a record whose fields can be:<DD>
+</DL><P>
+<DL><DT><code>rowLabels</code>:<DD>  at least this  field must be  present. It will contain labels
+for the rows of the table.
+</DL><P>
+<DL><DT><code>columnLabels</code>:<DD> labels for the columns of the table.
+</DL><P>
+<DL><DT><code>rowsLabel</code>:<DD> label for the first column (containing the <code>rowLabels</code>).
+</DL><P>
+<DL><DT><code>separators</code>:<DD> by default, a separating line is put after the line of column
+labels.  This  option  contains  the  indices  of  lines after which to put
+separating lines, so the default is equivalent to <code>.separators:=[0]</code>.
+</DL><P>
+<DL><DT><code>rows</code>:<DD>  a list  of indices.  If given,  only the  rows specified  by these
+indices are formatted.
+</DL><P>
+<DL><DT><code>columns</code>:<DD> a list of indices. If given, only the columns specified by these
+indices are formatted.
+</DL><P>
+<DL><DT><code>TeX</code>:<DD> if set to <code>true</code>, TeX output is generated to format the table.
+</DL><P>
+<DL><DT><code>LaTeX</code>:<DD>  <code>TeX</code>  also  should  be  set  if  this  is  used. LaTeX output is
+generated  using the package <code>longtable</code>, so the output can be split across
+several pages.
+</DL><P>
+<DL><DT><code>columnRepartition</code>:<DD>  This is  used to  specify how  to split  the table in
+several parts typeset one after the other. The variable <code>columnRepartition</code>
+should  be a list of integers to specify  how many columns to print in each
+part.  When using plain  text output, this  is unnecessary as <code>FormatTable</code>
+can  automatically split the table into parts not exceeding <code>screenColumns</code>
+columns, if this option is specified.
+</DL><P>
+<DL><DT><code>screenColumns</code>:<DD>  As explained above, is used to split the table when doing
+plain  text output. A  good value to  set it is  <code>SizeScreen()[1]</code>, so each
+part of the table does not exceed the screen width.
+</DL><P>
+<pre>    gap> t:=IdentityMat(3);;o:=rec(rowLabels:=[1..3]);;
+    gap> Print(FormatTable(t,o));
+    1 |1 0 0
+    2 |0 1 0
+    3 |0 0 1
+    gap> o.columnLabels:=[6..8];;Print(FormatTable(t,o));
+      |6 7 8
+    _________
+    1 |1 0 0
+    2 |0 1 0
+    3 |0 0 1
+    gap> o.rowsLabel:="N";;Print(FormatTable(t,o));
+    N |6 7 8
+    _________
+    1 |1 0 0
+    2 |0 1 0
+    3 |0 0 1
+    gap> o.separators:=[0,2];;Print(FormatTable(t,o));
+    N |6 7 8
+    _________
+    1 |1 0 0
+    2 |0 1 0
+    _________
+    3 |0 0 1</pre>
+<P><A NAME="SECT004"><h2>104.4 Format</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>Format( <var>object</var>[, <var>options</var>] )</code>
+<P>
+<A name = "I4"></a>
+
+<code>FormatGAP( <var>object</var>[, <var>options</var>] )</code>
+<P>
+<A name = "I5"></a>
+
+<code>FormatMaple( <var>object</var>[, <var>options</var>] )</code>
+<P>
+<A name = "I6"></a>
+
+<code>FormatTeX( <var>object</var>[, <var>options</var>] )</code>
+<P>
+<A name = "I7"></a>
+
+<code>FormatLaTeX( <var>object</var>[, <var>options</var>] )</code>
+<P>
+<code>Format</code>  is a  general routine  for formatting  an object.  <var>options</var> is a
+record  of options; if not given,  it is equivalent to <code><var>options</var>:=rec()</code>.
+The  routines <code>FormatGAP</code>, <code>FormatMaple</code>, <code>FormatTeX</code> and <code>FormatLaTeX</code> add
+some  options (or setup a record with some options if no second argument is
+given);    respectively   they   set   up   <code>GAP:=true</code>,   <code>Maple:=true</code>,
+<code>TeX:=true</code>, and for <code>FormatLaTeX</code> both <code>TeX:=true</code> and <code>LaTeX:=true</code>.
+<P>
+If  <var>object</var> is a  record, <code>Format</code> looks  if it has a <code>.operations.Format</code>
+method  and  then  calls  it.  Otherwise,  <code>Format</code>  knows how to format in
+various ways: polynomials, cyclotomics, lists, matrices, booleans.
+<P>
+Here are some examples.
+<P>
+<pre>    gap> q:=X(Rationals);;q.name:="q";;
+    gap> Format(q^-3-13*q);
+    "-13q+q^-3"
+    gap> FormatGAP(q^-3-13*q);
+    "-13*q+q^-3"
+    gap> FormatMaple(q^-3-13*q);
+    "-13*q+q^(-3)"
+    gap> FormatTeX(q^-3-13*q);
+    "-13q+q^{-3}"</pre>
+<P>
+By default, <code>Format</code> tries to recognize cyclotomics which are in quadratic
+number fields. If the option <code>noQuadrat:=true</code> is given it does not.
+<P>
+<pre>    gap> Format(E(3)-E(3)^2);
+    "ER(-3)"
+    gap> Format(E(3)-E(3)^2,rec(noQuadrat:=true));
+    "-E3^2+E3"
+    gap> FormatTeX(E(3)-E(3)^2,rec(noQuadrat:=true));
+    "-\\zeta_3^2+\\zeta_3"
+    gap> FormatTeX(E(3)-E(3)^2);
+    "\\sqrt {-3}"
+    gap> FormatMaple(E(3)-E(3)^2);
+    "sqrt(-3)"</pre>
+<P>
+Formatting  of arrays gives  output usable for  typesetting if the <code>TeX</code> or
+<code>LaTeX</code> options are given.
+<P>
+<pre>    gap> m:=IdentityMat(3);;
+    gap> Print(Format(m),"\n");
+    1 0 0
+    0 1 0
+    0 0 1
+    gap> FormatTeX(m);
+    "1#0#0\\cr\n0#1#0\\cr\n0#0#1\\cr\n"
+    gap> FormatGAP(m);
+    "[[1,0,0],[0,1,0],[0,0,1]]"
+    gap> FormatLaTeX(m);
+    "1#0#0\\\\\n0#1#0\\\\\n0#0#1\\\\\n"</pre>
+<P><a href ="chap103.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap105.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

@@ -1,0 +1,256 @@
+<html><head><title>GAP3 Manual: 12 Rationals</title></head>
+<body bgcolor="ffffff">
+<h1>12 Rationals</h1>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+The <strong>rationals</strong>  form  a very important field.  On the one hand it is the
+quotient field of the integers (see <a href="chap010.htm">Integers</a>).  On the other hand it is
+the prime field of the fields of characteristic zero  (see <a href="chap015.htm">Subfields  of
+Cyclotomic Fields</a>).
+<P>
+The former comment suggests the representation actually used.  A rational
+is  represented   as   a   pair   of  integers,  called  <strong>numerator</strong>  and
+<strong>denominator</strong>.   Numerator  and  denominator are  <strong>reduced</strong>, i.e.,  their
+greatest common divisor is 1.  If  the denominator  is 1, the rational is
+in fact an integer and is represented as such.   The numerator holds  the
+sign of the rational, thus the denominator is always positive.
+<P>
+Because the underlying integer arithmetic can compute with arbitrary size
+integers, the  rational arithmetic is  always  exact, even  for rationals
+whose numerators and denominators have thousands of digits.
+<P>
+<pre>    gap> 2/3;
+    2/3
+    gap> 66/123;
+    22/41    # numerator and denominator are made relatively prime
+    gap> 17/-13;
+    -17/13    # the numerator carries the sign
+    gap> 121/11;
+    11    # rationals with denominator 1 (after cancelling) are integers</pre>
+<P>
+The first sections of  this chapter  describe  the  functions  that  test
+whether an object  is a rational (see <a href="chap012.htm#SECT001">IsRat</a>), and select the  numerator
+and denominator of a rational (see <a href="chap012.htm#SECT002">Numerator</a>, <a href="chap012.htm#SECT003">Denominator</a>).
+<P>
+The next sections describe  the rational operations (see <a href="chap012.htm#SECT006">Comparisons  of
+Rationals</a>, and <a href="chap012.htm#SECT007">Operations for Rationals</a>).
+<P>
+The <strong>GAP3</strong> object <code>Rationals</code> is the field domain  of all rationals.  All
+set  theoretic  functions  are applicable  to  this  domain (see  chapter
+<a href="chap004.htm">Domains</a>  and <a href="chap012.htm#SECT008">Set  Functions for  Rationals</a>).  Since <code>Rationals</code> is  a
+field all  field  functions are also  applicable  to this domain  and its
+elements (see chapter <a href="chap006.htm">Fields</a> and <a href="chap012.htm#SECT009">Field Functions for Rationals</a>).
+<P>
+All external functions are defined in the file <code>"LIBNAME/rational.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap012.htm#SECT001">IsRat</a>
+<LI> <A HREF="chap012.htm#SECT002">Numerator</a>
+<LI> <A HREF="chap012.htm#SECT003">Denominator</a>
+<LI> <A HREF="chap012.htm#SECT004">Floor</a>
+<LI> <A HREF="chap012.htm#SECT005">Mod1</a>
+<LI> <A HREF="chap012.htm#SECT006">Comparisons of Rationals</a>
+<LI> <A HREF="chap012.htm#SECT007">Operations for Rationals</a>
+<LI> <A HREF="chap012.htm#SECT008">Set Functions for Rationals</a>
+<LI> <A HREF="chap012.htm#SECT009">Field Functions for Rationals</a>
+</ol>
+<A NAME="SECT001"><h2>12.1 IsRat</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>IsRat( <var>obj</var> )</code>
+<P>
+<code>IsRat</code> returns <code>true</code> if <var>obj</var>,  which can be  an arbitrary object, is a
+rational and <code>false</code> otherwise.   Integers are rationals with denominator
+1,   thus <code>IsRat</code> returns  <code>true</code> for  integers.   <code>IsRat</code> will signal an
+error if <var>obj</var> is an unbound variable or a procedure call.
+<P>
+<pre>    gap> IsRat( 2/3 );
+    true
+    gap> IsRat( 17/-13 );
+    true
+    gap> IsRat( 11 );
+    true
+    gap> IsRat( IsRat );
+    false    # <code>IsRat</code> is a function, not a rational </pre>
+<P><A NAME="SECT002"><h2>12.2 Numerator</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>Numerator( <var>rat</var> )</code>
+<P>
+<code>Numerator</code>  returns  the numerator of the rational <var>rat</var>.   Because  the
+numerator holds the sign of the rational it may be any integer.  Integers
+are rationals  with  denominator  1, thus  <code>Numerator</code>  is  the  identity
+function for integers.
+<P>
+<pre>    gap> Numerator( 2/3 );
+    2
+    gap> Numerator( 66/123 );
+    22    # numerator and denominator are made relatively prime
+    gap> Numerator( 17/-13 );
+    -17    # the numerator holds the sign of the rational
+    gap> Numerator( 11 );
+    11    # integers are rationals with denominator 1 </pre>
+<P>
+<code>Denominator</code> (see <a href="chap012.htm#SECT003">Denominator</a>) is the counterpart to <code>Numerator</code>.
+<P><A NAME="SECT003"><h2>12.3 Denominator</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>Denominator( <var>rat</var> )</code>
+<P>
+<code>Denominator</code> returns the denominator of the rational <var>rat</var>.  Because the
+numerator  holds the  sign of  the rational  the denominator  is always a
+positive integer.   Integers are rationals  with  the denominator 1, thus
+<code>Denominator</code> returns 1 for integers.
+<P>
+<pre>    gap> Denominator( 2/3 );
+    3
+    gap> Denominator( 66/123 );
+    41    # numerator and denominator are made relatively prime
+    gap> Denominator( 17/-13 );
+    13    # the denominator holds the sign of the rational
+    gap> Denominator( 11 );
+    1    # integers are rationals with denominator 1 </pre>
+<P>
+<code>Numerator</code> (see <a href="chap012.htm#SECT002">Numerator</a>) is the counterpart to <code>Denominator</code>.
+<P><A NAME="SECT004"><h2>12.4 Floor</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>Floor(<var>r</var>)</code>
+<P>
+This function returns the largest integer smaller or equal to <var>r</var>.
+<P>
+<pre>    gap> Floor(-2/3);
+    -1
+    gap> Floor(2/3);
+    0</pre>
+<P><A NAME="SECT005"><h2>12.5 Mod1</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>Mod1(<var>r</var>)</code>
+<P>
+The  argument should  be a  rational or  a list.  If <var>r</var>  is a rational, it
+returns <code>(Numerator(<var>r</var>) mod Denominator(<var>r</var>))/Denominator(r)</code>. If <var>r</var> is a
+list, it returns <code>List(<var>r</var>,Mod1)</code>. This function is very useful for working
+in <I>&#x211A;/&#x2124;</I>.
+<P>
+<pre>    gap> Mod1([-2/3,-1,7/4,3]);
+    [ 1/3, 0, 3/4, 0 ]</pre>
+<P><A NAME="SECT006"><h2>12.6 Comparisons of Rationals</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code><var>q1</var> = <var>q2</var></code> <BR> 
+<code><var>q1</var> <> <var>q2</var></code>
+<P>
+The  equality operator <code>=</code> evaluates to  <code>true</code> if the two rationals <var>q1</var>
+and <var>q2</var> are  equal  and to <code>false</code>  otherwise.  The  inequality operator
+<code><></code> evaluates to   <code>true</code> if the  two rationals  <var>q1</var> and  <var>q2</var> are not
+equal and to <code>false</code> otherwise.
+<P>
+<pre>    gap> 2/3 = -4/-6;
+    true
+    gap> 66/123 &lt;> 22/41;
+    false
+    gap> 17/13 = 11;
+    false </pre>
+<P>
+<code><var>q1</var> < <var>q2</var></code> <BR> 
+<code><var>q1</var> <= <var>q2</var></code> <BR> 
+<code><var>q1</var> > <var>q2</var></code>   <BR> 
+<code><var>q1</var> >= <var>q2</var></code>
+<P>
+The operators  <code><</code>,  <code><=</code>, <code>></code>,  and  <code>=></code> evaluate  to  <code>true</code> if  the
+rational  <var>q1</var> is  less  than, less than or equal to,  greater than,  and
+greater than or equal to the rational <var>q2</var> and to <code>false</code> otherwise.
+<P>
+One rational <I>q<sub>1</sub> = n<sub>1</sub>/d<sub>1</sub></I> is less than  another <I>q<sub>2</sub> = n<sub>2</sub>/d<sub>2</sub></I> if and
+only if  <I>n<sub>1</sub> d<sub>2</sub> &lt; n<sub>2</sub> d<sub>2</sub></I>.  This  definition is of  course only valid
+because the  denominator of rationals  is always  defined to be positive.
+This   definition   also extends   to the comparison   of  rationals with
+integers, which are   interpreted   as  rationals with    denominator  1.
+Rationals can also  be compared  with objects of  other  types.  They are
+smaller than objects of any other type by definition.
+<P>
+<pre>    gap> 2/3 &lt; 22/41;
+    false
+    gap> -17/13 &lt; 11;
+    true </pre>
+<P><A NAME="SECT007"><h2>12.7 Operations for Rationals</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code><var>q1</var> + <var>q2</var></code>   <BR> 
+<code><var>q1</var> - <var>q2</var></code>   <BR> 
+<code><var>q1</var> * <var>q2</var></code> <BR> 
+<code><var>q1</var> / <var>q2</var></code>
+<P>
+The operators <code>+</code>,  <code>-</code>,  <code>*</code> and <code>/</code> evaluate to the  sum,  difference,
+product, and  quotient  of  the  two  rationals  <var>q1</var>  and <var>q2</var>.  For the
+quotient  <code>/</code>  <var>q2</var>  must of course be  nonzero, otherwise  an  error  is
+signalled.   Either  operand  may  also  be  an  integer  <var>i</var>,  which  is
+interpreted  as a  rational  with  denominator  1.   The result of  those
+operations is always reduced.  If, after  the  reduction, the denominator
+is 1, the rational is in fact an integer, and is represented as such.
+<P>
+<pre>    gap> 2/3 + 4/5;
+    22/15
+    gap> 7/6 * 2/3;
+    7/9    # note how the result is cancelled
+    gap> 67/6 - 1/6;
+    11    # the result is an integer </pre>
+<P>
+<code><var>q</var> ^ <var>i</var></code>
+<P>
+The powering operator <code>^</code> returns the <var>i</var>-th power  of the rational <var>q</var>.
+<var>i</var> must  be an integer.   If the  exponent <var>i</var>  is  zero, <code><var>q</var>^<var>i</var></code>  is
+defined as 1; if <var>i</var>  is positive, <code><var>q</var>^<var>i</var></code> is  defined as the <var>i</var>-fold
+product <code><var>q</var>*<var>q</var>*..*<var>q</var></code>; finally, if  <var>i</var> is negative, <code><var>q</var>^<var>i</var></code>  is
+defined as <code>(1/<var>q</var>)^-<var>i</var></code>.  In this case <var>q</var> must of course be nonzero.
+<P>
+<pre>    gap> (2/3) ^ 3;
+    8/27
+    gap> (-17/13) ^ -1;
+    -13/17    # note how the sign switched
+    gap> (1/2) ^ -2;
+    4 </pre>
+<P><A NAME="SECT008"><h2>12.8 Set Functions for Rationals</h2></a>
+<P><P><P>
+As  was already mentioned in the introduction of this  chapter the <strong>GAP3</strong>
+object <code>Rationals</code> is the  domain of all  rationals.  All  set  theoretic
+functions,  e.g.,  <code>Intersection</code>  and  <code>Size</code>,  are  applicable to  this
+domain.
+<P>
+<pre>    gap> Intersection( Rationals, [ E(4)^0, E(4)^1, E(4)^2, E(4)^3 ] );
+    [ -1, 1 ]    # <code>E(4)</code> is the complex square root of -1
+    gap> Size( Rationals );
+    "infinity" </pre>
+<P>
+This does not seem to be very useful.
+<P><A NAME="SECT009"><h2>12.9 Field Functions for Rationals</h2></a>
+<P><P><P>
+As was already mentioned  in the introduction  of this chapter the <strong>GAP3</strong>
+object <code>Rationals</code>  is the field of all  rationals.  All field functions,
+e.g., <code>Norm</code> and <code>MinPol</code> are applicable to this domain and its elements.
+However, since  the field of  rationals  is the  prime  field, all  those
+functions are trivial.  Therefore, <code>Conjugates( Rationals, <var>q</var> )</code> returns
+<code>[ <var>q</var> ]</code>, <code>Norm( Rationals, <var>q</var> )</code> and <code>Trace(  Rationals, <var>q</var> )</code> return
+<var>q</var>, and <code>CharPol( Rationals, <var>q</var> )</code> and  <code>MinPol( Rationals, <var>q</var> )</code> both
+return <code>[ -<var>q</var>, 1 ]</code>.
+<P><a href ="chap011.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap013.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

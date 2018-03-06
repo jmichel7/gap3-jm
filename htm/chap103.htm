@@ -1,0 +1,374 @@
+<html><head><title>GAP3 Manual: 103 CHEVIE utility functions</title></head>
+<body bgcolor="ffffff">
+<h1>103 CHEVIE utility functions</h1>
+<P><P>
+The  functions described below, used   in various parts  of the  <strong>CHEVIE</strong>\
+package, are of a general nature  and should really  be included in other
+parts of the <strong>GAP3</strong> library.  We include them here for  the moment for the
+commodity of the reader.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap103.htm#SECT001">SymmetricDifference</a>
+<LI> <A HREF="chap103.htm#SECT002">DifferenceMultiSet</a>
+<LI> <A HREF="chap103.htm#SECT003">Rotation</a>
+<LI> <A HREF="chap103.htm#SECT004">Rotations</a>
+<LI> <A HREF="chap103.htm#SECT005">Inherit</a>
+<LI> <A HREF="chap103.htm#SECT006">Dictionary</a>
+<LI> <A HREF="chap103.htm#SECT007">GetRoot</a>
+<LI> <A HREF="chap103.htm#SECT008">CharParams</a>
+<LI> <A HREF="chap103.htm#SECT009">CharName</a>
+<LI> <A HREF="chap103.htm#SECT010">PositionId</a>
+<LI> <A HREF="chap103.htm#SECT011">InductionTable</a>
+<LI> <A HREF="chap103.htm#SECT012">CharRepresentationWords</a>
+<LI> <A HREF="chap103.htm#SECT013">PointsAndRepresentativesOrbits</a>
+<LI> <A HREF="chap103.htm#SECT014">AbelianGenerators</a>
+</ol>
+<A NAME="SECT001"><h2>103.1 SymmetricDifference</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>SymmetricDifference( <var>S</var>, <var>T</var>)</code>
+<P>
+This  function returns  the symmetric  difference of  the sets <var>S</var> and <var>T</var>,
+which can be written in <strong>GAP3</strong> as
+<code>Difference(Union(x,y),IntersectionSet(x,y)</code>.
+<P>
+<pre>    gap> SymmetricDifference([1,2],[2,3]);
+    [ 1, 3 ]</pre>
+<P><A NAME="SECT002"><h2>103.2 DifferenceMultiSet</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>DifferenceMultiSet( <var>l</var>, <var>s</var> )</code>
+<P>
+This function returns the difference of the multisets <var>l</var> and <var>s</var>. That is,
+<var>l</var>  and <var>s</var> are lists  which may contain several  times the same item. The
+result is a list which is like <var>l</var>, excepted if an item occurs <I>a</I> times in
+<var>s</var>,  the first <I>a</I> occurrences  of this item in  <var>l</var> have been deleted (all
+the occurrences if <I>a</I> is greater than the times it occurred in <var>l</var>).
+<P>
+<pre>    gap> DifferenceMultiSet("ababcbadce","edbca");
+    "abbac"</pre>
+<P><A NAME="SECT003"><h2>103.3 Rotation</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>Rotation(<var>l</var>, <var>i</var>)</code>
+<P>
+This function returns <var>l</var> rotated <var>i</var> steps.
+<P>
+<pre>    gap> l:=[1..5];;
+    gap> Rotation(l,1);
+    [ 2, 3, 4, 5, 1 ]
+    gap> Rotation(l,0);
+    [ 1, 2, 3, 4, 5 ]
+    gap> Rotation(l,-1);
+    [ 5, 1, 2, 3, 4 ]</pre>
+<P><A NAME="SECT004"><h2>103.4 Rotations</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>Rotations(<var>l</var>)</code>
+<P>
+This function returns the list of rotations of the list <var>l</var>.
+<P>
+<pre>    gap> Rotations("abcd");
+    [ "abcd", "bcda", "cdab", "dabc" ]
+    gap> Rotations([1,0,1,0]);
+    [ [ 1, 0, 1, 0 ], [ 0, 1, 0, 1 ], [ 1, 0, 1, 0 ], [ 0, 1, 0, 1 ] ]</pre>
+<P><A NAME="SECT005"><h2>103.5 Inherit</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>Inherit(<var>rec1</var>,<var>rec2</var>[,<var>fields</var>])</code>
+<P>
+This  functions copies to  the record <var>rec1</var>  all the fields  of the record
+<var>rec2</var>. If an additional argument <var>fields</var> is given, it should be a list of
+field names, and then only the fields specified by <var>fields</var> are copied. The
+function returns the modified <var>rec1</var>.
+<P>
+<pre>    gap> r:=rec(a:=1,b:=2);
+    rec(
+      a := 1,
+      b := 2 )
+    gap> s:=rec(c:=3,d:=4);
+    rec(
+      c := 3,
+      d := 4 )
+    gap> Inherit(r,s);
+    rec(
+      a := 1,
+      b := 2,
+      c := 3,
+      d := 4 )
+    gap> r:=rec(a:=1,b:=2);
+    rec(
+      a := 1,
+      b := 2 )
+    gap> Inherit(r,s,["d"]);
+    rec(
+      a := 1,
+      b := 2,
+      d := 4 )</pre>
+<P><A NAME="SECT006"><h2>103.6 Dictionary</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>Dictionary()</code>
+<P>
+This  function  creates  a  dictionary  data  type. The created object is a
+record  with two functions: 
+<P>
+<DL><DT><code>Get(k)</code>:<DD>  get the value associated to key <code>k</code>; it returns <code>false</code> if there
+is no such key.
+</DL><P>
+<code>Insert(k,v)</code>  sets in the dictionary the value associated to key <code>k</code> to be
+<code>v</code>.
+<P>
+The main advantage compared to records is that keys may be of any type.
+<P>
+<pre>    gap> d:=Dictionary();
+    Dictionary with 0 entries
+    gap> d.Insert("a",1);
+    1
+    gap> d.Insert("b",2);
+    2
+    gap> d.Get("a");
+    1
+    gap> d.Get("c");
+    false
+    gap> d;
+    Dictionary with 2 entries</pre>
+<P><A NAME="SECT007"><h2>103.7 GetRoot</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>GetRoot( <var>x</var>, <var>n</var> [, <var>msg</var>])</code>
+<P>
+<var>n</var> must  be a  positive integer.  <code>GetRoot</code> returns  an <var>n</var>-th  root of
+<var>x</var>  when possible,  else  signals an  error. If  <var>msg</var>  is present  and
+<code>InfoChevie=Print</code> a  warning message is  printed about which  choice of
+root has been made, after printing <var>msg</var>.
+<P>
+In the  current implementation, it  is possible  to find an  <var>n</var>-th root
+when <var>x</var> is one of the following <strong>GAP3</strong> objects:
+<P>
+1- a monomial of the form <code>a*q^(b*n)</code> when we know how to find a root
+of <I>a</I>. The root chosen is <code>GetRoot(a,n)*q^b</code>.
+<P>
+2-  a  root  of  unity  of  the  form  <code>E(a)^i</code>.  The  root  chosen  is
+<code>E(a*n)^i</code>.
+<P>
+3- an integer, when <var>n</var>=2 (the root  chosen is <code>ER(x)</code>) or when <var>x</var> is a
+perfect <var>n</var>-th power of <var>a</var> (the root chosen is <var>a</var>).
+<P>
+4- a product of an <var>x</var> of form 2- by an <var>x</var> of form 3-.
+<P>
+5- when <var>x</var> is a record and has a method <code>x.operations.GetRoot</code> the work
+is delegated to that method.
+<P>
+<pre>    gap> q:=X(Cyclotomics);;q.name:="q";;
+    gap> GetRoot(E(3)*q^2,2,"test");
+    </pre>#<pre>warning: test: E3^2q chosen as 2nd root of (E(3))*q^2
+    (E(3)^2)*q
+    gap> GetRoot(1,2,"test");
+    </pre>#<pre>warning: test: 1 chosen as 2nd root of 1
+    1</pre>
+<P>
+The  example  above   shows  that  <code>GetRoot</code>  is   not  compatible  with
+specialization:  <code>E(3)*q^2</code> evaluated  at <code>E(3)</code>  is <code>1</code>  whose root
+chosen by <code>GetRoot</code> is <code>1</code>, while <code>(-E(3)^2)*q</code> evaluated at <code>E(3)</code> is
+<code>-1</code>. Actually it can be shown that it is not possible mathematically to
+define a function <code>GetRoot</code> compatible with specializations. This is why
+there is a provision in functions for character tables of Hecke algebras
+to provide explicit roots.
+<P>
+<pre>    gap> GetRoot(8,3);
+    2
+    gap> GetRoot(7,3);
+    Error, unable to compute 3-th root of 7:
+     in
+    GetRoot( 7, 3 ) called from
+    main loop
+    brk></pre>
+<P><A NAME="SECT008"><h2>103.8 CharParams</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>CharParams(<var>G</var>)</code>
+<P>
+<code>G</code>  should   be  a  group  or   another  object  which  has   a  method
+<code>CharTable</code>, or  a character table.  The function <code>CharParams</code>  tries to
+determine a  list of  labels for  the characters  of <code>G</code>.  If <code>G</code>  has a
+method  <code>CharParams</code>  this  is  called.  Otherwise,  if  <code>G</code>  is  not  a
+character table,  its <code>CharTable</code> is  called. If  the table has  a field
+<code>.charparam</code>  in  <code>.irredinfo</code> this  is  returned.  Otherwise, the  list
+<code>[1..Length(G.irreducibles)]</code> is returned.
+<P>
+<pre>    gap> CharParams(CoxeterGroup("A",2));
+    [ [ [ 1, 1, 1 ] ], [ [ 2, 1 ] ], [ [ 3 ] ] ]
+    gap> CharParams(Group((1,2),(2,3)));
+    #W  Warning: Group has no name
+    [ 1 .. 3 ]</pre>
+<P><A NAME="SECT009"><h2>103.9 CharName</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>CharName(<var>G</var>, <var>param</var>)</code>
+<P>
+<code>G</code> should  be a group  and <code>param</code> a parameter  of a character  of that
+group (as returned by <code>CharParams</code>). If <code>G</code> has a method <code>CharName</code>, the
+function returns  the result  of that  method, which  is a  string which
+displays nicely  <code>param</code> (this is  used by  <strong>CHEVIE</strong> to nicely  fill the
+<code>.charNames</code> in a <code>CharTable</code> --  all finite reflection groups have such
+methods <code>CharName</code>).
+<P>
+<pre>    gap> G:=CoxeterGroup("G", 2);
+    CoxeterGroup("G",2)
+    gap> CharParams(G);
+    [ [ [ 1, 0 ] ], [ [ 1, 6 ] ], [ [ 1, 3, 1 ] ], [ [ 1, 3, 2 ] ],
+      [ [ 2, 1 ] ], [ [ 2, 2 ] ] ]
+    gap>  List(last,x->CharName(G,x));
+    [ "phi{1,0}", "phi{1,6}", "phi{1,3}'", "phi{1,3}''", "phi{2,1}",
+      "phi{2,2}" ]</pre>
+<P><A NAME="SECT010"><h2>103.10 PositionId</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code>PositionId( <var>G</var> )</code>
+<P>
+<var>G</var>  should be  a group,  a character  table, an  Hecke algebra  or another
+object  which  has  characters.  <code>PositionId</code>  returns  the position of the
+identity character in the character table of <var>G</var>.
+<P>
+<pre>    gap> W := CoxeterGroup( "D", 4 );;
+    gap> PositionId( W );
+    13</pre>
+<P><A NAME="SECT011"><h2>103.11 InductionTable</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+<code>InductionTable( <var>S</var>, <var>G</var> )</code>
+<P>
+<code>InductionTable</code>  computes the decomposition of the induced characters from
+the subgroup <var>S</var> into irreducible characters of <var>G</var>. The rows correspond to
+the  characters of the parent group, the  columns to those of the subgroup.
+What  is returned  is actually  a record  with several  fields: <code>.scalar</code>
+contains  the induction table proper, and  there are <code>Display</code> and <code>Format</code>
+methods.  The  other  fields  contain  labeling  information taken from the
+character tables of <var>S</var> and <var>G</var> when it exists.
+<P>
+<pre>    gap> G := Group( [ (1,2), (2,3), (3,4) ], () );
+    Group( (1,2), (2,3), (3,4) )
+    gap> S:=Subgroup( G, [ (1,2), (3,4) ] );
+    Subgroup( Group( (1,2), (2,3), (3,4) ), [ (1,2), (3,4) ] )
+    gap> G.name := "G";; S.name := "S";; # to avoid warnings
+    gap> Display( InductionTable( S, G ) );
+    Induction from S to G
+        |X.1 X.2 X.3 X.4
+    _____________________
+    X.1 |  1   .   .   .
+    X.2 |  .   .   .   1
+    X.3 |  1   .   .   1
+    X.4 |  .   1   1   1
+    X.5 |  1   1   1   . </pre>
+<P>
+<pre>    gap> G := CoxeterGroup( "G", 2 );;
+    gap> S := ReflectionSubgroup( G, [ 1, 4 ] );
+    ReflectionSubgroup(CoxeterGroup("G",2), [ 1, 4 ])
+    gap> t := InductionTable( S, G );
+    InductionTable( ReflectionSubgroup(CoxeterGroup("G",2), [ 1, 4 ]), Coxe\
+    terGroup("G",2))
+    gap> Display( t );
+    Induction from A1x~A1 to G2
+               | 11,11 11,2 2,11 2,2
+    ________________________________
+    phi{1,0}   |     .    .    .   1
+    phi{1,6}   |     1    .    .   .
+    phi{1,3}'  |     .    1    .   .
+    phi{1,3}'' |     .    .    1   .
+    phi{2,1}   |     .    1    1   .
+    phi{2,2}   |     1    .    .   1 </pre>
+<P>
+The  <code>Display</code>  and  <code>Format</code>  methods  take  the  same  arguments  as  the
+<code>FormatTable</code>  method. For instance to select a subset of the characters of
+the subgroup and of the parent group, one can call
+<P>
+<pre>    gap> Display( t,rec( rows := [5], columns := [3,2] ) );
+    Induction from A1x~A1 to G2
+             | 2,11 11,2
+    ____________________
+    phi{2,1} |    1    1 </pre>
+<P>
+It is also possible to get TeX and LaTeX output, see <a href="chap104.htm#SECT003">FormatTable</a>.
+<P><A NAME="SECT012"><h2>103.12 CharRepresentationWords</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code>CharRepresentationWords( <var>rep</var> , <var>elts</var> )</code>
+<P>
+given  a list <var>rep</var>  of matrices  corresponding to generators  and a list
+<var>elts</var>  of words in  the generators it returns  the list of traces of the
+corresponding representation on the elements in <var>elts</var>.
+<P>
+<pre>    gap> H := Hecke(CoxeterGroup( "F", 4 ));;
+    gap> r := ChevieClassInfo( Group( H ) ).classtext;;
+    gap> t := HeckeReflectionRepresentation( H );;
+    gap> CharRepresentationWords( t, r );
+    [ 4, -4, 0, 1, -1, 0, 1, -1, -2, 2, 0, 2, -2, -1, 1, 0, 2, -2, -1, 1,
+      0, 0, 2, -2, 0 ] </pre>
+<P><A NAME="SECT013"><h2>103.13 PointsAndRepresentativesOrbits</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+<code>PointsAndRepresentativesOrbits( <var>G</var>[, <var>m</var>] )</code>
+<P>
+returns a  pair <var>[orb, rep]</var> where  <var>orb</var> is a list of  the orbits of the
+permutation group <var>G</var> on <code>[ 1..LargestMovedPoint( <var>G</var> ) ]</code> and <var>rep</var> is a
+list  of   list of elements   of  <var>G</var>  such  that <code>rep[i][j]</code>  applied to
+<code>orb[i][1]</code>  yields <code>orb[i][j]</code> for all <I>i,j</I>.  If  the optional argument
+<var>m</var> is given, then <code>LargestMovedPoint( <var>G</var> )</code> is  replaced by the integer
+<var>m</var>.
+<P>
+<pre>    gap> G := Group( (1,7)(2,3)(5,6)(8,9)(11,12),
+    >                (1,5)(2,8)(3,4)(7,11)(9,10) );;
+    gap> PointsAndRepresentativesOrbits( G );
+    [ [ [ 1, 7, 5, 11, 6, 12 ], [ 2, 3, 8, 4, 9, 10 ] ],
+      [ [ (), ( 1, 7)( 2, 3)( 5, 6)( 8, 9)(11,12),
+              ( 1, 5)( 2, 8)( 3, 4)( 7,11)( 9,10),
+              ( 1,11,12, 7, 5, 6)( 2, 4, 3, 8,10, 9),
+              ( 1, 6, 5, 7,12,11)( 2, 9,10, 8, 3, 4),
+              ( 1,12)( 2, 4)( 3, 9)( 6, 7)( 8,10) ],
+          [ (), ( 1, 7)( 2, 3)( 5, 6)( 8, 9)(11,12),
+              ( 1, 5)( 2, 8)( 3, 4)( 7,11)( 9,10),
+              ( 1,11,12, 7, 5, 6)( 2, 4, 3, 8,10, 9),
+              ( 1, 6, 5, 7,12,11)( 2, 9,10, 8, 3, 4),
+              ( 1, 6)( 2,10)( 4, 8)( 5,11)( 7,12) ] ] ] </pre>
+<P><A NAME="SECT014"><h2>103.14 AbelianGenerators</h2></a>
+<P><P>
+<A name = "I13"></a>
+
+<P>
+<code>AbelianGenerators( <var>l</var>)</code>
+<P>
+<var>l</var>  should be a list of elements generating an abelian group. The function
+returns a list of generators for the generated group
+<code>G:=ApplyFunc(Group,l)</code>  which is optimal  in the sense  that they generate
+the cyclic groups whose orders are given by <code>AbelianInvariants(G)</code>.
+<P><a href ="chap102.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap104.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

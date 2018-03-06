@@ -1,0 +1,129 @@
+<html><head><title>GAP3 Manual: 31 Ranges</title></head>
+<body bgcolor="ffffff">
+<h1>31 Ranges</h1>
+<P><P><P>
+A <strong>range</strong> is a dense list of integers,  such  that the difference between
+consecutive  elements is a nonzero  constant.   Ranges can be abbreviated
+with the syntactic construct <code>[ <var>first</var>, <var>second</var> .. <var>last</var> ]</code> or, if the
+difference between consecutive elements is 1, as <code>[ <var>first</var> .. <var>last</var> ]</code>.
+<P>
+If  <code><var>first</var> > <var>last</var></code>,  <code>[<var>first</var>,<var>second</var>..<var>last</var>]</code> is  the empty list,
+which   by  definition  is   also   a  range.    If   <var>first</var>  =  <var>last</var>,
+<code>[<var>first</var>,<var>second</var>..<var>last</var>]</code> is a singleton list,  which is a range  too.
+Note that <code><var>last</var> - <var>first</var></code> must be divisible by the increment <code><var>second</var>
+- <var>first</var></code>, otherwise an error is signalled.
+<P>
+Note  that a range is  just a special case of a list.  So everything that
+is  possible for lists (see <a href="chap027.htm">Lists</a>) is also  possible for ranges.   Thus
+you can  access elements in such a range (see <a href="chap027.htm#SECT004">List Elements</a>),  test for
+membership  (see  <a href="chap027.htm#SECT014">In</a>), etc.   You can even assign to such a  range (see
+<a href="chap027.htm#SECT006">List   Assignment</a>).   Of   course,  unless   you   assign   <code><var>last</var>   +
+<var>second</var>-<var>first</var></code>  to   the   entry   <code><var>range</var>[Length(<var>range</var>)+1]</code>,   the
+resulting list will no longer be a range.
+<P>
+Most often ranges are used in connection with the <code>for</code>-loop (see <a href="chap002.htm#SECT017">For</a>).
+Here  the construct <BR> 
+<code>for <var>var</var>  in [<var>first</var>..<var>last</var>]  do <var>statements</var>  od</code> replaces the <BR> 
+<code>for <var>var</var>  from <var>first</var>  to <var>last</var>  do <var>statements</var>  od</code>,  which is more
+usual in other programming languages.
+<P>
+Note that a range is at the same time also a set (see <a href="chap028.htm">Sets</a>), because it
+contains no  holes or duplicates  and is sorted, and  also a  vector (see
+<a href="chap032.htm">Vectors</a>), because it contains no holes and all elements are integers.
+<P>
+<pre>    gap> r := [10..20];
+    [ 10 .. 20 ]
+    gap> Length( r );
+    11
+    gap> r[3];
+    12
+    gap> 17 in r;
+    true
+    gap> r[12] := 25;; r;
+    [ 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25 ]
+    gap> r := [1,3..17];
+    [ 1, 3 .. 17 ]
+    gap> Length( r );
+    9
+    gap> r[4];
+    7
+    gap> r := [0,-1..-9];
+    [ 0, -1 .. -9 ]
+    gap> r[5];
+    -4
+    gap> r := [ 1, 4 .. 32 ];
+    Error, Range: &lt;high>-&lt;low> must be divisible by &lt;inc>
+    gap> s := [];;  for i  in [10..20]  do Add( s, i^2 );  od;  s;
+    [ 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400 ] </pre>
+<P>
+The first section in this chapter describes  the function that tests if a
+list is a range (see <a href="chap031.htm#SECT001">IsRange</a>).
+<P>
+The  other section tells  you more  about  the internal representation of
+ranges (see <a href="chap031.htm#SECT002">More about Ranges</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap031.htm#SECT001">IsRange</a>
+<LI> <A HREF="chap031.htm#SECT002">More about Ranges</a>
+</ol>
+<A NAME="SECT001"><h2>31.1 IsRange</h2></a>
+<P><A name = "I0"></a>
+
+<P>
+<code>IsRange( <var>obj</var> )</code>
+<P>
+<code>IsRange</code> returns <code>true</code> if <var>obj</var>, which may be an object of any type, is
+a range and <code>false</code> otherwise.  A range is a list without holes such that
+the elements are integers with a constant increment.  Will cause an error
+if <var>obj</var> is an unassigned variable.
+<P>
+<pre>    gap> IsRange( [1,2,3] );
+    true    # this list is a range
+    gap> IsRange( [7,5,3,1] );
+    true    # this list is a range
+    gap> IsRange( [1,2,4,5] );
+    false    # this list is a set and a vector, but not a range
+    gap> IsRange( [1,,3,,5,,7] );
+    false    # this list contains holes
+    gap> IsRange( 1 );
+    false    # is not even a list
+    gap> IsRange( [] );
+    true    # the empty list is a range by definition
+    gap> IsRange( [1] );
+    true    # singleton lists are a range by definition too </pre>
+<P><A NAME="SECT002"><h2>31.2 More about Ranges</h2></a>
+<P><P><P>
+For some  lists the kernel knows   that they are  in fact  ranges.  Those
+lists are represented internally in a compact way instead of the ordinary
+way.  This is important since this representation needs only 12 bytes for
+the entire list while the ordinary representation needs <I>4 length</I> bytes.
+<P>
+Note that a list that is represented in the ordinary way might still be a
+range.  It is just that <strong>GAP3</strong> does not  know this.   This  section tells
+you under which circumstances a range is represented  in the compact way,
+so you can write your  program in such  a  way that you make best  use of
+this compact representation for ranges.
+<P>
+Lists  created by the syntactic construct <code>[ <var>first</var>, <var>second</var>  .. <var>last</var>
+]</code> are  of  course known to be ranges and  are represented in the compact
+way.
+<P>
+If  you call  <code>IsRange</code> for a  list represented the ordinary  way that is
+indeed a range, <code>IsRange</code> will note this,  change the representation from
+the ordinary to the compact representation, and then return <code>true</code>;
+<P><P>
+If   you change a   range  that is  represented   in the compact  way, by
+assignment, <code>Add</code>   or <code>Append</code>, the   range will  be   converted to  the
+ordinary representation, even  if the change is  such that the  resulting
+list is still a proper range.
+<P>
+Suppose  you have   built a proper   range  in  such  a way   that  it is
+represented in the  ordinary way and that you  now want to convert  it to
+the compact representation to save space.  Then you should call <code>IsRange</code>
+with that list as an argument.  If it is indeed a proper range, <code>IsRange</code>
+will convert it to the compact representation.  You can think of the call
+to <code>IsRange</code> as a hint to <strong>GAP3</strong> that this list is a proper range.
+<P><a href ="chap030.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap032.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

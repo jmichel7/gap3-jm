@@ -1,0 +1,198 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  boolean.tex                 GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: boolean.tex,v 1.1.1.1 1996/12/11 12:36:43 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the boolean datatype and its operations.
+%%
+%H  $Log: boolean.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:43  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.5  1993/03/11  17:53:56  fceller
+%H  strings are now lists
+%H
+%H  Revision 3.4  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.3  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.2  1991/07/26  12:34:01  martin
+%H  improved the index
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:10:48  martin
+%H  Initial revision under RCS.
+%H
+%%
+\Chapter{Booleans}%
+\index{type!boolean}\index{logical}
+
+The two *boolean*   values are 'true' and  'false'.   They stand for  the
+*logical* values  of the same name.  They  appear mainly as values of the
+conditions in 'if'-statements and 'while'-loops.
+
+This  chapter contains  sections   describing  the operations  that   are
+available   for  the  boolean  values   (see   "Comparisons of Booleans",
+"Operations for Booleans").
+
+Further this chapter contains a section  about the function 'IsBool' (see
+"IsBool").  Note that it is a convention that the name of a function that
+tests a   property, and  returns  'true' and   'false'  according to  the
+outcome, starts with 'Is', as in 'IsBool'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Booleans}%
+\index{comparisons!of booleans}
+
+'<bool1> = <bool2>', '<bool1> \<> <bool2>'
+
+The equality  operator '=' evaluates to  'true' if the two boolean values
+<bool1> and <bool2> are equal, i.e., both are 'true' or both are 'false',
+and 'false' otherwise.  The inequality operator '\<>' evaluates to 'true'
+if the two boolean  values <bool1> and  <bool2> are different and 'false'
+otherwise.  This operation is also called the *exclusive or*, because its
+value is 'true' if exactly one of <bool1> or <bool2> is 'true'.
+
+You  can compare boolean  values with objects  of other types.  Of course
+they are never equal.
+
+|    gap> true = false;
+    false
+    gap> false = (true = false);
+    true
+    gap> true <> 17;
+    true |
+
+'<bool1> \<\ <bool2>', '<bool1> \<= <bool2>',\\
+'<bool1>  > <bool2>', '<bool1>  >= <bool2>'
+
+The operators  '\<', '\<=',  '>', and   '=>'  evaluate to 'true'  if  the
+boolean value <bool1> is less than, less than  or equal to, greater than,
+and greater than or equal to the  boolean value <bool2>.  The ordering of
+boolean values is defined by 'true \<\ false'.
+
+You can compare  boolean values  with objects of other  types.  Integers,
+rationals, cyclotomics, permutations, and  words are smaller than boolean
+values.  Objects of the other types, i.e., functions, lists,  and records
+are larger.
+
+|    gap> true < false;
+    true
+    gap> false >= true;
+    true
+    gap> 17 < true;
+    true
+    gap> true < [17];
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Booleans}%
+\index{operations!for booleans}\index{logical operations}%
+\index{or}\index{and}\index{not}
+
+'<bool1> or <bool2>'
+
+The logical operator 'or' evaluates to 'true' if at  least one of the two
+boolean operands <bool1> and <bool2> is  'true' and to 'false' otherwise.
+
+'or' first evaluates <bool1>.  If the value is neither 'true' nor 'false'
+an error is signalled.  If the value is 'true', then  'or' returns 'true'
+*without*  evaluating  <bool2>.   If  the value  is  'false',  then  'or'
+evaluates <bool2>.  Again, if the value is neither 'true'  nor 'false' an
+error is signalled.  Otherwise 'or' returns  the value  of <bool2>.  This
+*short-circuited* evaluation  is important if   the value of  <bool1>  is
+'true' and evaluation of <bool2> would take much time or cause an error.
+
+'or' is associative, i.e., it is allowed to write '<b1> or <b2> or <b3>',
+which is interpreted as  '(<b1> or <b2>) or <b3>'.   'or' has the  lowest
+precedence  of the logical  operators.   All logical operators have lower
+precedence than the comparison operators '=', '\<', 'in', etc.
+
+|    gap> true or false;
+    true
+    gap> false or false;
+    false
+    gap> i := -1;;  l := [1,2,3];;
+    gap> if i <= 0 or l[i] = false  then Print("aha\n");  fi;
+    aha    # no error, because 'l[i]' is not evaluated |
+
+'<bool1> and <bool2>'
+
+The  logical operator 'and' evaluates  to 'true' if both boolean operands
+<bool1> and <bool2> are 'true' and to 'false' otherwise.
+
+'and'  first evaluates  <bool1>.    If the value   is neither 'true'  nor
+'false' an  error is signalled.   If the  value  is 'false',  then  'and'
+returns 'false'  *without* evaluating <bool2>.  If  the value is  'true',
+then 'and' evaluates <bool2>.  Again, if the value  is neither 'true' nor
+'false' an  error is signalled.   Otherwise   'and' returns the  value of
+<bool2>.  This *short-circuited* evaluation is important if the  value of
+<bool1> is 'false'  and evaluation  of   <bool2> would take much time  or
+cause an error.
+
+'and' is  associative, i.e., it is  allowed  to write '<b1>  and <b2> and
+<b3>',  which is interpreted  as '(<b1> and <b2>)  and  <b3>'.  'and' has
+higher precedence than  the  logical 'or' operator,  but lower  than  the
+unary  logical 'not'  operator.    All   logical operators  have    lower
+precedence than the comparison operators '=', '\<', 'in', etc.
+
+|    gap> true and false;
+    false
+    gap> true and true;
+    true
+    gap> false and 17;
+    false    # is no error, because '17' is never looked at |
+
+'not <bool>'
+
+The logical operator 'not' returns 'true'  if the boolean value <bool> is
+'false' and 'true' otherwise.  An error is  signalled if <bool>  does not
+evaluate to 'true' or 'false'.
+
+'not' has higher  precedence than the  other logical operators,  'or' and
+'and'.  All logical operators  have lower precedence than  the comparison
+operators '=', '\<', 'in', etc.
+
+|    gap> not true;
+    false
+    gap> not false;
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsBool}%
+\index{test!for a boolean}
+
+'IsBool( <obj> )'
+
+'IsBool' returns 'true' if <obj>, which may  be an object of an arbitrary
+type, is a boolean value and 'false' otherwise.  'IsBool' will  signal an
+error if <obj> is an unbound variable.
+
+|    gap> IsBool( true );
+    true
+    gap> IsBool( false );
+    true
+    gap> IsBool( 17 );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

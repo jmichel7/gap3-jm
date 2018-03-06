@@ -1,0 +1,2864 @@
+This file contains the mails sent to the GAP forum in January-March 1995.
+
+Name                Email address                           Mails   Lines
+Martin Schoenert    Martin.Schoenert@Math.RWTH-Aachen.DE        6     351
+Frank Celler        Frank.Celler@Math.RWTH-Aachen.DE            5     231
+Alexander Hulpke    Alexander.Hulpke@Math.RWTH-Aachen.DE        4     165
+Jacob Hirbawi       jcbhrb@cerf.net                             4     120
+Thomas Breuer       Thomas.Breuer@Math.RWTH-Aachen.DE           4     109
+Steve Linton        sal@cs.st-andrews.ac.uk                     3     141
+Derek Holt          dfh@maths.warwick.ac.uk                     3     101
+Leonard Soicher     leonard@qmw.ac.uk                           2     171
+TANG KO CHEUNG      s931282@hp720a.csc.cuhk.hk                  2     130
+L. McCarthy         lmccarth@klingon.cs.umass.edu               2      74
+Joachim Neubueser   Joachim.Neubueser@Math.RWTH-Aachen.DE       2      64
+SUNSHINE            satterfieldj@alpha.hendrix.edu              2      28
+Tim Boykett         tim@bruckner.stoch.uni-linz.ac.at           1     256
+Jan de Wit          jwit@cs.ruu.nl                              1      74
+Volkmar Felsch      Volkmar.Felsch@Math.RWTH-Aachen.DE          1      53
+Jaroslav Gurican    jaroslav.gurican@fmph.uniba.sk              1      42
+Walter Carlip       c3ar@math.uchicago.edu                      1      39
+Chris Wensley       mas023@bangor.ac.uk                         1      37
+Charles Wright      wright@bright.uoregon.edu                   1      34
+Heiko Theissen      Heiko.Theissen@Math.RWTH-Aachen.DE          1      33
+Meinolf Geck        Meinolf.Geck@Math.RWTH-Aachen.DE            1      26
+Sarah Rees          sarah.rees@newcastle.ac.uk                  1      23
+Andrew Mathas       a.mathas@ic.ac.uk                           1      20
+Robert S Clancy     rsc@math.ufl.edu                            1      20
+Bruce Kaskel        kaskel@math.berkeley.edu                    1      19
+David Sibley        sibley@math.psu.edu                         1      17
+Johannes Mueller    mueller@leon.informatik.uni-bonn.de         1      15
+Gene Cooperman      ccs.mailing-lists.gap-forum@ccs.neu.edu     1      12
+Jose S. Gomez       mtpsagoj@lg.ehu.es                          1      10
+Tim Sturge          t.sturge@math.canterbury.ac.nz              1      10
+
+This  file is in Berkeley mail drop format, which means you can read this
+file with 'mail -f <name-of-the-file>'  or 'mailx -f <name-of-the-file>'.
+It is also possible however to read this file with any text editor.
+
+
+
+From jcbhrb@cerf.net Sat Jan  7 21:10:00 1995
+Date:         Sat, 07 Jan 95 21:10:00 -0800
+From:         "Jacob Hirbawi" <jcbhrb@cerf.net>
+Subject:      strange problem with string concatenation
+
+I ran into this strange behavior of string concatenation :
+
+f:=x->Concatenation(List(x,String));
+a:=UnorderedTuples([1..3],2);
+b:=List(a,f);
+
+# I want b to equal ["11","12",...,"33"]; instead I get :
+gap> b;
+[ [ '1', '1' ], [ '1', '2' ], [ '1', '3' ], [ '2', '2' ], [ '2', '3' ], 
+  [ '3', '3' ] ]
+
+# but single elements look right!
+gap> b[1];
+"11"
+
+# looking at an element seems to "fix" it :
+gap> b;
+[ "11", [ '1', '2' ], [ '1', '3' ], [ '2', '2' ], [ '2', '3' ], [ '3', '3' ] ]
+
+# so this "fixes" the fourth element 
+gap> b[4];
+"22"
+
+gap> b;
+[ "11", [ '1', '2' ], [ '1', '3' ], "22", [ '2', '3' ], [ '3', '3' ] ]
+
+it's easy to find a way around this; for example this works :
+
+ff:=function(lst) local str,i;
+  str:="";
+  for i in lst do 
+    str:=ConcatenationString(str,String(i));
+  od;
+return str;end; 
+
+gap> bb:=List(a,ff);
+[ "11", "12", "13", "22", "23", "33" ]
+
+but it would be nicer if the built-in function behaves predictably.
+
+Jacob Hirbawi <JcbHrb@CERF.net>
+
+PS. I'm running with version 3.4
+
+
+
+From ccs.mailing-lists.gap-forum@ccs.neu.edu Sat Jan  7 02:55:00 1995
+Date:         Sat, 07 Jan 95 02:55:00 -0500
+From:         "Gene Cooperman" <ccs.mailing-lists.gap-forum@ccs.neu.edu>
+Subject:      Unbind()
+
+The GAP manual says that Unbind() can be used to unbind fields of a record
+and array elements.  I noticed that it also works in the following:
+  x:=3;
+  Unbind(x);
+  x;
+<returns appropriate notice that x is unbound>
+
+Is this usage supported?
+I find it useful in removing extraneous temporary global variables after
+their use, to avoid accidental collisions with variables of the same name 
+later.							- Gene Cooperman
+
+
+
+From Martin.Schoenert@Math.RWTH-Aachen.DE Mon Jan  9 12:01:00 1995
+Date:         Mon, 09 Jan 95 12:01:00 WET
+From:         "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:      Re: strange problem with string concatenation
+
+Jacob Hirbawi wrote in his e-mail message of 1995/01/07
+
+    I ran into this strange behavior of string concatenation :
+
+    f:=x->Concatenation(List(x,String));
+    a:=UnorderedTuples([1..3],2);
+    b:=List(a,f);
+
+    # I want b to equal ["11","12",...,"33"]; instead I get :
+    gap> b;
+    [ [ '1', '1' ], [ '1', '2' ], [ '1', '3' ], [ '2', '2' ], [ '2', '3' ], 
+      [ '3', '3' ] ]
+
+    # but single elements look right!
+    gap> b[1];
+    "11"
+
+        ...
+
+    but it would be nicer if the built-in function behaves predictably.
+
+Except for the printed appearance, there is no difference between the
+list [ '1', '1' ] and "11".  Both are lists containing two characters
+each.  "11" is just a shorthand for the more conventional representation
+[ '1', '1' ].  This in particular implies that the list b you get
+*is equal* to [ "11", "12", ..., "33" ] (in the sense of GAP's '='),
+even though they look different.
+
+Now because the shorthand is nicer, GAP tries to print it instead of the
+conventational list representation, whenever it is resonably easy to do
+so.  But in your example, GAP doesn't bother check whether each element
+of the large list is in fact a string.  On the other hand if you print
+the elements individualy, then GAP checks them, and notices that they
+are strings.
+
+If you want to force GAP to recognize that the elements are strings, use
+the following trick.
+
+    gap> f := x -> Concatenation(List(x,String));
+    gap> a := UnorderedTuples( [1..3], 2 );;
+    gap> b := List( a, f );;
+    ap> ignore := List( b, IsString );;
+
+In fact you can avoid the conversion from number to string by using
+the list [ '1', '2', '3' ] instead of [1..3] in the first place.
+
+    gap> b := UnorderedTuples( "123", 2 );;
+    gap> ignore := List( b, IsString );
+    gap> b;
+    [ "11", "12", "13", "22", "23", "33" ]
+
+Martin.
+
+PS. The above rules also imply that the empty list [] and the empty
+string "" are equal.  This is a bit ackward in the context of 'Print',
+where 'Print( [] )' should print '[]', but 'Print( "" )' should print
+nothing (because 'Print' drops the "" around strings).
+
+-- .- .-. - .. -.  .-.. --- ...- . ...  .- -. -. .. -.- .-
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,   +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, 52056 Aachen, Germany
+
+
+
+From dfh@maths.warwick.ac.uk Tue Jan 10 10:13:00 1995
+Date:         Tue, 10 Jan 95 10:13:00 +0000
+From:         "Derek Holt" <dfh@maths.warwick.ac.uk>
+Subject:      lists and words
+
+I want to do a long series of manipulations on words in abstract generators.
+I can't decide whether to convert the words to lists of integers or not.
+On the one hand, I find that
+
+l:=[1,1,1,1,1];
+l[3]:=2;
+
+is considerably quicker than
+
+w:=a^5;
+w:=SubstitutedWord(w,3,3,b);
+
+(presumably chiefly because SubstitutedWord does a copy, rather than
+substituting in place).
+
+On the other hand, 
+
+w:=SubstitutedWord(w,3,3,b^3); or w:=SubstitutedWord(w,2,4,b);
+
+works out quicker than the corresponding operation on lists, because to do
+it with lists in general, you have to write an inner loop to shift the end of
+the word to the left or right, depending on whether the substituted string is
+longer or shorter.
+
+My queries are then
+(i) Is there a better way of doing things which I don't know about?
+(ii) If not, can I put in plea for the future provision of a
+"SubstitutedWord" function which operates on its argument in place, rather
+than copying and returning a new word.
+
+I realise that word operations also have to check for possible  cancellation
+with inverses in the underlying free group, but that shouldn't make such a
+big difference. In any case, I hope that free monoids will eventually be
+supported in GAP, where inverse do not arise.
+
+Derek Holt.
+
+
+
+From lmccarth@klingon.cs.umass.edu Wed Jan 11 19:44:00 1995
+Date:         Wed, 11 Jan 95 19:44:00 -0500
+From:         "L. McCarthy" <lmccarth@klingon.cs.umass.edu>
+Subject:      Redefining Library Functions
+
+-----BEGIN PGP SIGNED MESSAGE-----
+
+For my current project I'm using a modified version of one of GAP's built-in
+library functions. Simply Read-ing a new definition of the function seems to
+work fine, until I hit an error somewhere and enter a break loop. Once I
+jump out of the break loop to the main loop, GAP seems to revert to using the
+library definition of the function. Is GAP re-reading the library files in
+this case, and if so, is there some environment variable I can set to disable
+this behavior within a session ?  
+
+Thanks
+ -Lewis McCarthy
+
+-----BEGIN PGP SIGNATURE-----
+Version: 2.6.1
+
+iQCVAwUBLxR7QGf7YYibNzjpAQFDfgQAsUafcWSF1hR3iPOue4hOHPYWanYXM303
+vajIdxE2hNEaEotf5FiCSYPkJEXj83G0oFBqz1/ZrUrroSuaWOPGo/I8u3zLH6gR
+CJcIZIVq1EKOjWgHN7UsWZXw9O8TVUZbT+2lyIRkrVmcUIn0XInouiL3sIqDCce9
+Q0s+g5+3VW0=
+=NxH8
+-----END PGP SIGNATURE-----
+
+
+
+From Martin.Schoenert@Math.RWTH-Aachen.DE Thu Jan 12 12:58:00 1995
+Date:         Thu, 12 Jan 95 12:58:00 WET
+From:         "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:      Re: Unbind()
+
+Gene Cooperman wrote in his e-mail message of 1995/01/07
+
+    The GAP manual says that Unbind() can be used to unbind fields of a record
+    and array elements.  I noticed that it also works in the following:
+      x:=3;
+      Unbind(x);
+      x;
+    <returns appropriate notice that x is unbound>
+
+    Is this usage supported?
+    I find it useful in removing extraneous temporary global variables after
+    their use, to avoid accidental collisions with variables of the same name 
+    later.
+
+There are four cases in which 'Unbind' can currently be used.
+
+1) To unbind a component of a list.
+2) To unbind a component of a record.
+3) To unbind a global variable.
+4) To unbind a local variable.
+
+The GAP manual mentions only the usages 1) and 2).  Those are supported
+now, and will always be supported, since they are the whole reason for
+having 'Unbind' at all.
+
+Usage 3) is probably what Gene meant with ``temporary global variables''.
+This usage is supported now and will be supported by future GAP versions.
+
+Usage 4) is supported now, but will probably not be supported by future
+versions of GAP.  But this is probably not important, since reusing a
+local variable for different purposes in a function is not a good idea.
+
+Martin.
+
+-- .- .-. - .. -.  .-.. --- ...- . ...  .- -. -. .. -.- .-
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,   +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, 52056 Aachen, Germany
+
+
+
+
+From Martin.Schoenert@Math.RWTH-Aachen.DE Thu Jan 12 13:31:00 1995
+Date:         Thu, 12 Jan 95 13:31:00 WET
+From:         "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:      Re: Redefining Library Functions
+
+Lewis McCarthy wrote in his e-mail message of 1995/01/11
+
+    For my current project I'm using a modified version of one of GAP's
+    built-in library functions. Simply Read-ing a new definition of the
+    function seems to work fine, until I hit an error somewhere and enter a
+    break loop. Once I jump out of the break loop to the main loop, GAP seems
+    to revert to using the library definition of the function. Is GAP
+    re-reading the library files in this case, and if so, is there some
+    environment variable I can set to disable this behavior within a session?
+
+Simply returning from a break loop should not result in GAP reverting to
+the library definition of a function.  But there are situations where GAP
+reverts to the library definition.  What probably happens is that GAP
+reverts to the library definition *before* you enter the break loop, but
+you only notice it when you return from the break loop.
+
+To understand this, you must understand the mechanism by which GAP
+reads the library.
+
+When you start GAP, it reads the library file 'init.g'.  This file
+contains lines of the form
+
+    AUTO( ReadLib( "list" ),
+      List, Apply, Concatenation, Flat, Reversed, Sublist, Filtered, Number,
+      Collected, Equivalenceclasses, ForAll, ForAny, First, PositionProperty,
+      Cartesian2, Cartesian, Sort, SortParallel, Sortex, Permuted,
+      PositionSorted, Product, Sum, Iterated, Maximum, Minimum, R_N, R_X,
+      RandomList, RandomSeed );
+
+This tells GAP that it should read the library file 'list.g', should it
+ever need one of the functions 'List', 'Apply', etc.  Basically GAP
+stores in the variable 'List' the *statement* 'ReadLib("list")',
+and marks the variable as 'T_VARAUTO', which means that 'List' does not
+point to a value but to a statement.
+
+Now when GAP evaluates 'List', it sees that 'List' is 'T_VARAUTO' and
+evaluates the statement that 'List' points to.  That is GAP reads the
+library file 'list.g'.  This then defines the function 'List' with the
+statement
+
+    List := function ( list, func ) ...library code... end;
+
+After this assignment 'List' has no longer type 'T_VARAUTO' but type
+'T_VAR', because it no longer points to a statement, but to a value.
+
+But at the same time GAP also reads all the other function definitions
+in the file 'list.g'.  This overwrites any previous definition those
+variables might have had.
+
+So assume that GAP has not yet read 'list.g'.  Now redefine 'Apply'
+with the following statement
+
+    Apply := function ( list, func ) ...your code... end;
+
+Everything works fine until you need another function from 'list.g', say
+'List'.  Then GAP reads 'list.g' to get the definition of 'List'.  But at
+the same time it overwrites your new definition of 'Apply' with the
+library function.
+
+The solution is to make certain that after your redefinition of 'Apply',
+GAP will not read the library file 'list.g'.  The easiest way to do this
+is to force GAP to read the library file 'list.g' *before* you redefine
+'Apply'.  This is achieved by the following code
+
+    Apply;  # autoread the library file where 'Apply' is defined
+    Apply := function ( list, func ) ...your code... end;
+
+This does not work for some library file <sub>, because they are not
+automatically read by the mechanism described above, but read explicetely
+from other library file <sup>.  In this case you must read the file <sup>
+(with 'ReadLib(<sup>);') before you redefine a function defined in <sub>.
+
+    <sup>       <sup>
+    aggroup.g   agprops.g  agsubgrp.g aghomomo.g agcoset.g  agnorm.g
+                aghall.g   aginters.g agcomple.g agclass.g  agctbl.g
+                onecohom.g saggroup.g sagsbgrp.g
+    fpgrp.g     fptietze.g fpsgpres.g
+    group.g     grphomom.g operatio.g grpcoset.g grpprods.g grpctbl.g
+                grplatt.g  monomial.g
+    matrix.g    matgrp.g   matring.g
+    permutat.g  permgrp.g  permstbc.g permoper.g permbckt.g permnorm.g
+                permcose.g permhomo.g permcset.g permag.g   permctbl.g
+                ratclass.g permprod.g
+    sq.g        sqstuff.g
+
+If you have such a problem, it is always a good idea to start your
+session with the statements (or put them into your '.gaprc' file)
+
+    InfoRead1 := Print;
+    InfoRead2 := Print;
+
+Then every time it reads a file, GAP will tell you about it.
+
+Hope this helps,
+
+Martin.
+
+-- .- .-. - .. -.  .-.. --- ...- . ...  .- -. -. .. -.- .-
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,   +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, 52056 Aachen, Germany
+
+
+
+From sal@cs.st-andrews.ac.uk Thu Jan 12 13:23:00 1995
+Date:         Thu, 12 Jan 95 13:23:00 -0500
+From:         "Steve Linton" <sal@cs.st-andrews.ac.uk>
+Subject:      Re: Unbind()
+
+Martin wrote -
+
+
+> There are four cases in which 'Unbind' can currently be used.
+> 
+> 1) To unbind a component of a list.
+> 2) To unbind a component of a record.
+> 3) To unbind a global variable.
+> 4) To unbind a local variable.
+> 
+> The GAP manual mentions only the usages 1) and 2).  Those are supported
+> now, and will always be supported, since they are the whole reason for
+> having 'Unbind' at all.
+> 
+> Usage 3) is probably what Gene meant with ``temporary global variables''.
+> This usage is supported now and will be supported by future GAP versions.
+> 
+> Usage 4) is supported now, but will probably not be supported by future
+> versions of GAP.  But this is probably not important, since reusing a
+> local variable for different purposes in a function is not a good idea.
+> 
+
+While it isn't vital, can I express a mild preference for retaining
+4 for the following reason. Suppose I have a loop that goes
+
+
+for .....   do
+
+	x := <very large object>;
+	<do stuff with x>
+#       I am finished with x now
+        <do other large stuff not involving x>
+    od;
+
+then I would use Unbind(x) at the point where the comment is
+to free up the workspace for the "other large stuff". I could do it
+with x := 1; (say), but it is less clear what I am doing.
+
+As I said a mild preference, but when one deals with individual
+large objects it is important to be able to release the storage as
+soon as possible.
+
+	Steve
+
+
+
+From tim@bruckner.stoch.uni-linz.ac.at Fri Jan 13 17:30:00 1995
+Date:         Fri, 13 Jan 95 17:30:00 +0100
+From:         "Tim Boykett" <tim@bruckner.stoch.uni-linz.ac.at>
+Subject:      Re: lists and words
+
+You mentioned free monoids in GaP:
+
+One of the students here has implemented a semigroup package
+for Gap, doing some decent stuff: It was his thesis project
+here, it should be okay. It includes Knuth Bendix stuff, 
+
+It should be in the GaP incoming directory, on samson. If not,
+get in touch.
+
+There should be a semigroup.doc and a semigroup.g
+
+Cheers
+
+Tim
+
+
+here is the DOC file
+
+
+*******************************************************************************
+
+***   SEMIGROUP FUNCTIONS FOR GAP ***  V 1.30 12.12.1994 (c) Widi Marcel Oliver 
+
+*******************************************************************************
+
+>Semigroup( l1, l2 );
+
+        defines a semigroup;
+        SYNTAX 1
+        arguments : l1 ... set of abstract generators
+                    l2 ... set of defining relations (list of lists)
+        SYNTAX 2 
+        arguments : l1 ... the semigroup table
+                    l2 ... the elements of the semigroup
+
+   Example for SYNTAX 1 :
+
+        z2m :=Semigroup([a,b],[[a*b,b*a],[a*b,a],[b^2,b],[a^2,a]]);
+                       -l1--  ------------- l2 -------------------
+                     generators     defining relations
+
+   Example for SYNTAX 2 :
+
+        z4m := Semigroup([[a,a,a,a],[a,b,c,d],[a,c,a,c],[a,d,c,b]],[a,b,c,d]);
+                         --------------- l1 --------------------   -- l2 ---
+                                   operation table                  elements
+
+>IsSemigroup( g );
+
+        checks if g is defined as a semigroup
+
+>DefSgCommutative( g );
+
+        define a semigroup presentation as commutative
+
+>DefAsNeutral( g, x );
+
+        define the abstract generator x to be the neutral element of g
+
+>SgTable( g {,"V"} {,order} );
+
+        computes the table of the semigroup g using some improved
+        Knuth-Bendix algorithm
+        "v" (optional) ... display progress of computation
+        order (optional) ... length-lexicographic order : 1
+                             lexicographic order        : 2
+                             power-lexicographic order  : 3
+
+>MinGens( g {,order} {,"V"}); *IMPROVED*
+
+        try al permutations of ordering generators to find a minimal
+        subset of generators for the semigroup
+        optional parameters : see SgTable
+
+>RedGens( g {,order} {,"V"}); *NEW*
+
+        'Greedy Algorithm' for finding a minimal set of generators for a
+        semigroup in very short time
+        optional parameters : see SgTable
+
+
+>Size( g );
+
+        computes the number of elements of g
+
+>Elements( g );
+
+        computes the elements of g
+
+>SgP( g, x, y );
+
+        computes the product of x and y in the semigroup g
+
+>IsSgMonoid( g );
+
+        checks if the semigroup g is a monoid
+
+>IsSgGroup( g );
+
+        checks if the semigroup g is a group
+
+>SgNeutral( g );
+
+        computes neutral element if g is a monoid; returns false otherwise
+
+>IsSgCommutative( g );
+
+        checks if the semigroup g is commutative
+
+>SgIdempotents( g );
+
+        computes the idempotent elements of g
+
+>IsGroupInvertible( g, x );
+
+        checks, if the element x of g is (group-)invertible
+
+>SgGroupKernel( g );
+
+        computes the group kernel of a semigroup
+
+>SgCentralizer( g, s );
+
+        computes centralizer of the subset s of the semigroup g
+
+>SgCenter( g );
+
+        computes the center of the semigroup g
+
+>IsSgIdempotent( g );
+
+        checks if the semigroup g is idempotent
+
+>SgRegulars( g );
+
+        computes the regular elements of g
+
+>IsSgRegular( g );
+
+        checks if the semigroup g is regular
+
+>SgCompletelyRegulars( g );
+
+        computes the completely regular elements of g
+
+>IsSgCompletelyRegular( g );
+
+        checks if the semigroup g is completely regular
+
+>IsSgInverse( g );
+
+        checks if the semigroup g is inverse
+
+>IsCliffordSg( g );
+
+        checks if the semigroup g is a Clifford semigroup
+
+>SubSemigroup( g, s );
+
+        computes the subsemigroup of g generated by the subset s of g
+
+>IsSubSemigroup( g, s );
+
+        checks if s is a subsemigroup of g
+
+>SubSemigroups( g );
+
+        computes all subsemigroups of g
+
+>SgOrder( g, a );
+
+        computes the order of the element a in the semigroup g
+
+>SgDistance( g1, g2 );
+
+        computes the distance between semigroups g1 and g2 where
+        there must be standard-epimorphism between g1 and g2
+
+>SgD( g1, g2 );
+
+        computes the distance between semigroups g1 and g2 where
+        g1 and g2 only must have same set of generators
+
+>SgGCD( g1, g2 );
+
+        computes the greatest common divisor of semigroups g1,g2
+
+>SgLeftIdeal( g, s );
+
+        computes left ideal generated by s in semigroup g
+
+>SgRightIdeal( g, s );
+
+        computes right ideal generated by s in semigroup g
+
+>SgIdeal( g, s );
+
+        computes ideal generated by s in semigroup g
+
+>IsSgLeftIdeal( g, s );
+
+        checks if s is a left ideal in g
+
+>SgRightIdeal( g, s );
+
+        checks if s is a right ideal in g
+
+>IsSgIdeal( g, s );
+
+        checks if s is an ideal in g
+
+>SgEpi( g, h );
+
+        computes all epimorphisms from g in h
+
+>SgMono( g, h );
+
+        computes all monomorphisms from g in h
+
+>SgIso( g, h );
+
+        computes all isomorphisms from g in h
+
+>SgHomo( g, h );
+
+        computes all homomorphisms from g in h
+
+>SgEndo( g );
+
+        computes all endomorphism on g
+
+>SgAuto( g );
+
+        computes all automorphisms on g
+
+>IsSgEmbeddable( g1, g2 );
+
+        checks, if the semigroup g1 is embeddable in the semigroup g2
+
+>Ver();
+
+        tells you which version of the semigroup functions you are using
+
+
+******************************************************************************
+watch this board for news !
+
+NEW since V 1.27 :
+
+* The function RedGens() has been added
+* The function MinGens() has been modified : Interrupting after the first
+  step will most likely yield the correct result
+* the warning messages on some machines should not occur any more
+
+******************************************************************************
+
+
+
+From mas023@bangor.ac.uk Fri Jan 13 16:30:00 1995
+Date:         Fri, 13 Jan 95 16:30:00 +0000
+From:         "Chris Wensley" <mas023@bangor.ac.uk>
+Subject:      MappedWord etc.
+
+I am trying to use WORD functions on the elements of a finitely 
+presented group - but perhaps this is not allowed?
+The following log file illustrates the problem:
+
+gap> F:=FreeGroup(4,"F");;
+gap> rels := [ F.1^2, F.2^3, (F.1*F.2)^2, F.3, F.4 ];;
+
+gap> S3 := F/rels;;
+gap> el := Elements(S3);
+[ IdWord, F.1, F.2, F.1*F.2, F.2*F.1, F.2^2 ]
+
+gap> w := el[4];
+F.1*F.2
+gap> IsWord(w);
+true
+
+gap> MappedWord( w, [F.1,F.2], [F.3,F.4] );
+F.1*F.2
+                                   !! the answer I wanted was:  F.3*F.4
+gap> gens := F.generators;;
+gap> IsWord(gens[1]);
+true
+gap> IsWord(el[2]);
+true
+gap> gens[1];
+F.1
+gap> el[2];
+F.1
+gap> Position(gens,F.1);
+1
+gap> Position(gens,el[2]);
+false                              !! and here I expected:  1
+
+Chris Wensley
+University of Wales at Bangor
+mas023@uk.ac.bangor
+
+
+
+From jcbhrb@cerf.net Sun Jan 15 21:41:00 1995
+Date:         Sun, 15 Jan 95 21:41:00 -0800
+From:         "Jacob Hirbawi" <jcbhrb@cerf.net>
+Subject:      characters of exceptional Weyl groups
+
+Is there a way to get the character tables of the exceptional Weyl
+groups F4,E6,E7,E8 in GAP? I used the package CHEVIE for this last year,
+but for some reason that doesn't work anymore;(it could be that I have an 
+old version of the package which is incompatible with 3.4). Anyway, these 
+groups are well known enough that I thought they might be in GAP itself. 
+
+Jacob Hirbawi <JcbHrb@CERF.net>
+
+
+
+From jcbhrb@cerf.net Sun Jan 15 21:42:00 1995
+Date:         Sun, 15 Jan 95 21:42:00 -0800
+From:         "Jacob Hirbawi" <jcbhrb@cerf.net>
+Subject:      multi-variable polynomial status
+
+I'd like to know the status of multi-variable polynomials in GAP. Before
+the release of 3.4 there was some discussion about having an efficient 
+implementation of these in a future release. How far off is this?
+
+Jacob Hirbawi <JcbHrb@CERF.net>
+
+
+
+From Meinolf.Geck@Math.RWTH-Aachen.DE Mon Jan 16 10:36:00 1995
+Date:         Mon, 16 Jan 95 10:36:00 +0100
+From:         "Meinolf Geck" <Meinolf.Geck@Math.RWTH-Aachen.DE>
+Subject:      Re: characters of exceptional Weyl groups
+
+Dear GAP forum,
+I am answering to the following about exceptional Weyl groups in GAP:
+> 
+> Is there a way to get the character tables of the exceptional Weyl
+> groups F4,E6,E7,E8 in GAP? ...
+
+The tabels of E6 and E8 are contained in the GAP library ("U4(2).2" and
+"2.O8+(2).2"), while that of E7 is the direct product of the table of
+the cyclic group of order 2 and the simple group "S6(2)".  The table of F4 
+is returned by 'CharTable("w(f4)")'. 
+
+One should note, however, that these tables do not contain the additional 
+information about canonical labellings of classes and characters which are 
+in the corresponding CHEVIE tables.
+
+> ...I used the package CHEVIE for this last year,
+> but for some reason that doesn't work anymore;(it could be that I have an 
+> old version of the package which is incompatible with 3.4). ...
+
+Yes, there was a new release of CHEVIE to make it compatible with some changes
+in GAP and, more seriously, some changes in MAPLE. It is available, as before,
+from the ftp server on samson under /oub/chevie.
+
+Best regards, Meinolf Geck
+
+
+
+
+From Thomas.Breuer@Math.RWTH-Aachen.DE Mon Jan 16 10:50:00 1995
+Date:         Mon, 16 Jan 95 10:50:00 WET
+From:         "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:      Re: character tables of exceptional Weyl groups
+
+Dear Mrs. and Mr. Forum,
+
+Jacob Hirbawi wrote
+
+> Is there a way to get the character tables of the exceptional Weyl
+> groups F4,E6,E7,E8 in GAP?
+
+The table of the Weyl group of F4 is 'CharTable( "W(F4)" )' in GAP.
+Unfortunately it is more complicated to get the others.
+For E6 and E8 one can use 'CharTable( "U4(2).2" )' and
+'CharTable( "2.O8+(2).2" )', respectively.
+Since the Weyl group of E7 is a direct product of S_6(2) and a cyclic
+group of order 2 one can construct (not simply fetch from the library)
+its table by 'CharTable( "Cyclic", 2 ) * CharTable( "S6(2)" )'.
+
+The names "W(E6)", "W(E7)", "W(E8)" will be admissible after the next patch
+of GAP-3.4.
+
+Kind regards
+Thomas Breuer
+
+
+
+
+From Frank.Celler@Math.RWTH-Aachen.DE Mon Jan 16 12:23:00 1995
+Date:         Mon, 16 Jan 95 12:23:00 -0700
+From:         "Frank Celler" <Frank.Celler@Math.RWTH-Aachen.DE>
+Subject:      words in GAP 3.4
+
+Dear Gap-Forum,
+
+Derek Holt asked in his email message:
+
+    I want to do a long series of manipulations on words in abstract
+    generators.  I can't decide whether to convert the words to lists of
+    integers or not.
+
+First of all let me answer Derek's easier questions.
+
+    My queries are then
+    (i) Is there a better way of doing things which I don't know about?
+
+No, there is no secret way (or better way) to deal with words at the moment.
+The current implementation is not very satisfactory, i.e., the printing is
+quite confusing and the representation as strings of handles instead of
+integers makes functions such as 'MappedWord' rather slow.
+
+    big difference. In any case, I hope that free monoids will eventually be
+    supported in GAP, where inverse do not arise.
+
+Yes, GAP 4.1 will, among other free/finitely presented structures, support
+free/fp monoids as native data types and address the problems mentioned
+above.
+
+Derek continues with a much harder question.
+
+    (ii) If not, can I put in plea for the future provision of a
+    "SubstitutedWord" function which operates on its argument in place,
+    rather than copying and returning a new word.
+
+GAP 4.1 will have a different garbage collector which will deal more
+efficiently with garbage created in processes repeatedly modifying an object
+because the storage manager keeps track of recently created objects (i.e.,
+it is generational).
+
+However, both storage managers need to copy objects even when trying to
+operate in place but changing their size in most cases, because there might
+not be enough room to enlarge an object and so it has to be copied to a new
+location. This can even be necessary when trying to *shrink* an object,
+this is due to the way the storage manager keeps track of free space.
+
+Another reason against modifying objects in place is that one has to copy
+each object when calling a library function outside the algorithm because
+other library functions might store their arguments as part of their
+computation (e.g. a Schreier-Sims will store its arguments as part of the
+strong generating set).  Modifying objects after calling a library function
+might corrupt data structures/results in subtle ways.
+
+On the other hand GAP 4.1 will make it easier to write functions which will
+modify words in place, so if one is working in a very closed environment and
+one is able to control the problems mentioned above, it will be easier in GAP
+4.1 to work in place.
+
+But these are major changes which will not be available before GAP 4.1, which
+we don't expect much before the end of this year, so my suggestion is to use
+list instead.  In GAP 4.1 there will be some more functions for list
+manipulations (e.g. SubstituteList, PositionSublist).  It is much easier to
+integrate these functions into GAP 3.4 and the list interface will survive
+the transition to GAP 4.1, while there will be some changes to the user
+interface for words because of the problems and confusions created by the GAP
+3.x word interface, e.g. the function 'AbstractGenerator' will finally be
+replaced by the function 'FreeGroup' which is already used in GAP 3.4.
+
+best wishes
+  Frank
+
+
+
+
+From Frank.Celler@Math.RWTH-Aachen.DE Mon Jan 16 12:25:00 1995
+Date:         Mon, 16 Jan 95 12:25:00 -0700
+From:         "Frank Celler" <Frank.Celler@Math.RWTH-Aachen.DE>
+Subject:      polynomials
+
+Dear Chris,
+
+you wrote:
+
+    I am trying to use WORD functions on the elements of a finitely 
+    presented group - but perhaps this is not allowed?
+
+This is allowed, but the printing of words is confusing (to say the
+least).  We will try to change this in the next GAP release.
+
+Back to the problem:
+
+    gap> el := Elements(S3);
+    [ IdWord, F.1, F.2, F.1*F.2, F.2*F.1, F.2^2 ]
+    gap> w := el[4];
+    F.1*F.2
+    gap> MappedWord( w, [F.1,F.2], [F.3,F.4] );
+    F.1*F.2
+
+<w> is an element of <S3> and not of <F> *although* the printing suggests
+otherwise.  The string used to print an abstract word has no meaning
+for GAP.  In order to replace <S3>.1 (which is printed as "F.1"!) by
+<S3>.3 one has to use
+
+    gap> w;
+    F.1*F.2
+    gap> MappedWord( w, [S3.1], [S3.3] );
+    F.3*F.2
+
+The same is true for
+
+    gap> Position(gens,F.1);
+    1
+    gap> Position(gens,el[2]);
+    false                              !! and here I expected:  1
+
+<el>[2] is *not* equal <F>.1 although it is printed in the same way.
+
+best wishes
+  Frank
+
+
+
+
+
+
+From Frank.Celler@Math.RWTH-Aachen.DE Mon Jan 16 12:25:00 1995
+Date:         Mon, 16 Jan 95 12:25:00 -0700
+From:         "Frank Celler" <Frank.Celler@Math.RWTH-Aachen.DE>
+Subject:      multi-variable polynomials
+
+Dear Forum,
+
+Jacob Hirbawi asked in his email message:
+
+    I'd like to know the status of multi-variable polynomials in
+    GAP. Before the release of 3.4 there was some discussion about
+    having an efficient implementation of these in a future
+    release. How far off is this?
+
+The next release of GAP, which will be 4.1, will contain a
+multi-variable polynomial arithmetic.  However, it will most certainly
+not contain any special multi-variable polynomial algorithms
+(e.g. Groebner bases), but it should contain enough support to use
+external packages, for example, to compute a Groebner basis and then
+work with this basis inside GAP.
+
+best wishes
+  Frank
+
+
+
+From leonard@qmw.ac.uk Thu Jan 19 17:56:00 1995
+Date:         Thu, 19 Jan 95 17:56:00 +0000
+From:         "Leonard Soicher" <leonard@qmw.ac.uk>
+Subject:      An application of GAP and GRAPE
+
+% A LaTeX file for a 3 page document
+
+\documentstyle[a4,12pt]{article} \font\twlrm=cmr12 \font\twlbf=cmbx12
+\def \im {\cong} \def \cl {\centerline} \def \ss {\smallskip} \def \ms
+{\medskip} \def \bs {\bigskip} \def \ds {\displaystyle} \def \split
+{\colon} \def \bec {\colon=} \def \ns {{}^{\ds .}} \def \intersect
+{\cap} \def \union {\cup} \def \la {\langle} \def \ra {\rangle} \def \x
+{\times} \def \a {\alpha} \def \b {\beta} \def \G {\Gamma} \def \D
+{\Delta} \def \S {\Sigma} \def \s {\sigma} \def \t {\tau} \def \w
+{\omega} \def \O {\Omega} \def \Aut {{\rm Aut}} 
+
+\newtheorem{thm}{Theorem} \newtheorem{lemma}{Lemma}
+\newtheorem{prop}{Proposition} \newtheorem{cor}{Corollary}
+\newtheorem{predefn}{Definition}
+\newenvironment{defn}{\begin{predefn}\rm}{\end{predefn}} 
+
+\title{Yet another distance-regular graph related to a Golay code}   
+
+\author{
+Leonard H. Soicher\\ School of Mathematical Sciences\\ Queen Mary and
+Westfield College\\ Mile End Road, London E1 4NS, U.K.\\
+email: L.H.Soicher@qmw.ac.uk} 
+\date{ }
+\begin{document}
+\maketitle
+
+\begin{abstract} We describe a new distance-regular, but not 
+distance-transitive, graph. This graph has intersection array
+$\{110,81,12;1,18,90\}$, and automorphism group $M_{22}\split2$.
+\end{abstract}
+
+In \cite{BCN}, Brouwer, Cohen and Neumaier discuss many distance-regular
+graphs related to the famous Golay codes. In this note, we describe yet 
+another such graph. 
+
+Ivanov, Linton, Lux, Saxl and the author \cite{ILLSS} have
+classified all primitive distance-transitive representations of the
+sporadic simple groups and their automorphism groups.  As part of this
+work, all multiplicity-free primitive representations of
+such groups have also been classified.  One such representation is
+$M_{22}\split2$ on the cosets of $L_2(11)\split2$.  This representation
+has rank 6, with subdegrees 1, 55, 55, 66, 165, 330.  Let $\G$ be the
+graph obtained by the edge-union of the orbital graphs corresponding to
+the two suborbits of length 55.  By examining the sum 
+$$\left(\begin{array}{rrrrrr} 0 & 55 & 0 & 0 & 0 & 0 \\ 1 & 8 & 4 & 0 &
+18 & 24 \\ 0 & 4 & 12 & 0 & 3 & 36 \\ 0 & 0 & 0 & 10 & 10 & 35 \\ 0 & 6
+& 1 & 4 & 20 & 24 \\ 0 & 4 & 6 & 7 & 12 & 26 \\ \end{array}\right)
+\quad +\quad \left(\begin{array}{rrrrrr} 0 & 0 & 55 & 0 & 0 & 0 \\ 0 &
+4 & 12 & 0 & 3 & 36 \\ 1 & 12 & 0 & 0 & 30 & 12 \\ 0 & 0 & 0 & 10 & 20
+& 25 \\ 0 & 1 & 10 & 8 & 4 & 32 \\ 0 & 6 & 2 & 5 & 16 & 26 \\
+\end{array}\right)$$ of the intersection matrices corresponding to
+these two orbital graphs, we see that $\G$ is distance-regular, with
+intersection array $$\{110,81,12;1,18,90\}.$$ According to \cite[p.430]{BCN},
+this graph was previously unknown.
+
+We now give a description of $\G$ in terms of a punctured
+binary Golay code. This description was obtained using the
+{\sf GRAPE} share library package \cite{GRAPE} of the {\sf GAP} system
+\cite{GAP} (available from {\tt ftp.math.rwth-aachen.de}).
+
+Let ${\cal C}_{22}$ be the code obtained by puncturing in one
+co-ordinate the (non-extended) binary Golay code. 
+Then ${\cal C}_{22}$ is a $[22,12,6]$--code, with 
+automorphism group $M_{22}\split2$. 
+Let $M$ be the set of the 77 minimum weight non-zero 
+words of ${\cal C}_{22}$,
+and $V$ be the set of the 672 unordered pairs of words of weight
+11 which have disjoint support.
+For $v=\{v_1,v_2\}\in V$ define $$M(v)\bec\{m\in M\mid 
+\hbox{weight$(v_1+m)$ $=$ weight$(v_2+m)$}\}.$$
+We remark that $M(v)$ has size 55.
+
+Now define $\G$ to have vertex set $V$, with vertices $v,w$ joined
+by an edge if and only if $$|M(v)\cap M(w)|=43.$$
+We use {\sf GRAPE} to check that $\G$ is indeed distance-regular, with 
+intersection array $\{110,81,12;1,18,90\}$.
+Using {\em nauty} \cite{nauty} within {\sf GRAPE}, we determine 
+that $\Aut(\G)\im M_{22}\split2$, and so $\G$ is not distance-transitive. 
+
+Further computations reveal the following intriguing fact. 
+Let $v,w\in V$, $v\not=w$. Then in $\G$, we have 
+$$d(v,w)=i$$ if and only if $$|M(v)\cap M(w)|=47-4i.$$
+
+As noted in \cite[p.430]{BCN}, the distance-2 graph $\G_2$ 
+is strongly regular, and it has parameters 
+$$(v,k,\lambda,\mu)=(672,495,366,360).$$ Indeed, $\G_2$ is a rank 
+3 graph for $U_6(2)$ (illustrating $M_{22}\le U_6(2)$). The full automorphism 
+group of $\G_2$ is $U_6(2)\split S_3$.
+
+It would be interesting to have a natural computer-free proof 
+of the results in this note, and to 
+see if these results generalize to other codes. 
+
+\medskip
+\noindent {\bf Remark} A.A.~Ivanov has since informed me that about ten
+years ago he and his colleagues in Moscow discovered the four class
+association scheme associated with the graph $\G$ (see \cite{FKM,IKF}),
+but they did not check this scheme to determine if it came from a
+distance-regular graph.
+
+\begin{thebibliography}{99} 
+
+\bibitem{BCN} A.E.~Brouwer, A.M.~Cohen and A.~Neumaier, 
+{\it Distance-Regular Graphs}, Springer, Berlin and New York, 1989.
+
+\bibitem{FKM} I.A.~Faradzev, M.H.~Klin and M.E.~Muzichuk, 
+Cellular rings and groups of automorphisms of graphs,
+in {\it Investigations in Algebraic Theory of Combinatorial Objects}
+(I.A.~Faradzev, A.A.~Ivanov, M.H.~Klin and A.J.~Woldar, eds.),
+Kluwer Academic Publishers, 1994, pp.~1--153.
+
+\bibitem{IKF} A.A.~Ivanov, M.H.~Klin and I.A.~Faradzev, 
+Primitive representations of nonabelian 
+simple groups of order less than $10^6$, Part 2, Preprint, VNIISI,
+Moscow, 1984.
+
+\bibitem{ILLSS} A.A.~Ivanov, S.A.~Linton, K.~Lux, J.~Saxl and
+L.H.~Soicher, Distance-transitive representations of the sporadic 
+groups, {\it Comm. Algebra}, to appear.
+
+\bibitem{nauty} B.D.~McKay, {\em nauty} user's guide (version 1.5),
+Technical report TR-CS-90-02, Computer Science Department, Australian
+National University, 1990.
+
+\bibitem{GAP} M.~Sch\"onert, et. al., {\sf GAP} -- Groups, Algorithms and
+Programming, fourth edition, Lehrstuhl D f\"ur Mathematik, RWTH Aachen, 
+1994.
+
+\bibitem{GRAPE} L.H.~Soicher, {\sf GRAPE}: a system for computing with
+graphs and groups, in {\it Groups and Computation}, L.~Finkelstein and
+W.M.~Kantor, eds., DIMACS Series in
+Discrete Mathematics and Theoretical Computer Science {\bf 11}, A.M.S.,
+1993, pp.~287--291.
+
+\end{thebibliography}
+
+\end{document}
+
+
+
+
+From satterfieldj@alpha.hendrix.edu Mon Jan 30 01:09:00 1995
+Date:         Mon, 30 Jan 95 01:09:00 -0600
+From:         "SUNSHINE" <satterfieldj@alpha.hendrix.edu>
+Subject:      Subgroup listings...
+
+This may be an elementary question, but I am simply trying to get a listing of
+all of the subgroups of a given group, say, D4.  I feel like I am missing an
+easy way to list all of the subgroups, but the following is the only way I've
+found so far:
+
+1) Define the group: d4:=Group((1,2,3,4));
+2) Create a subgroup lattice for that group: latd4:=Lattice(d4);
+3) Change the PrintLevel to display a representative subgroup for each
+       conjugacy class, as well as the conjugates of those representatives:
+       SetPrintLevel(latd4,3);
+4) Print the classes:  latd4.classes;
+
+I feel like there must be an easier way than this.  Any help is appreciated.
+
+Sincerely,
+
+Wade Satterfield
+satterfieldj@alpha.hendrix.edu 
+
+
+
+From sal@cs.st-andrews.ac.uk Mon Jan 30 10:04:00 1995
+Date:         Mon, 30 Jan 95 10:04:00 -0500
+From:         "Steve Linton" <sal@cs.st-andrews.ac.uk>
+Subject:      Re: Subgroup listings...
+
+> Subject: Subgroup listings...
+> 
+> This may be an elementary question, but I am simply trying to get a listing of
+> all of the subgroups of a given group, say, D4.  I feel like I am missing an
+> easy way to list all of the subgroups, but the following is the only way I've
+> found so far:
+> 
+> 1) Define the group: d4:=Group((1,2,3,4));
+> 2) Create a subgroup lattice for that group: latd4:=Lattice(d4);
+> 3) Change the PrintLevel to display a representative subgroup for each
+>        conjugacy class, as well as the conjugates of those representatives:
+>        SetPrintLevel(latd4,3);
+> 4) Print the classes:  latd4.classes;
+> 
+> I feel like there must be an easier way than this.  Any help is appreciated.
+> 
+
+There doesn't seem to be a single function to this, but it is easy to write
+one, since the conjugacy classes are domains, so we can apply the function
+Elements:
+
+gap> Subgroups := function(g)                
+> local l;
+> l := Lattice(g); 
+> return Union(List(l.classes,Elements));
+> end;
+function ( g ) ... end
+gap>
+
+and we can test it with:
+
+gap> g := CyclicGroup(4);
+Group( (1,2,3,4) )
+gap> Subgroups(g);
+[ Subgroup( Group( (1,2,3,4) ), [  ] ), Group( (1,2,3,4) ), 
+  Subgroup( Group( (1,2,3,4) ), [ (1,3)(2,4) ] ) ]
+gap> 
+
+The advantage of this method is that it returns a list of subgroups ready to
+manipulate further. Be warned however, that for even moderately large groups
+this list can become very long and very slow to compute. The elementary
+abelian group of order 32, for example, has 374 subgroups, and the symmetric
+group S6 has over 1000.
+
+In these larger cases, there is almost always a way to avoid calculating
+these lists in full, by using just conjugacy class representatives, or the
+table of marks (see TableOfMarks in the manual).
+ 
+	Steve Linton
+
+
+
+
+From jwit@cs.ruu.nl Thu Feb  2 12:10:00 1995
+Date:         Thu, 02 Feb 95 12:10:00 +0100
+From:         "Jan de Wit" <jwit@cs.ruu.nl>
+Subject:      How to reduce words in FpGroups
+
+	Hello,
+
+I am learning to use GAP for about a week now, and I have some questions and
+suggestions. I haven't had the time to read the forum9??.txts entirely yet, so
+there might be some 'old hat' among them.
+In no particular order:
+
+1. Given an FpGroup, ie FreeGroup(2)/[a^3,b^2,a*b*a^-1*b^-1] (cyclic group of
+   order 6). You can get the elements of this group by using Elements, and now
+   I want to compute (a^2*b) * (a). You get a^2*b*a, which is NOT in the list
+   of elements. It seems to me that GAP has a way of reducing this expression
+   to one which is in the list. How do you do this ?
+   The reason I want to do this is to make a data structure containing the 
+   *entire* multiplication table for a (hopefully small) group, no matter
+   what the exact elements are, and start working on that. Then it would be 
+   possible ,for instance, to check isomorphism between CyclicGroup(6) - a 
+   permutation group - and the FpGroup above. (Yes, this is brute force, and I
+   should write a program in C for it, but I want to try it using GAP).
+   Maybe there are other ways of doing this that I'm not aware of yet...
+
+2. It would be nice to be able to get some input from the user while executing
+   a function. As an example, try  
+     PrintArray(RecFields(GroupOps)); 
+   Now that wasn't too easy to follow, wasn't it?
+   To solve this problem I wrote a function which loops through the list,
+   counts the number of lines printed, and at regular intervals calls a func-
+   tion waitKey, defined like this:
+   
+   waitKey:=function()
+     Print("Press Ctrl-D to continue\n"); ## ctrl-d works for MS-DOS
+     Read(*stdin*);
+   end;
+
+   I don't think this is particularly elegant or easy. To make GAP programs
+   interactive, ie. accept numbers or strings as input you would have to do 
+   something like 
+
+   readInt:=function()
+     local input;
+     while not IsBound(input) do
+       Print("Enter 'input:=' <the number you want> ';' + ctrl-d");
+       Read(*stdin*);
+       if not IsInt(input) then
+         Unbind(input);
+       fi;
+     od;
+     return input;
+   end; 
+   I haven't tried this yet, but it's the only solution I can think of.
+
+3. Is it possible to load the libraries more selectively, so that when I type
+   G:=Group((1,2),(1,2,3));  not nearly all the libraries are loaded? 
+   I mean, I want to work with permutation groups, not with Cohomology- or 
+   SagGroups !
+   For most people this is not a problem, but for me it is, running GAP on an
+   MS-DOS machine with 4M (ie 3M extended space): after the group libraries
+   have loaded, I have about 300K free space left (and swapping to disk is 
+   SSSLLLLLOOOOOWWWW, goodbye GAPSTONES!).
+
+4. Have the algorithms and their implementations been proved correct by some
+   kind of formal method? If not you might just try something that's so 
+   complicated you can't verify the result by hand (Imagine someone writing
+   a thesis using incorrect results obtained by GAP...). I guess most of the
+   abstract algorithms have been proved correct, but I wonder about the 
+   implementation. 
+
+
+Well, that's about it, I hope my questions aren't too stupid for you to ponder
+over. I want to add that GAP looks great, most features I don't even know 
+(I'm just a third-year mathematics student at Utrecht University ).
+
+					Yours sincerely,
+						Jan de Wit
+
+
+
+From dfh@maths.warwick.ac.uk Thu Feb  2 12:36:00 1995
+Date:         Thu, 02 Feb 95 12:36:00 +0000
+From:         "Derek Holt" <dfh@maths.warwick.ac.uk>
+Subject:      Re:  How to reduce words in FpGroups
+
+Jan de Wit writes:
+> 
+> 1. Given an FpGroup, ie FreeGroup(2)/[a^3,b^2,a*b*a^-1*b^-1] (cyclic group of
+>    order 6). You can get the elements of this group by using Elements, and now
+>    I want to compute (a^2*b) * (a). You get a^2*b*a, which is NOT in the list
+>    of elements. It seems to me that GAP has a way of reducing this expression
+>    to one which is in the list. How do you do this ?
+>    The reason I want to do this is to make a data structure containing the 
+>    *entire* multiplication table for a (hopefully small) group, no matter
+>    what the exact elements are, and start working on that. Then it would be 
+>    possible ,for instance, to check isomorphism between CyclicGroup(6) - a 
+>    permutation group - and the FpGroup above. (Yes, this is brute force, and I
+>    should write a program in C for it, but I want to try it using GAP).
+>    Maybe there are other ways of doing this that I'm not aware of yet...
+> 
+
+Even for small groups, comparing multiplication tables would be a very
+inefficient way of testing for isomorphism. If the groups both had order
+n, then (assuming you knew which element was the identity), you would
+have to test all (n-1)! permutations of the rows and columns of one table
+against the other. This would become impractical as soon as n was bigger than
+about 12, I should think. I don't think you should consider using group
+multiplication tables for any serious computation in group theory - they
+are really only useful for display purposes!
+
+A better approach to the problem you mention is as follows. Suppose you
+are given a finitely presented group G and a permutation group P, say and
+you know that they both have order n. Let G have generators x_1,..,x_r,
+and relators r_1, ..., r_s.
+Then try each map of the generators of G onto P (there are n^r such maps). 
+For each such map, check to see if the images of the relators in P
+evaluate to the identity. If so, the map is a homomorphism. Then check to
+see if these images generate the whole of P. If so, it is an isomorphism.
+
+In many interesting examples, r will be two, so there will only be n^2 maps
+to consider, which is a lot less than (n-1)!.
+There are various tricks to speed things up - like, if you have a relator,
+such as x_1^2, then  you need only consider images of x_1 which have order
+2 in P. So, in your particular example, there would be one possible image for
+b and two for a, which cuts down the search from 6^2 to 2. Of course taking
+advantage of such things in general is more tricky to program, but it is
+perfectly possible. It is  doubtful whether there is any essentially
+better method of testing for isomorphism than this, at least for general
+groups. Testing for isomorphism between two permutation groups is not
+easy - I think the best method there is to find a suitable presentation
+of one of them, and then use the method I have outlined.
+
+Derek Holt.
+
+
+
+From rsc@math.ufl.edu Sun Feb  5 15:16:00 1995
+Date:         Sun, 05 Feb 95 15:16:00 -0500
+From:         "Robert S Clancy" <rsc@math.ufl.edu>
+Subject:      Memory usage
+
+Hello,
+
+My question is how to clear a record from memory.
+Specifically, a lattice record. This is the context: 
+Compute the lattice of the AlternatingGroup(8). Now
+for subgroups of this group, compute a lattice. I 
+don't want to do it all at once. I would be happy to 
+just be able to replace an old subgroup lattice with 
+a new subgroup lattice.
+
+Redefining the old subgroup lattice as the new
+subgroup lattice does not seem to work. In other words,
+after a few replacements, I still run out of memory.
+Is the information of the old subgroup lattice able to
+be cleared from memory?
+
+Thanks,
+
+Robert
+
+
+
+From Frank.Celler@Math.RWTH-Aachen.DE Mon Feb  6 09:44:00 1995
+Date:         Mon, 06 Feb 95 09:44:00 -0700
+From:         "Frank Celler" <Frank.Celler@Math.RWTH-Aachen.DE>
+Subject:      Re:  How to reduce words in FpGroups
+
+Dear Jan de Wit,
+
+you wrote:
+
+>  permutation group - and the FpGroup above. (Yes, this is brute force, and I
+>  should write a program in C for it, but I want to try it using GAP).
+>  Maybe there are other ways of doing this that I'm not aware of yet...
+
+As Derek has explained the complexity of a brute force algorithm is (n-1)!,
+so I doubt that even using assembler  or a very good  C optimizer will help
+to speed  up the  computation  by a factor   of  15!/11! ~  30000 to  get a
+pratical algorithm for  groups of size 16 (which  is the next "interesting"
+size, 13 & 15 being cyclic, 14 being cyclic or dihedral) instead of 12.
+
+>  what the exact elements are, and start working on that. Then it would be 
+>  possible ,for instance, to check isomorphism between CyclicGroup(6) - a 
+>  permutation group - and the FpGroup above. (Yes, this is brute force, and I
+
+If you need that isomorphism explicitly then  you have to implement Derek's
+algorithm, if you only  want to know if two  groups are isomorphic  you can
+use  'GroupId' for   permutations/ag groups  of  size  less than  101 (this
+function will *not* work  for fp groups, so you  have to convert a fp group
+first).
+
+    gap> f := FreeGroup(2);
+    Group( f.1, f.2 )
+    gap> g := f / [ f.1^4, f.2^2, f.1^f.2/f.1^-1 ];
+    Group( f.1, f.2 )
+    gap> p := OperationCosetsFpGroup( g, TrivialSubgroup(g) );
+    Group( (1,2,4,7)(3,6,8,5), (1,3)(2,5)(4,8)(6,7) )
+    gap> GroupId(p);
+    rec(
+      catalogue := [ 8, 4 ],
+      names := [ "D8" ],
+      3primes := [ "A", 2 ],
+      size := 8,
+      pGroupId := 3 )
+
+The entry 'catalogue' identifies the  groups of size less  than 101 and two
+such groups are  isomorphic if and only if   their 'catalogue' numbers  are
+equal.  The other  entries in this record  ('3primes' and 'pGroupId') refer
+to other classifications, please see the manual for details.
+
+>  Now that wasn't too easy to follow, wasn't it?
+>  To solve this problem I wrote a function which loops through the list,
+>  counts the number of lines printed, and at regular intervals calls a func-
+>  tion waitKey, defined like this:
+
+Yes, the GAP output is sometimes hard to read or too verbose.  GAP 4.1 will
+address this problem by being brief per default and  might offer a pager if
+asked to be verbose.
+
+>  Is it possible to load the libraries more selectively, so that when I type
+>  G:=Group((1,2),(1,2,3));  not nearly all the libraries are loaded? 
+>  I mean, I want to work with permutation groups, not with Cohomology- or 
+>   SagGroups !
+
+Again, GAP 4.1 will solve this problem  by loading only library files which
+are needed, but the current  version of  GAP indeed reads   quite a lot  of
+stuff which is not necessary to define, say, <(1,2)>.
+
+You can remove  the  line 'ReadLib("ratclass")' in  "permgrp.g",  this will
+avoid   loading the solvable  group  functions.  Removing this line however
+will  break  the   functions  'RationalClasses', 'ConjugacyClasses' because
+'RationalClasses' computes the   classes  by taking the  Sylow   subgroups,
+converting them into ag groups and using ag group methods there.
+
+Unfortunately, GAP is at  the moment quite generous  when reading in files,
+so if  you define a  permutation group, GAP  reads in every  file you might
+need.  Even if  you are never going to  use 'RationalClasses' (or functions
+which rely  on the  classes)  it will  fetch  the  methods used to  compute
+classes in permutation groups in advance.
+
+best wishes
+  Frank
+
+
+
+From sal@cs.st-andrews.ac.uk Mon Feb  6 10:06:00 1995
+Date:         Mon, 06 Feb 95 10:06:00 +0100
+From:         "Steve Linton" <sal@cs.st-andrews.ac.uk>
+Subject:      Re: Memory usage
+
+> My question is how to clear a record from memory.
+> Specifically, a lattice record. This is the context: 
+> Compute the lattice of the AlternatingGroup(8). Now
+> for subgroups of this group, compute a lattice. I 
+> don't want to do it all at once. I would be happy to 
+> just be able to replace an old subgroup lattice with 
+> a new subgroup lattice.
+> 
+> Redefining the old subgroup lattice as the new
+> subgroup lattice does not seem to work. In other words,
+> after a few replacements, I still run out of memory.
+> Is the information of the old subgroup lattice able to
+> be cleared from memory?
+> 
+
+Yes, it is. The memory manager in GAP will recover the space used by
+any object which is no longer "reachable". That is, it is no longer
+stored in a variable, or a member of a record that is reachable, or
+an element of an array that is reachable. The problem in this case
+is that when you execute
+
+l := Lattice(h);
+
+the lattice is actually stored in TWO places. Firstly it is stored
+in the variable l, from which you successfully delete it when you
+change the value of l. Secondly, it is stored as h.lattice in
+the record for the group h, to save time should it be required again.
+
+Thus to reclaim the space, you need to do something like:
+
+for h in .... do
+	l := Lattice(h);
+	<do stuff with l>
+	Unbind(h.lattice);
+od;
+
+then when you reassign l on each pass through the loop, the lattice
+computed on the last pass will un "unreachable" and the space it
+uses can be reclaimed.
+
+I would further remark that if you alrady have the lattice of G,
+then it should be possible to extract the lattice of H <= G from
+that of G without going to the trouble of recomputing it.
+
+	Steve
+
+
+
+From Alexander.Hulpke@Math.RWTH-Aachen.DE Mon Feb  6 11:38:00 1995
+Date:         Mon, 06 Feb 95 11:38:00 -0500
+From:         "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:      Re: Isomorphism test (was: How to reduce)
+
+Dear GAP-forum,
+
+Frank Celler wrote,
+
+> If you need that isomorphism explicitly then  you have to implement Derek's
+> algorithm,
+
+Just to save probably a few days work: I have written an implementation of
+this algorithm (which is to be added for future versions of GAP).
+If anyone is interested in it, I'll try to put it on our ftp server.
+
+Alexander Hulpke
+
+--     Alexander Hulpke    ,          |Ce po`eme est, en effet, divis'e en
+Concordia University, Montreal, Canada|cinq strophes successivement et respec-
+  hulpke@abacus.concordia.ca          |tivement compos'ees de 3-1-4-1-5 vers,
+  ahulpke@bert.math.rwth-aachen.de    |   Jacques Bens:  Le sonnet irrationnel
+
+
+
+From kaskel@math.berkeley.edu Tue Feb  7 14:43:00 1995
+Date:         Tue, 07 Feb 95 14:43:00 -0800
+From:         "Bruce Kaskel" <kaskel@math.berkeley.edu>
+Subject:      p-adics?
+
+Is it possible to work with p-adics in GAP? 
+
+Elements of any representation of Z_p (or Q_p) would of course
+be ``non-exact'' objects and perhaps as such are not part of the
+GAP philosophy. Such a representation would necessarily require
+a set limit of precision. So...
+
+How about rings of the form Z/p^nZ (or more generally Z/nZ)?
+Does GAP make these rings available in any cases other
+than when Z/nZ is a field?
+
+I am generally interested in linear groups over such rings.
+
+Any suggestions would be helpful. Thanks.
+
+--Bruce Kaskel
+kaskel@math.berkeley.edu
+
+
+
+
+From Thomas.Breuer@Math.RWTH-Aachen.DE Wed Feb  8 12:47:00 1995
+Date:         Wed, 08 Feb 95 12:47:00 WET
+From:         "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:      Re: p-adics?
+
+Dear Mrs. and Mr. Forum,
+
+Bruce Kaskel asked
+
+> Is it possible to work with p-adics in GAP? 
+> 
+> Elements of any representation of Z_p (or Q_p) would of course
+> be ``non-exact'' objects and perhaps as such are not part of the
+> GAP philosophy. Such a representation would necessarily require
+> a set limit of precision. So...
+
+At the moment (that is, in GAP-3.4) there is no support for p-adic numbers.
+Since this request has come up in our team as well as from outside before
+we hope to provide p-adics in a future version of GAP-4 but it is too early
+to promise any date for this, this is simply a question of manpower.
+Anyhow, GAP-4 will not be released before next year.
+
+> How about rings of the form Z/p^nZ (or more generally Z/nZ)?
+> Does GAP make these rings available in any cases other
+> than when Z/nZ is a field?
+
+GAP-3.4 does not support rings Z/nZ for non-primes n, but GAP-4 definitely
+will do; this will include of course matrices, matrix groups etc. over these
+rings.
+
+At the moment, it would be at least *possible* to define elements of Z/nZ
+using records; it would not be very efficient, just it would be possible.
+An extensive description how to implement elements of the multiplicative
+group of Z/nZ using records is given in section "About Defining New Group
+Elements" of the GAP manual.
+This method can be used to define elements of the ring Z/nZ.
+If one is mainly interested in matrix rings over Z/nZ then it is possible
+to define the vectors/matrices as records.  Such a vector/matrix could
+contain an integer vector/matrix and an 'operations' record that defines
+addition, multiplication etc. using the usual matrix multiplication followed
+by elementwise reduction modulo n.
+
+Kind regards
+Thomas Breuer
+
+
+
+
+From Alexander.Hulpke@Math.RWTH-Aachen.DE Wed Feb  8 12:00:00 1995
+Date:         Wed, 08 Feb 95 12:00:00 -0500
+From:         "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:      Re: Isomorphism test (was: How to reduce)
+
+Dear GAP-Forum,
+
+I have put a version of an isomorphism test routine for GAP 3.4 on our
+ftp server. The files are
+
+pub/incoming/morpheus.{g,doc}
+
+Alexander Hulpke
+
+--     Alexander Hulpke, Lehrstuhl D f"ur Mathematik, RWTH, 52056 Aachen,
+       ahulpke@bert.math.rwth-aachen.de     ,
+until April '95: Concordia University, Montreal, Canada
+		 hulpke@abacus.concordia.ca         
+
+
+
+From dfh@maths.warwick.ac.uk Thu Feb  9 12:39:00 1995
+Date:         Thu, 09 Feb 95 12:39:00 +0000
+From:         "Derek Holt" <dfh@maths.warwick.ac.uk>
+Subject:      Trouble with FP-group
+
+Hallo - I had a GAP variable called F, which was either equal to 0, or to
+a finitely presented group.
+Naturally, I put
+
+if F<>0 then ....
+
+but I was rather surprised when this caused GAP to try and calculate the order
+of F (which was pretty hopeless, since F was infinite).
+
+Is this intentional behaviour?
+I was asking if F was equal to the integer 0, and expected to get an immediate
+"no" as an answer.
+
+Derek Holt.
+
+
+
+From Volkmar.Felsch@Math.RWTH-Aachen.DE Tue Feb 14 10:09:00 1995
+Date:         Tue, 14 Feb 95 10:09:00 +0100
+From:         "Volkmar Felsch" <Volkmar.Felsch@Math.RWTH-Aachen.DE>
+Subject:      Bug in the SpaceGroup command
+
+I would like to warn you of a bug in the SpaceGroup command in
+the library of crystallographic groups.
+
+The SpaceGroup command returns a space group in form of a matrix
+group together with a set of abstract generators and a set of
+defining relators. In the current version, this set of defining
+relators is incomplete: It does not contain the relators which
+describe the action of the point group generators on the
+generators of the normal subgroup of translations.
+
+The bug will be fixed in the next upgrade. For the time being,
+you may fix it in your local copy by applying the following patch
+to the file grp/cryst.grp.
+
+Volkmar Felsch, Aachen
+
+--------------------------------------------------------------------
+
+--- grp/cryst.grp	1994/06/24 08:17:53
++++ grp/cryst.grp	1995/02/14 08:53:13
+@@ -3414,8 +3417,8 @@
+ ##
+ CR_SpaceGroup := function ( param )
+ 
+-    local CR, crgens, crrels, dim, G, g, g1, gens, gens1, i, j, mat, ngens,
+-          ngens1, nrels, num, q, qcl, rels, sys, word;
++    local CR, crgens, crrels, dim, G, g, g1, gens, gens1, i, inv, j, k, mat,
++          ngens, ngens1, nrels, num, q, qcl, rels, sys, word;
+ 
+     # Get the arguments.
+     dim := param[1];
+@@ -3445,6 +3448,17 @@
+     for i in [ ngens1 + 1 .. ngens - 1 ] do
+         for j in [ i + 1 .. ngens ] do
+             Add( rels, Comm( g[i], g[j] ) );
++        od;
++    od;
++    inv := List( gens, mat -> mat^-1 );
++    for i in [ 1 .. ngens1 ] do
++        for j in [ ngens1 + 1 .. ngens ] do
++            mat := inv[j] * inv[i] * gens[j] * gens[i];
++            word := IdWord;
++            for k in [ 1 .. dim ] do
++                word := word * g[ngens1+k]^mat[k][dim+1];
++            od;
++            Add( rels, g[j]^-1 * g[i]^-1 * g[j] * g[i] * word^-1 );
+         od;
+     od;
+     if ngens1 > 0 then
+
+--------------------------------------------------------------------
+
+
+
+
+From satterfieldj@alpha.hendrix.edu Fri Feb 10 15:08:00 1995
+Date:         Fri, 10 Feb 95 15:08:00 -0600
+From:         "SUNSHINE" <satterfieldj@alpha.hendrix.edu>
+Subject:      Cartesian product?
+
+Is there a way to create the cartesian product of a group, say of C2 x C2? 
+"Cartesian" does not work, as groups cannot be converted to lists.
+
+Also, is there a built-in function for creating the quaternion group?
+
+Thanks in advance.
+
+Wade Satterfield 
+
+
+
+From Thomas.Breuer@Math.RWTH-Aachen.DE Tue Feb 14 17:46:00 1995
+Date:         Tue, 14 Feb 95 17:46:00 WET
+From:         "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:      Re: Cartesian product?
+
+Dear Mrs. and Mr. Forum,
+
+Wade Satterfield asked two questions.  The first is
+
+> Is there a way to create the cartesian product of a group, say of C2 x C2? 
+
+The function 'DirectProduct' should do the job, for example
+
+    gap> c2:= CyclicGroup( 2 );
+    Group( (1,2) )
+    gap> DirectProduct( c2, c2 );
+    Group( (1,2), (3,4) )
+
+The second question is
+
+> Also, is there a built-in function for creating the quaternion group?
+
+The command 'SolvableGroup( "Q8" )' gives you the quaternion group
+as an AgGroup.
+
+Kind regards
+Thomas Breuer
+
+
+
+
+From wright@bright.uoregon.edu Wed Feb 15 09:00:00 1995
+Date:         Wed, 15 Feb 95 09:00:00 +1553
+From:         "Charles Wright" <wright@bright.uoregon.edu>
+Subject:      More on Q8
+
+A postscript on the quaternion group of order 8.
+
+It's easy to get non-AG presentations as well.
+
+For example, 
+
+gap> sl := SpecialLinearGroup( 2 , 3 );;
+gap> q := SylowSubgroup( sl , 2 );;
+
+produces Q8 as a group of 2x2 matrices over GF(3):
+
+Subgroup( SL(2,3), [ [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
+  [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ], 
+  [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ] ] )
+
+Then 
+
+gap> permq := Operation(q, Elements(q), OnRight);
+
+produces the permutation representation
+
+Group( (1,2)(3,6)(4,8)(5,7), (1,3,2,6)(4,5,8,7), (1,8,2,4)(3,5,6,7) )
+
+with elements
+
+[ (), (1,2)(3,6)(4,8)(5,7), (1,3,2,6)(4,5,8,7), (1,4,2,8)(3,7,6,5), 
+  (1,5,2,7)(3,4,6,8), (1,6,2,3)(4,7,8,5), (1,7,2,5)(3,8,6,4), 
+  (1,8,2,4)(3,5,6,7) ]
+
+
+Nothing fancy here, of course.
+
+C.R.B. Wright
+
+
+
+From Frank.Celler@Math.RWTH-Aachen.DE Fri Feb 17 12:02:00 1995
+Date:         Fri, 17 Feb 95 12:02:00 -0700
+From:         "Frank Celler" <Frank.Celler@Math.RWTH-Aachen.DE>
+Subject:      comparison of domains/elements
+
+Dear Derek,
+
+you wrote:
+
+>  if F<>0 then ....
+
+>  but I was rather surprised when this caused GAP to try and calculate
+>  the order of F (which was pretty hopeless, since F was infinite).
+
+yes,  GAP behaves  sometimes unpredictable,  if one  tries to  compare
+elements  of  different   universes,  simply  because   it  is  nearly
+impossible to catch all the cases.  So it is safer to first check that
+<F> is of the correct type before comparing, e.g.
+
+   if not IsInt(F)  then
+
+instead of
+
+   if F <> 0  then
+
+best wishes
+  Frank
+
+
+
+
+From sibley@math.psu.edu Sun Feb 19 21:12:00 1995
+Date:         Sun, 19 Feb 95 21:12:00 -0500
+From:         "David Sibley" <sibley@math.psu.edu>
+Subject:      GAP manual via HTTP?
+
+A GAP manual was available for a while via HTTP, at URL
+
+    http://www.math.rwth-aachen.de/~mschoene/GAP-Manual/
+
+However, it disappeared recently.  I can no longer access it.  Instead,
+I get "Unable to connect to remote host: Connection refused".
+
+Is the manual gone for good, or is this just a temporary problem?
+Or did the URL change?
+
+
+David Sibley        | "Accurate reckoning.  The entrance into knowledge
+Amateur radio NT3O  |  of all existing things and all obscure secrets."
+sibley@math.psu.edu |      -- The Rhind Papyrus
+<A HREF="http://www.math.psu.edu/sibley/">Dave's Web Page</A>
+
+
+
+
+From mueller@leon.informatik.uni-bonn.de Mon Feb 20 19:37:00 1995
+Date:         Mon, 20 Feb 95 19:37:00 +0000
+From:         "Johannes Mueller" <mueller@leon.informatik.uni-bonn.de>
+Subject:      Some Questions
+
+Dear Forum,
+
+First: can you tell me, what number X (given to GAPEMX.EXE with parameter -m
+Xm) works best (fastest) with respect to invoking Editor or computation of
+large objects (garbage collection etc.).
+
+My own tests (I have a 386-PC with 8Mb) brought this: Calling GAP with -m 4m
+results in (a little) faster Execution as -m 6m being faster as -m 7m.
+
+Second: I'm in need of a function returning the (rounded) modulus of a
+cyclotomic, e.g. something like AbsVal(1+E(4)) giving something about
+1414/1000. Is there something I haven't found? (gap3r4p0)
+
+Thanx & Bye, Johannes
+
+
+
+From Alexander.Hulpke@Math.RWTH-Aachen.DE Thu Feb 23 10:02:00 1995
+Date:         Thu, 23 Feb 95 10:02:00 -0500
+From:         "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:      Re: Some questions
+
+Dear Gap-Forum,
+
+Johannes M"uller asked:
+
+> First: can you tell me, what number X (given to GAPEMX.EXE with parameter -m
+> Xm) works best (fastest) with respect to invoking Editor or computation of
+> large objects (garbage collection etc.).
+
+These are in fact a couple of questions. I suppose you are using GAP under
+DOS.
+Your optimization conditions contradict each other in some way. I will just
+give a set of basic rules, by which you might find a suitable setting.
+
+- Unless you only work with numbers, 3.5 or 4MB is a lower limit to be able
+  to work reasonably with GAP. If you set a lower limit, it is very likely,
+  that GAP will extend its workspace automatically.
+- You can use the -g command line option to see the performance of garbage
+  collections and the total allocated memory to deduce the needed memory
+  space. As a rule of thumb, you should have at least 100kB free after a
+  garbage collection to get satisfactorial results.
+- If you allocate more memory than what fits into the main memory, GAP will
+  have to swap. This reduces computing speed enormously. Unless you
+  desperately need more memory, try to restrict yourself to the free RAM.
+  As I have not much experience with DOS systems, I have no idea, how much
+  memory remains after loading DOS and probably various TSR's.
+- As DOS has no provisions for multi-tasking, at least parts of GAP have to
+  be swapped to disk whenver an editor is called. I'm not sure, whether this
+  is always the whole memory area or only the lower 640kB. This might depend
+  on the editor as well. Probably using some kind of TSR editor and 'Read'
+  instead of 'Edit' might increase the turnaround times.
+  If using an ordinary editor, probably setting the memory limit as tight as
+  possible increases turnaround times, but computations might become slow.
+- Swapping speed is obviously depending on further hardware specifics.
+
+> My own tests (I have a 386-PC with 8Mb) brought this: Calling GAP with -m 4m
+> results in (a little) faster Execution as -m 6m being faster as -m 7m.
+
+So probably 4MB is the right amount for your work. If 'Edit'ing takes up a
+smaller part, then increasing the memory might be useful.
+It is likely, that 7MB already is beyond the RAM capacity (considering,
+that the OS and the GAP kernel have to fit into memory as well).
+
+> Second: I'm in need of a function returning the (rounded) modulus of a
+> cyclotomic, e.g. something like AbsVal(1+E(4)) giving something about
+> 1414/1000. Is there something I haven't found? (gap3r4p0)
+
+No. At the moment, GAP's implementation of field extensions is a purely
+algebraic one. There is no way to extend valuation information from the
+ground field to the extension.
+It would be possible to write a function 'AbsVal' in the GAP language, that
+would utilize the canonical embedding E(n)->exp(2\pi i/n) and get an
+approximation of the value by numerical evaluation. However this would
+require about 3-4 pages of code. Also the reliability (i.e. numerical
+stability) of this coude might me doubtful when comparing elements, which
+are 'close together'. Finally the resulting code would be quite slow.
+I must admit that I don't feel tempted to write such code.
+
+Are you sure, you'll *really* need this absolute value? For many
+applications one can find some way around this problem. For example, getting
+bounds would be much easier.
+
+> Thanx & Bye, Johannes
+
+You're welcome,
+
+      Alexander
+
+--     Alexander Hulpke, Lehrstuhl D f"ur Mathematik, RWTH, 52056 Aachen,
+       ahulpke@bert.math.rwth-aachen.de     ,
+until April '95: Concordia University, Montreal, Canada
+		 hulpke@abacus.concordia.ca         
+
+
+
+
+From jcbhrb@cerf.net Thu Feb 23 12:10:00 1995
+Date:         Thu, 23 Feb 95 12:10:00 -0800
+From:         "Jacob Hirbawi" <jcbhrb@cerf.net>
+Subject:      Re: Some questions
+
+Johannes M"uller writes :
+
+> Second: I'm in need of a function returning the (rounded) modulus of a
+> cyclotomic, e.g. something like AbsVal(1+E(4)) giving something about
+> 1414/1000. Is there something I haven't found? (gap3r4p0)
+
+to which Alexander Hulpke responds :
+
+> No. At the moment, GAP's implementation of field extensions is a purely
+> algebraic one. There is no way to extend valuation information from the
+> ground field to the extension.
+> It would be possible to write a function 'AbsVal' in the GAP language, that
+> would utilize the canonical embedding E(n)->exp(2\pi i/n) and get an
+> approximation of the value by numerical evaluation. 
+
+I wrote a function that takes a (real) element in Q(E(n)) and gives an 
+approximate rational of it. Modifying the code for nonreal elements should
+be striaght forward, but I didn't need it. As Alexander commented, the code
+is both crude and slow; but for what I was doing it worked reasonably well --
+(my application involves generating postscipt graphics from objects calculated
+in GAP, so round off errors and the like are not at all critical).
+Here's what I wrote :
+
+# Taylor series approximation for cos(r) 
+cos:=r->Sum([0..8],i->(((-1)^i)/Factorial(2*i))*r^(2*i) );
+# rationalize r; basically you express r as a sum of cosines using its
+# expansion in the cyclotomics, and then approximate each cosine term
+# with above series.
+Rat:=function(r) local n,cofs,i,j,twopi,res;
+  twopi:=710/113;
+  n:=NofCyc(r);
+  cofs:=CoeffsCyc(r,n);
+  res:=cofs[1];
+  for i in [2..n] do
+    if cofs[i]<>0 then 
+      res:=res+2*cofs[i]*cos(twopi*(i-1)/n);
+      j:=CoeffsCyc(E(n)^(i-1)+E(n)^-(i-1),n);
+      cofs:=cofs-cofs[i]*j;
+    fi;
+  od;
+  return Int(1000*res);
+end;
+
+some examples :
+
+gap> a1:=1+E(4);
+1+E(4)
+gap> a2:=a1*GaloisCyc(a1,-1);  # you get the absolute value using
+2
+
+gap> b0:=Rat(ER(2));
+1414
+gap> b0^2;
+1999396    # close enough!
+
+gap> b0:=Rat(ER(5));
+2236
+gap> b0^2;
+4999696
+
+Jacob Hirbawi <JcbHrb@CERF.net>
+
+
+
+From a.mathas@ic.ac.uk Fri Feb 24 12:00:00 1995
+Date:         Fri, 24 Feb 95 12:00:00 +0000
+From:         "Andrew Mathas" <a.mathas@ic.ac.uk>
+Subject:      possible error
+
+Dear Ms. & Mr Forum,
+     I am getting a repeatable error with the following message:
+
+Gasman: has no handle for a bag of type [1] and size     20.
+
+What I would like to know is if any one recognises this error and knows of a
+probable cause. I suspect that the problem is with my own code as I am
+dealing with recursively nested lists at this point in the calculation, but
+smaller examples work fine so I am confused by the error. If anyone has any
+thoughts then I would be pleased to hear them. 
+
+Apologies for the complete lack of information as to what causes this
+error. I have not isolated it to a small enough piece of code to inflict
+upon innocent readers without a guilty conscience. I can provide details
+upon request.
+
+Regards,
+     Andrew Mathas
+
+
+
+
+From mtpsagoj@lg.ehu.es Tue Feb 28 15:31:00 1995
+Date:         Tue, 28 Feb 95 15:31:00 +0100
+From:         "JOSE SANGRONIZ GOMEZ" <mtpsagoj@lg.ehu.es>
+Subject:      ConjugacyClasses
+
+Sometimes the function ConjugacyClasses in version 3.4 
+gives a wrong answer when applied to permutation groups 
+of order >1000. As it seems, only rational classes are
+considered:
+
+gap> G:=Group((1,2,3,4,5), (1,2,3), (6,7,8,9,10), (6,7,8));;
+gap> Length(ConjugacyClasses(G));
+17
+
+
+
+
+From Heiko.Theissen@Math.RWTH-Aachen.DE Wed Mar  1 15:24:00 1995
+Date:         Wed, 01 Mar 95 15:24:00 WET
+From:         "Heiko Theissen" <Heiko.Theissen@Math.RWTH-Aachen.DE>
+Subject:      Re: ConjugacyClasses
+
+Dear Mr. Gomez,
+
+this is really  a  bug that  you   have found in  the conjugacy  class
+routines in GAP 3.4. It will be fixed in the next version, but you can
+apply the following patch yourself and it should work then:
+
+In file 'lib/ratclass.g', lines 2905--2911 read:
+
+    class := RationalClass( G, cl.representative ^ S1.bijection, 
+               Image( S1.bijection, cl.centralizer ), cl.galoisGroup );
+    class.centralizer.size := Size( cl.centralizer );
+    class.power := RationalClass( G,
+	cl.power.representative ^ S1.bijection,
+	Image( S1.bijection, cl.power.centralizer ),
+	cl.power.galoisGroup );
+
+Replace these seven lines by the following eight lines:
+
+    class := RationalClass( G, cl.representative ^ S1.bijection, 
+               Image( S1.bijection, cl.centralizer ) );
+    class.galoisGroup := SylowSubgroup( cl.galoisGroup, p );
+    class.centralizer.size := Size( cl.centralizer );
+    class.power := RationalClass( G,
+	cl.power.representative ^ S1.bijection,
+	Image( S1.bijection, cl.power.centralizer ) );
+    class.power.galoisGroup := SylowSubgroup( cl.power.galoisGroup, p );
+
+Sorry for any inconvenience,
+
+Heiko Theissen
+
+
+
+
+
+From s931282@hp720a.csc.cuhk.hk Thu Mar  2 23:15:00 1995
+Date:         Thu, 02 Mar 95 23:15:00 +0800
+From:         "TANG KO CHEUNG" <s931282@hp720a.csc.cuhk.hk>
+Subject:      Run a program of Chapter 16.
+
+Dear GAP's family,
+
+	Look at these commands in the interactive mode:
+
+gap> x:=X(Rationals);x.name:="x";
+x
+"x"
+gap> Galois(x^5-110*x^3-55*x^2+2310*x+979);
+1
+gap> TransitiveGroup(5,1);
+5 = C(5)
+
+	Very nice! Put it in a file say "gal-1.p", one need to type
+
+x:=X(Rationals);x.name:="x"; Print("x:=X(Rationals);x.name:='x'; \n\n");	
+Print("Galois(x^5-110*x^3-55*x^2+2310*x+979); \n"); 	
+Print(Galois(x^5-110*x^3-55*x^2+2310*x+979), "\n\n"); 	
+Print("TransitiveGroup(5,1); \n");
+Print(TransitiveGroup(5,1),"\n\n");
+
+	and type
+
+gap> Read("gal-1.p");
+
+        to run it. It needs a lot of extra typing!
+
+        Being a user of IBM PC for years, I still have no idea of using I/O
+redirection to make  "Read("gal-1.gap")" output something to the screen
+without using "Print".
+
+        What is in my mind is the batch file feature (with echo on/off) of
+MS-DOS so then I may use "LogTo" or "LogInputTo" to achieve the purpose
+easily. Will "Read" get some extra switches in the future?
+
+-><- The release of GAP 3.4 of July/94 brings the birth of
+         Chapter 16 Algebraic Extensions,
+     but there is only a few discussions up to now.  -><-
+
+Thanks & Bye.
+
+
+
+From sarah.rees@newcastle.ac.uk Fri Mar  3 15:00:00 1995
+Date:         Fri, 03 Mar 95 15:00:00 +0000
+From:         "Sarah Rees" <sarah.rees@newcastle.ac.uk>
+Subject:      left actions
+
+Hello,
+  at the University of Newcastle (UK), we act on the left in all our courses. 
+That means of course that permutations must act on the left and multiply
+as in (1,2)(1,3)=(1,3,2)
+
+At first I was appalled at such a constraint, but am gradually becoming
+converted to the idea, and finding textbooks appropriate to it.
+I believe that left actions are becoming more and more common.
+
+Of course, this means I cannot use GAP in my undergraduate teaching.
+
+But I believe that it would not be impossible to create a left action within
+GAP. Of course I could provide a solution local to Newcastle, but I suspect
+I am not the only person who could use this facility. Is there 
+a market out there for permutations which can act on the left,
+and which can be built into left permutation groups, to which
+analogues to the current permutation group functions can be applied?
+Better still, are there people out there who would provide me with
+a left action?
+
+   Sarah
+
+
+
+
+From t.sturge@math.canterbury.ac.nz Tue Mar  7 15:44:00 1995
+Date:         Tue, 07 Mar 95 15:44:00 +0000
+From:         "Tim Sturge" <t.sturge@math.canterbury.ac.nz>
+Subject:      Design Theory package?
+
+Hello,
+
+I am using GAP to investigate the properties of some small geometric
+structures, and I wonder if a design theory package or library has
+been written for GAP. 
+
+Thanks, 
+
+Tim
+
+
+
+From leonard@qmw.ac.uk Tue Mar  7 13:43:00 1995
+Date:         Tue, 07 Mar 95 13:43:00 +0000
+From:         "Leonard Soicher" <leonard@qmw.ac.uk>
+Subject:      Re: Design Theory package?
+
+Tim Sturge writes:
+
+>
+>I am using GAP to investigate the properties of some small geometric
+>structures, and I wonder if a design theory package or library has
+>been written for GAP. 
+>
+
+Not to the best of my knowledge, but you should look at the GRAPE share
+library package for computing with graphs with (possibly trivial) group
+actions. Many of the algorithms in GRAPE were motivated by the desire
+to study graphs related to finite geometries, such as incidence graphs
+and collinearity graphs. You can study your design in GRAPE via its
+incidence graph, and can, for example determine the automorphism group
+of your design (using the function AutGroupGraph, which can determine
+the subgroup of the automorphism group of a graph preserving a given
+partition of the vertices).
+
+If anyone wants to write a design theory package, then I really suggest
+they consider making use of GRAPE, representing a design via its
+incidence graph, and naming the vertices appropriately. For example, a
+design record could contain a component "incidenceGraph", on which
+GRAPE functions could be applied.
+
+I have been using GRAPE recently to study partial linear spaces with 
+parameters (s,t). These are 1-(v,s+1,t+1) designs, such that any pair
+of distinct blocks meet in at most 1 point.  
+
+Hope you find this useful.
+
+Regards,   Leonard.
+
+
+
+From Joachim.Neubueser@Math.RWTH-Aachen.DE Tue Mar  7 17:19:00 1995
+Date:         Tue, 07 Mar 95 17:19:00 +0100
+From:         "Joachim Neubueser" <Joachim.Neubueser@Math.RWTH-Aachen.DE>
+Subject:      Re: left actions
+
+Dear Sarah,
+
+While, as always, we  do not want to  stop anybody from trying  out in
+GAP whatever (s)he likes, after a little  discussion here in Aachen we
+feel that we  should not encourage writing  a 'left action permutation
+package', certainly however we do not intend to do that here.
+
+We do not foresee which places  would have to be  modified in order to
+replace one permutation multiplication by the other,  i.e. it seems to
+be necessary to look carefully at all the  stuff involving actions and
+this would mean  not only  present  work but  also a continuous  task,
+whenever new routines for permutation groups are added. Moreover it is
+of course an excellent  source for bugs  (I remember a published paper
+by a renowned colleague not so long ago where a wrong theorem was just
+due to mixing up the  two multiplications). Finally,  we have all that
+nice notation in  GAP  like i^p for the  image  of a  point i under  a
+permutation p, which does not match with left action at all.
+
+I understand the  reason for   using left  action in particular   with
+beginners, they  are used to   write the square   root  sign or  other
+elementary functions in front  of   the argument.  In my teaching   of
+linear algebra I therefore start with  column vectors, multiplied from
+the left with matrices, but I use this soon  to explain that one might
+do it the other way round as well and by the end of the first term the
+students have learned that there are two ways  of doing this, and that
+operation from the right has  the advantage that mappings are  applied
+in that  sequence in which  we read them in English  or  German (if we
+were e.g. Arabs, we would miss out on that nice argument).
+
+What about   changing Newcasle  habits    rather  than GAP,   e.g.  by
+disallusioning first year students to the sad fact that mathematicians
+are lousy individualists who have not managed in  a couple of thousand
+years to get  accepted agreement where to write  the mapping, right or
+left ?
+
+Kind regards    Joachim Neubueser
+
+
+
+From Martin.Schoenert@Math.RWTH-Aachen.DE Wed Mar  8 08:59:00 1995
+Date:         Wed, 08 Mar 95 08:59:00 WET
+From:         "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:      Re: GAP manual via HTTP?
+
+David Sibley wrote in his e-mail message of 1995/02/19
+
+    A GAP manual was available for a while via HTTP, at URL
+
+        http://www.math.rwth-aachen.de/~mschoene/GAP-Manual/
+
+    However, it disappeared recently.  I can no longer access it.
+    Instead, I get "Unable to connect to remote host: Connection refused".
+
+Yes, sorry I switched to a new HTML server on a new port,
+and simply didn't notice when the other one died.
+
+Allow me to take this opportunity to tell you about the
+WWW information pages of Lehrstuhl D f"ur Mathematik.
+
+They will be (but currently aren't) available at
+
+    http://Math.RWTH-Aachen.DE/LDFM/
+
+or alternatively (this is already working)
+
+    http://Math.RWTH-Aachen.DE:8000/
+
+Of particular interest should be the pages under
+
+    http://Math.RWTH-Aachen.DE:8000/GAP/
+
+where you will find our announcement, the manual
+(now better than ever ;-), and all messages from the forum.
+
+As always comments are most wellcome.
+
+Martin.
+
+-- .- .-. - .. -.  .-.. --- ...- . ...  .- -. -. .. -.- .-
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,   +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, 52056 Aachen, Germany
+
+
+
+From Martin.Schoenert@Math.RWTH-Aachen.DE Thu Mar  9 14:06:00 1995
+Date:         Thu, 09 Mar 95 14:06:00 WET
+From:         "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:      Re: possible error
+
+Andrew Mathas wrote in his e-mail message of 1995/02/24
+
+    I am getting a repeatable error with the following message:
+
+    Gasman: has no handle for a bag of type [1] and size     20.
+
+    What I would like to know is if any one recognises this error and knows
+    of a probable cause. I suspect that the problem is with my own code as I
+    am dealing with recursively nested lists at this point in the
+    calculation, but smaller examples work fine so I am confused by the
+    error. If anyone has any thoughts then I would be pleased to hear them.
+
+This error message tells you that GAP run out of memory.  More precisely
+GAP was just trying to allocate memory for a list (type '[1]') for 5
+elements ((<20 bytes> - <4 bytes for the length>) / <4 bytes per element>).
+
+This is of course also the reason why you don't see this happen when you
+try the smaller examples.
+
+I suggest that you start GAP with the '-g' option to see how large GAP
+gets before it finally gives up (GAP extends its workspace until the
+operating system refuses to give GAP any more memory).
+
+Martin.
+
+-- .- .-. - .. -.  .-.. --- ...- . ...  .- -. -. .. -.- .-
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,   +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, 52056 Aachen, Germany
+
+
+
+From Martin.Schoenert@Math.RWTH-Aachen.DE Fri Mar 10 10:42:00 1995
+Date:         Fri, 10 Mar 95 10:42:00 WET
+From:         "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:      Re: Run a program of Chapter 16.
+
+Tang Ko Cheung wrote in his e-mail message of 1995/03/02
+
+    gap> x:=X(Rationals);x.name:="x";
+    x
+    "x"
+    gap> Galois(x^5-110*x^3-55*x^2+2310*x+979);
+    1
+    gap> TransitiveGroup(5,1);
+    5 = C(5)
+
+    	Very nice! Put it in a file say "gal-1.p", one need to type
+
+    x:=X(Rationals);x.name:="x"; Print("x:=X(Rationals);x.name:='x'; \n\n");
+    Print("Galois(x^5-110*x^3-55*x^2+2310*x+979); \n");
+    Print(Galois(x^5-110*x^3-55*x^2+2310*x+979), "\n\n");
+    Print("TransitiveGroup(5,1); \n");
+    Print(TransitiveGroup(5,1),"\n\n");
+
+    	and type
+
+    gap> Read("gal-1.p");
+
+            to run it. It needs a lot of extra typing!
+
+            Being a user of IBM PC for years, I still have no idea of using I/O
+    redirection to make  "Read("gal-1.gap")" output something to the screen
+    without using "Print".
+
+            What is in my mind is the batch file feature (with echo on/off) of
+    MS-DOS so then I may use "LogTo" or "LogInputTo" to achieve the purpose
+    easily. Will "Read" get some extra switches in the future?
+
+I am not quite sure what you want to achieve.
+
+If you want to be able to have GAP read commands from a file
+and to see both input and output on your screen you can do the
+following
+
+Putting the following commands into the file 'gap-1.p'
+
+    LogInputTo("*stdout*");
+    x:=X(Rationals);x.name:="x";
+    Galois(x^5-110*x^3-55*x^2+2310*x+979);
+    TransitiveGroup(5,1);
+
+and then starting GAP as follows ('-b' surpresses the banner)
+
+    gap -b < gap-1.p
+
+produces the following output
+
+    gap> gap> x:=X(Rationals);x.name:="x";
+    X(Rationals)
+    "x"
+    gap> Galois(x^5-110*x^3-55*x^2+2310*x+979);
+    1
+    gap> TransitiveGroup(5,1);
+    5 = C(5)
+    gap> 
+
+If you want to do that from a running GAP job, then something like this
+is not possible.  This is because only the main interactive loop is a
+read-eval-print loop (actually a <print-prompt>-read-eval-print loop).
+'Read' only does a read-eval loop (i.e. no printing).
+It would not be too difficult to add a 'ReadWithEcho' to the GAP kernel.
+If this is what you want, I would be glad to show you how to do it.
+
+He continued
+
+    -><- The release of GAP 3.4 of July/94 brings the birth of
+             Chapter 16 Algebraic Extensions,
+         but there is only a few discussions up to now.  -><-
+
+I am completely at loss to interpret this.  Is it a question?
+A call for discussions?  Or an observation?
+
+Martin.
+
+-- .- .-. - .. -.  .-.. --- ...- . ...  .- -. -. .. -.- .-
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,   +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, 52056 Aachen, Germany
+
+
+
+From s931282@hp720a.csc.cuhk.hk Mon Mar 13 23:48:00 1995
+Date:         Mon, 13 Mar 95 23:48:00 +0800
+From:         "TANG KO CHEUNG" <s931282@hp720a.csc.cuhk.hk>
+Subject:      Better Environment?
+
+In message 10 Mar 95 10:42 WET,
+  Martin Schoenert <martin.schoenert@Math.RWTH-Aachen.DE>  writes:
+   > I am not quite sure what you want to achieve.
+To be able to save a session with input and ouput to a file for later
+inspection.To be able to save the input of a session to a file say 'gal-1.p'.
+To be able to amend the commands in 'gal-1.p' without exiting gap.
+To be able to  run the program from *within* GAP in order to produce the
+input and/or output to the screen, and/or to a file say 'gal-1.log'
+(without using print and without exiting gap).
+
+This is nothing special but what I do with the notebook/worksheet interface
+of MS windows MATHEMATICA or MAPLE everyday. (actually, in that interface,
+one file is enough.) I even would not think of what I really want to achieve
+and they are in fact achieved every day. It is user-friendly and one can
+                 *concentrate on the experiment*
+rather than worrying about or wasting time with such things as above.
+
+I understand that to ask for a window-based GAP is totally impractical and I
+can forsee what will be the response of the GAP's architect. In the present
+IBM PC dos-based GAP environment, I know that LogTo, LogInputTo, Read, Print,
+PrintTo may be the solution (at least partially) and I have mentioned this,
+though not so explict, in my previous message.
+
+Martin continued
+  > If you want to be able to have GAP read commands from a file
+  > and to see both input and output on your screen you can do the
+  > following
+  >
+  > Putting the following commands into the file 'gap-1.p'
+  >
+  > LogInputTo("*stdout*");
+  > x:=X(Rationals);x.name:="x";
+  > Galois(x^5-110*x^3-55*x^2+2310*x+979);
+  > TransitiveGroup(5,1);
+  >
+  > and then starting GAP as follows ('-b' surpresses the banner)
+  >
+  > gap -b < gap-1.p
+  >
+  > produces the following output
+  >
+  > gap> gap> x:=X(Rationals);x.name:="x";
+  > X(Rationals)
+  > "x"
+  > gap> Galois(x^5-110*x^3-55*x^2+2310*x+979);
+  > 1
+  > gap> TransitiveGroup(5,1);
+  > 5 = C(5)
+  > gap>
+
+Well! I can understand the trick now despite the fact that line 1 of the
+output above got a double gap>.
+Also, I do not know why        gap.bat  -b < gal-1.p
+does not work on my IBM PC compatible with dos 6.22  though I can make it
+work by changing the last line of gap.bat to
+   %GAP_DIR%\bin\gapdjg -m %GAP_MEM% -l %GAP_DIR%/lib/; -h %GAP_DIR%\doc\
+   -b < gal-1.p
+I find that     gapdjg.exe -b < gal-1.p        works fine as well.
+
+As one can notice the execution time of
+    gap>   TransitiveGroup(5,1);
+    gap>   TransitiveGroup(5,2);
+the second command provides its output almost instantaneously,
+I consider the sequence
+     enetering gap -> run only one program -> automatically exiting gap,
+turns out to waste the 'loading time'.
+
+Martin continued
+> If you want to do that from a running GAP job, then something like this
+> is not possible.  This is because only the main interactive loop is a
+
+> It would not be too difficult to add a 'ReadWithEcho' to the GAP kernel.
+
+Well! I have the interest in running a program from *within* gap and put
+the input and/or output to the screen, and/or to a file (without using print
+and without exiting gap).
+I would like to know various possible solutions. I am eager to see  an
+example of system programming too!
+
+More questions:
+- I find that             gap> Exec("command");
+  'the shell to dos command' *sometimes* takes a long time.  Is there some
+  way to shorten it?
+- I can make              gap> Edit("gal-1.p");
+  works after a lot of time in browsing through the manual. I notice that
+  it is not a 'pure' edit but is an edit-AND-read, and the turn-around time
+  is long. How to make a faster and/or 'pure' edit?
+
+Best regards,         TangSimon@cuhk.hk
+
+
+
+From Joachim.Neubueser@Math.RWTH-Aachen.DE Wed Mar 15 12:39:00 1995
+Date:         Wed, 15 Mar 95 12:39:00 +0100
+From:         "Joachim Neubueser" <Joachim.Neubueser@Math.RWTH-Aachen.DE>
+Subject:      Re: Better Environment?
+
+Dear Mr. Tang Ko Cheung,
+
+Since Martin Schoenert, to whose answer in the GAP Forum you reply, is
+at present absent from aachen and will be so  for the next few days, I
+just want to reply briefly instead.
+
+GAP has not got  notebook or worksheet  faciliies like Mathematica  or
+Maple.  These are certainly nice commodities, nevertheless we have not
+put a similar  development  anywhere  in  our priority  list.   Please
+realize that we    are a small  mathematics department   and our first
+priority is  the   development of   the mathematical  facilities    of
+GAP.  Generally speaking, perhaps  also commercial systems have both a
+stronger  natural  interest  as well   as  more  free   means for  the
+development of such parts of the surface.
+
+As to the  very  detailed technical points in   your letter, I  do not
+think that  they are  of great interest  to the  large majority of the
+more than  300 participants  of   the  GAP-forum. For  answering  such
+question we have created the address GAP-trouble, where we try as well
+as we can  to  answer such questions too  without  bothering the forum
+members.  I expect that Martin Schoenert will try to answer (with copy
+to the small group of experts reading the GAP-trouble correspondence),
+also your further  technical questions. May I  suggest however that we
+stop their further discussion in the GAP-forum.
+
+With kind regards    Joachim Neubueser
+
+
+
+From lmccarth@klingon.cs.umass.edu Tue Mar 21 02:56:00 1995
+Date:         Tue, 21 Mar 95 02:56:00 -0500
+From:         "L. McCarthy" <lmccarth@klingon.cs.umass.edu>
+Subject:      Products of Elements of Different Fields
+
+-----BEGIN PGP SIGNED MESSAGE-----
+
+I haven't seen this phenomenon mentioned in the GAP Forum, so I'm hoping
+this isn't old news. While experimenting with the possibilities of creating
+elements of "unusual" domains in GAP, I've noticed a small bug in the code 
+for Rationals.operations.AlgebraicExtensionElmOps.\*:
+
+(This is in GAP v3r4p1)
+
+gap> Q := Rationals; Q.name := "Q"; x := Indeterminate(Q); x.name := "x";
+Rationals
+"Q"
+X(Q)
+"x"
+gap> a := RootOf(x^3 + x + 1);
+RootOf(x^3 + x + 1)
+gap> b := RootOf(x^5 - x^2 + 1);
+RootOf(x^5 - x^2 + 1)
+gap> a * b;
+Segmentation fault (core dumped)
+
+I think I have figured out why this happens. In the aforementioned routine,
+this is what happens when the elements to be multiplied lie in different
+domains:
+
+    elif a.domain <> b.domain  then
+        return a.operations.\*( a, b );
+
+I'm not sure what the intent of this particular line was, but it seems
+bound to lead to an infinite recursion whenever it's reached. So I presume
+the procedure call stack is overflowing, causing the segmentation fault.
+
+Until the implementation of multiple extensions is ready, perhaps the above
+lines should actually read:
+
+    elif a.domain <> b.domain  then
+	Error("<a> and <b> lie in no common domain");
+
+Take care
+ -L. Futplex McCarthy <lmccarth@cs.umass.edu>
+
+-----BEGIN PGP SIGNATURE-----
+Version: 2.6.2
+
+iQCVAwUBL26GVWf7YYibNzjpAQFzSwQAoXnY5u/uLxhQKIlnWnngMQvJ+FehlBhZ
+1SK/f4ujndokTcqEiaEZ+UuottsmfFJ1+4r3EQsI8yw2c9vphU1t4lcquLfy/gcW
+r+vIjaWowjFGtdr5c5cQqH3ZYI2kBzkamaNJ42GV+w7g7BIhDF2Lfdpp8ptzwbzL
+P2+yfzJQxFQ=
+=e/OD
+-----END PGP SIGNATURE-----
+
+
+
+From jaroslav.gurican@fmph.uniba.sk Tue Mar 28 14:57:00 1995
+Date:         Tue, 28 Mar 95 14:57:00 +0200
+From:         "Jaroslav Gurican" <jaroslav.gurican@fmph.uniba.sk>
+Subject:      Bug in Kernel GroupHomo...
+
+Dear  Forum,
+
+We have encountered the following problem:
+
+gap> a:=Group( (1,2,3,4));
+Group( (1,2,3,4) )
+gap> b:=Group((5,6,7,8));
+Group( (5,6,7,8) )
+gap> g:=GroupHomomorphismByImages(a,b,a.generators,b.generators);
+GroupHomomorphismByImages( Group( (1,2,3,4) ), Group( (5,6,7,8) ), 
+[ (1,2,3,4) ], [ (5,6,7,8) ] )
+gap> KernelGroupHomomorphism(g);
+Subgroup( Group( (5,6,7,8) ), [  ] )
+ 
+As you can see, gap aims, that this kernel is a subgroup of g.range
+instead of g.source. The problem is (we hope) only in the case if g is a
+bijection.
+Is it enough to change lines 
+
+ else
+            hom.kernel := TrivialSubgroup( Parent(hom.range) );
+                                                      ^^^^^
+        fi;
+    fi; #  not IsBound(hom.inverseMapping.orbit) or not IsBound(hom.kernel)
+
+
+to lines 
+
+ else
+            hom.kernel := TrivialSubgroup( Parent(hom.source) );
+						      ^^^^^^
+        fi;
+    fi; #  not IsBound(hom.inverseMapping.orbit) or not IsBound(hom.kernel)
+
+in premhomo.g file (this seems to be the only convenient place, but we
+may fail)? 
+
+Thank you
+
+Jaroslav Gurican, Martin Macaj
+
+
+
+
+From Thomas.Breuer@Math.RWTH-Aachen.DE Tue Mar 28 17:03:00 1995
+Date:         Tue, 28 Mar 95 17:03:00 WET
+From:         "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:      Re: Bug in KernelGroupHomo...
+
+Dear Forum,
+
+Jaroslav Gurican and Martin Macaj wrote to you
+about a bug in 'KernelGroupHomomorphism'
+for permutation groups, which occurs only if
+the kernel in question is trivial.
+
+Thanks for that.
+
+Their proposal of a fix is correct,
+it is sufficient to change 'range' to 'source'
+in the line of 'permhomo.g' mentioned in
+their message.
+
+This bug had been noticed already.
+The fix will be part of the next upgrade
+(which will be released soon).
+
+Kind regards
+Thomas Breuer
+
+
+
+
+From Alexander.Hulpke@Math.RWTH-Aachen.DE Tue Mar 28 17:39:00 1995
+Date:         Tue, 28 Mar 95 17:39:00 -0500
+From:         "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:      Re: Products of Elements of Different Fields
+
+Lewis McCarthy wrote:
+
+> I haven't seen this phenomenon mentioned in the GAP Forum, so I'm hoping
+> this isn't old news. 
+
+At least to me it's new, as I never tried simultaneously with different
+algebraic extensions.
+
+> elements of "unusual" domains in GAP, I've noticed a small bug in the code 
+> for Rationals.operations.AlgebraicExtensionElmOps.\*:
+
+[multiplication of elements in different AlgebraicExtensions leads to
+infinite recursion, example omitted]
+
+> I think I have figured out why this happens. In the aforementioned routine,
+> this is what happens when the elements to be multiplied lie in different
+> domains:
+> 
+>     elif a.domain <> b.domain  then
+>         return a.operations.\*( a, b );
+> 
+> I'm not sure what the intent of this particular line was, but it seems
+> bound to lead to an infinite recursion whenever it's reached. So I presume
+> the procedure call stack is overflowing, causing the segmentation fault.
+
+Your diagnosis is completely correct. The original intention for this
+line was to allow possibilities for multiplication with further
+user-defined objects. By standard, the multiplication function of the
+right multiplicand is called. If it does not know how to deal with this
+object, the idea was to try the left multiplication function.
+Unfortunately doing so, I laced my own shoes as this might lead to
+infinite recursions as in your example.
+
+> Until the implementation of multiple extensions is ready, perhaps the above
+> lines should actually read:
+> 
+>     elif a.domain <> b.domain  then
+> 	Error("<a> and <b> lie in no common domain");
+
+Actually, the function takes care beforehand of multiple extensions
+(though they are not yet supported).
+The case of very different objects with own operations did not yet
+arise and will be dealt with differently in future versions of GAP;
+therefore this fix should do no harm (unless you really want to define
+weird objects) and will certainly save you from this crash.
+
+Of course this is rather a cleanup and still does not give you the
+possibility to execute your example multiplication. For doing so,
+you'd need to define a new extension. Mail me directly if you want
+help with this.
+
+Yours,
+
+   Alexander Hulpke
+
+--     Alexander Hulpke, Lehrstuhl D f"ur Mathematik, RWTH, 52056 Aachen,
+       ahulpke@bert.math.rwth-aachen.de     ,
+until April '95: Concordia University, Montreal, Canada
+		 hulpke@abacus.concordia.ca         
+
+
+
+From c3ar@math.uchicago.edu Wed Mar 29 08:56:00 1995
+Date:         Wed, 29 Mar 95 08:56:00 -0600
+From:         "Walter Carlip" <c3ar@math.uchicago.edu>
+Subject:      Memory Use
+
+I'm puzzled by Gap's use of memory.  I find that "Gasman"
+fails to obtain "bags" for many computations
+I attempt.  Let me give a particular example. 
+I was investigating the cardinality of the set
+{g | <A,g> has abelian Sylow 2-subgroup} as A ranges over
+the conjugacy classes of subgroups of a group G and g
+ranges over elements of G.  I have Gap the group G = SymmetricGroup(6),
+which is not too large (720).  While Gap had no difficulty
+computing the ConjugacyClassesSubgroups, or doing other computations
+with G, it choked on my program:
+
+Myvector := function(group,classes,prime)
+  local A,g,i,v;    v:=[];
+  for A in classes do
+    i:= 0;
+      for g in Elements(group) do
+        if IsAbelian(SylowSubgroup(Closure(A.representative,g),prime)) then 
+          i:= i+1;
+        fi;
+      od;
+      Append(v,[i]); 
+   od;
+   return(v);
+end;  
+
+Question: Is Gap having difficulty with this because it attempts
+to save every bit of information it computes, i.e., a list of
+each subgroup <A,g> together with its sylow 2-subgroup?  If this
+is the problem, is there a way to tell Gap to discard intermediate
+results (when known to be no longer needed)?
+
+Thanks!
+
+--Walter
+_____________________________________________________________________________
+Walter C3arlip 				**** carlip@ace.cs.ohiou.edu ****
+(the "3" is silent)                     **** c3ar@zaphod.uchicago.edu ****
+_____________________________________________________________________________
+
+
+

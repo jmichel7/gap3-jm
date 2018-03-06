@@ -1,0 +1,365 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvutil.tex       CHEVIE documentation       Meinolf Geck, Frank Luebeck,
+%A                                                Jean Michel, G"otz Pfeiffer
+%%
+%Y  Copyright (C) 1992 - 1996  Lehrstuhl D f\"ur Mathematik, RWTH Aachen, IWR
+%Y  der Universit\"at Heidelberg, University of St. Andrews, and   University
+%Y  Paris VII.
+%%
+%%  This  file  contains  utility functions.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{CHEVIE utility functions}
+
+The  functions described below, used   in various parts  of the  \CHEVIE\
+package, are of a general nature  and should really  be included in other
+parts of the \GAP\ library.  We include them here for  the moment for the
+commodity of the reader.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SymmetricDifference}%
+\index{SymmetricDifference}%
+
+'SymmetricDifference( <S>, <T>)'
+
+This  function returns  the symmetric  difference of  the sets <S> and <T>,
+which can be written in \GAP\ as
+'Difference(Union(x,y),IntersectionSet(x,y)'.
+
+|    gap> SymmetricDifference([1,2],[2,3]);
+    [ 1, 3 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DifferenceMultiSet}%
+\index{DifferenceMultiSet}%
+
+'DifferenceMultiSet( <l>, <s> )'
+
+This function returns the difference of the multisets <l> and <s>. That is,
+<l>  and <s> are lists  which may contain several  times the same item. The
+result is a list which is like <l>, excepted if an item occurs $a$ times in
+<s>,  the first $a$ occurrences  of this item in  <l> have been deleted (all
+the occurrences if $a$ is greater than the times it occurred in <l>).
+
+|    gap> DifferenceMultiSet("ababcbadce","edbca");
+    "abbac"|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rotation}%
+\index{Rotation}%
+
+'Rotation(<l>, <i>)'
+
+This function returns <l> rotated <i> steps.
+
+|    gap> l:=[1..5];;
+    gap> Rotation(l,1);
+    [ 2, 3, 4, 5, 1 ]
+    gap> Rotation(l,0);
+    [ 1, 2, 3, 4, 5 ]
+    gap> Rotation(l,-1);
+    [ 5, 1, 2, 3, 4 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rotations}%
+\index{Rotations}%
+
+'Rotations(<l>)'
+
+This function returns the list of rotations of the list <l>.
+
+|    gap> Rotations("abcd");
+    [ "abcd", "bcda", "cdab", "dabc" ]
+    gap> Rotations([1,0,1,0]);
+    [ [ 1, 0, 1, 0 ], [ 0, 1, 0, 1 ], [ 1, 0, 1, 0 ], [ 0, 1, 0, 1 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Inherit}%
+\index{Inherit}%
+
+'Inherit(<rec1>,<rec2>[,<fields>])'
+
+This  functions copies to  the record <rec1>  all the fields  of the record
+<rec2>. If an additional argument <fields> is given, it should be a list of
+field names, and then only the fields specified by <fields> are copied. The
+function returns the modified <rec1>.
+
+|    gap> r:=rec(a:=1,b:=2);
+    rec(
+      a := 1,
+      b := 2 )
+    gap> s:=rec(c:=3,d:=4);
+    rec(
+      c := 3,
+      d := 4 )
+    gap> Inherit(r,s);
+    rec(
+      a := 1,
+      b := 2,
+      c := 3,
+      d := 4 )
+    gap> r:=rec(a:=1,b:=2);
+    rec(
+      a := 1,
+      b := 2 )
+    gap> Inherit(r,s,["d"]);
+    rec(
+      a := 1,
+      b := 2,
+      d := 4 )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Dictionary}%
+\index{Dictionary}%
+
+'Dictionary()'
+
+This  function  creates  a  dictionary  data  type. The created object is a
+record  with two functions\: 
+
+'Get(k)':  get the value associated to key 'k'; it returns 'false' if there
+is no such key.
+
+'Insert(k,v)'  sets in the dictionary the value associated to key 'k' to be
+'v'.
+
+The main advantage compared to records is that keys may be of any type.
+
+|    gap> d:=Dictionary();
+    Dictionary with 0 entries
+    gap> d.Insert("a",1);
+    1
+    gap> d.Insert("b",2);
+    2
+    gap> d.Get("a");
+    1
+    gap> d.Get("c");
+    false
+    gap> d;
+    Dictionary with 2 entries|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GetRoot}%
+\index{GetRoot}%
+
+'GetRoot( <x>, <n> [, <msg>])'
+
+<n> must  be a  positive integer.  'GetRoot' returns  an <n>-th  root of
+<x>  when possible,  else  signals an  error. If  <msg>  is present  and
+'InfoChevie=Print' a  warning message is  printed about which  choice of
+root has been made, after printing <msg>.
+
+In the  current implementation, it  is possible  to find an  <n>-th root
+when <x> is one of the following \GAP\ objects\:
+
+1- a monomial of the form 'a\*q\^(b\*n)' when we know how to find a root
+of $a$. The root chosen is 'GetRoot(a,n)\*q\^b'.
+
+2-  a  root  of  unity  of  the  form  'E(a)\^i'.  The  root  chosen  is
+'E(a\*n)\^i'.
+
+3- an integer, when <n>=2 (the root  chosen is 'ER(x)') or when <x> is a
+perfect <n>-th power of <a> (the root chosen is <a>).
+
+4- a product of an <x> of form 2- by an <x> of form 3-.
+
+5- when <x> is a record and has a method 'x.operations.GetRoot' the work
+is delegated to that method.
+
+|    gap> q:=X(Cyclotomics);;q.name:="q";;
+    gap> GetRoot(E(3)*q^2,2,"test");
+    |\#|warning: test: E3^2q chosen as 2nd root of (E(3))*q^2
+    (E(3)^2)*q
+    gap> GetRoot(1,2,"test");
+    |\#|warning: test: 1 chosen as 2nd root of 1
+    1|
+
+The  example  above   shows  that  'GetRoot'  is   not  compatible  with
+specialization\:\  'E(3)\*q\^2' evaluated  at 'E(3)'  is '1'  whose root
+chosen by 'GetRoot' is '1', while '(-E(3)\^2)\*q' evaluated at 'E(3)' is
+'-1'. Actually it can be shown that it is not possible mathematically to
+define a function 'GetRoot' compatible with specializations. This is why
+there is a provision in functions for character tables of Hecke algebras
+to provide explicit roots.
+
+|    gap> GetRoot(8,3);
+    2
+    gap> GetRoot(7,3);
+    Error, unable to compute 3-th root of 7:
+     in
+    GetRoot( 7, 3 ) called from
+    main loop
+    brk>|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharParams}%
+\index{CharParams}%
+
+'CharParams(<G>)'
+
+'G'  should   be  a  group  or   another  object  which  has   a  method
+'CharTable', or  a character table.  The function 'CharParams'  tries to
+determine a  list of  labels for  the characters  of 'G'.  If 'G'  has a
+method  'CharParams'  this  is  called.  Otherwise,  if  'G'  is  not  a
+character table,  its 'CharTable' is  called. If  the table has  a field
+'.charparam'  in  '.irredinfo' this  is  returned.  Otherwise, the  list
+'[1..Length(G.irreducibles)]' is returned.
+
+|    gap> CharParams(CoxeterGroup("A",2));
+    [ [ [ 1, 1, 1 ] ], [ [ 2, 1 ] ], [ [ 3 ] ] ]
+    gap> CharParams(Group((1,2),(2,3)));
+    #W  Warning: Group has no name
+    [ 1 .. 3 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharName}%
+\index{CharName}%
+
+'CharName(<G>, <param>)'
+
+'G' should  be a group  and 'param' a parameter  of a character  of that
+group (as returned by 'CharParams'). If 'G' has a method 'CharName', the
+function returns  the result  of that  method, which  is a  string which
+displays nicely  'param' (this is  used by  \CHEVIE\ to nicely  fill the
+'.charNames' in a 'CharTable' --  all finite reflection groups have such
+methods 'CharName').
+
+|    gap> G:=CoxeterGroup("G", 2);
+    CoxeterGroup("G",2)
+    gap> CharParams(G);
+    [ [ [ 1, 0 ] ], [ [ 1, 6 ] ], [ [ 1, 3, 1 ] ], [ [ 1, 3, 2 ] ],
+      [ [ 2, 1 ] ], [ [ 2, 2 ] ] ]
+    gap>  List(last,x->CharName(G,x));
+    [ "phi{1,0}", "phi{1,6}", "phi{1,3}'", "phi{1,3}''", "phi{2,1}",
+      "phi{2,2}" ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PositionId}
+\index{PositionId}
+
+'PositionId( <G> )'
+
+<G>  should be  a group,  a character  table, an  Hecke algebra  or another
+object  which  has  characters.  'PositionId'  returns  the position of the
+identity character in the character table of <G>.
+
+|    gap> W := CoxeterGroup( "D", 4 );;
+    gap> PositionId( W );
+    13|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InductionTable}%
+\index{InductionTable}
+
+'InductionTable( <S>, <G> )'
+
+'InductionTable'  computes the decomposition of the induced characters from
+the subgroup <S> into irreducible characters of <G>. The rows correspond to
+the  characters of the parent group, the  columns to those of the subgroup.
+What  is returned  is actually  a record  with several  fields\:\ '.scalar'
+contains  the induction table proper, and  there are 'Display' and 'Format'
+methods.  The  other  fields  contain  labeling  information taken from the
+character tables of <S> and <G> when it exists.
+
+|    gap> G := Group( [ (1,2), (2,3), (3,4) ], () );
+    Group( (1,2), (2,3), (3,4) )
+    gap> S:=Subgroup( G, [ (1,2), (3,4) ] );
+    Subgroup( Group( (1,2), (2,3), (3,4) ), [ (1,2), (3,4) ] )
+    gap> G.name := "G";; S.name := "S";; # to avoid warnings
+    gap> Display( InductionTable( S, G ) );
+    Induction from S to G
+        |'\|'|X.1 X.2 X.3 X.4
+    _____________________
+    X.1 |'\|'|  1   .   .   .
+    X.2 |'\|'|  .   .   .   1
+    X.3 |'\|'|  1   .   .   1
+    X.4 |'\|'|  .   1   1   1
+    X.5 |'\|'|  1   1   1   . |
+
+|    gap> G := CoxeterGroup( "G", 2 );;
+    gap> S := ReflectionSubgroup( G, [ 1, 4 ] );
+    ReflectionSubgroup(CoxeterGroup("G",2), [ 1, 4 ])
+    gap> t := InductionTable( S, G );
+    InductionTable( ReflectionSubgroup(CoxeterGroup("G",2), [ 1, 4 ]), Coxe\
+    terGroup("G",2))
+    gap> Display( t );
+    Induction from A1x~A1 to G2
+               |'\|'| 11,11 11,2 2,11 2,2
+    ________________________________
+    phi{1,0}   |'\|'|     .    .    .   1
+    phi{1,6}   |'\|'|     1    .    .   .
+    phi{1,3}'  |'\|'|     .    1    .   .
+    phi{1,3}'' |'\|'|     .    .    1   .
+    phi{2,1}   |'\|'|     .    1    1   .
+    phi{2,2}   |'\|'|     1    .    .   1 |
+
+The  'Display'  and  'Format'  methods  take  the  same  arguments  as  the
+'FormatTable'  method. For instance to select a subset of the characters of
+the subgroup and of the parent group, one can call
+
+|    gap> Display( t,rec( rows := [5], columns := [3,2] ) );
+    Induction from A1x~A1 to G2
+             |'\|'| 2,11 11,2
+    ____________________
+    phi{2,1} |'\|'|    1    1 |
+
+It is also possible to get TeX and LaTeX output, see "FormatTable".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharRepresentationWords}
+\index{CharRepresentationWords}
+
+'CharRepresentationWords( <rep> , <elts> )'
+
+given  a list <rep>  of matrices  corresponding to generators  and a list
+<elts>  of words in  the generators it returns  the list of traces of the
+corresponding representation on the elements in <elts>.
+
+|    gap> H := Hecke(CoxeterGroup( "F", 4 ));;
+    gap> r := ChevieClassInfo( Group( H ) ).classtext;;
+    gap> t := HeckeReflectionRepresentation( H );;
+    gap> CharRepresentationWords( t, r );
+    [ 4, -4, 0, 1, -1, 0, 1, -1, -2, 2, 0, 2, -2, -1, 1, 0, 2, -2, -1, 1,
+      0, 0, 2, -2, 0 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PointsAndRepresentativesOrbits}%
+\index{PointsAndRepresentativesOrbits}%
+
+'PointsAndRepresentativesOrbits( <G>[, <m>] )'
+
+returns a  pair <[orb, rep]> where  <orb> is a list of  the orbits of the
+permutation group <G> on '[ 1..LargestMovedPoint( <G> ) ]' and <rep> is a
+list  of   list of elements   of  <G>  such  that 'rep[i][j]'  applied to
+'orb[i][1]'  yields 'orb[i][j]' for all $i,j$.  If  the optional argument
+<m> is given, then 'LargestMovedPoint( <G> )' is  replaced by the integer
+<m>.
+
+|    gap> G := Group( (1,7)(2,3)(5,6)(8,9)(11,12),
+    >                (1,5)(2,8)(3,4)(7,11)(9,10) );;
+    gap> PointsAndRepresentativesOrbits( G );
+    [ [ [ 1, 7, 5, 11, 6, 12 ], [ 2, 3, 8, 4, 9, 10 ] ],
+      [ [ (), ( 1, 7)( 2, 3)( 5, 6)( 8, 9)(11,12),
+              ( 1, 5)( 2, 8)( 3, 4)( 7,11)( 9,10),
+              ( 1,11,12, 7, 5, 6)( 2, 4, 3, 8,10, 9),
+              ( 1, 6, 5, 7,12,11)( 2, 9,10, 8, 3, 4),
+              ( 1,12)( 2, 4)( 3, 9)( 6, 7)( 8,10) ],
+          [ (), ( 1, 7)( 2, 3)( 5, 6)( 8, 9)(11,12),
+              ( 1, 5)( 2, 8)( 3, 4)( 7,11)( 9,10),
+              ( 1,11,12, 7, 5, 6)( 2, 4, 3, 8,10, 9),
+              ( 1, 6, 5, 7,12,11)( 2, 9,10, 8, 3, 4),
+              ( 1, 6)( 2,10)( 4, 8)( 5,11)( 7,12) ] ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AbelianGenerators}%
+\index{AbelianGenerators}%
+
+'AbelianGenerators( <l>)'
+
+<l>  should be a list of elements generating an abelian group. The function
+returns a list of generators for the generated group
+'G:=ApplyFunc(Group,l)'  which is optimal  in the sense  that they generate
+the cyclic groups whose orders are given by 'AbelianInvariants(G)'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

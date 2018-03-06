@@ -1,0 +1,302 @@
+<html><head><title>GAP3 Manual: 29 Boolean Lists</title></head>
+<body bgcolor="ffffff">
+<h1>29 Boolean Lists</h1>
+<P><A name = "I0"></a>
+<A name = "I1"></a>
+<A name = "I2"></a>
+
+<P>
+This chapter describes boolean lists.   A <strong>boolean list</strong>  is a list  that
+has no holes and contains only boolean values, i.e., <code>true</code>  and <code>false</code>.
+In function names we call boolean lists <strong>blist</strong> for brevity.
+<P>
+Boolean lists can be used  in various ways, but  maybe the most important
+application is their use for the description of <strong>subsets</strong> of finite sets.
+Suppose <var>set</var>  is a finite set,  represented  as  a list.   Then a subset
+<var>sub</var>  of <var>set</var> is represented  by a boolean  list   <var>blist</var>  of the same
+length as <var>set</var> such that <code><var>blist</var>[<var>i</var>]</code> is <code>true</code>  if <code><var>set</var>[<var>i</var>]</code> is in
+<var>sub</var> and <code>false</code> otherwise.
+<P>
+This package contains functions to  switch between the representations of
+subsets of  a   finite set either  as  sets  or as   boolean  lists  (see
+<a href="chap029.htm#SECT001">BlistList</a>,  <a href="chap029.htm#SECT002">ListBlist</a>),  to test  if  a  list is a  boolean list (see
+<a href="chap029.htm#SECT003">IsBlist</a>), and to count the number of  <code>true</code> entries in  a boolean list
+(see <a href="chap029.htm#SECT004">SizeBlist</a>).
+<P>
+Next there are functions for the standard set  operations for the subsets
+represented  by    boolean  lists   (see  <a href="chap029.htm#SECT005">IsSubsetBlist</a>,  <a href="chap029.htm#SECT006">UnionBlist</a>,
+<a href="chap029.htm#SECT007">IntersectionBlist</a>,   and   <a href="chap029.htm#SECT008">DifferenceBlist</a>).   There  are    also the
+corresponding destructive procedures  that  change their  first  argument
+(see  <a href="chap029.htm#SECT009">UniteBlist</a>, <a href="chap029.htm#SECT010">IntersectBlist</a>,  and  <a href="chap029.htm#SECT011">SubtractBlist</a>).  Note  that
+there is no   function to add or   delete a single  element   to a subset
+represented by a boolean list, because this  can be achieved by assigning
+<code>true</code> or <code>false</code> to the corresponding  position in the boolean list (see
+<a href="chap027.htm#SECT006">List Assignment</a>).
+<P>
+Since boolean lists are just a special case  of lists, all the operations
+and functions for lists, can be used for boolean  lists just as well (see
+<a href="chap027.htm">Lists</a>).  For  example <code>Position</code> (see  <a href="chap027.htm#SECT015">Position</a>) can be used  to find
+the  <code>true</code>  entries in  a  boolean list, allowing   you to loop over the
+elements of the subset represented by the boolean list.
+<P>
+There is also a section  about internal details  (see <a href="chap029.htm#SECT012">More about Boolean
+Lists</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap029.htm#SECT001">BlistList</a>
+<LI> <A HREF="chap029.htm#SECT002">ListBlist</a>
+<LI> <A HREF="chap029.htm#SECT003">IsBlist</a>
+<LI> <A HREF="chap029.htm#SECT004">SizeBlist</a>
+<LI> <A HREF="chap029.htm#SECT005">IsSubsetBlist</a>
+<LI> <A HREF="chap029.htm#SECT006">UnionBlist</a>
+<LI> <A HREF="chap029.htm#SECT007">IntersectionBlist</a>
+<LI> <A HREF="chap029.htm#SECT008">DifferenceBlist</a>
+<LI> <A HREF="chap029.htm#SECT009">UniteBlist</a>
+<LI> <A HREF="chap029.htm#SECT010">IntersectBlist</a>
+<LI> <A HREF="chap029.htm#SECT011">SubtractBlist</a>
+<LI> <A HREF="chap029.htm#SECT012">More about Boolean Lists</a>
+</ol>
+<A NAME="SECT001"><h2>29.1 BlistList</h2></a>
+<P><P><P>
+<code>BlistList( <var>list</var>, <var>sub</var> )</code>
+<P>
+<code>BlistList</code> returns a new boolean list that describes the list <var>sub</var> as a
+sublist of  the  list <var>list</var>,   which  must  have  no holes.   That    is
+<code>BlistList</code> returns  a boolean list <var>blist</var> of  the same length as <var>list</var>
+such  that <code><var>blist</var>[<var>i</var>]</code>  is <code>true</code> if  <code><var>list</var>[<var>i</var>]</code>   is in <var>sub</var>  and
+<code>false</code> otherwise.
+<P>
+<var>list</var>  need not be a proper  set (see <a href="chap028.htm">Sets</a>),  even though in this case
+<code>BlistList</code> is most     efficient.   In particular  <var>list</var> may    contain
+duplicates.   <var>sub</var> need not  be a proper  sublist of <var>list</var>, i.e., <var>sub</var>
+may contain  elements that are  not in <var>list</var>.   Those elements of course
+have no influence on the result of <code>BlistList</code>.
+<P>
+<pre>    gap> BlistList( [1..10], [2,3,5,7] );
+    [ false, true, true, false, true, false, true, false, false, false ]
+    gap> BlistList( [1,2,3,4,5,2,8,6,4,10], [4,8,9,16] );
+    [ false, false, false, true, false, false, true, false, true, false ]</pre>
+<P>
+<code>ListBlist</code> (see <a href="chap029.htm#SECT002">ListBlist</a>) is the inverse function to <code>BlistList</code>.
+<P><A NAME="SECT002"><h2>29.2 ListBlist</h2></a>
+<P><P><P>
+<code>ListBlist( <var>list</var>, <var>blist</var> )</code>
+<P>
+<code>ListBlist</code> returns the sublist <var>sub</var> of the list <var>list</var>, which must have
+no holes, represented  by the boolean  list <var>blist</var>, which  must have the
+same length   as  <var>list</var>.   <var>sub</var> contains  the  element <code><var>list</var>[<var>i</var>]</code> if
+<code><var>blist</var>[<var>i</var>]</code>     is  <code>true</code> and   does    not contain   the element  if
+<code><var>blist</var>[<var>i</var>]</code>  is <code>false</code>.  The  order of  the elements  in <var>sub</var> is the
+same as the order of the corresponding elements in <var>list</var>.
+<P>
+<pre>    gap> ListBlist([1..8],[false,true,true,true,true,false,true,true]);
+    [ 2, 3, 4, 5, 7, 8 ]
+    gap> ListBlist( [1,2,3,4,5,2,8,6,4,10],
+    > [false,false,false,true,false,false,true,false,true,false] );
+    [ 4, 8, 4 ] </pre>
+<P>
+<code>BlistList</code> (see <a href="chap029.htm#SECT001">BlistList</a>) is the inverse function to <code>ListBlist</code>.
+<P><A NAME="SECT003"><h2>29.3 IsBlist</h2></a>
+<P><P><P>
+<code>IsBlist( <var>obj</var> )</code>
+<P>
+<code>IsBlist</code> returns  <code>true</code> if <var>obj</var>, which  may be an  object of arbitrary
+type, is a boolean list and <code>false</code> otherwise.   A boolean list is a list
+that has no holes and contains only <code>true</code> and <code>false</code>.
+<P>
+<pre>    gap> IsBlist( [ true, true, false, false ] );
+    true
+    gap> IsBlist( [] );
+    true
+    gap> IsBlist( [false,,true] );
+    false    # has holes
+    gap> IsBlist( [1,1,0,0] );
+    false    # contains not only boolean values
+    gap> IsBlist( 17 );
+    false    # is not even a list </pre>
+<P><A NAME="SECT004"><h2>29.4 SizeBlist</h2></a>
+<P><P><P>
+<code>SizeBlist( <var>blist</var> )</code>
+<P>
+<code>SizeBlist</code> returns  the number of  entries of  the boolean  list <var>blist</var>
+that are <code>true</code>.   This  is the size  of  the subset represented  by  the
+boolean list <var>blist</var>.
+<P>
+<pre>    gap> SizeBlist( [ true, true, false, false ] );
+    2 </pre>
+<P><A NAME="SECT005"><h2>29.5 IsSubsetBlist</h2></a>
+<P><P><P>
+<code>IsSubsetBlist( <var>blist1</var>, <var>blist2</var> )</code>
+<P>
+<code>IsSubsetBlist</code> returns <code>true</code> if  the boolean list  <var>blist2</var> is a subset
+of  the boolean list <var>list1</var>, which  must have equal  length, and <code>false</code>
+otherwise.   <var>blist2</var> is  a    subset if  <var>blist1</var>  if <code><var>blist1</var>[<var>i</var>]   =
+<var>blist1</var>[<var>i</var>] or <var>blist2</var>[<var>i</var>]</code> for all <var>i</var>.
+<P>
+<pre>    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> IsSubsetBlist( blist1, blist2 );
+    false
+    gap> blist2 := [ true, false, false, false ];;
+    gap> IsSubsetBlist( blist1, blist2 );
+    true </pre>
+<P><A NAME="SECT006"><h2>29.6 UnionBlist</h2></a>
+<P><A name = "I3"></a>
+
+<P>
+<code>UnionBlist( <var>blist1</var>, <var>blist2</var>.. )</code> <BR> 
+<code>UnionBlist( <var>list</var> )</code>
+<P>
+In the  first form <code>UnionBlist</code>  returns the union  of the  boolean lists
+<var>blist1</var>, <var>blist2</var>, etc., which must have equal length.  The <strong>union</strong> is a
+new boolean list such that <code><var>union</var>[<var>i</var>] = <var>blist1</var>[<var>i</var>] or <var>blist2</var>[<var>i</var>]
+or ..</code>.
+<P>
+In  the second form  <var>list</var> must  be a  list  of boolean lists  <var>blist1</var>,
+<var>blist2</var>, etc.,  which  must have  equal length,  and <code>Union</code> returns the
+union of those boolean list.
+<P>
+<pre>    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> UnionBlist( blist1, blist2 );
+    [ true, true, true, false ] </pre>
+<P>
+Note  that <code>UnionBlist</code>  is  implemented   in terms  of    the  procedure
+<code>UniteBlist</code> (see <a href="chap029.htm#SECT009">UniteBlist</a>).
+<P><A NAME="SECT007"><h2>29.7 IntersectionBlist</h2></a>
+<P><A name = "I4"></a>
+
+<P>
+<code>IntersectionBlist( <var>blist1</var>, <var>blist2</var>.. )</code><BR> 
+<code>IntersectionBlist( <var>list</var> )</code>
+<P>
+In the first  form <code>IntersectionBlist</code>  returns  the intersection  of the
+boolean  lists <var>blist1</var>, <var>blist2</var>,  etc., which  must  have equal length.
+The  <strong>intersection</strong>  is a  new boolean   list such  that  <code><var>inter</var>[<var>i</var>] =
+<var>blist1</var>[<var>i</var>] and <var>blist2</var>[<var>i</var>] and ..</code>.
+<P>
+In  the  second form <var>list</var>   must be a  list of  boolean lists <var>blist1</var>,
+<var>blist2</var>, etc., which   must have equal  length,  and <code>IntersectionBlist</code>
+returns the intersection of those boolean lists.
+<P>
+<pre>    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> IntersectionBlist( blist1, blist2 );
+    [ true, false, false, false ] </pre>
+<P>
+Note that <code>IntersectionBlist</code>  is implemented in terms  of  the procedure
+<code>IntersectBlist</code> (see <a href="chap029.htm#SECT010">IntersectBlist</a>).
+<P><A NAME="SECT008"><h2>29.8 DifferenceBlist</h2></a>
+<P><A name = "I5"></a>
+
+<P>
+<code>DifferenceBlist( <var>blist1</var>, <var>blist2</var> )</code>
+<P>
+<code>DifferenceBlist</code>  returns the  asymmetric  set  difference  of the   two
+boolean  lists <var>blist1</var> and <var>blist2</var>, which  must have equal length.  The
+<strong>asymmetric set difference</strong> is a new boolean list such that <code><var>union</var>[<var>i</var>]
+= <var>blist1</var>[<var>i</var>] and not <var>blist2</var>[<var>i</var>]</code>.
+<P>
+<pre>    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> DifferenceBlist( blist1, blist2 );
+    [ false, true, false, false ] </pre>
+<P>
+Note  that <code>DifferenceBlist</code>  is implemented in   terms  of the procedure
+<code>SubtractBlist</code> (see <a href="chap029.htm#SECT011">SubtractBlist</a>).
+<P><A NAME="SECT009"><h2>29.9 UniteBlist</h2></a>
+<P><A name = "I6"></a>
+
+<P>
+<code>UniteBlist( <var>blist1</var>, <var>blist2</var> )</code>
+<P>
+<code>UniteBlist</code>   unites the boolean list  <var>blist1</var>   with the boolean  list
+<var>blist2</var>,   which must  have the  same  length.    This is equivalent  to
+assigning <code><var>blist1</var>[<var>i</var>] := <var>blist1</var>[<var>i</var>] or <var>blist2</var>[<var>i</var>]</code> for all <var>i</var>.
+<code>UniteBlist</code> returns nothing, it is only called to change <var>blist1</var>.
+<P>
+<pre>    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> UniteBlist( blist1, blist2 );
+    gap> blist1;
+    [ true, true, true, false ] </pre>
+<P>
+The  function  <code>UnionBlist</code>   (see <a href="chap029.htm#SECT006">UnionBlist</a>) is   the  nondestructive
+counterpart to the procedure <code>UniteBlist</code>.
+<P><A NAME="SECT010"><h2>29.10 IntersectBlist</h2></a>
+<P><A name = "I7"></a>
+
+<P>
+<code>IntersectBlist( <var>blist1</var>, <var>blist2</var> )</code>
+<P>
+<code>IntersectBlist</code> intersects the  boolean list  <var>blist1</var> with the  boolean
+list <var>blist2</var>,  which must have the same  length.  This is  equivalent to
+assigning <code><var>blist1</var>[<var>i</var>]:= <var>blist1</var>[<var>i</var>] and <var>blist2</var>[<var>i</var>]</code> for all <var>i</var>.
+<code>IntersectBlist</code> returns nothing, it is only called to change <var>blist1</var>.
+<P>
+<pre>    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> IntersectBlist( blist1, blist2 );
+    gap> blist1;
+    [ true, false, false, false ] </pre>
+<P>
+The  function <code>IntersectionBlist</code>    (see  <a href="chap029.htm#SECT007">IntersectionBlist</a>)   is  the
+nondestructive counterpart to the procedure <code>IntersectBlist</code>.
+<P><A NAME="SECT011"><h2>29.11 SubtractBlist</h2></a>
+<P><A name = "I8"></a>
+
+<P>
+<code>SubtractBlist( <var>blist1</var>, <var>blist2</var> )</code>
+<P>
+<code>SubtractBlist</code> subtracts the boolean list <var>blist2</var> from the boolean list
+<var>blist1</var>, which must have equal length.   This is equivalent to assigning
+<code><var>blist1</var>[<var>i</var>] := <var>blist1</var>[<var>i</var>]  and  not <var>blist2</var>[<var>i</var>]</code>  for all   <var>i</var>.
+<code>SubtractBlist</code> returns nothing, it is only called to change <var>blist1</var>.
+<P>
+<pre>    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> SubtractBlist( blist1, blist2 );
+    gap> blist1;
+    [ false, true, false, false ] </pre>
+<P>
+The function   <code>DifferenceBlist</code>    (see   <a href="chap029.htm#SECT008">DifferenceBlist</a>)    is   the
+nondestructive counterpart to the procedure <code>SubtractBlist</code>.
+<P><A NAME="SECT012"><h2>29.12 More about Boolean Lists</h2></a>
+<P><P><P>
+In  the previous section (see <a href="chap029.htm">Boolean  Lists</a>) we defined a boolean list
+as a list that has no holes and contains  only <code>true</code> and <code>false</code>.  There
+is a special internal representation for boolean lists  that needs only 1
+bit for every entry.  This bit is set if the entry is <code>true</code> and reset if
+the entry is <code>false</code>.  This representation is of course much more compact
+than the ordinary representation of lists, which needs 32 bits per entry.
+<P>
+Not every boolean list is represented in this compact representation.  It
+would be too much work to test every time a list is changed, whether this
+list has become  a boolean  list.   This section  tells  you under  which
+circumstances  a      boolean  list  is  represented    in   the  compact
+representation, so  you can write  your functions in  such a way that you
+make best use of the compact representation.
+<P>
+The   results  of  <code>BlistList</code>,   <code>UnionBlist</code>,   <code>IntersectionBlist</code> and
+<code>DifferenceBlist</code> are known to be boolean lists by construction, and thus
+are represented in the compact representation upon creation.
+<P>
+If  an argument of <code>IsBlist</code>, <code>IsSubsetBlist</code>, <code>ListBlist</code>, <code>UnionBlist</code>,
+<code>IntersectionBlist</code>,  <code>DifferenceBlist</code>,   <code>UniteBlist</code>, <code>IntersectBlist</code>
+and <code>SubtractBlist</code> is a list represented in the ordinary representation,
+it  is tested to  see if  it is in  fact a boolean list.  If  it is  not,
+<code>IsBlist</code> returns <code>false</code> and the other functions signal an error.  If it
+is,   the   representation of  the  list    is  changed  to   the compact
+representation.
+<P>
+If  you change  a   boolean list that  is    represented in   the compact
+representation by assignment (see <a href="chap027.htm#SECT006">List Assignment</a>) or <code>Add</code> (see <a href="chap027.htm#SECT007">Add</a>)
+in  such a way  that  the  list  remains a  boolean list   it will remain
+represented  in the compact  representation.   Note  that changing a list
+that is not represented in the compact  representation,  whether it  is a
+boolean list or not,  in  such a way that  the  resulting list becomes  a
+boolean list, will never change the representation of the list.
+<P><a href ="chap028.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap030.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

@@ -1,0 +1,1041 @@
+<html><head><title>GAP3 Manual: 2 The Programming Language</title></head>
+<body bgcolor="ffffff">
+<h1>2 The Programming Language</h1>
+<P><P><P>
+This chapter describes the <strong>GAP3</strong> programming language.   It should allow
+you in principle to predict the result of each and every input.  In order
+to know what we are talking about, we first have to  look more closely at
+the process of  interpretation  and the  various representations  of data
+involved.
+<P>
+First we have the input to <strong>GAP3</strong>, given as a string  of characters.  How
+those characters enter <strong>GAP3</strong> is operating system  dependent,  e.g., they
+might be entered at a  terminal, pasted with  a mouse into  a window,  or
+read from a file.  The mechanism does not matter.  This representation of
+expressions by characters is called the <strong>external representation</strong> of  the
+expression.  Every expression has  at  least one external  representation
+that can be entered to get exactly this expression.
+<P>
+The input, i.e., the external representation, is transformed in a process
+called <strong>reading</strong> to an internal representation.   At this point the input
+is analyzed  and inputs   that  are  not legal external  representations,
+according to the rules given below, are rejected  as errors.  Those rules
+are usually called the <strong>syntax</strong> of a programming language.
+<P>
+The  internal  representation  created by  reading  is called  either  an
+<strong>expression</strong> or a <strong>statement</strong>.   Later we  will distinguish between those
+two terms, however now we will use them interchangeably.  The exact  form
+of the internal  representation does not matter.  It could be a string of
+characters  equal  to  the external  representation,  in  which case  the
+reading  would  only  need to check for errors.  It could be a series  of
+machine instructions  for the  processor  on  which <strong>GAP3</strong> is running, in
+which case the reading would  more appropriately  be  called compilation.
+It is in fact a tree--like structure.
+<P>
+After the input has been read it is again transformed in a process called
+<strong>evaluation</strong> or <strong>execution</strong>.  Later we will distinguish between those two
+terms too, but for the moment we will use them interchangeably.  The name
+hints at the nature of this  process, it replaces an  expression with the
+value of the expression.  This  works  recursively,  i.e., to evaluate an
+expression  first the subexpressions  are evaluated and then the value of
+the expression is  computed according  to rules  given  below from  those
+values.  Those rules  are usually called the <strong>semantics</strong> of a programming
+language.
+<P>
+The result of the evaluation is, not surprisingly, called a <strong>value</strong>.  The
+set of values    is  of course a    much smaller  set  than  the   set of
+expressions;  for  every value there  are   several expressions that will
+evaluate to   this  value.  Again  the form  in  which such  a   value is
+represented  internally does not   matter.  It is    in fact a tree--like
+structure again.
+<P>
+The last process  is called <strong>printing</strong>.  It  takes the  value produced by
+the evaluation and creates an external representation,  i.e., a string of
+characters again.  What you do with this external representation is up to
+you. You can look at it, paste it with the  mouse into another window, or
+write it to a file.
+<P>
+Lets look at an example to make this more clear.  Suppose you type in the
+following string of 8 characters
+<P>
+<code>    1 + 2 * 3;</code>
+<P>
+<strong>GAP3</strong>  takes   this external representation   and creates   a  tree like
+internal representation, which we can picture as follows
+<P>
+<pre>       +
+      / \ 
+     1   *
+        / \ 
+       2   3 </pre>
+<P>
+This expression is then evaluated.  To do this <strong>GAP3</strong> first evaluates the
+right subexpression <code>2*3</code>.   Again to do this <strong>GAP3</strong> first evaluates its
+subexpressions 2  and 3.  However they  are so simple that they are their
+own value, we say that  they are  self--evaluating.  After  this has been
+done,  the rule for <code>*</code> tells us that the value is the  product  of  the
+values of the  two  subexpressions,  which  in  this case  is clearly  6.
+Combining  this with the value  of the left operand of  the <code>+</code>, which is
+self--evaluating too gives us  the value of the whole expression 7.  This
+is  then  printed,  i.e.,  converted  into  the  external  representation
+consisting of the single character <code>7</code>.
+<P>
+In this fashion  we can predict the  result of every input  when we know
+the syntactic rules that govern the  process of reading and the semantic
+rules that  tell us for  every expression how  its value is  computed in
+terms of the values of the subexpressions. The syntactic rules are given
+in  sections  <a href="chap002.htm#SECT001">Lexical  Structure</a>, <a href="chap002.htm#SECT002">Language  Symbols</a>,  <a href="chap002.htm#SECT003">Whitespaces</a>,
+<a href="chap002.htm#SECT004">Keywords</a>, <a href="chap002.htm#SECT005">Identifiers</a>, and  <a href="chap002.htm#SECT020">The Syntax in BNF</a>,  the semantic rules
+are  given in  sections  <a href="chap002.htm#SECT006">Expressions</a>,  <a href="chap002.htm#SECT007">Variables</a>, <a href="chap002.htm#SECT008">Function  Calls</a>,
+<a href="chap002.htm#SECT009">Comparisons</a>,  <a href="chap002.htm#SECT010">Operations</a>,  <a href="chap002.htm#SECT011">Statements</a>,  <a href="chap002.htm#SECT012">Assignments</a>,  <a href="chap002.htm#SECT013">Procedure
+Calls</a>, <a href="chap002.htm#SECT014">If</a>,  <a href="chap002.htm#SECT015">While</a>, <a href="chap002.htm#SECT016">Repeat</a>,  <a href="chap002.htm#SECT017">For</a>, <a href="chap002.htm#SECT018">Functions</a>, and  the chapters
+describing the individual data types.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap002.htm#SECT001">Lexical Structure</a>
+<LI> <A HREF="chap002.htm#SECT002">Language Symbols</a>
+<LI> <A HREF="chap002.htm#SECT003">Whitespaces</a>
+<LI> <A HREF="chap002.htm#SECT004">Keywords</a>
+<LI> <A HREF="chap002.htm#SECT005">Identifiers</a>
+<LI> <A HREF="chap002.htm#SECT006">Expressions</a>
+<LI> <A HREF="chap002.htm#SECT007">Variables</a>
+<LI> <A HREF="chap002.htm#SECT008">Function Calls</a>
+<LI> <A HREF="chap002.htm#SECT009">Comparisons</a>
+<LI> <A HREF="chap002.htm#SECT010">Operations</a>
+<LI> <A HREF="chap002.htm#SECT011">Statements</a>
+<LI> <A HREF="chap002.htm#SECT012">Assignments</a>
+<LI> <A HREF="chap002.htm#SECT013">Procedure Calls</a>
+<LI> <A HREF="chap002.htm#SECT014">If</a>
+<LI> <A HREF="chap002.htm#SECT015">While</a>
+<LI> <A HREF="chap002.htm#SECT016">Repeat</a>
+<LI> <A HREF="chap002.htm#SECT017">For</a>
+<LI> <A HREF="chap002.htm#SECT018">Functions</a>
+<LI> <A HREF="chap002.htm#SECT019">Return</a>
+<LI> <A HREF="chap002.htm#SECT020">The Syntax in BNF</a>
+</ol>
+<A NAME="SECT001"><h2>2.1 Lexical Structure</h2></a>
+<P><P><P>
+The input of <strong>GAP3</strong> consists of sequences of the following characters.
+<P>
+Digits, uppercase and lowercase letters,  <var>space</var>, <var>tab</var>, <var>newline</var>,  and
+the special characters
+<P>
+<pre>    "       '       (       )       *       +       ,       _
+    .       /       :       ;       &lt;       =       >       ~
+    [       \       ]       ^       _       {       }       # </pre>
+<P>
+Other  characters  will  be signalled  as  illegal.   Inside strings  and
+comments the full character set supported by the computer is allowed.
+<P><A NAME="SECT002"><h2>2.2 Language Symbols</h2></a>
+<P><P><P>
+The  process of reading,  i.e., of assembling the input into expressions,
+has a subprocess,  called  <strong>scanning</strong>, that assembles the characters into
+symbols.   A <strong>symbol</strong>  is  a sequence of characters that form  a  lexical
+unit.  The  set of  symbols  consists of  keywords, identifiers, strings,
+integers, and operator and delimiter symbols.
+<P>
+A keyword is a  reserved word  consisting entirely  of lowercase  letters
+(see <a href="chap002.htm#SECT004">Keywords</a>).  An identifier is a sequence of letters and digits that
+contains at  least one letter  and is not a keyword  (see <a href="chap002.htm#SECT005">Identifiers</a>).
+An integer is a  sequence of  digits  (see  <a href="chap010.htm">Integers</a>).   A string is  a
+sequence  of   arbitrary  characters   enclosed  in  double  quotes  (see
+<a href="chap030.htm">Strings and Characters</a>).
+<P>
+Operator and delimiter symbols are
+<P>
+<pre>    +       -       *       /       ^       ~
+    =       &lt;>      &lt;       &lt;=      >       >=
+    :=      .       ..      ->      ,       ;
+    [       ]       {       }       (       )  </pre>
+<P>
+Note  that during the process of  scanning also all whitespace is removed
+(see <a href="chap002.htm#SECT003">Whitespaces</a>).
+<P><A NAME="SECT003"><h2>2.3 Whitespaces</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<A name = "I1"></a>
+<A name = "I2"></a>
+<A name = "I3"></a>
+<A name = "I4"></a>
+
+<P>
+The    characters <var>space</var>,  <var>tab</var>,   <var>newline</var>, and   <var>return</var> are called
+<strong>whitespace characters</strong>.   Whitespace is used   as necessary to  separate
+lexical symbols, such as integers, identifiers, or keywords.  For example
+<code>Thorondor</code> is  a single identifier, while <code>Th  or  ondor</code> is the keyword
+<code>or</code> between the two identifiers <code>Th</code>  and <code>ondor</code>.  Whitespace may occur
+between any two  symbols, but not within a  symbol.  Two or more adjacent
+whitespaces are  equivalent to a single  whitespace.  Apart from the role
+as  separator  of  symbols,  whitespaces  are   otherwise  insignificant.
+Whitespaces may also  occur inside a string,  where they are significant.
+Whitespaces should also be used freely for improved readability.
+<P>
+A  <strong>comment</strong> starts with the   character <code>#</code>, which is sometimes  called
+sharp or hatch, and continues to the end of the line on which the comment
+character appears.  The whole  comment, including <code>#</code> and  the <var>newline</var>
+character  is  treated  as a single    whitespace.  Inside a  string, the
+comment character <code>#</code> looses its role and is just an ordinary character.
+<P>
+For example, the following statement
+<P>
+<code>    if i&lt;0 then a:=-i;else a:=i;fi; </code>
+<P>
+is equivalent to
+<P>
+<pre>    if i &lt; 0  then      # if i is negative
+        a := -i;        #     take its inverse
+    else                # otherwise
+        a := i;         #     take itself
+    fi; </pre>
+<P>
+(which by the  way  shows  that  it  is  possible  to  write  superfluous
+comments).  However the first statement is not equivalent to
+<P>
+<code>    ifi&lt;0thena:=-i;elsea:=i;fi; </code>
+<P>
+since  the keyword <code>if</code>  must  be separated from  the identifier <code>i</code> by a
+whitespace,  and  similarly <code>then</code>  and <code>a</code>,  and <code>else</code> and  <code>a</code> must be
+separated.
+<P><A NAME="SECT004"><h2>2.4 Keywords</h2></a>
+<P><P><P>
+<strong>Keywords</strong> are reserved words that are used  to denote special operations
+or  are part of  statements.  They must not be used  as identifiers.  The
+keywords are
+<P>
+<pre>    and       do        elif      else      end       fi
+    for       function  if        in        local     mod
+    not       od        or        repeat    return    then
+    until     while     quit </pre>
+<P>
+Note that all keywords are written in lowercase.  For example only <code>else</code>
+is   a  keyword;  <code>Else</code>, <code>eLsE</code>,  <code>ELSE</code>   and   so  forth  are ordinary
+identifiers.  Keywords must not contain  whitespace, for  example <code>el if</code>
+is not the same as <code>elif</code>.
+<P><A NAME="SECT005"><h2>2.5 Identifiers</h2></a>
+<P><P><P>
+An identifier is used to  refer to   a  variable (see  <a href="chap002.htm#SECT007">Variables</a>).   An
+identifier consists of letters,  digits,  and underscores <code>_</code>,  and must
+contain at least one letter  or underscore.   An identifier is terminated
+by the first character not in this class.  Examples  of valid identifiers
+are
+<P>
+<pre>    a                   foo                 aLongIdentifier
+    hello               Hello               HELLO
+    x100                100x                _100
+    some_people_prefer_underscores_to_separate_words
+    WePreferMixedCaseToSeparateWords </pre>
+<P>
+Note that  case  is  significant, so  the three identifiers in the second
+line are distinguished.
+<P>
+The backslash <code>\</code> can be used to include other characters in identifiers;
+a backslash  followed  by  a character  is equivalent   to the character,
+except that this escape sequence  is considered to be an ordinary letter.
+For example <code>G\(2\,5\)</code> is an identifier, not a call to a function <code>G</code>.
+<P>
+An identifier that  starts with  a backslash is  never a  keyword, so for
+example <code>*</code> and <code>\mod</code> are identifier.
+<P>
+The length  of identifiers is not limited,   however only  the first 1023
+characters are significant.  The escape sequence <code>\</code><var>newline</var> is ignored,
+making it possible to split long identifiers over multiple lines.
+<P><A NAME="SECT006"><h2>2.6 Expressions</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+An  <strong>expression</strong> is a construct  that  evaluates  to a value.   Syntactic
+constructs that are executed to produce a side effect and return no value
+are called <strong>statements</strong>  (see <a href="chap002.htm#SECT011">Statements</a>).  Expressions appear as right
+hand  sides of assignments  (see <a href="chap002.htm#SECT012">Assignments</a>),  as  actual arguments in
+function calls (see <a href="chap002.htm#SECT008">Function Calls</a>), and in statements.
+<P>
+Note that an expression is not the same as a value.  For example <code>1 + 11</code>
+is  an    expression, whose value is   the   integer  12.    The external
+representation of this integer is the character sequence <code>12</code>, i.e., this
+sequence is output  if the integer is  printed.  This sequence is another
+expression whose value is  the integer 12.    The process of finding  the
+value of an  expression  is done by  the  interpreter and is  called  the
+<strong>evaluation</strong> of the expression.
+<P>
+Variables,  function  calls, and integer, permutation, string,  function,
+list, and record literals (see <a href="chap002.htm#SECT007">Variables</a>, <a href="chap002.htm#SECT008">Function Calls</a>, <a href="chap010.htm">Integers</a>,
+<a href="chap020.htm">Permutations</a>,   <a href="chap030.htm">Strings   and   Characters</a>,   <a href="chap002.htm#SECT018">Functions</a>,   <a href="chap027.htm">Lists</a>,
+<a href="chap046.htm">Records</a>), are the simplest cases of expressions.
+<P>
+Expressions,  for example the simple expressions  mentioned above, can be
+combined with the operators to form  more complex expressions.  Of course
+those expressions can then be combined further with the operators to form
+even more complex  expressions.  The <strong>operators</strong> fall into three classes.
+The  <strong>comparisons</strong>  are  <code>=</code>, <code><></code>,  <code><=</code>, <code>></code>,   <code>>=</code>,  and  <code>in</code> (see
+<a href="chap002.htm#SECT009">Comparisons</a> and <a href="chap027.htm#SECT014">In</a>).  The <strong>arithmetic operators</strong> are  <code>+</code>, <code>-</code>, <code>*</code>,
+<code>/</code>, <code>mod</code>, and <code>^</code>   (see <a href="chap002.htm#SECT010">Operations</a>).   The <strong>logical  operators</strong> are
+<code>not</code>, <code>and</code>, and <code>or</code> (see <a href="chap045.htm#SECT002">Operations for Booleans</a>).
+<P>
+<pre>    gap> 2 * 2;    # a very simple expression with value
+    4
+    gap> 2 * 2 + 9 = Fibonacci(7) and  Fibonacci(13) in Primes;
+    true            # a more complex expression </pre>
+<P><A NAME="SECT007"><h2>2.7 Variables</h2></a>
+<P><P>
+<A name = "I6"></a>
+<A name = "I7"></a>
+
+<P>
+A <strong>variable</strong>  is a location in a  <strong>GAP3</strong> program that  points to a value.
+We say the variable is <strong>bound</strong> to this value.  If a variable is evaluated
+it evaluates to this value.
+<P>
+Initially an ordinary variable is not  bound to  any value.  The variable
+can be bound to a  value  by <strong>assigning</strong> this value to  the variable (see
+<a href="chap002.htm#SECT012">Assignments</a>).  Because of this we sometimes say that a variable that is
+not bound to any value has no assigned value.  Assignment  is in fact the
+only way by which a variable, which is not an argument of a function, can
+be bound to  a  value.  After a variable  has  been bound to a   value an
+assignment can also be used to bind the variable to another value.
+<P>
+A special class of  variables are <strong>arguments</strong> of functions.  They  behave
+similarly to other variables, except they are  bound to the  value of the
+actual arguments upon a function call (see <a href="chap002.htm#SECT008">Function Calls</a>).
+<P>
+Each variable has a  name that is also called  its <strong>identifier</strong>.  This is
+because in  a given scope an identifier identifies a unique variable (see
+<a href="chap002.htm#SECT005">Identifiers</a>).  A <strong>scope</strong> is a lexical part of a program text.  There is
+the  global scope that encloses the  entire program  text, and there  are
+local  scopes that  range  from  the  <code>function</code>  keyword,  denoting  the
+beginning of a function  definition, to  the corresponding <code>end</code> keyword.
+A local scope  introduces new  variables, whose identifiers are given  in
+the formal argument list and the <code>local</code> declaration of the function (see
+<a href="chap002.htm#SECT018">Functions</a>).  Usage  of an  identifier in  a program  text refers to the
+variable in  the innermost scope  that has  this identifier as  its name.
+Because  this  mapping  from  identifiers  to variables is done  when the
+program is read, not when it is executed, <strong>GAP3</strong> is  said to have lexical
+scoping.   The  following example  shows  how  one identifier  refers  to
+different variables at different points in the program text.
+<P>
+<pre>     g := 0;            # global variable g
+     x := function ( a, b, c )
+        local   y;
+        g := c;         # c refers to argument c of function x
+        y := function ( y )
+            local  d, e, f;
+            d := y;     # y refers to argument y of function y
+            e := b;     # b refers to argument b of function x
+            f := g;     # g refers to global variable g
+            return d + e + f;
+        end;
+        return y( a );  # y refers to local y of function x
+    end; </pre>
+<P>
+It is important to note that the concept of a variable in <strong>GAP3</strong> is quite
+different from the concept  of  a variable in programming languages  like
+PASCAL.  In  those languages a variable  denotes a block of  memory.  The
+value of the variable is stored in this block.  So in those languages two
+variables can  have the  same value,  but  they can never  have identical
+values,  because  they  denote different  blocks of  memory.   (Note that
+PASCAL has  the concept of a reference  argument.  It seems as if such an
+argument and the variable used in the actual function  call have the same
+value, since changing the argument's value also changes the value of the
+variable  used in  the actual  function call.   But this is  not  so; the
+reference  argument is actually  a pointer  to the variable  used  in the
+actual function call, and it is the compiler that inserts enough magic to
+make the  pointer  invisible.)  In  order  for this to work the  compiler
+needs enough  information to compute the amount of memory needed for each
+variable in a  program,  which is  readily  available in the declarations
+PASCAL requires for every variable.
+<P>
+In <strong>GAP3</strong> on the other hand each variable justs points to a value.
+<P><A NAME="SECT008"><h2>2.8 Function Calls</h2></a>
+<P><P><P>
+<code><var>function-var</var>()</code> <BR> 
+<code><var>function-var</var>( <var>arg-expr</var> {</code>,<code> <var>arg-expr</var>} )</code>
+<P>
+The function call has the effect  of calling the function <var>function-var</var>.
+The precise semantics are as follows.
+<P>
+First  <strong>GAP3</strong> evaluates the <var>function-var</var>.  Usually  <var>function-var</var> is a
+variable,  and  <strong>GAP3</strong> does nothing more  than taking  the value of  this
+variable.   It is allowed  though  that  <var>function-var</var> is a more complex
+expression,  namely it can for example be  a selection of  a list element
+<code><var>list-var</var>[<var>int-expr</var>]</code>,  or   a   selection  of   a   record  component
+<code><var>record-var</var>.<var>ident</var></code>.  In any  case <strong>GAP3</strong> tests whether the value is a
+function.  If it is not, <strong>GAP3</strong> signals an error.
+<P>
+Next <strong>GAP3</strong> checks that the number of actual arguments <var>arg-expr</var>s agrees
+with the number of formal arguments as given  in the function definition.
+If they do not agree <strong>GAP3</strong>  signals an error.  An  exception is the case
+when there is  exactly one formal argument  with the name <code>arg</code>, in which
+case any number of actual arguments is allowed.
+<P>
+Now <strong>GAP3</strong> allocates for each formal argument and for each formal local a
+new variable.  Remember that a variable is a location in a <strong>GAP3</strong> program
+that points  to  a value.  Thus for   each formal argument  and  for each
+formal local such a location is allocated.
+<P>
+Next the arguments <var>arg-expr</var>s are evaluated, and the values are assigned
+to the newly created variables corresponding to the formal arguments.  Of
+course the first value  is assigned  to the new variable corresponding to
+the  first  formal argument, the second   value   is  assigned to the new
+variable corresponding   to   the second    formal argument, and   so on.
+However, <strong>GAP3</strong> does not make any guarantee about the order  in which the
+arguments are evaluated.  They might be evaluated left to right, right to
+left, or in  any  other order, but  each  argument is evaluated once.  An
+exception again occurs if the function has  only one formal argument with
+the name <code>arg</code>.  In this case the values  of all the actual arguments are
+stored  in   a  list and this   list  is assigned  to the    new variable
+corresponding to the formal argument <code>arg</code>.
+<P>
+The  new variables corresponding to the  formal  locals are initially not
+bound to any   value.   So trying   to evaluate  those   variables before
+something has been assigned to them will signal an error.
+<P>
+Now the body of the function, which is  a statement, is executed.  If the
+identifier of one of the formal arguments or formal locals appears in the
+body of the function it refers to the new variable that was allocated for
+this formal argument or formal local, and evaluates to  the value of this
+variable.
+<P>
+If during the execution of the body of the function  a <code>return</code> statement
+with  an expression (see <a href="chap002.htm#SECT019">Return</a>) is executed,  execution of the body is
+terminated  and  the value  of  the function  call  is the value  of  the
+expression  of  the <code>return</code>.  If  during the  execution of  the  body  a
+<code>return</code>  statement  without an expression is executed,  execution of the
+body  is  terminated and the function  call does not produce  a value, in
+which case  we call this call a procedure  call (see  <a href="chap002.htm#SECT013">Procedure Calls</a>).
+If the  execution of  the body completes without execution of  a <code>return</code>
+statement, the  function call again produces no  value, and again we talk
+about a procedure call.
+<P>
+<pre>    gap> Fibonacci( 11 );
+        # a call to the function <code>Fibonacci</code> with actual argument <code>11</code>
+    89 </pre>
+<P>
+<pre>    gap> G.operations.RightCosets( G, Intersection( U, V ) );;
+        # a call to the function in <code>G.operations.RightCosets</code>
+        # where the second actual argument is another function call </pre>
+<P><A NAME="SECT009"><h2>2.9 Comparisons</h2></a>
+<P><P><P>
+<code><var>left-expr</var> =   <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> <> <var>right-expr</var></code>
+<P>
+The operator <code>=</code> tests for equality of  its two operands and evaluates to
+<code>true</code> if they are equal and to <code>false</code>  otherwise.  Likewise <code><></code> tests
+for  inequality of its  two operands.  Note  that any two  objects can be
+compared, i.e., <code>=</code> and <code><></code> will never  signal an error.  For each type
+of objects the definition of equality is given in the respective chapter.
+Objects of different types are  never equal, i.e.,  <code>=</code> evaluates in this
+case to <code>false</code>, and <code><></code> evaluates to <code>true</code>.
+<P>
+<code><var>left-expr</var> < <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> >   <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> <= <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> >=  <var>right-expr</var></code>
+<P>
+<code><</code> denotes less than,  <code><=</code> less than or  equal, <code>></code> greater than, and
+<code>>=</code> greater than or equal of its two operands.  For each type of objects
+the definition of the  ordering is given in  the respective chapter.  The
+ordering  of  objects  of different types  is as follows.  Rationals  are
+smallest,  next  are  cyclotomics, followed  by  finite  field  elements,
+permutations, words, words in solvable groups, boolean values, functions,
+lists, and records are largest.
+<P>
+Comparison operators, which includes the operator <code>in</code> (see <a href="chap027.htm#SECT014">In</a>) are not
+associative, i.e., it is not allowed to write <code><var>a</var> =  <var>b</var> <> <var>c</var> = <var>d</var></code>,
+you  must use <code>(<var>a</var>  =  <var>b</var>) <>  (<var>c</var>  = <var>d</var>)</code>  instead.  The comparison
+operators have   higher precedence   than    the logical  operators  (see
+<a href="chap045.htm#SECT002">Operations  for  Booleans</a>),  but lower  precedence  than the arithmetic
+operators (see <a href="chap002.htm#SECT010">Operations</a>).  Thus, for example, <code><var>a</var> * <var>b</var> =  <var>c</var> and
+<var>d</var></code> is interpreted, <code>((<var>a</var> * <var>b</var>) = <var>c</var>) and <var>d</var>)</code>.
+<P>
+<pre>    gap> 2 * 2 + 9 = Fibonacci(7);    # a comparison where the left
+    true                              # operand is an expression </pre>
+<P><A NAME="SECT010"><h2>2.10 Operations</h2></a>
+<P><P>
+<A name = "I8"></a>
+<A name = "I9"></a>
+
+<P>
+<code>+ <var>right-expr</var></code> <BR> 
+<code>- <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> +   <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> -   <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> * <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> /   <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> mod <var>right-expr</var></code> <BR> 
+<code><var>left-expr</var> ^ <var>right-expr</var></code>
+<P>
+The arithmetic operators are  <code>+</code>,  <code>-</code>,  <code>*</code>,  <code>/</code>,  <code>mod</code>,  and  <code>^</code>.
+The meanings (semantic) of those  operators generally depend on the types
+of the operands  involved, and they are  defined in the  various chapters
+describing the types.  However basically the meanings are as follows.
+<P>
+<code>+</code> denotes the addition,  and <code>-</code>  the  subtraction  of ring  and  field
+elements.   <code>*</code> is  the  multiplication of  group  elements,  <code>/</code> is the
+multiplication of the left operand with the inverse of the right operand.
+<code>mod</code> is only defined for integers  and rationals and denotes  the modulo
+operation.  <code>+</code> and <code>-</code> can also be used as unary  operations.  The unary
+<code>+</code> is ignored and unary <code>-</code> is equivalent to multiplication by -1.  <code>^</code>
+denotes powering of a group  element  if the right operand is an integer,
+and is  also used to denote operation if  the  right operand  is  a group
+element.
+<P>
+The <strong>precedence</strong> of those operators is as follows.  The powering operator
+<code>^</code> has  the highest precedence, followed by the unary operators <code>+</code> and
+<code>-</code>,  which are followed by the  multiplicative  operators <code>*</code>, <code>/</code>, and
+<code>mod</code>, and  the additive  binary operators <code>+</code> and  <code>-</code>  have  the lowest
+precedence.   That  means that the expression  <code>-2 ^ -2 *  3 + 1</code>  is
+interpreted as <code>(-(2  ^ (-2)) * 3) + 1</code>.  If in doubt use parentheses
+to clarify your intention.
+<P>
+The <strong>associativity</strong> of the arithmetic operators is as follows.<code>^</code> is not
+associative,  i.e., it is  illegal to write <code>2^3^4</code>, use parentheses to
+clarify whether  you mean <code>(2^3)  ^  4</code> or <code>2 ^ (3^4)</code>.  The  unary
+operators <code>+</code> and <code>-</code> are right associative, because they are written  to
+the left of their operands.  <code>*</code>, <code>/</code>, <code>mod</code>, <code>+</code>,  and <code>-</code> are all left
+associative, i.e., <code>1-2-3</code> is interpreted as <code>(1-2)-3</code>  not as <code>1-(2-3)</code>.
+Again, if in doubt use parentheses to clarify your intentions.
+<P>
+The  arithmetic  operators  have higher  precedence  than  the comparison
+operators (see  <a href="chap002.htm#SECT009">Comparisons</a> and  <a href="chap027.htm#SECT014">In</a>)  and the logical  operators (see
+<a href="chap045.htm#SECT002">Operations for  Booleans</a>).  Thus, for  example, <code><var>a</var> * <var>b</var> =  <var>c</var> and
+<var>d</var></code> is interpreted, <code>((<var>a</var> * <var>b</var>) = <var>c</var>) and <var>d</var></code>.
+<P>
+<pre>    gap> 2 * 2 + 9;    # a very simple arithmetic expression
+    13 </pre>
+<P><A NAME="SECT011"><h2>2.11 Statements</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+Assignments (see <a href="chap002.htm#SECT012">Assignments</a>), Procedure calls (see <a href="chap002.htm#SECT013">Procedure Calls</a>),
+<code>if</code>  statements  (see  <a href="chap002.htm#SECT014">If</a>),  <code>while</code>  (see  <a href="chap002.htm#SECT015">While</a>),  <code>repeat</code>   (see
+<a href="chap002.htm#SECT016">Repeat</a>) and  <code>for</code>  loops (see <a href="chap002.htm#SECT017">For</a>), and the <code>return</code>  statement (see
+<a href="chap002.htm#SECT019">Return</a>) are called statements.  They can be entered interactively or be
+part of a function definition.  Every statement must  be terminated by  a
+semicolon.
+<P>
+Statements, unlike expressions, have no value.  They are executed only to
+produce an effect.  For example an assignment has the effect of assigning
+a   value to a  variable, a  <code>for</code> loop   has the  effect  of executing a
+statement sequence for  all elements in a  list and so  on.  We will talk
+about <strong>evaluation</strong> of expressions  but about <strong>execution</strong> of statements to
+emphasize this difference.
+<P>
+It is possible to use expressions as statements.  However this does cause
+a warning.
+<P>
+<pre>    gap> if i &lt;> 0  then  k = 16/i;  fi;
+    Syntax error: warning, this statement has no effect
+    if i &lt;> 0  then  k = 16/i;  fi;
+                             ^ </pre>
+<P>
+As you can see from  the  example this is useful for those  users who are
+used to languages where <code>=</code> instead of <code>:=</code> denotes assignment.
+<P>
+A sequence  of  one or more  statements is a statement sequence, and  may
+occur  everywhere instead of  a single statement.  There  is nothing like
+PASCAL's  BEGIN-END, instead each  construct is terminated by a keyword.
+The most simple  statement sequence is a single  semicolon, which can  be
+used as an empty statement sequence.
+<P><A NAME="SECT012"><h2>2.12 Assignments</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code><var>var</var> := <var>expr</var>;</code>
+<P>
+The <strong>assignment</strong> has the effect of assigning the value of the expressions
+<var>expr</var> to the variable <var>var</var>.
+<P>
+The variable <var>var</var> may be an  ordinary variable (see <a href="chap002.htm#SECT007">Variables</a>), a list
+element selection <code><var>list-var</var>[<var>int-expr</var>]</code> (see  <a href="chap027.htm#SECT006">List Assignment</a>)  or a
+record  component   selection    <code><var>record-var</var>.<var>ident</var></code>   (see    <a href="chap046.htm#SECT002">Record
+Assignment</a>).  Since a list element or a record component may itself be a
+list or a record the  left hand side of  an assignment may be arbitrarily
+complex.
+<P>
+Note that variables do  not have a type.  Thus  any value may be assigned
+to any variable.   For example a  variable with  an integer  value may be
+assigned a permutation or a list or anything else.
+<P>
+If the expression  <var>expr</var> is a  function  call then  this  function  must
+return a value.   If the  function does not  return a  value  an error is
+signalled and you enter a break loop  (see <a href="chap003.htm#SECT002">Break Loops</a>).   As usual you
+can leave  the  break   loop   with  <code>quit;</code>.    If  you  enter   <code>return
+<var>return-expr</var>;</code> the value of the expression  <var>return-expr</var> is assigned to
+the variable, and execution continues after the assignment.
+<P>
+<pre>    gap> S6 := rec( size := 720 );; S6;
+    rec(
+      size := 720 )
+    gap> S6.generators := [ (1,2), (1,2,3,4,5) ];; S6;
+    rec(
+      size := 720,
+      generators := [ (1,2), (1,2,3,4,5) ] )
+    gap> S6.generators[2] := (1,2,3,4,5,6);; S6;
+    rec(
+      size := 720,
+      generators := [ (1,2), (1,2,3,4,5,6) ] ) </pre>
+<P><A NAME="SECT013"><h2>2.13 Procedure Calls</h2></a>
+<P><P><P>
+<code><var>procedure-var</var>();</code> <BR> 
+<code><var>procedure-var</var>( <var>arg-expr</var> {</code>,<code> <var>arg-expr</var>} );</code>
+<P>
+The   procedure  call   has   the   effect   of  calling   the  procedure
+<var>procedure-var</var>.   A  procedure call is done exactly like a function call
+(see <a href="chap002.htm#SECT008">Function Calls</a>).  The distinction between functions and procedures
+is only for the  sake  of  the discussion,  <strong>GAP3</strong> does  not  distinguish
+between them.
+<P>
+A <strong>function</strong> does return a value but does not produce a  side effect.  As
+a convention the name of a function is a noun, denoting what the function
+returns, e.g., <code>Length</code>, <code>Concatenation</code> and <code>Order</code>.
+<P>
+A <strong>procedure</strong> is a  function that does  not return  a value but  produces
+some   effect.  Procedures  are called   only  for   this effect.  As   a
+convention the name of a procedure is a verb, denoting what the procedure
+does, e.g., <code>Print</code>, <code>Append</code> and <code>Sort</code>.
+<P>
+<pre>    gap> Read( "myfile.g" );     # a call to the procedure Read
+    gap> l := [ 1, 2 ];;
+    gap> Append( l, [3,4,5] );    # a call to the procedure Append </pre>
+<P><A NAME="SECT014"><h2>2.14 If</h2></a>
+<P><P>
+<A name = "I12"></a>
+<A name = "I13"></a>
+
+<A name = "I14"></a>
+<A name = "I15"></a>
+<A name = "I16"></a>
+<A name = "I17"></a>
+
+<P>
+<code>if <var>bool-expr1</var>  then <var>statements1</var> <BR> 
+{ elif <var>bool-expr2</var>  then <var>statements2</var> } <BR> 
+{}[ else <var>statements3</var> ] <BR> 
+fi;</code>
+<P>
+The <code>if</code> statement  allows  one  to  execute statements depending  on the
+value of some boolean expression. The execution is done as follows.
+<P>
+First the expression <var>bool-expr1</var> following the <code>if</code> is evaluated.  If it
+evaluates to <code>true</code> the statement sequence  <var>statements1</var> after the first
+<code>then</code> is executed, and the execution of the <code>if</code> statement is complete.
+<P>
+Otherwise the expressions <var>bool-expr2</var> following the <code>elif</code> are evaluated
+in turn.  There may  be any number of <code>elif</code> parts, possibly none at all.
+As soon  as an expression evaluates to <code>true</code> the corresponding statement
+sequence <var>statements2</var> is executed and execution of the <code>if</code> statement is
+complete.
+<P>
+If the <code>if</code> expression  and all, if  any, <code>elif</code> expressions  evaluate to
+<code>false</code>  and there is  an <code>else</code>  part, which is  optional, its statement
+sequence <var>statements3</var>  is  executed   and the   execution of    the <code>if</code>
+statement is complete.  If there is no <code>else</code> part  the <code>if</code> statement is
+complete without executing any statement sequence.
+<P>
+Since the <code>if</code> statement is  terminated by the  <code>fi</code> keyword there  is no
+question where an <code>else</code> part belongs, i.e., <strong>GAP3</strong> has no dangling else.<BR> 
+In <code>if <var>expr1</var>  then  if <var>expr2</var>  then <var>stats1</var>  else <var>stats2</var>  fi;  fi;</code><BR> 
+the <code>else</code> part  belongs  to  the  second   <code>if</code>  statement,  whereas  in<BR> 
+<code>if <var>expr1</var>  then  if  <var>expr2</var>  then  <var>stats1</var>  fi;  else  <var>stats2</var>  fi;</code><BR> 
+the <code>else</code> part belongs to the first <code>if</code> statement.
+<P>
+Since an if statement is  not an expression it  is not possible to  write
+<P>
+<code>    abs := if x  > 0  then  x;  else  -x;  fi;</code>
+<P>
+which would,  even  if  legal  syntax, be   meaningless,  since  the <code>if</code>
+statement does not produce a value that could be assigned to <code>abs</code>.
+<P>
+If one expression evaluates neither to <code>true</code>  nor to <code>false</code> an error is
+signalled and a break loop (see <a href="chap003.htm#SECT002">Break Loops</a>) is  entered.  As usual you
+can leave   the break loop  with <code>quit;</code>.   If you  enter <code>return true;</code>,
+execution  of the  <code>if</code> statement  continues  as if the expression  whose
+evaluation    failed had evaluated to  <code>true</code>.     Likewise, if you enter
+<code>return  false;</code>, execution of  the  <code>if</code> statement  continues as if  the
+expression whose evaluation failed had evaluated to <code>false</code>.
+<P>
+<pre>    gap> i := 10;;
+    gap> if 0 &lt; i  then
+    >        s := 1;
+    >    elif i &lt; 0  then
+    >        s := -1;
+    >    else
+    >        s := 0;
+    >    fi;
+    gap> s;
+    1        # the sign of i </pre>
+<P><A NAME="SECT015"><h2>2.15 While</h2></a>
+<P><P>
+<A name = "I18"></a>
+<A name = "I19"></a>
+<A name = "I20"></a>
+
+<P>
+<code>while <var>bool-expr</var>  do <var>statements</var>  od;</code>
+<P>
+The  <code>while</code> loop executes the statement  sequence <var>statements</var> while the
+condition <var>bool-expr</var> evaluates to <code>true</code>.
+<P>
+First <var>bool-expr</var> is evaluated.  If it evaluates  to <code>false</code> execution of
+the <code>while</code> loop  terminates and the  statement immediately following the
+<code>while</code> loop is executed next.  Otherwise if  it evaluates  to <code>true</code> the
+<var>statements</var> are executed and the whole process begins again.
+<P>
+The  difference  between the <code>while</code>   loop and the  <code>repeat  until</code> loop
+(see <a href="chap002.htm#SECT016">Repeat</a>) is that the <var>statements</var>  in  the  <code>repeat until</code> loop are
+executed at least  once, while the  <var>statements</var> in the  <code>while</code> loop are
+not executed at all if <var>bool-expr</var> is <code>false</code> at the first iteration.
+<P>
+If  <var>bool-expr</var>  does  not  evaluate to <code>true</code>  or <code>false</code>  an  error  is
+signalled  and a break loop (see <a href="chap003.htm#SECT002">Break Loops</a>) is entered.  As usual you
+can  leave the break loop with <code>quit;</code>.   If you  enter  <code>return false;</code>,
+execution  continues with the  next  statement immediately following  the
+<code>while</code>  loop.   If you  enter  <code>return  true;</code>,  execution continues  at
+<var>statements</var>, after  which  the  next evaluation of <var>bool-expr</var> may cause
+another error.
+<P>
+<pre>    gap> i := 0;;  s := 0;;
+    gap> while s &lt;= 200  do
+    >        i := i + 1;  s := s + i^2;
+    >    od;
+    gap> s;
+    204        # first sum of the first i squares larger than 200 </pre>
+<P><A NAME="SECT016"><h2>2.16 Repeat</h2></a>
+<P><P>
+<A name = "I21"></a>
+<A name = "I22"></a>
+<A name = "I23"></a>
+<A name = "I24"></a>
+
+<P>
+<code>repeat <var>statements</var>  until <var>bool-expr</var>;</code>
+<P>
+The <code>repeat</code> loop executes  the statement sequence <var>statements</var> until the
+condition <var>bool-expr</var> evaluates to <code>true</code>.
+<P>
+First <var>statements</var> are executed.   Then <var>bool-expr</var> is  evaluated.  If it
+evaluates   to <code>true</code> the  <code>repeat</code>   loop  terminates and  the statement
+immediately following the  <code>repeat</code> loop is  executed next.  Otherwise if
+it evaluates to <code>false</code> the whole process begins again with the execution
+of the <var>statements</var>.
+<P>
+The  difference  between the <code>while</code>  loop (see <a href="chap002.htm#SECT015">While</a>)  and the <code>repeat
+until</code> loop  is that the  <var>statements</var>  in  the  <code>repeat until</code> loop  are
+executed  at least once,  while the  <var>statements</var> in the <code>while</code> loop are
+not executed at all if <var>bool-expr</var> is <code>false</code> at the first iteration.
+<P>
+If  <var>bool-expr</var>  does  not evaluate to  <code>true</code>   or  <code>false</code> a  error  is
+signalled and a break loop (see <a href="chap003.htm#SECT002">Break Loops</a>) is entered.  As  usual you
+can leave  the break loop  with <code>quit;</code>.   If  you  enter <code>return true;</code>,
+execution continues with the  next statement   immediately following  the
+<code>repeat</code> loop.   If you  enter <code>return   false;</code>, execution continues  at
+<var>statements</var>, after which the next  evaluation  of  <var>bool-expr</var> may cause
+another error.
+<P>
+<pre>    gap> i := 0;;  s := 0;;
+    gap> repeat
+    >        i := i + 1;  s := s + i^2;
+    >    until s > 200;
+    gap> s;
+    204        # first sum of the first i squares larger than 200 </pre>
+<P><A NAME="SECT017"><h2>2.17 For</h2></a>
+<P><P>
+<A name = "I25"></a>
+<A name = "I26"></a>
+<A name = "I27"></a>
+<A name = "I28"></a>
+<A name = "I29"></a>
+
+<P>
+<code>for <var>simple-var</var>  in <var>list-expr</var>  do <var>statements</var>  od;</code>
+<P>
+The <code>for</code> loop executes   the statement sequence <var>statements</var>  for  every
+element of the list <var>list-expr</var>.
+<P>
+The statement sequence  <var>statements</var> is  first executed with <var>simple-var</var>
+bound  to  the first element of  the list  <var>list</var>, then with <var>simple-var</var>
+bound to the second element of <var>list</var> and  so on.  <var>simple-var</var> must be a
+simple  variable,   it   must not     be   a list     element   selection
+<code><var>list-var</var>[<var>int-expr</var>]</code>     or       a    record    component  selection
+<code><var>record-var</var>.<var>ident</var></code>.
+<P>
+The execution of the <code>for</code> loop is exactly equivalent to the <code>while</code> loop
+<P>
+<code>    </code><var>loop-list</var><code> := </code><var>list</var><pre>;
+    </pre><var>loop-index</var><pre> := 1;
+    while </pre><var>loop-index</var><code> &lt;= Length(</code><var>loop-list</var><pre>) do
+        </pre><var>variable</var><code> := </code><var>loop-list</var><code>[</code><var>loop-index</var><pre>];
+        </pre><var>statements</var><pre>
+        </pre><var>loop-index</var><code> := </code><var>loop-index</var><pre> + 1;
+    od; </pre>
+<P>
+with the   exception   that  <var>loop-list</var> and <var>loop-index</var>  are  different
+variables for each <code>for</code> loop that do not interfere with each other.
+<P>
+The list <var>list</var> is very often a range.<BR> 
+<code>for <var>variable</var> in [<var>from</var>..<var>to</var>] do <var>statements</var> od;</code><BR> 
+corresponds to the more common<BR> 
+<code>for <var>variable</var> from <var>from</var> to <var>to</var>  do <var>statements</var> od;</code><BR> 
+in other programming languages.
+<P>
+<pre>    gap> s := 0;;
+    gap> for i  in [1..100]  do
+    >        s := s + i;
+    > od;
+    gap> s;
+    5050 </pre>
+<P>
+Note in the following example  how the modification of  the <strong>list</strong> in the
+loop body causes the loop body also to be executed for the new values
+<P>
+<pre>    gap> l := [ 1, 2, 3, 4, 5, 6 ];;
+    gap> for i  in l  do
+    >        Print( i, " " );
+    >        if i mod 2 = 0  then Add( l, 3 * i / 2 );  fi;
+    > od;  Print( "\n" );
+    1 2 3 4 5 6 3 6 9 9
+    gap> l;
+    [ 1, 2, 3, 4, 5, 6, 3, 6, 9, 9 ] </pre>
+<P>
+Note  in  the following example that  the  modification of the <strong>variable</strong>
+that holds the list has no influence on the loop
+<P>
+<pre>    gap> l := [ 1, 2, 3, 4, 5, 6 ];;
+    gap> for i  in l  do
+    >        Print( i, " " );
+    >        l := [];
+    > od;  Print( "\n" );
+    1 2 3 4 5 6
+    gap> l;
+    [  ] </pre>
+<P><A NAME="SECT018"><h2>2.18 Functions</h2></a>
+<P><P>
+<A name = "I30"></a>
+<A name = "I31"></a>
+<A name = "I32"></a>
+
+<A name = "I33"></a>
+<A name = "I34"></a>
+
+<A name = "I35"></a>
+<A name = "I36"></a>
+
+<P>
+<code>function (</code> [ <var>arg-ident</var> {<code>,</code> <var>arg-ident</var>} ] <pre>)
+    </pre>[ <code>local   </code><var>loc-ident</var> {<code>, </code><var>loc-ident</var>} <code>;</code> ]<pre>
+    </pre><var>statements</var><pre>
+end</pre>
+<P>
+A function is in fact  a literal  and  not  a statement.  Such a function
+literal can be  assigned to a variable  or to  a list element or a record
+component.  Later  this function can  be called as described in <a href="chap002.htm#SECT008">Function
+Calls</a>.
+<P>
+The following is an example  of a function definition.   It is a function
+to compute values of the Fibonacci sequence (see <a href="chap047.htm#SECT022">Fibonacci</a>)
+<P>
+<pre>    gap> fib := function ( n )
+    >         local  f1,  f2,  f3,  i;
+    >         f1 := 1;  f2 := 1;
+    >         for i  in [3..n]  do
+    >             f3 := f1 + f2;
+    >             f1 := f2;
+    >             f2 := f3;
+    >         od;
+    >         return f2;
+    >     end;;
+    gap> List( [1..10], fib );
+    [ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ] </pre>
+<P>
+Because for  each of the formal arguments <var>arg-ident</var> and for each of the
+formal locals <var>loc-ident</var>  a  new variable is allocated when the function
+is called (see <a href="chap002.htm#SECT008">Function  Calls</a>), it is  possible that a  function calls
+itself.  This is usually called <strong>recursion</strong>. The following is a recursive
+function that computes values of the Fibonacci sequence
+<P>
+<pre>    gap> fib := function ( n )
+    >         if n &lt; 3  then
+    >             return 1;
+    >         else
+    >             return fib(n-1) + fib(n-2);
+    >         fi;
+    >     end;;
+    gap> List( [1..10], fib );
+    [ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ] </pre>
+<P>
+Note that the recursive version needs <code>2 * fib(<var>n</var>)-1</code> steps to compute
+<code>fib(<var>n</var>)</code>, while the  iterative version   of <code>fib</code>  needs  only  <code><var>n</var>-2</code>
+steps.   Both are not optimal  however,  the library function <code>Fibonacci</code>
+only needs on the order of <code>Log(<var>n</var>)</code> steps.
+<P>
+<code><var>arg-ident</var> -> <var>expr</var></code>
+<P>
+This  is a  shorthand for<BR> 
+<code>function (  <var>arg-ident</var> ) return <var>expr</var>; end</code>.<BR> 
+<var>arg-ident</var>  must  be  a single  identifier, i.e., it is  not possible to
+write functions of several arguments this way.  Also <code>arg</code> is not treated
+specially,  so  it  is  also impossible to  write  functions that take  a
+variable number of arguments this way.
+<P>
+The following is an example of a typical use of such a function
+<P>
+<pre>    gap> Sum( List( [1..100], x -> x^2 ) );
+    338350 </pre>
+<P>
+When a function <var>fun1</var> definition  is evaluated  inside  another function
+<var>fun2</var>, <strong>GAP3</strong>  binds all the identifiers inside the function <var>fun1</var> that
+are identifiers of an argument or a  local of <var>fun2</var> to the corresponding
+variable.  This set of bindings is called the environment of the function
+<var>fun1</var>.  When <var>fun1</var> is called, its body is executed in this environment.
+The  following implementation of a simple stack uses this.  Values can be
+pushed  onto  the  stack  and  then  later  be  popped  off  again.   The
+interesting thing here  is that the  functions <code>push</code>  and  <code>pop</code>  in the
+record returned by <code>Stack</code> access the local variable <code>stack</code> of  <code>Stack</code>.
+When <code>Stack</code> is called a new  variable  for  the  identifier  <code>stack</code>  is
+created.   When the function  definitions of  <code>push</code> and  <code>pop</code> are  then
+evaluated (as part of the  <code>return</code> statement)  each reference to <code>stack</code>
+is bound to this new variable.  Note also that the two stacks <code>A</code> and <code>B</code>
+do not interfere, because each call of <code>Stack</code> creates a new variable for
+<code>stack</code>.
+<P>
+<pre>    gap> Stack := function ()
+    >         local   stack;
+    >         stack := [];
+    >         return rec(
+    >             push := function ( value )
+    >                 Add( stack, value );
+    >             end,
+    >             pop := function ()
+    >                 local   value;
+    >                 value := stack[Length(stack)];
+    >                 Unbind( stack[Length(stack)] );
+    >                 return value;
+    >             end
+    >         );
+    >    end;;
+    gap> A := Stack();;
+    gap> B := Stack();;
+    gap> A.push( 1 );  A.push( 2 );  A.push( 3 );
+    gap> B.push( 4 );  B.push( 5 );  B.push( 6 );
+    gap> A.pop();  A.pop();  A.pop();
+    3
+    2
+    1
+    gap> B.pop();  B.pop();  B.pop();
+    6
+    5
+    4 </pre>
+<P>
+This feature should be used rarely, since its implementation in <strong>GAP3</strong> is
+not very efficient.
+<P><A NAME="SECT019"><h2>2.19 Return</h2></a>
+<P><P>
+<A name = "I37"></a>
+
+<P>
+<code>return;</code>
+<P>
+In this form <code>return</code> terminates the call of  the innermost function that
+is currently executing, and control returns to  the calling function.  An
+error  is signalled if no  function is currently  executing.  No value is
+returned by the function.
+<P>
+<code>return <var>expr</var>;</code>
+<P>
+In this form <code>return</code> terminates the call of the innermost  function that
+is currently executing, and returns  the value  of the expression <var>expr</var>.
+Control returns  to the calling  function.  An error is  signalled if  no
+function is currently executing.
+<P>
+Both statements  can also be used in  break loops  (see  <a href="chap003.htm#SECT002">Break  Loops</a>).
+<code>return;</code>  has the effect  that the  computation  continues  where it was
+interrupted by an error or the user hitting  <code><var>ctr</var>C</code>.   <code>return <var>expr</var>;</code>
+can be used to continue execution after an error.  What  happens with the
+value <var>expr</var> depends on the particular error.
+<P><A NAME="SECT020"><h2>2.20 The Syntax in BNF</h2></a>
+<P><P>
+<A name = "I38"></a>
+
+<P>
+This section contains the definition  of the <strong>GAP3</strong> syntax in Backus-Naur
+form.
+<P>
+A  BNF is a set of rules, whose left side  is the name of  a  syntactical
+construct.  Those  names  are enclosed in angle  brackets and  written in
+<var>italics</var>.  The right side of each rule contains a possible form for that
+syntactic  construct.   Each  right  side  may  contain  names  of  other
+syntactic  constructs,  again  enclosed in angle brackets and written  in
+<var>italics</var>,  or character  sequences that  must  occur literally; they are
+written in <code>typewriter style</code>.
+<P>
+Furthermore  each righthand side  can contain  the  following metasymbols
+written in <strong>boldface</strong>.  If the right  hand  side contains forms separated
+by a pipe symbol  (<I>|</I>)  this means  that one  of the possible forms can
+occur.  If a part of a form  is enclosed  in square brackets  ([ ])  this
+means that this part is optional, i.e.  might be present or  missing.  If
+part  of the form is enclosed  in curly braces  ({  })  this means that
+the part may occur arbitrarily often, or possibly be missing.
+<P>
+\newpage
+beg-tabbing<s></s>
+<var>Permutation</var>  \=:= \= <var>Expr</var>                                      \kill
+<var>Ident</var>        &gt;:=  &gt;<code>a</code><I>|</I>...<I>|</I><code>z</code><I>|</I><code>A</code><I>|</I>...<I>|</I><code>Z</code><I>|</I><code>_</code>
+{<code>a</code><I>|</I>...<I>|</I><code>z</code><I>|</I><code>A</code><I>|</I>...<I>|</I><code>Z</code><I>|</I><code>0</code><I>|</I>...<I>|</I><code>9</code><I>|</I><code>_</code>}<BR> 
+<var>Var</var>          &gt;:=  &gt;<var>Ident</var>                                        <BR> 
+               &gt;<I>|</I> &gt;<var>Var</var> <code>.</code> <var>Ident</var>                              <BR> 
+               &gt;<I>|</I> &gt;<var>Var</var> <code>.</code> <code>(</code> <var>Expr</var> <code>)</code>                       <BR> 
+               &gt;<I>|</I> &gt;<var>Var</var> <code>[</code> <var>Expr</var> <code>]</code>                           <BR> 
+               &gt;<I>|</I> &gt;<var>Var</var> <code>{</code> <var>Expr</var> <code>}</code>                         <BR> 
+               &gt;<I>|</I> &gt;<var>Var</var> <code>(</code> [ <var>Expr</var> { <code>,</code> <var>Expr</var> } ] <code>)</code>      <BR> 
+<var>List</var>         &gt;:=  &gt;<code>[</code> [ <var>Expr</var> ] {<code>,</code> [ <var>Expr</var> ] } <code>]</code>         <BR> 
+               &gt;<I>|</I> &gt;<code>[</code> <var>Expr</var> [, <var>Expr</var> ] <code>..</code> <var>Expr</var> <code>]</code>         <BR> 
+<var>Record</var>       &gt;:=  &gt;<code>rec(</code> [ <var>Ident</var> <code>:=</code> <var>Expr</var>
+                           {<code>,</code> <var>Ident</var> <code>:=</code> <var>Expr</var> } ] <code>)</code>         <BR> 
+<var>Permutation</var>  &gt;:=  &gt;<code>(</code> <var>Expr</var> {<code>,</code> <var>Expr</var> } <code>)</code>
+                     { <code>(</code> <var>Expr</var> {<code>,</code> <var>Expr</var> } <code>)</code> }              <BR> 
+<var>Function</var>     &gt;:=  &gt;<code>function (</code> [ <var>Ident</var> {<code>,</code> <var>Ident</var> } ] <code>)</code>  <BR> 
+               &gt;     &gt;    [ <code>local</code>  <var>Ident</var> {<code>,</code> <var>Ident</var> } <code>;</code> ]  <BR> 
+               &gt;     &gt;    <var>Statements</var>                               <BR> 
+               &gt;     &gt;<code>end</code>                                          <BR> 
+<var>Char</var>         &gt;:=  &gt;<code>'</code> <var>any character</var> <code>'</code>                        <BR> 
+<var>String</var>       &gt;:=  &gt;<code>"</code> { <var>any character</var> } <code>"</code>                <BR> 
+<var>Int</var>          &gt;:=  &gt;<code>0</code><I>|</I><code>1</code><I>|</I>...<I>|</I><code>9</code>
+                     { <code>0</code><I>|</I><code>1</code><I>|</I>...<I>|</I><code>9</code> }                    <BR> 
+<var>Atom</var>         &gt;:=  &gt;<var>Int</var>                                          <BR> 
+               &gt;<I>|</I> &gt;<var>Var</var>                                          <BR> 
+               &gt;<I>|</I> &gt;<code>(</code> <var>Expr</var> <code>)</code>                                 <BR> 
+               &gt;<I>|</I> &gt;<var>Permutation</var>                                  <BR> 
+               &gt;<I>|</I> &gt;<var>Char</var>                                         <BR> 
+               &gt;<I>|</I> &gt;<var>String</var>                                       <BR> 
+               &gt;<I>|</I> &gt;<var>Function</var>                                     <BR> 
+               &gt;<I>|</I> &gt;<var>List</var>                                         <BR> 
+               &gt;<I>|</I> &gt;<var>Record</var>                                       <BR> 
+<var>Factor</var>       &gt;:=  &gt;{<code>+</code><I>|</I><code>-</code>} <var>Atom</var> [ <code>^</code> {<code>+</code><I>|</I><code>-</code>} <var>Atom</var> ]<BR> 
+<var>Term</var>         &gt;:=  &gt;<var>Factor</var> { <code>*</code><I>|</I><code>/</code><I>|</I><code>mod</code> <var>Factor</var> }   <BR> 
+<var>Arith</var>        &gt;:=  &gt;<var>Term</var> { <code>+</code><I>|</I><code>-</code> <var>Term</var> }                 <BR> 
+<var>Rel</var>          &gt;:=  &gt;{ <code>not</code> } <var>Arith</var>
+       { <code>=</code><I>|</I><code>&lt;></code><I>|</I><code>&lt;</code><I>|</I><code>></code><I>|</I><code>&lt;=</code><I>|</I><code>>=</code><I>|</I><code>in</code> <var>Arith</var> } <BR> 
+<var>And</var>          &gt;:=  &gt;<var>Rel</var> { <code>and</code> <var>Rel</var> }                        <BR> 
+<var>Log</var>          &gt;:=  &gt;<var>And</var> { <code>or</code> <var>And</var> }                         <BR> 
+<var>Expr</var>         &gt;:=  &gt;<var>Log</var>                                          <BR> 
+               &gt;<I>|</I> &gt;<var>Var</var> [ <code>-></code> <var>Log</var> ]                           <BR> 
+<var>Statement</var>    &gt;:=  &gt;<var>Expr</var>                                         <BR> 
+               &gt;<I>|</I> &gt;<var>Var</var> <code>:=</code> <var>Expr</var>                             <BR> 
+               &gt;<I>|</I> &gt;<code>if</code>   <var>Expr</var>  <code>then</code> <var>Statements</var>             <BR> 
+               &gt;     &gt;{ <code>elif</code> <var>Expr</var>  <code>then</code> \=<var>Statements</var> }     <BR> 
+               &gt;      &gt;[ <code>else</code>                &gt;<var>Statements</var>  ] <code>fi</code><BR> 
+               &gt;<I>|</I> &gt;<code>for</code> <var>Var</var> <code>in</code> <var>Expr</var> <code>do</code> <var>Statements</var> <code>od</code> <BR> 
+               &gt;<I>|</I> &gt;<code>while</code> <var>Expr</var>  <code>do</code> <var>Statements</var>  <code>od</code>        <BR> 
+               &gt;<I>|</I> &gt;<code>repeat</code> <var>Statements</var>  <code>until</code> <var>Expr</var>          <BR> 
+               &gt;<I>|</I> &gt;<code>return</code> [ <var>Expr</var> ]                            <BR> 
+               &gt;<I>|</I> &gt;<code>quit</code>                                         <BR> 
+<var>Statements</var>   &gt;:=  &gt;{ <var>Statement</var> <code>;</code> }                          <BR> 
+               &gt;<I>|</I> &gt;<code>;</code>
+end-tabbing<s></s>
+<P><a href ="chap001.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap003.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

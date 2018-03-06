@@ -1,0 +1,809 @@
+<html><head><title>GAP3 Manual: 61 CrystGap--The Crystallographic Groups Package</title></head>
+<body bgcolor="ffffff">
+<h1>61 CrystGap--The Crystallographic Groups Package</h1>
+<P><P><P>
+The  CrystGap package provides  functions for the computation with affine
+crystallographic groups, in particular  space groups.  Also  provided are
+some functions dealing with related  linear matrix groups, such as  point
+groups.  For  the definition of the  standard crystallographic notions we
+refer to the International Tables <A href="biblio.htm#Hah95"><cite>Hah95</cite></a>, in particular the chapter
+by  Wondratschek  <A href="biblio.htm#Won95"><cite>Won95</cite></a>,  and   to the   introductory   chapter in
+<A href="biblio.htm#BBNWZ78"><cite>BBNWZ78</cite></a>.  Some  material  can also be  found in  the chapters <a href="chap038.htm#SECT013">The
+Crystallographic Groups Library</a> and <a href="chap038.htm#SECT012">Irreducible Maximal Finite Integral
+Matrix   Groups</a>.  The principal   algorithms  used in  this package  are
+described in <A href="biblio.htm#egn97b"><cite>egn97b</cite></a>, a preprint  of which in  included in the <code>doc</code>
+directory of this package.
+<P>
+CrystGap is  implemented in the <strong>GAP3</strong> language,  and  runs on any system
+supporting <strong>GAP3</strong> 3.4.4. The function <code>WyckoffLattice</code>, however, requires
+the share package  \sf XGap, which in  turn runs only  under Unix.  The
+functions  described in this   chapter  can be used  only  after  loading
+CrystGap with the command 
+<pre> 
+     gap> RequirePackage( "cryst" ); 
+</pre>
+<P>
+CrystGap has been developed by
+<P>
+<DL><DT>Bettina Eick<BR> 
+:<DD>Lehrstuhl D f&uuml;r Mathematik, RWTH Aachen, 
+D-52056 Aachen, Germany <BR> 
+:e-mail: <code>Bettina.Eick@math.RWTH-Aachen.de</code>
+</DL><P>
+<DL><DT>Franz G&auml;hler <BR> 
+:<DD>Centre de Physique Th&eacute;orique, Ecole Polytechnique, 
+F-91128 Palaiseau, France<BR> 
+:e-mail: <code>gaehler@pth.polytechnique.fr</code>
+</DL><P>
+<DL><DT>Werner Nickel <BR> 
+:<DD>School of Mathematical and Computational Sciences, 
+ University of St Andrews, <BR> 
+:St Andrews, Fife KY16 9SS, Scotland <BR> 
+:e-mail: <code>werner@dcs.st-and.ac.uk</code>
+</DL><P>
+Please send bug reports,  suggestions and other  comments to any of these
+e-mail addresses.
+<P>
+The   first and  third  authors acknowledge  financial  support from  the
+Graduiertenkolleg <I> Analyse und Konstruktion in der Mathematik</I>. The
+second author   was supported  by the  Swiss  Bundesamt  f&uuml;r
+Bildung und Wissenschaft  in the framework  of the  HCM programme of  the
+European   Community.  This collaboration was in   part  made possible by
+financial support from the HCM project <I> Computational Group Theory</I>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap061.htm#SECT001">Crystallographic Groups</a>
+<LI> <A HREF="chap061.htm#SECT002">Space Groups</a>
+<LI> <A HREF="chap061.htm#SECT003">More about Crystallographic Groups</a>
+<LI> <A HREF="chap061.htm#SECT004">CrystGroup</a>
+<LI> <A HREF="chap061.htm#SECT005">IsCrystGroup</a>
+<LI> <A HREF="chap061.htm#SECT006">PointGroup</a>
+<LI> <A HREF="chap061.htm#SECT007">TranslationsCrystGroup</a>
+<LI> <A HREF="chap061.htm#SECT008">AddTranslationsCrystGroup</a>
+<LI> <A HREF="chap061.htm#SECT009">CheckTranslations</a>
+<LI> <A HREF="chap061.htm#SECT010">ConjugatedCrystGroup</a>
+<LI> <A HREF="chap061.htm#SECT011">FpGroup for point groups</a>
+<LI> <A HREF="chap061.htm#SECT012">FpGroup for CrystGroups</a>
+<LI> <A HREF="chap061.htm#SECT013">MaximalSubgroupsRepresentatives</a>
+<LI> <A HREF="chap061.htm#SECT014">IsSpaceGroup</a>
+<LI> <A HREF="chap061.htm#SECT015">IsSymmorphicSpaceGroup</a>
+<LI> <A HREF="chap061.htm#SECT016">SpaceGroupsPointGroup</a>
+<LI> <A HREF="chap061.htm#SECT018">Wyckoff Positions</a>
+<LI> <A HREF="chap061.htm#SECT018">WyckoffPositions</a>
+<LI> <A HREF="chap061.htm#SECT019">WyckoffPositionsByStabilizer</a>
+<LI> <A HREF="chap061.htm#SECT020">WyckoffPositionsQClass</a>
+<LI> <A HREF="chap061.htm#SECT021">WyckoffOrbit</a>
+<LI> <A HREF="chap061.htm#SECT022">WyckoffLattice</a>
+<LI> <A HREF="chap061.htm#SECT023">NormalizerGL</a>
+<LI> <A HREF="chap061.htm#SECT024">CentralizerGL</a>
+<LI> <A HREF="chap061.htm#SECT025">PointGroupsBravaisClass</a>
+<LI> <A HREF="chap061.htm#SECT026">TranslationNormalizer</a>
+<LI> <A HREF="chap061.htm#SECT027">AffineNormalizer</a>
+<LI> <A HREF="chap061.htm#SECT028">AffineInequivalentSubgroups</a>
+<LI> <A HREF="chap061.htm#SECT029">Other functions for CrystGroups</a>
+<LI> <A HREF="chap061.htm#SECT030">Color Groups</a>
+<LI> <A HREF="chap061.htm#SECT031">ColorGroup</a>
+<LI> <A HREF="chap061.htm#SECT032">IsColorGroup</a>
+<LI> <A HREF="chap061.htm#SECT033">ColorSubgroup</a>
+<LI> <A HREF="chap061.htm#SECT034">ColorCosets</a>
+<LI> <A HREF="chap061.htm#SECT035">ColorOfElement</a>
+<LI> <A HREF="chap061.htm#SECT036">ColorPermGroup</a>
+<LI> <A HREF="chap061.htm#SECT037">ColorHomomorphism</a>
+<LI> <A HREF="chap061.htm#SECT038">Subgroup for color groups</a>
+<LI> <A HREF="chap061.htm#SECT039">PointGroup for color CrystGroups</a>
+<LI> <A HREF="chap061.htm#SECT040">Inequivalent colorings of space groups</a>
+</ol>
+<A NAME="SECT001"><h2>61.1 Crystallographic Groups</h2></a>
+<P><P><P>
+An  affine crystallographic group  <var>G</var> is a  subgroup of the group of all
+Euclidean motions of <I>d</I>-dimensional  space,  with the property that  its
+subgroup  <var>T</var> of   all pure  translations  is  a  freely abelian,  normal
+subgroup of  <var>G</var>,  which has rank at  most  equal to <var>d</var>,   and which has
+finite index in <var>G</var>.
+<P>
+In this package, the term <strong>CrystGroup</strong> always  refers to such an <strong>affine</strong>
+crystallographic group. Linear matrix groups, whether crystallographic or
+not,  will carry  different  designations  (see  below).  CrystGroups are
+represented as special matrix groups, whose  elements are affine matrices
+of the form
+<pre>
+                     [ M 0 ]
+                     [ t 1 ]
+</pre>
+acting on row vectors <I>(x,1)</I> from the right. Note that this is different
+from the crystallographic convention, where matrices usually act from the
+left on column vectors (see also  <a href="chap038.htm#SECT013">The Crystallographic Groups Library</a>).
+We have  adopted this convention  to maintain compatibility with the rest
+of <strong>GAP3</strong>.
+<P>
+The ``linear" parts <var>M</var> of the elements of a CrystGroup <var>G</var> generate the
+<strong>point  group</strong>  <var>P</var>   of  <var>G</var>,  which   is isomorphic   to  the  quotient
+<var>G</var>/<var>T</var>. There is a natural homomorphism from <var>G</var> to <var>P</var>, whose kernel is
+<var>T</var>.   The  translation vectors of the   elements of <var>T</var>  generate a free
+Z-module <var>L</var>, called the <strong>translation  lattice</strong> of <var>G</var>.  CrystGroups  can
+be defined  with respect to any  basis of Euclidean space, but internally
+most computations will be done in a  basis which contains  a basis of <var>L</var>
+(see <a href="chap061.htm#SECT003">More about Crystallographic Groups</a>).
+<P>
+CrystGroups carry  a special  operations record <code>CrystGroupOps</code>,  and are
+identified with  a tag  <code>isCrystGroup</code>.  CrystGroups must  be constructed
+with  a call to   <code>CrystGroup</code>  (see <a href="chap061.htm#SECT004">CrystGroup</a>)  which  sets  the  tag
+<code>isCrystGroup</code>  to    <code>true</code>,   and sets     the  operations  record   to
+<code>CrystGroupOps</code>.
+<P>
+<strong>Warning\:</strong> The groups in <strong>GAP3</strong>' s crystallographic groups library (see
+<a href="chap038.htm#SECT013">The Crystallographic Groups Library</a>),  whether they are extracted  with
+<code>SpaceGroup</code>  or  <code>TransposedSpaceGroup</code>, are  <strong>not</strong>  CrystGroups in  the
+sense of this package,  because CrystGroups have different record entries
+and  a  different  operations record.  However,  a group  extracted  with
+<code>TransposedSpaceGroup</code> from that library can be converted to a CrystGroup
+by a call to <code>CrystGroup</code> (see <a href="chap061.htm#SECT004">CrystGroup</a>).
+<P><A NAME="SECT002"><h2>61.2 Space Groups</h2></a>
+<P><P><P>
+A CrystGroup which has  a translation subgroup of full  rank is called  a
+<strong>space group</strong>. Certain functions are available only for space groups, and
+not  for general CrystGroups, notably all  functions dealing with Wyckoff
+positions (see <a href="chap061.htm#SECT018">Wyckoff Positions</a>).
+<P>
+Space  groups which are equivalent  under conjugation in the affine group
+(shortly: affine  equivalent  space groups)  are said  to belong to the
+same <strong>space group type</strong>.  As is well known, in three dimensions there are
+219 such space group  types (if only  conjugation by transformations with
+positive determinant is allowed, there are 230).
+<P>
+Representatives of all space group types in dimensions  2, 3 and 4 can be
+obtained from  the  crystallographic groups  library contained in  <strong>GAP3</strong>
+(see <a href="chap038.htm#SECT013">The Crystallographic Groups  Library</a>). They must be extracted with
+the  function <code>CrystGroup</code>, and  not with the  usual extraction functions
+<code>SpaceGroup</code> and <code>TransposedSpaceGroup</code>  of that library, as these latter
+functions return groups which do not have an operations record that would
+allow  to  compute  with  them.  <code>CrystGroup</code>  accepts  exactly the  same
+arguments as <code>SpaceGroup</code> and <code>TransposedSpaceGroup</code>. It returns the same
+group as <code>TransposedSpaceGroup</code>, but  equipped with a  working operations
+record.
+<P>
+Space   group types   (and  thus  space   groups)   are classified   into
+<I>&#x2124;</I>-classes and  <I>&#x211A;</I>-classes.  Two  space  groups belong   to  the same
+<I>&#x2124;</I>-class  if  their  point  groups, expressed   in  a   basis of  their
+respective   translation   lattices,   are   conjugate  as  subgroups  of
+<I>GL(d,&#x2124;)</I>. If the point groups are conjugate  as subgoups of <I>GL(d,&#x211A;)</I>,
+the  two space groups  are  said  to  be  in  the same <I>&#x211A;</I>-class.   This
+provides also  a classification of point  groups  (expressed in a lattice
+basis, i.e., integral point groups) into <I>&#x2124;</I>-classes and <I>&#x211A;</I>-classes.
+<P>
+For a given finite integral matrix  group <var>P</var>, representing a point group
+expressed in a  lattice basis, a  set of representative  space groups for
+each space  group type  in the <I>&#x2124;</I>-class  of <var>P</var>  can  be  obtained with
+<code>SpaceGroupsPointGroup</code> (see <a href="chap061.htm#SECT016">SpaceGroupsPointGroup</a>).  If, moreover, the
+normalizer of <var>P</var>  in  <I>GL(d,&#x2124;)</I> is known (see  <a href="chap061.htm#SECT023">NormalizerGL</a>), exactly
+one   representative  is     obtained  for  each    space    group  type.
+Representatives of all  <I>&#x2124;</I>-classes of maximal irreducible finite  point
+groups are contained in a <strong>GAP3</strong> library (see <a href="chap038.htm#SECT012">Irreducible Maximal Finite
+Integral  Matrix  Groups</a>) in  all dimensions   up to 11,   and  in prime
+dimensions up to  23.   For some  other  dimensions, at  least <I>&#x211A;</I>-class
+representatives are available.
+<P>
+Important information about  a space group is   contained in its  <strong>affine
+normalizer</strong> (see <a href="chap061.htm#SECT027">AffineNormalizer</a>), which is the normlizer of the space
+group   in the affine   group.  In  a way,  the  affine normalizer can be
+regarded as the symmetry of the space group.
+<P>
+<strong>Warning\:</strong> Groups which are called  space groups  in this manual  should
+not  be  confused  with  groups  extracted  with  <code>SpaceGroup</code>  from  the
+crystallographic   groups library    (see  <a href="chap038.htm#SECT013">The  Crystallographic  Groups
+Library</a>). The latter are not CrystGroups in the sense of this package.
+<P><A NAME="SECT003"><h2>61.3 More about Crystallographic Groups</h2></a>
+<P><P><P>
+In  this  section  we  describe  how  a  CrystGroup  <var>G</var>  is  represented
+internally.  The casual  user can skip this section  in  a first reading.
+Although the generators of a CrystGroup can be  specified with respect to
+any basis,  most computations are  done internally in a special, standard
+basis, which is stored  in <code>G.internalBasis</code>. The results  are translated
+into the user-specified basis only afterwards. <code>G.internalBasis</code> consists
+of a (standard) basis of the translation lattice of <var>G</var>, complemented, if
+necessary, with  suitable standard basis vectors.  The standard  basis of
+the translation lattice is stored in <code>G.translations</code>.
+<P>
+As soon as <code>G.internalBasis</code> has been determined, both the CrystGroup <var>G</var>
+and its point group <var>P</var> obtain a component <code>internalGenerators</code>.  For the
+point group <var>P</var>, the  component <code>P.internalGenerators</code> contains a set  of
+generators of <var>P</var>, expressed with  respect to the <code>internalBasis</code> of <var>G</var>,
+whereas for  the  CrystGroup  <var>G</var> the   component  <code>G.internalGenerators</code>
+contains a set of homomorphic preimages of <code>P.internalGenerators</code> in <var>G</var>,
+also expressed in the <code>internalBasis</code> of <var>G</var>. Thus <code>G.internalGenerators</code>
+does  not  contain any translation  generators.  These are   easy to add,
+however: With respect   to the internal  basis,   the translations  are
+generated by the first <var>k</var> standard basis vectors, where  <var>k</var> is the rank
+of the translation lattice.
+<P>
+Note that  the  <code>internalGenerators</code>  of both   a point  group <var>P</var> and  a
+CrystGroup  <var>G</var> may be changed by  some  functions, notably by <code>FpGroup</code>.
+Thus they need  not have  any obvious  connection  to  <code>P.generators</code> and
+<code>G.generators</code>,  respectively.  Internal record  entries of  a CrystGroup
+should <strong>never be changed</strong> by the user.
+<P><A NAME="SECT004"><h2>61.4 CrystGroup</h2></a>
+<P><P><P>
+<code>CrystGroup( <var>matgroup</var> )</code>
+<P>
+<code>CrystGroup( <var>generating matrices</var> )</code>
+<P>
+<code>CrystGroup( <var>list of generators</var>, <var>identity</var> )</code>
+<P>
+<code>CrystGroup( <var>integers</var> )</code>
+<P>
+<code>CrystGroup( <var>string</var> )</code>
+<P>
+<code>CrystGroup</code> accepts as arguments either a group of affine matrices, or a
+list of generating affine  matrices, or an  argument identifying  a space
+group from the crystallographic  groups library, i.e., a  list of  two or
+five  integers,  or a string    containing a Hermann-Mauguin  symbol, and
+converts it into a CrystGroup in the sense of this package.  <code>CrystGroup</code>
+tests whether the generators are indeed affine matrices.
+<P><A NAME="SECT005"><h2>61.5 IsCrystGroup</h2></a>
+<P><P><P>
+<code>IsCrystGroup( <var>G</var> )</code>
+<P>
+tests whether <code>G.isCrystGroup</code> is present and <code>true</code>. <code>G.isCrystGroup</code> is
+set by <code>CrystGroup</code>.
+<P><A NAME="SECT006"><h2>61.6 PointGroup</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>PointGroup( <var>G</var> )</code>
+<P>
+extracts  the  point  group  <var>P</var>  of a    space group  <var>G</var>,   binds it to
+<code>G.pointGroup</code>, and returns it.  It also determines the homomorphism from
+<var>G</var> to <var>P</var>, and binds it to <code>G.pointHomom</code>. A  point group <var>P</var> has always
+a   component  <code>P.isPointGroup</code>    set  to   <code>true</code>,    and  a  component
+<code>P.crystGroup</code> containing the CrystGroup from which it was constructed.
+<P><A NAME="SECT007"><h2>61.7 TranslationsCrystGroup</h2></a>
+<P><P><P>
+<code>TranslationsCrystGroup( <var>G</var> )</code>
+<P>
+determines a  basis  of  the translation lattice   of <var>G</var>,  binds   it to
+<code>G.translations</code>, and returns it.  Note  that this translation lattice is
+always invariant under the  point group <var>P</var>  of <var>G</var>.  If <code>G.translations</code>
+is not yet present, a finite presentation  of <var>P</var> needs to be determined.
+A basis  of the translation lattice  can also be  added by the user, with
+<code>AddTranslationsCrystGroup</code> (see <a href="chap061.htm#SECT008">AddTranslationsCrystGroup</a>).
+<P>
+<strong>Warning\:</strong> The  component <code>G.translations</code> must <strong>never</strong> be  set by hand.
+The functions <code>TranslationsCrystGroup</code>  and  <code>AddTranslationsCrystGroups</code>
+have important (and wanted) side effects.
+<P><A NAME="SECT008"><h2>61.8 AddTranslationsCrystGroup</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>AddTranslationsCrystGroup( <var>G</var>, <var>basis</var> )</code>
+<P>
+Since  <code>TranslationsCrystGroup</code> (see   <a href="chap061.htm#SECT007">TranslationsCrystGroup</a>) needs  a
+presentation of the point group,  the computation of <code>G.translations</code> can
+be rather time consuming. If a basis of the translation lattice is known,
+<code>AddTranslationsCrystGroup</code>  can  be used   to add  this  knowledge  to a
+CrystGroup.   If <code>G.translations</code>  is already  known,  its  value is kept
+without further  notice.  It is  the responsibility of  the user that the
+basis handed  over to <code>AddTranslationsCrystGroup</code> is  a  correct basis of
+the     translation   lattice.    In  case   of    doubt,   the  function
+<code>CheckTranslations</code>   (see <a href="chap061.htm#SECT009">CheckTranslations</a>)  can  be   used  to check
+whether the basis added was indeed correct.
+<P>
+<strong>Warning\:</strong> The  component <code>G.translations</code> must <strong>never</strong> be  set by hand.
+The functions <code>TranslationsCrystGroup</code>  and  <code>AddTranslationsCrystGroups</code>
+have important (and wanted) side effects.
+<P><A NAME="SECT009"><h2>61.9 CheckTranslations</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>CheckTranslations( <var>G</var> )</code>
+<P>
+checks whether <code>G.translations</code> is indeed correct. If <code>G.translations</code> is
+incorrect, a warning message is printed, otherwise <strong>GAP3</strong> remains silent.
+In the case  of an incorrect  translation basis a  new CrystGroup must be
+created, and the computations  must be started  afresh, because the wrong
+translation  basis  may    have produced   wrong  information components.
+<code>CheckTranslations</code>  is  useful  if  a   basis   has    been  added  with
+<code>AddTranslationsCrystGroup</code>,  and doubts  arise  later whether the  basis
+added was correct.
+<P><A NAME="SECT010"><h2>61.10 ConjugatedCrystGroup</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>ConjugatedCrystGroup( <var>G</var>, <var>c</var> )</code>
+<P>
+returns a new CrystGroup which is a conjugate of <var>G</var>.  The conjugator <var>c</var>
+can either be a <I>d</I>-dimensional linear matrix (which then is complemented
+with the zero translation), or  a (<I>d+1</I>)-dimensional affine matrix.  The
+generators are conjugated as <I>g<sup>c</sup>  = c*g*c<sup>-1</sup></I>.  Some components  which
+are  bound in  <var>G</var> are   copied  and  translated to   the  new basis,  in
+particular   <code>G.generators</code>,   <code>G.translations</code>,  <code>G.internalBasis</code>,  and
+<code>G.wyckoffPositons</code>.  If <code>G.internalBasis</code> is bound,
+<P>
+<code>ConjugatedCrystGroup( G, G.internalBasis )</code>
+<P>
+returns a CrystGroup whose translation lattice (of rank <I>k</I>) is generated
+by  the first  <I>k</I>  rows  of  the identity matrix. <code>ConjugatedCrystGroup</code>
+allows as input only a parent CrystGroup.
+<P><A NAME="SECT011"><h2>61.11 FpGroup for point groups</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>FpGroup( <var>P</var> )</code>
+<P>
+computes a finite  presentation of the point  group <var>P</var>, and binds  it to
+<code>P.fpGroup</code>.  If <var>P</var>  (and thus its  CrystGroup <code>G  := P.crystGroup</code>) is
+solvable, a power-commutator presentation  is returned. 
+<P>
+<strong>Warning\:</strong>   If <var>P</var>  is  solvable, the     abstract generators are   not
+necessarily   isomorphic   images  of  <code>P.generators</code>   (see  <a href="chap061.htm#SECT003">More about
+Crystallographic Groups</a>).
+<P><A NAME="SECT012"><h2>61.12 FpGroup for CrystGroups</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>FpGroup( <var>G</var> )</code>
+<P>
+computes a finite  presentation of  the CrystGroup <var>G</var>,  and  binds it to
+<code>G.fpGroup</code>.   If  the   point  group   (and thus  <var>G</var>)  is  solvable,  a
+power-commutator presentation is  returned.  The  presentation  is always
+an extension  of the presentation of the  point  group (which is computed
+if necessary).   
+<P>
+<strong>Warning\:</strong>  The abstract  generators  of    the  presentation are    not
+necessarily   isomorphic   images   of <code>G.generators</code>  (see   <a href="chap061.htm#SECT003">More about
+Crystallographic Groups</a>).
+<P><A NAME="SECT013"><h2>61.13 MaximalSubgroupsRepresentatives</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>MaximalSubgroupsRepresentatives( S, "translationEqual", [, ind ] )</code>
+<P>
+<code>MaximalSubgroupsRepresentatives( S, "classEqual", ind )</code>
+<P>
+<code>MaximalSubgroupsRepresentatives( S, ind )</code>
+<P>
+returns a list of conjugacy class representatives of maximal subgroups of
+the CrystGroup <var>S</var>. If <var>ind</var> is present, which must  be a prime or a list
+of primes, only those subgroups are returned whose index  is a power of a
+prime contained  in or equal  to <var>ind</var>.  If the flag ``translationEqual"
+is present, only those subgroups are returned which are translation-equal
+(translationengleich) with <var>S</var>.  If the <var>flag</var> ``classEqual" is present,
+only  those subgroups  are  return which are  class-equal (klassengleich)
+with <var>S</var>. <var>ind</var> is optional only if the flag ``latticeEqual" is present. 
+In all other cases, <var>ind</var> is required.
+<P><A NAME="SECT014"><h2>61.14 IsSpaceGroup</h2></a>
+<P><P><P>
+<code>IsSpaceGroup( <var>S</var> )</code>
+<P>
+determines   whether   the  CrystGroup   <var>S</var>  is   a  space  group   (see
+<a href="chap061.htm#SECT001">Crystallographic Groups</a>).
+<P><A NAME="SECT015"><h2>61.15 IsSymmorphicSpaceGroup</h2></a>
+<P><P><P>
+<code>IsSymmorphicSpaceGroup( <var>S</var> )</code>
+<P>
+determines whether the space  group <var>S</var> is  symmorphic.  A space group is
+called <strong>symmorphic</strong> if it  is equivalent to a  semidirect product  of its
+point group with its translation subgroup.
+<P><A NAME="SECT016"><h2>61.16 SpaceGroupsPointGroup</h2></a>
+<P><P><P>
+<code>SpaceGroupsPointGroup( <var>P</var> )</code>
+<P>
+<code>SpaceGroupsPointGroup( <var>P</var>, <var>normalizer elements</var> )</code>
+<P>
+where <I>P</I>  is any finite   subgroup of <I>GL(d,Z),</I>  returns  a list of all
+space groups  with   point  group  <I>P,</I> up   to  conjugacy in  the   full
+translation group of Euclidean space. All these space groups are returned
+as  CrystGroups  in standard  representation.   If a  second  argument is
+present,  which must be a  list of elements of the  normalizer  of <I>P</I> in
+<I>GL(d,Z),</I> only space  groups  inequivalent under conjugation with  these
+elements are returned.  If  these normalizer elements, together with <I>P,</I>
+generate  the full  normalizer  of <I>P</I>  in  <I>GL(d,Z)</I>,  then  exactly one
+representative of each space group type is obtained.
+<P><A NAME="SECT017"><h2>61.17 Wyckoff Positions</h2></a>
+<P><P>
+<A name = "I7"></a>
+<A name = "I8"></a>
+<A name = "I9"></a>
+
+<A name = "I10"></a>
+<A name = "I11"></a>
+<A name = "I12"></a>
+
+<P>
+A  Wyckoff position  of  a space group  <var>G</var>  is an equivalence   class of
+points in  Euclidean  space,  having  stabilizers  which  are   conjugate
+subgroups of <var>G</var>.  Apart from a subset of lower dimension, which contains
+points with  even bigger  stabilizers, a Wyckoff   position consists of a
+<var>G</var>-orbit of  some affine subspace  <var>A</var>. A Wyckoff position <I>W</I> therefore
+can  be  specified  by a  representative  affine  subspace  <I>A</I>  and  its
+stabilizer subgroup. In CrystGap,  a Wyckoff position <var>W</var> is  represented 
+as a record with the following components:
+<P>
+<DL><DT>     <code>W.basis</code>:<DD> <BR> 
+          Basis of the linear space <I>L</I>  parallel to <I>A.</I>  This basis is 
+          also a basis of the  intersection of <I>L</I> with  the translation 
+          lattice of <I>S</I>. <BR> 
+          Can be extracted with <code>WyckoffBasis( W )</code>.
+</DL><P>
+<DL><DT>     <code>W.translation</code>:<DD> <BR>  
+          <code>W.translation</code> is such that <code>A = L + W.translation</code>. <BR> 
+          Can be extracted with <code>WyckoffTranslation( W )</code>.
+</DL><P>
+<DL><DT>     <code>W.stabilizer</code>:<DD> <BR>   
+          The stabilizer subgroup of any generic point in <I>A.</I> <BR> 
+          Can be extracted with <code>WyckoffStabilizer( W )</code>.
+</DL><P>
+<DL><DT>     <code>W.class</code>:<DD> <BR>      
+          Wyckoff  positions  carry  the same  class label  if and  only
+          if their  stabilizers have  point groups  which  are conjugate 
+          subgroups of the point group of <I>S.</I> <BR> 
+          Can be extracted with <code>WyckoffPosClass( W )</code>.
+</DL><P>
+<DL><DT>     <code>W.spaceGroup</code>:<DD> <BR>      
+          The space group of which it is a Wyckoff position. <BR> 
+          Can be extracted with <code>WyckoffSpaceGroup( W )</code>.
+</DL><P><P>
+<DL><DT>     <code>W.isWyckoffPosition</code>:<DD> <BR> 
+          A flag identifying the record as a Wyckoff position.  It is set
+          to true.<BR> 
+          Can be tested with <code>IsWyckoffPosition( W )</code>.
+</DL><P>
+<DL><DT>     <code>W.operations</code>:<DD> <BR> 
+          The  operations  record  of  a Wyckoff  position.  It currently
+          contains only a Print function. 
+</DL><P><A NAME="SECT018"><h2>61.18 WyckoffPositions</h2></a>
+<P><P><P>
+<code>WyckoffPositions( <var>G</var> )</code>
+<P>
+returns the  list of all  Wyckoff positions  of the  space group  <var>G</var>.
+<P><A NAME="SECT019"><h2>61.19 WyckoffPositionsByStabilizer</h2></a>
+<P><P><P>
+<code>WyckoffPositionsByStabilizer( <var>G</var>, <var>U</var> )</code>,
+<P>
+where <var>G</var>  is a space group  and <var>U</var> a subgroup  of the  point group or a
+list  of such subgroups,    determines  only the Wyckoff positions   (see
+<a href="chap061.htm#SECT018">WyckoffPositions</a>)  having  a  representative   affine   subspace  whose
+stabilizer has a point  group equal to  the subgroup <var>U</var> or  contained in
+the list <var>U</var>, respectively.
+<P><A NAME="SECT020"><h2>61.20 WyckoffPositionsQClass</h2></a>
+<P><P><P>
+<code>WyckoffPositionsQClass( <var>G</var>, <var>S</var> )</code>
+<P>
+For space groups with   larger point groups,  most  of  the time in   the
+computation  of  Wyckoff  positions  (see  <a href="chap061.htm#SECT018">WyckoffPositions</a>)  is  spent
+computing the subgroup lattice of the point  group.  If Wyckoff positions
+are needed for several space  groups which are in  the same Q class,  and
+therefore have   isomorphic point groups, one  can  avoid recomputing the
+same subgroup lattice  for each of them as  follows.  For the computation
+of the Wyckoff positions of the first space group  <var>S</var> one uses a call to
+<code>WyckoffPositions</code>.  For  the remaining space  groups, <var>S</var> is then passed
+as a second argument to <code>WyckoffPositionsQClass( <var>G</var>,  <var>S</var> )</code>, which uses
+some of the results already obtained for <var>S</var>.
+<P><A NAME="SECT021"><h2>61.21 WyckoffOrbit</h2></a>
+<P><P><P>
+<code>WyckoffOrbit( W )</code>
+<P>
+takes a Wyckoff position <var>W</var> (see <a href="chap061.htm#SECT018">Wyckoff Positions</a>) and returns a list
+of Wyckoff positions which  are  different representations of  <var>W</var>,  such
+that the representative affine subspaces of these representations form an
+orbit under the space group <var>G</var> of <var>W</var>, modulo lattice translations.
+<P><A NAME="SECT022"><h2>61.22 WyckoffLattice</h2></a>
+<P><P><P>
+<code>WyckoffLattice( <var>G</var> )</code>
+<P>
+If  a point <I>x</I> in a  Wyckoff position <I>W<sub>1</sub></I> has  a stabilizer which is a
+subgroup of the stabilizer of some point <I>y</I> in a Wyckoff position <I>W<sub>2</sub>,</I>
+then the  closure of <I>W<sub>1</sub></I> will contain  <I>W<sub>2</sub></I>. These incidence relations
+are best represented in a  graph.  <code>WyckoffLattice( <var>G</var> )</code> determines and
+displays this graph using XGAP (note that  XGAP runs only under Unix plus
+the  X   Window  System). Each    Wyckoff position is   represented  by a
+vertex. If <I>W<sub>1</sub></I> contains <I>W<sub>2</sub></I>, its vertex is placed below that of <I>W<sub>2</sub></I>
+(i.e., Wyckoff  positions with bigger stabilizers  are placed higher up),
+and the two are connected, either directly  (if there is no other Wyckoff
+position  in between) or indirectly. With  the left mouse button and with
+the XGAP <code>CleanUp</code> menu it is possible to change the layout  of the graph
+(see the XGAP manual).  When clicking with  the right mouse  button  on a
+vertex,  a pop up  menu appears,  which  allows to  obtain the  following
+information  about the  representative  affine  subspace  of the  Wyckoff
+position:
+<P>
+<DL><DT>     <code>StabDim</code>::<DD> <BR> 
+          Dimension of the affine subspace of stable points.
+</DL><P>
+<DL><DT>     <code>StabSize</code>::<DD> <BR> 
+          Size of the stabilizer subgroup.
+</DL><P>
+<DL><DT>     <code>ClassSize</code>::<DD> <BR> 
+          Number of Wyckoff positions  having a  stabilizer  whose  point 
+          group is in the same subgroup conjugacy class.
+</DL><P>
+     <code>IsAbelian</code>, <code>IsCyclic</code>, <code>IsNilpotent</code>, <code>IsPerfect</code>, <code>IsSimple</code>,
+<DL><DT>     <code>IsSolvable</code>::<DD> <BR> 
+          Information about the stabilizer subgroup.
+</DL><P>
+<DL><DT>     <code>Isomorphism</code>::<DD> <BR> 
+          Isomorphism type of the  stabilizer subgroup.  Works  only  for
+          small sizes.
+</DL><P>
+<DL><DT>     <code>ConjClassInfo</code>::<DD> <BR> 
+          Prints  (in the <strong>GAP3</strong> window)  information  about each  of the 
+          conjugacy  classes  of the  stabilizer,  namely the order,  the 
+          trace and the determinant of its elements,  and the size of the  
+          conjugacy class. Note that trace refers here only to the  trace
+          of the point group part,  without the trailing 1 of the  affine
+          matrix.
+</DL><P>
+<DL><DT>     <code>Translation</code>::<DD> <BR> 
+          The representative point of the affine subspace.
+</DL><P>
+<DL><DT>     <code>Basis</code>::<DD> <BR> 
+          The basis of the linear space parallel to the affine subspace.
+</DL><P><A NAME="SECT023"><h2>61.23 NormalizerGL</h2></a>
+<P><P>
+<A name = "I13"></a>
+
+<P>
+<code>NormalizerGL( G )</code>,
+<P>
+where <var>G</var>  is a finite subgroup of  <var>GL(d,Z)</var>, returns  the normalizer of
+<var>G</var> in <var>GL(d,Z)</var>. At present, this  function is available only for groups
+which are the point   group of a   CrystGroup   extracted from  the space
+group library.
+<P><A NAME="SECT024"><h2>61.24 CentralizerGL</h2></a>
+<P><P>
+<A name = "I14"></a>
+
+<P>
+<code>CentralizerGL( G )</code>,
+<P>
+where <var>G</var> is  a finite subgroup of <var>GL(d,Z)</var>,  returns the centralizer of
+<var>G</var> in <var>GL(d,Z)</var>. At present, this function is  available only for groups
+which  are the  point group  of a  CrystGroup   extracted from the  space
+group library.
+<P><A NAME="SECT025"><h2>61.25 PointGroupsBravaisClass</h2></a>
+<P><P><P>
+<code>PointGroupsBravaisClass( B )</code>
+<P>
+<code>PointGroupsBravaisClass( B [, norm ] )</code>
+<P>
+where  <var>B</var> is   a  finite  integral matrix  group,   returns  a  list  of
+representatives of those conjugacy classes  of subgroups of <var>B</var> which are
+in the same Bravais class  as <var>B</var>. These  representatives are returned as
+parent groups, not   subgroups.  If  <var>B</var>  is a  Bravais   group, the list
+contains a  representative of  each point  group in the  Bravais class of
+<var>B</var>. If a second argument is present, which must be a list of elements of
+the normalizer  of <var>B</var> in  <I>GL(d,&#x2124;)</I>, only  subgroups inequivalent under
+conjugation with these elements are returned.
+<P><A NAME="SECT026"><h2>61.26 TranslationNormalizer</h2></a>
+<P><P>
+<A name = "I15"></a>
+
+<P>
+<code>TranslationNormalizer( S )</code>
+<P>
+returns the normalizer  of the space group  <var>S</var>  in the  full translation
+group. At present,  this function is  implemented only  for space groups,
+not for general  CrystGroups.  The translation normalizer <var>TN</var> of <var>S</var> may
+contain   a  continuous subgroup  <var>C</var>.  A  basis  of  the  space  of such
+continuous translations  is bound  in <code>TN.continuousTranslations</code>.  Since
+this subgroup is  not finitely generated,   it is <strong>not</strong> contained in  the
+group  generated by  <code>TN.generators</code>. Properly  speaking, the translation
+normalizer is the span of <var>TN</var> and <var>C</var> together.
+<P><A NAME="SECT027"><h2>61.27 AffineNormalizer</h2></a>
+<P><P>
+<A name = "I16"></a>
+
+<P>
+<code>AffineNormalizer( S )</code>
+<P>
+returns   the  affine normalizer of    the space group   <var>S</var>.  The affine
+normalizer contains the translation  normalizer as a subgroup.  Similarly
+as  with   <code>TranslationNormalizer</code>,   the  subgroup  <var>C</var>   of  continuous
+translations, which  is not finitely generated,  is not part of the group
+that  is  returned.   However,  a   basis of  the    space of  continuous
+translations is bound in the component <code>continuousTranslations</code>.
+<P>
+At present, this function is available only for for space groups, not for
+general <code>CrystGroups</code>.  Moreover, the <code>NormalizerGL</code> (see <a href="chap061.htm#SECT023">NormalizerGL</a>)
+of the point group of <var>S</var> must be know, which currently  is the case only
+for CrystGroups  extracted from the  space  group library.
+<P><A NAME="SECT028"><h2>61.28 AffineInequivalentSubgroups</h2></a>
+<P><P><P>
+<code>AffineInequivalentSubgroups( sub )</code>
+<P>
+takes as input a  list of subgroups with common  parent space  group <var>S</var>,
+and returns  a sublist of those  which are affine inequivalent. For this,
+the affine  normalizer of <var>S</var> is required,  which currently  is available
+only if <var>S</var> is a space group extracted from the space groups library.
+<P><A NAME="SECT029"><h2>61.29 Other functions for CrystGroups</h2></a>
+<P><P>
+<A name = "I17"></a>
+
+<P>
+In the operations  record  of  a  <code>CrystGroup</code> many of  the  usual <strong>GAP3</strong>
+functions are replaced with a <code>CrystGroup</code>  specific implementation.  For
+other  functions   the default   implementation   can  be  used.    Since
+<code>CrystGroups</code> are  matrix groups, all functions  which  work for a finite
+matrix group should work also for a finite  <code>CrystGroup</code> (i.e., one which
+contains no pure translations).  Of  course,  functions which require   a
+<strong>finite</strong>   group as  input  will  work   only for finite   <code>CrystGroups</code>.
+Following is a (probably not exhaustive) list of functions that are known
+to work for also for <strong>infinite</strong> <code>CrystGroups</code>.
+<P>
+<pre>
+     in
+     Parent, IsParent, Group, IsGroup
+     Subgroup, IsSubgroup, AsSubgroup, Index 
+     Centralizer, Centre, Normalizer 
+     Closure, NormalClosure
+     Intersection, NormalIntersection
+     ConjugacyClassSubgroups, ConjugateSubgroups
+     DerivedSubgroup, CommutatorSubgroup, Core 
+     DerivedSeries, SubnormalSeries
+     FactorGroup, CommutatorFactorGroup
+     ConjugateSubgroup, TrivialSubgroup 
+     IsAbelian, IsCentral, IsTrivial
+     IsNormal, IsSubnormal, IsPerfect, IsSolvable 
+</pre>
+<P><P>
+The following functions work for   <code>CrystGroups</code> <strong>provided</strong> the  subgroup
+<var>H</var> has <strong>finite index</strong> in <var>G</var>.  The elements  of the resulting domain are
+given in ascending order (with respect to an ad hoc, but fixed ordering).
+<P>
+<pre>
+     Cosets( G, H )
+     RightCosets( G, H )
+     LeftCosets( G, H )
+</pre>
+<P>
+The   following  functions    dealing  with group   operations  work  for
+<code>CrystGroups</code>  provided  the orbits of the   action  are <strong>finite</strong>.  Since
+<code>CrystGroups</code>  are   not  finite   in general,  this  is    a non-trivial
+requirement, and so some care is needed.
+<P>
+<pre>
+     Orbit( G, d, opr )
+     Orbits( G, D, opr )
+     OrbitLengths( G, D, opr )
+     Stabilizer( G, d, opr )
+     RepresentativeOperation( G, d, e, opr )
+     RepresentativesOperation( G, d, opr )
+</pre>
+<P>
+The following functions have  a <code>CrystGroup</code> specific implementation, but
+work for <strong>finite</strong> <code>CrystGroups</code> only:
+<P>
+<pre>
+     Elements( G )
+     ConjugacyClasses( G )
+     PermGroup( G )
+     SylowSubgroup( G, p )
+</pre>
+<P><A NAME="SECT030"><h2>61.30 Color Groups</h2></a>
+<P><P><P>
+Elements of a  color  group <var>C</var> are colored   in the following  way.  The
+elements having the same color as <code>C.identity</code> form a subgroup <var>H</var>, which
+has finite index <var>n</var> in  <var>C</var>.  <var>H</var> is  called the <code>ColorSubgroup</code> of <var>C</var>.
+Elements of <var>C</var> have the same color if and  only if they  are in the same
+right coset of <var>H</var> in <var>C</var>.  A  fixed list of right  cosets of <var>H</var> in <var>C</var>,
+called  <code>ColorCosets</code>,  therefore determines  a  labelling of the colors,
+which runs  from 1 to  <var>n</var>.  Elements of <var>H</var> by  definition have color 1,
+i.e., the  coset with representative   <code>C.identity</code> is always  the  first
+element of <code>ColorCosets</code>.  Right multiplication by a fixed element <var>g</var> of
+<var>C</var> induces a  permutation <var>p(g)</var>  of the colors  of  the parent of  <var>C</var>.
+This defines a natural homomorphism of <var>C</var>  into the permutation group of
+degree  <var>n</var>.   The  image    of    this  homomorphism  is    called   the
+<code>ColorPermGroup</code>  of <var>C</var>,   and  the  homomorphism to  it is  called  the
+<code>ColorHomomorphism</code> of <var>C</var>.
+<P><A NAME="SECT031"><h2>61.31 ColorGroup</h2></a>
+<P><P><P>
+A color group is constructed with
+<P>
+<code>ColorGroup( G, H ),</code>
+<P>
+which returns a colored copy of <var>G</var>, with color subgroup <var>H</var>. <var>G</var> must be
+a  parent group, and <var>H</var> must  be a finite  index subgroup  of <var>G</var>. Color
+subgroups must be  constructed as subgroups  of color parent  groups, and
+not  by coloring  uncolored  subgroups. Subgroups   of color  groups will
+inherit the  coloring of  their parent, including   the labelling of  the
+colors.
+<P>
+Color groups are identified with a tag  <code>isColorGroup</code>.  They always have
+a component <code>colorSubgroup</code>.  Color parent groups  moreover always have a
+component <code>colorCosets</code>, which fixes a labelling of the colors.
+<P>
+Groups which may be colored  include,  in particular, <code>CrystGroups</code>,  but
+coloring  of any  finite   group,  such as   a  finite  matrix  group  or
+permutation group, should work as well.
+<P><A NAME="SECT032"><h2>61.32 IsColorGroup</h2></a>
+<P><P><P>
+<code>IsColorGroup( G )</code>         
+<P>
+checks whether <code>G.isColorGroup</code> is bound and true.
+<P><A NAME="SECT033"><h2>61.33 ColorSubgroup</h2></a>
+<P><P><P>
+<code>ColorSubgroup( G )</code>
+<P>
+returns the color subgroup of <var>G</var>.
+<P><A NAME="SECT034"><h2>61.34 ColorCosets</h2></a>
+<P><P><P>
+<code>ColorCosets( G )</code>
+<P>
+returns the color cosets of <var>G</var>.
+<P><A NAME="SECT035"><h2>61.35 ColorOfElement</h2></a>
+<P><P><P>
+<code>ColorOfElement( G, elem )</code>
+<P>
+returns the color of an element.
+<P><A NAME="SECT036"><h2>61.36 ColorPermGroup</h2></a>
+<P><P><P>
+<code>ColorPermGroup( G )</code>
+<P>
+returns the ColorPermGroup of <var>G</var>, which is the permutation group induced
+by <var>G</var> acting on the colors of the parent of <var>G</var>.
+<P><A NAME="SECT037"><h2>61.37 ColorHomomorphism</h2></a>
+<P><P><P>
+<code>ColorHomomorphism( G )</code>
+<P>
+returns the homomomorphism from <var>G</var> to its ColorPermGroup.
+<P><A NAME="SECT038"><h2>61.38 Subgroup for color groups</h2></a>
+<P><P>
+<A name = "I18"></a>
+
+<P>
+If <var>C</var> is a color group, 
+<P>
+<code>Subgroup( C, [elems] )</code>
+<P>
+returns a colored subgroup of <var>C</var>, whereas
+<P>
+<code>C.operations.UncoloredSubgroup( C, [elems] )</code>
+<P>
+returns an ordinary, uncolored subgroup.
+<P><A NAME="SECT039"><h2>61.39 PointGroup for color CrystGroups</h2></a>
+<P><P>
+<A name = "I19"></a>
+
+<P>
+If <var>C</var> is a color <code>CrystGroup</code> whose color  subgroup is lattice-equal (or
+translationengleich) with <var>C</var>, the point group of <var>C</var> can consistently be
+colored. In that case,
+<P>
+<code>PointGroup( C )</code>                             
+<P>
+returns  a colored   point group.  Otherwise,  the  point   group will be
+uncolored. An uncolored point group can always be obtained with
+<P>
+<code>C.operations.UncoloredPointGroup( C )</code>
+<P><A NAME="SECT040"><h2>61.40 Inequivalent colorings of space groups</h2></a>
+<P><P>
+<A name = "I20"></a>
+
+<P>
+Two  colorings of    a space  group   <var>S</var>   are equivalent    if the  two
+<code>ColorSubgroups</code> are conjugate in the affine normalizer of <var>S</var>.
+<P>
+<code>AffineInequivalentSubgroups( L )</code>
+<P>
+where <var>L</var> is a list of sub space groups with  a common parent space group
+<var>S</var>, returns  a  list  of affine  inequivalent  subgroups  from  <var>L</var>.  At
+present, this routine is  supported only for CrystGroups constructed from
+the space group library.
+<P>
+A list of prime index <var>p</var> subgroups of <var>S</var> (actually, a list of conjugacy
+class representatives of such subgroups) can be obtained with
+<P>
+<code>Filtered( MaximalSubgroupsRepresentatives( S, p ), U -> U.index = p )</code>
+<P>
+These two routines together therefore allow to determine all inequivalent
+colorings of <var>S</var> with <var>p</var> colors.
+<P><a href ="chap060.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap062.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

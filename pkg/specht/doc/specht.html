@@ -1,0 +1,2179 @@
+<html><head><title>GAP Manual: Specht 2.4</title></head>
+<body bgcolor="ffffff">
+<h1>71 Decomposition numbers of Hecke algebras of type A</h1>
+<p>This package contains functions for computing the decomposition matrices 
+for Iwahori--Hecke algebras of the symmetric groups. As the (modular) 
+representation theory of these algebras closely resembles that of the 
+(modular) representation theory of the symmetric groups --- indeed, the 
+later is a special case of the former --- many of the combinatorial tools 
+from the representation theory of the symmetric group are included in 
+the package.
+<P>
+These programs grew out of the attempts by Gordon James and myself [JM1] 
+to understand the decomposition matrices of Hecke algebras of type <strong>A</strong> 
+when <I>&lt;q&gt;=-1</I>. The package is now much more general and its highlights 
+include:
+<P>
+  1. Specht provides a means of working in the Grothendieck ring of a 
+Hecke algebra <var>H</var> using the three natural bases corresponding to the 
+Specht modules, projective indecomposable modules, and simple modules.
+<P>
+  2. For Hecke algebras defined over fields of characteristic zero we 
+have implemented the algorithm of Lascoux, Leclerc, and Thibon [LLT] for 
+computing decomposition numbers and ``crystallized decomposition
+matrices''. In principle, this gives all of the decomposition matrices 
+of Hecke algebras defined over fields of characteristic zero.
+<P>
+  3. We provide a way of inducing and restricting modules. In addition,
+it is possible to ``induce'' decomposition matrices; this function is 
+quite effective in calculating the decomposition matrices of Hecke 
+algebras for small <var>n</var>.
+<P>
+  4. The <var>q</var>--analogue of Schaper's theorem [JM2] is included, as is
+Kleshchev's [K] algorithm of calculating the Mullineux map. Both are
+used extensively when inducing decomposition matrices.
+<P>
+  5. Specht can be used to compute the decomposition numbers of
+<var>q</var>--Schur algebras (and the general linear groups), although there is
+less direct support for these algebras. The decomposition matrices for the
+<var>q</var>--Schur algebras defined over fields of characteristic zero for <I>n&lt;11</I>
+and all <var>e</var> are included in Specht.
+<P>
+  6. The Littlewood--Richard rule, its inverse, and functions for many 
+of the standard operations on partitions (such as calculating cores, 
+quotients, and adding and removing hooks), are included.
+<P>
+  7. The decomposition matrices for the symmetric groups <I>Sym_n</I> are
+included for <I>n&lt;15</I> and for all primes.
+<P>
+<strong>The modular representation theory of Hecke algebras</strong>
+<P>
+The ``modular'' representation theory of the Iwahori--Hecke algebras of
+type <strong>A</strong> was pioneered by Dipper and James [DJ1,DJ2]; here we briefly 
+outline the theory, referring the reader to the references for details. 
+<a href="CHAP081.htm">Iwahori-Hecke algebras</a>; see also <a href="CHAP081.htm#SECT001">Hecke</a>.
+<P>
+Given a commutative integral domain <var>R</var> and a non--zero unit <var>q</var> in <var>R</var>,
+let <I>&lt;H&gt;=&lt;H&gt;_{&lt;R&gt;, &lt;q&gt;}</I> be the Hecke algebra of the symmetric group 
+<I>Sym_n</I> on <var>n</var> symbols defined over <var>R</var> and with parameter <var>q</var>. For 
+each partition <var><I>mu</I></var> of <var>n</var>, Dipper and James defined a <strong>Specht 
+module</strong> <code>S</code>(<var><I>mu</I></var>). Let <code>rad</code> <code>S</code><I>(mu)</I> be the radical of <code>S</code><I>(mu)</I> 
+and define <code>D</code><I>(mu)</I>=<code>S</code><I>(mu)</I>/<code>rad</code> <code>S</code><I>(mu)</I>. When <var>R</var> is a field, 
+<code>D</code><I>(mu)</I> is either zero or absolutely irreducible. Henceforth, we will 
+always assume that <code>R</code> is a field.
+<P>
+Given a non--negative integer <I>i</I>, let <I>[i]_q=1+q+ldots+q^{i-1}</I>. Define
+<var>e</var> to be the smallest non--negative  integer such that <I>[&lt;e&gt;]_q=0</I>; if 
+no such integer exists, we set <var>e</var> equal to <I>0</I>. <var>Many of the functions 
+in this package depend upon e;</var> the integer <var>e</var> is the Hecke algebras 
+analogue of the characteristic of the field in the modular representation 
+theory of finite groups.
+<P>
+A partition <I>mu=(mu_1,mu_2,ldots)</I> is <strong><var>e</var>--singular</strong> if there exists 
+an integer <I>i</I> such that <I>mu_i=mu_{i+1}=cdots=mu_{i+&lt;e&gt;-1}&gt;0</I>;
+otherwise, <var><I>mu</I></var> is <strong><var>e</var>--regular</strong>. Dipper and James [DJ1] showed that 
+<code>D</code>(<var><I>nu</I></var>)<I>ne(0)</I> if and only if <var><I>nu</I></var> is <var>e</var>--regular and that the 
+<code>D</code>(<var><I>nu</I></var>) give a complete set of non--isomorphic irreducible 
+<var>H</var>--modules as <var><I>nu</I></var> runs over the <var>e</var>--regular partitions of <var>n</var>. 
+Further, <code>S</code>(<var><I>mu</I></var>) and <code>S</code>(<var><I>nu</I></var>) belong to the same block if and 
+only if <var><I>mu</I></var> and <var><I>nu</I></var> have the same <var>e</var>-core [DJ2,JM2]. Note that 
+these results depend only on <var>e</var> and not directly on <var>R</var> or <var>q</var>.
+<P>
+Given two partitions <I>mu</I> and <I>nu</I>, where <I>nu</I> is <var>e</var>--regular, let 
+<I>d_{munu}</I> be the composition multiplicity of <code>D</code>(<var><I>nu</I></var>) in 
+<code>S</code>(<var><I>mu</I></var>).  The matrix <I>D=(d_{munu})</I> is the <strong>decomposition matrix</strong> 
+of <code>H</code>. When the rows and columns are ordered in a way compatible with 
+dominance, <I>D</I> is lower unitriangular. 
+<P>
+The indecomposable <var>H</var>-modules <code>P</code>(<var><I>nu</I></var>) are indexed by <var>e</var>-regular 
+partitions <var><I>nu</I></var>. By general arguments, <code>P</code>(<var><I>nu</I></var>) has the same 
+composition factors as 
+             <I>  sum_{mu} d_{munu} 'S'(&lt;mu&gt;)  </I>; 
+so these linear combinations of modules become identified in the 
+Grothendieck ring of <code>H</code>. Similarly, 
+          <I> 'D'(&lt;nu&gt;) = sum_{mu} d_{numu}^{-1} 'S'(&lt;mu&gt;) </I> 
+in the Grothendieck ring. These observations are the basis for many of 
+the computations in Specht.
+<P>
+<strong>Two small examples</strong>
+<P>
+Because of the algorithm of [LLT], in principle, all of decomposition 
+matrices for all Hecke algebras defined over fields of characteristic zero 
+are known and available using Specht. The algorithm is recursive; 
+however, it is quite quick and, as with a car, you need never look at 
+the engine:
+<P>
+<pre>gap&gt; H:=Specht(4);   # e=4, 'R' a field of characteristic 0
+Specht(e=4, S(), P(), D(), Pq())
+gap&gt; InducedModule(H.P(12,2));
+P(13,2)+P(12,3)+P(12,2,1)+P(10,3,2)+P(9,6)</pre>
+<P>
+The [LLT] algorithm was applied 24 times during this calculation.
+<P>
+For Hecke algebras defined over fields of positive characteristic the 
+major tool provided by Specht, apart from the decomposition matrices 
+contained in the libraries, is a way of ``inducing'' decomposition 
+matrices. This makes it fairly easy to calculate the associated 
+decomposition matrices for ``small'' <var>n</var>. For example, the Specht 
+libraries contain the decomposition matrices for the symmetric groups 
+<I>Sym_n</I> over fields of characteristic 3 for <I>n&lt;15</I>.  These matrices 
+were calculated by Specht using the following commands:
+<P>
+<pre>gap&gt; H:=Specht(3,3);   # e=3, 'R' field of characteristic 3
+Specht(e=3, p=3, S(), P(), D())
+gap&gt; d:=DecompositionMatrix(H,5);  # known for $n\&lt;2e$
+5     | 1         
+4,1   | . 1       
+3,2   | . 1 1     
+3,1^2 | . . . 1   
+2^2,1 | 1 . . . 1
+2,1^3 | . . . . 1
+1^5   | . . 1 . . 
+gap&gt; for n in [6..14] do
+&gt;       d:=InducedDecompositionMatrix(d); SaveDecompositionMatrix(d);  
+&gt;    od;</pre>
+<P>
+The function <code>InducedDecompositionMatrix</code> contains almost every trick 
+that I know for computing decomposition matrices (except using the spin
+groups). I would be very happy to hear of any improvements.
+<P>
+Specht can also be used to calculate the decomposition numbers of the
+<var>q</var>--Schur algebras; although, as yet,  here no additional routines for
+calculating the projective indecomposables indexed by <var>e</var>--singular
+partitions. Such routines will probably be included in a future release,
+together with the (conjectural) algorithm [LT] for computing the 
+decomposition matrices of the <var>q</var>--Schur algebras over fields of 
+characteristic zero. 
+<P>
+In the next release of Specht, I will also include functions for
+computing the decomposition matrices of Hecke algebras of type <strong>B</strong>, and
+more generally those of the Ariki--Koike algebras. As with the Hecke
+algebra of type <strong>A</strong>, there is an algorithm for computing the decomposition
+matrices of these algebras when <code>R</code> is a field of characteristic zero [M].
+<P>
+<strong>Credits</strong>
+<P>
+I would like to thank Gordon James, Johannes Lipp, and Klaus Lux
+for their comments and suggestions.
+<P>
+If you find Specht useful please let me know. I would also appreciate 
+hearing any suggestions, comments, or improvements. In addition, if 
+Specht does play a significant role in your research, please send me a 
+copy of the paper(s) and please cite Specht in your references.
+<P>
+The lastest version of <B>Specht</B> can be obtained from
+<a href=http://maths.usyd.edu.au:8000/u/mathas/specht>
+http://maths.usyd.edu.au:8000/u/mathas/specht.</a>
+<p>
+Andrew Mathas
+<a href=mailto:mathas@maths.usyd.edu.au>mathas@maths.usyd.edu.au</a><BR>
+University of Sydney, 1997.<P>
+<font size=-2>Supported in part by SERC grant GR/J37690</font><p>
+<hr width=70%><p>
+<strong>References</strong>
+<P>
+[A] S. Ariki,
+  <var>On the decomposition numbers of the Hecke algebra of <I>G(m,1,n)</I></var>,
+  J. Math. Kyoto Univ., <strong>36</strong> (1996), 789--808.
+<P>
+[B] J. Brundan,
+  <var>Modular branching rules for quantum <I>GL_n</I> and the Hecke algebra 
+   of type <strong>A</strong></var>, Proc. London Math. Soc (3), to appear. 
+<P>
+[DJ1] R. Dipper and G. James,
+  <var>Representations of Hecke algebras of general linear groups</var>, 
+  Proc. London Math. Soc. (3), <strong>52</strong> (1986), 20--52.
+<P>
+[DJ2] R. Dipper and G. James,
+  <var>Blocks and idempotents of Hecke algebras of general linear groups</var>, 
+   Proc. London Math. Soc. (3), <strong>54</strong> (1987), 57--82.
+<P>
+[G] M. Geck,
+  <var>Brauer trees of Hecke algebras</var>, Comm. Alg., <strong>20</strong> (1992), 2937--2973.
+<P>
+[Gr] I. Grojnowski,
+  <var>Affine Hecke algebras (and affine quantum <I>GL_n</I>) at roots of unity</var>, 
+   IMRN~<strong>5</strong> (1994), 215--217.
+<P>
+[J] G. James,
+  <var>The decomposition matrices of <I>GL_n(q)</I> for <I>n le 10</I></var>,
+   Proc. London Math. Soc.,~<strong>60</strong> (1990), 225--264.
+<P>
+[JK] G. James and A. Kerber,
+  <var>The representation theory of the symmetric group</var>, <strong>16</strong>, 
+   Encyclopedia of Mathematics, Addison--Wesley, Massachusetts~(1981).
+<P>
+[JM1] G. James and A. Mathas, 
+   <var>Hecke algebras of type <strong>A</strong> at <I>q=-1</I></var>, J. Algebra,
+   <strong>184</strong> (1996), 102--158.
+<P>
+[JM2] G. James and A. Mathas,
+  <var>A <I>q</I>--analogue of the Jantzen--Schaper Theorem</var>, Proc. London Math. 
+  Soc. (3), <strong>74</strong>, 1997, 241--274.
+<P>
+[K] A. Kleshchev,
+  <var>Branching rules for modular representations III</var>, 
+  J. London Math. Soc., <strong>54</strong>, 1996, 25--38.
+<P>
+[LLT] A. Lascoux, B. Leclerc, and J-Y. Thibon,
+  <var>Hecke algebras at roots of unity and crystal bases of quantum
+   affine algebras</var>, Comm. Math. Phys., <strong>181</strong> (1996), 205--263.
+<P>
+[LT] B. Leclerc and J-Y. Thibon,
+  <var>Canonical bases and <I>q</I>--deformed Fock spaces</var>, Int. Research Notices
+  <strong>9</strong> (1996), 447--456.
+<P>
+[M] A. Mathas,
+    <var>Canonical bases and the decomposition matrices of Ariki--Koike
+     algebras</var>, preprint~1996.
+<P>
+<P>
+<H3> Subsections</H3>
+<table><tr valign=top><td><ol>
+<LI> <A HREF="CHAP071.htm#SECT001">Specht</a>
+<LI> <A HREF="CHAP071.htm#SECT002">Schur</a>
+<LI> <A HREF="CHAP071.htm#SECT003">DecompositionMatrix</a>
+<LI> <A HREF="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>
+<LI> <A HREF="CHAP071.htm#SECT005">DecompositionNumber</a>
+<LI> <A HREF="CHAP071.htm#SECT006">InducedModule</a>
+<LI> <A HREF="CHAP071.htm#SECT007">SInducedModule</a>
+<LI> <A HREF="CHAP071.htm#SECT008">RestrictedModule</a>
+<LI> <A HREF="CHAP071.htm#SECT009">SRestrictedModule</a>
+<LI> <A HREF="CHAP071.htm#SECT010">InducedDecompositionMatrix</a>
+<LI> <A HREF="CHAP071.htm#SECT011">IsNewIndecomposable</a>
+<LI> <A HREF="CHAP071.htm#SECT012">InvertDecompositionMatrix</a>
+<LI> <A HREF="CHAP071.htm#SECT013">AdjustmentMatrix</a>
+<LI> <A HREF="CHAP071.htm#SECT014">SaveDecompositionMatrix</a>
+<LI> <A HREF="CHAP071.htm#SECT015">CalculateDecompositionMatrix</a>
+<LI> <A HREF="CHAP071.htm#SECT016">MatrixDecompositionMatrix</a>
+<LI> <A HREF="CHAP071.htm#SECT017">DecompositionMatrixMatrix</a>
+<LI> <A HREF="CHAP071.htm#SECT018">AddIndecomposable</a>
+<LI> <A HREF="CHAP071.htm#SECT019">RemoveIndecomposable</a>
+<LI> <A HREF="CHAP071.htm#SECT020">MissingIndecomposables</a>
+<LI> <A HREF="CHAP071.htm#SECT021">SimpleDimension</a>
+<LI> <A HREF="CHAP071.htm#SECT022">SpechtDimension</a>
+<LI> <A HREF="CHAP071.htm#SECT023">Schaper</a>
+<LI> <A HREF="CHAP071.htm#SECT024">IsSimpleModule</a>
+<LI> <A HREF="CHAP071.htm#SECT025">MullineuxMap</a>
+<LI> <A HREF="CHAP071.htm#SECT026">MullineuxSymbol</a>
+<LI> <A HREF="CHAP071.htm#SECT027">PartitionMullineuxSymbol</a>
+<LI> <A HREF="CHAP071.htm#SECT028">GoodNodes</a>
+<LI> <A HREF="CHAP071.htm#SECT029">NormalNodes</a>
+<LI> <A HREF="CHAP071.htm#SECT030">GoodNodeSequence</a>
+<LI> <A HREF="CHAP071.htm#SECT031">PartitionGoodNodeSequence</a>
+<LI> <A HREF="CHAP071.htm#SECT032">GoodNodeLatticePath</a>
+</ol><td><ol start=33>
+<LI> <A HREF="CHAP071.htm#SECT033">LittlewoodRichardsonRule</a>
+<LI> <A HREF="CHAP071.htm#SECT034">InverseLittlewoodRichardsonRule</a>
+<LI> <A HREF="CHAP071.htm#SECT035">EResidueDiagram</a>
+<LI> <A HREF="CHAP071.htm#SECT036">HookLengthDiagram</a>
+<LI> <A HREF="CHAP071.htm#SECT037">RemoveRimHook</a>
+<LI> <A HREF="CHAP071.htm#SECT038">AddRimHook</a>
+<LI> <A HREF="CHAP071.htm#SECT039">ECore</a>
+<LI> <A HREF="CHAP071.htm#SECT040">IsECore</a>
+<LI> <A HREF="CHAP071.htm#SECT041">EQuotient</a>
+<LI> <A HREF="CHAP071.htm#SECT042">CombineEQuotientECore</a>
+<LI> <A HREF="CHAP071.htm#SECT043">EWeight</a>
+<LI> <A HREF="CHAP071.htm#SECT044">ERegularPartitions</a>
+<LI> <A HREF="CHAP071.htm#SECT045">IsERegular</a>
+<LI> <A HREF="CHAP071.htm#SECT046">ConjugatePartition</a>
+<LI> <A HREF="CHAP071.htm#SECT047">BetaSet</a>
+<LI> <A HREF="CHAP071.htm#SECT048">PartitionBetaSet</a>
+<LI> <A HREF="CHAP071.htm#SECT049">ETopLadder</a>
+<LI> <A HREF="CHAP071.htm#SECT050">Dominates</a>
+<LI> <A HREF="CHAP071.htm#SECT051">LengthLexicographic</a>
+<LI> <A HREF="CHAP071.htm#SECT052">Lexicographic</a>
+<LI> <A HREF="CHAP071.htm#SECT053">ReverseDominance</a>
+<LI> <A HREF="CHAP071.htm#SECT054">Specialized</a>
+<LI> <A HREF="CHAP071.htm#SECT055">ERegulars</a>
+<LI> <A HREF="CHAP071.htm#SECT056">SplitECores</a>
+<LI> <A HREF="CHAP086.htm#SECT011">Coefficient</a>
+<LI> <A HREF="CHAP071.htm#SECT058">InnerProduct</a>
+<LI> <A HREF="CHAP071.htm#SECT059">SpechtPrettyPrint</a>
+<LI> <A HREF="CHAP071.htm#SECT060">SemiStandardTableaux</a>
+<LI> <A HREF="CHAP071.htm#SECT061">StandardTableaux</a>
+<LI> <A HREF="CHAP071.htm#SECT062">ConjugateTableau</a>
+<LI> <A HREF="CHAP071.htm#SECT063">ShapeTableau</a>
+<LI> <A HREF="CHAP071.htm#SECT064">TypeTableau</a>
+</ol></table>
+<A NAME="SECT001"><h2>71.1 Specht</h2></a>
+<P><code>Specht(<var>e</var>)</code><BR>
+<code>Specht(<var>e</var>, <var>p</var>)</code><BR>
+<code>Specht(<var>e</var>, <var>p</var>, <var>val</var> [,<var>HeckeRing</var>])</code> 
+<P>
+Let <var>R</var> be a field of characteristic 0, <var>q</var> a non--zero element of <var>R</var>, 
+and let <var>e</var> be the smallest positive integer such that
+                <I></I>  1+q+ldots+q^e-1=0  <I></I> 
+(we set <I>&lt;e&gt;=0</I> if no such integer exists). The record returned 
+by <code>Specht(<var>e</var>)</code> allows calculations in the Grothendieck rings of 
+the Hecke algebras <code>H</code> of type <strong>A</strong> which are defined over <var>R</var> and 
+have parameter <var>q</var>. (The Hecke algebra is described in Chapter 
+<a href="CHAP081.htm">Iwahori-Hecke algebras</a>; see also <code>Hecke</code> <a href="CHAP081.htm#SECT001">Hecke</a>.) Below we also
+describe how to consider Hecke algebras defined over fields of positive 
+characteristic.
+<P>
+<code>Specht</code> returns a record which contains, among other things, functions 
+<code>S</code> , <code>P</code>, and <code>D</code> which correspond to the Specht modules, projective 
+indecomposable modules, and the simple modules for the family of Hecke 
+algebras determined by <var>R</var> and <var>q</var>. Specht allows manipulation of
+arbitrary linear combinations of these ``modules'', as well as a way
+of inducing and restricting them, ``multiplying'' them, and converting 
+between these three natural bases of the Grothendieck ring. Multiplication 
+of modules corresponds to taking a tensor product, and then inducing (thus 
+giving a module for a larger Hecke algebra).
+<P>
+<pre>gap&gt; RequirePackage("specht"); H:=Specht(5);
+Specht(e=5, S(), P(), D(), Pq())
+gap&gt; H.D(3,2,1);
+D(3,2,1)
+gap&gt; H.S( last );
+S(6)-S(4,2)+S(3,2,1)
+gap&gt; InducedModule(H.P(3,2,1));
+P(4,2,1)+P(3,3,1)+P(3,2,2)+2*P(3,2,1,1)
+gap&gt; H.S(last);
+S(4,2,1)+S(3,3,1)+S(3,2,2)+2*S(3,2,1,1)+S(2,2,2,1)+S(2,2,1,1,1)
+gap&gt; H.D(3,1)*H.D(3);
+D(7)+2*D(6,1)+D(5,2)+D(5,1,1)+2*D(4,3)+D(4,2,1)+D(3,3,1)
+gap&gt; RestrictedModule(last);
+4*D(6)+3*D(5,1)+5*D(4,2)+2*D(4,1,1)+2*D(3,3)+2*D(3,2,1)
+gap&gt; H.S(last);
+S(6)+3*S(5,1)+3*S(4,2)+2*S(4,1,1)+2*S(3,3)+2*S(3,2,1)
+gap&gt; H.P(last);
+P(6)+3*P(5,1)+2*P(4,2)+2*P(4,1,1)+2*P(3,3) </pre>
+<P>
+The way in which the partitions indexing the modules are printed can 
+be changed using <code>SpechtPrettyPrint</code> <a href="CHAP071.htm#SECT059">SpechtPrettyPrint</a>.
+<P>
+There is also a function <code>Schur</code> <a href="CHAP071.htm#SECT002">Schur</a> for doing calculations with
+the <var>q</var>--Schur algebra. See <code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a>, 
+and <code>CrystalDecompositionMatrix</code> <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>.
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<strong>The functions <code>H.S</code>, <code>H.P</code>, and <code>H.D</code></strong>
+<P>
+The functions <code>H.S</code>, <code>H.P</code>, and <code>H.D</code> return records which correspond
+to Specht modules, projective indecomposable modules, and simple
+modules respectively. Each of these three functions can be called in
+four different ways, as we now describe.
+<P>
+<code>H.S</code>(<var><I>mu</I></var>)  &nbsp  <code>H.P</code>(<var><I>mu</I></var>)  &nbsp  <code>H.D</code>(<var><I>mu</I></var>)
+<P>
+In the first form, <var><I>mu</I></var> is a partition (either a list, or a sequence of
+integers), and the corresponding Specht module, PIM, or simple module
+(respectively), is returned.
+<P>
+<pre>gap&gt; H.P(4,3,2);
+P(4,3,2)</pre>
+<P>
+<code>H.S</code>(<var>x</var>)  &nbsp  <code>H.P</code>(<var>x</var>)  &nbsp  <code>H.D</code>(<var>x</var>)
+<P>
+Here, <var>x</var> is an <var>H</var>--module. In this form, <code>H.S</code> rewrites <var>x</var> as a linear 
+combination of Specht modules, if possible. Similarly, <code>H.P</code> and <code>H.D</code> 
+rewrite <var>x</var> as a linear combination of PIMs and simple modules 
+respectively. These conversions require knowledge of the relevant 
+decomposition matrix of <var>H</var>; if this is not known then <code>false</code> is 
+returned (over fields of characteristic zero, all of the decomposition 
+matrices are known via the algorithm of [LLT]; various other 
+decomposition matrices are included with Specht). For example, 
+<code>H.S</code>(<code>H.P</code>(<var><I>mu</I></var>)) returns
+          <I></I>  sum_nu d_numu <code>S</code>(nu),  <I></I>
+or <code>false</code> if some of these decomposition multiplicities are not known.
+<P>
+<pre>gap&gt; H.D( H.P(4,3,2) );
+D(5,3,1)+2*D(4,3,2)+D(2,2,2,2,1)
+gap&gt; H.S( H.D( H.S(1,1,1,1,1) ) );
+-S(5)+S(4,1)-S(3,1,1)+S(2,1,1,1) </pre>
+<P>
+As the last example shows, Specht does not always behave as expected.
+The reason for this is that Specht modules indexed by <var>e</var>--singular 
+partitions can always be written as a linear combination of Specht 
+modules which involve only <var>e</var>--regular partitions. As such, it is not 
+always clear when two elements are equal in the Grothendieck ring. 
+Consequently, to test whether two modules are equal you should first 
+rewrite both modules in the <code>D</code>--basis; this is <var>not</var> done by Specht 
+because it would be very inefficient.
+<P>
+<code>H.S</code>(<var>d</var>, <var><I>mu</I></var>) &nbsp <code>H.P</code>(<var>d</var>, <var><I>mu</I></var>) &nbsp <code>H.D</code>(<var>d</var>, <var><I>mu</I></var>)
+<P>
+In the third form, <var>d</var> is a decomposition matrix and <var><I>mu</I></var> is a 
+partition. This is useful when you are trying to calculate a new 
+decomposition matrix <var>d</var> because it allows you to do calculations using 
+the known entries of <var>d</var> to deduce information about the unknown ones. 
+When used in this way, <code>H.P</code> and <code>H.D</code> use <var>d</var> to rewrite <code>P</code>(<var><I>mu</I></var>) and
+<code>D</code>(<var><I>mu</I></var>) respectively as a linear combination of Specht modules, and 
+<code>H.S</code> uses <var>d</var> to write <code>S</code>(<var><I>mu</I></var>) as a linear combination of simple 
+modules. If the values of the unknown entries in <var>d</var> are needed, <code>false</code> 
+is returned.
+<P>
+<pre>gap&gt; H:=Specht(3,3);   # e = 3, p = 3 = characteristic of 'R'
+Specht(e=3, p=3, S(), P(), D())
+gap&gt;  d:=InducedDecompositionMatrix(DecompositionMatrix(H,14));;
+# Inducing....
+The following projectives are missing from &lt;d&gt;:
+    [ 15 ]  [ 8, 7 ]
+gap&gt; H.P(d,4,3,3,2,2,1);
+S(4,3,3,2,2,1)+S(4,3,3,2,1,1,1)+S(4,3,2,2,2,1,1)+S(3,3,3,2,2,1,1)
+gap&gt; H.S(d,7, 3, 3, 2);
+D(11,2,1,1)+D(10,3,1,1)+D(8,5,1,1)+D(8,3,3,1)+D(7,6,1,1)+D(7,3,3,2)
+gap&gt; H.D(d,14,1);
+false </pre>
+<P>
+The final example returned <code>false</code> because the partitions <code>(14,1)</code>
+and <code>(15)</code> have the same <I>3</I>--core (and <code>P</code>(15) is missing from <var>d</var>).
+<P>
+<code>H.S</code>(<var>d</var>, <var>x</var>)  &nbsp  <code>H.P</code>(<var>d</var>, <var>x</var>)  &nbsp  <code>H.D</code>(<var>d</var>, <var>x</var>)
+<P>
+In the final form, <var>d</var> is a decomposition matrix and <var>x</var> is a module. All 
+three functions rewrite <var>x</var> in their respective basis using <var>d</var>. Again
+this is only useful when you are trying to calculate a new decomposition 
+matrix because, for any ``known'' decomposition matrix <var>d</var>, <code>H.S(<var>x</var>)</code> 
+and <code>H.S</code>(<var>d</var>, <var>x</var>) are equivalent (and similarly for <code>H.P</code> and <code>H.D</code>).
+<P>
+<pre>gap&gt; H.S(d, H.D(d,10,5) );
+-S(13,2)+S(10,5)</pre>
+<P>
+
+<H3> Decomposition numbers of the symmetric groups</H3> 
+The last example looked at Hecke algebras with parameter <var>q</var>=1 and <var>R</var> a 
+field of characteristic~3 (so <var>e</var>=3); that is, the group algebra of the 
+symmetric group over a field of characteristic 3. More, generally, the 
+command <code>Specht(<var>p</var>, <var>p</var>)</code> can be used to consider the group algebras of 
+the symmetric groups over fields of characteristic <var>p</var> (i.e. <var>e</var>=p, and
+<code>R</code> a field of characteristic~<var>p</var>). 
+<P>
+For example, the dimensions of the simple modules of <I>Sym_6</I>
+over fields of characteristic 5 can be computed as follows:
+<P>
+<pre>gap&gt; H:=Specht(5,5);; SimpleDimension(H,6);
+6       : 1
+5,1     : 5
+4,2     : 8
+4,1^2   : 10
+3^2     : 5
+3,2,1   : 8
+3,1^3   : 10
+2^3     : 5
+2^2,1^2 : 1
+2,1^4   : 5</pre>
+<P>
+
+<H3> Hecke algebras over fields of positive characteristic</H3>To consider Hecke algebras defined over arbitrary fields <code>Specht</code> must 
+also be supplied with a <strong>valuation map</strong> <var>val</var> as an argument. The 
+function <var>val</var> is a map from some PID into the natural numbers; at 
+present it is needed only by functions which rely (at least implicitly),
+upon the <var>q</var>--analogue of Schaper's theorem. In general, <var>val</var> depends 
+upon <var>q</var> and the characteristic of <var>R</var>; full details can be found in [JM2].
+<P>
+Over fields of characteristic zero, and in the symmetric group case, the 
+function <var>val</var> is automatically defined by <code>Specht</code>. When <var>R</var> is a field 
+of characteristic zero, <var>val</var>(<I>[i]_q</I>) is <I>1</I> if <var>e</var> divides <var><I>i</I></var> and~<I>0</I> 
+otherwise (this is the valuation map associated to the prime ideal in 
+<strong>C</strong><I>[v]</I> generated by the <var>e</var>--th cyclotomic polynomial). When <I>&lt;q&gt;=1</I>
+and <var>R</var> is a field of characteristic <var>p</var>, <var>val</var> is the usual <var>p</var>--adic 
+valuation map.
+<P>
+As another example, if <I>&lt;q&gt;=4</I> and <var>R</var> is a field of characteristic 5 
+(so <I>&lt;e&gt;=2</I>), then the valuation map sends the integer <var>x</var> to 
+<I>nu_5([4]_x)</I> where <I>[4]_x</I> is interpreted as an integer and <I>nu_5</I> is 
+the usual 5--adic valuation. To consider this Hecke algebra one could 
+proceed as follows:
+<P>
+<pre>gap&gt; val:=function(x) local v;
+&gt;       x:=Sum([0..x-1],v-&gt;4^v);  # x-${&gt;}$[x]\_q
+&gt;       v:=0; while x mod 5=0 do x:=x/5; v:=v+1; od;
+&gt;       return v;
+&gt;     end;;
+gap&gt; H:=Specht(2,5,val,"e2q4");
+Specht(e=2, p=5, S(), P(), D(), HeckeRing="e2q4")</pre>
+<P>
+Notice the string ``e2q4'' which was also passed to <code>Specht</code> in this
+example. Although it is not strictly necessary, it is a good idea when 
+using a ``non--standard'' valuation map <var>val</var> to specify the value 
+of <code>H.HeckeRing</code>=<var>HeckeRing</var>. This string is used for internal 
+bookkeeping by Specht; in particular, it is used to determine filenames 
+when reading and saving decomposition matrices. If a ``standard'' 
+valuation map is used then <var>HeckeRing</var> is set to the string 
+``<I>e{&lt;}e{&gt;}p{&lt;}p{&gt;}</I>''; otherwise it defaults to ``unknown''. The
+function <code>SaveDecompositionMatrix</code> will not save any decomposition 
+matrix for any Hecke algebra <code>H</code> with <code>H.HeckeRing</code>=``unknown''.
+<P>
+
+<H3> The Fock space and Hecke algebras over fields of characteristic zero</H3>For Hecke algebras <var>H</var> defined over fields of characteristic zero Lascoux,
+Leclerc and Thibon [LLT] have described an easy, inductive, algorithm for 
+calculating the decomposition matrices of <var>H</var>. Their algorithm really
+calculates the <strong>canonical basis</strong>, or (global) <strong>crystal basis</strong> of the
+Fock space; results of Grojnowski--Lusztig [Gr] show that computing this 
+basis is equivalent to computing the decomposition matrices of <var>H</var> (see 
+also [A]). 
+<P>
+The <strong>Fock space</strong> <I>F</I> is an (integrable) module for the quantum group
+<I>U_q(widehat{sl}_{&lt;e&gt;})</I> of the affine special linear group. <I>F</I> is a
+free <strong>C</strong>[<code>v</code>]--module with basis the set of all Specht modules
+<code>S</code>(<var><I>mu</I></var>) for all partitions <var><I>mu</I></var> of all integers
+<I></I> F = bigoplus_nge0bigoplus_muvdash n<strong>C</strong>[<code>v</code>] <code>S</code>(<var>mu</var>); <I></I>
+here <code>v</code>=<code>H.info.Indeterminate</code> is an indeterminate over the integers 
+(or strictly, <strong>C</strong>). The canonical basis elements <code>Pq</code>(<var><I>mu</I></var>) for the 
+<I>U_q(widehat{sl}_e)</I>--submodule of <I>F</I> generated by the <I>0</I>--partition 
+are indexed by <var>e</var>--regular partitions <var><I>mu</I></var>. Moreover, under
+<strong>specialization</strong>, <code>Pq</code>(<var><I>mu</I></var>) maps to <code>P</code>(<var><I>mu</I></var>). An eloquent 
+description of the algorithm for computing <code>H.Pq</code>(<var><I>mu</I></var>) can be found 
+in [LLT].
+<P>
+To access the elements of the Fock space Specht provides the functions:
+<P>
+<code>H.Pq</code>(<var><I>mu</I></var>)  &nbsp  <code>H.Sq</code>(<var><I>mu</I></var>)
+<P>
+Notice that, unlike <code>H.P</code> and <code>H.S</code> the only arguments which <code>H.Pq</code> and 
+<code>H.Sq</code> accept are partitions. (Given that our indeterminate is <code>v</code> these 
+functions should really be called <code>H.Pv</code> and <code>H.Sv</code>; here ``q'' stands 
+for ``quantum<code></code>.)
+<P>
+The function <code>H.Pq</code>  computes the canonical basis element <code>Pq</code>(<var><I>mu</I></var>) 
+of the Fock space corresponding to the <var>e</var>--regular partition <var><I>mu</I></var>
+(there is a canonical basis --- defined using a larger quantum group ---
+for the whole of the Fock space [LT]; conjecturally, this basis can be used 
+to compute the decomposition matrices for the <var>q</var>--Schur algebra over fields 
+of characteristic zero). The second function returns a standard basis 
+element <code>S</code>(<var><I>mu</I></var>) of <I>F</I>.
+<P>
+<pre>gap&gt; H:=Specht(4);
+Specht(e=4, S(), P(), D(), Pq())
+gap&gt; H.Pq(6,2); 
+S(6,2)+v*S(5,3)
+gap&gt; RestrictedModule(last);
+S(6,1)+(v + v^(-1))*S(5,2)+v*S(4,3)
+gap&gt; H.P(last);
+P(6,1)+(v + v^(-1))*P(5,2)
+gap&gt; Specialized(last);
+P(6,1)+2*P(5,2)
+gap&gt; H.Sq(5,3,2);
+S(5,3,2)
+gap&gt; InducedModule(last,0);
+v^(-1)*S(5,3,3)</pre>
+<P>
+The modules returned by <code>H.Pq</code> and <code>H.Sq</code> behave very much like elements 
+of the Grothendieck ring of <var>H</var>; however, they should be considered as
+elements of the Fock space. The key difference is that when induced or 
+restricted ``quantum'' analogues of induction and restriction are used. 
+These analogues correspond to the action of <I>U_q(widehat{sl}_{&lt;e&gt;})</I> 
+on <I>F</I> [LLT]. 
+<P>
+In effect, the functions <code>H.Pq</code> and <code>H.Sq</code> allow computations in 
+the Fock space, using the functions <code>InducedModule</code> <a href="CHAP071.htm#SECT006">InducedModule</a> and
+<code>RestrictedModule</code> <a href="CHAP071.htm#SECT008">RestrictedModule</a>. The functions <code>H.S</code>, <code>H.P</code>, and 
+<code>H.D</code> can also be applied to elements of the Fock space, in which case 
+they have the expected effect. In addition, any element of the Fock space 
+can be specialized to give the corresponding element of the Grothendieck 
+ring of <code>H</code> (it is because of this correspondence that we do not make a 
+distinction between elements of the Fock space and the Grothendieck
+ring of <code>H</code>).
+<P>
+When working over fields of characteristic zero Specht will
+automatically calculate any canonical basis elements that it needs for
+computations in the Grothendieck ring of <var>H</var>. If you are not interested 
+in the canonical basis elements you need never work with them directly. 
+If, for some reason, you do not want Specht to use the canonical basis 
+elements to calculate decomposition numbers then all you need to do is
+<code>Unbind</code>(<code>H.Pq</code>).
+<P>
+<A NAME="SECT002"><h2>71.2 Schur</h2></a>
+<P><code>Schur(<var>e</var>)</code><BR>
+<code>Schur(<var>e</var>, <var>p</var>)</code><BR>
+<code>Schur(<var>e</var>, <var>p</var>, <var>val</var> [,<var>HeckeRing</var>])</code>
+<P>
+This function behaves almost identically to the function <code>Specht</code> (see
+<a href="CHAP071.htm#SECT001">Specht</a>), the only difference being that the three functions in the 
+record <code>S</code> returned by <code>Schur</code> are called <code>S.W</code>, <code>S.P</code>, and <code>S.F</code> 
+and that they correspond to the q-Weyl modules, the projective 
+decomposable modules, and the simple modules of the q--Schur algebra 
+respectively. Note that our labeling of these modules is non--standard, 
+following that used by James in [J]. The standard labeling can be 
+obtained from ours by replacing all partitions by their conjugates.
+<P>
+Almost all of the functions in Specht which accept a <code>Specht</code>
+record <var>H</var> will also accept a record <var>S</var> returned by <code>Schur</code>
+<P>
+In the current version of Specht the decomposition matrices of q--Schur 
+algebras are not fully supported. The <code>InducedDecompositionMatrix</code> 
+function can be applied to these matrices; however there are no additional
+routines available for calculating the columns corresponding to 
+<var>e</var>--singular partitions. The decomposition matrices for the q--Schur 
+algebras defined over a field of characteristic 0 for <I>&lt;n&gt; le 10</I> are in 
+the Specht libraries.
+<P>
+<pre>gap&gt; S:=Schur(2);
+Schur(e=2, W(), P(), F(), Pq())
+gap&gt; InducedDecompositionMatrix(DecompositionMatrix(S,3));
+# The following projectives are missing from &lt;d&gt;:
+#  [ 2, 2 ]
+4     | 1                   # 'DecompositionMatrix'(S,4) returns the
+3,1   | 1 1                 # full decomposition matrix. The point
+2^2   | . 1 .               # of this example is to emphasize the
+2,1^2 | 1 1 . 1             # current limitations of 'Schur'.
+1^4   | 1 . . 1 1 
+</pre>
+<P>
+Note that when <var>S</var> is defined over a field of characteristic zero then
+it contains a function <code>S.Pq</code> for calculating canonical basis elements
+(see <code>Specht</code> <a href="CHAP071.htm#SECT001">Specht</a>); currently <code>S.Pq(<var><I>mu</I></var>)</code> is implemented only 
+for <var>e</var>--regular partitions. There is also a function <code>H.Wq</code>.
+<P>
+See also <code>Specht</code> <a href="CHAP071.htm#SECT001">Specht</a>. This function requires the package 
+``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT003"><h2>71.3 DecompositionMatrix</h2></a>
+<P><code>DecompositionMatrix(<var>H</var>, <var>n</var> [,<var>Ordering</var>])</code><BR>
+<code>DecompositionMatrix(<var>H</var>, <var>filename</var> [,<var>Ordering</var>])</code>
+<P>
+The function <code>DecompositionMatrix</code> returns the decomposition matrix <code>D</code> of 
+<I>'H'(Sym_n)</I> where <code>H</code> is a Hecke algebra record returned by the function 
+<code>Specht</code> (or <code>Schur</code>). <code>DecompositionMatrix</code> first checks to see whether
+the required decomposition matrix exists as a library file (checking first
+in the current directory, next in the directory specified by 
+<code>SpechtDirectory</code>, and finally in the Specht libraries). If <code>H.Pq</code> 
+exists, <code>DecompositionMatrix</code> next looks for <strong>crystallized decomposition 
+matrices</strong> (see <code>CrystalDecompositionMatrix</code> <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>).
+If the decomposition matrix <code>d</code> is not stored in the library
+<code>DecompositionMatrix</code> will calculate <code>d</code> when <code>H</code> is a Hecke algebra with a
+base field <code>R</code> of characteristic zero, and will return <code>false</code> otherwise
+(in which case the function <code>CalculateDecompositionMatrix</code>
+<a href="CHAP071.htm#SECT015">CalculateDecompositionMatrix</a> can be used to force Specht to try and
+calculate this matrix).
+<P>
+For Hecke algebras defined over fields of characteristic zero, Specht
+uses the algorithm of [LLT] to calculate decomposition matrices 
+(this feature can be disabled by unbinding <code>H.Pq</code>). The decomposition 
+matrices for the <var>q</var>--Schur algebras for <I>&lt;n&gt; le 10</I> are contained in the 
+Specht library, as are those for the symmetric group over fields of 
+positive characteristic when <I>&lt;n&gt;&lt;15</I>.
+<P>
+Once a decomposition matrix is known, Specht keeps an internal copy 
+of it which is used by the functions <code>H.S</code>, <code>H.P</code>, and <code>H.D</code>; these
+functions also read decomposition matrix files as needed.
+<P>
+If you set the variable <code>SpechtDirectory</code>, then Specht will also search
+for decomposition matrix files in this directory. The files in the current
+directory override those in <code>SpechtDirectory</code> and those in the Specht
+libraries.
+<P>
+In the second form of the function, when a <var>filename</var> is supplied, 
+<code>DecompositionMatrix</code> will read the decomposition matrix in the file 
+<var>filename</var>, and this matrix will become Specht's internal copy of
+this matrix.
+<P>
+By default, the rows and columns of the decomposition matrices are ordered
+lexicographically. This can be changed by supplying <code>DecompositionMatrix</code> 
+with an ordering function such as <code>LengthLexicographic</code> or 
+<code>ReverseDominance</code>. You do not need to specify the ordering you want
+every time you call <code>DecompositionMatrix</code>; Specht will keep the same
+ordering until you change it again. This ordering can also be set ``by 
+hand'' using the variable <code>H.Ordering</code>. indexH.Ordering!Specht
+<P>
+<pre>gap&gt; DecompositionMatrix(Specht(3),6,LengthLexicographic);
+6      | 1             
+5,1    | 1 1           
+4,2    | . . 1         
+3^2    | . 1 . 1       
+4,1^2  | . 1 . . 1     
+3,2,1  | 1 1 . 1 1 1   
+2^3    | 1 . . . . 1   
+3,1^3  | . . . . 1 1   
+2^2,1^2| . . . . . . 1
+2,1^4  | . . . 1 . 1 . 
+1^6    | . . . 1 . . . </code>
+<P>
+Once you have a decomposition matrix it is often nice to be able
+to print it. The on screen version is often good enough; there is also
+a <code>TeX</code> command  which generates a LaTeX version. There are also 
+functions for converting Specht decomposition matrices into <strong>GAP</strong> 
+matrices and visa versa (see <code>MatrixDecompositionMatrix</code> 
+<a href="CHAP071.htm#SECT016">MatrixDecompositionMatrix</a> and <code>DecompositionMatrixMatrix</code> 
+<a href="CHAP071.htm#SECT017">DecompositionMatrixMatrix</a>).
+<P>
+Using the function <code>InducedDecompositionMatrix</code> (see 
+<a href="CHAP071.htm#SECT010">InducedDecompositionMatrix</a>), it is possible to induce a decomposition 
+matrix. See also <code>SaveDecompositionMatrix</code> <a href="CHAP071.htm#SECT014">SaveDecompositionMatrix</a> and 
+<code>IsNewIndecomposable</code> <a href="CHAP071.htm#SECT011">IsNewIndecomposable</a>, <code>Specht</code> <a href="CHAP071.htm#SECT001">Specht</a>, <code>Schur</code> 
+<a href="CHAP071.htm#SECT002">Schur</a>, and <code>CrystalDecompositionMatrix</code> <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>. 
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT004"><h2>71.4 CrystalDecompositionMatrix</h2></a>
+<P><code>CrystalDecompositionMatrix(<var>H</var>, <var>n</var> [,<var>Ordering</var>])</code><BR>
+<code>CrystalDecompositionMatrix(<var>H</var>, <var>filename</var> [,<var>Ordering</var>])</code>
+<P>
+This function is similar to <code>DecompositionMatrix</code>, except that it 
+returns a <strong>crystallized decomposition matrix</strong>. The columns of decomposition
+matrices correspond to projective indecomposables; the columns of 
+crystallized decomposition matrices correspond to the canonical basis 
+elements of the Fock space (see <a href="CHAP071.htm#SECT001">Specht</a>). Consequently, the entries in 
+these matrices are polynomials (in <code>v</code>), and by specializing (i.e. setting
+<code>v</code> equal to <I>1</I>; see <a href="CHAP071.htm#SECT054">Specialized</a>), the decomposition matrices of <var>H</var> 
+are obtained (see <a href="CHAP071.htm#SECT001">Specht</a>).
+<P>
+Crystallized decomposition matrices are defined only for Hecke algebras 
+over a base field of characteristic zero. Unlike ``normal'' 
+decomposition matrices, crystallized decomposition matrices cannot be 
+induced.
+<P>
+<pre>gap&gt; CrystalDecompositionMatrix(Specht(3), 6);
+6      |   1                         
+5,1    |   v   1                     
+4,2    |   .   .   1                 
+4,1^2  |   .   v   .   1             
+3^2    |   .   v   .   .   1         
+3,2,1  |   v v^2   .   v   v   1     
+3,1^3  |   .   .   . v^2   .   v     
+2^3    | v^2   .   .   .   .   v     
+2^2,1^2|   .   .   .   .   .   .   1
+2,1^4  |   .   .   .   .   v v^2   . 
+1^6    |   .   .   .   . v^2   .   . 
+gap&gt; Specialized(last);   # set 'v' equal to $1$.
+6      | 1             
+5,1    | 1 1           
+4,2    | . . 1         
+4,1^2  | . 1 . 1       
+3^2    | . 1 . . 1     
+3,2,1  | 1 1 . 1 1 1   
+3,1^3  | . . . 1 . 1   
+2^3    | 1 . . . . 1   
+2^2,1^2| . . . . . . 1
+2,1^4  | . . . . 1 1 . 
+1^6    | . . . . 1 . . </code>
+<P>
+See also <code>Specht</code> <a href="CHAP071.htm#SECT001">Specht</a>, <code>Schur</code> <a href="CHAP071.htm#SECT002">Schur</a>, <code>DecompositionMatrix</code>
+<a href="CHAP071.htm#SECT003">DecompositionMatrix</a>, and <code>Specialized</code> <a href="CHAP071.htm#SECT054">Specialized</a>. This function
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT005"><h2>71.5 DecompositionNumber</h2></a>
+<P><code>DecompositionNumber(<var>H</var>, <var><I>mu</I></var>, <var><I>nu</I></var>)</code><BR>
+<code>DecompositionNumber(<var>d</var>, <var><I>mu</I></var>, <var><I>nu</I></var>)</code>
+<P>
+This function attempts to calculate the decomposition multiplicity of 
+<code>D</code>(<var><I>nu</I></var>) in <code>S</code>(<var><I>mu</I></var>) (equivalently, the multiplicity of 
+<code>S</code>(<var><I>mu</I></var>) in <code>P</code>(<var><I>nu</I></var>)). If <code>P</code>(<var><I>nu</I></var>) is known, we just look up 
+the answer; if not <code>DecompositionNumber</code> tries to calculate the answer 
+using ``row and column removal'' (see [J,Theorem~6.18]).
+<P>
+<pre>gap&gt; H:=Specht(6);;
+gap&gt; DecompositionNumber(H,[6,4,2],[6,6]);  
+0</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT006"><h2>71.6 InducedModule</h2></a>
+<P><code>InducedModule(<var>x</var>)</code><BR>
+<code>InducedModule(<var>x</var>, <I>r_1</I> [,<I>r_2</I>, ...])</code>
+<P>
+There is an natural embedding of <I>'H'(Sym_n)</I> in <I>'H'(Sym_{n+1})</I>
+which in the usual way lets us define an <strong>induced</strong> 
+<I>'H'(Sym_{n+1})</I>--module for every <I>'H'(Sym_n)</I>--module. The
+function <code>InducedModule</code> returns the induced modules of the Specht 
+modules, principal indecomposable modules, and simple modules (more
+accurately, their image in the Grothendieck ring).
+<P>
+There is also a function <code>SInducedModule</code> (see <a href="CHAP071.htm#SECT007">SInducedModule</a>) which 
+provides a much faster way of <var>r</var>--inducing <var>s</var> times (and inducing <var>s</var> 
+times).
+<P>
+Let <var><I>mu</I></var> be a partition. Then the induced module 
+<code>InducedModule(S(<var><I>mu</I></var>))</code> is easy to describe: it has the same 
+composition factors as 
+                 <I>  sum 'S'(&lt;nu&gt;)  </I> 
+where <var><I>nu</I></var> runs over all partitions whose diagrams can be obtained by 
+adding a single node to the diagram of <var><I>mu</I></var>. 
+<P>
+<pre>gap&gt; H:=Specht(2,2);
+Specht(e=2, p=2, S(), P(), D())
+gap&gt; InducedModule(H.S(7,4,3,1));
+S(8,4,3,1)+S(7,5,3,1)+S(7,4,4,1)+S(7,4,3,2)+S(7,4,3,1,1)
+gap&gt; InducedModule(H.P(5,3,1));
+P(6,3,1)+2*P(5,4,1)+P(5,3,2)
+gap&gt; InducedModule(H.D(11,2,1));
+# D(&lt;x&gt;), unable to rewrite &lt;x&gt; as a sum of simples
+S(12,2,1)+S(11,3,1)+S(11,2,2)+S(11,2,1,1)</pre>
+<P>
+When inducing indecomposable modules and simple modules, <code>InducedModule</code> 
+first rewrites these modules as a linear combination of Specht modules 
+(using known decomposition matrices), and then induces this linear 
+combination of Specht modules. If possible Specht then rewrites the 
+induced module back in the original basis. Note that in the last example 
+above, the decomposition matrix for <I>Sym_{15}</I> is not known by Specht; 
+this is why <code>InducedModule</code> was unable to rewrite this module in the 
+<code>D</code>--basis.
+<P>
+<strong><var>r</var>--Induction</strong>
+<P>
+<code>InducedModule</code>(<var>x</var>, <I>r_1</I> [, <I>r_2</I>, ...])
+<P>
+Two Specht modules <code>S</code>(<var><I>mu</I></var>) and <code>S</code>(<var><I>nu</I></var>) belong to the same block 
+if and only if the corresponding partitions <var><I>mu</I></var> and <var><I>nu</I></var> have the 
+same <var>e</var>--core [JM2]  (see <a href="CHAP071.htm#SECT039">ECore</a>). Because the <var>e</var>--core of a partition 
+is determined by its (multiset of) <var>e</var>--residues, if <code>S</code>(<var><I>mu</I></var>) and 
+<code>S</code>(<var><I>nu</I></var>) appear in <code>InducedModule(S(<var><I>tau</I></var>))</code>, for some partition 
+<var><I>tau</I></var>, then <code>S</code>(<var><I>mu</I></var>) and <code>S</code>(<var><I>nu</I></var>) belong to the same block if 
+and only if <var><I>mu</I></var> and <var><I>nu</I></var> can be obtained by adding a node of the 
+same <var>e</var>--residue to the diagram of <var><I>tau</I></var>. The second form of 
+<code>InducedModule</code> allows one to induce ``within blocks'' by only adding 
+nodes of some fixed <var>e</var>--residue <var>r</var>; this is known as <strong>r-induction</strong>. Note
+that <I>0 le  r&lt;e</I>.
+<P>
+<pre>gap&gt; H:=Specht(4); InducedModule(H.S(5,2,1));
+S(6,2,1)+S(5,3,1)+S(5,2,2)+S(5,2,1,1)
+gap&gt; InducedModule(H.S(5,2,1),0);
+0*S()
+gap&gt; InducedModule(H.S(5,2,1),1);
+S(6,2,1)+S(5,3,1)+S(5,2,1,1)
+gap&gt; InducedModule(H.S(5,2,1),2);
+0*S()
+gap&gt; InducedModule(H.S(5,2,1),3);
+S(5,2,2)</pre>
+<P>
+The function <code>EResidueDiagram</code> (<a href="CHAP071.htm#SECT035">EResidueDiagram</a>), prints the diagram 
+of <var><I>mu</I></var>, labeling each node with its <var>e</var>--residue. A quick check of 
+this diagram confirms the answers above.
+<P>
+<pre>gap&gt; EResidueDiagram(H,5,2,1);
+  0  1  2  3  0
+  3  0
+  2</pre>
+<P>
+<strong>``Quantized'' induction</strong>
+<P>
+When <code>InducedModule</code> is applied to the canonical basis elements 
+<code>H.Pq</code>(<var><I>mu</I></var>) (or more generally elements of the Fock space; see 
+<a href="CHAP071.htm#SECT001">Specht</a>), a ``quantum analogue'' of induction is applied. More
+precisely, the function <code>InducedModule(*,i)</code> corresponds to the
+action of the generator <I>F_i</I> of the quantum group
+<I>U_q(widehat{sl_e})</I> on <I>F</I> [LLT]. 
+<P>
+<pre>gap&gt; H:=Specht(3);; InducedModule(H.Pq(4,2),1,2);
+S(6,2)+v*S(4,4)+v^2*S(4,2,2)
+gap&gt; H.P(last);
+P(6,2)</pre>
+<P>
+See also <code>SInducedModule</code> <a href="CHAP071.htm#SECT007">SInducedModule</a>, <code>RestrictedModule</code> 
+<a href="CHAP071.htm#SECT008">RestrictedModule</a>, and <code>SRestrictedModule</code> <a href="CHAP071.htm#SECT009">SRestrictedModule</a>. This 
+function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT007"><h2>71.7 SInducedModule</h2></a>
+<P><code>SInducedModule(<var>x</var>, <var>s</var>)</code><BR>
+<code>SInducedModule(<var>x</var>, <var>s</var>, <var>r</var>)</code>
+<P>
+The function <code>SInducedModule</code>, standing for ``string induction'', 
+provides a more efficient way of <var>r</var>--inducing <var>s</var> times (and a way of 
+inducing <var>s</var> times if the residue <var>r</var> is omitted); <var>r</var>--induction is 
+explained in <a href="CHAP071.htm#SECT006">InducedModule</a>.
+<P>
+<pre>gap&gt; H:=Specht(4);; SInducedModule(H.P(5,2,1),3);
+P(8,2,1)+3*P(7,3,1)+2*P(7,2,2)+6*P(6,3,2)+6*P(6,3,1,1)+3*P(6,2,1,1,1)
++2*P(5,3,3)+P(5,2,2,1,1)
+gap&gt; SInducedModule(H.P(5,2,1),3,1);
+P(6,3,1,1)
+gap&gt; InducedModule(H.P(5,2,1),1,1,1);
+6*P(6,3,1,1)</pre>
+<P>
+Note that the multiplicity of each summand of <code>InducedModule(x,r,...,r)</code> 
+is divisible by <I>&lt;s&gt;!</I> and that <code>SInducedModule</code> divides by this constant.
+<P>
+As with <code>InducedModule</code> this function can also be applied to elements of 
+the Fock space (see <a href="CHAP071.htm#SECT001">Specht</a>), in which case the quantum analogue of 
+induction is used.
+<P>
+See also <code>InducedModule</code> <a href="CHAP071.htm#SECT006">InducedModule</a>. This function requires the 
+package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT008"><h2>71.8 RestrictedModule</h2></a>
+<P><code>RestrictedModule(<var>x</var>)</code><BR>
+<code>RestrictedModule(<var>x</var>, <var><I>r_1</I></var> [, <var><I>r_2</I></var>, ...])</code><BR>
+<P>
+Given a module <var>x</var> for <I>'H'(Sym_n)</I> <code>RestrictedModule</code> returns the 
+corresponding module for <I>'H'(Sym_{n-1})</I>.  The restriction of the Specht
+module <code>S</code>(<var><I>mu</I></var>) is the linear combination of Specht modules 
+                    <I>sum 'S'(&lt;nu&gt;)</I> 
+where <var><I>nu</I></var> runs over the partitions whose diagrams are obtained by 
+deleting a node from the diagram of <var><I>mu</I></var>. If only nodes of residue <var>r</var> 
+are deleted then this corresponds to first restricting <code>S</code>(<var><I>mu</I></var>) and 
+then taking one of the block components of the restriction; this process 
+is known as <strong><var>r</var>-restriction</strong> (cf. <var>r</var>--induction in <a href="CHAP071.htm#SECT006">InducedModule</a>). 
+<P>
+There is also a function <code>SRestrictedModule</code> (see <a href="CHAP071.htm#SECT009">SRestrictedModule</a>) 
+which provides a faster way of <var>r</var>--restricting <var>s</var> times (and restricting
+<var>s</var> times).
+<P>
+When more than one residue if given to <code>RestrictedModule</code> it returns
+<I></I><code>RestrictedModule</code>(<var>x</var>,r_1,r_2,...,r_k)=
+     <code>RestrictedModule</code>(<code>RestrictedModule</code>(<var>x</var>,r_1),r_2,...,r_k) <I></I>
+(cf. <code>InducedModule</code> <a href="CHAP071.htm#SECT006">InducedModule</a>). 
+<P>
+<pre>gap&gt; H:=Specht(6);; RestrictedModule(H.P(5,3,2,1),4);
+2*P(4,3,2,1)
+gap&gt; RestrictedModule(H.D(5,3,2),1); 
+D(5,2,2) </pre>
+<P>
+<strong>``Quantized'' restriction</strong>
+<P>
+As with <code>InducedModule</code>, when <code>RestrictedModule</code> is applied to the 
+canonical basis elements <code>H.Pq</code>(<var><I>mu</I></var>) a quantum analogue of restriction
+is applied; this time, <code>RestrictedModule(*,i)</code> corresponds to the action 
+of the generator <I>E_i</I> of <I>U_q(widehat{sl_e})</I> on <I>F</I> [LLT].
+<P>
+See also <code>InducedModule</code> <a href="CHAP071.htm#SECT006">InducedModule</a>, <code>SInducedModule</code> 
+<a href="CHAP071.htm#SECT007">SInducedModule</a>, and <code>SRestrictedModule</code> <a href="CHAP071.htm#SECT009">SRestrictedModule</a>. This 
+function requires the package ``specht'' 
+(see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT009"><h2>71.9 SRestrictedModule</h2></a>
+<P><code>SRestrictedModule(<var>x</var>, <var>s</var>)</code><BR>
+<code>SRestrictedModule(<var>x</var>, <var>s</var>, <var>r</var>)</code>
+<P>
+As with <code>SInducedModule</code> this function provides a more efficient way of
+<var>r</var>--restricting <var>s</var> times, or restricting <var>s</var> times if the residue <var>r</var>
+is omitted (cf. <code>SInducedModule</code> <a href="CHAP071.htm#SECT007">SInducedModule</a>).
+<P>
+<pre>gap&gt; H:=Specht(6);; SRestrictedModule(H.S(4,3,2),3);
+3*S(4,2)+2*S(4,1,1)+3*S(3,3)+6*S(3,2,1)+2*S(2,2,2)
+gap&gt; SRestrictedModule(H.P(5,4,1),2,4);
+P(4,4) </pre>
+<P>
+See also <code>InducedModule</code> <a href="CHAP071.htm#SECT006">InducedModule</a>, <code>SInducedModule</code> 
+<a href="CHAP071.htm#SECT007">SInducedModule</a>, and <code>RestrictedModule</code> <a href="CHAP071.htm#SECT008">RestrictedModule</a>. This function 
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT010"><h2>71.10 InducedDecompositionMatrix</h2></a>
+<P><code>InducedDecompositionMatrix(<var>d</var>)</code>
+<P>
+If <var>d</var> is the decomposition matrix of <I>'H'(Sym_n)</I>, then 
+<code>InducedDecompositionMatrix(<var>d</var>)</code> attempts to calculate the decomposition 
+matrix of <I>'H'(Sym_{n+1})</I>. It does this by extracting each projective 
+indecomposable from <var>d</var> and inducing these modules to obtain projective 
+modules for <I>'H'(Sym_{n+1})</I>.  <code>InducedDecompositionMatrix</code> then tries 
+to decompose these projectives using the function <code>IsNewIndecomposable</code> 
+(see <a href="CHAP071.htm#SECT011">IsNewIndecomposable</a>). In general there will be columns of the 
+decomposition matrix which <code>InducedDecompositionMatrix</code> is unable to 
+decompose and these will have to be calculated ``by hand''. 
+<code>InducedDecompositionMatrix</code> prints a list of those columns of the 
+decomposition matrix which it is unable to calculate (this list is also 
+printed by the function <code>MissingIndecomposables(<var>d</var>)</code>).
+<P>
+<pre>gap&gt; gap&gt; d:=DecompositionMatrix(Specht(3,3),14);;
+gap&gt; InducedDecompositionMatrix(d);;
+# Inducing....
+The following projectives are missing from &lt;d&gt;:
+    [ 15 ]  [ 8, 7 ]</pre>
+<P>
+Note that the missing indecomposables come in ``pairs'' which map to 
+each other under the Mullineux map (see <code>MullineuxMap</code> <a href="CHAP071.htm#SECT025">MullineuxMap</a>).
+<P>
+Almost all of the decomposition matrices included in Specht were 
+calculated directly by <code>InducedDecompositionMatrix</code>. When <var>n</var> is 
+``small'' <code>InducedDecompositionMatrix</code> is usually able to return the 
+full decomposition matrix for <I>'H'(Sym_{n+1})</I>.
+<P>
+Finally, although the <code>InducedDecompositionMatrix</code> can also be applied to 
+the decomposition matrices of the <var>q</var>--Schur algebras (see <code>Schur</code> 
+<a href="CHAP071.htm#SECT002">Schur</a>), <code>InducedDecompositionMatrix</code> is much less successful in inducing
+these decomposition matrices because it contains no special routines for 
+dealing with the indecomposable modules of the <var>q</var>--Schur algebra which 
+are indexed by <var>e</var>--singular partitions.  Note also that we use a 
+non--standard labeling of the decomposition matrices of <var>q</var>--Schur 
+algebras; see <a href="CHAP071.htm#SECT002">Schur</a>.
+<P>
+<A NAME="SECT011"><h2>71.11 IsNewIndecomposable</h2></a>
+<P><code>IsNewIndecomposable(<var>d</var>, <var>x</var> [,<var><I>mu</I></var>])</code>
+<P>
+<code>IsNewIndecomposable</code> is the function which does all of the hard work when
+the function <code>InducedDecompositionMatrix</code> is applied to decomposition 
+matrices (see <a href="CHAP071.htm#SECT010">InducedDecompositionMatrix</a>). Given a projective module 
+<var>x</var>, <code>IsNewIndecomposable</code> returns <code>true</code> if it is able to show that <var>x</var> 
+is indecomposable (and this indecomposable is not already listed in <var>d</var>), 
+and <code>false</code> otherwise. <code>IsNewIndecomposable</code> will also print a brief 
+description of its findings, giving an upper and lower bound on the 
+<strong>first</strong> decomposition number <var><I>mu</I></var> for which it is unable to determine 
+the multiplicity of <code>S</code>(<var><I>mu</I></var>) in <var>x</var>.
+<P>
+<code>IsNewIndecomposable</code> works by running through all of the partitions 
+<var><I>nu</I></var> such that <code>P</code><I>(nu)</I> could be a summand of <var>x</var> and it uses various
+results, such as the q-Schaper theorem of [JM2] (see <code>Schaper</code> <a href="CHAP071.htm#SECT023">Schaper</a>),
+the Mullineux map (see <code>MullineuxMap</code> <a href="CHAP071.htm#SECT025">MullineuxMap</a>), and inducing simple 
+modules, to determine if <code>P</code>(<var><I>nu</I></var>) does indeed split off. In addition, 
+if <var>d</var> is the decomposition matrix for <I>'H'(Sym_n)</I> then 
+<code>IsNewIndecomposable</code> will probably use some of the decomposition matrices
+of <I>'H'(Sym_m)</I> for <I>m le  n</I>, if they are known. Consequently it is 
+a good idea to save decomposition matrices as they are calculated (see
+<a href="CHAP071.htm#SECT014">SaveDecompositionMatrix</a>).
+<P>
+For example, in calculating the 2--modular decomposition matrices of
+<I>Sym_{r}</I> the first projective which <code>InducedDecompositionMatrix</code> is 
+unable to calculate is <code>P</code>(10).
+<P>
+<pre>gap&gt; H:=Specht(2,2);; 
+gap&gt; d:=InducedDecompositionMatrix(DecompositionMatrix(H,9));; 
+# Inducing.
+# The following projectives are missing from &lt;d&gt;:
+#  [ 10 ]</pre>
+<P>
+(In fact, given the above commands, Specht will return the full
+decomposition matrix for <I>Sym_{10}</I> because this matrix is in the library;
+these were the commands that I used to calculate the decomposition matrix
+in the library.)
+<P>
+By inducing <code>P</code>(9) we can find a projective <var>H</var>--module which contains
+<code>P</code>(10). We can then use <code>IsNewIndecomposable</code> to try and decompose this
+induced module into a sum of PIMs.
+<P>
+<pre>gap&gt; SpechtPrettyPrint(); x:=InducedModule(H.P(9),1);
+S(10)+S(9,1)+S(8,2)+2S(8,1^2)+S(7,3)+2S(7,1^3)+3S(6,3,1)+3S(6,2^2)
++4S(6,2,1^2)+2S(6,1^4)+4S(5,3,2)+5S(5,3,1^2)+5S(5,2^2,1)+2S(5,1^5)
++2S(4^2,2)+2S(4^2,1^2)+2S(4,3^2)+5S(4,3,1^3)+2S(4,2^3)+5S(4,2^2,1^2)
++4S(4,2,1^4)+2S(4,1^6)+2S(3^3,1)+2S(3^2,2^2)+4S(3^2,2,1^2)
++3S(3^2,1^4)+3S(3,2^2,1^3)+2S(3,1^7)+S(2^3,1^4)+S(2^2,1^6)+S(2,1^8)
++S(1^10)
+gap&gt; IsNewIndecomposable(d,x);
+# The multiplicity of S(6,3,1) in P(10) is at least 1 and at most 2.
+false
+gap&gt; x;
+S(10)+S(9,1)+S(8,2)+2S(8,1^2)+S(7,3)+2S(7,1^3)+2S(6,3,1)+2S(6,2^2)
++3S(6,2,1^2)+2S(6,1^4)+3S(5,3,2)+4S(5,3,1^2)+4S(5,2^2,1)+2S(5,1^5)
++2S(4^2,2)+2S(4^2,1^2)+2S(4,3^2)+4S(4,3,1^3)+2S(4,2^3)+4S(4,2^2,1^2)
++3S(4,2,1^4)+2S(4,1^6)+2S(3^3,1)+2S(3^2,2^2)+3S(3^2,2,1^2)
++2S(3^2,1^4)+2S(3,2^2,1^3)+2S(3,1^7)+S(2^3,1^4)+S(2^2,1^6)+S(2,1^8)
++S(1^10)</pre>
+<P>
+Notice that some of the coefficients of the Specht modules in <var>x</var> have
+changed; this is because <code>IsNewIndecomposable</code> was able to determine
+that the multiplicity of <code>S</code>(6,3,1) was at most <I>2</I> and so it
+subtracted one copy of <code>P</code>(6,3,1) from <var>x</var>.
+<P>
+In this case, the multiplicity of <code>S</code>(6,3,1) in <code>P</code>(10) is easy to resolve 
+because general theory says that this multiplicity must be odd. Therefore,  
+<I>x-'P'(6,3,1)</I> is projective. After subtracting <code>P</code>(6,3,1) from <var>x</var> we
+again use <code>IsNewIndecomposable</code> to see if <var>x</var> is now indecomposable.
+We can tell <code>IsNewIndecomposable</code> that all of the multiplicities up to
+and including <code>S</code>(6,3,1) have already been checked by giving it the 
+addition argument <var><I>mu</I></var>=[6,3,1]. 
+<P>
+<pre>gap&gt; x:=x-H.P(d,6,3,1);; IsNewIndecomposable(d,x,6,3,1);
+true</pre>
+<P>
+Consequently, <I>&lt;x&gt;='P'(10)</I> and we add it to the decomposition matrix 
+<var>d</var> (and save it).
+<P>
+<code>gap&gt; AddIndecomposable(d,x); SaveDecompositionMatrix(d); </code>
+<P>
+A full description of what <code>IsNewIndecomposable</code> does can be found by
+reading the comments in <code>specht.g</code>. Any suggestions or improvements on 
+this function would be especially welcome.
+<P>
+See also <code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a> and
+<code>InducedDecompositionMatrix</code> <a href="CHAP071.htm#SECT010">InducedDecompositionMatrix</a>. This function 
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT012"><h2>71.12 InvertDecompositionMatrix</h2></a>
+<P><code>InvertDecompositionMatrix(d)</code>
+<P>
+Returns the inverse of the (<var>e</var>--regular part of) <var>d</var>, where <var>d</var> is a
+decomposition matrix, or crystallized decomposition matrix, of a Hecke
+algebra or <var>q</var>--Schur algebra. If part of the decomposition matrix <var>d</var>
+is unknown then <code>InvertDecompositionMatrix</code> will invert as much of <var>d</var>
+as possible.
+<P>
+<pre>gap&gt; H:=Specht(4);; d:=CrystalDecompositionMatrix(H,5);;
+gap&gt; InvertDecompositionMatrix(d);
+5    |   1                     
+4,1  |   .   1                 
+3,2  |  -v   .   1             
+3,1^2|   .   .   .   1         
+2^2,1| v^2   .  -v   .   1     
+2,1^3|   .   .   .   .   .   1</code>
+<P>
+See also <code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a>, and
+<code>CrystalDecompositionMatrix</code> <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>. This 
+function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT013"><h2>71.13 AdjustmentMatrix</h2></a>
+<P><code>AdjustmentMatrix(<var>dp</var>, <var>d</var>)</code>
+<P>
+James [J] noticed, and Geck [G] proved, that the decomposition
+matrices
+<var>dp</var> for Hecke algebras defined over fields of positive characteristic
+admit a factorization
+        <I></I>             <var>dp</var> = <var>d</var> * <var>a</var>         <I></I>
+where <var>d</var> is a decomposition matrix for a suitable Hecke algebra
+defined over a field of characteristic zero, and <var>a</var> is the so--called
+<strong>adjustment matrix</strong>. This function returns the adjustment matrix <var>a</var>.
+<P>
+<pre>gap&gt; H:=Specht(2);; Hp:=Specht(2,2);;
+gap&gt; d:=DecompositionMatrix(H,13);; dp:=DecompositionMatrix(Hp,13);;
+gap&gt; a:=AdjustmentMatrix(dp,d);
+13     | 1
+12,1   | . 1
+11,2   | 1 . 1
+10,3   | . . . 1
+10,2,1 | . . . . 1
+9,4    | 1 . 1 . . 1
+9,3,1  | 2 . . . . . 1
+8,5    | . 1 . . . . . 1
+8,4,1  | 1 . . . . . . . 1
+8,3,2  | . 2 . . . . . 1 . 1
+7,6    | 1 . . . . 1 . . . . 1
+7,5,1  | . . . . . . 1 . . . . 1
+7,4,2  | 1 . 1 . . 1 . . . . 1 . 1
+7,3,2,1| . . . . . . . . . . . . . 1
+6,5,2  | . 1 . . . . . 1 . 1 . . . . 1
+6,4,3  | 2 . . . 1 . . . . . . . . . . 1
+6,4,2,1| . 2 . 1 . . . . . . . . . . . . 1
+5,4,3,1| 4 . 2 . . . . . . . . . . . . . . 1 
+gap&gt; MatrixDecompositionMatrix(dp)=
+&gt;           MatrixDecompositionMatrix(d)*MatrixDecompositionMatrix(a);
+true </pre>
+<P>
+In the last line we have checked our calculation.
+<P>
+See also <code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a>, and
+<code>CrystalDecompositionMatrix</code> <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>. This
+function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT014"><h2>71.14 SaveDecompositionMatrix</h2></a>
+<P><code>SaveDecompositionMatrix(<var>d</var>)</code> <BR>
+<code>SaveDecompositionMatrix(<var>d</var>, <var>filename</var>)</code>
+<P>
+The function <code>SaveDecompositionMatrix</code> saves the decomposition matrix <var>d</var>.
+After a decomposition matrix has been saved, the functions <code>H.S</code>,
+<code>H.P</code>, and <code>H.D</code> will automatically access it as needed. So, for example, 
+before saving <var>d</var> in order to retrieve the indecomposable <code>P</code>(<var><I>mu</I></var>) 
+from <var>d</var> it is necessary to type <code>H.P(<var>d</var>, <var><I>mu</I></var>)</code>; once <var>d</var> has been 
+saved, the command <code>H.P(<var><I>mu</I></var>)</code> suffices. 
+<P>
+Since <code>InducedDecompositionMatrix(<var>d</var>)</code> consults the decomposition 
+matrices for smaller <var>n</var>, if they are available, it is advantageous to 
+save decomposition matrices as they are calculated. For example, over a 
+field of characteristic~<I>5</I>, the decomposition matrices for the symmetric 
+groups <I>Sym_n</I> with <I>n le  20</I> can be calculated as follows:
+<P>
+<pre>gap&gt; H:=Specht(5,5);;
+gap&gt; d:=DecompositionMatrix(H,9);; 
+gap&gt; for r in [10..20] do
+&gt;      d:=InducedDecompositionMatrix(d); 
+&gt;      SaveDecompositionMatrix(d); 
+&gt;    od; </pre>
+<P>
+If your Hecke algebra record <code>H</code> is defined using a non--standard 
+valuation map (see <a href="CHAP071.htm#SECT001">Specht</a>) then it is also necessary to set the string 
+``<code>H.HeckeRing</code>'', or to supply the function with a <var>filename</var> before
+it will save your matrix. <code>SaveDecompositionMatrix</code> will also save 
+adjustment matrices and the various other matrices that appear in Specht
+(they can be read back in using <code>DecompositionMatrix</code>). Each matrix 
+has a default filename which you can over ride by supplying a <var>filename</var>. 
+Using non--standard file names will stop Specht from automatically 
+accessing these matrices in future. 
+<P>
+See also <a href="CHAP071.htm#SECT003">DecompositionMatrix</a> <code>DecompositionMatrix</code> 
+<a href="CHAP071.htm#SECT003">DecompositionMatrix</a> and <code>CrystalDecompositionMatrix</code> 
+<a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>. This function requires the package 
+``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT015"><h2>71.15 CalculateDecompositionMatrix</h2></a>
+<P><code>CalculateDecompositionMatrix(H,n)</code>
+<P>
+<code>CalculateDecompositionMatrix(H,n)</code> is similar to the function
+<code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a> in that both functions try to
+return the decomposition matrix <code>d</code> of <I>'H'(Sym_n)</I>; the difference is 
+that this function tries to calculate this matrix whereas the later reads 
+the matrix from the library files (in characteristic zero both functions 
+apply the algorithm of [LLT] to compute~<code>d</code>). In effect this function is 
+only needed when working with Hecke algebras defined over fields of positive 
+characteristic (or when you wish to avoid the libraries). 
+<P>
+For example, if you want to do calculations with the decomposition matrix of 
+the symmetric group <I>Sym_{15}</I> over a field of characteristic two, 
+<code>DecompositionMatrix</code> returns false whereas <code>CalculateDecompositionMatrix</code>; 
+returns a part of the decomposition matrix.
+<P>
+<pre>gap&gt; H:=Specht(2,2);
+Specht(e=2, p=2, S(), P(), D())
+gap&gt; d:=DecompositionMatrix(H,15); 
+# This decomposition matrix is not known; use CalculateDecompositionMatrix()
+# or InducedDecompositionMatrix() to calculate with this matrix.
+false
+gap&gt; d:=CalculateDecompositionMatrix(H,15);;
+# Projective indecomposable P(6,4,3,2) not known.
+# Projective indecomposable P(6,5,3,1) not known.
+...
+gap&gt; MissingIndecomposables(d);
+The following projectives are missing from &lt;d&gt;:
+    [ 15 ]  [ 14, 1 ]  [ 13, 2 ]  [ 12, 3 ]  [ 12, 2, 1 ]  [ 11, 4 ]  
+[ 11, 3, 1 ]  [ 10, 5 ]  [ 10, 4, 1 ]  [ 10, 3, 2 ]  [ 9, 6 ]  [ 9, 5, 1 ]
+[ 9, 4, 2 ]  [ 9, 3, 2, 1 ]  [ 8, 7 ]  [ 8, 6, 1 ]  [ 8, 5, 2 ]  [ 8, 4, 3]  
+[ 8, 4, 2, 1 ]  [ 7, 6, 2 ]  [ 7, 5, 3 ]  [ 7, 5, 2, 1 ]  [ 7, 4, 3, 1 ]  
+[ 6, 5, 4 ]  [ 6, 5, 3, 1 ]  [ 6, 4, 3, 2 ]</pre>
+<P>
+Actually, you are much better starting with the decomposition matrix of
+<I>Sym_{14}</I> and then applying <code>InducedDecompositionMatrix</code> to this matrix.
+<P>
+See also <a href="CHAP071.htm#SECT003">DecompositionMatrix</a> <code>DecompositionMatrix</code>. This function
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT016"><h2>71.16 MatrixDecompositionMatrix</h2></a>
+<P><code>MatrixDecompositionMatrix(<var>d</var>)</code>
+<P>
+Returns the <strong>GAP</strong> matrix corresponding to the Specht decomposition
+matrix <var>d</var>. The rows and columns of <var>d</var> are ordered by <code>H.Ordering</code>.
+<P>
+<pre>gap&gt; MatrixDecompositionMatrix(DecompositionMatrix(Specht(3),5));      
+[ [ 1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 1, 1, 0, 0 ], 
+  [ 0, 0, 0, 1, 0 ], [ 1, 0, 0, 0, 1 ], [ 0, 0, 0, 0, 1 ], 
+  [ 0, 0, 1, 0, 0 ] ]</pre>
+<P>
+See also <code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a> and
+<code>DecompositionMatrixMatrix</code> <a href="CHAP071.htm#SECT017">DecompositionMatrixMatrix</a>. This function
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT017"><h2>71.17 DecompositionMatrixMatrix</h2></a>
+<P><code>DecompositionMatrixMatrix(<var>H</var>, <var>m</var>, <var>n</var>)</code>
+<P>
+Given a Hecke algebra <var>H</var>, a <strong>GAP</strong> matrix <var>m</var>, and an integer <var>n</var> this
+function returns the Specht decomposition matrix corresponding to <var>m</var>.
+If <code>p</code> is the number of partitions of <var>n</var> and <code>r</code> the number of
+<var>e</var>--regular partitions of <var>n</var>, then <var>m</var> must be either <I>&lt;r&gt;times&lt;r&gt;</I>,
+<I>&lt;p&gt;times&lt;r&gt;</I>, or <I>&lt;p&gt;times&lt;p&gt;</I>. The rows and columns of <var>m</var> are assumed
+to be indexed by partitions ordered by <code>H.Ordering</code> (see <a href="CHAP071.htm#SECT001">Specht</a>).
+<P>
+<pre>gap&gt; H:=Specht(3);;
+gap&gt; m:=[ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 1, 0, 1, 0 ], 
+&gt;         [ 0, 0, 0, 1 ], [ 0, 0, 1, 0 ] ];;
+gap&gt; DecompositionMatrixMatrix(H,m,4);
+4    | 1       
+3,1  | . 1     
+2^2  | 1 . 1   
+2,1^2| . . . 1
+1^4  | . . 1 . </code>
+<P>
+See also <code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a> and
+<code>MatrixDecompositionMatrix</code> <a href="CHAP071.htm#SECT016">MatrixDecompositionMatrix</a>. This function
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT018"><h2>71.18 AddIndecomposable</h2></a>
+<P><code>AddIndecomposable(<var>d</var>, <var>x</var>)</code><BR>
+<P>
+<code>AddIndecomposable(<var>d</var>, <var>x</var>)</code> inserts the indecomposable module <var>x</var> into 
+the decomposition matrix <var>d</var>. If <var>d</var> already contains the indecomposable 
+<var>x</var> then a warning is printed. The function  <code>AddIndecomposable</code> also
+calculates <code>MullineuxMap(<var>x</var>)</code> (see <a href="CHAP071.htm#SECT025">MullineuxMap</a>) and adds this 
+indecomposable to <var>d</var> (or checks to see that it agrees with the 
+corresponding entry of <var>d</var> if this indecomposable is already by <var>d</var>).
+<P>
+See <code>IsNewIndecomposable</code> <a href="CHAP071.htm#SECT011">IsNewIndecomposable</a> for an example.
+See also <code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a> and
+<code>CrystalDecompositionMatrix</code> <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>. This 
+function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT019"><h2>71.19 RemoveIndecomposable</h2></a>
+<P><code>RemoveIndecomposable(<var>d</var>, <var><I>mu</I></var>)</code>
+<P>
+The function <code>RemoveIndecomposable</code> removes the column from <var>d</var> which
+corresponds to <code>P</code>(<var><I>mu</I></var>). This is sometimes useful when trying to 
+calculate a new decomposition matrix using Specht and want to test a 
+possible candidate for a yet to be identified PIM.
+<P>
+See also <code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a> and
+<code>CrystalDecompositionMatrix</code> <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>. This 
+function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT020"><h2>71.20 MissingIndecomposables</h2></a>
+<P><code>MissingIndecomposables(<var>d</var>)</code>
+<P>
+The function <code>MissingIndecomposables</code> prints the list of partitions 
+corresponding to the indecomposable modules which are not listed in <var>d</var>.
+<P>
+See also <code>DecompositionMatrix</code> <a href="CHAP071.htm#SECT003">DecompositionMatrix</a> and
+<code>CrystalDecompositionMatrix</code> <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>. This 
+function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT021"><h2>71.21 SimpleDimension</h2></a>
+<P><code>SimpleDimension(<var>d</var>)</code><BR>
+<code>SimpleDimension(<var>H</var>, <var>n</var>)</code><BR>
+<code>SimpleDimension(<var>H</var>|<var>d</var>, <var><I>mu</I></var>)</code>
+<P>
+In the first two forms, <code>SimpleDimension</code> prints the dimensions of all
+of the simple modules specified by <var>d</var> or for the Hecke algebra
+<I>'H'(Sym_n)</I> respectively. If a partition <var><I>mu</I></var> is supplied, as in the 
+last form, then the dimension of the simple module <code>D</code><I>(mu)</I> is 
+returned.  At present the function is not implemented for the simple 
+modules of the <var>q</var>--Schur algebras.
+<P>
+<pre>gap&gt; H:=Specht(6);;
+gap&gt; SimpleDimension(H,11,3);
+272
+gap&gt; d:=DecompositionMatrix(H,5);; SimpleDimension(d,3,2);
+5
+gap&gt; SimpleDimension(d);
+5     : 1
+4,1   : 4
+3,2   : 5
+3,1^2 : 6
+2^2,1 : 5
+2,1^3 : 4
+1^5   : 1
+</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT022"><h2>71.22 SpechtDimension</h2></a>
+<P><code>SpechtDimension(<var><I>mu</I></var>)</code>
+<P>
+Calculates the dimension of the Specht module <code>S</code>(<var><I>mu</I></var>), which is equal 
+to the number of standard <var><I>mu</I></var>-tableaux; the answer is given by the hook
+length formula (see [JK]).
+<P>
+<pre>gap&gt; SpechtDimension(6,3,2,1);
+5632</pre>
+<P>
+See also <code>SimpleDimension</code> <a href="CHAP071.htm#SECT021">SimpleDimension</a>. This function requires
+the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT023"><h2>71.23 Schaper</h2></a>
+<P><code>Schaper(<var>H</var>, <var><I>mu</I></var>)</code>
+<P>
+Given a partition <var><I>mu</I></var>, and a Hecke algebra <var>H</var>, <code>Schaper</code> returns a
+linear combination of Specht modules which have the same composition 
+factors as the sum of the modules in the ``Jantzen filtration'' of 
+<code>S</code>(<var><I>mu</I></var>); see [JM2]. In particular, if <var><I>nu</I></var> strictly dominates 
+<var><I>mu</I></var> then <code>D</code>(<var><I>nu</I></var>) is a composition factor of <code>S</code>(<var><I>mu</I></var>) if and 
+only if it is a composition factor of <code>Schaper(<var><I>mu</I></var>)</code>. 
+<P>
+<code>Schaper</code> uses the valuation map <code>H.valuation</code> attached to <var>H</var> (see 
+<a href="CHAP071.htm#SECT001">Specht</a> and [JM2]).
+<P>
+One way in which the <var>q</var>--Schaper theorem can be applied is as follows. 
+Suppose that we have a projective module <var>x</var>, written as a linear 
+combination of Specht modules, and suppose that we are trying to decide 
+whether the projective indecomposable <code>P</code>(<var><I>mu</I></var>) is a direct summand of 
+<var>x</var>. Then, providing that we know that <code>P</code>(<var><I>nu</I></var>) is not a summand of 
+<var>x</var> for all (<var>e</var>--regular) partitions <var><I>nu</I></var> which strictly dominate 
+<var><I>mu</I></var> (see <a href="CHAP071.htm#SECT050">Dominates</a>), <code>P</code>(<var><I>mu</I></var>) is a summand of <var>x</var> if and only if
+<code>InnerProduct(Schaper(H,<I>mu</I>),x)</code> is non--zero (note, in particular, that 
+we don't need to know the indecomposable <code>P</code>(<var><I>mu</I></var>) in order to perform 
+this calculation).
+<P>
+The <var>q</var>--Schaper theorem can also be used to check for irreduciblity; in
+fact, this is the basis for the criterion employed by <code>IsSimpleModule</code>.
+<P>
+<pre>gap&gt; H:=Specht(2);;
+gap&gt; Schaper(H,9,5,3,2,1);
+S(17,2,1)-S(15,2,1,1,1)+S(13,2,2,2,1)-S(11,3,3,2,1)+S(10,4,3,2,1)-S(9,8,3)
+-S(9,8,1,1,1)+S(9,6,3,2)+S(9,6,3,1,1)+S(9,6,2,2,1)
+gap&gt; Schaper(H,9,6,5,2);  
+0*S(0)</pre>
+<P>
+The last calculation shows that <code>S</code>(9,6,5,2) is irreducible when <var>R</var> is a
+field of characteristic <I>0</I> and <code><var>e</var>=2</code> (cf. <code>IsSimpleModule(H,9,6,5,2)</code>).
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT024"><h2>71.24 IsSimpleModule</h2></a>
+<P><code>IsSimpleModule(<var>H</var>, <var><I>mu</I></var>)</code>
+<P>
+<var><I>mu</I></var> an <var>e</var>--regular partition.
+<P>
+Given an <var>e</var>--regular partition <var><I>mu</I></var>, <code>IsSimpleModule(<var>H</var>, <var><I>mu</I></var>)</code> 
+returns <code>true</code> if <code>S</code>(<var><I>mu</I></var>) is simple and <code>false</code> otherwise.  This 
+calculation uses the valuation function <code>H.valuation</code>; see <a href="CHAP071.htm#SECT001">Specht</a>. Note 
+that the criterion used by <code>IsSimpleModule</code> is completely combinatorial; 
+it is derived from the <var>q</var>--Schaper theorem [JM2].
+<P>
+<pre>gap&gt; H:=Specht(3);;
+gap&gt; IsSimpleModule(H,45,31,24);
+false</pre>
+<P>
+See also <code>Schaper</code> <a href="CHAP071.htm#SECT023">Schaper</a>.  This function requires the package 
+``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT025"><h2>71.25 MullineuxMap</h2></a>
+<P><code>MullineuxMap(<var>e</var>|<var>H</var>, <var><I>mu</I></var>)</code><BR>
+<code>MullineuxMap(<var>d</var>, <var><I>mu</I></var>)</code><BR>
+<code>MullineuxMap(<var>x</var>)</code>
+<P>
+Given an integer <var>e</var>, or a Specht record <var>H</var>, and a partition <var><I>mu</I></var>,
+<code>MullineuxMap</code>(<var>e</var>, <var><I>mu</I></var>) returns the image of <var><I>mu</I></var> under the Mullineux
+map; which we now explain.
+<P>
+The sign representation <code>D</code>(<I>1^n</I>) of the Hecke algebra is the (one 
+dimensional) representation sending <I>T_w</I> to <I>(-1)^{ell(w)}</I>. The Hecke
+algebra <var>H</var> is not a Hopf algebra so there is no well defined action of 
+<var>H</var> upon the tensor product of two <var>H</var>--modules; however, there is an 
+outer automorphism # of <var>H</var> which corresponds to tensoring with 
+<code>D</code>(<I>1^n)</I>.  This sends an irreducible module <I>'D'(&lt;mu&gt;)</I> to an 
+irreducible <I>'D'(&lt;mu&gt;)^#cong 'D'(&lt;mu^#&gt;)</I> for some <var>e</var>--regular 
+partition <I>mu^#</I>. In the symmetric group case, Mullineux gave a
+conjectural algorithm for calculating <I>mu^#</I>; consequently the map 
+sending <var><I>mu</I></var> to <var><I>mu^#</I></var> is known as the <strong>Mullineux map</strong>.
+<P>
+Deep results of Kleshchev [K] for the symmetric group give another 
+(proven) algorithm for calculating the partition <I>mu^#</I> (Ford and 
+Kleshchev have deduced Mullineux's conjecture from this). Using the 
+canonical basis, it was shown by [LLT] that the natural generalization
+of Kleshchev's algorithm to <var>H</var> gives the Mullineux map for Hecke 
+algebras over fields of characteristic zero. The general case follows from
+this, so the Mullineux map is now known for all Hecke algebras.
+<P>
+Kleshchev's map is easy to describe; he proved that if <var>gns</var> is any 
+good node sequence for <var><I>mu</I></var>, then the sequence obtained from <var>gns</var> by 
+replacing each residue <var>r</var> by <I>-rbmod e</I> is a good node sequence for 
+<I>mu^#</I> (see <code>GoodNodeSequence</code> <a href="CHAP071.htm#SECT030">GoodNodeSequence</a>). 
+<P>
+<pre>gap&gt; MullineuxMap(Specht(2),12,5,2); 
+[ 12, 5, 2 ]
+gap&gt; MullineuxMap(Specht(4),12,5,2);
+[ 4, 4, 4, 2, 2, 1, 1, 1 ]
+gap&gt; MullineuxMap(Specht(6),12,5,2);
+[ 4, 3, 2, 2, 2, 2, 2, 1, 1 ]
+gap&gt; MullineuxMap(Specht(8),12,5,2);
+[ 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1 ]
+gap&gt; MullineuxMap(Specht(10),12,5,2);
+[ 3, 3, 3, 3, 2, 1, 1, 1, 1, 1 ]</pre>
+<P>
+<code>MullineuxMap</code>(<var>d</var>, <var><I>mu</I></var>)
+<P>
+The Mullineux map can also be calculated using a decomposition matrix.
+To see this recall that ``tensoring'' a Specht module <code>S</code>(<var><I>mu</I></var>) with
+the sign representation yields a module isomorphic to the dual of
+<code>S</code>(<var><I>lambda</I></var>), where <I>lambda</I> is the partition conjugate to <var><I>mu</I></var>. 
+It follows that <I>d_{munu}=d_{lambdanu^#}</I> for all <var>e</var>--regular 
+partitions <var><I>nu</I></var>. Therefore, if <var><I>mu</I></var> is the last partition in the 
+lexicographic order such that <I>d_{munu}ne0</I> then we must have 
+<I>nu^#=lambda</I>. The second form of <code>MullineuxMap</code> uses <var>d</var> to calculate 
+<I>mu^#</I> rather than the Kleshchev--[LLT] result.
+<P>
+<code>MullineuxMap</code>(<var>x</var>)
+<P>
+In the third form, <var>x</var> is a module, and <code>MullineuxMap</code> returns <I>&lt;x&gt;^#</I>, the
+image of <var>x</var> under #. Note that the above remarks show that <code>P</code>(<var><I>mu</I></var>) 
+is mapped to <code>P</code>(<I>mu^#</I>) via the Mullineux map; this observation is 
+useful when calculating decomposition matrices (and is used by the
+function <code>InducedDecompositionMatrix</code>).
+<P>
+See also <code>GoodNodes</code> <a href="CHAP071.htm#SECT028">GoodNodes</a> and <code>GoodNodeSequence</code> 
+<a href="CHAP071.htm#SECT030">GoodNodeSequence</a> .  This function requires the package ``specht'' 
+(see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT026"><h2>71.26 MullineuxSymbol</h2></a>
+<P><code>MullineuxSymbol(<var>e</var>|<var>H</var>, <var><I>mu</I></var>)</code>
+<P>
+Returns the Mullineux symbol of the <var>e</var>--regular partition <var><I>mu</I></var>.
+<P>
+<pre>gap&gt; MullineuxSymbol(5,[8,6,5,5]);
+[ [ 10, 6, 5, 3 ], [ 4, 4, 3, 2 ] ]</pre>
+<P>
+See also <code>PartitionMullineuxSymbol</code> <a href="CHAP071.htm#SECT027">PartitionMullineuxSymbol</a>. This function 
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT027"><h2>71.27 PartitionMullineuxSymbol</h2></a>
+<P><code>PartitionMullineuxSymbol(<var>e</var>|<var>H</var>, <var>ms</var>)</code>
+<P>
+Given a Mullineux symbol <var>ms</var>, this function returns the corresponding
+<var>e</var>--regular partition.
+<P>
+<pre>gap&gt; PartitionMullineuxSymbol(5, MullineuxSymbol(5,[8,6,5,5]) );
+[ 8, 6, 5, 5 ]</pre>
+<P>
+See also <code>MullineuxSymbol</code> <a href="CHAP071.htm#SECT026">MullineuxSymbol</a>. This function 
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT028"><h2>71.28 GoodNodes</h2></a>
+<P><code>GoodNodes(<var>e</var>|<var>H</var>, <var><I>mu</I></var>)</code><BR>
+<code>GoodNodes(<var>e</var>|<var>H</var>, <var><I>mu</I></var>, <var>r</var>)</code>
+<P>
+Given a partition and an integer <var>e</var>, Kleshchev [K] defined the notion of 
+<strong>good node</strong> for each residue <var>r</var> (<I>0 le  r&lt;e</I>). When <var>e</var> is prime and 
+<var><I>mu</I></var> is <var>e</var>--regular, Kleshchev showed that the good nodes describe the 
+restriction of the socle of <code>D</code>(<var><I>mu</I></var>) in the symmetric group case. 
+Brundan~[B] has recently generalized this result to the Hecke algebra.
+<P>
+By definition, there is at most one good node for each residue <var>r</var>, and 
+this node is a removable node (in the diagram of <var><I>mu</I></var>). The function 
+<code>GoodNodes</code> returns a list of the rows of <var><I>mu</I></var> which end in a good 
+node; the good node of residue <var>r</var> (if it exists) is the (<var>r</var>+1)--st 
+element in this list. In the second form, the number of the row which 
+ends with the good node of residue <var>r</var> is returned; or <code>false</code> if there 
+is no good node of residue <var>r</var>.
+<P>
+<pre>gap&gt; GoodNodes(5,[5,4,3,2]);
+[ false, false, 2, false, 1 ]
+gap&gt; GoodNodes(5,[5,4,3,2],0);
+false
+gap&gt; GoodNodes(5,[5,4,3,2],4);
+1</pre>
+<P>
+The good nodes also determine the Kleshchev--Mullineux map (see 
+<code>GoodNodeSequence</code> <a href="CHAP071.htm#SECT030">GoodNodeSequence</a> and <code>MullineuxMap</code> <a href="CHAP071.htm#SECT025">MullineuxMap</a>). This 
+function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT029"><h2>71.29 NormalNodes</h2></a>
+<P><code>NormalNodes(<var>e</var>|<var>H</var>, <var><I>mu</I></var>)</code><BR>
+<code>NormalNodes(<var>e</var>|<var>H</var>, <var><I>mu</I></var>, <var>r</var>)</code>
+<P>
+Returns the numbers of the rows of <var><I>mu</I></var> which end in one of 
+Kleshchev's [K] normal nodes. In the second form, only those rows
+corresponding to normal nodes of the specified residue are returned.
+<P>
+<pre>gap&gt; NormalNodes(5,[6,5,4,4,3,2,1,1,1]);
+[ [ 1, 4 ], [  ], [  ], [ 2, 5 ], [  ] ]
+gap&gt; NormalNodes(5,[6,5,4,4,3,2,1,1,1],0);
+[ 1, 4 ]</pre>
+<P>
+See also <code>GoodNodes</code> <a href="CHAP071.htm#SECT028">GoodNodes</a>. This function requires the package 
+``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT030"><h2>71.30 GoodNodeSequence</h2></a>
+<P><code>GoodNodeSequence(<var>e</var>|<var>H</var>, <var><I>mu</I></var>)</code><BR>
+<code>GoodNodeSequences(<var>e</var>|<var>H</var>, <var><I>mu</I></var>)</code>
+<P>
+<var><I>mu</I></var> an <var>e</var>--regular partition.
+<P>
+Given an <var>e</var>--regular partition <var><I>mu</I></var> of <var>n</var>, a <strong>good node sequence</strong> for 
+<var><I>mu</I></var> is a sequence <var>gns</var> of <I>n</I> residues such that <var><I>mu</I></var> has a good 
+node of residue <var>r</var>, where <var>r</var> is the last residue in <var>gns</var>, and the first 
+<I>n-1</I> residues in <var>gns</var> are a good node sequence for the partition
+obtained from <var><I>mu</I></var> by deleting its (unique) good node with residue <var>r</var>
+(see <code>GoodNodes</code> <a href="CHAP071.htm#SECT028">GoodNodes</a>). In general, <var><I>mu</I></var> will have more than one
+good node sequence; however, any good node sequence uniquely determines
+<var><I>mu</I></var> (see <code>PartitionGoodNodeSequence</code> <a href="CHAP071.htm#SECT031">PartitionGoodNodeSequence</a>).
+<P>
+<pre>gap&gt; H:=Specht(4);; GoodNodeSequence(H,4,3,1);
+[ 0, 3, 1, 0, 2, 2, 1, 3 ]
+gap&gt; GoodNodeSequence(H,4,3,2);
+[ 0, 3, 1, 0, 2, 2, 1, 3, 3 ]
+gap&gt; GoodNodeSequence(H,4,4,2);  
+[ 0, 3, 1, 0, 2, 2, 1, 3, 3, 2 ]
+gap&gt; GoodNodeSequence(H,5,4,2);
+[ 0, 3, 1, 0, 2, 2, 1, 3, 3, 2, 0 ]</pre>
+<P>
+The function <code>GoodNodeSequences</code> returns the list of all good node 
+sequences for <var><I>mu</I></var>.
+<P>
+<pre>gap&gt; GoodNodeSequences(H,5,2,1);
+[ [ 0, 1, 2, 3, 3, 2, 0, 0 ], [ 0, 3, 1, 2, 2, 3, 0, 0 ], 
+  [ 0, 1, 3, 2, 2, 3, 0, 0 ], [ 0, 1, 2, 3, 3, 0, 2, 0 ], 
+  [ 0, 1, 2, 3, 0, 3, 2, 0 ], [ 0, 1, 2, 3, 3, 0, 0, 2 ], 
+  [ 0, 1, 2, 3, 0, 3, 0, 2 ] ] </pre>
+<P>
+The good node sequences determine the Mullineux map (see <code>GoodNodes</code>
+<a href="CHAP071.htm#SECT028">GoodNodes</a> and <code>MullineuxMap</code> <a href="CHAP071.htm#SECT025">MullineuxMap</a>). This function requires the 
+package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT031"><h2>71.31 PartitionGoodNodeSequence</h2></a>
+<P><code>PartitionGoodNodeSequence(<var>e</var>|<var>H</var>, <var>gns</var>)</code>
+<P>
+Given a good node sequence <var>gns</var> (see <code>GoodNodeSequence</code> 
+<a href="CHAP071.htm#SECT030">GoodNodeSequence</a>), this function returns the unique <var>e</var>--regular 
+partition corresponding to <var>gns</var> (or <code>false</code> if in fact <var>gns</var> is not a 
+good node sequence).
+<P>
+<pre>gap&gt; H:=Specht(4);; 
+gap&gt; PartitionGoodNodeSequence(H,0, 3, 1, 0, 2, 2, 1, 3, 3, 2);
+[ 4, 4, 2 ]</pre>
+<P>
+See also <code>GoodNodes</code> <a href="CHAP071.htm#SECT028">GoodNodes</a>, <code>GoodNodeSequence</code> <a href="CHAP071.htm#SECT030">GoodNodeSequence</a>
+and <code>MullineuxMap</code> <a href="CHAP071.htm#SECT025">MullineuxMap</a>. This function requires the package 
+``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT032"><h2>71.32 GoodNodeLatticePath</h2></a>
+<P> 
+<code>GoodNodeLatticePath(<var>e</var>|<var>H</var>, <var><I>mu</I></var>)</code> <BR>
+<code>GoodNodeLatticePaths(<var>e</var>|<var>H</var>, <var><I>mu</I></var>)</code> <BR>
+<code>LatticePathGoodNodeSequence(<var>e</var>|<var>H</var>, <var>gns</var>)</code>
+<P>
+The function <code>GoodNodeLatticePath</code> returns a sequence of partitions which 
+give a path in the <var>e</var>--good partition lattice from the empty partition 
+to <var><I>mu</I></var>. The second function returns the list of all paths in the 
+<var>e</var>--good partition lattice which end in <var><I>mu</I></var>, and the third function 
+returns the path corresponding to a given good node sequence <var>gns</var>.
+<P>
+<pre>gap&gt; GoodNodeLatticePath(3,3,2,1);
+[ [ 1 ], [ 1, 1 ], [ 2, 1 ], [ 2, 1, 1 ], [ 2, 2, 1 ], [ 3, 2, 1 ] ]
+gap&gt; GoodNodeLatticePaths(3,3,2,1);
+[ [ [ 1 ], [ 1, 1 ], [ 2, 1 ], [ 2, 1, 1 ], [ 2, 2, 1 ], [ 3, 2, 1 ] ], 
+  [ [ 1 ], [ 1, 1 ], [ 2, 1 ], [ 2, 2 ], [ 2, 2, 1 ], [ 3, 2, 1 ] ] ]
+gap&gt; GoodNodeSequence(4,6,3,2);
+[ 0, 3, 1, 0, 2, 2, 3, 3, 0, 1, 1 ]
+gap&gt; LatticePathGoodNodeSequence(4,last);
+[ [ 1 ], [ 1, 1 ], [ 2, 1 ], [ 2, 2 ], [ 3, 2 ], [ 3, 2, 1 ], [ 4, 2, 1 ], 
+  [ 4, 2, 2 ], [ 5, 2, 2 ], [ 6, 2, 2 ], [ 6, 3, 2 ] ] </pre>
+<P>
+See also <code>GoodNodes</code> <a href="CHAP071.htm#SECT028">GoodNodes</a>. This function requires the package
+``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT033"><h2>71.33 LittlewoodRichardsonRule</h2></a>
+<P><code>LittlewoodRichardsonRule(<var><I>mu</I></var>, <var><I>nu</I></var>)</code><BR>
+<code>LittlewoodRichardsonCoefficient(<var><I>mu</I></var>, <var><I>nu</I></var>, <var><I>tau</I></var>)</code>
+<P>
+Given partitions <var><I>mu</I></var> of <I>n</I> and <var><I>nu</I></var> of <I>m</I> the module
+<I>'S'(&lt;mu&gt;) otimes 'S'(&lt;nu&gt;)</I> is naturally an 
+<I>'H'(Sym_ntimesSym_m)</I>-module and, by inducing, we obtain an 
+<I>'H'(Sym_{n+m})</I>-module. This module has the same composition factors as 
+       <I></I>sum_nu a_munu^lambda <code>S</code>(lambda),<I></I>
+where the sum runs over all partitions <I>lambda</I> of <I>n+m</I> and the integers
+<I>a_{munu}^lambda</I> are the Littlewood--Richardson coefficients. The
+integers <I>a_{munu}^lambda</I> can be calculated using a straightforward 
+combinatorial algorithm known as the Littlewood--Richardson rule 
+(see [JK]).
+<P>
+The function <code>LittlewoodRichardsonRule</code> returns an (unordered) list of 
+partitions of <I>n+m</I> in which each partition <var><I>lambda</I></var> occurs 
+<I>a_{munu}^lambda</I> times. The Littlewood-Richardson coefficients are 
+independent of <var>e</var>; they can be read more easily from the computation 
+<code>S(<var><I>mu</I></var>)*S(<var><I>nu</I></var>)</code>. 
+<P>
+<pre>gap&gt; H:=Specht(0);;    # the generic Hecke algebra with 'R'=*C*['q']
+gap&gt; LittlewoodRichardsonRule([3,2,1],[4,2]);
+[ [ 4, 3, 2, 2, 1 ],[ 4, 3, 3, 1, 1 ],[ 4, 3, 3, 2 ],[ 4, 4, 2, 1, 1 ],
+ [ 4, 4, 2, 2 ],[ 4, 4, 3, 1 ],[ 5, 2, 2, 2, 1 ],[ 5, 3, 2, 1, 1 ], 
+  [ 5, 3, 2, 2 ],[ 5, 4, 2, 1 ],[ 5, 3, 2, 1, 1 ],[ 5, 3, 3, 1 ], 
+  [ 5, 4, 1, 1, 1 ],[ 5, 4, 2, 1 ],[ 5, 5, 1, 1 ],[ 5, 3, 2, 2 ], 
+  [ 5, 3, 3, 1 ],[ 5, 4, 2, 1 ],[ 5, 4, 3 ],[ 5, 5, 2 ],[ 6, 2, 2, 1, 1],
+  [ 6, 3, 1, 1, 1 ],[ 6, 3, 2, 1 ],[ 6, 4, 1, 1 ],[ 6, 2, 2, 2 ], 
+  [ 6, 3, 2, 1 ],[ 6, 4, 2 ],[ 6, 3, 2, 1 ],[ 6, 3, 3 ],[ 6, 4, 1, 1 ],
+  [ 6, 4, 2 ], [ 6, 5, 1 ], [ 7, 2, 2, 1 ], [ 7, 3, 1, 1 ], [ 7, 3, 2 ], 
+  [ 7, 4, 1 ] ]
+gap&gt; H.S(3,2,1)*H.S(4,2);
+S(7,4,1)+S(7,3,2)+S(7,3,1,1)+S(7,2,2,1)+S(6,5,1)+2*S(6,4,2)+2*S(6,4,1,1)
++S(6,3,3)+3*S(6,3,2,1)+S(6,3,1,1,1)+S(6,2,2,2)+S(6,2,2,1,1)+S(5,5,2)
++S(5,5,1,1)+S(5,4,3)+3*S(5,4,2,1)+S(5,4,1,1,1)+2*S(5,3,3,1)+2*S(5,3,2,2)
++2*S(5,3,2,1,1)+S(5,2,2,2,1)+S(4,4,3,1)+S(4,4,2,2)+S(4,4,2,1,1)+S(4,3,3,2)
++S(4,3,3,1,1)+S(4,3,2,2,1)
+gap&gt; LittlewoodRichardsonCoefficient([3,2,1],[4,2],[5,4,2,1]);
+3</pre>
+<P>
+The function <code>LittlewoodRichardsonCoefficient</code> returns a single
+Littlewood--Richardson coefficient (although you are really better off
+asking for all of them, since they will all be calculated anyway).
+<P>
+See also <code>InducedModule</code> <a href="CHAP071.htm#SECT006">InducedModule</a> and 
+<code>InverseLittlewoodRichardsonRule</code> <a href="CHAP071.htm#SECT034">InverseLittlewoodRichardsonRule</a>.
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT034"><h2>71.34 InverseLittlewoodRichardsonRule</h2></a>
+<P><code>InverseLittlewoodRichardsonRule(<var><I>tau</I></var>)</code>
+<P>
+Returns a list of all pairs of partitions [<I>mu,nu</I>] such that the
+Littlewood-Richardson coefficient <I>a_{munu}^tau</I> is non-zero
+(see <a href="CHAP071.htm#SECT033">LittlewoodRichardsonRule</a>). The list returned is unordered and
+[<I>mu,nu</I>] will appear <I>a_{munu}^tau</I> times in it.
+<P>
+<pre>gap&gt; InverseLittlewoodRichardsonRule([3,2,1]);
+[ [ [  ],[ 3, 2, 1 ] ],[ [ 1 ],[ 3, 2 ] ],[ [ 1 ],[ 2, 2, 1 ] ], 
+  [ [ 1 ],[ 3, 1, 1 ] ],[ [ 1, 1 ],[ 2, 2 ] ],[ [ 1, 1 ],[ 3, 1 ] ], 
+  [ [ 1, 1 ],[ 2, 1, 1 ] ],[ [ 1, 1, 1 ],[ 2, 1 ] ],[ [ 2 ],[ 2, 2 ] ], 
+  [ [ 2 ],[ 3, 1 ] ],[ [ 2 ],[ 2, 1, 1 ] ],[ [ 2, 1 ],[ 3 ] ], 
+  [ [ 2, 1 ],[ 2, 1 ] ],[ [ 2, 1 ],[ 2, 1 ] ],[ [ 2, 1 ],[ 1, 1, 1 ] ], 
+  [ [ 2, 1, 1 ],[ 2 ] ],[ [ 2, 1, 1 ],[ 1, 1 ] ],[ [ 2, 2 ],[ 2 ] ], 
+  [ [ 2, 2 ],[ 1, 1 ] ],[ [ 2, 2, 1 ],[ 1 ] ],[ [ 3 ],[ 2, 1 ] ], 
+  [ [ 3, 1 ],[ 2 ] ],[ [ 3, 1 ],[ 1, 1 ] ],[ [ 3, 1, 1 ],[ 1 ] ], 
+  [ [ 3, 2 ],[ 1 ] ],[ [ 3, 2, 1 ],[ ] ] ]
+</pre>
+<P>
+See also <code>LittlewoodRichardsonRule</code> <a href="CHAP071.htm#SECT033">LittlewoodRichardsonRule</a>.
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT035"><h2>71.35 EResidueDiagram</h2></a>
+<P><code>EResidueDiagram(<var>H</var>|<var>e</var>, <var><I>mu</I></var>)</code>  <BR>
+<code>EResidueDiagram(<var>x</var>)</code>
+<P>
+The <var>e</var>--residue of the <I>(i,j)</I>--th node in the diagram of a partition 
+<var><I>mu</I></var> is <I>(j-i)bmod &lt;e&gt;</I>. <code>EResidueDiagram(<var>e</var>, <var><I>mu</I></var>)</code> prints the 
+diagram of the partition <var><I>mu</I></var> replacing each node with its <var>e</var>-residue.
+<P>
+If <var>x</var> is a module then <code>EResidueDiagram(<var>x</var>)</code> prints the <var>e</var>--residue 
+diagrams of all of the <var>e</var>--regular partitions appearing in <var>x</var> (such 
+diagrams are useful when trying to decide how to restrict and induce 
+modules and also in applying results such as the ``Scattering theorem''
+of [JM1]). It is not necessary to supply the integer <var>e</var> in this case 
+because <var>x</var> ``knows'' the value of <var>e</var>.
+<P>
+<pre>gap&gt; H:=Specht(2);; EResidueDiagram(H.S(H.P(7,5)));
+[ 7, 5 ]
+   0   1   0   1   0   1   0
+   1   0   1   0   1
+[ 6, 5, 1 ]
+   0   1   0   1   0   1
+   1   0   1   0   1
+   0
+[ 5, 4, 2, 1 ]
+   0   1   0   1   0
+   1   0   1   0
+   0   1
+   1
+# There are 3 2-regular partitions.</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT036"><h2>71.36 HookLengthDiagram</h2></a>
+<P><code>HookLengthDiagram(<var><I>mu</I></var>)</code>
+<P>
+Prints the diagram of <var><I>mu</I></var>, replacing each node with its hook length
+(see [JK]).
+<P>
+<pre>gap&gt; HookLengthDiagram(11,6,3,2);
+ 14 13 11  9  8  7  5  4  3  2  1
+  8  7  5  3  2  1
+  4  3  1
+  2  1</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT037"><h2>71.37 RemoveRimHook</h2></a>
+<P><code>RemoveRimHook(<var><I>mu</I></var>, <var>row</var>, <var>col</var>)</code>
+<P>
+Returns the partition obtained from <I>mu</I> by removing the (<var>row</var>, <var>col</var>)--th
+rim hook from (the diagram of) <var><I>mu</I></var>.
+<P>
+<pre>gap&gt; RemoveRimHook([6,5,4],1,2);
+[ 4, 3, 1 ]
+gap&gt; RemoveRimHook([6,5,4],2,3);
+[ 6, 3, 2 ]
+gap&gt; HookLengthDiagram(6,5,4);
+   8   7   6   5   3   1
+   6   5   4   3   1
+   4   3   2   1 </pre>
+<P>
+See also <code>AddRimHook</code> <a href="CHAP071.htm#SECT038">AddRimHook</a>. This function requires the package
+``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT038"><h2>71.38 AddRimHook</h2></a>
+<P><code>AddRimHook(<var><I>mu</I></var>, <var>r</var>, <var>h</var>);</code>
+<P>
+Returns a list [<var><I>nu</I></var>, <var>l</var>] where <var><I>nu</I></var> is the partition obtained from
+<var><I>mu</I></var> by adding a rim hook of length <var>h</var> with its ``foot'' in the 
+<var>r</var>--th row of (the diagram of) <var><I>mu</I></var> and <var>l</var> is the leg length of the 
+wrapped on rim hook (see, for example, [JK]). If the resulting diagram 
+<var><I>nu</I></var> is not the diagram of a partition then <code>false</code> is returned.
+<P>
+<pre>gap&gt; AddRimHook([6,4,3],1,3);
+[ [ 9, 4, 3 ], 0 ]
+gap&gt; AddRimHook([6,4,3],2,3);
+false
+gap&gt; AddRimHook([6,4,3],3,3);
+[ [ 6, 5, 5 ], 1 ]
+gap&gt; AddRimHook([6,4,3],4,3);
+[ [ 6, 4, 3, 3 ], 0 ]
+gap&gt; AddRimHook([6,4,3],5,3);
+false</pre>
+<P>
+See also <code>RemoveRimHook</code> <a href="CHAP071.htm#SECT037">RemoveRimHook</a>. This function requires the 
+package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT039"><h2>71.39 ECore</h2></a>
+<P><code>ECore(<var>H</var>|<var>e</var>, <var><I>mu</I></var>)</code>
+<P>
+The <var>e</var>-core of a partition <var><I>mu</I></var> is what remains after as many rim 
+<var>e</var>-hooks as possible have been removed from the diagram of <var><I>mu</I></var>
+(that this is well defined is not obvious; see [JK]). Thus, 
+<code>ECore(<var><I>mu</I></var>)</code> returns the <var>e</var>--core of the partition <var><I>mu</I></var>, 
+<P>
+<pre>gap&gt; H:=Specht(6);; ECore(H,16,8,6,5,3,1);
+[ 4, 3, 1, 1 ]</pre>
+<P>
+The <var>e</var>--core is calculated here using James' notation of an <strong>abacus</strong>; 
+there is also an <code>EAbacus </code> function; but it is more ``pretty'' than 
+useful. indexEAbacus
+<P>
+See also <code>IsECore</code> <a href="CHAP071.htm#SECT040">IsECore</a>, <code>EQuotient</code> <a href="CHAP071.htm#SECT041">EQuotient</a>, and <code>EWeight</code> 
+<a href="CHAP071.htm#SECT043">EWeight</a>.  This function requires the package ``specht'' (see 
+<a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT040"><h2>71.40 IsECore</h2></a>
+<P><code>IsECore(<var>H</var>|<var>e</var>, <var><I>mu</I></var>)</code>
+<P>
+Returns <code>true</code> if <var><I>mu</I></var> is an <var>e</var>--core and <code>false</code> otherwise; see 
+<code>ECore</code> <a href="CHAP071.htm#SECT039">ECore</a>.
+<P>
+See also <code>ECore</code> <a href="CHAP071.htm#SECT039">ECore</a>. This function requires the package ``specht'' 
+(see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT041"><h2>71.41 EQuotient</h2></a>
+<P><code>EQuotient(<var>H</var>|<var>e</var>, <var><I>mu</I></var>)</code>
+<P>
+Returns the <var>e</var>-quotient of <var><I>mu</I></var>; this is a sequence of <var>e</var> partitions
+whose definition can be found in [JK]. 
+<P>
+<pre>gap&gt; H:=Specht(8);; EQuotient(H,22,18,16,12,12,1,1);
+[ [ 1, 1 ], [  ], [  ], [  ], [  ], [ 2, 2 ], [  ], [ 1 ] ]</pre>
+<P>
+See also <code>ECore</code> <a href="CHAP071.htm#SECT039">ECore</a> and <code>CombineEQuotientECore</code> <a href="CHAP071.htm#SECT042">CombineEQuotientECore</a>.
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT042"><h2>71.42 CombineEQuotientECore</h2></a>
+<P><code>CombineEQuotientECore(<var>H</var>|<var>e</var>, <var>Q</var>, <var>C</var>)</code>
+<P>
+A partition is uniquely determined by its <var>e</var>-quotient and its <var>e</var>-core 
+(see <a href="CHAP071.htm#SECT041">EQuotient</a> and <a href="CHAP071.htm#SECT039">ECore</a>). <code>CombineEQuotientECore(<var>e</var>, <var>Q</var>, <var>C</var>)</code> returns 
+the partition which has <var>e</var>--quotient <var>Q</var> and <var>e</var>--core <var>C</var>. The integer
+<var>e</var> can be replaced with a record <var>H</var> which was created using the function
+<code>Specht</code>.
+<P>
+<pre>gap&gt; H:=Specht(11);; mu:=[100,98,57,43,12,1];;
+gap&gt; Q:=EQuotient(H,mu);
+[ [ 9 ], [  ], [  ], [  ], [  ], [  ], [ 3 ], [ 1 ], [ 9 ], [  ], [ 5 ] ]
+gap&gt; C:=ECore(H,mu);
+[ 7, 2, 2, 1, 1, 1 ]
+gap&gt; CombineEQuotientECore(H,Q,C);
+[ 100, 98, 57, 43, 12, 1 ]</pre>
+<P>
+See also <code>ECore</code> <a href="CHAP071.htm#SECT039">ECore</a> and  <code>EQuotient</code> <a href="CHAP071.htm#SECT041">EQuotient</a>.  This function 
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT043"><h2>71.43 EWeight</h2></a>
+<P><code>EWeight(<var>H</var>|<var>e</var>, <var><I>mu</I></var>)</code>
+<P>
+The <var>e</var>--weight of a partition is the number of <var>e</var>--hooks which must be
+removed from the partition to reach the <var>e</var>--core (see <code>ECore</code> <a href="CHAP071.htm#SECT039">ECore</a>).
+<P>
+<pre>gap&gt; EWeight(6,[16,8,6,5,3,1]);
+5</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT044"><h2>71.44 ERegularPartitions</h2></a>
+<P><code>ERegularPartitions(<var>H</var>|<var>e</var>, <var>n</var>)</code>
+<P>
+A  partition <I>mu=(mu_1,mu_2,ldots)</I> is <strong><var>e</var>--regular</strong> if there is no
+integer <I>i</I> such that <I>mu_i=mu_{i+1}=cdots=mu_{i+&lt;e&gt;-1}&gt;0</I>. The 
+function <code>ERegularPartitions(<var>e</var>, <var>n</var>)</code> returns the list of 
+<var>e</var>--regular partitions of <var>n</var>, ordered reverse lexicographically (see 
+<a href="CHAP071.htm#SECT052">Lexicographic</a>).
+<P>
+<pre>gap&gt; H:=Specht(3);
+Specht(e=3, S(), P(), D(), Pq());
+gap&gt; ERegularPartitions(H,6);       
+[ [ 2, 2, 1, 1 ], [ 3, 2, 1 ], [ 3, 3 ], [ 4, 1, 1 ], [ 4, 2 ], 
+  [ 5, 1 ], [ 6 ] ] </pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT045"><h2>71.45 IsERegular</h2></a>
+<P><code>IsERegular(<var>H</var>|<var>e</var>, <var><I>mu</I></var>)</code>
+<P>
+Returns <code>true</code> if <var><I>mu</I></var> is <var>e</var>--regular and <code>false</code> otherwise.
+<P>
+This functions requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT046"><h2>71.46 ConjugatePartition</h2></a>
+<P><code>ConjugatePartition(<var><I>mu</I></var>)</code>
+<P>
+Given a partition <var><I>mu</I></var>, <code>ConjugatePartition(<var><I>mu</I></var>)</code> returns the 
+partition whose diagram is obtained by interchanging the rows and columns 
+in the diagram of <var><I>mu</I></var>.
+<P>
+<pre>gap&gt; ConjugatePartition(6,4,3,2);
+[ 4, 4, 3, 2, 1, 1 ]
+</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT047"><h2>71.47 BetaSet</h2></a>
+<P><code>BetaSet(<var><I>mu</I></var>)</code>
+<P>
+This function returns a <strong>set</strong> of beta numbers (i.e. first column hook
+lengths; see [JK]) corresponding to the partition <var><I>mu</I></var>. 
+<P>
+<pre>gap&gt; BetaSet([5,4,2,2]);
+[ 2, 3, 6, 8 ]</pre>
+<P>
+See also <code>PartitionBetaSet</code> <a href="CHAP071.htm#SECT048">PartitionBetaSet</a>. This function requires 
+the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT048"><h2>71.48 PartitionBetaSet</h2></a>
+<P><code>PartitionBetaSet(<var>bn</var>)</code>
+<P>
+Given a <strong>set</strong> of beta numbers <var>bn</var> (see <code>BetaSet</code> <a href="CHAP071.htm#SECT047">BetaSet</a>), this function
+returns the corresponding partition. Note in particular that <var>bn</var> must be 
+a set of integers.
+<P>
+<pre>gap&gt; PartitionBetaSet([ 2, 3, 6, 8 ]);
+[ 5, 4, 2, 2 ]</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT049"><h2>71.49 ETopLadder</h2></a>
+<P><code>ETopLadder(<var>H</var>|<var>e</var>, <var><I>mu</I></var>)</code>
+<P>
+The ladders in the diagram of a partition are the lines connecting nodes
+of constant <var>e</var>--residue, having slope <I>&lt;e&gt;-1</I> (see [JK]). A new partition 
+can be obtained from <var><I>mu</I></var> by sliding all nodes up to the highest 
+possible rungs on their ladders. <code>ETopLadder(<var>e</var>, <var><I>mu</I></var>)</code> returns the 
+partition obtained in this way; it is automatically <var>e</var>--regular (this 
+partition is denoted <var><I>mu^R</I></var> in [JK]). 
+<P>
+<pre>gap&gt; H:=Specht(4);;
+gap&gt; ETopLadder(H,1,1,1,1,1,1,1,1,1,1);
+[ 4, 3, 3 ]
+gap&gt; ETopLadder(6,1,1,1,1,1,1,1,1,1,1); 
+[ 2, 2, 2, 2, 2 ]</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT050"><h2>71.50 Dominates</h2></a>
+<P><code>Dominates(<var><I>mu</I></var>, <var><I>nu</I></var>)</code>
+<P>
+The dominance ordering is an important partial order in the representation
+theory of Hecke algebra because <I>d_{munu}=0</I> unless <var><I>nu</I></var> dominates 
+<var><I>mu</I></var>. <code>Dominates(<var><I>mu</I></var>, <var><I>nu</I></var>)</code> returns <code>true</code> if either 
+<var><I>mu</I></var>=<var><I>nu</I></var> or for all <I>i ge  1</I>, 
+             <I>sum_{j=1}^imu_j ge sum_{j=1}^inu_j</I>, 
+and <code>false</code> otherwise.
+<P>
+<pre>gap&gt; Dominates([5,4],[4,4,1]);
+true</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT051"><h2>71.51 LengthLexicographic</h2></a>
+<P><code>LengthLexicographic(<var><I>mu</I></var>, <var><I>nu</I></var>)</code>
+<P>
+<code>LengthLexicographic</code> returns <code>true</code> if the length of <var><I>mu</I></var> is less
+than the length of <var><I>nu</I></var> or if the length of <var><I>mu</I></var> equals the length 
+of <var><I>nu</I></var> and <code>Lexicographic(<var><I>mu</I></var>, <var><I>nu</I></var>)</code>.
+<P>
+<pre>gap&gt; p:=Partitions(6);;Sort(p,LengthLexicographic); p;
+[ [ 6 ],[ 5, 1 ],[ 4, 2 ],[ 3, 3 ],[ 4, 1, 1 ],[ 3, 2, 1 ],[ 2, 2, 2 ],
+  [ 3, 1, 1, 1 ],[ 2, 2, 1, 1 ],[ 2, 1, 1, 1, 1 ],[ 1, 1, 1, 1, 1, 1 ] ]
+</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT052"><h2>71.52 Lexicographic</h2></a>
+<P><code>Lexicographic(<var><I>mu</I></var>, <var><I>nu</I></var>)</code>
+<P>
+<code>Lexicographic(<var><I>mu</I></var>, <var><I>nu</I></var>)</code> returns <code>true</code> if <var><I>mu</I></var> is 
+lexicographically greater than or equal to <var><I>nu</I></var>.
+<P>
+<pre>gap&gt; p:=Partitions(6);;Sort(p,Lexicographic); p;
+[ [ 6 ],[ 5, 1 ],[ 4, 2 ],[ 4, 1, 1 ],[ 3, 3 ],[ 3, 2, 1 ],
+  [ 3, 1, 1, 1 ],[ 2, 2, 2 ],[ 2, 2, 1, 1 ],[ 2, 1, 1, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1 ] ]</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT053"><h2>71.53 ReverseDominance</h2></a>
+<P><code>ReverseDominance(<var><I>mu</I></var>, <var><I>nu</I></var>)</code>
+<P>
+This is another total order on partitions which extends the dominance 
+ordering (see <a href="CHAP071.htm#SECT050">Dominates</a>). Here <var><I>mu</I></var> is greater than <var><I>nu</I></var> if for 
+all <I>i&gt;0</I>
+<I></I> sum_jge imu_j </var> sum_jge inu_j. <I></I>
+<P>
+<pre>gap&gt; p:=Partitions(6);;Sort(p,ReverseDominance); p;
+[ [ 6 ], [ 5, 1 ], [ 4, 2 ], [ 3, 3 ], [ 4, 1, 1 ], [ 3, 2, 1 ], 
+  [ 2, 2, 2 ], [ 3, 1, 1, 1 ], [ 2, 2, 1, 1 ], [ 2, 1, 1, 1, 1 ], 
+  [ 1, 1, 1, 1, 1, 1 ] ] </pre>
+<P>
+This is the ordering used by James in the appendix of his Springer
+lecture notes book.
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT054"><h2>71.54 Specialized</h2></a>
+<P><code>Specialized(x [,q]);</code><BR>
+<code>Specialized(d [,q]);</code>
+<P>
+Given an element of the Fock space <var>x</var> (see <a href="CHAP071.htm#SECT001">Specht</a>), or a crystallized
+decomposition matrix (see <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>), <code>Specialized</code>
+returns the corresponding element of the Grothendieck ring or the
+corresponding decomposition matrix of the Hecke algebra respectively. By
+default the indeterminate <code>v</code> is specialized to <I>1</I>; however <code>v</code> can be
+specialized to any (integer) <var>q</var> by supplying a second argument.
+<P>
+<pre>gap&gt; H:=Specht(2);; x:=H.Pq(6,2);
+S(6,2)+v*S(6,1,1)+v*S(5,3)+v^2*S(5,1,1,1)+v*S(4,3,1)+v^2*S(4,2,2)
++(v^3 + v)*S(4,2,1,1)+v^2*S(4,1,1,1,1)+v^2*S(3,3,1,1)+v^3*S(3,2,2,1)
++v^3*S(3,1,1,1,1,1)+v^3*S(2,2,2,1,1)+v^4*S(2,2,1,1,1,1)
+gap&gt; Specialized(x);
+S(6,2)+S(6,1,1)+S(5,3)+S(5,1,1,1)+S(4,3,1)+S(4,2,2)
++2*S(4,2,1,1)+S(4,1,1,1,1)+S(3,3,1,1)+S(3,2,2,1)+S(3,1,1,1,1,1)
++S(2,2,2,1,1)+S(2,2,1,1,1,1)
+gap&gt; Specialized(x,2);
+S(6,2)+2*S(6,1,1)+2*S(5,3)+4*S(5,1,1,1)+2*S(4,3,1)+4*S(4,2,2)+10*S(4,2,1,1)
++4*S(4,1,1,1,1)+4*S(3,3,1,1)+8*S(3,2,2,1)+8*S(3,1,1,1,1,1)+8*S(2,2,2,1,1)
++16*S(2,2,1,1,1,1) </pre>
+<P>
+An example of <code>Specialize</code> being applied to a crystallized decomposition
+matrix can be found in <a href="CHAP071.htm#SECT004">CrystalDecompositionMatrix</a>. This function
+requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT055"><h2>71.55 ERegulars</h2></a>
+<P><code>ERegulars(<var>x</var>)</code><BR>
+<code>ERegulars(<var>d</var>)</code><BR>
+<code>ListERegulars(<var>x</var>)</code>
+<P>
+<code>ERegulars(<var>x</var>)</code> prints a list of the <var>e</var>--regular partitions, together 
+with multiplicities, which occur in the module <var>x</var>. <code>ListERegulars(<var>x</var>)</code>
+returns an actual list of these partitions rather than printing them.
+<P>
+<pre>gap&gt; H:=Specht(8);;
+gap&gt; x:=H.S(InducedModule(H.P(8,5,3)) );  
+S(9,5,3)+S(8,6,3)+S(8,5,4)+S(8,5,3,1)+S(6,5,3,3)+S(5,5,4,3)+S(5,5,3,3,1)
+gap&gt; ERegulars(x);
+[ 9, 5, 3 ]  [ 8, 6, 3 ]  [ 8, 5, 4 ]  [ 8, 5, 3, 1 ]  
+[ 6, 5, 3, 3 ]  [ 5, 5, 4, 3 ]  [ 5, 5, 3, 3, 1 ]  
+gap&gt; H.P(x);
+P(9,5,3)+P(8,6,3)+P(8,5,4)+P(8,5,3,1)</pre>
+<P>
+This example shows why these functions are useful: given a projective
+module <var>x</var>, as above, and the list of <var>e</var>--regular partitions in
+<var>x</var> we know the possible indecomposable direct summands of <var>x</var>.
+<P>
+Note that it is not necessary to specify what <var>e</var> is when calling this
+function because <var>x</var> ``knows'' the value of <var>e</var>. 
+<P>
+The function <code>ERegulars</code> can also be applied to a decomposition 
+matrix <var>d</var>; in this case it returns the unitriangular submatrix of <var>d</var>
+whose rows and columns are indexed by the <var>e</var>--regular partitions.
+<P>
+These function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT056"><h2>71.56 SplitECores</h2></a>
+<P><code>SplitECores(<var>x</var>)</code><BR>
+<code>SplitECores(<var>x</var>, <var><I>mu</I></var>)</code><BR>
+<code>SplitECores(<var>x</var>, <var>y</var>)</code>
+<P>
+The function <code>SplitECores(<var>x</var>)</code> returns a list <code>[<I>b_1</I>,...,<I>b_k</I>]</code> where 
+the Specht modules in each <I>b_i</I> all belong to the same block (i.e. they 
+have the same <var>e</var>-core). Similarly, <code>SplitECores(<var>x</var>, <var><I>mu</I></var>)</code> returns 
+the component of <var>x</var> which is in the same block as <var><I>mu</I></var>, and 
+<code>SplitECores(<var>x</var>, <var>y</var>)</code> returns the component of <var>x</var> which is in the same 
+block as <var>y</var>.
+<P>
+<pre>gap&gt; H:=Specht(2);;
+gap&gt; SplitECores(InducedModule(H.S(5,3,1))); 
+[ S(6,3,1)+S(5,3,2)+S(5,3,1,1), S(5,4,1) ]
+gap&gt; InducedModule(H.S(5,3,1),0);
+S(5,4,1)
+gap&gt; InducedModule(H.S(5,3,1),1);
+S(6,3,1)+S(5,3,2)+S(5,3,1,1) </pre>
+<P>
+See also <code>ECore</code> <a href="CHAP071.htm#SECT039">ECore</a>, <code>InducedModule</code> <a href="CHAP071.htm#SECT006">InducedModule</a>, and <code>RestrictedModule</code> <a href="CHAP071.htm#SECT008">RestrictedModule</a>.
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT057"><h2>71.57 Coefficient</h2></a>
+<P><code>Coefficient(<var>x</var>, <var><I>mu</I></var>)</code><BR>
+<P>
+If <var>x</var> is a sum of Specht (resp. simple, or indecomposable) modules, then
+<code>Coefficient(<var>x</var>, <var><I>mu</I></var>)</code> returns the coefficient of <code>S</code>(<var><I>mu</I></var>) in <var>x</var>
+(resp.  <code>D</code>(<var><I>mu</I></var>), or <code>P</code>(<var><I>mu</I></var>)).
+<P>
+<pre>gap&gt; H:=Specht(3);; x:=H.S(H.P(7,3));
+S(7,3)+S(7,2,1)+S(6,2,1^2)+S(5^2)+S(5,2^2,1)+S(4^2,1^2)+S(4,3^2)+S(4,3,2,1)
+gap&gt; Coefficient(x,5,2,2,1);  
+1</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT058"><h2>71.58 InnerProduct</h2></a>
+<P><code>InnerProduct(<var>x</var>, <var>y</var>)</code>
+<P>
+Here <var>x</var> and <var>y</var> are some modules of the Hecke algebra (i.e. Specht 
+modules, PIMS, or simple modules). <code>InnerProduct(<var>x</var>, <var>y</var>)</code> computes the 
+standard inner product of these elements. This is sometimes a convenient 
+way to compute decomposition numbers (for example).
+<P>
+<pre>gap&gt; InnerProduct(H.S(2,2,2,1), H.P(4,3));
+1
+gap&gt; DecompositionNumber(H,[2,2,2,1],[4,3]);
+1 </pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT059"><h2>71.59 SpechtPrettyPrint</h2></a>
+<P><code>SpechtPrettyPrint(true)</code> <BR>
+<code>SpechtPrettyPrint(false)</code> <BR>
+<code>SpechtPrettyPrint()</code>
+<P>
+This function changes the way in which Specht prints modules. The first 
+two forms turn pretty printing on and off respectively (by default it is 
+off), and the third form toggles the printing format.
+<P>
+<pre>gap&gt; H:=Specht(2);; x:=H.S(H.P(6));;
+gap&gt; SpechtPrettyPrint(true); x;
+S(6)+S(5,1)+S(4,1^2)+S(3,1^3)+S(2,1^4)+S(1^6)
+gap&gt; SpechtPrettyPrint(false); x;
+S(6)+S(5,1)+S(4,1,1)+S(3,1,1,1)+S(2,1,1,1,1)+S(1,1,1,1,1,1)
+gap&gt; SpechtPrettyPrint(); x;     
+S(6)+S(5,1)+S(4,1^2)+S(3,1^3)+S(2,1^4)+S(1^6)</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT060"><h2>71.60 SemiStandardTableaux</h2></a>
+<P><code>SemiStandardTableaux(<var><I>mu</I></var>, <var><I>nu</I></var>)</code>
+<P>
+<var><I>mu</I></var> a partition, <var><I>nu</I></var> a composition.
+<P>
+Returns a list of the semistandard <var><I>mu</I></var>--tableaux of type <var><I>nu</I></var> [JK].
+Tableaux are represented as lists of lists, with the first element of
+the list being the first row of the tableaux and so on.
+<P>
+<pre>gap&gt; SemiStandardTableaux([4,3],[1,1,1,2,2]);    
+[ [ [ 1, 2, 3, 4 ], [ 4, 5, 5 ] ], [ [ 1, 2, 3, 5 ], [ 4, 4, 5 ] ], 
+  [ [ 1, 2, 4, 4 ], [ 3, 5, 5 ] ], [ [ 1, 2, 4, 5 ], [ 3, 4, 5 ] ], 
+  [ [ 1, 3, 4, 4 ], [ 2, 5, 5 ] ], [ [ 1, 3, 4, 5 ], [ 2, 4, 5 ] ] ]
+</pre>
+<P>
+See also <code>StandardTableaux</code> <a href="CHAP071.htm#SECT061">StandardTableaux</a>. This function requires the 
+package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT061"><h2>71.61 StandardTableaux</h2></a>
+<P><code>StandardTableaux(<var><I>mu</I></var>)</code>
+<P>
+ <var><I>mu</I></var> a partition.
+<P>
+Returns a list of the standard <var><I>mu</I></var>--tableaux.
+<P>
+<pre>gap&gt; StandardTableaux(4,2);
+[ [ [ 1, 2, 3, 4 ], [ 5, 6 ] ], [ [ 1, 2, 3, 5 ], [ 4, 6 ] ], 
+  [ [ 1, 2, 3, 6 ], [ 4, 5 ] ], [ [ 1, 2, 4, 5 ], [ 3, 6 ] ], 
+  [ [ 1, 2, 4, 6 ], [ 3, 5 ] ], [ [ 1, 2, 5, 6 ], [ 3, 4 ] ], 
+  [ [ 1, 3, 4, 5 ], [ 2, 6 ] ], [ [ 1, 3, 4, 6 ], [ 2, 5 ] ], 
+  [ [ 1, 3, 5, 6 ], [ 2, 4 ] ] ]</pre>
+<P>
+See also <code>SemiStandardTableaux</code> <a href="CHAP071.htm#SECT060">SemiStandardTableaux</a>. This function requires 
+the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT062"><h2>71.62 ConjugateTableau</h2></a>
+<P><code>ConjugateTableau(<var>tab</var>)</code>
+<P>
+Returns the tableau obtained from <var>tab</var> by interchangings its rows and
+columns.
+<P>
+<pre>gap&gt; ConjugateTableau([ [ 1, 3, 5, 6 ], [ 2, 4 ] ]);
+[ [ 1, 2 ], [ 3, 4 ], [ 5 ], [ 6 ] ] </pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT063"><h2>71.63 ShapeTableau</h2></a>
+<P><code>ShapeTableau(<var>tab</var>)</code>
+<P>
+Given a tableau <var>tab</var> this function returns the partition (or composition).
+<P>
+<pre>gap&gt; ShapeTableau( [ [ 1, 1, 2, 3 ], [ 4, 5 ] ] );
+[ 4, 2 ] </pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<A NAME="SECT064"><h2>71.64 TypeTableau</h2></a>
+<P><code>TypeTableau(<var>tab</var>)</code>
+<P>
+Returns the type of the (semistandard) tableau <var>tab</var>; that is, the
+composition <I>sigma=(sigma_1,sigma_2,ldots)</I> where <I>sigma_i</I> is 
+the number of entries in <var>tab</var> which are equal to <I>i</I>.
+<P>
+<pre>gap&gt; List(SemiStandardTableaux([5,4,2],[4,3,0,1,3]),TypeTableau);
+[ [ 4, 3, 0, 1, 3 ], [ 4, 3, 0, 1, 3 ], [ 4, 3, 0, 1, 3 ], 
+  [ 4, 3, 0, 1, 3 ], [ 4, 3, 0, 1, 3 ] ]</pre>
+<P>
+This function requires the package ``specht'' (see <a href="CHAP056.htm#SECT001">RequirePackage</a>).
+<P>
+<a href ="CHAP070.htm">Previous</a> <a href = "chapters.htm">Up</a> <a href ="CHAP072.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>GAP 3.4.4<br>April 1997</address></body></html>

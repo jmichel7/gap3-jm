@@ -1,0 +1,403 @@
+<html><head><title>GAP3 Manual: 22 Words in Abstract Generators</title></head>
+<body bgcolor="ffffff">
+<h1>22 Words in Abstract Generators</h1>
+<P><P>
+<A name = "I0"></a>
+<A name = "I1"></a>
+
+<A name = "I2"></a>
+
+<P>
+<strong>Words in abstract generators</strong> are  a type of group  elements in  <strong>GAP3</strong>.
+In the following  we will abbreviate their full name to  <strong>abstract words</strong>
+<A name = "I3"></a>
+ or just to <strong>words</strong>.
+<P>
+A word  is just a sequence of  letters, where each letter  is an abstract
+generator or its inverse.  Words are multiplied by concatenating them and
+removing  adjacent  pairs of  a  generator  and  its  inverse.   Abstract
+generators  are   created  by  the   function   <code>AbstractGenerator</code>  (see
+<a href="chap022.htm#SECT001">AbstractGenerator</a>).
+<P>
+Note  that words do not belong to a certain group.  Any two words can  be
+multiplied.   In  effect  we  compute with  words  in  a  free  group  of
+potentially  infinite  rank (potentially  infinite because we  can always
+create new abstract generators with <code>AbstractGenerator</code>).
+<P>
+Words are entered as expressions in abstract generators and are displayed
+as product of abstract generators (and powers thereof).  The trivial word
+can be entered and is displayed as <code>IdWord</code>.
+<P>
+<pre>    gap> a := AbstractGenerator( "a" );
+    a
+    gap> b := AbstractGenerator( "b" );
+    b
+    gap> w := (a^2*b)^5*b^-1;
+    a^2*b*a^2*b*a^2*b*a^2*b*a^2
+    gap> a^0;
+    IdWord </pre>
+<P>
+The first  sections in  this chapter describe the functions  that  create
+abstract generators  (see  <a href="chap022.htm#SECT001">AbstractGenerator</a> and <a href="chap022.htm#SECT002">AbstractGenerators</a>).
+The next sections define  the  operations for words  (see <a href="chap022.htm#SECT003">Comparisons of
+Words</a>  and  <a href="chap022.htm#SECT004">Operations for  Words</a>).   The next  section describes  the
+function that tests whether an object is a word (see <a href="chap022.htm#SECT005">IsWord</a>).  The next
+sections describe the  functions  that compute the number of letters of a
+word  (see  <a href="chap022.htm#SECT006">LengthWord</a>   and  <a href="chap022.htm#SECT007">ExponentSumWord</a>).   The  next  sections
+describe the functions that extract or find a subword (see  <a href="chap022.htm#SECT008">Subword</a> and
+<a href="chap022.htm#SECT009">PositionWord</a>).  The  final  sections describe the functions that modify
+words (see <a href="chap022.htm#SECT010">SubstitutedWord</a>, <a href="chap022.htm#SECT011">EliminatedWord</a>, and <a href="chap022.htm#SECT012">MappedWord</a>).
+<P>
+Note that words in abstract generators are different from words in finite
+polycyclic groups (see <a href="chap024.htm">Words in Finite Polycyclic Groups</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap022.htm#SECT001">AbstractGenerator</a>
+<LI> <A HREF="chap022.htm#SECT002">AbstractGenerators</a>
+<LI> <A HREF="chap022.htm#SECT003">Comparisons of Words</a>
+<LI> <A HREF="chap022.htm#SECT004">Operations for Words</a>
+<LI> <A HREF="chap022.htm#SECT005">IsWord</a>
+<LI> <A HREF="chap022.htm#SECT006">LengthWord</a>
+<LI> <A HREF="chap022.htm#SECT007">ExponentSumWord</a>
+<LI> <A HREF="chap022.htm#SECT008">Subword</a>
+<LI> <A HREF="chap022.htm#SECT009">PositionWord</a>
+<LI> <A HREF="chap022.htm#SECT010">SubstitutedWord</a>
+<LI> <A HREF="chap022.htm#SECT011">EliminatedWord</a>
+<LI> <A HREF="chap022.htm#SECT012">MappedWord</a>
+</ol>
+<A NAME="SECT001"><h2>22.1 AbstractGenerator</h2></a>
+<P><P><P>
+<code>AbstractGenerator( <var>string</var> )</code>
+<P>
+<code>AbstractGenerator</code>  returns  a  new  abstract generator.   This abstract
+generator  is  printed  using  the string <var>string</var> passed as  argument to
+<code>AbstractGenerator</code>.
+<P>
+<pre>    gap> a := AbstractGenerator( "a" );
+    a
+    gap> a^5;
+    a^5 </pre>
+<P>
+Note that the string is only used to  print the abstract generator and to
+order abstract  generators (see <a href="chap022.htm#SECT003">Comparisons of  Words</a>).  It is possible
+for two different abstract generators to use the same string and still be
+different.
+<P>
+<pre>    gap> b := AbstractGenerator( "a" );
+    a
+    gap> a = b;
+    false </pre>
+<P>
+Also when you define abstract generators interactively it is a  good idea
+to  use  the identifier of  the  variable  as  the  name of  the abstract
+generator, because then what <strong>GAP3</strong> will  output for  a word is  equal to
+what  you can  input to obtain this word.  The following is an example of
+what you should probably <strong>not</strong> do.
+<P>
+<pre>    gap> c := AbstractGenerator( "d" );
+    d
+    gap> d := AbstractGenerator( "c" );
+    c
+    gap> (c*d)^3;
+    d*c*d*c*d*c
+    gap> d*c*d*c*d*c;
+    c*d*c*d*c*d </pre>
+<P><A NAME="SECT002"><h2>22.2 AbstractGenerators</h2></a>
+<P><P><P>
+<code>AbstractGenerators( <var>string</var>, <var>n</var> )</code>
+<P>
+<code>AbstractGenerators</code>  returns  a list  of  <var>n</var>  new abstract  generators.
+These new  generators are  printed  using <code><var>string</var>1</code>, <code><var>string</var>2</code>,  ...,
+<code><var>string</var><n></code>.
+<P>
+<pre>    gap> AbstractGenerators( "a", 3 );
+    [ a1, a2, a3 ] </pre>
+<P>
+<code>AbstractGenerators</code>    could     be    defined    as    follows     (see
+<a href="chap022.htm#SECT001">AbstractGenerator</a>).
+<P>
+<pre>    AbstractGenerators := function ( string, n )
+        local   gens, i;
+        gens := [];
+        for i  in [1..n]  do
+            Add( gens,
+                 AbstractGenerator(
+                     ConcatenationString( string, String(i) ) ) );
+        od;
+        return gens;
+    end; </pre>
+<P><A NAME="SECT003"><h2>22.3 Comparisons of Words</h2></a>
+<P><P><P>
+<code><var>w1</var> = <var>w2</var></code><BR> 
+<code><var>w1</var> <> <var>w2</var></code>
+<P>
+The equality operator <code>=</code> evaluates to <code>true</code> if the  two words  <var>w1</var> and
+<var>w2</var> are equal and  to  <code>false</code> otherwise.  The inequality operator <code><></code>
+evaluates to <code>true</code>  if the two words <var>w1</var> and <var>w2</var> are not  equal and to
+<code>false</code> otherwise.
+<P>
+You  can  compare words  with objects of  other types, but they are never
+equal of course.
+<P>
+<pre>    gap> a := AbstractGenerator( "a" );;
+    gap> b := AbstractGenerator( "b" );;
+    gap> a = b;
+    false
+    gap> (a^2*b)^5*b^-1 = a^2*b*a^2*b*a^2*b*a^2*b*a^2;
+    true </pre>
+<P>
+<code><var>w1</var> < <var>w2</var></code> <BR> 
+<code><var>w1</var> <= <var>w2</var></code> <BR> 
+<code><var>w1</var>  >  <var>w2</var></code> <BR> 
+<code><var>w1</var>  >= <var>w2</var></code>
+<P>
+The operators <code><</code>, <code><=</code>, <code>></code>, and  <code>=></code> evaluate to <code>true</code>  if the word
+<var>w1</var> is less than, less than or equal to, greater than, and greater  than
+or equal to the word <var>w2</var>.
+<P>
+Words are  ordered as follows.   One word <var>w1</var> is considered smaller than
+another word <var>w2</var> it it is shorted, or, if they have the same  length, if
+it is first in  the lexicographical ordering  implied by  the ordering of
+the  abstract  generators.  The ordering  of abstract  generators  is  as
+follows.  The abstract generators are ordered with respect to the strings
+that  were  passed to  <code>AbstractGenerator</code>  when  creating these abstract
+generators.   Each abstract  generator  <var>g</var>  is  also  smaller  than  its
+inverse, but this inverse is smaller than any abstract  generator that is
+larger than <var>g</var>.
+<P>
+Words  can  also  be  compared with objects  of  other types.   Integers,
+rationals,  cyclotomics,  finite field  elements,  and  permutations  are
+smaller than words, everything else is larger.
+<P>
+<pre>    gap> IdWord&lt;a;  a&lt;a^-1;  a^-1&lt;b;  b&lt;b^-1;  b^-1&lt;a^2; a^2&lt;a*b;
+    true
+    true
+    true
+    true
+    true
+    true </pre>
+<P><A NAME="SECT004"><h2>22.4 Operations for Words</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<A name = "I5"></a>
+
+<A name = "I6"></a>
+
+<A name = "I7"></a>
+
+<A name = "I8"></a>
+
+<A name = "I9"></a>
+
+<A name = "I10"></a>
+
+<A name = "I11"></a>
+
+<P>
+<code><var>w1</var> * <var>w2</var></code>
+<P>
+The  operator  <code>*</code> evaluates  to  the product  of the two words <var>w1</var> and
+<var>w2</var>.  Note that words do not belong to  a  specific  group, thus any two
+words   can   be   multiplied.   Multiplication  of   words  is  done  by
+concatenating  the  words  and removing adjacent  pairs  of  an  abstract
+generator and its inverse.
+<P>
+<P>
+<code><var>w1</var> / <var>w2</var></code>
+<P>
+The operator <code>/</code> evaluates to the quotient <I>w1*w2<sup>-1</sup></I> of the two words
+<var>w1</var> and <var>w2</var>.  Inversion of a word is done by reversing the order of its
+letters and replacing each abstract generator with its inverse.
+<P>
+<P>
+<code><var>w1</var> ^ <var>w2</var></code>
+<P>
+The operator <code>^</code> evaluates  to the conjugate <I>w2<sup>-1</sup>* w1* w2</I> of  the
+word <var>w1</var> under the word <var>w2</var>.
+<P>
+<P>
+<code><var>w1</var> ^ <var>i</var></code>
+<P>
+The powering operator <code>^</code>  returns  the <var>i</var>-th power of the  word  <var>w1</var>,
+where <var>i</var> must be an integer.  If <var>i</var> is zero, the value is <code>IdWord</code>.
+<P>
+<P>
+<code><var>list</var> * <var>w1</var></code> <BR> 
+<code><var>w1</var> * <var>list</var></code>
+<P>
+In this form the operator <code>*</code> returns a new list where each entry is the
+product of  <var>w1</var>  and  the  corresponding  entry  of <var>list</var>.   Of  course
+multiplication must be defined between <var>w1</var> and each entry of <var>list</var>.
+<P>
+<P>
+<code><var>list</var> / <var>w1</var></code>
+<P>
+In this form the operator <code>/</code> returns a new list where  each entry is the
+quotient  of  <var>w1</var>  and  the  corresponding entry of  <var>list</var>.   Of course
+division must be defined between <var>w1</var> and each entry of <var>list</var>.
+<P>
+<code>Comm( <var>w1</var>, <var>w2</var> )</code>
+<P>
+<code>Comm</code> returns the commutator <I>w1<sup>-1</sup>* w2<sup>-1</sup>* w1*  w2</I> of two words
+<var>w1</var> and <var>w2</var>.
+<P>
+<P>
+<code>LeftQuotient( <var>w1</var>, <var>w2</var> )</code>
+<P>
+<code>LeftQuotient</code> returns the left quotient <I>w1<sup>-1</sup>* w2</I> of two words <var>w1</var>
+and <var>w2</var>.
+<P><A NAME="SECT005"><h2>22.5 IsWord</h2></a>
+<P><P><P>
+<code>IsWord( <var>obj</var> )</code>
+<P>
+<code>IsWord</code>  returns <code>true</code> if  the object <var>obj</var>,  which may be an object of
+arbitrary type,  is a  word and <code>false</code>  otherwise.   Signals an error if
+<var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> a := AbstractGenerator("a");;
+    gap> b := AbstractGenerator("b");;
+    gap> w := (a^2*b)^5*b^-1;
+    a^2*b*a^2*b*a^2*b*a^2*b*a^2
+    gap> IsWord( w );
+    true
+    gap> a := (1,2,3);;
+    gap> IsWord( a^2 );
+    false </pre>
+<P><A NAME="SECT006"><h2>22.6 LengthWord</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+<code>LengthWord( <var>w</var> )</code>
+<P>
+<code>LengthWord</code>  returns the  length  of the word <var>w</var>,  i.e., the  number of
+letters in the word.
+<P>
+<pre>    gap> a := AbstractGenerator("a");;
+    gap> b := AbstractGenerator("b");;
+    gap> w := (a^2*b)^5*b^-1;
+    a^2*b*a^2*b*a^2*b*a^2*b*a^2
+    gap> LengthWord( w );
+    14
+    gap> LengthWord( a^13 );
+    13
+    gap> LengthWord( IdWord );
+    0 </pre>
+<P><A NAME="SECT007"><h2>22.7 ExponentSumWord</h2></a>
+<P><P><P>
+<code>ExponentSumWord( <var>w</var>, <var>gen</var> )</code>
+<P>
+<code>ExponentSumWord</code> returns the number of times the generator <var>gen</var> appears
+in the word <var>w</var> minus the number of times its inverse appears in <var>w</var>.  If
+<var>gen</var> and its inverse do no occur in <var>w</var>,  0 is returned.  <var>gen</var> may also
+be the inverse of a generator of course.
+<P>
+<pre>    gap> a := AbstractGenerator("a");;
+    gap> b := AbstractGenerator("b");;
+    gap> w := (a^2*b)^5*b^-1;
+    a^2*b*a^2*b*a^2*b*a^2*b*a^2
+    gap> ExponentSumWord( w, a );
+    10
+    gap> ExponentSumWord( w, b );
+    4
+    gap> ExponentSumWord( (a*b*a^-1)^3, a );
+    0
+    gap> ExponentSumWord( (a*b*a^-1)^3, b^-1 );
+    -3 </pre>
+<P><A NAME="SECT008"><h2>22.8 Subword</h2></a>
+<P><P><P>
+<code>Subword( <var>w</var>, <var>from</var>, <var>to</var> )</code>
+<P>
+<code>Subword</code> returns  the  subword  of the  word <var>w</var> that begins at position
+<var>from</var> and  ends at position  <var>to</var>.  <var>from</var>  and <var>to</var>  must  be  positive
+integers.  Indexing is done with origin 1.
+<P>
+<pre>    gap> a := AbstractGenerator("a");;
+    gap> b := AbstractGenerator("b");;
+    gap> w := (a^2*b)^5*b^-1;
+    a^2*b*a^2*b*a^2*b*a^2*b*a^2
+    gap> Subword( w, 5, 8 );
+    a*b*a^2 </pre>
+<P><A NAME="SECT009"><h2>22.9 PositionWord</h2></a>
+<P><P><P>
+<code>PositionWord( <var>w</var>, <var>sub</var>, <var>from</var> )</code>
+<P>
+<code>PositionWord</code> returns the position of  the first occurrence of the  word
+<var>sub</var> in the  word <var>w</var> starting at position  <var>from</var>.  If there is no such
+occurrence,  <code>false</code>  is  returned.  <var>from</var>  must  be a positive integer.
+Indexing is done with origin 1.
+<P>
+In other  words,  <code>PositionWord(<var>w</var>,<var>sub</var>,<var>from</var>)</code>  returns the  smallest
+integer <var>i</var> larger than or equal to <var>from</var> such that  <code>Subword( <var>w</var>, <var>i</var>,
+<var>i</var>+LengthWord(<var>sub</var>)-1 ) = <var>sub</var></code> (see <a href="chap022.htm#SECT008">Subword</a>).
+<P>
+<pre>    gap> a := AbstractGenerator("a");;
+    gap> b := AbstractGenerator("b");;
+    gap> w := (a^2*b)^5*b^-1;
+    a^2*b*a^2*b*a^2*b*a^2*b*a^2
+    gap> PositionWord( w, a^2*b, 2 );
+    4
+    gap> PositionWord( w, a*b^2, 2 );
+    false </pre>
+<P><A NAME="SECT010"><h2>22.10 SubstitutedWord</h2></a>
+<P><P><P>
+<code>SubstitutedWord( <var>w</var>, <var>from</var>, <var>to</var>, <var>by</var> )</code>
+<P>
+<code>SubstitutedWord</code>  returns a new  word where the subword of  the word <var>w</var>
+that begins at position <var>from</var>  and ends at position <var>to</var> is  replaced by
+the word  <var>by</var>.  <var>from</var> and  <var>to</var> must be positive integers.  Indexing is
+done with origin 1.
+<P>
+In  other  words  <code>SubstitutedWord(<var>w</var>,<var>from</var>,<var>to</var>,<var>by</var>)</code>  is   the  word
+<code>Subword(<var>w</var>,1,<var>from</var>-1) * <var>by</var> * Subword(<var>w</var>,<var>to</var>+1,LengthWord(<var>w</var>)</code>
+(see <a href="chap022.htm#SECT008">Subword</a>).
+<P>
+<pre>    gap> a := AbstractGenerator("a");;
+    gap> b := AbstractGenerator("b");;
+    gap> w := (a^2*b)^5*b^-1;
+    a^2*b*a^2*b*a^2*b*a^2*b*a^2
+    gap> SubstitutedWord(w,5,8,b^-1);
+    a^2*b*a^3*b*a^2 </pre>
+<P><A NAME="SECT011"><h2>22.11 EliminatedWord</h2></a>
+<P><P><P>
+<code>EliminatedWord( <var>word</var>, <var>gen</var>, <var>by</var> )</code>
+<P>
+<code>EliminatedWord</code>  returns  a  new  word  where  each  occurrence  of  the
+generator <var>gen</var> is replaced by the word <var>by</var>.
+<P>
+<pre>    gap> a := AbstractGenerator("a");;
+    gap> b := AbstractGenerator("b");;
+    gap> w := (a^2*b)^5*b^-1;
+    a^2*b*a^2*b*a^2*b*a^2*b*a^2
+    gap> EliminatedWord( w, b, b^2 );
+    a^2*b^2*a^2*b^2*a^2*b^2*a^2*b^2*a^2 </pre>
+<P><A NAME="SECT012"><h2>22.12 MappedWord</h2></a>
+<P><P><P>
+<code>MappedWord( <var>w</var>, <var>gens</var>, <var>imgs</var> )</code>
+<P>
+<code>MappedWord</code> returns the new group element that is obtained  by replacing
+each occurrence of a generator <var>gen</var> in the list of  generators <var>gens</var> by
+the corresponding  group  element <var>img</var> in  the  list  of group  elements
+<var>imgs</var>.  The lists <var>gens</var> and <var>imgs</var> must of course have the same length.
+<P>
+<pre>    gap> a := AbstractGenerator("a");;
+    gap> b := AbstractGenerator("b");;
+    gap> w := (a^2*b)^5*b^-1;
+    a^2*b*a^2*b*a^2*b*a^2*b*a^2
+    gap> MappedWord( w, [a,b], [(1,2,3),(1,2)] );
+    (1,3,2) </pre>
+<P>
+If the images in  <var>imgs</var> are all words, and some of them are equal to the
+corresponding generators in <var>gens</var>, then those may be omitted.
+<P>
+<pre>    gap> MappedWord( w, [a], [a^2] );
+    a^4*b*a^4*b*a^4*b*a^4*b*a^4 </pre>
+<P>
+Note that the special case that  the list  <var>gens</var>  and  <var>imgs</var>  have only
+length   1  is  handled   more  efficiently   by  <code>EliminatedWord</code>   (see
+<a href="chap022.htm#SECT011">EliminatedWord</a>).
+<P><a href ="chap021.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap023.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

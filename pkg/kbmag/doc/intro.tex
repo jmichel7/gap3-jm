@@ -1,0 +1,289 @@
+%%File intro.tex
+\Chapter{Introduction}
+\Section{What is KBMAG?}
+{\KBMAG} (pronounced ``Kay-bee-mag\'\')
+stands for *Knuth--Bendix on Monoids, and Automatic Groups*.
+This manual provides instructions for its use as a stand-alone package.
+It will eventually be also usable from within the {\GAP} system, and
+instructions for its use in that setting will appear in the {\GAP} manual
+(see \cite{Sch92}).
+The current status of the interface with {\GAP} is described in Chapter
+"The Interface with GAP".
+The applications of {\KBMAG} can be divided into three inter-relating
+categories. These are covered in detail in the Chapters
+"The Knuth--Bendix Program for Monoids",
+"The Automatic Groups Package" and
+"Programs for Manipulating Finite State Automata",
+but we will summarize them here.
+
+Firstly, the program 'kbprog' can be used by itself to carry out the
+Knuth--Bendix completion procedure on monoids defined by a finite presentation
+and, in particular, on finitely presented groups. The user has a choice
+between the shortlex ordering and the recursive-path ordering on strings.
+Weighted shortlex and wreath-product orderings, are also possible.
+The latter are defined on pages 46 -- 50 of \cite{Sims94}.
+(It would be easy to make other orderings available if there were ever any
+demand.) The implementation is designed more with speed of execution in mind
+than with minimizing space requirements; thus, a finite state automaton is
+always used to carry out word reduction, which can be space-consuming,
+particularly when the number of generators is large. For a more flexible
+Knuth--Bendix package, with more general orderings available, and a
+choice of word-reduction procedures, the user could try the Rutgers
+Knuth--Bendix package {\rkbp} written by Charles Sims. 
+After running the program, the current set of reduction rules can be used to
+reduce words in the monoid generators. If the rewriting-system produced is
+confluent, then words will be correctly reduced to their irreducible normal
+form under the given ordering, and so the word problem can be solved efficiently
+in the monoid.
+
+Secondly, the package can be used to compute the finite state automata
+that constitute the automatic structure of a shortlex automatic group.
+This supercedes the existing Warwick {\Automata} package for this purpose;
+the current program is generally faster than {\Automata}, and successful with
+more examples. For general information about automatic groups, see
+\cite{ECHLPT92}, and for more detailed information about the algorithms
+used in {\Automata}, see \cite{EHR91} or \cite{Holt94}. There are 
+no fundamentally new algorithms employed in {\KBMAG}, but several
+improvements have been made to the various components. The most
+noticeable change is that a single multiplier automaton is now computed,
+with the states labeled to indicate for which generators they are success
+states, rather than a separate multiplier for each generator (although the
+separate multipliers can still be computed if desired).
+
+Computing an automatic structure is done in several steps, which are
+carried out by a number of individual 'C'-programs. A Bourne Shell script,
+called 'autgroup' has been provided to run these programs in the correct
+sequence with, hopefully, a sensible default choice of options. As an
+alternative to the use of this shell script, the individual programs can of
+course be run separately. The first first step is to run the program
+'kbprog', but with the ``word-difference\'\'\ option, which is required
+for automatic group calculations. The next program (which can itself be
+divided up into different parts if required) computes the word-acceptor
+and multiplier automata for the group. The final program (which can again
+be split into parts), is the so-called axiom-checking process, which proves
+that the automata that have been calculated are correct.
+If the process runs to completion, then the automata can be used to reduce
+words in the group generators to their irreducible normal forms under the
+shortlex ordering, and so the word problem in the group can be solved
+efficiently.
+
+The third application of the package is for general manipulation of finite
+state automata. Currently, this application is effectively restricted to
+deterministic automata, since non-deterministic automata can only be read in and
+printed out again. Eventually we plan at least to provide a program that
+inputs a nondeterministic machine and outputs a deterministic one accepting
+the same language.
+
+There are programs for carrying out logical operations
+on automata (in fact, some of the functions that they call are also used
+in the automatic group calculations).  There are also programs to count
+and to enumerate the language of a finite state automaton. These are
+likely to be interesting to apply to the automata associated with
+an automatic group, or to the reduction automaton output by 'kbprog' in
+its stand-alone mode. There are a number of other, more dedicated,
+packages that are available for manipulating finite state automata and
+regular expressions. One such is {\Automate} (see \cite{Rie87} or
+\cite{ChH91}), and another {\Grail} (see ??) developed at Ontario.
+
+\Section{File formats}
+The programs in {\KBMAG} generally do all of their serious input and output
+from files, and only print diagnostics to 'stdout'. These files conform to
+the format of the  {\GAP} system \cite{Sch92} and so are readable from
+within {\GAP}. The interface with {\GAP} is currently rather rudimentary;
+eventually, it will hopefully be possible to provide {\GAP} functions which
+call the {\KBMAG} programs directly from within {\GAP}. Further details on
+the current situation can be found in Chapter "The Interface with GAP".
+
+Two principal types of objects are handled, rewriting-systems and
+finite state automata. Each file contains a single {\GAP} declaration, which
+defines one object of one of these two types. This takes the general form
+
+'<identifier> \:= rec(<list>);'
+
+where <list> is a comma-separated list
+of field-definitions that specify the values of the fields of the object
+being defined. The two types of object are distinguished by the first
+such definition, which must be either
+
+|isRWS := true| \hspace{1cm}  or \hspace{1cm}  |isFSA := true|
+
+for rewriting-systems and finite state automata, respectively.
+
+To use the interface with {\GAP} in its current form, the name of a
+rewriting-system (i.e. the value of <identifier>) has to be '\_RWS'.
+This is because the relevant {\GAP} functions have '\_RWS' defined as an
+external variable, and expect a declaration of this form.
+
+Formal definitions of these formats have not yet been written down.
+There is a text document giving an informal, and not completely up-to-data
+description of the finite state automaton format in the {\KBMAG}
+directory 'doc'. Examples of files containing rewriting-systems can be
+found in the directories 'kb\_data' and 'ag\_data', and examples of
+finite state automata in 'fsa\_data'. Rather than attempt a description
+here, we suggest that the reader takes a look at some of these files.
+
+For the Knuth--Bendix and automatic group applications, the user has to
+supply a rewriting-system that defines a monoid or group in a file as input.
+The programs produce new files containing rewriting-systems or automata.
+In general, the user\'s file will contain a declaration of the above type,
+and the computed files will contain a declaration of form
+
+'<identifier>.<suffix> \:= rec(<list>);'
+
+for the same <identifier>, so that if the user reads these files from
+within {\GAP}, and the input file is read first, then, from {\GAP}\'s
+viewpoint, the computed files will define new components of the original
+record. (As mentioned above, for use with {\GAP}, the value of
+<identifier> should always be '\_RWS'.)
+
+The best method (and the one always employed by the author)
+of creating an input file is to copy an existing one and edit it. Let us
+briefly look at an example and discuss it.
+
+|
+#Free nilpotent group of rank 2 and class 2
+_RWS := rec(
+           isRWS := true,
+  generatorOrder := [c,C,b,B,a,A],
+        inverses := [C,c,B,b,A,a],
+        ordering := "recursive",
+       equations := [
+         [b*a,a*b*c]
+       ]
+);
+|
+
+The first line is a comment, and is ignored by programs. (In general,
+comments are preceded by the `\#\'\ symbol and last to the end of the line.)
+To comply with the current {\GAP} interface, we name our rewriting-system
+'\_RWS'.
+As we saw above, the first field definition merely states that this is a
+definition of a rewriting system.
+
+The |ordering|\ field specifies which
+ordering on strings in the input alphabet is to be used by the Knuth--Bendix
+program. Although there is a default ordering, which is '\"shortlex\"',
+this field is required by the {\GAP} interface, so it is recommended that
+it should always be included.
+It is also possible
+to define the ordering by means of a command-line option to 'kbprog'
+however. The convention for this, and various other fields, is that
+command-line options override settings in the file in case of conflict.
+Full details of these options are given in Chapters
+"The Knuth--Bendix Program for Monoids" and "The Automatic Groups Package".
+
+The remaining three fields provide the definition of the group or monoid.
+First comes a list of generators. They must generate the structure as a monoid,
+even if it is a group; this means inverses should be included in the generator
+list. The field is named |generatorOrder|\ to emphasize the fact that the
+order is relevant - it will affect the ordering of strings in the alphabet.
+The names of the generators should be alphanumeric strings. In fact,
+dots and underscores are also allowed, for compatability with {\GAP}.
+Case is significant. It is recommended to use single letters, and use
+case-change for inversion, as we have done in this example. Another
+recommended policy is to use a common prefix followed by numbers; for
+example, a file output by {\GAP} might have its generators named
+'G.1, G.2, ..., G.n' for some $n \ge 0$.
+
+The |inverses|\ field supplies the list of two-sided inverses of the
+generators, in the same order as the generators. This field must be present,
+but, in general, not all generators need have inverses, so the list could
+be empty, or contain gaps. For example, if only the first and third
+generators have inverses, and these are named 'i1' and 'i2', then the list
+would be written as '[i1,,i2]'.  However, if generator 'A' is listed as the
+inverse of 'a', then 'a' must also be listed as the inverse of 'A'.
+There is currently no mechanism for inputting one-sided inverses (although
+that would be useful information for 'kbprog' under some circumstances, and so
+it may be introduced in the future).
+In the automatic groups applications, the structure must be a group, and all
+generators must have inverses specified in the list.
+(Currently, there is no way of specifying a default convention, such as
+inversion equals case-change. We may introduce such a convention in
+future, but this will depend on whether it can be made meaningful to
+{\GAP}.)
+
+Finally, there comes the |equations|\ field. This consists of a list of
+lists. Each inner list constitutes a defining relation for the
+monoid, and should have two entries, which are words in the generators,
+and are the left and right hand sides of the relation.
+The empty word is denoted (as in {\GAP}) by 'IdWord'.
+The word may contain brackets to any level, and positive powers.
+So, for example 'a\*(b\*(A\*c)\^4)\^3\*c\^12' is a valid word in the generators
+in the example above.
+Since the word is in the monoid generators, not all of which will
+necessarily have inverses, negative powers are not permitted. (This means,
+unfortunately, that there is currently no shorthand method of writing
+commutators; we may attempt to remedy this in the future.)
+
+It is not necessary to include defining relations of type
+'[a\*A,IdWord]' in the list of equations, where the generators 'a' and 'A'
+have been already been specified as mutually inverse in the ``|inverses|\'\'
+field, and this has not been done in the example above. On the other hand
+it does no harm if you do include them, and they will be included in
+lists of equations output by 'kbprog'.
+
+There are a number of other optional fields, which do not occur in this example,
+and provide further detailed instructions for the Knuth--Bendix program.
+See the description of this program in Section "kbprog" for details.
+
+\Section{Exit Status of Programs and Meanings of Some Options}
+
+The exit status of nearly all of the programs is 0 if successful and
+1 if unsuccessful, and the program aborts with an error message
+to 'stderr', without outputting to file.
+One or two of the programs can also exit with status 2, which means that
+something unusual but non-fatal has occurred. The two most important are
+'kbprog' and 'gpaxioms'; see Sections "kbprog", "kbprog -wd", and
+"gpaxioms".
+
+Many of the options to the individual programs in {\KBMAG} have the same
+meaning wherever they occur. To avoid repeating them over and over again, we
+list some of them here.
+\begin{description}
+\item[|-v |]
+The verbose option. A certain amount of extra information on progress of
+calculation is printed out to stdout.
+(By default, only the main results of calculations are printed out as
+comments to stdout.)
+\item[|-silent|]
+There is no output at all to 'stdout'.
+The only output to the terminal is error messages when the program
+aborts for some reason.
+\item[|-vv |]
+The very-verbose option. A huge of diagnostic information is printed out,
+much of which may seem incomprehensible.
+\item[|-l |]
+Large hash-tables. When constructing finite state automata, the states
+are identified as sequences of integers, sometimes of varying length.
+The sequences are stored in open hash-tables. Space is allocated as
+required in blocks. The default size of the block is $2^{18}$ bytes;
+with the '-l' option it becomes $2^{21}$ bytes. This makes things
+run more efficiently when constructing large automata.
+There is also a '-h' option (huge hash-tables) which is of doubtful
+desirability.
+\item[|-ip d|]
+Store finite state automata in dense format, which means that the
+transition table is stored as an $ne \times ns$ array, where $ne$ and
+$ns$ are the sizes of the alphabet  and state-set, respectively.
+This is always the default, and is the fastest. It can be expensive on
+space, however, particularly when the alphabet is large. If you run out
+of space, or a program starts to swap heavily, then it may be worth trying
+sparse storage.
+\item[|-ip s|[<dr>]]
+Store finite state automata in sparse format. This means that the
+transitions from each state are stored as a sequence of edge-target
+pairs. With large automata, with large alphabet (which means size more
+than about 5 or 6), it normally requires significantly less space than
+dense format. The '[<dr>]' option (dense rows) is a compromise.
+Here <dr> should be a positive integer (something like 1000 might be a good
+choice). The transitions from the first <dr> states are stored in dense
+format, and the remainder in sparse format.
+\item[|-op d|]
+Automata are written to files in dense format. This is the default
+for one-variable automata (such as the word acceptor in an automatic
+group).
+\item[|-op s|]
+Automata are written to files in sparse format. This is the default
+for two-variable automata (such as the multiplier in an automatic
+group).
+\end{description}

@@ -1,0 +1,3901 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  xmod.tex               GAP documentation         Chris Wensley & Murat Alp
+%%
+%A  @(#)$Id: xmod.tex,v 1.5 1997/04/15 14:21:43 gap Exp $
+%%
+%%  This file describes the xmod datatype and its opertions.
+%%
+%H  $Log: xmod.tex,v $
+%H  Revision 1.5  1997/04/15 14:21:43  gap
+%H  Fixed manual example
+%H
+%H  Revision 1.4  1997/03/31 16:48:41  gap
+%H  Corrected small problem with HTML conversion		SL
+%H
+%H  Revision 1.3  1997/03/31 15:59:11  gap
+%H  Fixed remaining double definitions and undefined references. Manual now
+%H  LaTeX's without error
+%H
+%H  		Steve
+%H
+%H  Revision 1.2  1997/03/27 14:41:46  gap
+%H  Reformatted to look better on line	SL
+%H
+%H  Revision 1.1  1997/03/27 14:01:07  gap
+%H  Added manual chapter for xmod. Corrected xmod and matpkg to avoid duplicate
+%H  section names.
+%H
+%H  		SL
+%H
+%H  Revision 1.1  1997/03/27 13:35:39  gap
+%H      Added xmod 1.31
+%H
+%H  	    SL
+%H
+%H  25/ 7/95  Initial version for Aachen
+%H  15/12/95  Version 1.1 posted on the ftp server
+%H   4/ 9/96  Version 1.2 posted on the ftp server
+%H  13/ 1/97  Version 1.3 posted on the ftp server
+
+\newcommand{\semidirect}{\hspace{0.3em}\rule[0.03em]{0.05em}{0.45em}
+                         \hspace{-0.35em}  \times  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{XMOD}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{About XMOD}
+
+This document describes a package for the {\GAP} group theory langauge
+which  enables computations with    the equivalent notions  of finite,
+permutation {\em crossed modules} and {\em cat1-groups}.
+
+The package divides into six parts, each of which has its own introduction\:
+\begin{itemize}
+\item for constructing crossed modules and their morphisms in section 
+      \ref{About crossed modules}\:\ About crossed modules;
+\item for cat1-groups, their morphisms, and for converting between
+      crossed modules and cat1-groups, 
+      in section \ref{About cat1-groups}\:\ About cat1-groups;
+\item for derivations and sections and the monoids which they form
+      under the Whitehead multiplication, in section
+      \ref{About derivations and sections}\:\ About derivations and sections;
+\item for actor crossed modules, actor cat1-groups and the actors squares
+      which they form,  in section \ref{About actors}\:\ About actors;
+\item for the construction of induced crossed modules
+      and induced cat1-groups, in section 
+      \ref{About induced constructions}\:\ About induced constructions;
+\item for a collection of utility functions in section 
+      \ref{About utilities}\:\ About utilities.
+\end{itemize}
+
+\noindent
+These seven |About...| sections are collected together in a separate
+\LaTeX file, |xmabout.tex|, which forms a short introduction to the package.
+
+The  package may be obtained as  a compressed file by  ftp from one of
+the sites with   a {\GAP} archive.  After  decompression, instructions
+for installing the package may be found in the |README| file.
+
+The following constructions are planned  for the  next version of  the
+package.  Firstly,  although  sub-crossed  module functions  have been
+included,  the  equivalent set  of  sub-cat1-groups  functions  is not
+complete.  Secondly,  functions for  pre-crossed modules,  the Peiffer
+subgroup of a pre-crossed module  and the associated crossed  modules,
+will  be added.  Group-graphs  provide examples of pre-crossed modules
+and their implementation will require interaction with graph-theoretic
+functions in {\GAP}.  Crossed squares  and the equivalent  cat2-groups
+are   the structures   which  arise as  \"three-dimensional  groups\".
+Examples of  these are implicitly  included already, namely inclusions
+of normal  sub-crossed modules, and the inner  morphism from a crossed
+module to its actor (section \ref{InnerMorphism for crossed modules}).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{About crossed modules}
+
+The term crossed module was introduced by J. H. C. Whitehead in
+\cite{xmodW2}, \cite{xmodW1}. In \cite{xmodL1} Loday reformulated the notion of a 
+crossed  module  as a   cat1-group.  Norrie \cite{xmodN1},   \cite{xmodN2} and
+Gilbert \cite{xmodG1} have studied  derivations, automorphisms  of crossed
+modules and the actor of  a crossed module,  while Ellis \cite{xmodE1} has
+investigated   higher dimensional analogues.    Properties  of induced
+crossed modules have been determined  by Brown, Higgins and Wensley in
+\cite{xmodBH1},  \cite{xmodBW1}  and \cite{xmodBW2}.    For further references see
+\cite{xmodAW1} where we discuss some of the data structures and algorithms
+used in this  package,  and  also   tabulate isomorphism   classes  of
+cat1-groups up to size $30$.
+
+We first recall the descriptions of three equivalent categories\: ~
+\textbf{XMod}, the category of crossed modules and their morphisms; ~
+\textbf{Cat1}, the category of cat1-groups and their morphisms; and ~
+\textbf{GpGpd}, the subcategory of group objects in the category
+\textbf{Gpd} of groupoids.
+We also  include functors between  these categories which  exhibit the
+equivalences.  Most papers on crossed modules use left actions, but we
+give the alternative right action axioms here, which are more suitable
+for use in computational group theory programs.
+
+A crossed module  ${\cal X} =  (\partial \: S  \to R )$  consists of a
+group homomorphism   $\partial  $,   called  the  {\em   boundary}  of
+$\mathcal{X}$,   with {\em source} $S$   and {\em range} $R$, together
+with an action  $\alpha \: R  \to \mathrm{Aut}(S)$ satisfying, for all
+$s,s_1,s_2 \in S$ and $r \in R$,
+\begin{center}
+\begin{tabular}{c r c l }
+\textbf{XMod\ 1\:} &  $\partial(s^r)$   &  =  &  $r^{-1} (\partial s) r$ \\
+\textbf{XMod\ 2\:} &  $s_1^{\partial s_2}$  &  =  &  $s_2^{-1}s_1 s_2$.
+\end{tabular}
+\end{center}
+The kernel of  $\partial$  is abelian.
+
+
+The standard constructions for crossed modules are as follows:
+
+\begin{enumerate}
+\item A {\em conjugation crossed module}
+      is an  inclusion of a  normal subgroup  $S  \unlhd R$, where $R$
+      acts on $S$ by conjugation.
+\item A {\em central extension crossed module} has as boundary a surjection
+      $\partial \: S \to R$ with central  kernel, where $r \in R$ acts
+      on $S$ by conjugation with $\partial^{-1}r$.
+\item An {\em automorphism crossed module} has as range a subgroup $R$
+      of the automorphism  group $\mbox{Aut}(S)$ of $S$ which contains
+      the inner  automorphism group of $S$.  The  boundary maps $s \in
+      S$ to the inner automorphism of $S$ by $s$.
+\item A {\em trivial action crossed module}  $\partial \: S \to R$
+      has $s^r =  s$ for all  $s \in S,  \; r \in   R$, the source  is
+      abelian and the image lies in the centre of the range.
+\item An {\em R-Module crossed module} has an $R$-module as source
+      and the zero map as boundary.
+\item The direct product  ${\cal X}_{1} \times {\cal X}_{2}$
+      of two crossed  modules has source $S_1  \times S_2$, range $R_1
+      \times R_2$ and   boundary $\partial_1 \times \partial_2$,  with
+      $R_1,\ R_2$ acting trivially on $S_2,\ S_1$ respectively.
+\end{enumerate}
+
+A morphism between two crossed  modules ${\cal X}_{1} = (\partial_1 \:
+S_1 \to R_1)$ and  ${\cal X}_{2} = (\partial_2  \: S_2 \to R_2)$ is  a
+pair $(\sigma,  \rho)$, where $  \sigma \: S_1 \to S_2$  and $ \rho \:
+R_1 \to R_2$ are homomorphisms satisfying 
+$$\partial_2 \sigma = \rho \partial_1, \; \;
+\sigma(s^r) = (\sigma s)^{\rho r}.
+$$  
+
+When ${\cal X}_{1}    = {\cal X}_{2}$ and   $  \sigma, \rho $  are
+automorphisms then $(\sigma,  \rho)$   is an automorphism   of  ${\cal
+X}_1$.  The group of  automorphisms is denoted  by $\mathrm{Aut}({\cal
+X}_1 ).$
+
+
+In this implementation a crossed module  |X|  is a record with fields:
+
+\begin{tabular}{ll}
+|X.source|,     & the source $S$ of $\partial$,       \\
+|X.boundary|,   & the homomorphsim $\partial$,        \\
+|X.range|,      & the range $R$ of $\partial$,        \\
+|X.aut|,        & a group of automorphisms of $S$,    \\
+|X.action|,     & a homomorphism from $R$ to |X.aut|, \\
+|X.isXMod|,     & a boolean flag, normally |true|,    \\
+|X.isDomain|,   & always true,                        \\
+|X.operations|, & special set of operations 'XModOps'
+                  (see \ref{Operations for crossed modules}),  \\
+|X.name|,       & a concatenation of the names of the source and range.
+\end{tabular}
+
+Here   is a simple  example of   an automorphism  crossed  module, the
+holomorph of the cyclic group of size five.
+
+|    gap> c5 := CyclicGroup( 5 );;   c5.name := "c5";;
+    gap> X1 := AutomorphismXMod( c5 );
+    Crossed module [c5->PermAut(c5)]
+    gap> XModPrint( X1 );
+    Crossed module [c5->PermAut(c5)] :- 
+    : Source group c5 has generators:
+      [ (1,2,3,4,5) ]
+    : Range group = PermAut(c5) has generators:
+      [ (1,2,4,3) ]
+    : Boundary homomorphism maps source generators to:
+      [ () ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2,4,3) --> { source gens --> [ (1,3,5,2,4) ] }
+      This automorphism generates the group of automorphisms.    |
+
+
+Implementation of the  standard constructions is described in sections
+|ConjugationXMod|,    |CentralExtensionXMod|,      |AutomorphismXMod|,
+|TrivialActionXMod| and  |RModuleXMod|.  With  these  building blocks,
+sub-crossed modules |SubXMod|, quotients of normal sub-crossed modules
+|FactorXMod|  and  direct  products  |XModOps.DirectProduct|  may   be
+constructed.  An   extra function |XModSelect|  is used  to call these
+constructions using groups of  order up to  $47$ and data from file in
+|Cat1List|.
+
+A morphism  from  a crossed module ${\cal  X}_1$  to a crossed  module
+${\cal  X}_2$ is  a  pair  of homomorphisms  $(\sigma,  \rho)$,  where
+$\sigma, \rho$ are respectively homomorphisms  between the sources and
+ranges of  ${\cal X}_1$ and ${\cal X}_2$,  which  commute with the two
+boundary  maps and which are  morphisms  for the two  actions.  In the
+following code we construct a simple automorphism of |X1|.
+
+|    gap> sigma1 := GroupHomomorphismByImages( c5, c5, [ (1,2,3,4,5) ],
+    >        [ (1,5,4,3,2) ] );;
+    gap> rho1 := InclusionMorphism( X1.range, X1.range );;
+    gap> mor1 := XModMorphism( X1, X1, [ sigma1, rho1 ] );
+    Morphism of crossed modules <[c5->PermAut(c5)] >-> [c5->PermAut(c5)]>
+    gap> IsXModMorphism( mor1 );
+    true
+    gap> XModMorphismPrint( mor1 );
+    Morphism of crossed modules :- 
+    : Source = Crossed module [c5->PermAut(c5)] with generating sets:
+      [ (1,2,3,4,5) ]
+      [ (1,2,4,3) ]
+    : Range = Source
+    : Source Homomorphism maps source generators to:
+      [ (1,5,4,3,2) ]
+    : Range Homomorphism maps range generators to:
+      [ (1,2,4,3) ]
+    : isXModMorphism? true
+    gap> IsAutomorphism( mor1 );
+    true  |
+
+The functors between  \textbf{XMod} and \textbf{Cat1}, are implemented
+as functions |XModCat1| and |Cat1XMod|.
+
+An integer variable 'XModPrintLevel'   is set initially equal to  '1'.
+If it is increased, additional  information is printed out during  the
+execution of many of the functions.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The XMod Function}
+
+'XMod( <f, a> )'
+
+A   crossed   module is   determined  by    its  boundary and   action
+homomorphisms, $f$ and $a$.  All  the standard constructions described
+below call this function after constructing the two homomorphisms.  In
+the following example we construct  a central extension crossed module
+$s3 \times c4 \to s3$  directly by defining the  projection on to  the
+first factor to be the boundary map, and constructing the automorphism
+group by taking two inner automorphisms as generators.
+
+|    gap> s3c4 := Group( (1,2),(2,3),(4,5,6,7));;
+    gap> s3c4.name := "s3c4";;
+    gap> s3 := Subgroup( s3c4, [ (1,2), (2,3) ] );;
+    gap> s3.name := "s3";;
+    gap> # construct the boundary
+    gap> gen := s3c4.generators;;
+    gap> imb := [ (1,2), (2,3), () ];;
+    gap> bX := GroupHomomorphismByImages( s3c4, s3, gen, imb );;
+    gap> # construct the inner automorphisms by (1,2) and (2,3)
+    gap> im1 := List( gen, g -> g^(1,2) );;
+    gap> a1 := GroupHomomorphismByImages( s3c4, s3c4, gen, im1 );;
+    gap> im2 := List( gen, g -> g^(2,3) );;
+    gap> a2 := GroupHomomorphismByImages( s3c4, s3c4, gen, im2 );;
+    gap> A := Group( a1, a2 );;
+    gap> # construct the action map from s3 to A
+    gap> aX := GroupHomomorphismByImages( s3, A, [(1,2),(2,3)], [a1,a2] );;
+    gap> X := XMod( bX, aX );
+    Crossed module [s3c4->s3]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsXMod}%
+\index{test!for xmods}
+
+'IsXMod( <X> )'
+
+This Boolean function  checks that the five  main fields of  $X$ exist
+and that the crossed module axioms are satisfied.
+
+|    gap> IsXMod( X );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModPrint}%
+\index{Print!for xmods}
+
+'XModPrint( <X> )'
+
+This function is used to display the main fields of a crossed module.
+
+|    gap> XModPrint( X );
+    Crossed module [s3c4->s3] :- 
+    : Source group s3c4 has generators:
+      [ (1,2), (2,3), (4,5,6,7) ]
+    : Range group has parent ( s3c4 ) and has generators:
+      [ (1,2), (2,3) ]
+    : Boundary homomorphism maps source generators to:
+      [ (1,2), (2,3), () ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2) --> { source gens --> [ (1,2), (1,3), (4,5,6,7) ] }
+      (2,3) --> { source gens --> [ (1,3), (2,3), (4,5,6,7) ] }
+      These 2 automorphisms generate the group of automorphisms.   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ConjugationXMod}%
+
+'ConjugationXMod( <R [,S]> )'
+
+This construction returns the  crossed module  whose  source $S$ is  a
+normal subgroup of  the range $R$, the  boundary is the inclusion map,
+the group of automorphisms is the inner automorphism group of $S$, and
+the action maps an element of $r \in R$  to conjugation of $S$ by $r$.
+The default value for $S$ is $R$.
+
+|    gap> s4 := Group( (1,2,3,4), (1,2) );;
+    gap> a4 := Subgroup( s4, [ (1,2,3), (2,3,4) ] );;
+    gap> k4 := Subgroup( a4, [ (1,2)(3,4), (1,3)(2,4) ] );;
+    gap> s4.name := "s4";;  a4.name := "a4";;  k4.name := "k4";;
+    gap> CX := ConjugationXMod( a4, k4 );
+    Crossed module [k4->a4] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModName}%
+\index{Name!for xmods}
+
+'XModName( <X> )'
+
+Whenever  the names of the  source or range of  |X|  are changed, this
+function may     be   used  to produce      the  new   standard   form
+|[X.source.name->X.range.name]| for the name of |X|.  This function is
+called automatically by |XModPrint|.
+
+|    gap> k4.name := "v4";;
+    gap> XModName( CX );
+    "[v4->a4]"           |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CentralExtensionXMod}%
+
+'CentralExtensionXMod( <f> )'
+
+This  construction returns the crossed module  whose boundary $f$ is a
+surjection from $S$  to $R$ having as kernel  a subgroup of the centre
+of $S$.  The action maps an element of $r \in R$ to conjugation of $S$
+by $f^{-1}r$.
+
+|    gap> d8 := Subgroup( s4, [ (1,2,3,4), (1,3) ] );; d8.name := "d8";;
+    gap> gend8 := d8.generators;; genk4 := k4.generators;;
+    gap> f := GroupHomomorphismByImages( d8, k4, gend8, genk4 );;
+    gap> EX := CentralExtensionXMod( f );
+    Crossed module [d8->v4] 
+    gap> XModPrint( EX );
+    Crossed module [d8->v4] :-
+    : Source group d8 has parent s4 and generators:
+      [ (1,2,3,4), (1,3) ]
+    : Range group k4 has parent s4 and generators:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : Boundary homomorphism maps source generators to:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2)(3,4) --> { source gens --> [ (1,2,3,4), (2,4) ] }
+      (1,3)(2,4) --> { source gens --> [ (1,4,3,2), (1,3) ] }
+    These 2 automorphisms generate the group of automorphisms.   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AutomorphismXMod}%
+
+'AutomorphismXMod( <S [, A]> )'
+
+This construction  returns the  crossed module  whose  range $R$ is  a
+permutation  representation  of a  group   $A$ which  is  a  group  of
+automorphisms of  the    source $S$ and    which  contains the   inner
+automorphism group  of $S$ as a subgroup.   When $A$ is  not specified
+the full automorphism group is  used.   The boundary morphism maps  $s
+\in S$ to the representation of the  inner automorphism of $S$ by $s$.
+The action is the isomorphism $R \to A$.
+
+In  the following example, recall  that the automorphism  group of the
+quaternion group is isomorphic to the symmetric  group of degree 4 and
+that  the inner automorphism group  is isomorphic  to |k4|.  The group
+|A| is a subgroup of |Aut(q8)| isomorphic to |d8|.
+
+|    gap> q8 := Group( (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8) );;
+    gap> q8.name := "q8";; genq8 := q8.generators;;
+    gap> iaq8 := InnerAutomorphismGroup( q8 );;
+    gap> a := GroupHomomorphismByImages( q8, q8, genq8,
+    >             [(1,5,3,7)(2,6,4,8),(1,4,3,2)(5,6,7,8)]);;
+    gap> genA := Concatenation( iaq8.generators, [a] );
+    [ InnerAutomorphism( q8, (1,2,3,4)(5,8,7,6) ), 
+      InnerAutomorphism( q8, (1,5,3,7)(2,6,4,8) ), 
+      GroupHomomorphismByImages( q8, q8, [ (1,2,3,4)(5,8,7,6),
+       (1,5,3,7)(2,6,4,8) ], [ (1,5,3,7)(2,6,4,8), (1,4,3,2)(5,6,7,8) ] ) ]
+    gap> id := IdentityMapping( q8 );;
+    gap> A := Group( genA, id );;
+    gap> AX := AutomorphismXMod( q8, A );
+    Crossed module [q8->PermSubAut(q8)] 
+    gap> RecFields( AX );
+    [ "isDomain", "isParent", "source", "range", "boundary", "action",
+      "aut", "isXMod", "operations", "name", "isAutomorphismXMod" ]       |
+
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InnerAutomorphismXMod}%
+\index{InnerAutomorphism!for xmods}
+
+'InnerAutomorphismXMod( <S> )'
+
+This function  is  equivalent to  |AutomorphismXMod(S,A)|  in the case
+when |A| is the inner automorphism group of |S|.
+
+|    gap> IX := InnerAutomorphismXMod( q8 );
+    Crossed module [q8->PermInn(q8)]   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TrivialActionXMod}%
+
+'TrivialActionXMod( <f> )'
+
+For a crossed  module to have trivial  action, the axioms require  the
+source  to be  abelian and  the image of   the boundary to  lie in the
+centre of the range.  A  homomorphism |f| can act  as the boundary map
+when these conditions are satisfied.
+
+|    gap> imf := [ (1,3)(2,4), (1,3)(2,4) ];;
+    gap> f := GroupHomomorphismByImages( k4, d8, genk4, imf );;
+    gap> TX := TrivialActionXMod( f );
+    Crossed module [v4->d8]
+    gap> XModPrint( TX );
+
+    Crossed module [v4->d8] :- 
+    : Source group has parent ( s4 ) and has generators:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : Range group has parent ( s4 ) and has generators:
+      [ (1,2,3,4), (1,3) ]
+    : Boundary homomorphism maps source generators to:
+      [ (1,3)(2,4), (1,3)(2,4) ]
+      The automorphism group is trivial   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRModule for groups}%
+\index{test!for RModules}
+
+'IsRModule( <Rmod> )'
+
+'IsRModuleRecord( <Rmod> )'
+
+An $R$-module consists of   a  permutation group  $R$ with  an  action
+$\alpha \: R  \to  A$ where $A$  is  a group  of automorphisms  of  an
+abelian    group  $M$.   When |R|   is    not specified,  the function
+|AutomorphismPair| is automatically called to construct it.
+
+This structure is implemented here as a record |Rmod| with fields:
+
+\begin{tabular}{ll}
+|Rmod.module|,     & the abelian group $M$,   \\
+|Rmod.perm|,       & the group $R$,           \\
+|Rmod.auto|,       & the action group $A$,    \\
+|Rmod.isRModule|,  & set true.
+\end{tabular}
+
+The 'IsRModule' distributor calls  this function when the parameter is
+a record but not a crossed module.
+
+|    gap> k4gen := k4.generators;;
+    gap> k4im := [ (1,3)(2,4), (1,4)(2,3) ];;
+    gap> a := GroupHomomorphismByImages( k4, k4, k4gen, k4im );;
+    gap> Ak4 := Group( a );;
+    gap> R := rec( );;
+    gap> R.module := k4;;
+    gap> R.auto := Ak4;;
+    gap> IsRModule( R );
+    true
+    gap> RecFields( R );
+    [ "module", "auto", "perm", "isRModule" ]
+    gap> R.perm;
+    PermSubAut(v4)   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RModuleXMod}%
+
+'RModuleXMod( <Rmod> )'
+
+The crossed module  |RX| obtained from an  $R$-module  has the abelian
+group $M$ as  source, the zero  map  as boundary, the group  $R$ which
+acts on $M$ as  range,   the group  $A$  of  automorphisms of  $M$  as
+|RX.aut| and $\alpha \: R \to A$  as |RX.action|.  An appropriate name
+for |RX|  is chosen automatically.    Continuing the previous example,
+$M$ is |k4| and $R$ is cyclic of order $3$.
+
+|    gap> RX := RModuleXMod( R );
+    Crossed module [v4->PermSubAut(v4)]
+    gap> XModPrint( RX );
+
+    Crossed module [v4->PermSubAut(v4)]
+    : Source group has parent s4 and has generators:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : Range group = PermSubAut(v4) has generators:
+      [ (1,2,3) ]
+    : Boundary homomorphism maps source generators to:
+      [ () ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2,3) --> { source gens --> [ (1,3)(2,4), (1,4)(2,3) ] }
+      This automorphism generates the group of automorphisms.    |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModSelect}%
+\index{Select!for xmods}
+
+'XModSelect( <size> [, <gpnum>, <type>, <norm>] )'
+
+Here the parameter <size> may take any value  up to 47, <gpnum> refers
+to the isomorphism class of  groups of order <size>  as ordered in the
+\GAP $\;$   library.  The <norm>  parameter  is only  used in the case
+|"conj"| and specifies the position of the source group in the list of
+normal subgroups  of the range $R$.   The  list |Cat1List|  is used to
+store the data for these  groups.  The allowable <types> are  |"conj"|
+for  normal  inclusions with  conjugation,   |"aut"|  for automorphism
+groups  and |"rmod"| for $R$modules.   If <type>  is not specified the
+default  is  |"conj"|.  If   <norm>     is not specified,  then    the
+|AutomorphismXMod| of $R$ is returned.
+
+In the following example the fourteenth class of  groups of size 24 is
+a  special linear  group 'sl(2,3)'  and a  double cover  of 'a4'.  The
+third normal  subgroup   of 'sl(2,3)' is a    quaternion group, and  a
+conjugation crossed module is returned.
+
+|    gap> SX := XModSelect( 24, 14, "conj", 3 );
+    Crossed module [N3->sl(2,3)] 
+    gap> XModPrint( SX );
+
+    Crossed module [N3->sl(2,3)] :- 
+    : Source group has parent ( sl(2,3) )  and has generators:
+      [ (1,2,3,4)(5,8,7,6), ( 1, 5, 3, 7)( 2, 6, 4, 8) ]
+    : Range group = sl(2,3)  has generators:
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8), (2,5,6)(4,7,8)(9,10,11) ]
+    : Boundary homomorphism maps source generators to:
+      [ (1,2,3,4)(5,8,7,6), ( 1, 5, 3, 7)( 2, 6, 4, 8) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2,3,4)(5,8,7,6) --> { source gens --> 
+    [ (1,2,3,4)(5,8,7,6), ( 1, 7, 3, 5)( 2, 8, 4, 6) ] }
+      (1,5,3,7)(2,6,4,8) --> { source gens -->  
+    [ (1,4,3,2)(5,6,7,8), ( 1, 5, 3, 7)( 2, 6, 4, 8) ] }
+      ( 2, 5, 6)( 4, 7, 8)( 9,10,11) --> { source gens --> 
+    [ ( 1, 5, 3, 7)( 2, 6, 4, 8), ( 1, 6, 3, 8)( 2, 7, 4, 5) ] }
+      These 3 automorphisms generate the group of automorphisms. |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for crossed modules}%
+
+Special  operations  defined for crossed    modules are stored  in the
+record   structure    |XModOps|.  Every    crossed   module  |X|   has
+|X.operations := XModOps;|.
+
+|    gap> RecFields( XModOps );
+    [ "name", "operations", "Elements", "IsFinite", "Size", "=", "<", 
+      "in", "IsSubset", "Intersection", "Union", "IsParent", "Parent", 
+      "Difference", "Representative", "Random", "Print", "Kernel", 
+      "IsAspherical", "IsSimplyConnected", "IsConjugation", 
+      "IsTrivialAction", "IsCentralExtension", "DirectProduct", 
+      "IsAutomorphismXMod", "IsZeroBoundary", "IsRModule",
+      "InclusionMorphism", "WhiteheadPermGroup", "Whitehead", "Norrie",
+      "Lue", "Actor", "InnerMorphism", "Centre", "InnerActor",
+       "AutomorphismPermGroup", "IdentityMorphism", "InnerAutomorphism", ] |
+
+Crossed  modules |X,Y|  are  considered equal if   they have  the same
+source, boundary,  range, and  action.   The remaining  functions  are
+discussed below and following section "About actors".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Print for crossed modules}%
+\index{Print!for xmods}
+
+'XModOps.Print( <X> )'
+
+This  function  is  the  special print  command  for crossed modules,
+producing a single line of output,  and is called automatically when a
+crossed module is displayed.  For more detail use |XModPrint( X )|.
+
+|    gap> CX;
+    Crossed module [v4->a4] | 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Size for crossed modules}%
+\index{Size!for xmods}
+
+'XModOps.Size( <X> )'
+
+This function  returns  a 2-element  list containing  the sizes of the
+source and the range of |X|.
+
+|    gap> Size( CX );
+    [ 4, 12 ] | 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elements for crossed modules}%
+\index{Elements!for xmods}
+
+'XModOps.Elements( <X> )'
+
+This function returns  a 2-element list of   lists of elements of  the
+source and range of |X|.
+
+|    gap> Elements( CX );
+    [ [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3) ],
+      [ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2),
+        (1,3,4), (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ] ]   | 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsConjugation for crossed modules}%
+\index{test!for conjugation xmod}
+
+'XModOps.IsConjugation( <X> )'
+
+This  Boolean function checks that the  source is a normal subgroup of
+the range and that the boundary is an inclusion.
+
+|    gap> IsConjugation( CX );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAspherical}%
+\index{test!for asherical xmod}
+
+'XModOps.IsAspherical( <X> )'
+
+This Boolean function checks that the boundary map is monomorphic.
+
+|    gap> IsAspherical( CX );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSimplyConnected}%
+\index{test!for simply connected xmod}
+
+'XModOps.IsSimplyConnected( <X> )'
+
+This Boolean function checks that the boundary map is surjective.  The
+corresponding groupoid then has a single connected component.
+
+|    gap> IsSimplyConnected( EX );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCentralExtension}%
+\index{test!for central extension xmod}
+
+'XModOps.IsCentralExtension( <X> )'
+
+This  Boolean function checks  that the   boundary is surjective  with
+kernel central in the source.
+
+|    gap> IsCentralExtension( EX );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAutomorphismXMod}%
+\index{test!for automorphism xmod}
+
+'XModOps.IsAutomorphismXMod( <X> )'
+
+This Boolean function checks that the range group is a subgroup of the
+automorphism group of  the source group  containing the group of inner
+automorphisms,  and that the boundary and  action homomorphisms are of
+the correct form.
+
+|    gap> IsAutomorphismXMod( AX );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsTrivialAction}%
+\index{test!for trivial action xmod}
+
+'XModOps.IsTrivialAction( <X> )'
+
+This Boolean function checks that the action is the zero map.
+
+|    gap> IsTrivialAction( TX );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsZeroBoundary}%
+\index{test!for zero boundary xmod}
+
+'XModOps.IsZeroBoundary( <X> )'
+
+This Boolean function checks that the boundary is the zero map.
+
+|    gap> IsZeroBoundary( EX );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRModule for crossed modules}%
+\index{IsRModule!for xmods}
+
+'XModOps.IsRModule( <X> )'
+
+This Boolean  function checks that  the boundary is  the zero  map and
+that the source is abelain.
+
+|    gap> IsRModule( RX );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{WhatTypeXMod}%
+
+'WhatTypeXMod( <X> )'
+
+This function checks whether the crossed module  |X| is one or more of
+the six standard type listed above.
+
+|    gap> WhatTypeXMod( EX );
+    [ " extn, " ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DirectProduct for crossed modules}%
+\index{DirectProduct!for xmods}
+
+'XModOps.DirectProduct( <X,Y> )'
+
+The direct  product of crossed  modules |X,Y| has  as source and range
+the direct products  of the sources  and ranges  of |X|  and |Y|.  The
+boundary map is the product  of the two  boundaries.  The range of |X|
+acts   trivially on the source  of   |Y| and  conversely.  Because the
+standard |DirectProduct| function  requires the  two parameters to  be
+groups, the |XModOps.| prefix must be used (at least for {\GAP}3.4.3).
+
+|    gap> DX := XModOps.DirectProduct( CX, CX );
+    Crossed module [v4xv4->a4xa4]
+    gap> XModPrint( DX );
+
+    Crossed module [v4xv4->a4xa4] :- 
+    : Source group v4xv4 has generators:
+      [ (1,2)(3,4), (1,3)(2,4), (5,6)(7,8), (5,7)(6,8) ]
+    : Range group = a4xa4 has generators:
+      [ (1,2,3), (2,3,4), (5,6,7), (6,7,8) ]
+    : Boundary homomorphism maps source generators to:
+      [ (1,2)(3,4), (1,3)(2,4), (5,6)(7,8), (5,7)(6,8) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2,3) --> { source gens -->
+          [ (1,4)(2,3), (1,2)(3,4), (5,6)(7,8), (5,7)(6,8) ] }
+      (2,3,4) --> { source gens -->
+          [ (1,3)(2,4), (1,4)(2,3), (5,6)(7,8), (5,7)(6,8) ] }
+      (5,6,7) --> { source gens -->
+          [ (1,2)(3,4), (1,3)(2,4), (5,8)(6,7), (5,6)(7,8) ] }
+      (6,7,8) --> { source gens -->
+          [ (1,2)(3,4), (1,3)(2,4), (5,7)(6,8), (5,8)(6,7) ] }
+      These 4 automorphisms generate the group of automorphisms. |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModMorphism}%
+\index{Morphism!for xmods}
+
+'XModMorphism( <X, Y, homs> )'
+
+A morphism of crossed modules is a pair of homomorphisms '[ sourceHom,
+rangeHom    ]',   where   'sourceHom',   'rangeHom' are   respectively
+homomorphisms  between  the sources and ranges  of  $X$ and $Y$, which
+commute with the two boundary maps and which are morphisms for the two
+actions.
+
+In this implementation a morphism of crossed modules |mor| is a record
+with fields:
+
+\begin{tabular}{ll}
+|mor.source|,         & the source crossed module  |X|,                \\
+|mor.range|,          & the range crossed module  |Y|,                 \\
+|mor.sourceHom|,      & a homomorphism from 'X.source' to 'Y.source',  \\
+|mor.rangeHom|,       & a homomorphism from 'X.range' to 'Y.range',    \\
+|mor.isXModMorphism|, & a Boolean flag, normally |true|,               \\
+|mor.operations|,     & a special set of operations 'XModMorphismOps'
+              (see \ref{Operations for morphisms of crossed modules}), \\
+|mor.name|,           & a concatenation of the names of |X| and |Y|.
+\end{tabular}
+
+The function |XModMorphism| requires as parameters two crossed modules
+and a two-element list containing the  source and range homomorphisms.
+It  sets  up the  required  fields for |mor|,   but does not check the
+axioms.  The 'IsXModMorphism' function should be used to perform these
+checks.  Note that the 'XModMorphismPrint' function is needed to print
+out the morphism in detail.
+
+|    gap> smor := GroupHomomorphismByImages( q8, k4, genq8, genk4 );
+    GroupHomomorphismByImages( q8, v4, 
+     [(1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8)], [(1,2)(3,4), (1,3)(2,4)] )
+    gap> IsHomomorphism(smor);
+    true
+    gap> sl23 := SX.range;;
+    gap> gensl23 := sl23.generators;
+     [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8), (2,5,6)(4,7,8)(9,10,11) ]
+    gap> images := [ (1,2)(3,4), (1,3)(2,4), (2,3,4) ];;
+    gap> rmor := GroupHomomorphismByImages( sl23, a4, gensl23, images );;
+    gap> IsHomomorphism(rmor);
+    true
+    gap> mor := XModMorphism( SX, CX, [ smor, rmor ] );
+    Morphism of crossed modules <[N3->sl(2,3)] >-> [v4->a4]> |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsXModMorphism}%
+\index{test!for xmod morphism}
+
+'IsXModMorphism( <mor> )'
+
+This Boolean function checks that <mor> includes homomorphisms between
+the corresponding   source and range  crossed  modules, and that these
+homomorphisms commute  with   the two  actions.    In the example   we
+increase the value  of |XModPrintLevel| to  show the effect of such an
+increase in a simple case.
+
+|    gap> XModPrintLevel := 3;;
+    gap> IsXModMorphism( mor );
+    Checking that the diagram commutes :- 
+             Y.boundary(morsrc(x)) = morrng(X.boundary(x)) 
+    Checking:  morsrc(x2^x1) = morsrc(x2)^(morrng(x1))
+    true
+    gap> XModPrintLevel := 1;;   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModMorphismPrint}%
+\index{Print!for xmod morphisms}
+
+'XModMorphismPrint( <mor> )'
+
+This function is used to display the main fields of a crossed module.
+
+|    gap> XModMorphismPrint( mor );
+    Morphism of crossed modules :-
+    : Source = Crossed module [N3->sl(2,3)] with generating sets
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8) ]
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8), (2,5,6)(4,7,8)(9,10,11) ]
+    :  Range = Crossed module [v4->a4] with generating sets
+      [ (1,2)(3,4), (1,3)(2,4) ]]
+      [ (1,2,3), (2,3,4) ]
+    : Source Homomorphism maps source generators to:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : Range Homomorphism maps range generators to:
+      [ (1,2)(3,4), (1,3)(2,4), (2,3,4) ]
+    : isXModMorphism? true  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModMorphismName}%
+\index{Name!for xmod morphisms}
+
+'XModMorphismName( <mor> )'
+
+Whenever the names of the source  or range crossed module are changed,
+this    function may  be  used to    produce the    new standard  form
+|<mor.source.name >-> mor.range.name>| for the  <name> of <mor>.  This
+function is automatically called by |XModMorphismPrint|.
+
+|    gap> k4.name := "k4";;  XModName( CX );;
+    gap> XModMorphismName( mor );
+    <[N3->sl(2,3)] >-> [k4->a4]>  |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for morphisms of crossed modules}%
+\index{IsMonomorphism!for crossed modules}
+\index{IsEpimorphism!for crossed modules}
+\index{IsIsomorphism!for crossed modules}
+\index{IsEndomorphism!for crossed modules}
+\index{IsAutomorphism!for crossed modules}
+
+Special operations defined for morphisms of crossed modules are stored
+in  the    record structure  'XModMorphismOps'     which is  based  on
+'MappingOps'.   Every  crossed    module  morphism  'mor'   has  field
+'mor.operations' set equal to 'XModMorphismOps;'.
+
+|    gap> IsMonomorphism( mor );
+    false
+    gap> IsEpimorphism( mor );
+    true
+    gap> IsIsomorphism( mor );
+    false
+    gap> IsEndomorphism( mor );
+    false
+    gap> IsAutomorphism( mor );
+    false   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdentitySubXMod}%
+
+'IdentitySubXMod( <X> )'
+
+Every  crossed  module |X| has  an  identity sub-crossed  module whose
+source and range are the identity subgroups of the source and range.
+
+|    gap> IdentitySubXMod( CX );
+    Crossed module [Id[k4->a4]]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SubXMod}%
+
+'SubXMod( <X, subS, subR> )'
+
+A sub-crossed module of a crossed module |X| has  as source a subgroup
+|subS| of |X.source| and as range a subgroup |subR| of |X.range|.  The
+boundary map and the action are  the appropriate restrictions.  In the
+following example we construct a sub-crossed module of |SX| with range
+|q8| and source a cyclic group of order 4.
+
+|    gap> q8 := SX.source;; genq8 := q8.generators;;
+    gap> q8.name := "q8";; XModName( SX );;
+    gap> c4 := Subgroup( q8, [ genq8[1] ] );
+    Subgroup( sl(2,3), [ (1,2,3,4)(5,8,7,6) ] )
+    gap> c4.name := "c4";;
+    gap> subSX := SubXMod( SX, c4, q8 );
+    Crossed module [c4->q8] 
+    gap> XModPrint( subSX );
+    Crossed module [c4->q8] :- 
+    : Source group has parent ( sl(2,3) ) and has generators:
+      [ (1,2,3,4)(5,8,7,6) ]
+    : Range group has parent ( sl(2,3) ) and has generators:
+      [ (1,2,3,4)(5,8,7,6), ( 1, 5, 3, 7)( 2, 6, 4, 8) ]
+    : Boundary homomorphism maps source generators to:
+      [ ( 1, 2, 3, 4)( 5, 8, 7, 6) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2,3,4)(5,8,7,6) --> {source gens --> [ (1,2,3,4)(5,8,7,6) ]}
+      (1,5,3,7)(2,6,4,8) --> {source gens --> [ (1,4,3,2)(5,6,7,8) ]}
+      These 2 automorphisms generate the group of automorphisms.  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSubXMod}%
+\index{test!for sub-xmod}
+
+'IsSubXMod( <X,S> )'
+
+This boolean function checks that 'S' is a sub-crossed module of 'X'.
+
+|    gap> IsSubXMod( SX, subSX );
+    true  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InclusionMorphism for crossed modules}%
+\index{InclusionMorphism!for xmods}
+
+'InclusionMorphism( <S,X> )'
+
+This function constructs the inclusion of a  sub-crossed module 'S' of
+'X'.  When 'S = X' the identity morphism is returned.
+
+|    gap> inc := InclusionMorphism( subSX, SX );
+    Morphism of crossed modules <[c4->q8] >-> [q8->sl(2,3)]>
+    gap> IsXModMorphism( inc );
+    true
+    gap> XModMorphismPrint( inc );
+    Morphism of crossed modules :- 
+    : Source = Crossed module [c4->q8] with generating sets:
+      [ (1,2,3,4)(5,8,7,6) ]
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8) ]
+    :  Range = Crossed module [q8->sl(2,3)] with generating sets:
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8) ]
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8), (2,5,6)(4,7,80(9,10,11) ]
+    : Source Homomorphism maps source generators to:
+      [ (1,2,3,4)(5,8,7,6) ]
+    : Range Homomorphism maps range generators to:
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8) ] 
+    :  isXModMorphism? true                            |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsNormalSubXMod}%
+\index{IsNormal!for xmods}
+
+'IsNormalSubXMod( <X,Y> )'
+
+A sub-crossed module |Y=(N->M)| is normal in |X=(S->R)| when
+\begin{itemize}
+\item {$N,M$ are normal subgroups of $S,R$ respectively,}
+\item {$n^r \in N$ for all $n \in N, \; r \in R$,}
+\item {$s^{-1}\ s^m \in N$ for all $m \in M, \; s \in S$.}
+\end{itemize}
+
+These axioms  are  sufficient to  ensure that $M   \semidirect N$ is a
+normal subgroup of  $R \semidirect S$.   %%(see \ref{IsNormalSubCat1})
+They also  ensure that the  inclusion morphism of a normal sub-crossed
+module forms  a     conjugation  crossed square,  analogous   to   the
+construction of a conjugation crossed module.
+
+|    gap> IsNormalSubXMod( SX, subSX );
+    false  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NormalSubXMods}%
+
+'NormalSubXMods( <X> )'
+
+This  function takes  pairs of normal   subgroups from the source  and
+range of |X|  and constructs a normal  sub-crossed module whenever the
+axioms are satisfied.  Appropriate names are chosen where possible.
+
+|    gap> NSX := NormalSubXMods( SX );
+    [ Crossed module [Id[q8->sl(2,3)]], Crossed module [I->?], 
+      Crossed module [Sub[q8->sl(2,3)]], Crossed module [?->q8], 
+      Crossed module [?->q8], Crossed module [q8->sl(2,3)] ]    |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Factor crossed module}%
+\index{Factor!for xmods}
+
+'FactorXMod( <X, subX> )'
+
+The  quotient   crossed module  of  a   crossed   module  by a  normal
+sub-crossed module  has quotient groups as  source and range, with the
+obvious action.
+
+|    gap> Size( NSX[3] );
+    [ 2, 2 ]
+    gap> FX := FactorXMod( SX, NSX[3] );
+    Crossed module [?->?]
+    gap> Size( FX );
+    [ 4, 12 ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Kernel of a crossed module morphism}%
+\index{Kernel!for xmod morphisms}
+
+'Kernel( <mor> )'
+
+The kernel of a morphism 'mor' $\: X \to  Y$ of crossed modules is the
+normal  sub-crossed  module of  $X$  whose  source  is the   kernel of
+'mor.sourceHom' and whose range  is the kernel  of 'mor.rangeHom'.  An
+appropriate  name for the  kernel  is  chosen automatically.  A  field
+'.kernel' is added to 'mor'.
+
+|    gap> XModMorphismName( mor );;
+    gap> KX := Kernel( mor );
+    Crossed module Ker<[q8->sl(2,3)] >-> [k4->a4]>
+    gap> XModPrint( KX );
+    Crossed module Ker<[q8->SL(2,3)] >-> [k4->a4]> :- 
+    : Source group has parent ( sl(2,3) )  and has generators:
+      [ (1,3)(2,4)(5,7)(6,8) ]
+    : Range group has parent ( sl(2,3) )  and has generators:
+      [ ( 1, 3)( 2, 4)( 5, 7)( 6, 8) ]
+    : Boundary homomorphism maps source generators to:
+      [ (1,3)(2,4)(5,7)(6,8) ]
+    : The automorphism group is trivial.
+    gap> IsNormalSubXMod( SX, KX );
+    true   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Image for a crossed module morphism}%
+\index{Image!for xmod morphisms}
+
+'ImageXModMorphism( <mor>, <S> )'
+
+The  image of a sub-crossed module  |S| of |X|  under a morphism 'mor'
+$\: X \to Y$ of crossed modules is the sub-crossed module of $Y$ whose
+source  is  the image  of  'S.source' under  'mor.sourceHom' and whose
+range is the image of  'S.range' under 'mor.rangeHom'.  An appropriate
+name for the image is chosen automatically.  A field '.image' is added
+to  'mor'.    Note      that    thjis function  should      be   named
+|XModMorphismOps.Image|, but the command |J := Image(  mor, S );| does
+not work with version 3 of {\GAP}.
+
+|    gap> subSX;
+    Crossed module [c4->q8]
+    gap> JX := ImageXModMorphism( mor, subSX );
+    Crossed module [Im([c4->q8]) by <[q8->sl(2,3)] >-> [k4->a4]>]
+    gap> RecFields( mor );
+    [ "sourceHom", "rangeHom", "source", "range", "name", "isXModMorphism",
+       "domain", "kernel", "image", "isMonomorphism", "isEpimorphism",
+       "isIsomorphism", "isEndomorphism", "isAutomorphism", "operations" ]
+    gap> XModPrint( JX );
+    
+    Crossed module [Im([c4->q8]) by <[q8->sl(2,3)] >-> [k4->a4]>] :-
+    : Source group has parent ( s4 )  and has generators:
+      [ (1,2)(3,4) ]
+    : Range group has parent ( s4 )  and has generators:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : Boundary homomorphism maps source generators to:
+      [ (1,2)(3,4) ]
+    : The automorphism group is trivial.  |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InnerAutomorphism of a crossed module}%
+\index{InnerAutomorphism!for xmods}
+
+'InnerAutomorphism( <X, r> )'
+
+Each element 'r' of  'X.range' determines an   automorphism of 'X'  in
+which the   automorphism of 'X.source'   is  given  by the  image   of
+'X.action' on 'r' and the  automorphism of 'X.range' is conjugation by
+'r'.  The command  |InnerAutomorphism(  X, r );|  does not  work  with
+version 3 of {\GAP}.
+
+|    gap> g := Elements( q8 )[8];
+    (1,8,3,6)(2,5,4,7)
+    gap> psi := XModOps.InnerAutomorphism( subSX, g );
+    Morphism of crossed modules <[c4->q8] >-> [c4->q8]>
+    gap> XModMorphismPrint( psi );
+    Morphism of crossed modules :- 
+    : Source = Crossed module [c4->q8] with generating sets:
+      [ (1,2,3,4)(5,8,7,6) ]
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8) ]
+    :  Range = Crossed module [c4->q8] with generating sets:
+      [ (1,2,3,4)(5,8,7,6) ]
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8) ] 
+    : Source Homomorphism maps source generators to:
+      [ ( 1,4,3,2)(5,6,7,8) ]
+    : Range Homomorphism maps range generators to:
+      [ ( 1,4,3,2)(5,6,7,8), (1,7,3,5)(2,8,4,6) ]
+      isXModMorphism? true   |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Order of a crossed module morphism}%
+\index{Order!for xmod morphisms}
+
+'XModMorphismOps.Order( <mor> )'
+
+This function calculates the order of an automorphism of a crossed module.
+
+|    gap> XModMorphismOps.Order( psi );
+    2   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CompositeMorphism for crossed modules}%
+\index{Composite!for morphisms of crossed modules}
+
+'CompositeMorphism( <mor1, mor2> )'
+
+Morphisms $\mu_1 \: X \to Y$  and $\mu_2 \:  Y \to Z$ have a composite
+$\mu   =  \mu_2 \circ  \mu_1    \: X \to   Z$ whose   source and range
+homomorphisms are the composites of those of $\mu_1$ and $\mu_2$.
+
+In the following example we compose 'psi' with the 'inc' obtained previously.
+
+|    gap> xcomp := XModMorphismOps.CompositeMorphism( psi, inc );
+    Morphism of crossed modules <[c4->q8] >-> [q8->sl(2,3)]> 
+    gap> XModMorphismPrint( xcomp );
+    Morphism of crossed modules :- 
+    : Source = Crossed module [c4->q8] with generating sets:
+      [ (1,2,3,4)(5,8,7,6) ]
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8) ]
+    : Range = Crossed module [q8->sl(2,3)] with generating sets:
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8) ]
+      [ (1,2,3,4)(5,8,7,6), (1,5,3,7)(2,6,4,8), (2,5,6)(4,7,8)(9,10,11) ]
+    : Source Homomorphism maps source generators to:
+      [ (1,4,3,2)(5,6,7,8) ]
+    : Range Homomorphism maps range generators to:
+      [ (1,4,3,2)(5,6,7,8), (1,7,3,5)(2,8,4,6) ]
+    : isXModMorphism? true    |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SourceXModXPModMorphism}%
+
+'SourceXModXPModMorphism( <mor> )'
+
+When  crossed modules <X,Y>  have a  common range <P>  and  'mor' is a
+morphism from  <X> to <Y>  whose  range  homomorphism is the  identity
+homomorphism,  then  |mor.sourceHom  :  X.source ->  Y.source)|   is a
+crossed module.
+
+|    gap> c2 := Subgroup( q8, [ genq8[1]^2 ] );
+    Subgroup( sl(2,3), [ (1,3)(2,4)(5,7)(6,8) ] )
+    gap> c2.name := "c2";;
+    gap> sub2 := SubXMod( subSX, c2, q8 );
+    Crossed module [c2->q8]
+    gap>inc2 := InclusionMorphism( sub2, subSX );
+    Morphism of crossed modules <[c2->q8] >-> [c4->q8]>
+    gap> PX := SourceXModXPModMorphism( inc2 );
+    Crossed module [c2->c4]
+    gap> IsConjugation( PX );
+    true   |
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{About cat1-groups}%
+
+In \cite{xmodL1} Loday  reformulated the notion of  a crossed module as  a
+cat1-group, namely a group $G$ with a pair of homomorphisms $t,h
+\: G \to G$ having a  common image $R$  and satisfying certain axioms.
+We find it convenient to  define a cat1-group  ${\cal C} = (e;t,h \: G
+\to R  )$ as  having  source  group $G$,  range group  $R$,  and three
+homomorphisms\: \ two surjections $t,h \: G \to R$ and an embedding $e
+\: R \to G$ satisfying\:
+\begin{center}
+\begin{tabular}{r l}
+\textbf{Cat\ 1\:}  &  $te = he = \mathrm{id}_R $, \\
+\textbf{Cat\ 2\:}  &  $[\ker t, \ker h] = \{ 1_G \}$.
+\end{tabular}
+\end{center}
+It follows that  $teh = h, \; het = t, \; tet = t, \; heh = h$.
+
+The maps $t,h$ are often   referred to as  the  {\em source} and  {\em
+target}, but we choose to  call them the {\em  tail} and {\em head} of
+${\cal C}$, because {\em source} is the {\GAP}  term for the domain of
+a function.
+
+
+A  morphism  ${\cal  C}_1 \to {\cal  C}_2$  of  cat1-groups is  a pair
+$(\gamma, \rho)$  where $\gamma \: G_1 \to  G_2$ and  $\rho \: R_1 \to
+R_2$ are homomorphisms satisfying  $$ h_2 \gamma  = \rho h_1, \;\; t_2
+\gamma   =   \rho   t_1, \;\;  e_2    \rho  =   \gamma  e_1,  $$  (see
+\ref{Cat1Morphism} and subsequent sections).
+
+In this  implementation a cat1-group $ {\cal  C}$ is a record with the
+following fields\:
+
+\begin{tabular}{ll}
+|C.source|,     & the source 'G',                                      \\
+|C.range|,      & the range 'R',                                       \\
+|C.tail|,       & the tail homomorphism 't',                           \\
+|C.head|,       & the head homomorphism 'h',                           \\
+|C.embedRange|, & the embedding of 'R' in 'G',                         \\
+|C.kernel|,     & a permutation group isomorphic to the kernel of 't', \\
+|C.embedKernel|,& the inclusion of the kernel in 'G',                \\
+|C.boundary|,   & the restriction of 'h' to the kernel,                \\
+|C.isDomain|,   & set 'true',                                          \\
+|C.operations|, & a special set of operations 'Cat1Ops'
+                  (see \ref{Operations for cat1-groups}, \\
+|C.name|,       & a concatenation of the names of the source and range.\\
+|C.isCat1| & a boolean flag, normally |true|.
+\end{tabular}
+
+The following listing shows a simple example\:
+
+|    gap> s3c4gen := s3c4.generators;
+    [ (1,2), (2,3), (4,5,6,7) ]
+    gap> t1 := GroupHomomorphismByImages( s3c4, s3, s3c4gen,
+    >     [ (1,2), (2,3), () ] );;
+    gap> C1 := Cat1( s3c4, t1, t1 );
+    cat1-group [s3c4 ==> s3] 
+    gap> Cat1Print( C1 );
+    cat1-group [s3c4 ==> s3] :- 
+    : source group has generators:
+      [ (1,2), (2,3), (4,5,6,7) ]
+    :  range group has generators:
+      [ (1,2), (2,3) ]
+    : tail homomorphism maps source generators to:
+      [ ( 1, 2), ( 2, 3), () ]
+    : head homomorphism maps source generators to:
+      [ ( 1, 2), ( 2, 3), () ]
+    : range embedding maps range generators to:
+      [ (1,2), (2,3) ]
+    : kernel has generators:
+      [ (4,5,6,7) ]
+    : boundary homomorphism maps generators of kernel to:
+      [ () ]
+    : kernel embedding maps generators of kernel to:
+      [ (4,5,6,7) ]  |
+
+The  category of  crossed modules is   equivalent to  the  category of
+cat1-groups, and  the  functors between these  two categories   may be
+described as follows.
+
+Starting  with the crossed  module ${\cal X}  = (\partial \: S \to R)$
+the  group   $ G $   is  defined as  the semidirect  product  $  G = R
+\semidirect  S$  using the  action  from  ${\cal  X}$.  The structural
+morphisms are given by $$ t(r,s)  = r, \; h(r,s) =  r (\partial s), \;
+er = (r,1).  $$
+
+On the other hand, starting with a cat1-group $ {\cal C} = (e;t,h \: G
+\to R)$ we define $ S = \ker t$, the range $R$ remains unchanged and $
+\partial = h\mid_S $.  The action of $R$ on  $S$ is conjugation in $S$
+via the embedding of $R$ in $G$.
+
+|    gap> X1;
+    Crossed module [c5->PermAut(c5)]
+    gap> CX1 := Cat1XMod(X1);
+    cat1-group [Perm(PermAut(c5) |'\|'|X c5) ==> PermAut(c5)] 
+    gap> CX1.source.generators;
+    [ (2,3,5,4), (1,2,3,4,5) ]
+    gap>
+    gap> XC1 := XModCat1( C1 );
+    Crossed module [ker([s3c4 ==> s3])->s3]
+    gap> WhatTypeXMod( XC1 );
+    [ " triv, ", " zero, ", " RMod, " ]  |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1}%
+
+'Cat1( <G, t, h> )'
+
+This function constructs a cat1-group ${\cal C}$  from a group $G$ and
+a pair of endomorphisms, the tail and head of ${\cal C}$.  The example
+uses the holomorph of  |c5|, a group of  size 20, which was the source
+group in |XC1| in \ref{About cat1-groups}.  Note that when $t = h$ the
+boundary is the zero map.
+
+|    gap> h20 := Group( (1,2,3,4,5), (2,3,5,4) );;
+    gap> h20.name := "h20";;
+    gap> genh20 := h20.generators;;
+    gap> imh20 := [ (), (2,3,5,4) ];;
+    gap> h := GroupHomomorphismByImages( h20, h20, genh20, imh20 );;
+    gap> t := h;;
+    gap> C := Cat1( h20, t, h );
+    cat1-group [h20 ==> R]    |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCat1}%
+\index{test!for cat1-groups}
+
+'IsCat1( <C> )'
+
+This function checks that the axioms of a cat1-group are satisfied and
+that the main fields of a cat1-group record exist.
+
+|    gap> IsCat1(C);
+    true  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1Print}%
+\index{Print!for cat1-groups}
+
+'Cat1Print( <C> ) '
+
+This function is used to display the main fields of a cat1-group.
+
+|    gap> Cat1Print(C);
+
+    cat1-group [h20 ==> R] :- 
+    : source group has generators:
+      [ (1,2,3,4,5), (2,3,5,4) ]
+    : range group has generators:
+      [ ( 2, 3, 5, 4) ]
+    : tail homomorphism maps source generators to:
+      [ (), ( 2, 3, 5, 4) ]
+    : head homomorphism maps source generators to:
+      [ (), ( 2, 3, 5, 4) ]
+    : range embedding maps range generators to:
+      [ ( 2, 3, 5, 4) ]
+    : kernel has generators:
+      [ (1,2,3,4,5) ]
+    : boundary homomorphism maps generators of kernel to:
+      [ () ]
+    : kernel embedding maps generators of kernel to:
+      [ ( 1, 2, 3, 4, 5) ]   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1Name}%
+\index{Name!for cat1-groups}
+
+'Cat1Name( <C> )'   
+
+Whenever the names of the source or the range of |C| are changed, this
+function    may    be  used    to  produce    the    new standard form
+|[<C.source.name>   ==> <C.range.name>]| for  the   name of |C|.  This
+function is called automatically by |Cat1Print|.  Note the use of |=|,
+rather than |-| in the arrow shaft, to indicate the pair of maps.
+
+|    gap> C.range.name := "c4";; Cat1Name( C ); 
+    "[h20 ==> c4]"  | 
+    
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ConjugationCat1}%
+
+'ConjugationCat1( <R, S> )'
+
+When  $S$  is a normal subgroup  of  a group  $R$ form the semi-direct
+product $G = R \semidirect S$ to $R$ and take this as the source, with
+$R$ as  the range.   The tail and  head homomorphisms  are  defined by
+$t(r,s) = r(\partial s), \; h(r,s) = r$.  In  the example 'h20' is the
+range, rather than the source.
+
+|    gap> c5 := Subgroup( h20, [(1,2,3,4,5)] );;
+    gap> c5.name := "c5";;
+    gap> CC := ConjugationCat1( h20, c5 );
+    cat1-group [Perm(h20 |'\|'|X c5) ==> h20] 
+    gap> Cat1Print( CC );
+
+    cat1-group [Perm(h20 |'\|'|X c5) ==> h20] :- 
+    : source group has generators:
+      [ ( 6, 7, 8, 9,10), ( 2, 3, 5, 4)( 7, 8,10, 9), (1,2,3,4,5) ]
+    :  range group has generators:
+      [ (1,2,3,4,5), (2,3,5,4) ]
+    : tail homomorphism maps source generators to:
+      [ ( 1, 2, 3, 4, 5), ( 2, 3, 5, 4), () ]
+    : head homomorphism maps source generators to:
+      [ ( 1, 2, 3, 4, 5), ( 2, 3, 5, 4), ( 1, 2, 3, 4, 5) ]
+    : range embedding maps range generators to:
+      [ ( 6, 7, 8, 9,10), ( 2, 3, 5, 4)( 7, 8,10, 9) ]
+    : kernel has generators:
+      [ (1,2,3,4,5) ]
+    : boundary homomorphism maps generators of kernel to:
+      [ ( 1, 2, 3, 4, 5) ]
+    : kernel embedding maps generators of kernel to:
+      [ ( 1, 2, 3, 4, 5) ]
+    : associated crossed module is Crossed module [c5->h20]
+
+    gap> ct := CC.tail;;
+    gap> ch := CC.head;;
+    gap> CG := CC.source;;
+    gap> genCG := CG.generators;;
+    gap> x := genCG[2] * genCG[3];
+    ( 1, 2, 4, 3 )( 7, 8,10, 9 )
+    gap> tx := Image( ct, x );
+    ( 2, 3, 5, 4)
+    gap> hx := Image( ch, x );
+    ( 1, 2, 4, 3)
+    
+    gap> RecFields( CC );
+    [ "source", "range", "tail", "head", "embedRange", "kernel", 
+      "boundary", "embedKernel", "isDomain", "operations", "isCat1",
+      "name", "xmod" ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for cat1-groups}%
+
+Special   operations defined for   crossed  modules are stored  in the
+record structure |Cat1Ops| based on |DomainOps|.  Every cat1-group |C|
+has |C.operations := Cat1Ops;|.
+
+|    gap> RecFields( Cat1Ops );
+    [ "name", "operations", "Elements", "IsFinite", "Size", "=", "<", 
+      "in", "IsSubset", "Intersection", "Union", "IsParent", "Parent", 
+      "Difference", "Representative", "Random", "Print", "Actor",
+      "InnerActor", "InclusionMorphism", "WhiteheadPermGroup" ]  |
+
+Cat1-groups are considered equal if  they have the same source, range,
+tail,   head  and embedding.  The   remaining  functions are described
+below.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Size for cat1-groups}%
+\index{Size!for cat1-groups}
+
+'Cat1Ops.Size( <C> )'
+
+This function returns  a two-element list  containing the sizes of the
+source and range of |C|.
+
+|    gap> Size( C );
+     [ 20, 4 ] | 
+     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elements for cat1-groups}%
+\index{Elements!for cat1-groups}
+
+'Cat1Ops.Elements( <C> )'
+
+This function returns the two-element list of lists of elements of the
+source and range of $C$.
+
+
+|    gap> Elements( C );
+    [ [ (), (2,3,5,4), (2,4,5,3), (2,5)(3,4), (1,2)(3,5), (1,2,3,4,5),
+        (1,2,4,3), (1,2,5,4), (1,3,4,2), (1,3)(4,5), (1,3,5,2,4),
+        (1,3,2,5), (1,4,5,2), (1,4,3,5), (1,4)(2,3), (1,4,2,5,3), 
+        (1,5,4,3,2), (1,5,3,4), (1,5,2,3), (1,5)(2,4) ],
+      [ (), (2,3,5,4), (2,4,5,3), (2,5)(3,4) ] ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModCat1}%
+
+'XModCat1( <C> )'
+
+This function acts as the functor  from the category of cat1-groups to
+the category of crossed modules.
+
+|    gap> XC := XModCat1( C );
+    Crossed module [ker([h20 ==> c4])->c4]
+    gap> XModPrint( XC );
+
+    Crossed module [ker([h20 ==> c4])->c4] :- 
+    : Source group has parent ( h20 ) and has generators:
+      [ (1,2,3,4,5) ]
+    : Range group has parent ( h20 ) and has generators:
+      [ ( 2, 3, 5, 4) ]
+    : Boundary homomorphism maps source generators to:
+      [ () ]
+    : Action homomorphism maps range generators to automorphisms:
+      (2,3,5,4) --> { source gens --> [ (1,3,5,2,4) ] }
+      This automorphism generates the group of automorphisms.
+    : Associated cat1-group = cat1-group [h20 ==> c4]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1XMod}%
+
+'Cat1XMod( <X> )'
+
+This function acts as the functor from the category of crossed modules
+to the category of  cat1-groups.  A permutation representation of  the
+semidirect product $R   \semidirect S$ is constructed  for  $G$.   See
+section \ref{SemidirectCat1XMod}  for   a  version  where  $G$ is    a
+semidirect product group.  The   example uses the crossed module  |CX|
+constructed in section
+\ref{ConjugationXMod}.
+
+|    gap> CX;
+    Crossed module [k4->a4]
+    gap> CCX := Cat1XMod( CX );
+    cat1-group [a4.k4 ==> a4] 
+    gap> Cat1Print( CCX );
+
+    cat1-group [a4.k4 ==> a4] :- 
+    : source group has generators:
+      [ (2,4,3)(5,6,7), (2,3,4)(6,7,8), (1,2)(3,4), (1,3)(2,4) ]
+    :  range group has generators:
+      [ (1,2,3), (2,3,4) ]
+    : tail homomorphism maps source generators to:
+      [ ( 1, 2, 3), ( 2, 3, 4), (), () ]
+    : head homomorphism maps source generators to:
+      [ ( 1, 2, 3), ( 2, 3, 4), ( 1, 2)( 3, 4), ( 1, 3)( 2, 4) ]
+    : range embedding maps range generators to:
+      [ ( 2, 4, 3)( 5, 6, 7), ( 2, 3, 4)( 6, 7, 8) ]
+    : kernel has generators:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : boundary homomorphism maps generators of kernel to:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : kernel embedding maps generators of kernel to:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : associated crossed module is Crossed module [k4->a4]    |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SemidirectCat1XMod}%
+
+'SemidirectCat1XMod( <X> )'
+
+This  function is  similar to  the   previous one, but a   permutation
+representation for $R \semidirect S$ is not constructed.
+
+|    gap> Unbind( CX.cat1 );
+    gap> SCX := SemidirectCat1XMod( CX );
+    cat1-group [a4 |'\|'|X k4 ==> a4] 
+    gap> Cat1Print( SCX );
+
+    cat1-group [a4 |'\|'|X k4 ==> a4] :- 
+    : source group has generators:
+      [ SemidirectProductElement( (1,2,3), GroupHomomorphismByImages( k4,
+         k4, [(1,3)(2,4), (1,4)(2,3)], [(1,2)(3,4), (1,3)(2,4)] ), () ), 
+        SemidirectProductElement( (2,3,4), GroupHomomorphismByImages( k4, 
+         k4, [(1,4)(2,3), (1,2)(3,4)], [(1,2)(3,4), (1,3)(2,4)] ), () ), 
+        SemidirectProductElement( (), IdentityMapping( k4 ), (1,2)(3,4) ), 
+        SemidirectProductElement( (), IdentityMapping( k4 ), (1,3)(2,4) ) ]
+    :  range group has generators:
+      [ (1,2,3), (2,3,4) ]
+    : tail homomorphism maps source generators to:
+      [ (1,2,3), (2,3,4), (), () ]
+    : head homomorphism maps source generators to:
+      [ (1,2,3), (2,3,4), (1,2)(3,4), (1,3)(2,4) ]
+    : range embedding maps range generators to:
+      [ SemidirectProductElement( (1,2,3), GroupHomomorphismByImages( k4,
+         k4, [(1,3)(2,4), (1,4)(2,3)], [(1,2)(3,4), (1,3)(2,4)] ), () ), 
+        SemidirectProductElement( (2,3,4), GroupHomomorphismByImages( k4,
+         k4, [(1,4)(2,3), (1,2)(3,4)], [(1,2)(3,4), (1,3)(2,4)] ), () ) ]
+    : kernel has generators:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : boundary homomorphism maps generators of kernel to:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : kernel embedding maps generators of kernel to:
+      [ SemidirectProductElement( (), IdentityMapping( k4 ), (1,2)(3,4) ), 
+        SemidirectProductElement( (), IdentityMapping( k4 ), (1,3)(2,4) ) ]
+    : associated crossed module is Crossed module [k4->a4]   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1List}%
+
+|Cat1List| is a list containing  data on all cat1-structures on groups
+of size up to 47.  The list is used by |Cat1Select| to construct these
+small examples of cat1-groups.
+
+|    gap> Length( Cat1List );
+    198
+    gap> Cat1List[8];
+    [ 6, 2, [ (1,2), (2,3) ], "s3", 
+            [ [ [ (2,3), (2,3) ], "c3", "c2", [ (2,3), (2,3) ], 
+            [ (2,3), (2,3) ] ] ] ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1Select}%
+\index{Select!for cat1-groups}
+
+'Cat1Select( <size, [gpnum, num] > )'
+
+All cat-structures  on groups of  order up to 47 are  stored in a list
+|Cat1List| and   may be obtained  from the  list  using this function.
+Global        variables    |Cat1ListMaxSize      :=    47|         and
+|NumbersOfIsomorphismClasses|   are  also    stored.   The     example
+illustrated is  the first case  in which $t \ne  h$ and the associated
+conjugation  crossed module is  given  by the  normal subgroup |c3| of
+|s3|.
+ 
+|    gap> Cat1ListMaxSize;
+    47
+    gap> NumbersOfIsomorphismClasses[18];
+    5
+    gap> Cat1Select( 18 );
+    Usage:  Cat1Select( size, gpnum, num )
+    [ "c6c3", "c18", "d18", "s3c3", "c3^2|'\|'|Xc2" ]
+
+    gap> Cat1Select( 18, 5 );
+    There are 4 cat1-structures for the group c3^2|'\|'|Xc2.
+    [ [range generators], [tail.genimages], [head.genimages] ]  :- 
+    [ [ (1,2,3), (4,5,6), (2,3)(5,6) ],  tail = head = identity mapping ]
+    [ [ (2,3)(5,6) ], "c3^2", "c2", [ (), (), (2,3)(5,6) ],
+        [ (), (), (2,3)(5,6) ] ]
+    [ [ (4,5,6), (2,3)(5,6) ], "c3", "s3", [ (), (4,5,6), (2,3)(5,6) ], 
+        [ (), (4,5,6), (2,3)(5,6) ] ]
+    [ [ (4,5,6), (2,3)(5,6) ], "c3", "s3", [ (4,5,6),(4,5,6),(2,3)(5,6) ],
+        [ (), (4,5,6), (2,3)(5,6) ] ]
+    Usage:  Cat1Select( size, gpnum, num )
+    Group has generators [ (1,2,3), (4,5,6), (2,3)(5,6) ]
+ 
+    gap> SC := Cat1Select( 18, 5, 4 );
+    cat1-group [c3^2|'\|'|Xc2 ==> s3] 
+    gap> Cat1Print( SC );
+
+    cat1-group [c3^2|'\|'|Xc2 ==> s3] :- 
+    : source group has generators:
+      [ (1,2,3), (4,5,6), (2,3)(5,6) ]
+    :  range group has generators:
+      [ (4,5,6), (2,3)(5,6) ]
+    : tail homomorphism maps source generators to:
+      [ ( 4, 5, 6), ( 4, 5, 6), ( 2, 3)( 5, 6) ]
+    : head homomorphism maps source generators to:
+      [ (), ( 4, 5, 6), ( 2, 3)( 5, 6) ]
+    : range embedding maps range generators to:
+      [ ( 4, 5, 6), ( 2, 3)( 5, 6) ]
+    : kernel has generators:
+      [ ( 1, 2, 3)( 4, 6, 5) ]
+    : boundary homomorphism maps generators of kernel to:
+      [ ( 4, 6, 5) ]
+    : kernel embedding maps generators of kernel to:
+      [ ( 1, 2, 3)( 4, 6, 5) ]
+
+    gap> XSC := XModCat1( SC );
+    Crossed module [c3->s3]   |
+
+For   each  group |G|    the first  cat1-structure    is the  identity
+cat1-structure  |(id;id,id :  G  ->  G)| with   trivial   kernel.  The
+corresponding crossed module has as  boundary the inclusion map of the
+trivial subgroup.
+
+|    gap> AC := Cat1Select( 12, 5, 1 );
+    cat1-group [a4 ==> a4]   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1Morphism}%
+\index{Morphism!for cat1-groups}
+
+'Cat1Morphism( <C, D, L> )'
+
+A  morphism of cat1-groups is   a pair of  homomorphisms '[ sourceHom,
+rangeHom  ]',   where    'sourceHom',  'rangeHom'  are    respectively
+homomorphisms between  the sources and   ranges of $C$ and $D$,  which
+commute   with   the  two  tail homomorphisms     with  the  two  head
+homomorphisms and with the two embeddings.
+
+In this implementation a morphism of cat1-groups |mu| is a record with
+fields\:
+
+\begin{tabular}{ll}
+|mu.source|,         & the source cat1-group 'C',              \\
+|mu.range|,          & the range cat1-group  'D',               \\
+|mu.sourceHom|,      & a homomorphism from 'C.source' to 'D.source',\\
+|mu.rangeHom|,       & a homomorphism from 'C.range' to 'D.range',  \\
+|mu.isCat1Morphism|, & a Boolean flag, normally |true|,             \\
+|mu.operations|,     & a special set of operations 'Cat1MorphismOps', \\
+|mu.name|,           & a concatenation of the names of |C| and |D|.
+\end{tabular}
+
+The function |Cat1Morphism| requires as parameters two cat1-groups and
+a two-element list containing the source  and range homomorphisms.  It
+sets up the required fields for  |mu|, but does  not check the axioms.
+The 'IsCat1Morphism' function should  be used to perform these checks.
+Note that the 'Cat1MorphismPrint' function  is needed to print out the
+morphism in detail.
+
+|    gap> GCCX := CCX.source;
+    Perm(a4 |'\|'|X k4)
+    gap> GAC := AC.source;
+    a4
+    gap> genGAC := GAC.generators;
+    [ (1,2,3), (2,3,4) ]
+    gap> im := Sublist( GCCX.generators, [1..2] );
+    [ (2,4,3)(5,6,7), (2,3,4)(6,7,8) ]
+
+    gap> musrc := GroupHomomorphismByImages( GAC, GCCX, genGAC, im );;
+    gap> murng := InclusionMorphism( a4, a4 );;
+    gap> mu := Cat1Morphism( AC, CCX, [ musrc, murng ] );
+    Morphism of cat1-groups <[a4 ==> a4]-->[Perm(a4 |'\|'|X k4) ==> a4]>   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCat1Morphism}%
+\index{test!for cat1-group morphism}
+
+'IsCat1Morphism( <mu> )'
+
+This Boolean function checks that $\mu$ includes homomorphisms between
+the corresponding   source  and    range   groups, and    that   these
+homomorphisms commute with the pairs of tail and head homomorphisms.
+
+|    gap> IsCat1Morphism( mu );
+    true |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1MorphismName}%
+\index{Name!for cat1-morphisms}
+
+'Cat1MorphismName( <mu> )'
+
+This function  concatenates the  names of the   source and range  of a
+morphism of cat1-groups.
+
+|    gap> CCX.source.name := "a4.k4";; Cat1Name( CCX );
+    "[a4.k4 ==> a4]"
+    gap> Cat1MorphismName( mu );
+    "<[a4 ==> a4]-->[a4.k4 ==> a4]>"  |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1MorphismPrint}%
+\index{Print!for cat1-group morphism}
+
+'Cat1MorphismPrint( <mu> )'
+
+This printing function for cat1-groups is one of the special functions
+in 'Cat1MorphismOps'.
+
+|    gap> Cat1MorphismPrint( mu );
+    Morphism of cat1-groups := 
+    : Source = cat1-group [a4 ==> a4] 
+    :  Range = cat1-group [a4.k4 ==> a4] 
+    : Source homomorphism maps source generators to:
+      [ (2,4,3)(5,6,7), (2,3,4)(6,7,8) ]
+    : Range homomorphism maps range generators to:
+      [ (1,2,3), (2,3,4) ]  |
+   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for morphisms of cat1-groups}%
+
+Special operations defined for morphisms of  cat1-groups are stored in
+the record structure 'Cat1MorphismOps' which is based on 'MappingOps'.
+Every morphism of   cat1-groups 'mor' has  field  'mor.operations' set
+equal to 'Cat1MorphismOps;'.
+
+|    gap> IsMonomorphism( mu );
+    true
+    gap> IsEpimorphism( mu );
+    false
+    gap> IsIsomorphism( mu );
+    false
+    gap> IsEndomorphism( mu );
+    false
+    gap> IsAutomorphism( mu );
+    false   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1MorphismSourceHomomorphism}%
+
+'Cat1MorphismSourceHomomorphism ( C, D, phi )'
+
+Given a homomorphism from the source of |C| to the source of |D|, this
+function defines the corresponding cat1-group morphism.
+
+|    gap> GSC := SC.source;;
+    gap> homsrc := GroupHomomorphismByImages( a4, GSC,
+    >                [(1,2,3),(2,3,4)],[(4,5,6),(4,6,5)]);;
+    gap> musrc := Cat1MorphismSourceHomomorphism( AC, SC, homsrc );
+    Morphism of cat1-groups <[a4 ==> a4]-->[c3^2|'\|'|Xc2 ==> s3]>
+    gap> IsCat1Morphism( musrc );
+    true
+    gap> Cat1MorphismPrint( musrc );
+    Morphism of cat1-groups := 
+    : Source = cat1-group [a4 ==> a4] 
+    :  Range = cat1-group [c3^2|'\|'|Xc2 ==> s3] 
+    : Source homomorphism maps source generators to:
+       [ (4,5,6), (4,6,5) ]
+    : Range homomorphism maps range generators to:
+       [ (4,5,6), (4,6,5) ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReverseCat1}%
+
+'ReverseCat1( <C> )'
+
+The reverse of a cat1-group is an  isomorphic cat1-group with the same
+source,  range and embedding, but with  the tail and head interchanged
+(see \cite{xmodAW1}, section 2).
+
+|    gap> revCC := ReverseCat1( CC );
+    cat1-group [h20 |'\|'|X c5 ==> h20]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReverseIsomorphismCat1}%
+
+'ReverseIsomorphismCat1( <C> )'
+
+|    gap> revmu := ReverseIsomorphismCat1( CC );
+    Morphism of cat1-groups
+       <[Perm(h20 |'\|'|X c5) ==> h20]-->[h20 |'\|'|X c5 ==> h20]>
+    gap> IsCat1Morphism( revmu );
+    true  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1MorphismXModMorphism}%
+
+'Cat1MorphismXModMorphism( <mor> ) '
+
+If |C1, C2| are the cat1-groups produced from |X1, X2| by the function
+|Cat1XMod|, then for any |mor : X1 -> X2| there is an associated |mu :
+C1 -> C2|.  The result is stored as |mor.cat1Morphism|.
+
+|    gap> CX.Cat1 := CCX;;
+    gap> CSX := Cat1XMod( SX );
+    cat1-group [Perm(sl(2,3) |'\|'|X q8) ==> sl(2,3)]
+    gap> mor;
+    Morphism of crossed modules <[q8->sl(2,3)] >-> [k4->a4]>
+    gap> catmor := Cat1MorphismXModMorphism( mor );
+    Morphism of cat1-groups
+       <[Perm(sl(2,3) |'\|'|X q8) ==> sl(2,3)]-->[Perm(a4 |'\|'|X k4) ==> a4]>
+    gap> IsCat1Morphism( catmor );
+    true
+    gap> Cat1MorphismPrint( catmor );
+    Morphism of cat1-groups := 
+    : Source = cat1-group [Perm(sl(2,3) |'\|'|X q8) ==> sl(2,3)] 
+    :  Range = cat1-group [Perm(a4 |'\|'|X k4) ==> a4] 
+    : Source homomorphism maps source generators to:
+      [ (5,6)(7,8), (5,7)(6,8), (2,3,4)(6,7,8), (1,2)(3,4), (1,3)(2,4) ]
+    : Range homomorphism maps range generators to:
+      [ (1,2)(3,4), (1,3)(2,4), (2,3,4) ]           |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModMorphismCat1Morphism}%
+
+'XModMorphismCat1Morphism ( <mu> ) '
+
+If  |X1,X2| are the two crossed  modules produced from  |C1,C2| by the
+function |XModCat1|, then  for   any | mu  :  C1  -> C2| there  is  an
+associated morphism of crossed modules  from |X1| to |X2|.  The result
+is stored as |mu.xmodMorphism|.
+
+|    gap> mu;
+    Morphism of cat1-groups <[a4 ==> a4]-->[a4.k4 ==> a4]>
+    gap> xmu := XModMorphismCat1Morphism( mu );
+    Morphism of crossed modules <[a4->a4] >-> [k4->a4]>   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CompositeMorphism for cat1-groups}%
+\index{Composite!for morphisms of cat1-groups}
+
+'Cat1MorphismOps.CompositeMorphism( <mu1,mu2> )'
+
+Morphisms $\mu_1 \: C \to D$  and $\mu_2 \:  D \to E$ have a composite
+$\mu =   \mu_2  \circ \mu_1   \:   C \to E$  whose   source  and range
+homomorphisms are the composites of those of $\mu_1$ and $\mu_2$.  The
+example corresponds to that in
+\ref{CompositeMorphism for crossed modules}.
+
+|    gap> psi;
+    Morphism of crossed modules <[c4->q8] >-> [c4->q8]>
+    gap> inc;
+    Morphism of crossed modules <[c4->q8] >-> [q8->sl(2,3)]>
+    gap> mupsi := Cat1MorphismXModMorphism( psi );
+    Morphism of cat1-groups
+        <[Perm(q8 |'\|'|X c4) ==> q8]-->[Perm(q8 |'\|'|X c4) ==> q8]>
+    gap> muinc := Cat1MorphismXModMorphism( inc );
+    Morphism of cat1-groups
+        <[Perm(q8 |'\|'|X c4) ==> q8]-->[Perm(sl(2,3) |'\|'|X q8) ==> sl(2,3)]>
+    gap> mucomp := Cat1MorphismOps.CompositeMorphism( mupsi, muinc );
+    Morphism of cat1-groups
+        <[Perm(q8 |'\|'|X c4) ==> q8]-->[Perm(sl(2,3) |'\|'|X q8) ==> sl(2,3)]>
+    gap> muxcomp := Cat1MorphismXModMorphism( xcomp );;
+    gap> mucomp = muxcomp;
+    true   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdentitySubCat1}
+
+'IdentitySubCat1( <C> )'
+
+Every  cat1-group  ${\cal  C}$ has  an   identity sub-cat1-group whose
+source and range are the identity subgroups of the source and range of
+${\cal C}$.
+
+|    gap> IdentitySubCat1( SC );
+    cat1-group [Id[c3^2|'\|'|Xc2 ==> s3]]  | 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SubCat1}%
+
+'SubCat1( <C, H> )'
+
+When |H| is a subgroup of  |C.source| and the restrictions of |C.tail|
+and |C.head| to |H| have a common image, these homomorphisms determine
+a sub-cat1-group of |C|.
+
+|    gap> d20 := Subgroup( h20, [ (1,2,3,4,5), (2,5)(3,4) ] );;
+    gap> subC := SubCat1( C, d20 );
+    cat1-group [Sub[h20 ==> c4]] 
+    gap> Cat1Print( subC );
+
+    cat1-group [Sub[h20 ==> c4]] :- 
+    : source group has generators:
+      [ (1,2,3,4,5), (2,5)(3,4) ]
+    :  range group has generators:
+      [ ( 2, 5)( 3, 4) ]
+    : tail homomorphism maps source generators to:
+      [ (), ( 2, 5)( 3, 4) ]
+    : head homomorphism maps source generators to:
+      [ (), ( 2, 5)( 3, 4) ]
+    : range embedding maps range generators to:
+      [ ( 2, 5)( 3, 4) ]
+    : kernel has generators:
+      [ (1,2,3,4,5) ]
+    : boundary homomorphism maps generators of kernel to:
+      [ () ]
+    : kernel embedding maps generators of kernel to:
+      [ ( 1, 2, 3, 4, 5) ]   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InclusionMorphism for cat1-groups}%
+\index{InclusionMorphism!for cat1-groups}
+
+'InclusionMorphism( <S, C> )'
+
+This  function   constructs the inclusion   morphism  |S  ->   C| of a
+sub-cat1-group |S| of a cat1-group |C|.
+
+|    gap> InclusionMorphism( subC, C );
+    Morphism of cat1-groups <[Sub[h20 ==> c4]]-->[h20 ==> c4]>  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NormalSubCat1s}%
+
+'NormalSubCat1s( <C> )'
+
+This  function takes  pairs of  normal  subgroups from  the source and
+range of ${\cal C}$  and  constructs a normal sub-cat1-group  whenever
+the axioms are satisfied.
+
+|    gap> NormalSubCat1s( SC );
+    [ cat1-group [Sub[c3^2|'\|'|Xc2 ==> s3]] ,
+      cat1-group [Sub[c3^2|'\|'|Xc2 ==> s3]] , 
+      cat1-group [Sub[c3^2|'\|'|Xc2 ==> s3]] ,
+      cat1-group [Sub[c3^2|'\|'|Xc2 ==> s3]]  ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AllCat1s}%
+
+'AllCat1s( <G> )'
+
+By a {\em cat1-structure} on $G$ we mean a cat1-group ${\cal C}$ where
+$R$ is a subgroup of  $G$ and $e$ is the   inclusion map.  For such  a
+structure to exist, $G$  must contain a normal  subgroup $S$ with $G/S
+\cong R$.  Furthermore, since $t,h$ are  respectively the identity and
+zero maps  on $S$, we  require $R \cap S  = \{ 1_G \}$.  This function
+uses 'EndomorphismClasses(  G,  3  )'  (see \ref{EndomorphismClasses},
+\ref{IdempotentImages}) to construct  idempotent endomorphisms  of |G|
+as potential tails and heads.  A backtrack procedure then tests to see
+which    pairs  of idempotents   give  cat1-groups.   A non-documented
+function  |AreIsomorphicCat1s| is called  in  order that the  function
+returns representatives for  isomorphism classes of cat1-structures on
+|G|.  See \cite{xmodAW1} for all cat1-structures  on groups of order up to
+30.
+
+|    gap> AllCat1s( a4 );
+    There are 1 endomorphism classes.
+    Calculating idempotent endomorphisms.
+    # idempotents mapping to lattice class representatives:
+    [ 1, 0, 1, 0, 1 ]
+    Isomorphism class 1
+    : kernel of tail = [ "2x2" ]
+    :    range group = [ "3" ]
+    Isomorphism class 2
+    : kernel of tail = [ "1" ]
+    :    range group = [ "A4" ]
+    [ cat1-group [a4 ==> a4.H3] , cat1-group [a4 ==> a4] ]  |
+
+The first class has range |c3| and kernel |k4|.
+The second class contails all cat1-groups 
+${\cal C} = (\alpha^{-1}; \alpha, \alpha \: G \to G)$
+where  $\alpha$  is an automorphism of $G$.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\Section{About derivations and sections}%
+
+The Whitehead monoid $\rm{Der}({\cal X})$ of ${\cal X}$ was defined in
+\cite{xmodW2} to be the monoid of all {\it derivations} from $ R $ to $S$,
+that is the set of all maps $R \to S$, with  composition $\ \circ \ $,
+satisfying
+\begin{center}
+\begin{tabular}{c r c l }
+\textbf{Der\ 1\:}  &  $\chi(qr)$              &  = 
+           & $(\chi q)^{r} \; (\chi r)$  \\
+\textbf{Der\ 2\:}  &  $(\chi_1 \circ \chi_2)(r)$  &  =
+           & $(\chi_1 r)(\chi_2 r)(\chi_1 \partial \chi_2 r)$. 
+\end{tabular}
+\end{center}
+
+\noindent
+The  zero   map  is the identity  for    this composition.  Invertible
+elements in the monoid are called  {\em regular}.  The Whitehead group
+of ${\cal  X}$ is the  group of regular derivations in $\rm{Der}({\cal
+X} )$.  In section \ref{About actors} the {\em actor} of ${\cal X}$ is
+defined  as a crossed  module whose  source and  range are permutation
+representations of the Whitehead group  and the automorphism group  of
+${\cal X}$.
+
+The  construction for  cat1-groups  equivalent to the  derivation of a
+crossed module is the {\em section}.  The monoid of sections of ${\cal
+C}$  is  the  set of   group homomorphisms   $\xi \: R   \to  G$, with
+composition $\ \circ \ $, satisfying\:
+\begin{center}
+\begin{tabular}{l l}
+\textbf{Sect\ 1\:}  &  $t \xi = \mathrm{id}_R$,               \\
+\textbf{Sect\ 2\:}  &  $(\xi_1 \circ \xi_2)(r) =
+                       (\xi_{2}r)(e h \xi_{2}r)^{-1}(\xi_{1} h \xi_{2}r)$.
+\end{tabular}
+\end{center}
+The embedding  $e$ is the identity for  this composition, and $h(\xi_1
+\circ  \xi_2) = (h \xi_1)(h \xi_2)$.   A section is {\em regular} when
+$h   \xi$  is an automorphism and,   of  course, the group  of regular
+sections is isomorphic to the Whitehead group.
+
+Derivations  are  stored  like group homomorphisms  by  specifying the
+images of a generating set.  Images of the remaining elements may then
+be obtained using  axiom \textbf{Der\ 1}.  The function |IsDerivation|
+is automatically called to check that this procedure is well-defined.
+
+|    gap> X1;
+    Crossed module [c5->PermAut(c5)]
+    gap> chi1 := XModDerivationByImages( X1, [ () ] );
+    XModDerivationByImages( PermAut(c5), c5, [ (1,2,4,3) ], [ () ] )
+    gap> IsDerivation( chi1 );
+    true  |
+
+A derivation is stored as a record |chi| with fields\:
+
+\begin{tabular}{ll}
+|chi.source|,      & the range group $R$ of ${\cal X}$,         \\
+|chi.range|,       & the source group $S$ of ${\cal X}$,        \\
+|chi.generators|,  & a fixed generating set for $R$,            \\
+|chi.genimages|,   & the chosen images of the generators,       \\
+|chi.xmod|,        & the crossed module ${\cal X}$,             \\
+|chi.operations|,  & special set of operations |XModDerivationByImagesOps|, \\
+|chi.isDerivation|,& a boolean flag, normally |true|.
+\end{tabular}
+
+Sections \emph{are} group  homomorphisms, and are  stored as such, but
+with  a  modified  set  of  operations |Cat1SectionByImagesOps|  which
+includes  a special |.Print|  function  to display  the section in the
+manner   shown    below.    Functions    |SectionDerivation|       and
+|DerivationSection|  convert  derivations to sections, and vice-versa,
+calling |Cat1XMod| and |XModCat1| automatically.
+
+The equation $\xi  r  = (er)(\chi  r)$ determines a  section  $\xi$ of
+$\mathcal{C}$,   given   a  derivation $\chi$    of $\mathcal{X}$, and
+conversely.
+
+|    gap> xi1 := SectionDerivation( chi1 );
+    Cat1SectionByImages( PermAut(c5), Perm(PermAut(c5) |'\|'|X c5),
+        [ (1,2,4,3) ], [ (2,3,5,4) ] )
+    gap> xi1.cat1;
+    cat1-group [Perm(PermAut(c5) |'\|'|X c5) ==> PermAut(c5)]  |
+
+There are two functions to determine all the elements of the Whitehead
+group   and  the   Whitehead      monoid   of ${\cal   X}$,     namely
+|RegularDerivations|  and |AllDerivations|.   If the  whole  monoid is
+needed at some  stage,  then the  latter function should  be  used.  A
+field  |D = X.derivations|  is created which   stores all the required
+information\:
+
+\begin{tabular}{ll}
+|D.areDerivations|,  & a boolean flag, normally |true|,                    \\
+|D.isReg|,           & |true| when only the regular derivations are known, \\
+|D.isAll|,           & |true| when all the derivations have been found,    \\
+|D.generators|,      & a \emph{copy} of |R.generators|,                    \\
+|D.genimageList|,    & a list of |.genimages| lists for the derivations,   \\
+|D.regular|,         & the number of regular derivations (if known),       \\
+|D.xmod|,            & the crossed module ${\cal X}$,                      \\
+|D.operations|,      & a special set of operations |XModDerivationsOps|.
+\end{tabular}
+
+Using  our  standard example |X1| we   find that there   are just five
+derivations, all of them regular, so the associated group is cyclic of
+size 5.
+
+|    gap> RegularDerivations( X1 );
+    RegularDerivations record for crossed module [c5->PermAut(c5)],
+    : 5 regular derivations, others not found.
+    gap> AllDerivations( X1 );
+    AllDerivations record for crossed module [c5->PermAut(c5)],
+    : 5 derivations found but unsorted.
+    gap> DerivationsSorted( X1 );
+    true
+    gap> imder1 := X1.derivations.genimageList;
+    [ [()], [(1,2,3,4,5)], [(1,3,5,2,4)], [(1,4,2,5,3)], [(1,5,4,3,2)] ] |
+
+The    functions     |RegularSections|  and   |AllSections|    perform
+corresponding tasks for  a cat1-group.  Two strategies for calculating
+derivations and sections are implemented, see \cite{xmodAW1}.  The default
+method for |AllDerivations|   is to search for  all  possible sets  of
+images using  a backtracking procedure,  and when all  the derivations
+are  found   it  is  not   known  which   are regular.  The   function
+|DerivationsSorted|  sorts  the  |.genImageList|  field,  placing  the
+regular ones at the top  of the list  and adding the |.regular| field.
+The  default method for |AllSections( C  )| computes all endomorphisms
+on the  range  group |R|  of  |C| as possibilities  for  the composite
+$h\xi$.  A  backtrack  method then  finds  possible images  for such a
+section.  When  either the set of derivations  or the  set of sections
+already exists, the other set is computed using |SectionDerivation| or
+|DerivationSection|.
+
+|    gap> CX1 := Cat1XMod( X1 );
+    cat1-group [Perm(PermAut(c5) |'\|'|X c5) ==> PermAut(c5)] 
+    gap> CX1.source.name := "Hol(c5)";; Cat1Name( CX1 );
+    gap> RegularSections( CX1 );
+    RegularSections record for cat1-group [Hol(c5) ==> PermAut(c5)],
+    : 5 regular sections, others not found.
+    gap> CX1.sections.genimageList;
+    [ [(2,3,5,4)], [(1,2,4,3)], [(1,3,2,5)], [(1,4,5,2)], [(1,5,3,4)] ]  |
+
+The derivation images and the composition table may be listed as follows.
+
+|    gap> chi2 := XModDerivationByImages( X1, imder1[2] ); 
+    XModDerivationByImages( PermAut(c5), c5, [(1,2,4,3)], [(1,2,3,4,5)] )
+    gap> DerivationImage( chi2, (1,4)(2,3) );
+    ( 1, 4, 2, 5, 3)
+    gap> DerivationImages( chi2 );
+    [ 1, 2, 3, 4 ]
+    gap> PrintList( DerivationTable( X1 ) );
+    [ 1, 1, 1, 1 ]
+    [ 1, 2, 3, 4 ]
+    [ 1, 3, 5, 2 ]
+    [ 1, 4, 2, 5 ]
+    [ 1, 5, 4, 3 ]
+    gap> PrintList( WhiteheadGroupTable( X1 ) );
+    [ 1, 2, 3, 4, 5 ]
+    [ 2, 3, 4, 5, 1 ]
+    [ 3, 4, 5, 1, 2 ]
+    [ 4, 5, 1, 2, 3 ]
+    [ 5, 1, 2, 3, 4 ]  |
+
+
+Each $\chi$ or $\xi$  determines endomorphisms of $R,  S, G, {\cal X}$
+and ${\cal C}$, namely\:
+\begin{center}
+\begin{tabular}{rccl}
+    $\rho$  &  \:  &  $R \to R,$ 
+                  &  $r \mapsto r(\partial \chi r) = h \xi r$,  \\
+  $\sigma$  &  \:  &  $S \to S,$
+                  &  $s \mapsto s(\chi \partial s)$,            \\
+  $\gamma$  &  \:  &  $G \to G,$
+                  &  $g \mapsto (eh \xi tg)(\xi tg^{-1})g(ehg^{-1})(\xi hg)$,\\
+  $(\sigma,\rho)$ & \:  & ${\cal X} \to {\cal X},$              \\
+  $(\gamma,\rho)$ & \:  & ${\cal C} \to {\cal C}$.
+\end{tabular}
+\end{center}
+
+When these endomorphisms are automorphisms, the derivation is regular.
+When the boundary  of ${\cal X}$ is  the  zero map, both  $\sigma$ and
+$\rho$ are identity  homomorphisms,  and every derivation  is regular,
+which is the case in this example.
+
+|    gap> sigma2 := SourceEndomorphismDerivation( chi2 );
+    GroupHomomorphismByImages( c5, c5, [ (1,2,3,4,5) ], [ (1,2,3,4,5) ] )
+    gap> rho2 := RangeEndomorphismDerivation( chi2 );
+    GroupHomomorphismByImages( PermAut(c5), PermAut(c5), [ (1,2,4,3) ], 
+       [ (1,2,4,3) ] )
+    gap> xi2 := SectionDerivation( chi2 );;
+    gap> gamma2 := SourceEndomorphismSection( xi2 );
+    GroupHomomorphismByImages( Hol(c5), Hol(c5), [(2,3,5,4),(1,2,3,4,5)],
+       [(2,3,5,4),(1,2,3,4,5)] )
+    gap> mor2 := XModMorphism( X1, X1, [sigma2,rho2] );
+    Morphism of crossed modules <[c5->PermAut(c5)] >-> [c5->PermAut(c5)]>
+    gap> mu2 := Cat1Morphism( CX1, CX1, [gamma2,rho2] );
+    Morphism of cat1-groups <[Hol(c5) ==> PermAut(c5)]-->
+       [Hol(c5) ==> PermAut(c5)]>  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModDerivationByImages}%
+
+'XModDerivationByImages( <X, im> )'
+
+This   function takes a    list of images  in |S   = X.source| for the
+generators of  |R = X.range|  and constructs a map $\chi  \: R  \to S$
+which is  then tested to see whether   the axioms of  a derivation are
+satisfied.
+
+|    gap> XSC;
+    Crossed module [c3->s3]
+    gap> imchi := [ (1,2,3)(4,6,5), (1,2,3)(4,6,5) ];;
+    gap> chi := XModDerivationByImages( XSC, imchi );
+    XModDerivationByImages( s3, c3, [ (4,5,6), (2,3)(5,6) ], 
+       [ (1,2,3)(4,6,5), (1,2,3)(4,6,5) ] )  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsDerivation}%
+\index{test!for a derivation}
+
+'IsDerivation( <X, im> )'
+
+'IsDerivation( <chi> )'
+
+This function may be called in two ways, and tests that the derivation
+given by the images of its generators is well-defined.
+
+|    gap> im0 := [ (1,3,2)(4,5,6), () ];;
+    gap> IsDerivation( XSC, im0 );
+    true  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DerivationImage}%
+\index{Image!for a derivation}
+
+'DerivationImage( <chi, r> )'
+
+This function returns $\chi(r) \in S$ when $\chi$ is a derivation.
+
+|    gap> DerivationImage( chi, (4,6,5) );
+    (1,3,2)(4,5,6)  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DerivationImages}%
+\index{Images!for a derivation}
+
+'DerivationImages( <chi> )'
+
+All   the  images   of  the   elements     of  $R$ are  found    using
+|DerivationImage| and their positions in |S.elements| is returned as a
+list.
+
+|    gap> XSC.source.elements;
+    [ (), ( 1, 2, 3)( 4, 6, 5), ( 1, 3, 2)( 4, 5, 6) ]
+    gap> DerivationImages(chi);
+    [ 1, 2, 3, 2, 3, 1 ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InnerDerivation}%
+
+'InnerDerivation( <X, s> )'
+
+When $S,R$ are respectively the source  and range of  |X|, each $s \in
+S$ defines a derivation $\eta_s  \: R  \to S,  r \mapsto s^r  s^{-1}$.
+These {\em inner   derivations}   are  often  called  {\em   principal
+derivations} in the literature.
+
+|    gap> InnerDerivation( XSC, (1,2,3)(4,6,5) );
+    XModDerivationByImages( s3, c3, [ (4,5,6), (2,3)(5,6) ],
+       [ (), (1,2,3)(4,6,5) ] )  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ListInnerDerivations}%
+\index{InnerDerivations list}
+
+'ListInnerDerivations( <X> )'
+ 
+This    functions  applies |InnerDerivation|     to every  element  of
+|X.source| and outputs    a   list of  genimages  for   the  resulting
+derivations.   This   list is   stored   as |.innerImageList|   in the
+derivations record.
+
+|    gap> PrintList( ListInnerDerivations( XSC ) );
+    [ (), () ]
+    [ (), ( 1, 2, 3)( 4, 6, 5) ]
+    [ (), ( 1, 3, 2)( 4, 5, 6) ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for derivations}%
+
+The operations record for derivations is  |XModDerivationByImagesOps|.
+
+|    gap> RecFields( chi.operations );
+    [ "name", "operations", "IsMapping", "IsInjective", "IsSurjective", 
+      "IsBijection", "IsHomomorphism", "IsMonomorphism", "IsEpimorphism", 
+      "IsIsomorphism", "IsEndomorphism", "IsAutomorphism", "=", "<", "*",
+      "/", "mod", "Comm", "^", "ImageElm", "ImagesElm", "ImagesSet",
+      "ImagesSource", "ImagesRepresentative", "PreImageElm",
+      "PreImagesSet", "PreImagesRange", "PreImagesRepresentative",
+      "PreImagesElm", "CompositionMapping", "PowerMapping",
+      "IsGroupHomomorphism", "KernelGroupHomomorphism",
+      "IsFieldHomomorphism", "KernelFieldHomomorphism",
+      "InverseMapping", "Print", "IsRegular" ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1SectionByImages}%
+
+'Cat1SectionByImages( <C, im> )'
+
+This function  takes  a list  of  images in   |G =  C.source|  for the
+generators of |R  = C.range| and constructs a  homomorphism  $\xi \: R
+\to G$ which is then tested to see whether the axioms of a section are
+satisfied.
+
+|    gap> SC;
+    cat1-group [c3^2|'\|'|Xc2 ==> s3] 
+    gap> imxi := [ (1,2,3), (1,2)(4,6) ];;
+    gap> xi := Cat1SectionByImages( SC, imxi );
+    Cat1SectionByImages( s3, c3^2|'\|'|Xc2, [ (4,5,6), (2,3)(5,6) ], 
+       [ (1,2,3), (1,2)(4,6) ] )  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSection}%
+\index{test!for sections}
+
+'IsSection( <C, im> )'
+
+'IsSection( <xi> )'
+
+This function may be  called in two  ways, and tests that  the section
+given by the images of its generators is well-defined.
+
+|    gap> im0 := [ (1,2,3), (2,3)(4,5) ];;
+    gap> IsSection( SC, im0 );
+    false   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRegular for Crossed Modules}%
+\index{test!for regular xmods}
+\index{test!for regular cat1-groups}
+
+'IsRegular( <chi> )'
+
+This function tests a  derivation or a  section  to see whether  it is
+invertible in the Whitehead monoid.
+
+|    gap> IsRegular( chi );
+    false
+    gap> IsRegular( xi );
+    false  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for sections}%
+
+The operations record for sections is |Cat1SectionByImagesOps|.
+
+|    gap> RecFields( xi.operations );
+    [ "name", "operations", "IsMapping", "IsInjective", "IsSurjective", 
+      "IsBijection", "IsHomomorphism", "IsMonomorphism", "IsEpimorphism", 
+      "IsIsomorphism", "IsEndomorphism", "IsAutomorphism", "=", "<", "*",
+      "/", "mod", "Comm", "^", "ImageElm", "ImagesElm", "ImagesSet",
+      "ImagesSource","ImagesRepresentative", "PreImageElm", "PreImagesElm",
+      "PreImagesSet", "PreImagesRange", "PreImagesRepresentative",
+      "CompositionMapping", "PowerMapping", "InverseMapping",
+      "IsGroupHomomorphism", "CoKernel", "KernelGroupHomomorphism",
+      "MakeMapping", "Print", "IsRegular" ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RegularDerivations}%
+\index{Derivations!regular}
+
+'RegularDerivations( <X [,\"back\" {\rm or} \"cat1\"]> )'
+
+By default,   this function uses  a  backtrack search to  find all the
+regular  derivations   of ${\cal X}$.   The  result   is stored  in  a
+derivations record.     The alternative strategy,  for  which \"cat1\"
+option should be specified is to calculate the regular sections of the
+associated cat1-group first, and convert these to derivations.
+
+|    gap> regXSC := RegularDerivations( XSC );
+    RegularDerivations record for crossed module [c3->s3],
+    : 6 regular derivations, others not found.
+    gap> PrintList( regXSC.genimageList );
+    [ (), () ]
+    [ (), ( 1, 2, 3)( 4, 6, 5) ]
+    [ (), ( 1, 3, 2)( 4, 5, 6) ]
+    [ ( 1, 3, 2)( 4, 5, 6), () ]
+    [ ( 1, 3, 2)( 4, 5, 6), ( 1, 2, 3)( 4, 6, 5) ]
+    [ ( 1, 3, 2)( 4, 5, 6), ( 1, 3, 2)( 4, 5, 6) ]
+    gap> RecFields( regXSC );
+    [ "areDerivations", "isReg", "isAll", "genimageList", "operations",
+      "xmod", "generators", "regular" ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AllDerivations}%
+\index{Derivations!all}
+
+'AllDerivations( <X [,\"back\" {\rm or} \"cat1\"]> )'
+
+This function  calculates  all  the   derivations  of ${\cal  X}$  and
+overwrites any existing subfields of |X.derivations|.
+
+|    gap> allXSC := AllDerivations( XSC );
+    AllDerivations record for crossed module [c3->s3],
+    : 9 derivations found but unsorted.  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DerivationsSorted}%
+
+'DerivationsSorted( <D> )'
+
+This function tests  the derivations in  the derivation record |D|  to
+see  which are regular; sorts the   list |D.genimageList|, placing the
+regular images first; and stores  the number of regular derivations in
+|D.regular|.  The function returns |true| on successful completion.
+
+|    gap> DerivationsSorted( allXSC );
+    true
+    gap> PrintList( allXSC.genimageList );
+    [ (), () ]
+    [ (), ( 1, 2, 3)( 4, 6, 5) ]
+    [ (), ( 1, 3, 2)( 4, 5, 6) ]
+    [ ( 1, 3, 2)( 4, 5, 6), () ]
+    [ ( 1, 3, 2)( 4, 5, 6), ( 1, 2, 3)( 4, 6, 5) ]
+    [ ( 1, 3, 2)( 4, 5, 6), ( 1, 3, 2)( 4, 5, 6) ]
+    [ ( 1, 2, 3)( 4, 6, 5), () ]
+    [ ( 1, 2, 3)( 4, 6, 5), ( 1, 2, 3)( 4, 6, 5) ]
+    [ ( 1, 2, 3)( 4, 6, 5), ( 1, 3, 2)( 4, 5, 6) ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DerivationTable}%
+\index{Table!for derivations}
+
+'DerivationTable( <D> )'
+
+The function  |DerivationImages|  in \ref{DerivationImages} is applied
+to  each derivation in  the current derivations  record and  a list of
+positions of images in $S$ is returned.
+
+|    gap> PrintList( DerivationTable( allXSC ) );
+    [ 1, 1, 1, 1, 1, 1 ]
+    [ 1, 1, 1, 2, 2, 2 ]
+    [ 1, 1, 1, 3, 3, 3 ]
+    [ 1, 3, 2, 1, 3, 2 ]
+    [ 1, 3, 2, 2, 1, 3 ]
+    [ 1, 3, 2, 3, 2, 1 ]
+    [ 1, 2, 3, 1, 2, 3 ]
+    [ 1, 2, 3, 2, 3, 1 ]
+    [ 1, 2, 3, 3, 1, 2 ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AreDerivations}%
+\index{test!for derivations record}
+
+'AreDerivations( <D> )'
+
+This function checks that the record |D| has  the correct fields for a
+derivations record (regular or all).
+
+|    gap> AreDerivations( regXSC );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RegularSections}%
+\index{Sections!regular}
+
+'RegularSections( <C [,\"endo\" {\rm or} \"xmod\"]> )'
+
+By default, this function computes the set of idempotent automorphisms
+from $R \to  R$  and takes these as  possible  choices for $h\xi$.   A
+backtrack procedure  then  calculates   possible images for    such  a
+section.  The result is stored in  a sections record |C.sections| with
+fields  similar  to those of   a serivations  record.  The alternative
+strategy,    for  which \"xmod\"   option should   be  specified is to
+calculate the regular derivations   of the associated  crossed  module
+first, and convert the resulting derivations to sections.
+
+|    gap> Unbind( XSC.derivations );
+    gap> regSC := RegularSections( SC );
+    RegularSections record for cat1-group [c3^2|'\|'|Xc2 ==> s3],
+    : 6 regular sections, others not found.  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AllSections}%
+\index{Sections!all}
+
+'AllSections( <C [,\"endo\" {\rm or} \"xmod\"]> )'
+
+By default, this function computes the set of idempotent endomorphisms
+from    $R    \to   R$   (see     sections  \ref{EndomorphismClasses},
+\ref{IdempotentImages}) and takes  these  as possible choices  for the
+composite homomorphism $h\xi$.   A backtrack procedure then calculates
+possible images for such a  section.  This function calculates all the
+sections  of  ${\cal C}$  and  overwrites any   existing subfields  of
+|C.sections|.
+
+|    gap> allSC := AllSections( SC );
+    AllSections record for cat1-group [c3^2|'\|'|Xc2 ==> s3],
+    : 6 regular sections,  3 irregular ones found. 
+    gap> RecFields( allSC );
+    [ "areSections", "isReg", "isAll", "regular", "genimageList",
+      "generators", "cat1", "operations" ]
+    gap> PrintList( allSC.genimageList );
+    [ ( 4, 5, 6), ( 2, 3)( 5, 6) ]
+    [ ( 4, 5, 6), ( 1, 3)( 4, 5) ]
+    [ ( 4, 5, 6), ( 1, 2)( 4, 6) ]
+    [ ( 1, 3, 2)( 4, 6, 5), ( 2, 3)( 5, 6) ]
+    [ ( 1, 3, 2)( 4, 6, 5), ( 1, 3)( 4, 5) ]
+    [ ( 1, 3, 2)( 4, 6, 5), ( 1, 2)( 4, 6) ]
+    [ ( 1, 2, 3), ( 2, 3)( 5, 6) ]
+    [ ( 1, 2, 3), ( 1, 2)( 4, 6) ]
+    [ ( 1, 2, 3), ( 1, 3)( 4, 5) ] 
+    gap> allXSC := AllDerivations( XSC, "cat1" );
+    AllDerivations record for crossed module [c3->s3],
+    : 6 regular derivations,  3 irregular ones found.   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AreSections}%
+\index{test! for sections record}
+
+'AreSections( <S> )'
+
+This function checks that the record |S| has  the correct fields for a
+sections record (regular or all).
+
+|    gap> AreSections( allSC );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SectionDerivation}%
+
+'SectionDerivation( <D, i> )'
+
+This function   converts  a derivation  of  |X|  to a  section  of the
+associated cat1-group      |C|.  This    function  is    inverse    to
+|DerivationSection|.  In the following  examples we note that |allXSC|
+has  been  obtained using |allSC|,   so the  derivations and  sections
+correspond in the same order.
+
+|    gap> chi8 := XModDerivationByImages( XSC, allXSC.genimageList[8] );
+    XModDerivationByImages( s3, c3, [ (4,5,6), (2,3)(5,6) ], 
+       [ ( 1,2,3)(4,6,5), (1,2,3)(4,6,5) ] )
+    gap> xi8 := SectionDerivation( chi8 );
+    GroupHomomorphismByImages( s3, c3^2|'\|'|Xc2,
+        [ (4,5,6), (2,3)(5,6) ], [ (1,2,3), (1,2)(4,6) ] )  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DerivationSection}%
+
+'DerivationSection( < C, xi > )'
+
+This  function  converts a  section   of |C| to   a derivation  of the
+associated   crossed  module    |X|.  This function    is   inverse to
+|SectionDerivation|.
+
+|    gap> xi4 := Cat1SectionByImages( SC, allSC.genimageList[4] );
+    Cat1SectionByImages( s3, c3^2|'\|'|Xc2, [ (4,5,6), (2,3)(5,6) ], 
+       [ (1,3,2)(4,6,5), (2,3)(5,6) ] )
+    gap> chi4 := DerivationSection( xi4 );
+    XModDerivationByImages( s3, c3, [ (4,5,6), (2,3)(5,6) ],
+       [ (1,3,2)(4,5,6), () ] )  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CompositeDerivation}%
+\index{Composite!for derivations}
+
+'CompositeDerivation( <chi, chj> )'
+
+This function  applies the  Whitehead product  to  two derivations and
+returns the  composite.   In the  example,  derivations |chi4|, |chi8|
+correspond to sections |xi4| and |xi8|.
+
+|    gap> chi48 := CompositeDerivation( chi4, chi8 );
+    XModDerivationByImages( s3, c3, [ (4,5,6), (2,3)(5,6) ], 
+       [ (1,2,3)(4,6,5), (1,3,2)(4,5,6) ] )  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CompositeSection}%
+\index{Composite!for sections}
+
+'CompositeSection( <xi, xj> )'
+
+This function  applies the Whitehead  composition to  two sections and
+returns the composite.
+
+|    gap> xi48 := CompositeSection( xi4, xi8 );
+    Cat1SectionByImages( s3, c3^2|'\|'|Xc2, [ (4,5,6), (2,3)(5,6) ], 
+       [ ( 1,2,3), (1,3)(4,5) ] )
+    gap> SectionDerivation( chi48 ) = xi48;
+    true  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{WhiteheadGroupTable}%
+\index{Table!for WhiteheadGroup}
+
+'WhiteheadGroupTable( <X> )'
+
+This  function applies |CompositeDerivation|   to all pairs of regular
+derivations,  producing the Whitehead  group  multiplication table.  A
+field |.groupTable| is added to |D|.
+
+|    gap> WGT := WhiteheadGroupTable( XSC );; PrintList( WGT );
+    returning existing ALL derivations
+    [ 1, 2, 3, 4, 5, 6 ]
+    [ 2, 3, 1, 5, 6, 4 ]
+    [ 3, 1, 2, 6, 4, 5 ]
+    [ 4, 6, 5, 1, 3, 2 ]
+    [ 5, 4, 6, 2, 1, 3 ]
+    [ 6, 5, 4, 3, 2, 1 ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{WhiteheadMonoidTable}%
+\index{Table!for WhiteheadMonoid}
+
+'WhiteheadMonoidTable( <X> )'
+
+The derivations of   |X| form a monoid  with  the first  derivation as
+identity.  This function applies |CompositeDerivation| to all pairs of
+derivations and produces the multiplication  table as a list of lists.
+A field  |.monoidTable| is added  to |D|.  In  our example there are 9
+derivations and the three irregular ones,  numbers 7,8,9, are all left
+zeroes.
+
+|    gap> WMT := WhiteheadMonoidTable( XSC );; PrintList(WMT );
+    [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
+    [ 2, 3, 1, 5, 6, 4, 9, 7, 8 ]
+    [ 3, 1, 2, 6, 4, 5, 8, 9, 7 ]
+    [ 4, 6, 5, 1, 3, 2, 7, 9, 8 ]
+    [ 5, 4, 6, 2, 1, 3, 9, 8, 7 ]
+    [ 6, 5, 4, 3, 2, 1, 8, 7, 9 ]
+    [ 7, 7, 7, 7, 7, 7, 7, 7, 7 ]
+    [ 8, 8, 8, 8, 8, 8, 8, 8, 8 ]
+    [ 9, 9, 9, 9, 9, 9, 9, 9, 9 ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InverseDerivations}%
+
+'InverseDerivations( <X, i> )'
+
+When  |T[i]| is  a  regular  derivation,   this  function returns  the
+position |j|   such  that |T[j]|  is the   inverse of |T[i]|   in  the
+Whitehead group.  When |T[i]| is not regular,  a list of values |j| is
+returned such that the inverse semigroup condition $xyx =  x, \; yxy =
+y$ is satisfied, where $x = T[i], y = T[j]$.  Notice that derivation 8
+has order 3 and derivation 15 as inverse.
+
+|    gap> inv4 := InverseDerivations( chi4 );
+    [ 4 ]
+    gap> inv8 := InverseDerivations( chi8 );
+    [ 7, 8, 9 ]   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ListInverseDerivations}%
+\index{List!for InverseDerivations}
+
+'ListInverseDerivations( <X> )'
+
+This function applies |InverseDerivations| to all  the derivations.  A
+field |.inverses| is added to |D|.
+
+|    gap> inv := ListInverseDerivations( XSC );
+    [ [ 1 ], [ 3 ], [ 2 ], [ 4 ], [ 5 ], [ 6 ],
+      [ 7, 8, 9 ], [ 7, 8, 9 ], [ 7, 8, 9 ] ]    |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SourceEndomorphismDerivation}%
+
+'SourceEndomorphismDerivation( <chi> )'
+
+Each derivation $\chi$ determines an endomorphism $\sigma$ of |S| such
+that $\sigma  s = s (\chi  \partial s)$.  This construction  defines a
+homomorphism   from the Whitehead group   to $Aut(S)$  which forms the
+action  homomorphism of   the Whitehead crossed    module described in
+section
+\ref{Whitehead crossed module}.
+
+|    gap> sigma8 := SourceEndomorphismDerivation( chi8 );
+    GroupHomomorphismByImages( c3, c3, [ (1,2,3)(4,6,5) ], [ () ] )
+    gap> sigma4 := SourceEndomorphismDerivation( chi4 );
+    GroupHomomorphismByImages( c3, c3, [ (1,2,3)(4,6,5) ], 
+       [ (1,3,2)(4,5,6) ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TableSourceEndomorphismDerivations}%
+\index{Table!for SourceEndomorphismDerivations}
+
+'TableSourceEndomorphismDerivations( <X> )'
+
+Applying |SourceEndomorphismDerivation| to every derivation produces a
+list of endomorphisms of |S = X.source|.  This function returns a list
+of |.genimages| for these endomorphisms.  Note  that, in this example,
+|S = c3| and the irregular derivations produce zero maps.
+
+|    gap> TSE := TableSourceEndomorphismDerivations( XSC );;
+    gap> PrintList( TSE );
+    [ ( 1, 2, 3)( 4, 6, 5) ]
+    [ ( 1, 2, 3)( 4, 6, 5) ]
+    [ ( 1, 2, 3)( 4, 6, 5) ]
+    [ ( 1, 3, 2)( 4, 5, 6) ]
+    [ ( 1, 3, 2)( 4, 5, 6) ]
+    [ ( 1, 3, 2)( 4, 5, 6) ]
+    [ () ]
+    [ () ]
+    [ () ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RangeEndomorphismDerivation}%
+
+'RangeEndomorphismDerivation( <chi> )'
+
+Each derivation  $\chi$ determines an  endomorphism $\rho$ of |R| such
+that  $\rho r  = r (\partial  \chi  r)$.  This  construction defines a
+homomorphism from the Whitehead group to $Aut(R)$.
+
+|    gap> rho8 := RangeEndomorphismDerivation( chi8 );
+    GroupHomomorphismByImages( s3, s3, [ (4,5,6), (2,3)(5,6) ], 
+      [ (), (2,3)(4,6) ] )
+    gap> rho4 := RangeEndomorphismDerivation( chi4 );
+    GroupHomomorphismByImages( s3, s3, [ (4,5,6), (2,3)(5,6) ], 
+      [ (4,6,5), (2,3)(5,6) ] )   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TableRangeEndomorphismDerivations}%
+\index{Table!for RangeEndomorphismDerivations}
+
+'TableRangeEndomorphismDerivations( <X> )'
+
+Applying |RangeEndomorphismDerivation|  to every derivation produces a
+list of endomorphisms of |R =  X.range|.  This function returns a list
+of |.genimages| for these endomorphisms.  Note  that, in this example,
+the 3  irregular derivations map onto  the 3 cyclic subgroups of order
+2.
+
+|    gap> TRE := TableRangeEndomorphismDerivations( XSC );;
+    gap> PrintList( TRE );
+    [ (4,5,6), (2,3)(5,6) ]
+    [ (4,5,6), (2,3)(4,5) ]
+    [ (4,5,6), (2,3)(4 6) ]
+    [ (4,6,5), (2,3)(5,6) ]
+    [ (4,6,5), (2,3)(4,5) ]
+    [ (4,6,5), (2,3)(4,6) ]
+    [ (), (2,3)(5,6) ]
+    [ (), (2,3)(4,6) ]
+    [ (), (2,3)(4,5) ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModEndomorphismDerivation}%
+
+'XModEndomorphismDerivation( <chi> )'
+
+The endomorphisms |sigma4|, |rho4| together determine a pair which may
+be used   to construct   an endomorphism  of  ${\cal  X}$.    When the
+derivation is regular, the resulting  morphism is an automorphism, and
+this construction determines a  homomorphism from the  Whitehead group
+to the automorphism group of |X|.
+
+|    gap> phi4 := XModEndomorphismDerivation( chi4 );
+    Morphism of crossed modules <[c3->s3]->[c3->s3]>  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SourceEndomorphismSection}%
+
+'SourceEndomorphismSection( <xi> )'
+
+Each section  $\xi$  determines an  endomorphism $\gamma$  of |G| such
+that $$\gamma g =  (e h \xi t g)(\xi  t g^{-1}) g (e  h g^{-1}) (\xi h
+g).$$
+
+|    gap> gamma4 := SourceEndomorphismSection( xi4 );
+    GroupHomomorphismByImages( c3^2|'\|'|Xc2, c3^2|'\|'|Xc2,
+      [ (1,2,3), (4,5,6), (2,3)(5,6) ], [ (1,3,2), (4,6,5), (2,3)(5,6) ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RangeEndomorphismSection}%
+
+'RangeEndomorphismSection( <xi> )'
+
+Each derivation $\xi$ determines  an  endomorphism $\rho$ of |R|  such
+that $\rho r = h \xi r$.
+
+|    gap> rho4 := RangeEndomorphismSection( xi4 );
+    GroupHomomorphismByImages( s3, s3, [ (4,5,6), (2,3)(5,6) ], 
+      [ (4,6,5), (2,3)(5,6) ] )   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cat1EndomorphismSection}%
+
+'Cat1EndomorphismSection( <xi> )'
+
+The endomorphisms |gamma4|, |rho4| together determine a pair which may
+be  used  to  construct an  endomorphism    of ${\cal  C}$.  When  the
+derivation is regular, the  resulting morphism is an automorphism, and
+this  construction determines a homomorphism  from the Whitehead group
+to the automorphism group of |C|.
+
+|    gap> psi4 := Cat1EndomorphismSection( xi4 );
+    Morphism of cat1-groups <[c3^2|'\|'|Xc2 ==> s3]-->[c3^2|'\|'|Xc2 ==> s3]>|
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{About actors}
+
+
+The \emph{actor}  of ${\cal X}$ is a  crossed module $(\Delta \: {\cal
+W}({\cal  X}) \to {\rm   Aut}({\cal X}))$ which  was shown  by Lue and
+Norrie, in \cite{xmodN2} and \cite{xmodN1}  to give the automorphism object of
+a crossed module ${\cal X}$.  The source of the actor is a permutation
+representation  $W$ of the  Whitehead group of regular derivations and
+the  range is a   permutation  representation $A$ of the  automorphism
+group ${\rm Aut}({\cal X})$ of ${\cal X}$.
+
+An automorphism $( \sigma, \rho )$ of |X| acts on the Whitehead monoid
+by  $\chi^{(\sigma,\rho)} =  \sigma^{-1}  \chi \rho$,  and this action
+determines the action for the actor.
+
+In fact the  four groups $R, S,  W, A$, the homomorphisms between them
+and the various actions, form five crossed modules\:
+
+\begin{tabular}{rcll}
+   ${\cal X}$ &\:& $S \to R$  &  the initial crossed module,                 \\
+${\cal W(X)}$ &\:& $S \to W$  &  the Whitehead crossed module of ${\cal X}$, \\
+${\cal L(X)}$ &\:& $S \to A$  &  the Lue crossed module of ${\cal X}$,       \\
+${\cal N(X)}$ &\:& $R \to A$  &  the Norrie crossed module of ${\cal X}$, and \\
+${\rm Act}({\cal X})$ &\:& $W \to A$  &  the actor crossed module of ${\cal X}$.
+\end{tabular}
+
+These $5$ crossed modules, together with the evaluation  
+$W \times R \to S, \ \ (\chi,r) \mapsto \chi r$, 
+form a crossed square\:
+
+|                        S ------ WX ------> W
+                        :  \                :
+                        :     \             :
+                        X        LX        ActX
+                        :           \       :
+                        :              \    :
+                        V                 \ V
+                        R ------ NX ------> A  |
+
+
+in which   pairs   of boundaries  or  identity  mappings   provide six
+morphisms of crossed modules.   In particular, the boundaries of  |WX|
+and |NX|   form the  \emph{inner   morphism} of  |X|,   mapping source
+elements to   inner    derivations  and  range  elements     to  inner
+automorphisms.   The image  of    |X| under  this  morphism  is    the
+\emph{inner actor}  of |X|, while  the kernel  is the \emph{centre} of
+|X|.
+
+In the example which follows, using the usual |(X1 : c5 -> Aut(c5))|,
+\ |Act(X1)|  is isomorphic to  |X1|  and to  |LX1|  
+while the Whitehead and Norrie boundaries are identity homomorphisms.
+
+|    gap> X1;
+    Crossed module [c5->PermAut(c5)]
+    gap> WGX1 := WhiteheadPermGroup( X1 );
+    WG([c5->PermAut(c5)])
+    gap> WGX1.generators;
+    [ (1,2,3,4,5) ]
+    gap> AX1 := AutomorphismPermGroup( X1 );
+    PermAut([c5->PermAut(c5)])
+    gap> AX1.generators;
+    [ (1,2,4,3) ]
+    gap> XModMorphismAutoPerm( X1, AX1.generators[1] );
+    Morphism of crossed modules <[c5->PermAut(c5)] >-> [c5->PermAut(c5)]>
+
+    gap> WX1 := Whitehead( X1 );
+    Crossed module Whitehead[c5->PermAut(c5)]
+    gap> NX1 := Norrie( X1 );
+    Crossed module Norrie[c5->PermAut(c5)]
+    gap> LX1 := Lue( X1 );
+    Crossed module Lue[c5->PermAut(c5)]
+    gap> ActX1 := Actor( X1 );;
+    gap> XModPrint( ActX1);
+    Crossed module Actor[c5->PermAut(c5)] :- 
+    : Source group WG([c5->PermAut(c5)]) has generators:
+      [ (1,2,3,4,5) ]
+    : Range group has parent ( PermAut(c5)xPermAut(PermAut(c5)) )
+        and has generators:  [ (1,2,4,3) ]
+    : Boundary homomorphism maps source generators to:
+      [ () ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2,4,3) --> { source gens --> [ (1,3,5,2,4) ] }
+      This automorphism generates the group of automorphisms.
+
+    gap> InActX1 := InnerActor( X1 );
+    Crossed module Actor[c5->PermAut(c5)]
+    gap> InActX1 = ActX1;
+    true
+    gap> InnerMorphism( X1 );
+    Morphism of crossed modules
+        <[c5->PermAut(c5)] >-> Actor[c5->PermAut(c5)]>
+    gap> Centre( X1 );
+    Crossed module Centre[c5->PermAut(c5)]  |
+
+All of these constructions are stored in a sub-record |X1.actorSquare|.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ActorSquareRecord}%
+\index{ActorSquare!for xmods}
+\index{ActorSquare!for cat1s}
+
+'ActorSquareRecord( <X> )'
+
+'ActorSquareRecord( <C> )'
+
+This function  creates a   new  field |.actorSquare| for the   crossed
+module or  cat1-group, initially  containing |.isActorSquare :=  true|
+and |.xmod|  or |.cat1| as  appropriate.  Components for  the actor of
+|X| or |C| are stored here when constructed.
+
+|    gap> ActorSquareRecord( X1 );
+    rec(
+      isActorSquare := true,
+      xmod := Crossed module [c5->PermAut(c5)],
+      WhiteheadPermGroup := WG([c5->PermAut(c5)]),
+      automorphismPermGroup := PermAut([c5->PermAut(c5)]),
+      Whitehead := Crossed module Whitehead[c5->PermAut(c5)],
+      Norrie := Crossed module Norrie[c5->PermAut(c5)],
+      Lue := Crossed module Lue[c5->PermAut(c5)],
+      actor := Crossed module Actor[c5->PermAut(c5)],
+      innerMorphism :=  Morphism of crossed modules
+          <[c5->PermAut(c5)] >-> Actor[c5->PermAut(c5)]>,
+      innerActor := Crossed module Actor[c5->PermAut(c5)] )  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{WhiteheadPermGroup}%
+
+'WhiteheadPermGroup( <X> )'
+
+This  function     first        calls   |WhiteheadGroupTable|,     see
+\ref{WhiteheadGroupTable}.  These  lists   are  then   converted    to
+permutations,  producing a  permutation group  which  is effectively a
+regular representation of the group.  A field |.WhiteheadPermGroup| is
+added to |X.actorSquare|  and  a field |.genpos|   is  added to  |D  =
+X.derivations|.  The    latter  is a    list   of  the   positions  in
+|D.genimageList| corresponding to the chosen generating elements.  The
+group is given the name |WG(<name of X>)|.
+
+For  an example,  we  return to the  crossed  module |XSC  = [c3->s3]|
+obtained  from the cat1-group |SC|  in  section \ref{Cat1Select} which
+has Whitehead group and automorphism group isomorphic to |s3|.
+
+|    gap> WG := WhiteheadPermGroup( XSC );
+    WG([c3->s3])
+    gap> XSC.derivations.genpos;
+    [ 2, 4 ]
+    gap> Elements( WG );
+    [ (), (1,2,3)(4,6,5), (1,3,2)(4,5,6), (1,4)(2,5)(3,6),
+      (1,5)(2,6)(3,4), (1,6)(2,4)(3,5) ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Whitehead crossed module}%
+\index{Whitehead!for xmods}
+
+'Whitehead( <X> )'
+
+This crossed module has the source of |X| as source, and the Whitehead
+group  |WX|  as range.  The  boundary maps  each  element to the inner
+derivation      which        it   defines.       The     action   uses
+|SourceEndomorphismDerivation|.
+
+|    gap> WXSC := Whitehead( XSC );
+    Crossed module Whitehead[c3->s3]
+    gap> XModPrint( WXSC );
+    Crossed module Whitehead[c3->s3] :- 
+    : Source group has parent ( c3^2|'\|'|Xc2 ) and has generators:
+      [ (1,2,3)(4,6,5) ]
+    : Range group = WG([c3->s3]) has generators:
+      [ (1,2,3)(4,6,5), (1,4)(2,5)(3,6) ]
+    : Boundary homomorphism maps source generators to:
+      [ (1,3,2)(4,5,6) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2,3)(4,6,5) --> { source gens --> [ (1,2,3)(4,6,5) ] }
+      (1,4)(2,5)(3,6) --> { source gens --> [ (1,3,2)(4,5,6) ] }
+      These 2 automorphisms generate the group of automorphisms.  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AutomorphismPermGroup for crossed modules}%
+\index{AutomorphismPermGroup!for xmods}
+
+'XModOps.AutomorphismPermGroup( <X> )'
+
+This function constructs  a permutation group  |PermAut(X)| isomorphic
+to the  group of automorphisms  of the crossed  module |X|.  First the
+automorphism groups  of the source and  range of  |X| are obtained and
+|AutomorphismPair|  used to   obtain  permutation  representations  of
+these.  The direct product of these permutation groups is constructed,
+and the required  automorphism  group is  a  subgroup of   this direct
+product.  The result is  stored as |X.automorphismPermGroup| which has
+fields defining the various embeddings and projections.
+
+|    gap> autXSC := AutomorphismPermGroup( XSC );
+    PermAut([c3->s3])
+    gap> autXSC.projsrc;
+    GroupHomomorphismByImages( PermAut([c3->s3]), PermAut(c3), 
+    [ (5,6,7), (1,2)(3,4)(6,7) ], [ (), (1,2) ] )
+    gap> autXSC.projrng;
+    GroupHomomorphismByImages( PermAut([c3->s3]), PermAut(s3), 
+    [ (5,6,7), (1,2)(3,4)(6,7) ], [ (3,4,5), (1,2)(4,5) ] )
+    gap> autXSC.embedSourceAuto;
+    GroupHomomorphismByImages( PermAut(c3), PermAut(c3)xPermAut(s3),
+        [ (1,2) ], [ (1,2) ] )
+    gap> autXSC.embedRangeAuto;
+    GroupHomomorphismByImages( PermAut(s3), PermAut(c3)xPermAut(s3), 
+    [ (3,5,4), (1,2)(4,5) ], [ (5,7,6), (3,4)(6,7) ] )
+    gap> autXSC.autogens;
+    [ [ GroupHomomorphismByImages( c3, c3, [ (1,2,3)(4,6,5) ],
+            [ (1,2,3)(4,6,5) ] ), GroupHomomorphismByImages( s3, s3, 
+            [ (4,5,6), (2,3)(5,6) ], [ (4,5,6), (2,3)(4,5) ] ) ], 
+      [ GroupHomomorphismByImages( c3, c3, [ (1,2,3)(4,6,5) ], 
+            [ (1,3,2)(4,5,6) ] ), GroupHomomorphismByImages( s3, s3, 
+            [ (4,5,6), (2,3)(5,6) ], [ (4,6,5), (2,3)(5,6) ] ) ] ]   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{XModMorphismAutoPerm}%
+
+'XModMorphismAutoPerm( <X, perm> )'
+
+Given the  isomorphism between the automorphism group  of |X|  and its
+permutation representation  |PermAut(X)|, an  element  of  the  latter
+determines an automorphism of |X|.
+
+|    gap> XModMorphismAutoPerm( XSC, (1,2)(3,4)(6,7) );
+    Morphism of crossed modules <[c3->s3] >-> [c3->s3]>  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ImageAutomorphismDerivation}%
+
+'ImageAutomorphismDerivation( <mor, chi> )'
+
+An automorphism $( \sigma,  \rho )$ of  |X| acts on   the left on  the
+Whitehead   monoid  by   $\mbox{}^{(\sigma,\rho)}\chi   =  \sigma \chi
+\rho^{-1}$.  This   is   converted  to    a   right action    on   the
+|WhiteheadPermGroup|.  In the  example we see  that |phi4| maps |chi8|
+to |chi9|.
+
+|    gap> chi8im := ImageAutomorphismDerivation( phi4, chi8 );
+    XModDerivationByImages( s3, c3, [ (4,5,6), (2,3)(5,6) ], 
+       [ (1,2,3)(4,6,5), (1,3,2)(4,5,6) ] )
+    gap> Position( allXSC.genimageList, chi8im.genimages );
+    9  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Norrie crossed module}%
+
+'Norrie( <X> )'
+
+This   crossed  module has  the   range  of  |X|   as  source and  the
+automorphism permutation group of |X| as range.
+
+|    gap> NXSC := Norrie( XSC );
+    Crossed module Norrie[c3->s3]
+    gap> XModPrint( NXSC );
+
+    Crossed module Norrie[c3->s3] :- 
+    : Source group has parent ( c3^2|'\|'|Xc2 ) and has generators:
+      [ (4,5,6), (2,3)(5,6) ]
+    : Range group has parent ( PermAut(c3)xPermAut(s3) ) and has
+        generators: [ (5,6,7), (1,2)(3,4)(6,7) ]
+    : Boundary homomorphism maps source generators to:
+      [ (5,7,6), (1,2)(3,4)(6,7) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (5,6,7) --> { source gens --> [ (4,5,6), (2,3)(4,5) ] }
+      (1,2)(3,4)(6,7) --> { source gens --> [ (4,6,5), (2,3)(5,6) ] }
+      These 2 automorphisms generate the group of automorphisms.  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Lue crossed module}%
+
+'Lue( <X> )'
+
+This  crossed   module has  the  source of   |X|  as  source, and  the
+automorphism permutation group of |X| as range.
+
+|    gap> LXSC := Lue( XSC );
+    Crossed module Lue[c3->s3]
+    gap> XModPrint( LXSC );
+
+    Crossed module Lue[c3->s3] :- 
+    : Source group has parent ( c3^2|'\|'|Xc2 ) and has generators:
+      [ (1,2,3)(4,6,5) ]
+    : Range group has parent ( PermAut(c3)xPermAut(s3) ) and has
+        generators: [ (5,6,7), (1,2)(3,4)(6,7) ]
+    : Boundary homomorphism maps source generators to:
+      [ (5,6,7) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (5,6,7) --> { source gens --> [ (1,2,3)(4,6,5) ] }
+      (1,2)(3,4)(6,7) --> { source gens --> [ (1,3,2)(4,5,6) ] }
+      These 2 automorphisms generate the group of automorphisms.  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Actor crossed module}%
+\index{Actor!for xmods}
+
+'Actor( <X> )'
+
+The actor  of a crossed module |X|  is a crossed module |Act(X)| which
+has the  Whitehead group (of regular derivations)  as source group and
+the automorphism  group |PermAut(X)|   of |X|  as  range  group.   The
+boundary of |Act(X)| maps each derivation to the automorphism provided
+by |XModEndomorphismDerivation|.   The action of  an automorphism on a
+derivation is that provided by |ImageAutomorphismDerivation|.
+
+|    gap> ActXSC := Actor( XSC );
+    Crossed module Actor[c3->s3]
+    gap> XModPrint( ActXSC );
+
+    Crossed module Actor[c3->s3] :- 
+    : Source group WG([c3->s3]) has generators:
+      [ (1,2,3)(4,6,5), (1,4)(2,5)(3,6) ]
+    : Range group has parent ( PermAut(c3)xPermAut(s3) ) and has
+        generators: [ (5,6,7), (1,2)(3,4)(6,7) ]
+    : Boundary homomorphism maps source generators to:
+      [ (5,7,6), (1,2)(3,4)(6,7) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (5,6,7) --> { source gens --> [ (1,2,3)(4,6,5), (1,6)(2,4)(3,5) ] }
+      (1,2)(3,4)(6,7) -->
+                  { source gens --> [ (1,3,2)(4,5,6), (1,4)(2,5)(3,6) ] }
+      These 2 automorphisms generate the group of automorphisms.  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InnerMorphism for crossed modules}%
+\index{InnerMorphism!for xmods}
+
+'InnerMorphism( <X> )'
+
+The boundary maps of |WX| and |NX| form a morphism from |X| to its actor.
+
+|    gap> innXSC := InnerMorphism( XSC );
+    Morphism of crossed modules <[c3->s3] >-> Actor[c3->s3]>
+    gap> XModMorphismPrint( innXSC );
+    Morphism of crossed modules :- 
+    : Source = Crossed module [c3->s3] with generating sets:
+      [ (1,2,3)(4,6,5) ]
+      [ (4,5,6), (2,3)(5,6) ]
+    :  Range = Crossed module Actor[c3->s3]
+          with generating sets:
+      [ (1,2,3)(4,6,5), (1,4)(2,5)(3,6) ]
+      [ (5,6,7), (1,2)(3,4)(6,7) ]
+    : Source Homomorphism maps source generators to:
+      [ (1,3,2)(4,5,6) ]
+    : Range Homomorphism maps range generators to:
+      [ (5,7,6), (1,2)(3,4)(6,7) ]
+    : isXModMorphism? true  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Centre for crossed modules}%
+\index{Centre!for xmods}
+
+'XModOps.Centre( <X> )'
+
+The kernel of the inner morphism  |X -> ActX| is  called the centre of
+|X|, generalising the centre of a group $G$, which is the kernel of $G
+\to Aut(G), \; g \mapsto (h \mapsto h^g)$.  In this example the centre
+is trivial.
+
+|    gap> ZXSC := Centre( XSC );
+    Crossed module Centre[c3->s3]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InnerActor for crossed modules}%
+\index{InnerActor!for xmods}
+
+'InnerActor( <X> )'
+
+The inner actor of |X| is the image of the inner morphism.
+
+|    gap> InnActXSC := InnerActor( XSC );
+    Crossed module InnerActor[c3->s3] 
+    gap> XModPrint( InnActXSC );
+
+    Crossed module InnerActor[c3->s3] :- 
+    : Source group has parent ( WG([c3->s3]) ) and has generators:
+      [ (1,3,2)(4,5,6) ]
+    : Range group has parent ( PermAut(c3)xPermAut(s3) ) and has
+        generators: [ (5,7,6), (1,2)(3,4)(6,7) ]
+    : Boundary homomorphism maps source generators to:
+      [ (5,6,7) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (5,7,6) --> { source gens --> [ (1,3,2)(4,5,6) ] }
+      (1,2)(3,4)(6,7) --> { source gens --> [ (1,2,3)(4,6,5) ] }
+      These 2 automorphisms generate the group of automorphisms.  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Actor for cat1-groups}
+\index{Actor!for cat1-groups}
+
+'Actor( <C> )'
+
+The actor of  a cat1-group ${\cal C}$ is  the cat1-group associated to
+the actor crossed module  of the crossed  module ${\cal X}$ associated
+to ${\cal C}$.  Its range is the automorphism group $A$ and its source
+is $A \semidirect W$ where $W$ is the Whitehead group.
+
+|    gap> ActSC := Actor( SC );;
+    gap> Cat1Print( ActSC );
+    cat1-group Actor[c3^2|'\|'|Xc2 ==> s3] :- 
+    : source group has generators:
+      [ (4,6,5), (2,3)(5,6), (1,2,3)(4,6,5), (1,4)(2,5)(3,6) ]
+    :  range group has generators:
+      [ (5,6,7), (1,2)(3,4)(6,7) ]
+    : tail homomorphism maps source generators to:
+      [ (5,6,7), (1,2)(3,4)(6,7), (), () ]
+    : head homomorphism maps source generators to:
+      [ (5,6,7), (1,2)(3,4)(6,7), (5,7,6), (1,2)(3,4)(6,7) ]
+    : range embedding maps range generators to:
+      [ (4,6,5), (2,3)(5,6) ]
+    : kernel has generators:
+      [ (1,2,3)(4,6,5), (1,4)(2,5)(3,6) ]
+    : boundary homomorphism maps generators of kernel to:
+      [ (5,7,6), (1,2)(3,4)(6,7) ]
+    : kernel embedding maps generators of kernel to:
+      [ (1,2,3)(4,6,5), (1,4)(2,5)(3,6) ]
+    : associated crossed module is Crossed module Actor[c3->s3]  |
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{About induced constructions}%
+
+A morphism of crossed modules $(\sigma, \rho) \:  {\cal X}_1 \to {\cal
+X}_2$ factors uniquely through an  induced crossed module $\rho_{\ast}
+{\cal  X}_1 =   (\delta \: \rho_{\ast}  S_1 \to   R_2)$.  Similarly, a
+morphism   of  cat1-groups  factors    through an induced  cat1-group.
+Calculation of induced crossed modules of  ${\cal X}$ also provides an
+algebraic  means  of determining  the   homotopy $2$-type  of homotopy
+pushouts of the classifying space of ${\cal  X}$.  For more background
+from   algebraic  topology see  references in  \cite{xmodBH1}, \cite{xmodBW1},
+\cite{xmodBW2}.  Induced crossed   modules  and induced cat1-groups   also
+provide the   building    blocks for constructing     pushouts  in the
+categories
+\textbf{XMod} and \textbf{Cat1}.
+
+Data for the cases of algebraic interest  is provided by a conjugation
+crossed module ${\cal X} =  (\partial \: S \to  R)$ and a homomorphism
+$\iota$  from   $R$  to a  third   group  $Q$.   The  output  from the
+calculation is   a crossed module  $\iota_{\ast}{\cal  X} = (\delta \:
+\iota_{\ast}S  \to Q)$ together  with   a morphism of crossed  modules
+${\cal X}  \to \iota_{\ast}{\cal  X}$.   When $\iota$ is  a surjection
+with kernel $K$ then $\iota_{\ast} S =  [S,K]$ (see \cite{xmodBH1}).  When
+$\iota$ is an  inclusion the induced  crossed module may be calculated
+using  a copower construction  \cite{xmodBW1} or, in  the case when $R$ is
+normal in $Q$, as a coproduct  of crossed modules (\cite{xmodBW2}, not yet
+implemented).  When $\iota$ is  neither a surjection nor an inclusion,
+$\iota$ is written as  the composite of the  surjection onto the image
+and the inclusion of the image in  $Q$, and then the composite induced
+crossed module is constructed.
+
+Other functions  required  by the induced  crossed module construction
+include a  function to produce a common  transversal  for the left and
+right cosets  of   a   subgroup (see \ref{IsCommonTransversal}     and
+\ref{CommonTransversal}).  Also, modifications to  some of  the Tietze
+transformation routines in  |fptietze.g| are required.  These have yet
+to be released as part of the {\GAP} library and so are made available
+in this package in file |felsch.g|, but are not documented here.
+
+As a simple example  we take for ${\cal   X}$ the conjugation  crossed
+module $(\partial \: c4 \to d8)$ and for $\iota$ the inclusion of $d8$
+in $d16$.  The induced crossed module has $c4 \times c4$ as source.
+
+|    gap> d16 := DihedralGroup( 16 );  d16.name := "d16";;
+    Group( (1,2,3,4,5,6,7,8), (2,8)(3,7)(4,6) )
+    gap> d8 := Subgroup( d16, [ (1,3,5,7)(2,4,6,8), (1,3)(4,8)(5,7) ] );;
+    gap> c4 := Subgroup( d8, [ (1,3,5,7)(2,4,6,8) ] );;
+    gap> d8.name :=  "d8";;  c4.name := "c4";;
+    gap> DX := ConjugationXMod( d8, c4 );
+    Crossed module [c4->d8]
+    gap> iota := InclusionMorphism( d8, d16 );;
+    gap> IDXincl := InducedXMod( DX, iota );
+    Action of RQ on generators of I :- 
+      (1,2,3,4,5,6,7,8) : (1,4)(2,3)
+      (2,8)(3,7)(4,6) : (1,2)(3,4)
+    |'\#'|I  Protecting the first 1 generators.
+    |'\#'|I  there are 2 generators and 3 relators of total length 12
+    partitioning the generators: [ [ 2 ], [ 1 ] ]
+    Simplified presentation for I :- 
+    |'\#'|I  generators: [ fI.1, fI.3 ]
+    |'\#'|I  relators:
+    |'\#'|I  1.  4  [ 1, 1, 1, 1 ]
+    |'\#'|I  2.  4  [ 2, 2, 2, 2 ]
+    |'\#'|I  3.  4  [ 2, -1, -2, 1 ]
+
+     I has Size: 16
+    **************** 
+
+    Group is abelian 
+    factor 1 is abelian with invariants: [ 4 ]
+    factor 2 is abelian with invariants: [ 4 ]
+    Image of I has index 4 in RQ and is generated by :   
+    [ ( 1, 3, 5, 7)( 2, 4, 6, 8), ( 1, 7, 5, 3)( 2, 8, 6, 4) ]
+
+    gap> XModPrint( IDXincl );
+    Crossed module [i*(c4)->d16] :- 
+    : Source group i*(c4) has generators:
+      [ ( 1, 2, 4, 7)( 3, 5, 8,11)( 6, 9,12,14)(10,13,15,16), 
+        ( 1, 3, 6,10)( 2, 5, 9,13)( 4, 8,12,15)( 7,11,14,16) ]
+    : Range group = d16 has generators:
+      [ (1,2,3,4,5,6,7,8), (2,8)(3,7)(4,6) ]
+    : Boundary homomorphism maps source generators to:
+      [ ( 1, 3, 5, 7)( 2, 4, 6, 8), ( 1, 7, 5, 3)( 2, 8, 6, 4) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2,3,4,5,6,7,8) --> { source gens --> 
+    [ ( 1,10, 6, 3)( 2,13, 9, 5)( 4,15,12, 8)( 7,16,14,11), 
+      ( 1, 7, 4, 2)( 3,11, 8, 5)( 6,14,12, 9)(10,16,15,13) ] }
+      (2,8)(3,7)(4,6) --> { source gens --> 
+    [ ( 1, 7, 4, 2)( 3,11, 8, 5)( 6,14,12, 9)(10,16,15,13), 
+      ( 1,10, 6, 3)( 2,13, 9, 5)( 4,15,12, 8)( 7,16,14,11) ] }
+      These 2 automorphisms generate the group of automorphisms.
+    : Kernel of the crossed module has generators:
+      [ ( 1, 5,12,16)( 2, 8,14,10)( 3, 9,15, 7)( 4,11, 6,13) ]
+    : Induced XMod from Crossed module [c4->d8]  with source morphism:
+      [ (1,3,5,7)(2,4,6,8) ]
+       --> [ ( 1, 2, 4, 7)( 3, 5, 8,11)( 6, 9,12,14)(10,13,15,16) ]  |
+
+In some of the sections which follow the output is very lengthy and so
+has been pruned.
+   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InducedXMod}%
+
+'InducedXMod( <X, iota> )'
+
+'InducedXMod( <Q, P, M> )'
+
+This function requires as data a  conjugation crossed module ${\cal X}
+= (\partial \: M \to P)$ and a homomorphism $\iota  \: P \to Q$.  This
+data may  be specified using either of  the two forms shown, where the
+latter form required $Q \ge P \ge M$.
+
+In the first example, $\iota$ is a surjection from |d8| to |k4|.
+
+|    gap> d8gen := d8.generators;
+    [ (1,3,5,7)(2,4,6,8), (1,3)(4,8)(5,7) ]
+    gap> k4gen := k4.generators;
+    [ (1,2)(3,4), (1,3)(2,4) ]
+    gap> DX;
+    Crossed module [c4->d8]
+    gap> iota := GroupHomomorphismByImages( d8, k4, d8gen, k4gen );;
+    gap> IDXsurj := InducedXMod( DX, iota );
+    Crossed module [c4/ker->k4]
+    gap> XModPrint( IDXsurj );
+    Crossed module [c4/ker->k4] :- 
+    : Source group c4/ker has generators:
+      [ (1,2,3,4) ]
+    : Range group has parent ( s4 ) and has generators:
+      [ (1,2)(3,4), (1,3)(2,4) ]
+    : Boundary homomorphism maps source generators to:
+      [ ( 1, 2)( 3, 4) ]
+    : Action homomorphism maps range generators to automorphisms:
+      (1,2)(3,4) --> { source gens --> [ (1,2,3,4) ] }
+      (1,3)(2,4) --> { source gens --> [ (1,4,3,2) ] }
+      These 2 automorphisms generate the group of automorphisms.
+    : Induced XMod from Crossed module [c4->d8]  with source morphism:
+      [ (1,3,5,7)(2,4,6,8) ]
+       --> [ (1,2,3,4) ]    |
+
+In a second example we take |(c3 -> s3)| as the initial crossed module
+and |s3 -> s4|  as the inclusion.  The  induced group turns out  to be
+the special linear group |sl(2,3)|.
+
+|    gap> s3 := Subgroup( s4, [ (2,3), (1,2,3) ] );;
+    gap> c3 := Subgroup( s3, [ (1,2,3) ] );
+    gap> s3.name := "s3";;  c3.name := "c3";;
+    gap> InducedXMod( s4, s3, c3 );
+
+    Action of RQ on generators of I :- 
+      (1,2,3,4) : (1,7,6,3)(2,8,5,4)
+      (1,2) : (1,2)(3,4)(5,8)(6,7)
+    |'\#'|I  Protecting the first 1 generators.
+    |'\#'|I  there are 2 generators and 3 relators of total length 12
+    Simplified presentation for I :- 
+    |'\#'|I  generators: [ fI.1, fI.5 ]
+    |'\#'|I  relators:
+    |'\#'|I  1.  3  [ 2, 2, 2 ]
+    |'\#'|I  2.  3  [ 1, 1, 1 ]
+    |'\#'|I  3.  6  [ 2, -1, -2, 1, -2, -1 ]
+
+     I has Size: 24
+    **************** 
+     Searching Solvable Groups Library:
+     GroupId = 
+    rec(
+      catalogue := [ 24, 14 ],
+      names := [ "SL(2,3)" ],
+      size := 24 )
+    Image of I has index 2 in RQ and is generated by : 
+    [ (1,2,3), (1,2,4), (1,4,3), (2,3,4) ]
+
+    Crossed module [i*(c3)->s4]            |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AllInducedXMods}%
+
+'AllInducedXMods( <Q> )'
+
+This function calculates |InducedXMod( Q, P, M )|  where |P| runs over
+all conjugacy classes of subgroups of |Q| and |M| runs over all normal
+subgroups of |P|.
+
+|    gap> AllInducedXMods( d8 );
+           | $\vdots$ |
+    Number of induced crossed modules calculated = 11  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InducedCat1}%
+
+'InducedCat1( <C, iota> )'
+
+When ${\cal C}$ is the induced cat1-group associated to ${\cal X}$ the
+induced cat1-group may be obtained by construction the induced crossed
+module   and then using  the  |Cat1XMod|  function.   An experimental,
+alternative  procedure   is  to  calculate    the induced   cat1-group
+$\iota_\ast G = G  \ast_R Q$ directly.  This  has been implemented for
+the case when ${\cal C} = ( e;t,h \: G \to R)$ and $\iota  \: R \to Q$
+is an inclusion.
+
+The output  from the  calculation is a   cat1-group  ${\cal C}_\ast  =
+(e_\ast;t_\ast,   h_\ast \: \iota_{\ast}G    \to Q)$  together  with a
+morphism of crossed modules ${\cal C} \to {\cal C}_{\ast}$.
+
+In  the example an induced  cat1-group is constructed whose associated
+crossed module has  source  $c4 \times  c4$  and range $d16$,  so  the
+source of the cat1-group is $d16 \semidirect (c4 \times c4)$.
+
+|    gap> CDX := Cat1XMod( DX );
+    cat1-group [Perm(d8 |'\|'|X c4) ==> d8] 
+    gap> inc := InclusionMorphism( d8, d16 );;
+    gap> ICDX := InducedCat1( CDX, inc );
+          | $\vdots$ |
+    new perm group size 256
+    cat1-group <ICG([Perm(d8 |'\|'|X c4) ==> d8])> 
+    gap> XICDX := XModCat1( ICDX );
+    Crossed module [ker(<ICG([Perm(d8 |'\|'|X c4) ==> d8])>)->d16]
+    gap> AbelianInvariants( XICDX.source );
+    [ 4, 4 ]  |
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{About utilities}
+
+By a utility function we mean a {\GAP} function which is\:
+\begin{itemize}
+\item needed by other functions in this package,
+\item not (as far as we know) provided by the standard {\GAP} library,
+\item more suitable for inclusion in the main library than in this package.
+\end{itemize}
+
+The  first   two   utilities   give  particular  group  homomorphisms,
+|InclusionMorphism(H,G)| and |ZeroMorphism(G,H)|.  We often prefer
+
+|    gap> incs3 := InclusionMorphism( s3, s3 );
+    IdentityMapping( s3 )
+    gap> incs3.genimages;
+    [ (1,2), (2,3) ]  |
+
+to |IdentityMapping(s3)| because   the  latter does   not  provide the
+fields |.generators| and the |.genimages| which  many of the functions
+in this package expect homomorphisms to possess.
+
+The second set of utilities involve endomorphisms and automorphisms of
+groups.  For example\:
+
+|    gap> end8 := EndomorphismClasses( d8 );;
+    gap> RecFields( end8 );
+    [ "isDomain", "isEndomorphismClasses", "areNonTrivial", "classes",
+      "intersectionFree", "group", "latticeLength", "latticeReps" ]
+    gap> Length( end8.classes );
+    11
+    gap> end8.classes[3];
+    rec(
+      quotient := d8.Q3,
+      projection := OperationHomomorphism( d8, d8.Q3 ),
+      autoGroup := Group( IdentityMapping( d8.Q3 ) ),
+      rangeNumber := 2,
+      isomorphism := GroupHomomorphismByImages( d8.Q3, d8.H2, [ (1,2) ], 
+        [ (1,5)(2,6)(3,7)(4,8) ] ),
+      conj := [ () ] )
+    gap> innd8 := InnerAutomorphismGroup( d8 );
+    Inn(d8)
+    gap> innd8.generators;
+    [ InnerAutomorphism( d8, (1,3,5,7)(2,4,6,8) ), 
+      InnerAutomorphism( d8, (1,3)(4,8)(5,7) ) ]
+    gap> IsAutomorphismGroup( innd8 );
+    true   |
+
+The third set of functions construct isomorphic pairs of groups, where
+a  faithful permutation  representation of a  given  type of group  is
+constructed.  Types covered include  finitely presented groups, groups
+of automorphisms   and  semidirect products.   A  typical pair  record
+includes the following fields\:
+
+\begin{tabular}{ll}
+.type         &  the given group $G$,                \\
+.perm         &  the permutation representation $P$, \\
+.t2p          &  the isomorphism  $G \to P$,         \\
+.p2t          &  the inverse isomorphism  $P \to G$, \\
+.isTypePair   &  a boolean flag, normally |true|.
+\end{tabular}
+
+The inner automorphism group of the dihedral  group |d8| is isomorphic
+to |k4|\:
+
+|    gap> Apair := AutomorphismPair( innd8 );
+    rec(
+      auto := Inn(d8),
+      perm := PermInn(d8),
+      a2p := OperationHomomorphism( Inn(d8), PermInn(d8) ),
+      p2a := GroupHomomorphismByImages( PermInn(d8), Inn(d8),
+        [ (1,3), (2,4) ], 
+        [ InnerAutomorphism( d8, (1,3,5,7)(2,4,6,8) ), 
+          InnerAutomorphism( d8, (1,3)(4,8)(5,7) ) ] ),
+      isAutomorphismPair := true )
+    gap> IsAutomorphismPair( Apair );
+    true  |
+
+The final set of functions deal with lists of  subsets of |[1..n]| and
+construct systems of distinct and common representatives using simple,
+non-recursive, combinatorial algorithms.   The latter function returns
+two lists\:\  the  set of representatives,   and a permutation of  the
+subsets of the second list.   It may also be used  to provide a common
+transversal for sets of left and right  cosets of a  subgroup $H$ of a
+group $G$, although a greedy algorithm is usually quicker.
+
+|    gap> L := [ [1,4], [1,2], [2,3], [1,3], [5] ];;
+    gap> DistinctRepresentatives( L );
+    [ 4, 2, 3, 1, 5 ]
+    gap> M := [ [2,5], [3,5], [4,5], [1,2,3], [1,2,3] ];;
+    gap> CommonRepresentatives( L, M );
+    [ [ 4, 1, 3, 1, 5 ], [ 3, 5, 2, 4, 1 ] ]
+    gap> CommonTransversal( s4, c3 );
+    [ (), (3,4), (2,3), (1,3)(2,4), (1,2)(3,4), (2,4), (1,4), (1,4)(2,3) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InclusionMorphism}%
+\index{InclusionMorphism!for groups}
+
+'InclusionMorphism( <H, G> )'
+
+This gives the inclusion map of a subgroup $H$ of a group $G$.  In the
+case  that $H=G$ the   |IdentityMapping(G)|  is returned, with  fields
+|.generators| and |.genimages| added.
+
+|    gap> s4 := Group( (1,2,3,4), (1,2) );; s4.name:="s4";;
+    gap> a4 := Subgroup( s4, [ (1,2,3), (2,3,4) ] );; a4.name:="a4";;
+    gap> InclusionMorphism( a4, s4 );
+    GroupHomomorphismByImages( a4, s4, [ (1,2,3), (2,3,4) ],
+      [ (1,2,3), (2,3,4) ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ZeroMorphism}%
+\index{ZeroMorphism!for groups}
+
+'ZeroMorphism( <G, H> )'
+
+This gives the zero map from  $G$  to the identity subgroup of  $H$.
+
+|    gap> ZeroMorphism( s4, a4 );
+    GroupHomomorphismByImages( s4, a4, [ (1,2,3,4), (1,2) ], [ (), () ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{EndomorphismClasses}%
+
+'EndomorphismClasses( <G, case> )'
+
+The monoid of endomorphisms is required when calculating the monoid of
+derivations of    a   crossed module and  when    determining  all the
+cat1-structures on a group $G$  (see sections \ref{AllDerivations} and
+\ref{AllSections}).
+
+An endomorphism $\epsilon$ of  $R$  with image $H^{\prime}$ is determined by
+\begin{itemize}
+\item  a normal subgroup $N$ of $R$ and a permutation representation 
+       $\theta \: R/N \to Q$  of the quotient,
+       giving a projection  $\theta \circ \nu \: R \to Q $,
+       where  $\nu \: R \to R/N$  is the natural homomorphism;
+\item  an automorphism  $\alpha$  of  $Q$;
+\item  a subgroup  $H^{\prime}$  in a conjugacy class  $[H]$
+       of subgroups of  $R$
+       isomorphic to  $Q$  having representative  $H$,
+       an isomorphism  $\phi \: Q \cong H$,
+       and a conjugating element  $c \in R$
+       such that  $H^c = H^{\prime}$,
+\end{itemize}
+and takes values
+$$\epsilon r \; = \; (\phi \alpha \theta \nu r)^c.$$
+
+Endomorphisms are placed  in  the same  class  if they  have the  same
+choice of $N$ and $[H]$, so the number of endomorphisms is
+\begin{center}
+'\|'$\mathrm{End}(R)$'\|'$ = \; \sum_{classes}$
+'\|'$\mathrm{Aut}(Q)$'\|'\ '\|'$[H]$'\|'.
+\end{center}
+The function returns records |E  = R.endomorphismClasses| and subfield
+|.classes| as  shown below.  Three  cases are catered for as indicated
+in the example.
+
+|    gap> Ea4 := EndomorphismClasses( a4 , 7);
+    Usage:  EndomorphismClasses( G [, case] );
+     choose  case = 1  to include automorphisms and zero,
+    default  case = 2  to exclude automorphisms and zero,
+             case = 3  when  N meet H  is trivial,
+    false
+    gap> Ea4 := EndomorphismClasses( a4 );
+    rec(
+      isDomain := true,
+      isEndomorphismClasses := true,
+      areNonTrivial := true,
+      intersectionFree := false,
+      classes := [ rec(
+              quotient := a4.Q2,
+              projection := OperationHomomorphism( a4, a4.Q2 ),
+              autoGroup := Group( GroupHomomorphismByImages( a4.Q2, a4.Q2, 
+                [ (1,3,2) ], [ (1,2,3) ] ) ),
+              rangeNumber := 3,
+              isomorphism := GroupHomomorphismByImages( a4.Q2, a4.H3, 
+                [ (1,3,2) ], [ (2,3,4) ] ),
+              conj := [ (), (1,3,2), (1,2)(3,4), (1,4,2) ] ) ],
+      group := a4,
+      latticeLength := 5,
+      latticeReps := [ a4.id, a4.H2, a4.H3, a4.H4, a4 ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{EndomorphismImages}%
+
+'EndomorphismImages( <G> )'
+
+This returns   the   lists of  images   of the  generators  under  the
+endomorphisms, using the  data  in |G.endomorphismClasses|.    In this
+example two trivial   normal   subgroups  have been   excluded.    The
+remaining normal subgroup of |a4| is |k4|, with quotient |c3| and |a4|
+has 8 elements of  order 3 with which to  generate a |c3|, and hence 8
+endomorphisms in this class.
+
+|    gap> EndomorphismImages( a4 );
+    [ [ (2,3,4), (2,4,3) ], [ (2,4,3), (2,3,4) ], [ (1,2,4), (1,4,2) ], 
+      [ (1,4,2), (1,2,4) ], [ (1,4,3), (1,3,4) ], [ (1,3,4), (1,4,3) ], 
+      [ (1,3,2), (1,2,3) ], [ (1,2,3), (1,3,2) ] ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdempotentImages}%
+
+'IdempotentImages( <G> )'
+
+This return the  images of idempotent endomorphisms.   Various options
+are allowed.
+
+|    gap> IdempotentImages( a4, 7 );
+    Usage: IdempotentImages( G [, case] );
+    where  case = 1  for ALL idempotent images,
+           case = 2  for all non-trivial images,
+           case = 3  for case 2 and one group per conj class,
+           case = 4  for case 3 and sorted into images.
+    false
+    gap> IdempotentImages( a4, 2 );
+    [ [ (2,4,3), (2,3,4) ], [ (1,4,2), (1,2,4) ], [ (1,3,4), (1,4,3) ], 
+      [ (1,2,3), (1,3,2) ] ]
+    gap> IdempotentImages( a4, 3 );
+    [ [ (2,4,3), (2,3,4) ] ]           |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InnerAutomorphismGroup}%
+\index{InnerAutomorphismGroup!for groups}
+
+'InnerAutomorphismGroup( < G > )'
+
+This creates  the inner automorphism    group of  |G|  as the    group
+generated by the inner automorphisms by generators of |G|.  If a field
+|G.automorphismGroup|  exists, it  is   specified  as the  parent   of
+|Inn(G)|.
+
+|    gap> inna4 := InnerAutomorphismGroup( a4 );
+    Inn(a4)
+    gap> inna4.generators;
+    [ InnerAutomorphism( a4, (1,2,3) ), InnerAutomorphism( a4, (2,3,4) ) ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAutomorphismGroup}%
+\index{test!for automorphism group}
+
+'IsAutomorphismGroup( <A> )'
+
+This tests to see whether |A| is a group of automorphisms.
+
+|    gap> IsAutomorphismGroup( inna4 );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AutomorphismPair}%
+\index{Pair!for automorphism groups}
+
+'AutomorphismPair( <A> )'
+
+This   returns  a   record |pairA|  containing    a  permutation group
+isomorphic to the group $A$ obtained using the |OperationHomomorphism|
+function.       The record contains   $A$    and  |pairA.auto|, $P$ as
+|pairA.perm|.  Isomorphisms in each direction are saved as |pairA.p2a|
+and |pairA.a2p|.
+
+|    gap> ac3 := AutomorphismGroup( c3 );
+    Group( GroupHomomorphismByImages( c3, c3, [(1,2,3)], [(1,3,2)] ) )
+    gap> pairc3 := AutomorphismPair( ac3 );
+    rec(
+      auto := Aut(c3),
+      perm := PermAut(c3),
+      a2p := OperationHomomorphism( Aut(c3), PermAut(c3) ),
+      p2a := GroupHomomorphismByImages( PermAut(c3), Aut(c3), [(1,2)], 
+        [ GroupHomomorphismByImages( c3, c3, [(1,2,3)], [(1,3,2)] ) ] ),
+      isAutomorphismPair := true )
+    gap> pc3 := pairc3.perm;
+    PermAut(c3)  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAutomorphismPair}%
+\index{test!for automorphism pair}
+
+'IsAutomorphismPair( <pair> )'
+
+This tests to see whether |pair| is an (automorphism group, perm group) pair.
+
+|    gap> IsAutomorphismPair( pairc3 );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AutomorphismPermGroup}%
+\index{AutomorphismPermGroup!for groups}
+
+'AutomorphismPermGroup( < G > )'
+
+This    combines  |AutomorphismGroup(G)|     with  the        function
+|AutomorphismPair|                       and                   returns
+|G.automorphismGroup.automorphismPair.perm|.            The       name
+|PermAut(<G.name>)| is given automatically.
+
+|    gap> P := AutomorphismPermGroup( a4 );
+    PermAut(a4)
+    gap> P.generators;
+    [ (1,8,4)(2,6,7), (3,6,7)(4,5,8), (1,2)(3,8)(4,7)(5,6) ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FpPair}%
+\index{Pair!for FpGroups}
+
+'FpPair( <G> )'
+
+When $G$ is a finitely presented group, this function finds a faithful
+permutation     representation  $P$,   which    may    be  the regular
+representation, and sets up a pairing between $G$ and $P$.
+
+|    gap> f := FreeGroup( 2 );;
+    gap> rels := [ f.1^3, f.2^3, (f.1*f.2)^2 ];;
+    gap> g := f/rels;;
+    gap> pairg := FpPair( g );
+    rec(
+      perm := Group( (2,4,3), (1,3,2) ),
+      fp := Group( f.1, f.2 ),
+      f2p := GroupHomomorphismByImages( Group( f.1, f.2 ), 
+        Group( (2,4,3), (1,3,2) ), [ f.1, f.2 ], [ (2,4,3), (1,3,2) ] ),
+      p2f := GroupHomomorphismByImages( Group( (2,4,3), (1,3,2) ),
+        Group( f.1, f.2 ), [ (2,4,3), (1,3,2) ], [ f.1, f.2 ] ),
+      isFpPair := true,
+      isMinTransitivePair := true,
+      generators := [ (2,4,3), (1,3,2) ],
+      degree := 4,
+      position := 3 )  |
+
+When     $G$   is      a    permutation     group,     the    function
+|PresentationViaCosetTable| is called  to find a presentation  for $G$
+and hence a finitely presented group $F$  isomorphic to $G$.  When $G$
+has a name, the name |<name of G>Fp| is given automatically to $F$ and
+|<name of G>Pair| to the pair.
+
+|    gap> h20.generators;
+    [ (1,2,3,4,5), (2,3,5,4) ]
+    gap> pairh := FpPair( h20 );
+    rec(
+      perm := h20,
+      fp := h20Fp,
+      f2p := GroupHomomorphismByImages( h20Fp, h20, [ f.1, f.2 ], 
+        [ (1,2,3,4,5), (2,3,5,4) ] ),
+      p2f := GroupHomomorphismByImages( h20, h20Fp,
+        [ (1,2,3,4,5), (2,3,5,4) ], [ f.1, f.2 ] ),
+      isFpPair := true,
+      degree := 5,
+      presentation := << presentation with 2 gens and 3 rels
+        of total length 14 >>,
+      name := [ 'h', '2', '0', 'P', 'a', 'i', 'r' ] )
+    gap> pairh.fp.relators;
+    [ f.2^4, f.1^5, f.1*f.2*f.1*f.2^-1*f.1 ]   |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsFpPair}%
+\index{test!for Fp-pair}
+
+'IsFpPair( <pair> )'
+
+This tests to see whether |pair| is an (Fp-group, perm group) pair.
+
+|    gap> IsFpPair( pairh );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SemidirectPair}%
+\index{Pair!for semidirect groups}
+
+'SemidirectPair( <S> )'
+
+When  |S|  is a semidirect  product,   this function finds  a faithful
+permutation  representation $P$ and sets  up a pairing between $S$ and
+$P$.  The example illustrates |c2|'\|'|Xc3|$\cong$|s3|.
+
+|    gap> agen := ac3.generators;; pgen := pc3.generators;;
+    gap> a := GroupHomomorphismByImages( pc3, ac3, pgen, agen );
+    GroupHomomorphismByImages( PermAut(c3), Aut(c3), [ (1,2) ], 
+    [ GroupHomomorphismByImages( c3, c3, [ (1,2,3) ], [ (1,3,2) ] ) ] )
+    gap> G := SemidirectProduct( pc3, a, c3 );;
+    gap> G.name := "G";;  PG := SemidirectPair( G );
+    rec(
+      perm := Perm(G),
+      sdp := G,
+      s2p := OperationHomomorphism( G, Perm(G) ),
+      p2s := GroupHomomorphismByImages( Perm(G), G, [(1,2)(4,5), (3,5,4)],
+        [ SemidirectProductElement( (1,2), GroupHomomorphismByImages
+              ( c3, c3, [ (1,3,2) ], [ (1,2,3) ] ), () ), 
+        SemidirectProductElement( (), IdentityMapping(c3), (1,2,3) ) ] ))|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSemidirectPair}%
+\index{test!for semidirect pair}
+
+'IsSemidirectPair( <pair> )'
+
+This tests to see whether |pair| is a (semidirect product, perm group) pair.
+
+|    gap> IsSemidirectPair( PG );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrintList}%
+\index{Print!for lists}
+
+'PrintList( <L> )'
+
+This functions prints each of the elements of a list |L| on a separate
+line.
+
+|    gap> J := [ [1,2,3], [3,4], [3,4], [1,2,4] ];; PrintList( J );
+    [ 1, 2, 3 ]
+    [ 3, 4 ]
+    [ 3, 4 ]
+    [ 1, 2, 4 ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DistinctRepresentatives}%
+
+'DistinctRepresentatives( <L> )'
+
+When $L$ is a set of $n$ subsets of $[1..n]$ and the Hall condition is
+satisfied (the union of any $k$ subsets  has at least $k$ elements), a
+standard algorithm for systems of distinct representatives is applied.
+(A backtrack algorithm would  be more efficient.)   If the elements of
+$L$ are lists, they are converted to sets.
+
+|    gap> DistinctRepresentatives( J );
+    [ 1, 3, 4, 2 ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CommonRepresentatives}%
+
+'CommonRepresentatives( <J, K> )'
+
+When |J| and |K| are  both lists of  |n| sets, the  list |L| is formed
+where   $L[i] \:= \{ j   \;\:\; J[i] \cap K[j]  \ne  \emptyset \}$.  A
+system  of    distinct represetatives  |reps|  for  |L|    provides  a
+permutation of the elements  of |K| such  that |J[i]| and  |K[i]| have
+non-empty intersection.   Taking the  first element  in each of  these
+intersections determines   a system of common   representatives |com|.
+The function returns the pair |[ com, reps ]|.   Note that there is no
+requirement for the representatives to be distinct.  See also the next
+section.
+
+|   gap> K := [ [3,4], [1,2], [2,3], [2,3,4] ];;
+    gap> CommonRepresentatives( J, K );
+    [ [ 3, 3, 3, 1 ], [ 1, 3, 4, 2 ] ]  |
+
+This has produced
+$3 \in J[1] \cap K[1]$, $3 \in J[2] \cap K[3]$,
+$3 \in J[3] \cap K[4]$  and  $1 \in J[4] \cap K[2]$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CommonTransversal}
+
+'CommonTransversal( <G, H> )'
+
+The existence of a common transversal for the left and right cosets of
+a  subgroup $H$ of  $G$   is a   special  case of  systems of   common
+representatives.
+
+|    gap> T := CommonTransversal( a4, c3 );
+    [ (), (1,3)(2,4), (1,2)(3,4), (1,4)(2,3) ]   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCommonTransversal}%
+\index{test!for common transversal}
+
+'IsCommonTransversal( <G, H, T> )'
+
+|    gap> IsCommonTransversal( a4, c3, T );
+    true  |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

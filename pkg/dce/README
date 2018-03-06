@@ -1,0 +1,174 @@
+DCE 1.0 README. 
+==============
+
+This directory contains the DCE (Double Coset Enumerator) share
+package for use with GAP 3.4 patchlevel 2 or higher.
+
+Documentation for the package is contained in the file dce.tex in the
+distribution. This can be installed as part of the GAP manual,
+providing on-line help and a LateX manual. A pre-processsed DVI file
+dce.dvi contains just this chapter.
+
+Below is an excerpt from dce.tex, covering authorship and installation.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Authorship and Contact Information}
+
+
+The 'dce' package was written by Steve Linton of the Division of Computer
+Science, University of St.~Andrews, North Haugh, St.~Andrews, Fife, KY16
+9SS, UK\\  e-mail\:\ 'sal@dcs.st-and.ac.uk', and any problems or questions
+should be directed to him. 
+
+The work was done mainly during a  visit to Lehrstuhl D f\"ur Mathematik,
+RWTH-Aachen, Aachen, Germany,  and the author gratefuly  acknowledges the
+hospitality  of Lehrstuhl  D and  the  financial support  of the Deutsche
+Forschungsgemeinschaft.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing the DCE Package}
+
+The  DCE package  is completely written  in the {\GAP} language, it does
+not require any additional programs  and/or compilations.  It will run on
+any  computer that runs {\GAP}.  In the  following  we  will describe the
+installation under  UNIX. The installation on the  Atari ST, TT or IBM PC
+is similar.
+
+In the example  we give we  will assume that {\GAP}  is installed  in the
+home directory of a pseudo  user  'gap' and that you, as user 'gap', want
+to install  the DCE package.  Note that certain  parts of the  output in
+the examples should only be taken as rough outline, especially file sizes
+and file dates are *not* to be taken literally.
+
+First  of all you have  to get the file   'dce.zoo' (see "Getting GAP").
+Then you must locate the {\GAP} directories containing 'lib/' and 'doc/',
+this is usually 'gap3r4p2' where '2' is to be replaced by the current the
+patch level.
+
+|    gap:~ > ls -l
+    drwxr-xr-x  11 gap      gap          1024 Jul  8 14:05 gap3r4p2
+    -rw-r--r--   1 gap      gap         76768 Sep 11 12:33 dce.zoo
+    gap:~ > ls -l gap3r4p2
+    drwxr-xr-x   2 gap      gap          3072 Aug 26 11:53 doc
+    drwxr-xr-x   2 gap      gap          1024 Jul  8 14:05 grp
+    drwxr-xr-x   2 gap      gap          2048 Aug 26 09:42 lib
+    drwxr-xr-x   2 gap      gap          2048 Aug 26 09:42 src
+    drwxr-xr-x   2 gap      gap          1024 Aug 26 09:42 tst|
+
+Unpack the package using  'unzoo' (see "Installation  of GAP  for UNIX").
+Note that you  must be in the directory  containing 'gap3r4p2'  to unpack
+the  files.  After  you  have  unpacked the  source  you  may remove  the
+*archive-file*.
+
+|    gap:~ > unzoo x dce.zoo
+    gap:~ > ls -l gap3r4p2/pkg/dce
+    -rw-r--r--   1 gap      gap          1536 Nov 22 04:16 README
+    -rw-r--r--   1 gap      gap        116553 Nov 22 04:02 init.g
+    -rw-r--r--   1 gap      gap         48652 Nov 22 04:18 dce.tex
+    -rw-r--r--   1 gap      gap        549708 Nov 22 04:18 dce.dvi
+    -rw-r--r--   1 gap      gap         14112 Nov 22 04:18 dce-inte.tex
+    -rw-r--r--   1 gap      gap        116553 Nov 22 03:41 dce.g|
+
+Copy the file 'dce.tex' into the 'doc/' directory, and edit 'manual.tex'
+(also in the 'doc/' directory) and add a line |\Include{dce}| after the
+line |\Include{weyl}| near the end of the file. Finally run latex again
+(see "Installation of GAP for UNIX").
+
+|    gap:~ > cd gap3r4p2/pkg/dce
+    gap:../dce > cp dce.tex ../../doc
+    gap:../dce > cd ../../doc
+    gap:../doc > vi manual.tex # and add the necessary line
+    gap:../doc > latex manual
+    # a few messages about undefined references
+    gap:../doc > latex manual
+    # a few messages about undefined references
+    gap:../doc > makeindex manual
+    # 'makeindex' prints some diagnostic output
+    gap:../doc > latex manual
+    # there should be no warnings this time |
+
+Now  it  is  time  to  test  the installation.  Let  us  assume that  the
+executable of {\GAP} lives in 'src/' and is called 'gap'.
+
+|    gap:~/gap3r4p2 > src/gap -b
+    gap> ?DCE
+        DCE _________________________________________ The Double Coset Enumerator
+        'DCE(<pres>)'
+    
+        The basic command to run the double coset enumerator is 'DCE'. This takes
+        one argument, the presentation record in  the format described above, and
+        returns a DCE Universe of status ``closed''    or ``early-closed''.   The
+        exact details of operation are controlled by various  fields in the input
+        structure, as described in "Strategies for Double Coset Enumeration".
+    
+    gap> c := AbstractGenerator("c");
+    c
+    gap> d := AbstractGenerator("d");
+    d
+    gap> S5Pres := rec( groupK := k,
+    > gainGroups := [rec(), rec(dom := 3)],
+    > gens := [rec(name := c, invol := true, wgg := 2),
+    > rec(name := d, invol := true, wgg := 1)],
+    > relators := [DCEWord(k,c*d)^3,DCEWord(k,[(2,3),c])^3],
+    > subgens := [DCEWord(k,(1,2,3)), DCEWord(k,(1,2)), DCEWord(k,c)]);
+    rec(
+      groupK := Group( (1,3), (2,3) ),
+      gainGroups := [ rec(
+	       ), rec(
+	      dom := 3 ) ],
+      gens := [ rec(
+	      name := c,
+	      invol := true,
+	      wgg := 2 ), rec(
+	      name := d,
+	      invol := true,
+	      wgg := 1 ) ],
+      relators := 
+       [ DCEWord(Group( (1,3), (2,3) ),[c, d])^3, DCEWord(Group( (1,3), 
+	    (2,3) ),[(2,3), c])^3 ],
+      subgens := 
+       [ DCEWord(Group( (1,3), (2,3) ),[(1,2,3)]), DCEWord(Group( (1,3), 
+	    (2,3) ),[(1,2)]), DCEWord(Group( (1,3), (2,3) ),[c]) ] )
+    gap> u := DCE(S5Pres);
+    &I 270         Set up generators and inverses 
+    &I 290         Set up column structure: 4 columns 
+    &I 380         Pre-processed relators 
+    &I 450         Done subgroup generators 
+    &I 450         Also done relators in subgroup 
+    &I 450         Pushing at weight 3 
+    &I      1 double 1 single 1 blanks 
+    &I 460         1 DCEWord(K,[c, d])^3 
+    &I 460           1 cases 
+    &I 690         1 DCEWord(K,[(2,3), c])^3 
+    &I 700           1 cases 
+    &I 710         Pushing at weight 5 
+    &I      3 double 5 single 1 blanks 
+    &I 720         2 DCEWord(K,[c, d])^3 
+    &I 720           1 cases 
+    &I 740         2 DCEWord(K,[(2,3), c])^3 
+    &I 740           1 cases 
+    &I 770         3 DCEWord(K,[c, d])^3 
+    &I 860           2 cases 
+    &I 870         3 DCEWord(K,[(2,3), c])^3 
+    &I 910           3 cases 
+    &I 1020        Pushing at weight 101 
+    &I      3 double 5 single 0 blanks 
+    &I 1020        1 DCEWord(K,[c, c]) 
+    &I 1030          1 cases 
+    &I 1040        1 DCEWord(K,[d, d]) 
+    &I 1040          1 cases 
+    &I 1050        Pushing at weight 103 
+    &I      3 double 5 single 0 blanks 
+    &I 1050        2 DCEWord(K,[c, c]) 
+    &I 1060          1 cases 
+    &I 1060        2 DCEWord(K,[d, d]) 
+    &I 1070          1 cases 
+    &I 1070        3 DCEWord(K,[c, c]) 
+    &I 1090          2 cases 
+    &I 1100        3 DCEWord(K,[d, d]) 
+    &I 1100          1 cases 
+    Double coset table "No name" closed 3 double 5 single
+|
+
+If 'RequirePackage'  signals  an  error  check  the  permissions  of  the
+subdirectories 'pkg/' and 'dce/'.

@@ -1,0 +1,820 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  domain.tex                  GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: domain.tex,v 1.1.1.1 1996/12/11 12:36:44 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes domains, the concept, their functions and operations.
+%%
+%H  $Log: domain.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:44  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.8  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.7  1993/02/18  16:34:21  felsch
+%H  another example fixed
+%H
+%H  Revision 3.6  1993/02/15  09:42:18  felsch
+%H  examples fixed
+%H
+%H  Revision 3.5  1993/02/10  20:48:39  martin
+%H  fixed some examples
+%H
+%H  Revision 3.4  1992/04/30  11:57:09  martin
+%H  changed a few sentences to avoid bold non-roman fonts
+%H
+%H  Revision 3.3  1992/04/06  12:43:02  martin
+%H  fixed some more typos
+%H
+%H  Revision 3.2  1992/04/02  21:06:23  martin
+%H  changed *domain functions* to *set theoretic functions*
+%H  
+%H  Revision 3.1  1992/03/11  11:40:55  martin
+%H  changed 'Representative' to 'RepresentativeOperation' in the example
+%H
+%H  Revision 3.0  1991/12/27  16:10:27  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Domains}
+
+*Domain* is {\GAP}\'s  name  for structured sets.   The ring  of Gaussian
+integers  $Z[I]$  is  an  example  of  a  domain,  the group  $D_{12}$ of
+symmetries of a regular hexahedron is another.
+
+The {\GAP}  library predefines some   domains.  For example  the  ring of
+Gaussian integers is  predefined as 'GaussianIntegers' (see  "Gaussians")
+and the   field   of rationals   is predefined  as      'Rationals'  (see
+"Rationals").   Most domains  are  constructed  by  functions,  which are
+called  *domain   constructors*.   For  example  the    group $D_{12}$ is
+constructed by the construction 'Group( (1,2,3,4,5,6), (2,6)(3,5) )' (see
+"Group") and  the finite  field  with  16  elements   is constructed   by
+'GaloisField( 16 )' (see "GaloisField").
+
+The first place where  you need domains  in {\GAP}  is  the  obvious one.
+Sometimes you simply want to talk about a  domain.  For  example  if  you
+want to compute the size of the group $D_{12}$, you had better be able to
+represent this group in a way that the 'Size' function can understand.
+
+The second place where you need domains in {\GAP} is when  you want to be
+able to specify that an operation or computation takes place in a certain
+domain.   For  example suppose  you want   to factor 10    in the ring of
+Gaussian integers.  Saying 'Factors( 10 )' will not do, because this will
+return the factorization in  the ring of integers '[  2, 5 ]'.  To  allow
+operations and  computations to happen in   a specific domain, 'Factors',
+and many other functions  as well, accept  this domain as optional  first
+argument.   Thus 'Factors( GaussianIntegers,   10 )'  yields  the desired
+result '[ 1+E(4), 1-E(4), 2+E(4), 2-E(4) ]'.
+
+Each domain  in  {\GAP} belongs to one  or  more *categories*, which  are
+simply sets of domains.  The categories in  which a domain lies determine
+the functions  that  are  applicable to   this  domain and  its elements.
+Examples  of domains are *rings*  (the  functions applicable to a  domain
+that  is a  ring  are  described in "Rings"),  *fields*   (see "Fields"),
+*groups*  (see "Groups"), *vector spaces*  (see "Vector  Spaces"), and of
+course  the category *domains* that   contains all domains (the functions
+applicable to any domain are described in this chapter).
+
+This chapter describes how domains are represented in {\GAP} (see "Domain
+Records"),  how functions that  can be  applied  to  different  types  of
+domains know how  to  solve a  problem  for  each  of  those  types  (see
+"Dispatchers", "More about Dispatchers", and "An Example of a Computation
+in a Domain"), how domains are compared (see  "Comparisons of  Domains"),
+and  the set theoretic  functions that can be  applied to any domain (see
+"Elements",   "Membership   Test  for   Domains",   "IsFinite",   "Size",
+"IsSubset", "Intersection", "Union", "Difference", "Random").
+
+The  functions  described in this  chapter  are implemented in  the  file
+'LIBNAME/\"domain.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Domain Records}
+
+Domains are represented by    records (see "Records"), which  are  called
+*domain records* in the following.  Which  components need to be present,
+which  may, and what   those components hold,  differs  from  category to
+category, and,  to a smaller   extent, from  domain  to domain.   It   is
+generally possible though to distinguish four types of components.
+
+Each  domain record  has  the component 'isDomain',  which  has the value
+'true'.  Furthermore,  most domains also have  a component that specifies
+which category this  domain belongs to.  For  example, each group has the
+component 'isGroup', holding the   value  'true'.  Those components   are
+called  the *category  components* of  the  domain record.  A domain that
+only has  the  component  'isDomain' is  a  member  only of the  category
+*Domains* and only the functions described in this chapter are applicable
+to such a domain.
+
+Every domain record also contains enough information to identify uniquely
+the domain in the   so called *identification components*.   For example,
+for a  group the domain record,  called group record  in this case, has a
+component called 'generators' containing a system of generators (and also
+a component 'identity' holding the identity element  of the group, needed
+if the generator list is empty, as is the case for the trivial group).
+
+Next the  domain record  holds all   the knowledge  {\GAP} has  about the
+domain, for example the  size of the domain, in  the so called *knowledge
+components*.   Of  course, the  knowledge   about a certain  domain  will
+usually  increase  as time goes  by.   For example,  a  group  record may
+initially hold  only the knowledge that the  group is finite, but may end
+holding all kinds of knowledge, for example the derived series, the Sylow
+subgroups, etc.
+
+Finally  each   domain  record has    a component,  which  is called  its
+*operations   record*  (because  it   is   the component  with  the  name
+'operations' and it holds a record), that tells functions like 'Size' how
+to  compute this  information  for this domain.   The exact  mechanism is
+described later (see "Dispatchers").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Dispatchers}%
+\index{operations record}\index{record!operations}%
+\index{dispatcher functions}\index{default functions}
+
+In the previous section it was  mentioned that domains are represented by
+domain records, and  that each domain record  has  an operations  record.
+This operations record  is used by functions like 'Size' to  find out how
+to  compute  this information  for  the  domain.   Let  us  discuss  this
+mechanism using the example  of 'Size'.  Suppose you  call 'Size'  with a
+domain <D>.
+
+First 'Size' tests whether  <D> has a  component called 'size',  i.e., if
+'<D>.size' is bound.  If it is, 'Size' assumes that  it holds the size of
+the domain and returns this value.
+
+Let  us suppose that this component has no assigned  value.  Then  'Size'
+looks at the component '<D>.operations', which must be a  record.  'Size'
+takes  component '<D>.operations.Size' of this  record,  which must  be a
+function.  'Size'  calls this  function  passing <D>  as argument.  If  a
+domain  record has no 'Size' function in its operations record,  an error
+is signalled.
+
+Finally 'Size' stores the value returned  by '<D>.operations.Size( <D> )'
+in the  component '<D>.size', where it is  available for the next call of
+'Size( <D> )'.
+
+Because functions like  'Size' do little  except dispatch to the function
+in the operations record they are called *dispatcher functions*.
+
+Which function is called through  this mechanism obviously depends on the
+domain and its  operations record.  In  principle each  domain could have
+its own 'Size' function.  In practice however this is  not the case.  For
+example all permutation groups share the operations record 'PermGroupOps'
+so they all use the same 'Size' function 'PermGroupOps.Size'.
+
+Note that in fact domains of the  same type not only share the functions,
+in fact they share the operations record.  So for example all permutation
+groups have the same operations record.  This means  that changing such a
+function for a domain <D> in the following way '<D>.operations.<function>
+\:= <new-function>;' will also change this  function for  all  domains of
+the  same type, even those that do not  yet exist at  the  moment  of the
+assignment  and will  only  be  constructed  later.  This  is usually not
+desirable, since supposedly <new-function> uses  some  special properties
+of the domain <D> to  work efficiently.   We suggest  therefore, that you
+use the following assignments instead\: \\
+'<D>.operations \:= Copy( <D>.operations );'\\
+'<D>.operations.<function> \:= <new-function>;'.
+
+Some domains do not provide a special 'Size' function,  either because no
+efficient method is  known  or because the   author that implemented  the
+domain simply was  too  lazy to write  one.   In those cases   the domain
+inherits the *default    function*, which   is 'DomainOps.Size'.     Such
+inheritance  is uncommon for  the 'Size' function,  but rather common for
+the 'Union' function.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Dispatchers}
+
+Usually you  need not care about  the mechanism described in the previous
+section.  You just call the  dispatcher functions like 'Size'.  They will
+call  the   function  in  the   operations   record,  which  is hopefully
+implementing an algorithm that is well  suited for their domain, by using
+the structure of this domain.
+
+There  are three  reasons  why  you  might  want  to  avoid  calling  the
+dispatcher function and call the dispatched to function directly.
+
+The first reason is efficiency.  The  dispatcher functions don\'t do very
+much.   They   only check the types    of their arguments,  check  if the
+requested information is already present, and dispatch to the appropriate
+function in the  operations record.   But  sometimes, for example  in the
+innermost loop of your algorithm, even this little is too much.  In those
+cases you can avoid the overhead introduced by the dispatcher function by
+calling the function in the operations record directly.  For example, you
+would use '<G>.operations.Size(<G>)' instead of 'Size(<G>)'.
+
+The second reason is flexibility.  Sometimes you do not want to call  the
+function in the operations record, but another function that performs the
+same task, using a different algorithm.  In that case you will  call this
+different function.  For example, if <G> is a permutation group,  and the
+orbit of <p> under <G> is very short, 'GroupOps.Orbit(<G>,<p>)', which is
+the  default function to compute an orbit, may be slightly more efficient
+than 'Orbit(<G>,<p>)', which calls '<G>.operations.Orbit(<G>,<p>)', which
+is the same as 'PermGroupOps.Orbit(<G>,<p>)'.
+
+The third has to do with the fact that the dispatcher functions check for
+knowledge   components like '<D>.size' or   '<D>.elements' and also store
+their result in such components.  For example,  suppose you know that the
+result of a computation takes  up quite some space, as  is the case  with
+'Elements(<D>)', and that  you will never  need the value again.  In this
+case you would not want the dispatcher function to enter the value in the
+domain  record, and therefore  would call  '<D>.operations.Elements(<D>)'
+directly.  On  the other hand you  may not want  to use the  value in the
+domain record, because you mistrust it.  In this case you should call the
+function  in   the operations   record   directly,  e.g., you would   use
+'<G>.operations.Size(<G>)' instead of  'Size(<G>)' (and  then compare the
+result with '<G>.size').
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{An Example of a Computation in a Domain}
+
+This section contains an extended example to  show  you how a computation
+in a domain may  use default and special  functions to achieve its  goal.
+Suppose you defined 'G', 'x', and 'y' as follows.
+
+|    gap> G := SymmetricGroup( 8 );;
+    gap> x := [ (2,7,4)(3,5), (1,2,6)(4,8) ];;
+    gap> y := [ (2,5,7)(4,6), (1,5)(3,8,7) ];; |
+
+Now you ask for  an  element of 'G' that   conjugates 'x' to 'y', i.e., a
+permutation on 8 points  that takes '(2,7,4)(3,5)' to '(2,5,7)(4,6)'  and
+'(1,2,6)(4,8)' to  '(1,5)(3,8,7)'.      This is done    as follows   (see
+"RepresentativeOperation" and "Other Operations").
+
+|    gap> RepresentativeOperation( G, x, y, OnTuples );
+    (1,8)(2,7)(3,4,5,6) |
+
+Let    us    look    at    what    happens    step   by    step.    First
+'RepresentativeOperation'  is called.  After  checking  the  arguments it
+calls the  function 'G.operations.RepresentativeOperation', which  is the
+function    'SymmetricGroupOps.RepresentativeOperation',   passing    the
+arguments 'G', 'x', 'y', and 'OnTuples'.
+
+'SymmetricGroupOps.RepresentativeOperation'  handles  a   lot  of   cases
+specially, but the operation on tuples of permutations is not among them.
+Therefore it delegates  this  problem  to the function that  it overlays,
+which is 'PermGroupOps.RepresentativeOperation'.
+
+'PermGroupOps.RepresentativeOperation' also does  not handle this special
+case, and delegates the problem  to the function that it  overlays, which
+is the default function called 'GroupOps.RepresentativeOperation'.
+
+'GroupOps.RepresentativeOperation' views this problem as a general tuples
+problem, i.e., it  does not  care  whether  the  points in the tuples are
+integers or permutations, and decides to solve it one step at a time.  So
+first it looks for  an element taking '(2,7,4)(3,5)' to '(2,5,7)(4,6)' by
+calling 'RepresentativeOperation( G, (2,7,4)(3,5), (2,5,7)(4,6) )'.
+
+'RepresentativeOperation'  calls   'G.operations.RepresentativeOperation'
+next, which is the  function 'SymmetricGroupOps.RepresentativeOperation',
+passing the arguments 'G', '(2,7,4)(3,5)', and '(2,5,7)(4,6)'.
+
+'SymmetricGroupOps.RepresentativeOperation' can  handle  this  case.   It
+*knows*  that 'G' contains every  permutation on 8 points, so it contains
+'(3,4,7,5,6)',  which obviously does what we want, namely it takes 'x[1]'
+to 'y[1]'.  We will call this element 't'.
+
+Now 'GroupOps.RepresentativeOperation'  (see  above) looks  for an 's' in
+the stabilizer of 'x[1]' taking 'x[2]' to 'y[2]\^(t\^-1)', since then for
+'r=s\*t'  we have 'x[1]\^r  =  (x[1]\^s)\^t =  x[1]\^t  =  y[1]' and also
+'x[2]\^r =  (x[2]\^s)\^t = (y[2]\^(t\^-1))\^t = y[2]'.   So the next step
+is to compute  the  stabilizer  of 'x[1]' in  'G'.  To do this  it  calls
+'Stabilizer( G, (2,7,4)(3,5) )'.
+
+'Stabilizer'    calls     'G.operations.Stabilizer',        which      is
+'SymmetricGroupOps.Stabilizer',  passing  the       arguments   'G'   and
+'(2,7,4)(3,5)'.   'SymmetricGroupOps.Stabilizer' detects that  the second
+argument  is a permutation, i.e.,  an  element of the   group,  and calls
+'Centralizer( G,  (2,7,4)(3,5)  )'.  'Centralizer'   calls  the  function
+'G.operations.Centralizer',   which is   'SymmetricGroupOps.Centralizer',
+again passing the arguments 'G', '(2,7,4)(3,5)'.
+
+'SymmetricGroupOps.Centralizer'   again  *knows*   how  centralizers   in
+symmetric   groups  look,   and     after looking  at    the  permutation
+'(2,7,4)(3,5)'  sharply  for  a  short  while returns  the centralizer as
+'Subgroup( G,  [ (1,6), (1,6,8), (2,7,4), (3,5)  ] )', which we will call
+'S'.  Note  that  'S'  is of  course not   a symmetric  group,  therefore
+'SymmetricGroupOps.Subgroup' gives it 'PermGroupOps' as operations record
+and not 'SymmetricGroupOps'.
+
+As explained above 'GroupOps.RepresentativeOperation' needs an element of
+'S' taking 'x[2]'  ('(1,2,6)(4,8)') to 'y[2]\^(t\^-1)'  ('(1,7)(4,6,8)').
+So 'RepresentativeOperation( S, (1,2,6)(4,8), (1,7)(4,6,8) )' is  called.
+'RepresentativeOperation'     in     turn     calls     the      function
+'S.operations.RepresentativeOperation',  which   is,  since   'S'   is  a
+permutation group,  the function  'PermGroupOps.RepresentativeOperation',
+passing the arguments 'S', '(1,2,6)(4,8)', and '(1,7)(4,6,8)'.
+
+'PermGroupOps.RepresentativeOperation'  detects  that  the   points   are
+permutations and and  performs a backtrack search through 'S'.   It finds
+and returns '(1,8)(2,4,7)(3,5)', which we call 's'.
+
+Then   'GroupOps.RepresentativeOperation'    returns   'r    =   s\*t   =
+(1,8)(2,7)(3,6)(4,5)', and we are done.
+
+In this  example you have seen how functions use the  structure of  their
+domain   to   solve   a    problem   most   efficiently,   for    example
+'SymmetricGroupOps.RepresentativeOperation' but also the backtrack search
+in 'PermGroupOps.RepresentativeOperation', how they use  other functions,
+for example 'SymmetricGroupOps.Stabilizer' called 'Centralizer', and  how
+they delegate cases  which they  can not handle  more efficiently back to
+the       function        they        overlaid,        for        example
+'SymmetricGroupOps.RepresentativeOperation'         delegated          to
+'PermGroupOps.RepresentativeOperation', which in turn delegated to to the
+function 'GroupOps.RepresentativeOperation'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Domain}
+
+'Domain( <list> )'
+
+'Domain' returns a domain that  contains all  the elements  in <list> and
+that  knows how to  make  the ring,  field, group, or vector  space  that
+contains those elements.
+
+Note that the domain returned by 'Domain' need in general  not be a ring,
+field, group,  or vector space itself.  For  example if passed  a list of
+elements of  finite     fields 'Domain'   will     return   the    domain
+'FiniteFieldElements'.  This  domain contains all finite  field elements,
+no   matter  of  which  characteristic.  This   domain  has  a   function
+'FiniteFieldElementsOps.Field' that knows how to make a finite field that
+contains the elements in <list>.  This  function knows that  all elements
+must have the same characteristic for them to lie in a common field.
+
+|    gap> D := Domain( [ Z(4), Z(8) ] );
+    FiniteFieldElements
+    gap> IsField( D );
+    false
+    gap> D.operations.Field( [ Z(4), Z(8) ] );
+    GF(2^6) |
+
+'Domain'  is the only function  in the whole  {\GAP}  library  that knows
+about the  various  types  of  elements.   For  example,  when  'Norm' is
+confronted by a field element <z>, it does  not know what  to do with it.
+So it calls 'F \:= DefaultField( [ <z> ] )' to  get  a field in which <z>
+lies, because  this field (more precisely  'F.operations.Norm') will know
+better.  However, 'DefaultField' also does not know  what to do with <z>.
+So it calls 'D \:= Domain( [ <z> ] )' to get  a domain in which <z> lies,
+because it (more precisely 'D.operations.DefaultField') will know  how to
+make a default field in which <z> lies.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elements}%
+\index{elements!of a domain}
+
+'Elements( <D> )'
+
+'Elements'  returns the set of elements  of the  domain  <D>.  The set is
+returned  as a new proper  set, i.e., as a  new sorted list without holes
+and duplicates (see "Sets").  <D>  may also be  a list, in which case the
+set of elements of this list  is returned.  An  error is signalled if <D>
+is an infinite domain.
+
+|    gap> Elements( GaussianIntegers );
+    Error, the ring <R> must be finite to compute its elements
+    gap> D12 := Group( (2,6)(3,5), (1,2)(3,6)(4,5) );;
+    gap> Elements( D12 );
+    [ (), (2,6)(3,5), (1,2)(3,6)(4,5), (1,2,3,4,5,6), (1,3)(4,6),
+      (1,3,5)(2,4,6), (1,4)(2,3)(5,6), (1,4)(2,5)(3,6), (1,5)(2,4),
+      (1,5,3)(2,6,4), (1,6,5,4,3,2), (1,6)(2,5)(3,4) ] |
+
+'Elements' remembers the set of  elements in the component '<D>.elements'
+and will return a shallow copy (see "ShallowCopy") next time it is called
+to compute the elements of <D>.  If  you want to  avoid this, for example
+for a large domain, for which you know that you will not need the list of
+elements in the future,  either  unbind (see "Unbind")  '<D>.elements' or
+call '<D>.operation.Elements(<D>)' directly.
+
+Since there is no general method to compute the elements  of a domain the
+default  function  'DomainOps.Elements'  just  signals  an  error.   This
+default function  is  overlaid for each  special finite domain.  In fact,
+implementors of domains, *must* implement this function  for new domains,
+since it is,  together with 'IsFinite'  (see  "IsFinite")  the most basic
+function for domains, used by most of the default functions in the domain
+package.
+
+In  general functions that  return  a set of   elements are free, in fact
+encouraged, to return a  domain instead  of the  proper set of  elements.
+For  one  thing this  allows  to  keep the    structure, for  another the
+representation   by a  domain record is    usually more space  efficient.
+'Elements' must not do this, its only purpose is to create the proper set
+of elements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Domains}
+
+'<D> = <E>' \\
+'<D> \<> <E>'
+
+'=' evaluates  to  'true' if the  two  domains <D> and  <E> are equal, to
+'false' otherwise.  '\<>' evaluates  to 'true' if the two domains <D> and
+<E> are different and to 'false' if they are equal.
+
+Two  domains  are considered  equal  if  and  only if  the  sets of their
+elements as computed by 'Elements' (see "Elements") are equal.   Thus, in
+general '=' behaves as if each domain operand were replaced by its set of
+elements.  Except  that '=' will also sometimes, but not always, work for
+infinite domains, for which  it is of course difficult to compute the set
+of elements.  Note that this implies that domains belonging  to different
+categories may well be equal.  As  a special case of this, either operand
+may also be a proper set, i.e., a sorted list without holes or duplicates
+(see  "Set"),  and the result will be 'true' if and only  if  the  set of
+elements of  the domain  is, as  a set, equal  to  the set.  It  is  also
+possible to compare a domain with something else that is not a domain  or
+a set, but the result will of course always be 'false' in this case.
+
+|    gap> GaussianIntegers = D12;
+    false    # {\GAP} knows that those domains cannot be equal because
+             # 'GaussianIntegers' is infinite and 'D12' is finite
+    gap> GaussianIntegers = Integers;
+    false    # {\GAP} knows how to compare those two rings
+    gap> GaussianIntegers = Rationals;
+    Error, sorry, cannot compare the infinite domains <D> and <E>
+    gap> D12 = Group( (2,6)(3,5), (1,2)(3,6)(4,5) );
+    true
+    gap> D12 = [(),(2,6)(3,5),(1,2)(3,6)(4,5),(1,2,3,4,5,6),(1,3)(4,6),
+    >           (1,3,5)(2,4,6),(1,4)(2,3)(5,6),(1,4)(2,5)(3,6),
+    >           (1,5)(2,4),(1,5,3)(2,6,4),(1,6,5,4,3,2),(1,6)(2,5)(3,4)];
+    true
+    gap> D12 = [(1,6,5,4,3,2),(1,6)(2,5)(3,4),(1,5,3)(2,6,4),(1,5)(2,4),
+    >           (1,4)(2,5)(3,6),(1,4)(2,3)(5,6),(1,3,5)(2,4,6),(1,3)(4,6),
+    >           (1,2,3,4,5,6),(1,2)(3,6)(4,5),(2,6)(3,5),()];
+    false    # since the left operand behaves as a set
+             # while the right operand is not a set |
+
+The  default function  |DomainOps.'='|  checks whether  both domains  are
+infinite.  If they are, an error is signalled.  Otherwise, if  one domain
+is infinite, 'false'  is returned.  Otherwise  the sizes (see "Size")  of
+the domains are compared.  If they are  different,  'false' is  returned.
+Finally  the  sets  of   elements  of  both  domains  are  computed  (see
+"Elements") and compared.   This  default function  is overlaid  by  more
+special functions for other domains.
+
+'<D> \<\ <E>' \\
+'<D> \<= <E>' \\
+'<D>  >  <E>' \\
+'<D>  >= <E>'
+
+'\<', '\<=', '>', and '>=' evaluate  to 'true' if the  domain <D> is less
+than, less than or equal to,  greater than, and greater  than or equal to
+the domain <E> and to 'false' otherwise.
+
+A domain <D> is considered less than a  domain <E> if and only if the set
+of elements of <D> is less than  the set of elements  of the  domain <E>.
+Generally you may just imagine  that  each domain operand is  replaced by
+the set of its  elements, and that the comparison is performed  on  those
+sets (see "Comparisons of Lists").  This  implies that, if you compare  a
+domain with an  object that is not a list or a domain,  this other object
+will be less than the domain, except if it  is a record, in which case it
+is larger than the domain (see "Comparisons").
+
+Note that '\<' does *not* test whether the left domain is a subset of the
+right  operand,   even  though  it  resembles   the  mathematical  subset
+notation.
+
+|    gap> GaussianIntegers < Rationals;
+    Error, sorry, cannot compare <E> with the infinite domain <D>
+    gap> Group( (1,2), (1,2,3,4,5,6) ) < D12;
+    true     # since '(5,6)', the second element of the left operand,
+             # is less than '(2,6)(3,5)', the second element of 'D12'.
+    gap> D12 < [(1,6,5,4,3,2),(1,6)(2,5)(3,4),(1,5,3)(2,6,4),(1,5)(2,4),
+    >           (1,4)(2,5)(3,6),(1,4)(2,3)(5,6),(1,3,5)(2,4,6),(1,3)(4,6),
+    >           (1,2,3,4,5,6),(1,2)(3,6)(4,5),(2,6)(3,5),()];
+    true     # since '()', the first element of 'D12', is less than
+             # '(1,6,5,4,3,2)', the first element of the right operand.
+    gap> 17 < D12;
+    true     # objects that are not lists or records are smaller
+             # than domains, which behave as if they were a set |
+
+The  default function  |DomainOps.'<'| checks  whether  either  domain is
+infinite.   If  one  is,  an error  is signalled.  Otherwise  the sets of
+elements  of both  domains  are computed  (see "Elements") and  compared.
+This  default  function  is  only  very  seldom overlaid  by more special
+functions for other domains.   Thus the  operators '\<', '\<=', '>',  and
+'>=' are quite expensive and their use should be avoided if possible.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Membership Test for Domains}%
+\index{in!for domains}\index{membership test!for domains}
+
+'<elm> in <D>'
+
+'in' returns 'true' if the element  <elm>, which may  be an object of any
+type, lies in the domain <D>, and 'false' otherwise.
+
+|    gap> 13 in GaussianIntegers;
+    true
+    gap> GaussianIntegers in GaussianIntegers;
+    false
+    gap> (1,2) in D12;
+    false
+    gap> (1,2)(3,6)(4,5) in D12;
+    true |
+
+The default  function  for domain membership   tests is |DomainOps.'in'|,
+which  computes  the set  of  elements of the  domain   with the function
+'Elements' (see  "Elements") and tests whether   <elm> lies in  this set.
+Special   domains usually overlay    this  function with more   efficient
+membership tests.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsFinite}%
+\index{finiteness test!for domains}
+
+'IsFinite( <D> )'
+
+'IsFinite'  returns  'true' if  the   domain <D> is  finite  and  'false'
+otherwise.  <D> may also be a proper  set (see "Set"),  in which case the
+result is of course always 'true'.
+
+|    gap> IsFinite( GaussianIntegers );
+    false
+    gap> IsFinite( D12 );
+    true |
+
+The default function 'DomainOps.IsFinite'  just signals  an error,  since
+there is no general method to determine  whether  a  domain is  finite or
+not.   This  default function is  overlaid  for  each special domain.  In
+fact,  implementors  of domains *must*  implement this  function for  new
+domains, since it is, together with 'Elements' (see "Elements"), the most
+basic function for domains,  used by most of the default functions in the
+domain package.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Size}%
+\index{size!of a domain}
+
+'Size( <D> )'
+
+'Size' returns the  size of the domain <D>.   If <D> is  infinite, 'Size'
+returns the  string  '\"infinity\"'.  <D> may  also be a proper set  (see
+"Set"), in  which  case  the result  is  the length of this list.  'Size'
+will, however, signal an error if <D> is a list that is not a proper set,
+i.e., that is not sorted, or has holes, or contains duplicates.
+
+|    gap> Size( GaussianIntegers );
+    "infinity"
+    gap> Size( D12 );
+    12 |
+
+The default function to compute the size of a domain is 'DomainOps.Size',
+which  computes the  set of  elements of  the  domain  with  the function
+'Elements' (see "Elements") and  returns the  length  of this  set.  This
+default function is overlaid in practically every domain.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSubset}%
+\index{subset test!for domains}
+
+'IsSubset( <D>, <E> )'
+
+'IsSubset' returns 'true' if the domain <E> is a subset of the domain <D>
+and 'false' otherwise.
+
+<E> is considered a subset of <D> if  and only if the  set of elements of
+<E> is as a set  a subset of  the set of  elements of <D> (see "Elements"
+and  "Set Functions  for  Sets").   That  is  'IsSubset'  behaves  as  if
+implemented as 'IsSubsetSet( Elements(<D>), Elements(<E>) )', except that
+it  will also sometimes,  but not always,  work for infinite domains, and
+that it will usually work much faster than the  above definition.  Either
+argument may also be a proper set.
+
+|    gap> IsSubset( GaussianIntegers, [1,E(4)] );
+    true
+    gap> IsSubset( GaussianIntegers, Rationals );
+    Error, sorry, cannot compare the infinite domains <D> and <E>
+    gap> IsSubset( Group( (1,2), (1,2,3,4,5,6) ), D12 );
+    true
+    gap> IsSubset( D12, [ (), (1,2)(3,4)(5,6) ] );
+    false |
+
+The default function 'DomainOps.IsSubset' checks whether both domains are
+infinite.   If they are it  signals an  error.   Otherwise if the <E>  is
+infinite it returns 'false'.  Otherwise if  <D> is infinite it  tests  if
+each element of <E>  is  *in* <D>  (see "Membership  Test  for Domains").
+Otherwise it tests whether the proper set  of elements of <E> is a subset
+of the  proper set of elements of <D> (see "Elements"  and "Set Functions
+for Sets").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Intersection}%
+\index{intersection!of domains}
+
+'Intersection( <D1>, <D2>... )' \\
+'Intersection( <list> )'
+
+In the first form 'Intersection' returns the  intersection of the domains
+<D1>, <D2>, etc.  In the second form <list> must be a list of domains and
+'Intersection' returns the intersection  of those domains.  Each argument
+<D> or  element of <list> respectively may  also be an arbitrary list, in
+which case 'Intersection' silently applies 'Set' (see "Set") to it first.
+
+The result of 'Intersection' is the set of elements  that lie in every of
+the domains <D1>, <D2>, etc.  Functions called by the dispatcher function
+'Intersection'  however,  are  encouraged to  keep  as  much structure as
+possible.  So if <D1> and  <D2> are elements  of a common category and if
+this   category is  closed  under taking  intersections,  then the result
+should be a   domain lying  in  this category  too.  So  for  example the
+intersection of permutation groups will again be a permutation group.
+
+|    gap> Intersection( CyclotomicField(9), CyclotomicField(12) );
+    CF(3)    # 'CF' is a shorthand for 'CyclotomicField'
+             # this is one of the rare cases where the intersection
+             # of two infinite domains works
+    gap> Intersection( GaussianIntegers, Rationals );
+    Error, sorry, cannot intersect infinite domains <D> and <E>
+    gap> Intersection( D12, Group( (1,2), (1,2,3,4,5) ) );
+    Group( (1,5)(2,4) )
+    gap> Intersection( D12, [ (1,3)(4,6), (1,2)(3,4) ] );
+    [ (1,3)(4,6) ]    # note that the second argument is not a set
+    gap> Intersection( D12, [ (), (1,2)(3,4), (1,3)(4,6), (1,4)(5,6) ] );
+    [ (), (1,3)(4,6) ]    # although the result is mathematically a
+                          # group it is returned as a proper set
+                          # because the second argument was not a group
+    gap> Intersection( [2,4,6,8,10], [3,6,9,12,15], [5,10,15,20,25] );
+    [  ]    # two or more domains or sets as arguments are legal
+    gap> Intersection( [ [1,2,4], [2,3,4], [1,3,4] ] );
+    [ 4 ]    # or a list of domains or sets
+    gap> Intersection( [ ] );
+    Error, List Element: <list>[1] must have a value |
+
+The  dispatcher function  (see "Dispatchers") 'Intersection' is  slightly
+different from other  dispatcher functions.  It does  not simply call the
+function in the  operations  record passings  its arguments.   Instead it
+loops over its arguments  (or the  list of domains or sets) and calls the
+function in  the operations record repeatedly,  and passes each time only
+two  domains.   This  obviously  makes  writing  the  function   for  the
+operations record simpler.
+
+The default function 'DomainOps.Intersection' checks whether both domains
+are infinite.  If they are it signals an error.  Otherwise, if one of the
+domains is infinite it loops over  the elements of  the other domain, and
+tests for each element whether it lies in the  infinite domain.   If both
+domains are finite  it computes the proper sets  of elements  of both and
+intersects them  (see "Elements" and  "Set Functions  for  Sets").   This
+default method is  overlaid  by more special  functions  for  most  other
+domains.  Those  functions  usually are faster  and keep the structure of
+the domains if possible.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Union}%
+\index{union!of domains}
+
+'Union( <D1>, <D2>... )' \\
+'Union( <list> )'
+
+In  the first form  'Union' returns the union of  the domains <D1>, <D2>,
+etc.  In the second form  <list> must be  a  list of domains and  'Union'
+returns the  union of  those domains.   Each argument  <D> or element  of
+<list> respectively may also be an  arbitrary list, in which case 'Union'
+silently applies 'Set' (see "Set") to it first.
+
+The result of 'Union' is the set of elements that lie  in any the domains
+<D1>,   <D2>, etc.  Functions called   by the dispatcher function 'Union'
+however, are encouraged to keep as much  structure as possible.  However,
+currently  {\GAP} does  not  support any  category  that  is closed under
+taking unions except the category of all  domains.  So the only case that
+structure will be  kept is when  one  argument <D>  or element of  <list>
+respectively is a  superset  of all  the other arguments  or elements  of
+<list>.
+
+|    gap> Union( GaussianIntegers, Rationals );
+    Error, sorry, cannot unite <E> with the infinite domain <D>
+    gap> Union( D12, Group( (1,2), (1,2,3) ) );
+    [ (), (2,3), (2,6)(3,5), (1,2), (1,2)(3,6)(4,5), (1,2,3),
+      (1,2,3,4,5,6), (1,3,2), (1,3), (1,3)(4,6), (1,3,5)(2,4,6),
+      (1,4)(2,3)(5,6), (1,4)(2,5)(3,6), (1,5)(2,4), (1,5,3)(2,6,4),
+      (1,6,5,4,3,2), (1,6)(2,5)(3,4) ]
+    gap> Union( [2,4,6,8,10], [3,6,9,12,15], [5,10,15,20,25] );
+    [ 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 20, 25 ]
+        # two or more domains or sets as arguments are legal
+    gap> Union( [ [1,2,4], [2,3,4], [1,3,4] ] );
+    [ 1, 2, 3, 4 ]    # or a list of domains or sets
+    gap> Union( [ ] );
+    [  ] |
+
+The dispatcher function (see "Dispatchers") 'Union' is slightly different
+from other dispatcher functions.  It does not simply call the function in
+the operations record passings its arguments.  Instead it loops over  its
+arguments (or the list of domains or sets) and calls the function  in the
+operations  record repeatedly,  and  passes each  time only two  domains.
+This  obviously makes  writing  the function  for  the  operations record
+simpler.
+
+The default function 'DomainOps.Union'  checks  whether either domain  is
+infinite.  If one is it signals  an error.  If both domains are finite it
+computes  the  proper sets  of  elements  of both and  unites  them  (see
+"Elements"  and  "Set Functions  for  Sets").   This  default  method  is
+overlaid  by  more special  functions  for  some  other  domains.   Those
+functions usually are faster.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Difference}%
+\index{set difference!of domains}
+
+'Difference( <D>, <E> )'
+
+'Difference'  returns the  set difference  of  the domains  <D> and  <E>.
+Either argument may also be an arbitrary list, in which case 'Difference'
+silently applies 'Set' (see "Set") to it first.
+
+The result of 'Difference' is the set of elements that lie in <D> but not
+in <E>.  Note that <E> need not be a subset of <D>.  The elements of <E>,
+however, that are not element of <D> play no role for the result.
+
+|    gap> Difference( D12, [(),(1,2,3,4,5,6),(1,3,5)(2,4,6),
+    >                    (1,4)(2,5)(3,6),(1,6,5,4,3,2),(1,5,3)(2,6,4)] );
+    [ (2,6)(3,5), (1,2)(3,6)(4,5), (1,3)(4,6), (1,4)(2,3)(5,6),
+      (1,5)(2,4), (1,6)(2,5)(3,4) ] |
+
+The  default  function  'DomainOps.Difference'  checks  whether  <D>   is
+infinite.  If it is it signals an error.  Otherwise 'Difference' computes
+the  proper sets of elements of <D> and <E> and returns the difference of
+those  sets (see "Elements" and "SubtractSet").  This default function is
+currently not overlaid for any domain.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Representative}
+\index{representative!of a domain}
+
+'Representative( <D> )'
+
+'Representative' returns a representative of the domain <D>.
+
+The existence of  a representative, and the exact  definition of  what  a
+representative  is, depends on the category  of  <D>.  The representative
+should be an  element that, within a given context, identifies the domain
+<D>.  For example if <D> is a cyclic group, its representative would be a
+generator of <D>, or if <D> is  a  coset, its representative  would be an
+arbitrary element of the coset.
+
+Note that 'Representative' is pretty free in choosing a representative if
+there are  several.   It is not  even  guaranteed   that 'Representative'
+returns the same  representative if it  is called several  times for  one
+domain.  Thus  the main difference  between 'Representative' and 'Random'
+(see "Random") is that 'Representative' is free to choose a value that is
+cheap  to  compute,  while 'Random'   must  make an  effort  to  randomly
+distribute its answers.
+
+|    gap> C := Coset( Subgroup( G, [(1,4)(2,5)(3,6)] ), (1,6,5,4,3,2) );;
+    gap> Representative( C );
+    (1,3,5)(2,4,6) |
+
+'Representative'  first tests whether  the component '<D>.representative'
+is  bound.  If the  field is bound it  returns its  value.   Otherwise it
+calls  '<D>.operations.Representative(  <D>  )',  remembers the  returned
+value in '<D>.representative', and returns it.
+
+The default function called this way is 'DomainOps.Representative', which
+simply signals  an error,  since  there  is  no  default  way  to  find a
+representative.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Random}%
+\index{random element!of a domain}
+
+'Random( <D> )'
+
+'Random' returns a random element of the domain <D>.  The distribution of
+elements returned  by 'Random'  depends on  the domain  <D>.  For  finite
+domains all  elements are usually  equally likely.   For infinite domains
+some reasonable  distribution is used.  See the   chapters of the various
+domains to find out which distribution is being used.
+
+|    gap> Random( GaussianIntegers );
+    1-4*E(4)
+    gap> Random( GaussianIntegers );
+    1+2*E(4)
+    gap> Random( D12 );
+    ()
+    gap> Random( D12 );
+    (1,4)(2,5)(3,6) |
+
+The default function for random selection  is  'DomainOps.Random',  which
+computes  the  set of  elements  using  'Elements'  and selects  a random
+element  of  this  list  using  'RandomList'  (see  "RandomList"   for  a
+description of the pseudo random  number generator  used).  This  default
+function can of course only be applied to finite domains.  It is overlaid
+by other functions for most other domains.
+
+All random functions called this way rely on  the low level random number
+generator provided by 'RandomList' (see "RandomList").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

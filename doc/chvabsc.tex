@@ -1,0 +1,801 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvabsc.tex       CHEVIE documentation                        Jean Michel
+%%
+%A  $Id: chvabsc.tex,v 1.1 1997/03/27 16:31:29 werner Exp $
+%%
+%Y  Copyright (C) 1992 - 1996  Lehrstuhl D f\"ur Mathematik, RWTH Aachen
+%Y  and  University  Paris VII.
+%%
+%%  This file contains  the description of the GAP  functions of CHEVIE
+%%  dealing with abstract Coxeter groups.
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{Coxeter groups}
+
+In this chapter  we describe functions for dealing  with general Coxeter
+groups.
+
+A suitable reference for the general  theory is, for example, the volume
+of Bourbaki \cite{Bou68}.
+
+A  *Coxeter group* is  a group which  has the presentation $W= \left\langle
+s_1,  \ldots,  s_n\  \|\  (s_i  s_j)^{m(i,j)}=1  \right\rangle  $  for some
+symmetric  integer  matrix  $m(i,j)$  called  the  *Coxeter  matrix*, where
+$m(i,j)>1$  for $i  \ne j$  and $m(i,i)=1$.  It is  true (but a non-trivial
+theorem)  that  in  a  Coxeter  group  the  order  of  $s_i s_j$ is exactly
+$m(i,j)$, thus a Coxeter group is the same as a *Coxeter system*, that is a
+pair   $(W,S)$  of  a  group  $W$   and  a  set  $S=\{s_1,\ldots,s_n\}$  of
+involutions,  such that the group is  presented by relations describing the
+order  of the  product of  two generating  elements. A  Coxeter group has a
+natural  representation on a real vector  space $V$ of dimension the number
+of  generators, where each generator acts  as a reflection, its *reflection
+representation*  (see  'CoxeterGroupByCoxeterMatrix');  the faithfulness of
+this  representation in the main  argument to prove that  the order of $s_i
+s_j$  is exactly $m(i,j)$. Thus Coxeter  groups are real reflection groups.
+The  converse need not be true if the set of reflecting hyperplanes has bad
+topological properties, but it turns out that finite Coxeter groups are the
+same  as finite real  reflection groups. The  possible Coxeter matrices for
+finite  Coxeter groups  have been  completely classified; the corresponding
+finite groups play a deep role in several areas of mathematics.
+
+Coxeter  groups  have  a  nice  solution  to the word problem. The *length*
+$l(w)$ of an element $w$ of $W$ is the minimum number of elements of $S$ of
+which it is a product (since the elements of $S$ are involutions, we do not
+need inverses). An expression of $w$ of minimal length is called a *reduced
+word*  for $w$. The main property of  reduced words is the *exchange lemma*
+which  states that if $s_1\ldots s_k$ is a reduced word for $w$ where $k=l(w)$
+and $s\in S$ is such that $l(sw)\le l(w)$ then one of the $s_i$ in the word
+for  $w$ can be deleted to obtain a reduced word for $sw$. Thus given $s\in
+S$ and $w\in W$, either $l(sw)=l(w)+1$ or $l(sw)=l(w)-1$ and we say in this
+last  case  that  $s$  belongs  to  the  *left  descent  set*  of  $w$. The
+computation  of a reduced word for an element, and other word problems, are
+easily  done if we know the left descent sets. For most Coxeter groups that
+we  will be able to  build in \CHEVIE, this  left descent set can be easily
+determined  (see e.g. 'CoxeterGroupSymmetricGroup' below), so this suggests
+how  to deal with Coxeter groups  in {\CHEVIE}. They are reflection groups,
+so the following fields are defined in the group record\:
+
+'.nbGeneratingReflections':\\ the size of $S$
+
+'.reflections':\\ a list of elements of <W>, such
+     that 'W.reflections{[1..W.nbGeneratingReflections]}' is the set $S$.
+
+the above names  are used instead of names  like 'CoxeterGenerators' and
+'CoxeterRank' since  the Coxeter groups  *are* reflection groups  and we
+want the functions for reflection  groups applicable to them (similarly,
+if you have  read the chapter on reflections and  reflection groups, you
+will realize  that there is also  a field '.OrdersGeneratingReflections'
+which contains only 2\'s). The  main additional function which allows to
+compute within Coxeter groups is\:
+
+'.operations.IsLeftDescending(W,w,i)':\\ returns true if and only if the
+      $i$-th element of $S$ is in the left descending set of $w$.
+
+For Coxeter groups constructed in {\CHEVIE} an 'IsLeftDescending' operation
+is  provided, but you can construct your own Coxeter groups just by filling
+the  above fields (see the  function 'CoxeterGroupSymmetricGroup' below for
+an  example). It  should be  noted than  you can  make into a Coxeter group
+*any*  kind of  group\:\ finitely  presented groups,  permutation groups or
+matrix  groups, if you  fill appropriately the  above fields; and the given
+generating  reflection do not  have to be  'W.generators' --- all functions
+for Coxeter group and Hecke algebras will then work for your Coxeter groups
+(using your function 'IsLeftDescending').
+
+A  common occurrence in \CHEVIE\ code for Coxeter groups is a loop like\:
+
+'First([1..W.semisimpleRank],x->IsLeftDescending(W,w,x))'
+
+which for a reflection subgroup becomes
+
+'First(W.rootRestriction\{[1..W.semisimpleRank]\},x->IsLeftDescending(W,w,x))'
+
+where  the overhead is quite large, since  dispatching on the group type is
+done in 'IsLeftDescending'. To improve this code, if you provide a function
+'FirstLeftDescending(W,w)'  it will be called instead of the above loop (if
+you  do  not  provide  one  the  above  loop will be used). Such a function
+provided  by \CHEVIE\ for finite  Coxeter groups represented as permutation
+groups of the roots is 3 times more efficient than the above loop.
+
+Because of  the easy  solution of  the word  problem in  Coxeter groups,
+a  convenient  way  to  represent  their elements is  as  words  in  the
+Coxeter  generators.  They are  represented  in  {\CHEVIE} as  lists  of
+labels  for  the  generators.  By  default these  labels  are  given  as
+the  index  of  a  generator  in  $S$, so  a  Coxeter  word  is  just  a
+list  of  integers  which  run  from  1  to  the  length  of  $S$.  This
+can  be  changed  to  reflect  a more  conventional  notation  for  some
+groups, by changing the field  '.reflectionsLabels' of the Coxeter group
+which contains  the labels  used for  the Coxeter  words (by  default it
+contains '[1..W.nbGeneratingReflections]').  For a Coxeter group  with 2
+generators, you  could for instance  set this  field to '\"st\"'  to use
+words such as '\"sts\"' instead  of '[1,2,1]'. For reflection subgroups,
+this  is used  in {\CHEVIE}  by setting  the reflection  labels to  the
+indices of the generators  in the set $S$ of the  parent group (which is
+given by '.rootInclusion').
+
+The functions 'CoxeterWord' and 'EltWord' will do the conversion between
+Coxeter words and elements of the group.
+
+|    gap> W := CoxeterGroup( "D", 4 );;
+    gap> p := EltWord( W, [ 1, 3, 2, 1, 3 ] );
+    ( 1,14,13, 2)( 3,17, 8,18)( 4,12)( 5,20, 6,15)( 7,10,11, 9)(16,24)
+    (19,22,23,21)
+    gap> CoxeterWord( W, p );
+    [ 1, 3, 1, 2, 3 ]
+    gap> W.reflectionsLabels:="stuv";
+    "stuv"
+    gap> CoxeterWord(W,p);
+    "sustu"|
+
+We  notice  that  the  word  we   started  with  and  the  one  that  we
+ended  up  with,  are  not  the same.  But  of  course,  they  represent
+the  same  element of  $W$.  The  reason  for  this difference  is  that
+the  function 'CoxeterWord'  always  computes a  reduced  word which  is
+the  lexicographically smallest  among  all possible  expressions of  an
+element of  $W$ as a word  in the fundamental reflections.  The function
+'ReducedCoxeterWord' does the same but with a word as input (rather than
+an element  of the  group). Below are  some other  possible computations
+with the same Coxeter group as above\:
+
+|    gap> LongestCoxeterWord( W );  # the (unique) longest element in W
+    [ 1, 2, 3, 1, 2, 3, 4, 3, 1, 2, 3, 4 ]
+    gap> w0 := LongestCoxeterElement( W ); # = EltWord( W, last )
+    ( 1,13)( 2,14)( 3,15)( 4,16)( 5,17)( 6,18)( 7,19)( 8,20)( 9,21)(10,22)
+    (11,23)(12,24)
+    gap> CoxeterLength( W, w0 );
+    12
+    gap> List( Reflections( W ), i -> CoxeterWord( W, i ) );
+    [ "s", "t", "u", "v", "sus", "tut", "uvu", "stust", "suvus", "tuvut",
+      "stuvust", "ustuvustu" ]
+    gap> l := List( [0 .. W.N], x -> CoxeterElements( W, x ) );;
+    gap> List( l, Length );
+    [ 1, 4, 9, 16, 23, 28, 30, 28, 23, 16, 9, 4, 1 ] |
+
+The above line tells us that there is 1 element of length 0, there are 4
+elements of length 4, etc.
+
+For  many basic  functions (like  'Bruhat', 'CoxeterLength',  etc.) we have
+chosen  the convention  that the  input is  an element  of a  Coxeter group
+(rather  than a Coxeter word). The reason is that for a Coxeter group which
+is  a permutation  group, if  in some  application one  has to  do a lot of
+computations  with Coxeter group  elements then using  the low level {\GAP}
+functions  for permutations is usually  much faster than manipulating lists
+of reduced expressions.
+
+Before  describing functions  applicable to  Coxeter groups  and Coxeter
+words we describe functions which  build two familiar examples.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterGroupSymmetricGroup}
+\index{CoxeterGroupSymmetricGroup}
+
+'CoxeterGroupSymmetricGroup( <n> )'
+
+returns the symmetric group on <n> letters as a Coxeter group.   We  give
+the  code  of  this  function  as  it  is a good example on how to make a
+Coxeter group\:
+
+|    gap> CoxeterGroupSymmetricGroup := function ( n )
+    > local  W;
+    > W := SymmetricGroup( n );
+    > W.reflections := List( [ 1 .. n - 1 ], i->(i,i + 1) );
+    > W.operations.IsLeftDescending := function ( W, w, i )
+    >       return i ^ w > (i + 1) ^ w;
+    >   end;
+    > AbsCoxOps.CompleteCoxeterGroupRecord( W );
+    > return W;
+    > end;
+    function ( n ) ... end|
+
+In   the   above,  we   first   set   the  generating   reflections   of
+$W$   to  be   the  elementary   transpositions  '(i,i+1)'   (which  are
+reflections  in  the  natural  representation  of  the  symmetric  group
+permuting  the  standard  basis  of an  $n$-dimensional  vector  space),
+then   give  the   'IsLeftDescending'   function   (which  just   checks
+if   '(i,i+1)'   is  an   inversion   of   the  permutation).   Finally,
+'AbsCoxOps.CompleteCoxeterGroupRecord' is a  service routine which fills
+other fields from the ones we gave. We can see what it did by doing\:
+
+|    gap> PrintRec(CoxeterGroupSymmetricGroup(3));
+    rec(
+      isDomain                        := true,
+      isGroup                         := true,
+      identity                        := (),
+      generators                      := [ (1,3), (2,3) ],
+      operations                      := HasTypeOps,
+      isPermGroup                     := true,
+      isFinite                        := true,
+      1                               := (1,3),
+      2                               := (2,3),
+      degree                          := 3,
+      reflections                     := [ (1,2), (2,3) ],
+      nbGeneratingReflections         := 2,
+      generatingReflections           := [ 1 .. 2 ],
+      EigenvaluesGeneratingReflections:= [ 1/2, 1/2 ],
+      isCoxeterGroup                  := true,
+      reflectionsLabels               := [ 1 .. 2 ],
+      coxeterMat                      := [ [ 1, 3 ], [ 3, 1 ] ],
+      orbitRepresentative             := [ 1, 1 ],
+      longestElm                      := (1,3),
+      longestCoxeterWord              := [ 1, 2, 1 ],
+      N                               := 3 )|
+
+We  do   not  indicate  all  the   fields  here.  Some  are   there  for
+technical  reasons   and  may   change  from   version  to   version  of
+\CHEVIE.  Among  the  added  fields,  we  see  'nbGeneratingReflections'
+(taken  to   be  'Length(W.reflections)'   if  we   do  not   give  it),
+'.OrdersGeneratingReflections',  the  Coxeter  matrix  '.coxeterMat',  a
+description of conjugacy classes of  the generating reflections given in
+'.orbitRepresentative' (whose  $i$-th entry is  the smallest index  of a
+reflection  conjugate to  '.reflections[i]'), '.reflectionsLabels'  (the
+default labels used for Coxeter word). At the end are 3 fields which are
+computed only  for finite Coxeter  groups\:\ the longest element,  as an
+element and as a Coxeter word, and in 'W.N' the number of reflections in
+$W$ (which is also the length of the longest Coxeter word).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterGroupHyperoctaedralGroup}
+\index{CoxeterGroupHyperoctaedralGroup}
+
+'CoxeterGroupHyperoctaedralGroup( <n> )'
+
+returns the hyperoctaedral group of rank <n> as a Coxeter group. It is
+given as a permutation group on $2n$ letters, with Coxeter generators
+the permutations '(i,i+1)(2n+1-i,2n-i)' and '(n,n+1)'.
+
+|    gap> CoxeterGroupHyperoctaedralGroup(2);
+    Group( (2,3), (1,2)(3,4) )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterMatrix}
+\index{CoxeterMatrix}
+
+'CoxeterMatrix( <W> )'
+
+return the Coxeter  matrix of the Coxeter group <W>,  that is the matrix
+whose entry  'm[i][j]' contains the  order of $g_i\*g_j$ where  $g_i$ is
+the $i$-th Coxeter generator of <W>. An infinite order is represented by
+the entry 0.
+
+|    gap> W:=CoxeterGroupSymmetricGroup(4);
+    Group( (1,4), (2,4), (3,4) )
+    gap> CoxeterMatrix(W);
+    [ [ 1, 3, 2 ], [ 3, 1, 3 ], [ 2, 3, 1 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterGroupByCoxeterMatrix}
+\index{CoxeterGroupByCoxeterMatrix}
+
+'CoxeterGroupByCoxeterMatrix( <m> )'
+
+returns  the  Coxeter  group  whose  Coxeter  matrix  is  <m>.
+
+The  matrix <m> should  be a symmetric  integer matrix such that 'm[i,i]=1'
+and 'm[i,j]>=2' (or 'm[i,j]=0' to represent an infinite entry).
+
+The  group is constructed as a  matrix group, using the standard reflection
+representation  for Coxeter  groups. This  is the  representation on a real
+vector  space $V$ of dimension ' Length(m)' defined as follows \:\ if $e_s$
+is  a  basis  of  $V$  indexed  by  the  lines  of  $m$, we make the $s$-th
+reflection act by $s(x)=x-2\langle x, e_s\rangle e_s$ where
+$\langle,\rangle$   is  the  bilinear  form  on  $V$  defined  by  $\langle
+e_s,e_t\rangle=-\cos(\pi/m[s,t])$  (where  by  convention $\pi/m[s,t]=0$ if
+$m[s,t]=\infty$,   which   is   represented   in   {\CHEVIE}   by   setting
+'m[s,t]\:=0').  In the example below the  affine Weyl group $\tilde A_2$ is
+constructed, and then $\tilde A_1$.
+
+|    gap> m:=[[1,3,3],[3,1,3],[3,3,1]];;
+    gap> W:=CoxeterGroupByCoxeterMatrix(m);
+    CoxeterGroupByCoxeterMatrix([ [ 1, 3, 3 ], [ 3, 1, 3 ], [ 3, 3, 1 ] ])
+    gap> CoxeterWords(W,3);
+    [ [ 1, 3, 2 ], [ 1, 2, 3 ], [ 1, 2, 1 ], [ 1, 3, 1 ], [ 2, 1, 3 ],
+      [ 3, 1, 2 ], [ 2, 3, 2 ], [ 2, 3, 1 ], [ 3, 2, 1 ] ]
+    gap> CoxeterGroupByCoxeterMatrix([[1,0],[0,1]]);
+    CoxeterGroupByCoxeterMatrix([[1,0],[0,1]])|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterGroupByCartanMatrix}
+\index{CoxeterGroupByCartanMatrix}
+
+'CoxeterGroupByCartanMatrix( <m> )'
+
+<m>  should be a square  matrix of real cyclotomic  numbers. It returns the
+reflection  group  whose  Cartan  matrix  is  <m>.  This  is a matrix group
+constructed  as follows.  Let $V$  be a  real vector  space of  dimension '
+Length(m)',  and  let  $\langle,\rangle$  be  the  bilinear form defined by
+$\langle e_i, e_j\rangle=m[i,j]$ where $e_i$ is the canonical basis of $V$.
+Then   the  result  is  the  matrix  group  generated  by  the  reflections
+$s_i(x)=x-2\langle x, e_i\rangle e_i$.
+
+This  function  is  used  in  'CoxeterGroupByCoxeterMatrix', using also the
+function 'CartanMatFromCoxeterMatrix'.
+
+|    gap> CartanMatFromCoxeterMatrix([[1,0],[0,1]]);
+    [ [ 2, -2 ], [ -2, 2 ] ]
+    gap> CoxeterGroupByCartanMatrix(last);
+    CoxeterGroupByCartanMatrix([[2,-2],[-2,2]])|
+
+Above is another way to construct $\tilde A_1$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CartanMatFromCoxeterMatrix}
+\index{CartanMatFromCoxeterMatrix}
+
+'CartanMatFromCoxeterMatrix( <m> )'
+
+The  argument is  a CoxeterMatrix  for a  finite Coxeter  group <W> and the
+result is a Cartan Matrix for the standard reflection representation of <W>
+(see  "CartanMat"). Its diagonal terms are  $2$ and the coefficient between
+two  generating reflections $s$  and $t$ is  $-2\cos(\pi/m[s,t])$ (where by
+convention  $\pi/m[s,t]=0$  if  $m[s,t]=\infty$,  which  is  represented in
+{\CHEVIE} by setting 'm[s,t]\:=0').
+
+|    gap> m:=[[1,3],[3,1]];
+    [ [ 1, 3 ], [ 3, 1 ] ]
+    gap> CartanMatFromCoxeterMatrix(m);
+    [ [ 2, -1 ], [ -1, 2 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for general Coxeter groups}
+
+Some functions take advantage of the fact a group is a Coxeter group to
+use a better algorithm. A typical example is\:
+
+'Elements(<W>)'
+\index{Elements}
+
+For  finite Coxeter  groups, uses  a  recursive algorithm  based on  the
+construction of elements of a chain of parabolic subgroups
+
+\index{ReflectionSubgroup}
+'ReflectionSubgroup(<W>, <J>)'
+
+When  <I>  is  a  subset of  |[1..W.nbGeneratingReflections]|  then  the
+reflection  subgroup  of  <W>   generated  by  'W.reflections\{I\}'  can
+be  generated  abstractly  (without  any specific  knowledge  about  the
+representation of  <W>) as a  Coxeter group.  This is what  this routine
+does\:\  implement a  special case  of 'ReflectionSubgroup'  which works
+for  arbitrary Coxeter  groups  (see  "ReflectionSubgroup"). The  actual
+argument <J>  should be reflection labels  for <W>, i.e. be  a subset of
+'W.reflectionsLabels'.
+
+Similarly,     the     functions     'ReducedRightCosetRepresentatives',
+'PermCosetsSubgroup', work  for reflection subgroups of  the above form.
+See  the chapter  on reflection  subgroups  for a  description of  these
+functions.
+
+\index{CartanMat}
+'CartanMat(<W>)'
+
+Returns       'CartanMatFromCoxeterMatrix(CoxeterMatrix(<W>))'      (see
+"CartanMatFromCoxeterMatrix").
+
+The  functions  'ReflectionType',  'ReflectionName'  and  all  functions
+depending on the classification of finite Coxeter groups work for finite
+Coxeter groups. See  the chapter on reflection groups  for a description
+of these functions.
+
+\index{BraidRelations}
+'BraidRelations(<W>)'
+
+returns the braid relations implied by the Coxeter matrix of <W>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsLeftDescending}
+\index{IsLeftDescending}
+
+'IsLeftDescending( <W> , <w>, <i> )'
+
+returns  'true'  if  and  only   if  the  $i$-th  generating  reflection
+'W.reflections[i]' is in the left descent set of the element <w> of <W>.
+
+|    gap> W:=CoxeterGroupSymmetricGroup(3);
+    Group( (1,3), (2,3) )
+    gap> IsLeftDescending(W,(1,2),1);
+    true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{FirstLeftDescending}
+\index{FirstLeftDescending}
+
+'FirstLeftDescending( <W> , <w> )'
+
+returns the  index in the list  of generating reflections of  <W> of the
+first element of the  left descent set of the element  <w> of <W> (i.e.,
+the first <i> such that  if 's=W.reflections[i]' then $l(sw)\<l(w)$). It
+is quite  important to think  of using  this function rather  than write
+a  loop  like  'First([1..W.nbGeneratingReflections],IsLeftDescending)',
+since for particular classes of  groups (e.g. finite Coxeter groups) the
+function is much optimized compared to such a loop.
+
+|    gap> W:=CoxeterGroupSymmetricGroup(3);
+    Group( (1,3), (2,3) )
+    gap> FirstLeftDescending(W,(2,3));
+    2|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LeftDescentSet}
+\index{LeftDescentSet}
+
+'LeftDescentSet( <W>, <w> )'
+
+The set of generators $s$ such that $l(sw)\<l(w)$, given  as  a  list  of
+labels for the corresponding generating reflections.
+
+|    gap> W:=CoxeterGroupSymmetricGroup(3);
+     Group( (1,3), (2,3) )
+    gap> LeftDescentSet( W, (1,3));
+    [ 1, 2 ] |
+
+See also "RightDescentSet".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RightDescentSet}
+\index{RightDescentSet}
+
+'RightDescentSet( <W>, <w> )'
+
+The set of generators $s$ such that $l(ws)\< l(w)$, given as  a  list  of
+labels for the corresponding generating reflections.
+
+|    gap> W := CoxeterGroup( "A", 2 );;
+    gap> w := EltWord( W, [ 1, 2 ] );;
+    gap> RightDescentSet( W, w );
+    [ 2 ] |
+
+See also "LeftDescentSet".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{EltWord}
+\index{EltWord}
+
+'EltWord( <W> , <w> )'
+
+returns  the element of <W> which corresponds to the Coxeter word <w>. Thus
+it  returns a permutation if <W> is a permutation group (the usual case for
+finite  Coxeter  groups)  and  a  matrix  for matrix groups (such as affine
+Coxeter  groups).
+
+|    gap> W:=CoxeterGroupSymmetricGroup(4);
+    Group( (1,4), (2,4), (3,4) )
+    gap> EltWord(W,[1,2,3]);
+    (1,4,3,2)|
+
+See also "CoxeterWord".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterWord}
+\index{CoxeterWord}
+
+'CoxeterWord( <W> , <w> )'
+
+returns a reduced  word in the standard generators of  the Coxeter group
+<W>  for  the  element  <w>  (represented as  the  {\GAP}  list  of  the
+corresponding reflection labels).
+
+|    gap> W := CoxeterGroup( "A", 3 );;
+    gap> w := ( 1,11)( 3,10)( 4, 9)( 5, 7)( 6,12);;
+    gap> w in W;
+    true
+    gap> CoxeterWord( W, w );
+    [ 1, 2, 3, 2, 1 ] |
+
+The result  of 'CoxeterWord'  is the lexicographically  smallest reduced
+word  for~<w> (for  the  ordering  of the  Coxeter  generators given  by
+'W.reflections').
+
+See also "EltWord" and "ReducedCoxeterWord".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterLength}
+\index{CoxeterLength}
+
+'CoxeterLength( <W> , <w> )'
+
+returns the length of the element <w>  of <W> as a reduced expression in
+the standard generators.
+
+|    gap> W := CoxeterGroup( "F", 4 );;
+    gap> p := EltWord( W, [ 1, 2, 3, 4, 2 ] );
+    ( 1,44,38,25,20,14)( 2, 5,40,47,48,35)( 3, 7,13,21,19,15)
+    ( 4, 6,12,28,30,36)( 8,34,41,32,10,17)( 9,18)(11,26,29,16,23,24)
+    (27,31,37,45,43,39)(33,42)
+    gap> CoxeterLength( W, p );
+    5
+    gap> CoxeterWord( W, p );
+    [ 1, 2, 3, 2, 4 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReducedCoxeterWord}
+\index{ReducedCoxeterWord}
+
+'ReducedCoxeterWord( <W> , <w> )'
+
+returns a  reduced expression for an  element of the Coxeter  group <W>,
+which is  given as a {\GAP}  list of reflection labels  for the standard
+generators of <W>.
+
+|    gap> W := CoxeterGroup( "E", 6 );;
+    gap> ReducedCoxeterWord( W, [ 1, 1, 1, 1, 1, 2, 2, 2, 3 ] );
+    [ 1, 2, 3 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BrieskornNormalForm}
+\index{BrieskornNormalForm}
+
+'BrieskornNormalForm( <W> , <w> )'
+
+Brieskorn \cite{Bri71}  has noticed that  if $L(w)$ is the  left descent
+set  of $w$  (see "LeftDescentSet"),  and if  $w_{L(w)}$ is  the longest
+Coxeter element (see "LongestCoxeterElement") of the reflection subgroup
+$W_{L(w)}$ (note that this  element is  an involution),  then $w_{L(w)}$
+divides  $w$, in  the  sense that  $l(w_{L(w)})+l(w_{L(w)}^{-1}w)=l(w)$.
+We  can  now  divide  $w$   by  $w_{L(w)}$  and  continue  this  process
+with  the  quotient.  In  this  way,  we  obtain  a  reduced  expression
+$w=w_{L_1}  \cdots w_{L_r}$  where $L_i=L(w_{L_i}  \cdots w_{L_r})$  for
+all  $i$,  which  we  call  the *Brieskorn  normal  form*  of  $w$.  The
+function 'BrieskornNormalForm'  will return a description  of this form,
+by  returning  the  list  of   sets  $L(w)$  which  describe  the  above
+decomposition.
+
+|    gap> W:=CoxeterGroup("E",8);
+    CoxeterGroup("E",8)
+    gap> w:=[ 2, 3, 4, 2, 3, 4, 5, 4, 2, 3, 4, 5, 6, 5, 4, 2, 3, 4,
+    >   5, 6, 7, 6, 5, 4, 2, 3, 4, 5, 6, 7, 8 ];;
+    gap> BrieskornNormalForm(W,EltWord(W,w));
+        [ [ 2, 3, 4, 5, 6, 7 ], [ 8 ] ]
+    gap> EltWord(W,w)=Product(last,x->LongestCoxeterElement(W,x));
+    true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{LongestCoxeterElement}
+\index{LongestCoxeterElement}
+
+'LongestCoxeterElement( <W> [,<I>])'
+
+If <W>  is finite, returns the  unique element of maximal  length of the
+Coxeter group <W>. May loop infinitely otherwise.
+
+|    gap> LongestCoxeterElement( CoxeterGroupSymmetricGroup( 4 ) );
+    (1,4)(2,3)|
+
+If  a second  argument <I>  is given,  returns the  longest element  of the
+parabolic  subgroup generated by the reflections in <I> (where <I> is given
+as '.reflectionsLabels').
+
+|    gap> LongestCoxeterElement(CoxeterGroupSymmetricGroup(4),[2,3]);
+    (2,4)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LongestCoxeterWord}
+\index{LongestCoxeterWord}
+
+'LongestCoxeterWord( <W> )'
+
+If  <W>  is  finite,  returns  a  reduced  expression  in  the  standard
+generators for the unique element of maximal length of the Coxeter group
+<W>. May loop infinitely otherwise.
+
+|    gap> LongestCoxeterWord( CoxeterGroupSymmetricGroup( 5 ) );
+    [ 1, 2, 1, 3, 2, 1, 4, 3, 2, 1 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterElements}
+\index{CoxeterElements}
+
+'CoxeterElements( <W>[, <l>] )'
+
+With  one argument this is equivalent  to 'Elements(W)' --- this works only
+if  <W> is finite.  The returned elements  are sorted by increasing Coxeter
+length.  If the second argument is an  integer <l>, the elements of Coxeter
+length  <l>  are  returned.  The  second  argument  can  also  be a list of
+integers, and the result is a list of same length as <l> of lists where the
+<i>-th list contains the elements of Coxeter length 'l[i]'.
+
+|    gap> W := CoxeterGroup( "G", 2 );;
+    gap> e := CoxeterElements( W, 6 );
+    [ ( 1, 7)( 2, 8)( 3, 9)( 4,10)( 5,11)( 6,12) ]
+    gap> e[1] = LongestCoxeterElement( W );
+    true |
+
+After  the call to  'CoxeterElements(W,l)', the list  of elements of 'W' of
+Coxeter  length 'l' is stored in the component 'elts[l+1]' of the record of
+$W$.  There are  a number  of programs  (like "BruhatPoset")  which use the
+lists 'W.elts'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterWords}
+\index{CoxeterWords}
+
+'CoxeterWords( <W>[, <l>] )'
+
+With second argument the integer <l> returns the list of 'CoxeterWord's for
+all elements of 'CoxeterLength' <l> in the Coxeter group <W>.
+
+If  only one  argument is  given, returns  all elements  of <W>  as Coxeter
+words, in the same order as
+
+|Concatenation(List([0..W.N],i->CoxeterWords(W,i)))|
+
+this only makes sense for finite Coxeter groups.
+
+|    gap> CoxeterWords( CoxeterGroup( "G", 2 ) );
+    [ [  ], [ 2 ], [ 1 ], [ 2, 1 ], [ 1, 2 ], [ 2, 1, 2 ], [ 1, 2, 1 ],
+      [ 2, 1, 2, 1 ], [ 1, 2, 1, 2 ], [ 2, 1, 2, 1, 2 ],
+      [ 1, 2, 1, 2, 1 ], [ 1, 2, 1, 2, 1, 2 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Bruhat}
+\index{Bruhat}
+
+'Bruhat( <W>, <y>, <w> )'
+
+returns 'true', if the element <y> is less than or equal to the element <w>
+of  the Coxeter group <W> for the  Bruhat order, and 'false' otherwise (<y>
+is  less than <w> if a reduced expression for <y> can be extracted from one
+for  <w>). See \cite[(5.9) and (5.10)]{Hum90}  for properties of the Bruhat
+order.
+
+|    gap> W := CoxeterGroup( "H", 3 );;
+    gap> w := EltWord( W, [ 1, 2, 1, 3 ] );;
+    gap> b := Filtered( Elements( W ), x -> Bruhat( W, x, w) );;
+    gap> List( b, x -> CoxeterWord( W, x ) );
+    [ [  ], [ 3 ], [ 2 ], [ 1 ], [ 2, 1 ], [ 2, 3 ], [ 1, 3 ], [ 1, 2 ],
+      [ 2, 1, 3 ], [ 1, 2, 1 ], [ 1, 2, 3 ], [ 1, 2, 1, 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BruhatSmaller}
+\index{BruhatSmaller}
+
+'BruhatSmaller( <W>, <w>)'
+
+Returns  a list  whose $i$-th  element is  the list  of elements  of <W>
+smaller for  the Bruhat  order that  <w> and of  Length $i-1$.  Thus the
+first element  of the returned  list contains only 'W.identity'  and the
+'CoxeterLength(W,w)'-th element contains only <w>.
+
+|    gap> W:=CoxeterGroupSymmetricGroup(3);
+    Group( (1,3), (2,3) )
+    gap> BruhatSmaller(W,(1,3));
+    [ [ () ], [ (2,3), (1,2) ], [ (1,2,3), (1,3,2) ], [ (1,3) ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BruhatPoset}
+\index{BruhatPoset}
+
+'BruhatPoset( <W> [, <w>])'
+
+Returns as a poset (see "Poset") the Bruhat poset of <W>. If an element <w>
+is given, only the poset of the elements smaller than <w> is given.
+
+|    gap> W:=CoxeterGroup("A",2);          
+    CoxeterGroup("A",2)
+    gap> BruhatPoset(W);
+    Poset with 6 elements
+    gap> Display(last);
+    <1,2<21,12<121
+    gap> W:=CoxeterGroup("A",3);
+    CoxeterGroup("A",3)
+    gap> BruhatPoset(W,EltWord(W,[1,3]));
+    Poset with 4 elements
+    gap> Display(last);
+    <3,1<13|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReducedInRightCoset}
+\index{ReducedInRightCoset}
+
+'ReducedInRightCoset( <W>, <w>)'
+
+Let  <w>  be an  element  of  a parent  group  of  <W> whose  action  by
+conjugation induces  an automorphism of  Coxeter groups on <W>,  that is
+sends the Coxeter generators of <W> to a conjugate set (but may not send
+the  tuple of  generators to  a conjugate  tuple). 'ReducedInRightCoset'
+returns  the  unique   element  in  the  right  coset   $W.w$  which  is
+$W$-reduced, that  is which preserves  the set of Coxeter  generators of
+$W$.
+
+|    gap> W:=CoxeterGroupSymmetricGroup(6);
+    Group( (1,6), (2,6), (3,6), (4,6), (5,6) )
+    gap> H:=ReflectionSubgroup(W,[2..4]);
+    Subgroup( Group( (1,6), (2,6), (3,6), (4,6), (5,6) ),
+    [ (2,3), (3,4), (4,5) ] )
+    gap> ReducedInRightCoset(H,(1,6)(2,4)(3,5));
+    (1,6)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ForEachElement}
+\index{ForEachElement}
+
+'ForEachElement( <W>, <f>)'
+
+This  functions calls  'f(x)' for  each element  <x> of  the finite Coxeter
+group  <W>. It is quite useful when the 'Size' of <W> would make impossible
+to call 'Elements(W)'. For example,
+
+|    gap> i:=0;;
+    gap> W:=CoxeterGroup("E",7);;
+    gap> ForEachElement(W,function(x)i:=i+1;
+    > if i mod 1000000=0 then Print("*\c");fi;
+    > end);Print("\n");
+    **|
+
+prints  a |*| about every second on  a 3Ghz computer, so enumerates 1000000
+elements per second.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ForEachCoxeterWord}
+\index{ForEachCoxeterWord}
+
+'ForEachCoxeterWord( <W>, <f>)'
+
+This functions calls 'f(x)' for each coxeter word <x> of the finite Coxeter
+group  <W>. It is quite useful when the 'Size' of <W> would make impossible
+to call 'CoxeterWords(W)'. For example,
+
+|    gap> i:=0;;
+    gap> W:=CoxeterGroup("E",7);;
+    gap> ForEachCoxeterWord(W,function(x)i:=i+1;
+    > if i mod 1000000=0 then Print("*\c");fi;
+    > end);Print("\n");
+    **|
+
+prints  a |*| about every second on  a 3Ghz computer, so enumerates 1000000
+elements per second.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{StandardParabolicClass}
+\index{StandardParabolicClass}
+
+'StandardParabolicClass( <W>, <I>)'
+
+<I>  should be a subset of 'W.reflectionsLabels' describing a subset of the
+generating reflections for <W>. The function returns the list of subsets of
+'W.reflectionsLabels' corresponding to sets of reflections conjugate to the
+given subset.
+
+|    gap> StandardParabolicClass(CoxeterGroup("E",8),[7,8]);
+    [ [ 1, 3 ], [ 2, 4 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ], [ 6, 7 ],
+      [ 7, 8 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ParabolicRepresentatives}
+\index{ParabolicRepresentatives}
+
+'ParabolicRepresentatives(<W> [, <r>])'
+
+Returns   a   list   of   subsets   of   'W.reflectionsLabels'   describing
+representatives  of orbits of parabolic subgroups under conjugation by $W$.
+If  a second  argument <r>  is given,  returns only  representatives of the
+parabolic subgroups of semisimple rank <r>.
+
+|    gap> ParabolicRepresentatives(Affine(CoxeterGroup("A",3)));
+    [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 3 ], [ 1, 2, 3, 4 ], [ 1, 2, 4 ],
+      [ 1, 3 ], [ 1, 3, 4 ], [ 2, 3, 4 ], [ 2, 4 ] ]
+    gap> ParabolicRepresentatives(Affine(CoxeterGroup("A",3)),2);
+    [ [ 1, 2 ], [ 1, 3 ], [ 2, 4 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReducedExpressions}
+\index{ReducedExpressions}
+
+'ReducedExpressions(<W> , <w>)'
+
+Returns  the list  of all  reduced expressions  of the  element <w>  of the
+Coxeter group <W>.
+
+|    gap> W:=CoxeterGroup("A",3);
+    CoxeterGroup("A",3)
+    gap> ReducedExpressions(W,LongestCoxeterElement(W));
+    [ [ 1, 2, 1, 3, 2, 1 ], [ 1, 2, 3, 1, 2, 1 ], [ 1, 2, 3, 2, 1, 2 ], 
+      [ 1, 3, 2, 1, 3, 2 ], [ 1, 3, 2, 3, 1, 2 ], [ 2, 1, 2, 3, 2, 1 ], 
+      [ 2, 1, 3, 2, 1, 3 ], [ 2, 1, 3, 2, 3, 1 ], [ 2, 3, 1, 2, 1, 3 ], 
+      [ 2, 3, 1, 2, 3, 1 ], [ 2, 3, 2, 1, 2, 3 ], [ 3, 1, 2, 1, 3, 2 ], 
+      [ 3, 1, 2, 3, 1, 2 ], [ 3, 2, 1, 2, 3, 2 ], [ 3, 2, 1, 3, 2, 3 ], 
+      [ 3, 2, 3, 1, 2, 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

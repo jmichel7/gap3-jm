@@ -1,0 +1,391 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  set.tex                     GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: set.tex,v 1.1.1.1 1996/12/11 12:36:50 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes those functions that mainly deal  with  proper  sets.
+%%
+%H  $Log: set.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:50  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.7  1994/05/30  14:52:41  vfelsch
+%H  index entries rearranged
+%H
+%H  Revision 3.6  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.5  1993/02/04  16:03:43  felsch
+%H  examples fixed
+%H
+%H  Revision 3.4  1992/04/02  21:06:23  martin
+%H  changed *domain functions* to *set theoretic functions*
+%H
+%H  Revision 3.3  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.2  1991/07/26  09:01:07  martin
+%H  changed |\GAP\ | to |{\GAP}|
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:33:34  martin
+%H  Initial revision under RCS
+%H
+%%
+\Chapter{Sets}%
+\index{multisets}
+
+A  very important mathematical concept,  maybe the most important of all,
+are sets.  Mathematically  a *set* is  an abstract object such that  each
+object  is either an element  of the  set or it  is not.   So  a set is a
+collection like  a list, and in fact {\GAP} uses lists to represent sets.
+Note that this of course implies that {\GAP} only deals with finite sets.
+
+Unlike a list a set must not contain an element several times.  It simply
+makes no sense to say   that an object is   twice  an element of a   set,
+because an object is either an element of a set, or it is not.  Therefore
+the list that is used  to represent a set has  no duplicates, that is, no
+two elements of such a list are equal.
+
+Also unlike a  list a set does not  impose any ordering  on the elements.
+Again it  simply makes no  sense to say  that an object  is  the first or
+second etc.  element of  a set, because,  again, an  object is  either an
+element of a set, or it is not.  Since ordering is  not defined for a set
+we can put the elements in any order into the  list used to represent the
+set.  We put the elements sorted into the  list, because this ordering is
+very practical.  For example if we convert a  list into a  set we have to
+remove  duplicates, which is  very  easy to do  after  we have sorted the
+list, since then equal elements will be next to each other.
+
+In   short   sets are represented  by   sorted  lists without  holes  and
+duplicates in {\GAP}.  Such  a list is  in this document called a  proper
+set.  Note that we guarantee this representation, so  you may make use of
+the fact that a set is represented by a sorted list in your functions.
+
+In some contexts (for example see "Combinatorics"),  we also want to talk
+about multisets.  A *multiset* is like a set,  except that an element may
+appear several  times  in a multiset.   Such multisets are represented by
+sorted lists with holes that may have duplicates.
+
+The first section in this chapter  describes the  functions to test if an
+object is a set and to convert objects to sets (see "IsSet" and "Set").
+
+The next section describes the function that tests if two sets  are equal
+(see "IsEqualSet").
+
+The next sections  describe  the destructive  functions that  compute the
+standard   set   operations   for   sets    (see   "AddSet", "RemoveSet",
+"UniteSet", "IntersectSet", and "SubtractSet").
+
+The last   section  tells  you more   about   sets  and   their  internal
+representation (see "More about Sets").
+
+All set theoretic functions, especially  'Intersection' and 'Union', also
+accept  sets  as  arguments.  Thus  all  functions  described in  chapter
+"Domains" are applicable to sets (see "Set Functions for Sets").
+
+Since sets are just  a  special case of lists,   all the  operations  and
+functions for lists, especially  the membership test  (see "In"),  can be
+used for sets just as well (see "Lists").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSet}%
+\index{test!for a set}
+
+'IsSet( <obj> )'
+
+'IsSet'  returns   'true' if the   object   <obj> is  a set  and  'false'
+otherwise.  An object is a  set if it is a  sorted lists without holes or
+duplicates.  Will cause an  error if evaluation of   <obj> is an  unbound
+variable.
+
+|    gap> IsSet( [] );
+    true
+    gap> IsSet( [ 2, 3, 5, 7, 11 ] );
+    true
+    gap> IsSet( [, 2, 3,, 5,, 7,,,, 11 ] );
+    false        # this list contains holes
+    gap> IsSet( [ 11, 7, 5, 3, 2 ] );
+    false        # this list is not sorted
+    gap> IsSet( [ 2, 2, 3, 5, 5, 7, 11, 11 ] );
+    false        # this list contains duplicates
+    gap> IsSet( 235711 );
+    false        # this argument is not even a list |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set}%
+\index{convert!to a set}
+
+'Set( <list> )'
+
+'Set' returns a  new proper  set, which  is represented as  a sorted list
+without holes or duplicates, containing the elements of the list <list>.
+
+'Set' returns a new list even if the list <list> is already a proper set,
+in this  case  it is   equivalent to  'ShallowCopy' (see  "ShallowCopy").
+Thus the result is  a new list  that is not  identical to any other list.
+The elements of  the result are however identical  to elements of <list>.
+If <list> contains equal elements, it is  not specified to which of those
+the element of the result is identical (see "Identical Lists").
+
+|    gap> Set( [3,2,11,7,2,,5] );
+    [ 2, 3, 5, 7, 11 ]
+    gap> Set( [] );
+    [  ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsEqualSet}%
+\index{test!for set equality}
+
+'IsEqualSet( <list1>, <list2> )'
+
+'IsEqualSet' returns  'true' if the   two lists <list1>  and <list2>  are
+equal *when viewed as sets*, and  'false' otherwise.  <list1> and <list2>
+are equal if  every element of <list1> is  also an element of <list2> and
+if every element of <list2> is also an element of <list1>.
+
+If both lists are proper sets then they are of course  equal if  and only
+if they are also equal as  lists.  Thus  'IsEqualSet( <list1>, <list2> )'
+is equivalent to 'Set( <list1>  ) = Set( <list2> )'  (see "Set"), but the
+former is more efficient.
+
+|    gap> IsEqualSet( [2,3,5,7,11], [11,7,5,3,2] );
+    true
+    gap> IsEqualSet( [2,3,5,7,11], [2,3,5,7,11,13] );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AddSet}%
+\index{add!an element to a set}
+
+'AddSet( <set>, <elm> )'
+
+'AddSet' adds <elm>, which may be an elment of an  arbitrary type, to the
+set   <set>, which must  be  a proper  set,  otherwise an  error  will be
+signalled.  If <elm> is already an element of the  set <set>, the  set is
+not  changed.  Otherwise <elm> is inserted  at the  correct position such
+that <set> is again a set afterwards.
+
+|    gap> s := [2,3,7,11];;
+    gap> AddSet( s, 5 );  s;
+    [ 2, 3, 5, 7, 11 ]
+    gap> AddSet( s, 13 );  s;
+    [ 2, 3, 5, 7, 11, 13 ]
+    gap> AddSet( s, 3 );  s;
+    [ 2, 3, 5, 7, 11, 13 ] |
+
+'RemoveSet' (see "RemoveSet") is the counterpart of 'AddSet'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RemoveSet}%
+\index{remove!an element from a set}
+
+'RemoveSet( <set>, <elm> )'
+
+'RemoveSet' removes   the  element  <elm>,  which  may be   an  object of
+arbitrary  type, from the set <set>,  which must be  a  set, otherwise an
+error will be signalled.  If  <elm>  is  not an  element of <set> nothing
+happens.  If <elm>  is  an element it is removed   and  all the following
+elements in the list are moved one position forward.
+
+|    gap> s := [ 2, 3, 4, 5, 6, 7 ];;
+    gap> RemoveSet( s, 6 );
+    gap> s;
+    [ 2, 3, 4, 5, 7 ]
+    gap> RemoveSet( s, 10 );
+    gap> s;
+    [ 2, 3, 4, 5, 7 ] |
+
+'AddSet' (see "AddSet") is the counterpart of 'RemoveSet'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{UniteSet}%
+\index{union!of sets}
+
+'UniteSet( <set1>, <set2> )'
+
+'UniteSet' unites the set <set1> with the set <set2>.  This is equivalent
+to adding all the elements  in <set2>  to <set1> (see "AddSet").   <set1>
+must be a proper set, otherwise an  error is  signalled.  <set2> may also
+be  list that  is  not a  proper set,  in  which case 'UniteSet' silently
+applies 'Set' to it first (see "Set").  'UniteSet' returns nothing, it is
+only called to change <set1>.
+
+|    gap> set := [ 2, 3, 5, 7, 11 ];;
+    gap> UniteSet( set, [ 4, 8, 9 ] );  set;
+    [ 2, 3, 4, 5, 7, 8, 9, 11 ]
+    gap> UniteSet( set, [ 16, 9, 25, 13, 16 ] );  set;
+    [ 2, 3, 4, 5, 7, 8, 9, 11, 13, 16, 25 ] |
+
+The  function  'UnionSet'   (see  "Set  Functions   for  Sets")  is   the
+nondestructive counterpart to the destructive procedure 'UniteSet'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IntersectSet}%
+\index{intersection!of sets}
+
+'IntersectSet( <set1>, <set2> )'
+
+'IntersectSet' intersects  the set <set1> with the  set <set2>.  This  is
+equivalent  to removing all  the elements  that are not  in  <set2>  from
+<set1> (see  "RemoveSet").  <set1> must be a  set, otherwise  an error is
+signalled.  <set2> may be a list that is not a proper  set, in which case
+'IntersectSet'   silently  applies  'Set' to      it first  (see  "Set").
+'IntersectSet' returns nothing, it is only called to change <set1>.
+
+|    gap> set := [ 2, 3, 4, 5, 7, 8, 9, 11, 13, 16 ];;
+    gap> IntersectSet( set, [ 3, 5, 7, 9, 11, 13, 15, 17 ] );  set;
+    [ 3, 5, 7, 9, 11, 13 ]
+    gap> IntersectSet( set, [ 9, 4, 6, 8 ] );  set;
+    [ 9 ] |
+
+The function 'IntersectionSet'  (see  "Set Functions  for Sets")  is  the
+nondestructive counterpart to the destructive procedure 'IntersectSet'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SubtractSet}%
+\index{subtract!a set from another}
+
+'SubtractSet( <set1>, <set2> )'
+
+'SubtractSet'  subtracts  the set  <set2>  from the set  <set1>.  This is
+equivalent to  removing  all the elements in   <set2>  from  <set1>  (see
+"RemoveSet").   <set1> must  be  a  proper  set, otherwise   an  error is
+signalled.  <set2> may be a list that is not a proper  set, in which case
+'SubtractSet' applies  'Set'   to it   first  (see "Set").  'SubtractSet'
+returns nothing, it is only called to change <set1>.
+
+|    gap> set := [ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ];;
+    gap> SubtractSet( set, [ 6, 10 ] );  set;
+    [ 2, 3, 4, 5, 7, 8, 9, 11 ]
+    gap> SubtractSet( set, [ 9, 4, 6, 8 ] );  set;
+    [ 2, 3, 5, 7, 11 ] |
+
+The function 'Difference'   (see  "Difference")  is   the  nondestructive
+counterpart to destructive the procedure 'SubtractSet'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Functions for Sets}%
+\index{test!for subsets}
+
+As was already mentioned  in  the introduction to this chapter all domain
+functions also accept sets as arguments.  Thus all functions described in
+the chapter "Domains"  are applicable to sets.   This  section  describes
+those functions where  it might be helpful to know  the implementation of
+those functions for sets.
+
+'IsSubset( <set1>, <set2> )'%
+\index{IsSubset!for sets}
+
+This is implemented by 'IsSubsetSet', which you can call directly to save
+a little  bit of  time.  Either argument to  'IsSubsetSet' may also  be a
+list that is not a proper set, in which  case 'IsSubset' silently applies
+'Set' (see "Set") to it first.
+
+'Union( <set1>, <set2> )'%
+\index{union!of sets}
+
+This is implemented by 'UnionSet', which you can call  directly to save a
+little bit of time.  Note that  'UnionSet' only accepts two  sets, unlike
+'Union',  which accepts several sets or  a list of  sets.  The  result of
+'UnionSet' is a new set,  represented as  a sorted list  without holes or
+duplicates.  Each argument to 'UnionSet' may also be a list that is not a
+proper set, in which case 'UnionSet'  silently  applies 'Set' (see "Set")
+to this argument.  'UnionSet' is implemented in terms of its  destructive
+counterpart 'UniteSet' (see "UniteSet").
+
+'Intersection( <set1>, <set2> )'%
+\index{intersection!of sets}
+
+This is implemented by 'IntersectionSet', which you can call  directly to
+save a little bit of time.  Note that 'IntersectionSet'  only accepts two
+sets, unlike 'Intersection',  which  accepts several sets  or  a list  of
+sets.  The  result of 'IntersectionSet' is  a new  set,  represented as a
+sorted  list     without  holes   or  duplicates.   Each   argument    to
+'IntersectionSet' may also be a list  that is not  a proper set, in which
+case  'IntersectionSet'  silently  applies  'Set' (see  "Set")    to this
+argument.  'IntersectionSet' is implemented in  terms of its  destructive
+counterpart 'IntersectSet' (see "IntersectSet").
+
+The result of 'IntersectionSet' and 'UnionSet' is always a new list, that
+is not  identical to any other list.   The elements of that  list however
+are identical to the corresponding elements of <set1>.   If <set1> is not
+a proper list it is not specified to which of a number  of equal elements
+in <set1> the element in the result is identical (see "Identical Lists").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Sets}
+
+In the previous section we defined a proper  set as a sorted list without
+holes or duplicates.  This representation is not  only nice to use, it is
+also a good internal representation supporting efficient algorithms.  For
+example the 'in' operator can use binary instead of a linear search since
+a set is sorted.  For another example 'Union' only has to merge the sets.
+
+However, all  those set functions  also allow lists that are  not  proper
+sets,  silently making  a copy  of it and  converting this copy to a set.
+Suppose all the functions would have to test  their arguments every time,
+comparing  each element  with its  successor, to see if  they  are proper
+sets.  This would chew up most  of  the performance advantage again.  For
+example suppose 'in' would have to run  over the whole list, to see if it
+is  a  proper set, so  it could  use the  binary search.   That  would be
+ridiculous.
+
+To avoid this a  list that is  a proper set  may, but need  not, have  an
+internal flag set that tells  those functions that  this list is indeed a
+proper set.  Those functions do not have to check this argument then, and
+can use the more  efficient algorithms.  This  section tells  you  when a
+proper set obtains this flag,  so you can write your  functions in such a
+way that you make best use of the algorithms.
+
+The results of 'Set', 'Difference', 'Intersection'  and 'Union' are known
+to be sets by construction, and thus have the flag set upon creation.
+
+If an argument to 'IsSet', 'IsEqualSet', 'IsSubset', 'Set', 'Difference',
+'Intersection' or  'Union' is a proper  set, that does  not  yet have the
+flag set, those functions will notice that and set the flag for this set.
+Note that 'in' will use linear search if the  right operand does not have
+the flag set, will therefore not detect  if it is  a proper set and will,
+unlike the functions above, never set the flag.
+
+If you change a proper set, that does have this  flag set, by assignment,
+'Add'   or 'Append' the  set  will generally lose  it  flag,  even if the
+change is such that the resulting list is still a proper set.  However if
+the set has more than 100 elements and the value assigned or added is not
+a list and not a record and the resulting list is still a proper set than
+it will keep  the flag.  Note that  changing a list  that is not a proper
+set will never set the flag, even if the resulting list  is a proper set.
+Such a set will obtain the flag only if it is passed to a set function.
+
+Suppose you have built a proper set  in such a way that  it does not have
+the flag set, and that you now want  to perform lots of membership tests.
+Then you  should call 'IsSet'  with that set   as an argument.   If it is
+indeed  a proper set  'IsSet' will set the flag,  and the subsequent 'in'
+operations will use  the more efficient binary  search.  You can think of
+the call to 'IsSet' as a hint to {\GAP} that this list is a proper set.
+
+There is no way you can set the flag for an ordinary  list  without going
+through the checking in 'IsSet'.  The  internal  functions depend so much
+on the fact that a list with  this flag set  is indeed sorted and without
+holes and duplicates that the risk would be too high to allow setting the
+flag without such a check.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

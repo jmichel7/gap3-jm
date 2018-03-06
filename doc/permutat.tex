@@ -1,0 +1,342 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  permutat.tex                GAP documentation                   Udo Polis
+%%
+%A  @(#)$Id: permutat.tex,v 1.1.1.1 1996/12/11 12:36:49 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes those functions that deal with permutation groups
+%%
+%H  $Log: permutat.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:49  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.6  1993/03/11  17:48:26  fceller
+%H  removed reference to bound of domain
+%H
+%H  Revision 3.5  1993/02/09  16:29:11  felsch
+%H  another example adjusted
+%H
+%H  Revision 3.4  1993/02/01  16:28:08  felsch
+%H  example fixed
+%H
+%H  Revision 3.3  1992/04/07  13:07:55  martin
+%H  fixed some more typos
+%H
+%H  Revision 3.2  1992/03/13  10:44:47  martin
+%H  changed two section titles
+%H
+%H  Revision 3.1  1992/01/15  14:09:18  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Permutations}
+
+{\GAP} is a system  especially  designed for the computations  in groups.
+Permutation groups are a very important class of groups and {\GAP} offers
+a data type *permutation* to describe the elements of permutation groups.
+
+Permutations  in  {\GAP}  operate on *positive integers*.  Whenever group
+elements  operate  on  a domain  we  call  the elements  of  this  domain
+*points*.  Thus in this chapter we often  call  positive integers points,
+if we want to  emphasize that a permutation operates on them.  An integer
+$i$ is said to  be *moved* by a permutation $p$ if the image $i^p$ of $i$
+under $p$ is not  $i$.  The largest  integer moved by any permutation may
+not be larger  than  $2^{28}-1$.
+
+Note that permutations  do  not belong to  a specific group.   That means
+that you can work  with permutations without defining a permutation group
+that contains them.  This is  just like  it is  with integers, with which
+you can compute without caring about the domain 'Integers' that  contains
+them.  It also means that you can multiply any two permutations.
+
+Permutations are entered and displayed in cycle notation.
+
+|    gap> (1,2,3);
+    (1,2,3)
+    gap> (1,2,3) * (2,3,4);
+    (1,3)(2,4) |
+
+The first  sections  in  this chapter describe  the  operations that  are
+available  for  permutations  (see  "Comparisons  of  Permutations"   and
+"Operations for Permutations").   The next section describes the function
+that  tests whether an object is a permutation (see "IsPerm").   The next
+sections describe the functions that find the largest and smallest  point
+moved    by    a    permutation    (see    "LargestMovedPointPerm"    and
+"SmallestMovedPointPerm").  The next section describes  the function that
+computes  the sign  of a permutation (see "SignPerm").  The next  section
+describes the  function  that  computes  the  smallest  permutation  that
+generates  the   same  cyclic  subgroup  as  a  given  permutation   (see
+"SmallestGeneratorPerm").  The final sections describe the functions that
+convert  between  lists and  permutations  (see  "ListPerm",  "PermList",
+"RestrictedPerm", and "MappingPermListList").
+
+Permutations are  elements  of groups operating on positive integers in a
+natural way, thus see chapter "Groups"  and chapter "Operations" for more
+functions.
+
+The external functions are in the file 'LIBNAME/\"permutat.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Permutations}%
+
+'<p1> = <p2>' \\
+'<p1> \<> <p2>'
+
+The  equality operator  '=' evaluates to  'true'  if the two permutations
+<p1> and  <p2> are equal,  and  to  'false'  otherwise.   The  inequality
+operator '\<>' evaluates to 'true' if the two permutations <p1>  and <p2>
+are  not  equal,  and  to  'false'   otherwise.   You  can  also  compare
+permutations with objects of other types, of course they are never equal.
+
+Two permutations are considered equal  if and  only if they move the same
+points and if  the images  of the  moved  points are  the  same under the
+operation of both permutations.
+
+|    gap> (1,2,3) = (2,3,1);
+    true
+    gap> (1,2,3) * (2,3,4) = (1,3)(2,4);
+    true |
+
+'<p1> \<  <p2>' \\
+'<p1> \<= <p2>' \\
+'<p1>  >  <p2>' \\
+'<p1>  >= <p2>'
+
+The operators '\<',  '\<=',  '>',  and  '>='  evaluate  to 'true'  if the
+permutation <p1> is less  than,  less than or  equal to, greater than, or
+greater than or equal to the permutation <p2>, and to 'false' otherwise.
+
+Let $p_1$ and $p_2$ be two  permutations that are  not equal.  Then there
+exists  at least one point  $i$ such that $i^{p_1} \<> i^{p_2}$.  Let $k$
+be the  smallest such point.  Then $p_1$ is considered smaller than $p_2$
+if  and only  if $k^{p_1} \<\ k^{p_2}$.   Note that this implies that the
+identity permutation is the smallest permutation.
+
+You can also compare permutations with objects of other types.  Integers,
+rationals, cyclotomics, unknowns, and  finite field  elements are smaller
+than permutations.  Everything else is larger.
+
+|    gap> (1,2,3) < (1,3,2);
+    true    # $1^{(1,2,3)} = 2 \<\ 3 = 1^{(1,3,2)}$
+    gap> (1,3,2,4) < (1,3,4,2);
+    false    # $2^{(1,3,2,4)} = 4 > 1 = 2^{(1,3,4,2)}$ |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Permutations}%
+
+'<p1> \*\ <p2>'
+
+The operator '\*'  evaluates to the product of the two  permutations <p1>
+and <p2>.
+
+'<p1> / <p2>'
+
+The operator  '/'  evaluates to the quotient $p1 \*  p2^{-1}$  of the two
+permutations <p1> and <p2>.
+
+'LeftQuotient( <p1>, <p2> )'
+
+'LeftQuotient' returns  the left  quotient  $p1^{-1}  \* p2$ of  the  two
+permutations <p1> and <p2>.  (This can also be written '<p1> mod <p2>'.)
+
+'<p> \^\ <i>'
+
+The operator '\^' evaluates to the <i>-th power of the permutation <p>.
+
+'<p1> \^\ <p2>'
+
+The operator '\^' evaluates to the conjugate $p2^{-1} \* p1 \* p2$ of the
+permutation <p1> by the permutation <p2>.
+
+'Comm( <p1>, <p2> )'
+
+'Comm' returns the commutator $p1^{-1} \* p2^{-1} \* p1 \* p2$ of the two
+permutations <p1> and <p2>.
+
+'<i> \^\ <p>'
+
+The operator '\^' evaluates to  the image $i^p$  of the  positive integer
+<i> under the permutation <p>.
+
+'<i> / <p>'
+
+The operator  '/' evaluates to  the preimage  $i^{p^{-1}}$ of the integer
+<i> under the permutation <p>.
+
+
+'<list> \*\ <p>' \\
+'<p> \*\ <list>'
+
+The operator '\*' evaluates  to the  list of products of the permutations
+in <list> with  the permutation <p>.  That  means that the value is a new
+list <new>  such that  '<new>[<i>] = <list>[<i>]  \*\  <p>'  respectively
+'<new>[<i>] = <p> \*\ <list>[<i>]'.
+
+'<list> / <p>'
+
+The operator '/' evaluates to the list  of  quotients of the permutations
+in <list> with  the permutation  <p>.  That means that the value is a new
+list <new> such that '<new>[<i>] = <list>[<i>] / <p>'.
+
+For the precedence of the operators see "Operations".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPerm}
+
+'IsPerm( <obj> )'
+
+'IsPerm' returns 'true'  if  <obj>, which may be  an  object of arbitrary
+type, is a permutation and 'false' otherwise.  It will signal an error if
+<obj> is an unbound variable.
+
+|    gap> IsPerm( (1,2) );
+    true
+    gap> IsPerm( 1 );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LargestMovedPointPerm}
+
+'LargestMovedPointPerm( <perm> )'
+
+'LargestMoverPointPerm'   returns  the   largest  point   moved   by  the
+permutation  <perm>, i.e.,  the  largest  positive  integer <i> such that
+'<i>\^<perm>  \<>  <i>'.   It will  signal an error  if <perm> is trivial
+(see also "SmallestMovedPointPerm").
+
+|    gap> LargestMovedPointPerm( (2,3,1) );
+    3
+    gap> LargestMovedPointPerm( (1,2)(1000,1001) );
+    1001 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SmallestMovedPointPerm}
+
+'SmallestMovedPointPerm( <perm> )'
+
+'SmallestMovedPointPerm'  returns  the  smallest   point  moved  by   the
+permutation <perm>,  i.e., the  smallest  positive integer  <i> such that
+'<i>\^<perm> \<>  <i>'.   It will signal  an error if  <perm>  is trivial
+(see also "LargestMovedPointPerm").
+
+|    gap> SmallestMovedPointPerm( (4,7,5) );
+    4 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SignPerm}
+
+'SignPerm( <perm> )'
+
+'SignPerm' returns the *sign* of the permutation <perm>.
+
+The sign $s$ of a permutation $p$ is defined by
+$s = \prod_{i \< j}{(i^p - j^p)} / \prod_{i \< j}{(i - j)}$,
+where $n$ is the largest point moved by $p$ and $i,j$ range over $1...n$.
+
+One can easily show that *sign* is equivalent to the *determinant* of the
+*permutation  matrix* of <perm>.  Thus  it   is obvious that the function
+*sign* is a homomorphism.
+
+|    gap> SignPerm( (1,2,3)(5,6) );
+    -1 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SmallestGeneratorPerm}
+
+'SmallestGeneratorPerm( <perm> )'
+
+'SmallestGeneratorPerm' returns  the smallest permutation that  generates
+the same cyclic group as the permutation <perm>.
+
+|    gap> SmallestGeneratorPerm( (1,4,3,2) );
+    (1,2,3,4) |
+
+Note that 'SmallestGeneratorPerm' is very efficient, even when <perm> has
+huge order.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ListPerm}
+
+'ListPerm( <perm> )'
+
+'ListPerm' returns a list <list> that contains the images of the positive
+integers  under the permutation <perm>.   That means  that '<list>[<i>] =
+<i>\^<perm>',  where  <i> lies between 1 and  the largest  point moved by
+<perm> (see "LargestMovedPointPerm").
+
+|    gap> ListPerm( (1,2,3,4) );
+    [ 2, 3, 4, 1 ]
+    gap> ListPerm( () );
+    [  ] |
+
+'PermList' (see "PermList") performs the inverse operation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermList}
+
+'PermList( <list> )'
+
+'PermList' returns the permutation <perm> that moves  points as describes
+by the list  <list>.  That  means that '<i>\^<perm> = <list>[<i>]' if <i>
+lies between 1 and the length of <list>, and  '<i>\^<perm> = <i>' if  <i>
+is larger than the length of the list <list>.  It will signal an error if
+<list> does not define a permutation,  i.e.,  if <list> is not a list  of
+integers without holes,  or if <list>  contains  an integer  twice, or if
+<list> contains an integer not in the range '[1..Length(<list>)]'.
+
+|    gap> PermList( [6,2,4,1,5,3] );
+    (1,6,3,4)
+    gap> PermList( [] );
+    () |
+
+'ListPerm' (see "ListPerm") performs the inverse operation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RestrictedPerm}
+
+'RestrictedPerm( <perm>, <list> )'
+
+'RestrictedPerm'  returns the new permutation <new> that  operates on the
+points  in the list <list> in the same way as the permutation <perm>, and
+that fixes those points that are not in <list>.  <list> must be a list of
+positive  integers  such  that  for  each   <i>  in  <list>   the   image
+'<i>\^<perm>' is also in <list>, i.e., it must be  the union of cycles of
+<perm>.
+
+|    gap> RestrictedPerm( (1,2,3)(4,5), [4,5] );
+    (4,5) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MappingPermListList}
+
+'MappingPermListList( <list1>, <list2> )'
+
+'MappingPermListList'   returns   a   permutation   <perm>    such   that
+'<list1>[<i>] \^\ <perm> = <list2>[<i>]'.  <perm> fixes all points larger
+then the  maximum  of the  entries in <list1> and <list2>.  If there  are
+several    such    permutations,    it    is    not    specified    which
+'MappingPermListList' returns.  <list1>  and  <list2>  must  be lists  of
+positive integers  of the same length, and neither may contain an element
+twice.
+
+|    gap> MappingPermListList( [3,4], [6,9] );
+    (3,6,4,9,8,7,5)
+    gap> MappingPermListList( [], [] );
+    () |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

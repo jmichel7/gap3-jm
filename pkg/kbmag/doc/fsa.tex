@@ -1,0 +1,109 @@
+%%File fsa.tex
+\Chapter{Programs for Manipulating Finite State Automata}
+In this chapter, we describe the utility functions that are provided for
+manipulating finite state automata. Currently, only 'fsafilter' (which
+merely reads in and prints out again) can handle nondeterministic
+automata. In the future, we may provide facilities to determinize a
+nondeterministic machine. For explanation of all of the standard options,
+see Section "Exit Status of Programs and Meanings of Some Options".
+
+\Section{fsafilter}
+
+'fsafilter [-ip d/s[<dr>]] [-op d/s] [-silent] [-v] [<filename>]'
+
+This merely reads in a finite state automaton and prints it out again.
+It is used partly for testing, but also if one wants to change the format
+of an automaton from dense to sparse or vice-versa.
+If the optional <filename> argument is present, then input is from <filename>
+and output to <filename>'.fsafilter'. Otherwise, input is from 'stdin' and
+output to 'stdout'.
+
+\Section{fsamin}
+
+'fsamin [-ip d/s] [-op d/s] [-silent] [-v] [-l] [<filename>]'
+
+A finite state automaton is read in, minimzed and then printed out again.
+If the optional <filename> argument is present, then input is from <filename>
+and output to <filename>'.fsamin'. Otherwise, input is from 'stdin' and
+output to 'stdout'.
+
+\Section{fsabfs}
+
+'fsabfs [-ip d/s] [-op d/s] [-silent] [-v] [-l] [<filename>]'
+
+A finite state automaton is read in, and then its states are permuted into
+bfs-order (bfs = breadth-first-search), and it is printed out again.
+This means that the states are numbered $1,2, \ldots, ns$, and if one
+scans the transition-table, in order of increasing states, then the states
+occur in increasing order. 'fsamin' and 'fsabfs' used together can be used
+to check whether two deterministic automata with the same alphabet
+have the same language.
+First apply 'fsamin' and then 'fsabfs'.
+If they have the same language, then the resulting automata should be identical.
+If the optional <filename> argument is present, then input is from <filename>
+and output to <filename>'.fsabfs'. Otherwise, input is from 'stdin' and
+output to 'stdout'.
+
+\Section{fsacount}
+
+'fsacount  [-ip d/s] [-silent] [-v] [<filename>]'
+
+A finite state automaton is read in,
+the size of the accepted language is counted, and the answer (which may
+of course be infinite) is output to 'stdout'.
+Input is from <filename> if
+the optional argument is present, and otherwise from 'stdin'.
+
+\Section{fsaeliminate}
+
+'fsaenumerate  [-ip d/s] [-bfs/-dfs] <min> <max> <filename>'
+
+A finite state automaton is read in from the file <filename>.
+<min> and <max> should be non-negative integers with <min> $\le$ <max>.
+The words in the accepted language having lengths at least <min> and at
+most <max> are enumerated, and output as a list of words to the file
+<filename>'.enumerate'.
+
+If the option '-dfs' is called (depth-first search -- the default),
+then the words
+in the list will be in lexicographical order, whereas with '[-bfs]'
+(breadth-first-search), they will be in order of increasing length, and in
+lexicographical order for each individual length (i.e. in shortlex order).
+Depth-first-search is marginally quicker.
+
+\Section{fsaand}
+
+'fsaand [-ip d/s[<dr>]] [-op d/s] [-silent] [-v] [-l]\
+ <filename1> <filename2> <outfilename>'
+
+Two finite state automata, which must have the same alphabet,
+are read in from the files <filename1> and <filename2>. An automaton that
+accepts a word $w$ in the alphabet if and only if both of the input automata
+accept $w$ is computed, minimized, and output to the file <outfilename>.
+
+\Section{fsaor}
+
+'fsaor [-ip d/s[<dr>]] [-op d/s] [-silent] [-v] [-l]\
+ <filename1> <filename2> <outfilename>'
+
+Two finite state automata, which must have the same alphabet, are read in from
+the files <filename1> and <filename2>. An automaton that accepts a word $w$ in
+the alphabet if and only if at least one of the input automata
+accept $w$ is computed, minimized, and output to the file <outfilename>.
+
+\Section{fsanot}
+
+'fsanot [-ip d/s[<dr>]] [-op d/s] [-silent] [-v] [-l] <filename>'
+
+A finite state automaton is read in from the file <filename>, and an automaton
+with the same alphabet, which accepts a word $w$ if and only if the input
+automaton does not accept $w$, is calculated and output to <filename>.not.
+
+\Section{fsaexists}
+
+'fsaexists [-ip d/s[<dr>]] [-op d/s] [-silent] [-v] [-l] <filename>'
+
+A two-variable finite state automaton is read in from the file <filename>,
+and a one-variable automaton, which accepts a word $v$ if and only if the input
+automaton accepts $(v,w)$ for some word $w$,
+is calculated and output to <filename>.exists.

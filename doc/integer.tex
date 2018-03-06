@@ -1,0 +1,848 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  integer.tex                 GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: integer.tex,v 1.1.1.1 1996/12/11 12:36:46 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file contains descriptions of the  integer datatype,  the operations
+%%  and the functions.
+%%
+%H  $Log: integer.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:46  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.13.1.2  1994/08/30  11:40:35  mschoene
+%H  added yet another Mersenne prime exponent
+%H
+%H  Revision 3.13.1.1  1994/08/24  16:02:21  mschoene
+%H  changed the description of 'IsPrimeInt'
+%H
+%H  Revision 3.13  1993/03/11  10:53:19  fceller
+%H  added 'EuclideanQuotient', 'EuclideanRemainder' and 'QuotientRemainder'
+%H
+%H  Revision 3.12  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.11  1993/02/18  15:06:02  felsch
+%H  anothe example fixed
+%H
+%H  Revision 3.10  1993/02/12  16:08:27  felsch
+%H  more examples fixed
+%H
+%H  Revision 3.9  1993/02/01  13:38:07  felsch
+%H  examples fixed
+%H
+%H  Revision 3.8  1992/04/06  16:26:54  martin
+%H  fixed some more typos
+%H
+%H  Revision 3.7  1992/04/02  21:06:23  martin
+%H  changed *domain functions* to *set theoretic functions*
+%H
+%H  Revision 3.6  1992/03/27  18:55:07  martin
+%H  added another Mersenne prime exponent
+%H
+%H  Revision 3.5  1991/12/30  09:29:21  martin
+%H  changed incorrect reference to "SmallestRoot"
+%H
+%H  Revision 3.4  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.3  1991/07/26  12:34:01  martin
+%H  improved the index
+%H
+%H  Revision 3.2  1991/07/26  09:01:07  martin
+%H  changed |\GAP\ | to |{\GAP}|
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:31:19  martin
+%H  Initial revision under RCS
+%H
+%%
+\Chapter{Integers}%
+\index{type!integer}
+
+One of the most  fundamental  datatypes in every programming  language is
+the integer type.  {\GAP} is no exception.
+
+{\GAP} integers are entered  as a sequence  of digits optionally preceded
+by a '+' sign for positive integers or a '-'  sign for negative integers.
+The size of integers in {\GAP} is only limited by the amount of available
+memory,  so you can compute with integers having thousands of digits.
+
+|    gap> -1234;
+    -1234
+    gap> 123456789012345678901234567890123456789012345678901234567890;
+    123456789012345678901234567890123456789012345678901234567890 |
+
+The first sections in this  chapter describe the operations applicable to
+integers  (see  "Comparisons of  Integers",  "Operations  for  Integers",
+"QuoInt" and "RemInt").
+
+The  next sections describe the  functions that test whether an object is
+an integer (see "IsInt") and convert objects of various types to integers
+(see "Int").
+
+The next sections describe functions related to  the ordering of integers
+(see "AbsInt", "SignInt").
+
+The next section describes the function that computes a Chinese remainder
+(see "ChineseRem").
+
+The next sections  describe  the  functions related  to  the  ordering of
+integers, logarithms, and roots ("LogInt", "RootInt", "SmallestRootInt").
+
+The {\GAP} object 'Integers'  is the ring domain of all integers.  So all
+set theoretic functions  are also  applicable to this domain (see chapter
+"Domains"  and "Set  Functions for  Integers").  The  only serious use of
+this however seems to be the generation of random integers.
+
+Since the  integers  form a  Euclidean ring  all  the ring  functions are
+applicable  to   integers  (see   chapter "Rings", "Ring   Functions  for
+Integers",  "Primes", "IsPrimeInt",  "IsPrimePowerInt",   "NextPrimeInt",
+"PrevPrimeInt",  "FactorsInt",  "DivisorsInt",  "Sigma",     "Tau",   and
+"MoebiusMu").
+
+Since the integers are naturally embedded in  the field of  rationals all
+the field functions are applicable to  integers (see chapter "Fields" and
+"Field Functions for Rationals").
+
+Many more functions that are mainly related to the prime residue group of
+integers modulo an integer are described in chapter "Number Theory".
+
+The external functions are in the file 'LIBNAME/\"integer.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Integers}%
+\index{comparisons!of integers}
+
+'<n1> = <n2>' \\
+'<n1> \<> <n2>'
+
+The  equality operator '='  evaluates to 'true'  if the integer   <n1> is
+equal to the integer <n2> and 'false' otherwise.  The inequality operator
+'\<>'  evaluates  to 'true'   if <n1>  is  not equal  to <n2> and 'false'
+otherwise.
+
+Integers can also be compared to objects  of other types; of course, they
+are never equal.
+
+|    gap> 1 = 1;
+    true
+    gap> 1 <> 0;
+    true
+    gap> 1 = (1,2);     # '(1,2)' is a permutation
+    false |
+
+'<n1> \<\ <n2>' \\
+'<n1> \<= <n2>' \\
+'<n1> > <n2>' \\
+'<n1> >= <n2>'
+
+The  operators  '\<',  '\<=', '>',  and '=>'  evaluate to  'true' if  the
+integer <n1> is  less  than,  less  than  or  equal to, greater than,  or
+greater than or equal to the integer <n2>, respectively.
+
+Integers  can  also be  compared to  objects  of  other  types, they  are
+considered  smaller than any  other object,  except rationals, where  the
+ordering  reflects  the  ordering  of the rationals  (see "Comparisons of
+Rationals").
+
+|    gap> 1 < 2;
+    true
+    gap> 1 < -1;
+    false
+    gap> 1 < 3/2;
+    true
+    gap> 1 < false;
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Integers}%
+\index{operations!for integers}
+
+'<n1> + <n2>'
+
+The operator '+' evaluates to the sum of the two integers <n1> and <n2>.
+
+'<n1> - <n2>'
+
+The operator '-' evaluates to the difference of the two integers <n1> and
+<n2>.
+
+'<n1> \*\ <n2>'
+
+The operator '\*' evaluates to the product of  the  two integers <n1> and
+<n2>.
+
+'<n1> / <n2>'
+
+The operator '/' evaluates to the quotient of the two  integers  <n1> and
+<n2>.  If the   divisor does not  divide  the dividend the  quotient is a
+rational (see "Rationals").  If the  divisor is 0  an error is signalled.
+The integer  part  of  the quotient can  be  computed with  'QuoInt' (see
+"QuoInt").
+
+'<n1> mod <n2>'
+
+The operator 'mod' evaluates  to the smallest positive representative  of
+the  residue  class of the left operand modulo  the right, i.e., '<i> mod
+<k>' is the unique <m> in the range '[0 ..  AbsInt(<k>)-1]' such that <k>
+divides '<i>  - <m>'.  If the right operand is  0 an error  is signalled.
+The  remainder of  the  division  can  be  computed  with  'RemInt'  (see
+"RemInt").
+
+'<n1> \^\ <n2>'
+
+The operator '\^' evaluates to the <n2>-th power of the integer <n1>.  If
+<n2> is a positive integer then '<n1>\^<n2>' is '<n1>\* <n1>\* ..\* <n1>'
+(<n2> factors).  If <n2> is a negative integer '<n1>\^<n2>' is defined as
+$1 / {<n1>^{-<n2>}}$.  If 0  is raised to  a negative power an  error  is
+signalled.  Any integer, even 0, raised to the zeroth power yields 1.
+
+Since  integers  embed naturally into  the  field of  rationals  all  the
+rational  operations are available  for integers too (see "Operations for
+Rationals").
+
+For the precedence of the operators see "Operations".
+
+|    gap> 2 * 3 + 1;
+    7 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{QuoInt}%
+\index{integer part of a quotient}
+
+'QuoInt( <n1>, <n2> )'
+
+'QuoInt'  returns  the   integer part of   the  quotient  of  its integer
+operands.
+
+If <n1>  and  <n2> are positive 'QuoInt(  <n1>,  <n2> )'  is the  largest
+positive integer <q> such that '<q>\*<n2> \<= <n1>'.  If <n1>  or <n2> or
+both are negative the absolute value of  the integer part of the quotient
+is the quotient of the absolute values of <n1> and <n2>,  and the sign of
+it is the product of the signs of <n1> and <n2>.
+
+'RemInt' (see "RemInt") can be used to compute the remainder.
+
+|    gap> QuoInt(5,2);  QuoInt(-5,2);  QuoInt(5,-2);  QuoInt(-5,-2);
+    2
+    -2
+    -2
+    2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RemInt}%
+\index{remainder of a quotient}
+
+'RemInt( <n1>, <n2> )'
+
+'RemInt' returns the remainder of its two integer operands.
+
+If  <n2> is not equal to  zero 'RemInt(  <n1>,   <n2> ) =   <n1> - <n2>\*
+QuoInt( <n1>,   <n2> )'.  Note   that  the rules  given for 'QuoInt' (see
+"QuoInt") imply that 'RemInt( <n1>, <n2> )' has the same sign as <n1> and
+its absolute  value is strictly  less  than the  absolute value  of <n2>.
+Dividing by 0 signals an error.
+
+|    gap> RemInt(5,2);  RemInt(-5,2);  RemInt(5,-2);  RemInt(-5,-2);
+    1
+    -1
+    1
+    -1 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsInt}%
+\index{test!for an integer}
+
+'IsInt( <obj> )'
+
+'IsInt' returns 'true' if <obj>, which can be an  arbitrary object, is an
+integer and 'false' otherwise.  'IsInt' will signal an error if  <obj> is
+an unbound variable.
+
+|    gap> IsInt( 1 );
+    true
+    gap> IsInt( IsInt );
+    false        # 'IsInt' is a function, not an integer |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Int}%
+\index{convert!to an integer}
+
+'Int( <obj> )'
+
+'Int' converts an  object <obj> to an  integer.   If <obj> is an  integer
+'Int' will simply return <obj>.
+
+If <obj> is a rational number (see "Rationals")  'Int' returns the unique
+integer that has  the same sign  as  <obj> and the largest absolute value
+not larger than the absolute value of <obj>.
+
+If <obj> is an element  of the prime field  of a finite field <F>,  'Int'
+returns the least positive integer <n> such that '<n>\*  <F>.one = <obj>'
+(see "IntFFE").
+
+If <obj> is not of one of the above types an error is signalled.
+
+|    gap> Int( 17 );
+    17
+    gap> Int( 17 / 3 );
+    5
+    gap> Int( Z(5^3)^62 );
+    4  # $Z(5^3)^{62}=(Z(5^3)^{124/4})^2=Z(5)^2=PrimitiveRoot(5)^2=2^2$ |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AbsInt}%
+\index{absolute value of an integer}
+
+'AbsInt( <n> )'
+
+'AbsInt' returns the absolute value of the integer <n>,  i.e., <n> if <n>
+is positive, -<n> if <n> is negative and 0 if <n> is 0 (see "SignInt").
+
+|    gap> AbsInt( 33 );
+    33
+    gap> AbsInt( -214378 );
+    214378
+    gap> AbsInt( 0 );
+    0 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SignInt}%
+\index{sign!of an integer}
+
+'SignInt( <obj> )'
+
+'SignInt' returns  the  sign of the integer  <obj>, i.e.,  1 if <obj>  is
+positive, -1 if <obj> is negative and 0 if <obj> is 0 (see "AbsInt").
+
+|    gap> SignInt( 33 );
+    1
+    gap> SignInt( -214378 );
+    -1
+    gap> SignInt( 0 );
+    0 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsOddInt}%
+
+'IsOddInt( <i> )'
+
+Determines whether <i> is odd.
+
+|    gap> IsOddInt(3);IsOddInt(4);
+     true
+     false|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsEvenInt}%
+
+'IsEvenInt( <i> )'
+
+Determines whether <i> is even.
+
+|    gap> IsEvenInt(3);IsEvenInt(4);
+     false
+     true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ChineseRem}%
+\index{chinese remainder}
+
+'ChineseRem( <moduli>, <residues> )'
+
+'ChineseRem' returns the combination   of   the  <residues>  modulo   the
+<moduli>, i.e., the  unique integer <c>  from '[0..Lcm(<moduli>)-1]' such
+that  '<c>  = <residues>[i]' modulo '<moduli>[i]'   for  all  <i>, if  it
+exists.  If no such combination exists 'ChineseRem' signals an error.
+
+Such    a    combination    does     exist    if    and     only     if\\
+'<residues>[<i>]=<residues>[<k>]'  mod 'Gcd(<moduli>[<i>],<moduli>[<k>])'
+for every pair <i>, <k>.  Note  that this implies that such a combination
+exists if the  moduli  are pairwise relatively prime.  This is called the
+Chinese remainder theorem.
+
+|    gap> ChineseRem( [ 2, 3, 5, 7 ], [ 1, 2, 3, 4 ] );
+    53
+    gap> ChineseRem( [ 6, 10, 14 ], [ 1, 3, 5 ] );
+    103
+    gap> ChineseRem( [ 6, 10, 14 ], [ 1, 2, 3 ] );
+    Error, the residues must be equal modulo 2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LogInt}%
+\index{logarithm of an integer}
+
+'LogInt( <n>, <base> )'
+
+'LogInt'   returns  the  integer part  of  the logarithm of  the positive
+integer  <n> with  respect to   the positive integer   <base>, i.e.,  the
+largest  positive integer <exp> such  that $base^{exp}  \<= n$.  'LogInt'
+will signal an error if either <n> or <base> is not positive.
+
+|    gap> LogInt( 1030, 2 );
+    10        # $2^{10} = 1024$
+    gap> LogInt( 1, 10 );
+    0 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RootInt}%
+\index{root!of an integer}\index{square root!of an integer}
+
+'RootInt( <n> )' \\
+'RootInt( <n>, <k> )'
+
+'RootInt' returns the integer part of the <k>th root  of the integer <n>.
+If the optional integer argument <k> is not given it defaults to 2, i.e.,
+'RootInt' returns the integer part of the square root in this case.
+
+If  <n> is positive  'RootInt' returns  the  largest positive integer $r$
+such that $r^k \<=  n$.  If <n>  is negative and  <k>  is  odd  'RootInt'
+returns '-RootInt( -<n>,  <k> )'.  If  <n> is negative   and <k> is  even
+'RootInt' will cause an error.  'RootInt' will also cause an error if <k>
+is 0 or negative.
+
+|    gap> RootInt( 361 );
+    19
+    gap> RootInt( 2 * 10^12 );
+    1414213
+    gap> RootInt( 17000, 5 );
+    7        # $7^5 = 16807$ |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SmallestRootInt}%
+\index{root!of an integer, smallest}
+
+'SmallestRootInt( <n> )'
+
+'SmallestRootInt' returns the smallest root of the integer <n>.
+
+The  smallest  root of an  integer $n$  is  the  integer $r$  of smallest
+absolute  value for which  a  positive integer $k$ exists such  that $n =
+r^k$.
+
+|    gap> SmallestRootInt( 2^30 );
+    2
+    gap> SmallestRootInt( -(2^30) );
+    -4        # note that $(-2)^{30} = +(2^{30})$
+    gap> SmallestRootInt( 279936 );
+    6
+    gap> LogInt( 279936, 6 );
+    7
+    gap> SmallestRootInt( 1001 );
+    1001 |
+
+'SmallestRootInt' can be used to  identify and decompose powers of primes
+as is demonstrated in the following example (see "IsPrimePowerInt")
+
+|    p := SmallestRootInt( q );  n := LogInt( q, p );
+    if not IsPrimeInt(p) then Error("GF: <q> must be a primepower"); fi;|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Functions for Integers}
+
+As already mentioned in the first section of  this chapter, 'Integers' is
+the  domain  of  all integers.   Thus  in  principle  all  set  theoretic
+functions, for  example 'Intersection', 'Size',  and so on can be applied
+to this domain.  This seems generally of little use.
+
+|    gap> Intersection( Integers, [ 0, 1/2, 1, 3/2 ] );
+    [ 0, 1 ]
+    gap> Size( Integers );
+    "infinity" |
+
+'Random( Integers )'
+
+This seems to be the only useful  domain function that can  be applied to
+the domain 'Integers'.  It returns pseudo random integers between -10 and
+10 distributed according to a binomial distribution.
+
+|    gap> Random( Integers );
+    1
+    gap> Random( Integers );
+    -4 |
+
+To  generate  uniformly  distributed  integers from   a  range,  use  the
+construct 'Random( [ <low> .. <high> ] )'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ring Functions for Integers}
+
+As was already noted  in the introduction  to this  chapter  the integers
+form  a Euclidean ring, so all  ring functions (see chapter "Rings")  are
+applicable to the integers.   This section comments on the implementation
+of those functions  for  the integers and tells you how  you can call the
+corresponding functions directly, for example to save time.
+
+'IsPrime( Integers, <n> )'
+
+This is implemented by 'IsPrimeInt', which you can  call directly to save
+a little bit of time (see "IsPrimeInt").
+
+'Factors( Integers, <n> )'
+
+This is  implemented as by 'FactorsInt', which  you  can call directly to
+save a little bit of time (see "FactorsInt").
+
+'EuclideanDegree( Integers, <n> )'
+
+The Euclidean degree of an integer is of course simply the absolute value
+of the integer.  Calling 'AbsInt' directly will be a little bit faster.
+
+'EuclideanRemainder( Integers, <n>, <m> )'
+
+This  is implemented as 'RemInt( <n>, <m> )', which you can use  directly
+to save a lot of time.
+
+'EuclideanQuotient( Integers, <n>, <m> )'
+
+This is  implemented as 'QuoInt( <n>, <m> )', which you can use  directly
+to save a lot of time.
+
+'QuotientRemainder( Integers, <n>, <m> )'
+
+This is implemented as '[ QuoInt(<n>,<m>),  RemInt(<n>,<m>) ]', which you
+can use directly to save a lot of time.
+
+'QuotientMod( Integers, <n1>, <n2>, <m> )'
+
+This  is implemented as   '(<n1> /  <n2>)  mod <m>',   which  you can use
+directly to save a lot of time.
+
+'PowerMod( Integers, <n>, <e>, <m> )'
+
+This is implemented by 'PowerModInt', which you can call directly to save
+a  little bit  of  time.   Note that  using  '<n> \^\  <e> mod <m>'  will
+generally  be slower, because it can not reduce intermediate results like
+'PowerMod'.
+
+'Gcd( Integers, <n1>, <n2>.. )'
+
+This is implemented by  'GcdInt', which you  can call  directly to save a
+lot of time.  Note that 'GcdInt' takes only two arguments, not several as
+'Gcd' does.
+
+'Gcdex( <n1>, <n2> )'
+
+'Gcdex'  returns a record.  The component  'gcd' is the   gcd of <n1> and
+<n2>.
+
+The components   'coeff1' and  'coeff2' are  integer  cofactors such that\\
+'<g>.gcd =  <g>.coeff1\*<n1> +  <g>.coeff2\*<n2>'.\\
+If <n1> and <n2> both are nonzero, 'AbsInt( <g>.coeff1 )' is less than or
+equal to 'AbsInt(<n2>) / (2\*<g>.gcd)' and 'AbsInt( <g>.coeff2 )' is less
+than or equal to 'AbsInt(<n1>) / (2\*<g>.gcd)'.
+
+The components 'coeff3' and 'coeff4'  are  integer  cofactors  such  that\\
+'0 = <g>.coeff3\*<n1>  + <g>.coeff4\*<n2>'.\\
+If <n1> or <n2>  or are  both nonzero  'coeff3' is '-<n2>  / <g>.gcd' and
+'coeff4' is '<n1> / <g>.gcd'.
+
+The coefficients always form a  unimodular matrix, i.e., the determinant\\
+'<g>.coeff1\*<g>.coeff4 -  <g>.coeff3\*<g>.coeff2'\\
+is 1 or -1.
+
+|    gap> Gcdex( 123, 66 );
+    rec(
+      gcd := 3,
+      coeff1 := 7,
+      coeff2 := -13,
+      coeff3 := -22,
+      coeff4 := 41 )
+          # 3 = 7\*123 - 13\*66, 0 = -22\*123 + 41\*66
+    gap> Gcdex( 0, -3 );
+    rec(
+      gcd := 3,
+      coeff1 := 0,
+      coeff2 := -1,
+      coeff3 := 1,
+      coeff4 := 0 )
+    gap> Gcdex( 0, 0 );
+    rec(
+      gcd := 0,
+      coeff1 := 1,
+      coeff2 := 0,
+      coeff3 := 0,
+      coeff4 := 1 ) |
+
+'Lcm( Integers, <n1>, <n2>.. )'
+
+This is implemented  as 'LcmInt', which  you can call directly to  save a
+little bit of  time.  Note that 'LcmInt'  takes  only two arguments,  not
+several as 'Lcm' does.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Primes}%
+\index{list!of primes}
+
+'Primes[ <n> ]'
+
+'Primes' is a set, i.e., a sorted list, of the 168 primes less than 1000.
+
+'Primes' is used in 'IsPrimeInt' (see "IsPrimeInt") and 'FactorsInt' (see
+"FactorsInt") to cast out small prime divisors quickly.
+
+|    gap> Primes[1];
+    2
+    gap> Primes[100];
+    541 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPrimeInt}%
+\index{test!for a prime}
+
+'IsPrimeInt( <n> )'
+
+'IsPrimeInt' returns 'false'  if it can  prove that <n>  is composite and
+'true' otherwise.  By  convention 'IsPrimeInt(0) = IsPrimeInt(1) = false'
+and we define 'IsPrimeInt( -<n> ) = IsPrimeInt( <n> )'.
+
+'IsPrimeInt' will return  'true' for all   prime $n$.  'IsPrimeInt'  will
+return 'false' for all composite $n \< 10^{13}$ and for all composite $n$
+that have   a factor  $p \<  1000$.   So for  integers $n    \< 10^{13}$,
+'IsPrimeInt' is  a    proper primality test.    It  is  conceivable  that
+'IsPrimeInt' may  return 'true' for some  composite $n > 10^{13}$, but no
+such $n$ is currently known.  So for integers $n > 10^{13}$, 'IsPrimeInt'
+is a  probable-primality test.  If composites  that fool  'IsPrimeInt' do
+exist,  they would be  extremly rare, and finding one  by  pure chance is
+less likely than finding a bug in {\GAP}.
+
+'IsPrimeInt' is a deterministic algorithm, i.e., the computations involve
+no random numbers, and repeated calls will always return the same result.
+'IsPrimeInt' first   does trial divisions  by the  primes less than 1000.
+Then it tests  that  $n$  is a   strong  pseudoprime w.r.t. the base   2.
+Finally it  tests whether $n$ is  a Lucas pseudoprime w.r.t. the smallest
+quadratic nonresidue of  $n$.  A better  description can be found in  the
+comment in the library file 'integer.g'.
+
+The time taken by 'IsPrimeInt' is approximately proportional to the third
+power  of  the number  of  digits of <n>.   Testing numbers  with several
+hundreds digits is quite feasible.
+
+|    gap> IsPrimeInt( 2^31 - 1 );
+    true
+    gap> IsPrimeInt( 10^42 + 1 );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPrimePowerInt}%
+\index{test!for a power of a prime}
+
+'IsPrimePowerInt( <n> )'
+
+'IsPrimePowerInt' returns 'true' if the integer <n>  is a prime power and
+'false' otherwise.
+
+$n$ is a *prime power* if there exists a prime $p$ and a positive integer
+$i$ such that $p^i = n$.  If $n$ is negative the  condition is that there
+must exist a negative prime $p$ and an odd positive integer $i$ such that
+$p^i = n$.  1 and -1 are not prime powers.
+
+Note    that 'IsPrimePowerInt'      uses       'SmallestRootInt'     (see
+"SmallestRootInt") and a probable-primality test (see "IsPrimeInt").
+
+|    gap> IsPrimePowerInt( 31^5 );
+    true
+    gap> IsPrimePowerInt( 2^31-1 );
+    true        # $2^{31}-1$ is actually a prime
+    gap> IsPrimePowerInt( 2^63-1 );
+    false
+    gap> Filtered( [-10..10], IsPrimePowerInt );
+    [ -8, -7, -5, -3, -2, 2, 3, 4, 5, 7, 8, 9 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NextPrimeInt}%
+\index{larger prime}
+
+'NextPrimeInt( <n> )'
+
+'NextPrimeInt' returns the smallest  prime which  is strictly larger than
+the integer <n>.
+
+Note  that     'NextPrimeInt'  uses  a    probable-primality  test   (see
+"IsPrimeInt").
+
+|    gap> NextPrimeInt( 541 );
+    547
+    gap> NextPrimeInt( -1 );
+    2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrevPrimeInt}%
+\index{smaller prime}
+
+'PrevPrimeInt( <n> )'
+
+'PrevPrimeInt' returns the largest prime  which is  strictly smaller than
+the integer <n>.
+
+Note  that    'PrevPrimeInt'   uses   a  probable-primality    test  (see
+"IsPrimeInt").
+
+|    gap> PrevPrimeInt( 541 );
+    523
+    gap> PrevPrimeInt( 1 );
+    -2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FactorsInt}%
+\index{factorization!of an integer}
+
+'FactorsInt( <n> )'
+
+'FactorsInt' returns a list of the prime factors of the  integer <n>.  If
+the <i>th power of a prime divides <n> this prime appears <i> times.  The
+list is sorted, that is the smallest prime factors come first.  The first
+element has  the same  sign  as  <n>, the others   are positive.  For any
+integer <n> it holds that 'Product( FactorsInt( <n> ) ) = <n>'.
+
+Note that 'FactorsInt' uses a probable-primality test (see "IsPrimeInt").
+Thus 'FactorsInt' might return a list which contains composite integers.
+
+The time taken by   'FactorsInt'  is approximately  proportional to   the
+square root of the second largest prime factor  of <n>, which is the last
+one that 'FactorsInt'  has to find,   since the largest  factor is simply
+what remains when all others have been removed.  Thus the time is roughly
+bounded by  the fourth  root of <n>.   'FactorsInt' is guaranteed to find
+all factors   less than  $10^6$  and will find  most    factors less than
+$10^{10}$.    If <n>    contains   multiple  factors   larger  than  that
+'FactorsInt' may not be able to factor <n> and will then signal an error.
+
+|    gap> FactorsInt( -Factorial(6) );
+    [ -2, 2, 2, 2, 3, 3, 5 ]
+    gap> Set( FactorsInt( Factorial(13)/11 ) );
+    [ 2, 3, 5, 7, 13 ]
+    gap> FactorsInt( 2^63 - 1 );
+    [ 7, 7, 73, 127, 337, 92737, 649657 ]
+    gap> FactorsInt( 10^42 + 1 );
+    [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DivisorsInt}%
+\index{divisors!of an integer}
+
+'DivisorsInt( <n> )'
+
+'DivisorsInt'  returns a list of all  positive  *divisors* of the integer
+<n>.  The list  is sorted, so  it starts with 1 and  ends with <n>.    We
+define 'DivisorsInt(  -<n> ) =  DivisorsInt(  <n> )'.   Since the  set of
+divisors of 0 is infinite calling 'DivisorsInt( 0 )' causes an error.
+
+'DivisorsInt' calls 'FactorsInt' (see  "FactorsInt")  to obtain the prime
+factors.  'Sigma' (see  "Sigma") computes the sum,  'Tau' (see "Tau") the
+number of positive divisors.
+
+|    gap> DivisorsInt( 1 );
+    [ 1 ]
+    gap> DivisorsInt( 20 );
+    [ 1, 2, 4, 5, 10, 20 ]
+    gap> DivisorsInt( 541 );
+    [ 1, 541 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sigma}%
+\index{sum!of divisors of an integer}%
+\index{mersenne primes}\index{primes!mersenne}
+
+'Sigma( <n> )'
+
+'Sigma' returns  the sum of the  positive divisors (see "DivisorsInt") of
+the integer <n>.
+
+'Sigma' is a multiplicative arithmetic function, i.e., if $n$ and $m$ are
+relatively  prime we have $\sigma(n m) = \sigma(n)  \sigma(m)$.  Together
+with  the  formula $\sigma(p^e) = (p^{e+1}-1) / (p-1)$ this allows you to
+compute $\sigma(n)$.
+
+Integers  $n$ for which $\sigma(n)=2 n$ are called perfect.  Even perfect
+integers are exactly of the form $2^{n-1}(2^n-1)$ where $2^n-1$ is prime.
+Primes of the form  $2^n-1$ are called *Mersenne  primes*, the known ones
+are obtained for $n =$ 2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521,
+607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701,
+23209,  44497, 86243, 110503, 132049,  216091, 756839, and 859433.  It is
+not known whether odd  perfect integers  exist, however \cite{BC89}  show
+that any such integer must have at least 300 decimal digits.
+
+'Sigma' usually spends most of its time factoring <n> (see "FactorsInt").
+
+|    gap> Sigma( 0 );
+    Error, Sigma: <n> must not be 0
+    gap> Sigma( 1 );
+    1
+    gap> Sigma( 1009 );
+    1010        # thus 1009 is a prime
+    gap> Sigma( 8128 ) = 2*8128;
+    true        # thus 8128 is a perfect number |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Tau}%
+\index{number!of divisors of an integer}
+
+'Tau( <n> )'
+
+'Tau' returns the number of  the positive divisors (see "DivisorsInt") of
+the integer <n>.
+
+'Tau' is a multiplicative  arithmetic function,  i.e., if $n$ and $m$ are
+relatively  prime we have $\tau(n  m) =  \tau(n) \tau(m)$.  Together with
+the formula $\tau(p^e) = e+1$ this allows us to compute $\tau(n)$.
+
+'Tau' usually spends most of its time factoring <n> (see "FactorsInt").
+
+|    gap> Tau( 0 );
+    Error, Tau: <n> must not be 0
+    gap> Tau( 1 );
+    1
+    gap> Tau( 1013 );
+    2        # thus 1013 is a prime
+    gap> Tau( 8128 );
+    14
+    gap> Tau( 36 );
+    9        # $\tau(n)$ is odd if and only if $n$ is a perfect square |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MoebiusMu}%
+\index{Moebius inversion function}
+
+'MoebiusMu( <n> )'
+
+'MoebiusMu' computes the value of the *Moebius  function* for the integer
+<n>.  This is 0  for  integers which  are not squarefree, i.e., which are
+divisible by a square $r^2$.  Otherwise it is 1 if <n> has an even number
+and -1 if <n> has an odd number of prime factors.
+
+The importance   of $\mu$ stems  from the   so called  inversion formula.
+Suppose $f(n)$  is a function  defined on the  positive integers and  let
+$g(n)=\sum_{d \mid n}{f(d)}$. Then $f(n)=\sum_{d \mid n}{\mu(d) g(n/d)}$.
+As a special case we have  $\phi(n) = \sum_{d  \mid n}{\mu(d) n/d}$ since
+$n = \sum_{d \mid n}{\phi(d)}$ (see "Phi").
+
+'MoebiusMu' usually   spends  all of   its    time   factoring <n>   (see
+"FactorsInt").
+
+|    gap> MoebiusMu( 60 );
+    0
+    gap> MoebiusMu( 61 );
+    -1
+    gap> MoebiusMu( 62 );
+    1 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

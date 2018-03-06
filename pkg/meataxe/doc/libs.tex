@@ -1,0 +1,3547 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This file is part of the C Meat-Axe.                                 %
+% Written by Michael Ringe <mringe@tiffy.math.rwth-aachen.de>          %
+% (C) Copyright 1994:	    Lehrstuhl D fuer Mathematik                %
+%                           RWTH Aachen                                %
+%                           Aachen, Germany                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\def\Libitem#1#2{\subsection*{{\tt #1} \hfill #2}\vspace{-1.3em}%
+\rule{\linewidth}{0.3mm}\\\vspace{-2em}}
+
+\def\Function#1#2#3{\Libitem{#2()}{#3}\index{#1@{\tt #2()}}%
+\begin{verbatim}}
+\def\Variable#1#2#3{\Libitem{#2}{#3}\index{#1@{\tt #2} variable}%
+\begin{verbatim}}
+\def\Type#1#2#3{\Libitem{#2}{#3}\index{#1@{\tt #2} data type}%
+\begin{verbatim}}
+\def\Constant#1#2#3{\Libitem{#2}{#3}\index{#1@{\tt #2}}}
+%\def\SeeAlso{\medskip\par\noindent {\large $\Longrightarrow$}\quad}
+\def\SeeAlso{\medskip\par\noindent See also: }
+
+\def\Description{\medskip\par\noindent}
+
+\def\TABll{\begin{tabular}{|l|l|}}
+\def\TABlp{\begin{tabular}{|l|p{0.8\linewidth}|}}
+\def\TABllp{\begin{tabular}{|l|l|p{0.7\linewidth}|}}
+\def\TABlll{\begin{tabular}{|l|l|l|}}
+\def\eTAB{\end{tabular}}
+
+\MakeShortVerb{|}
+
+
+\chapter{The MeatAxe Library}\label{chap:libs}
+%============================
+\index{libraries}
+
+The {\MeatAxe} system consists of a library of functions and user
+programs (see chapter \ref{chap:progs}) depending on the library.
+Using the library you can create your own {\MeatAxe} programs, or
+modify the existing programs to suit your personal needs.
+In the following sections you will find
+\begin{enumerate}
+\item
+    a description of all {\MeatAxe} library functions. The functions
+    are grouped by category (e.g., matrix functions, memory
+    functions, etc.). To find a specific function by name, look
+    in the index at the end of this document.
+\item
+    instructions for writing your own {\MeatAxe} programs. For each
+    library function there is a short description, and (sometimes)
+    more detailed instructions including short examples.
+\end{enumerate}
+Note: Throughout this chapter I assume that you are familiar with
+the C programming language. If you have no experience in writing
+programs in C, this is probably not the best way to start.
+
+
+\section{How to use the library}
+%-------------------------------
+To use the {\MeatAxe} library in your programs you need two files:
+\begin{center}
+\begin{tabular}{lp{0.8\linewidth}}
+|libmtx.a| & The library file. This file is generated during
+	the compilation process.\\
+|meataxe.h| & The header file for all {\MeatAxe} library
+	functions. This file is part of the distribution.
+\end{tabular}
+\end{center}
+You must include the header file in your program by putting the line
+\begin{verbatim}
+    #include "meataxe.h"
+\end{verbatim}
+somewhere at the top of your program. If |meataxe.h| resides in
+the same directory as your program the compiler will find it there.
+Otherwise you must specify a complete path in the include statement
+or specify the directory on the command line, for example:
+\msg{cc -c -I/usr/joe/mtx/src -o myprog.o myprog.c}
+Having compiled your program you must link it with the
+{\MeatAxe} library. Here is an example:
+\msg{cc -o myprog myprog.o libmtx.a}
+
+\medskip\noindent
+Some general hints for using the library:
+\begin{enumerate}
+\item
+    Library functions don't terminate your program if an error
+    occurs. See section \ref{sec:liberr} for details about
+    error messages and error handling.
+\item
+    Always use pointers for complex data types such as |matrix_t|.
+    For example, declaring a variable as |matrix_t mat| is usually
+    more complicated than declaring ``|matrix_t *mat|''.
+\item
+    There is a sample file called |examples.c| which has no
+    functionality but demonstrates the use of many library functions.
+    You may use this sample program as a basis for your own programs.
+\end{enumerate}
+
+
+
+\section{{\MeatAxe} data types}\label{sec:intdata}
+%-----------------------------
+\index{data types (overview)}
+
+\subsection{Simple data types}
+%-----------------------------
+\index{FEL@{\tt FEL} data type}
+\index{PTR@{\tt PTR} data type}
+\index{simple data types}
+There are two basic data types:
+\begin{center}
+\TABlp
+\hline
+Data type	& Meaning \\
+\hline
+\verb"FEL"	& Finite field element\\
+\verb"PTR"	& Pointer to a (packed) vector or matrix\\
+\hline
+\eTAB
+\end{center}
+The actual implementation of these types depends on the kernel
+you are using (see section \ref{sec:kernel}). Currently, there
+are two kernels
+available: a `small' version for field orders up to 256,
+and a `big' version for larger fields up to $q=2^{16}$. In the
+small version vectors are stored in packed format putting two or
+more elements into one byte (see \ref{sec:fel}). This saves both
+memory and speed since
+arithmetic operations can be performed simultaneously on multiple
+elements. The kernel is selected at compile-time.
+
+
+\subsection{Complex data types}
+%------------------------------
+In addition to the elementary data types, there are more complex
+types: 
+\begin{center}
+\TABlp
+\hline
+Data type	& Meaning \\
+\hline
+\verb"matrix_t"	& Matrix over a finite field (see \ref{sec:matrix})\\
+\verb"perm_t"	& Permutation (see \ref{sec:perms})\\
+\verb"poly_t"	& Polynomial over a finite field (see \ref{sec:poly})\\
+\verb"bitstring_t"& Set (bit string) (see \ref{sec:bitstrings})\\
+\verb"set_t"	& Set (ordered list) (see \ref{sec:sets})\\
+\verb"sequence_t"& A sequence (see \ref{sec:seq})\\
+\hline
+\eTAB
+\end{center}
+
+
+\subsection{Internal data representation}
+%-----------------------------------------
+
+\subsubsection{Field elements}\label{sec:fel}
+%- - - - - - - - - - - - -
+In the small version, field elements of GF$(q)$ are represented
+by the numbers $0,1,\ldots,q-1$. The field is defined by its
+Conway polynomial $p(x)$, a polynomial of degree $n$ over $\Z_p[x]$,
+where $q=p^n$. Thus, we have a one-to-one correspondence of field
+elements $a\in{\rm GF}(q)$ and polynomials $f_a(x)\in\Z_p[x]$ of
+degree $\leq n$. By treating $\Z_p$ as a subset of $\Z$ ---
+actually, on the computer, elements of $\Z_p$ are represented
+by integers --- this is also a polynomial over $\Z$. Now,
+calculate $f_a(p)$ giving the number of the field element $a$.
+It follows that the elements of the prime field are represented by
+$0$, $1$, \ldots, $p-1$. The number 0 represents the zero element,
+and 1 represents the unit element.
+
+If the field order is not too big, several field elements are packed
+into one byte. Let $q$ be the field order and $m$ the largest natural
+number with $q^m\leq 256$, i.e.
+\[
+	m := \lfloor 8/\log_2 q \rfloor
+\]
+Then, $m$ elements are packed into one byte using the
+packing function:
+\[
+	\mbox{pack}(k_1,\ldots,k_m) = \sum_{i=0}^m k_iq^i
+\]
+Packing of field elements is used exclusively for rows (vectors),
+not for polynomials or other data types.
+
+The big version uses always 2 Bytes (an {\tt unsigned short}) for
+field elements. Non-zero elements are stored as their logarithms with
+respect to a fixed generator, i.e. the unit element is represented by
+the number 0. The zero element is represented by
+the special value {\tt 0xFFFF}.
+
+As a consequence of the different representations of field elements
+in the small and big version, programs should never
+\begin{itemize}
+\item	assign numbers to variables of type {\tt FEL} or pass numbers
+        to functions expecting an argument of type {\tt FEL}
+\item	perform integer arithmetic on variables of type {\tt FEL}
+\item	{\tt printf} or {\tt scanf} variables of type {\tt FEL}
+\end{itemize}
+Instead of using the literals 0 and 1 for the zero and unit element in
+the field, which would produce wrong results with the big version,
+you should use the following predefined constants:
+\index{F_ZERO@{\tt F\_ZERO} constant}
+\index{F_ONE@{\tt F\_ONE} constant}
+\begin{center}
+\TABlp
+\verb|F_ZERO| & The zero element \\
+\verb|F_ONE| & The unit element
+\eTAB
+\end{center}
+In addition to these constants there are two functions,
+{\tt zitof()} and {\tt zftoi()}, which provide a one-to-one mapping
+between {\tt FEL} values and the integer numbers 0,\ldots,$q-1$
+(see section \ref{sec:convert}).
+
+
+
+\subsubsection{Packed vectors (Rows)}
+% - - - - - - - - - - - - - - - - -
+A (row) vector is stored in memory as an array of bytes. The memory
+size of a row depends on the number of marks in the row and on the
+field order. However, the size is always a multiple of
+{\tt sizeof(long)}. Thus, there may be unused bytes at the end of a
+row. The contents of these extra bytes (and even the contents of
+unused bits in partially used bytes) is not defined. For this reason,
+memory must be initialized before it is used, or else some functions
+as `compare rows' may fail.
+
+A single entries of a row is selected by its index where $1$
+corresponds to the first entry. This differs from the C convention
+of starting indexes with 0.
+
+
+\subsubsection{Matrices}
+%- - - - - - - - - -
+A matrix is stored as a sequence of rows with no extra space between
+them. The rows and columns of a matrix are numbered $1,2,\ldots n$.
+Column vectors may be stored as matrices with one column but this is
+very inefficient because each mark of the vector will occupy 4 Bytes.
+
+
+\subsubsection{Permutations}
+%- - - - - - - - - - - - -
+Permutations operate on the set $\{1,2,\ldots,n\}$, where $n$ is the
+degree. Internally, a permutation $\pi$ on $n$ points is stored as an
+array of long integers containing the images ($1\pi,2\pi,\ldots,n\pi$).
+
+
+\section{File formats}\label{sec:filefmt}
+%---------------------
+
+{\MeatAxe} data files can be in two formats, readable or binary.
+There are two programs, ZPR and ZCV, which convert between the two
+formats. See section \ref{sec:fileconv} for details.
+
+\subsection{Readable format}
+%---------------------------
+Lines beginning with `\#' are treated as comments.
+Each object (matrix, permutation, or other) begins with a header
+line specifying the type of object and additional parameters.
+Here are some examples:
+\begin{verbatim}
+    matrix field=5 rows=100 cols=100
+    permutation degree=5
+    polynomial field=3 degree=10
+\end{verbatim}
+The header may be given in a different format:
+\begin{verbatim}
+    MeatAxeFileInfo := "matrix field=5 rows=100 cols=100";
+\end{verbatim}
+is treated as
+\begin{verbatim}
+    matrix field=5 rows=100 cols=100
+\end{verbatim}
+
+\subsection{Binary format}
+%-------------------------
+
+Binary data files contain a sequence of objects. Each object consists
+of a 12-byte header, followed by the data part.
+The data is stored in the internal format described above
+(section \ref{sec:intdata}) with the following differences:
+\begin{itemize}
+\item
+    Packed rows (vectors) are truncated to their actual length. For
+    example, a row with 17 entries over GF(125) on a machine with
+    ${\tt sizeof(long)}=4$ would occupy 20 bytes in memory but only
+    17 bytes in a data file.
+\item
+    All integers, including the file header, are stored as 32-bit
+    numbers with least significant byte first.
+\end{itemize}
+
+The file header consists of three integers, the type parameter and
+two other values. The meaning of these values is as follows:
+\begin{center}
+\TABlll
+\hline
+field parameter 	     & 2nd value 	& 3rd value \\
+\hline
+$q > 1$: Matrix over $GF(q)$ & no.\ of rows	& no.\ of columns \\
+-1: Permutation		     & no.\ of points& no.\ of permutations \\
+-2: Polynomial		     & field		& degree \\
+-8: Integer matrix	     & no.\ of rows     & no.\ of columns \\
+\hline
+\eTAB
+\end{center}
+
+
+
+\section{Library functions by category}
+%--------------------------------------
+
+\def\Shortlist{\begin{list}{}{\leftmargin 4cm\labelwidth 38mm%
+\labelsep 2mm\itemsep 0mm\parsep 0mm}}
+\def\ShortlistEnd{\end{list}}
+\def\Short#1#2{\item[{\tt #1}\hfill]#2}
+
+
+
+\subsection{The kernel}\label{sec:kernel}
+%----------------------
+
+The kernel contains the basic field arithmetic and vector operations.
+There are two kernels available: one for small fields (up to 256) and
+one for larger fields (up to $2^{16}$). The user must chose a kernel at
+compile time.
+Each kernel consists of two parts, the source file containing all
+kernel functions, and a specific section in the {\MeatAxe} header
+file \verb"meataxe.h".
+
+\subsubsection{Data types}
+%- - - - - - - - - - - - - 
+The kernel defines two basic data types. The |typedef|'s are
+in the header file |meataxe.h|.
+\Shortlist
+\Short{FEL}{A finite field element}
+\Short{PTR}{A pointer to a vector (row). |PTR| may be defined as
+	|*FEL|, but this is not mandatory. However, it must be
+	possible to dereference and to increment a |PTR|.}
+\ShortlistEnd
+The kernel also defines two constants:
+\Shortlist
+\Short{F\_ZERO}{The zero element of the current field.}
+\Short{F\_ONE}{The unit element of the current field.}
+\ShortlistEnd
+Actually, |F_ZERO| and |F_ONE| need not be constants. They
+can be defined as variables or even function calls.
+
+\subsubsection{Global variables}
+%- - - - - - - - - - - - - - - - -
+The following global variables are provided by the kernel. The higher
+levels use the values but they must not modify them directly.
+\Shortlist
+\Short{zzzversion}{A short version string. This string should specify
+	the encoding used for field elements and the packing method
+	for vectors.}
+\Short{zzz\_cc}{A string containing the compiler and options used to
+	compile the kernel. Used for debugging and benchmarking.}
+\Short{zfl}{The currently selected field (|long|). This variable
+	is updated at each call to |zsetfield()|.}
+\Short{zchar}{The characteristic of the current field (|long|).
+	Like |zfl|, this variable is updated by
+	|zsetfield()|.}
+\Short{zgen}{A generator for the current field (|FEL|).}
+\Short{znoc}{The current number of columns (|long|). This variable
+	is updated at each call to |zsetlen()|.}
+\Short{zrowsize}{The size of one row in memory (|size\_t|). This
+	variable is updated by |zsetlen()|. |rowsize| must
+	always be a multiple of |sizeof(long)|.}
+\Short{zrowsize\_io}{The `real' size of a row, i.e., the number of
+	bytes actually used (|size\_t|). May be less than
+	|zrowsize|, depending on the number of columns, the field order
+	and the machine type. Used for file i/o.}
+\ShortlistEnd
+
+
+\subsubsection{Kernel functions}
+%- - - - - - - - - - - - - - - -
+The following functions are defined by the kernel. They may be
+implemented as true functions of as macros. In the latter case,
+it is garanteed that they have no side-effects.
+
+\Shortlist
+\Short{zsetfield()}{Selects the field}
+\Short{zadd()}{Finite field addition}
+\Short{zmul()}{Finite field multiplication}
+\Short{zneg()}{Additive inverse}
+\Short{zinv()}{Multiplicative inverse}
+\ShortlistEnd
+
+\Shortlist
+\Short{zembed()}{Embed a subfield}
+\Short{zrestrict()}{Restrict to a subfield}
+\Short{zftoi()}{Convert field element to integer}
+\Short{zitof()}{Convert integer to field element}
+\ShortlistEnd
+
+\Shortlist
+\Short{zsetlen()}{Select the row size}
+\Short{zinsert()}{Insert a mark into a row}
+\Short{zextract()}{Extract a mark from a row}
+\Short{zfindpiv()}{Find the first nonzero mark in a row}
+\Short{zextractcol()}{Extract a column from a matrix. Convert
+	column vector to row vector.}
+\ShortlistEnd
+
+\Shortlist
+\Short{zaddrow()}{Add rows}
+\Short{zmulrow()}{Multiply a row by a field element. Also
+	used to initialize memory.}
+\Short{zaddmulrow()}{Add a multiple of a row}
+\Short{zmaprow()}{Multiply a row by matrix}
+\ShortlistEnd
+
+
+
+\subsection{General functions}
+%-----------------------------
+\Shortlist
+\Short{mtxinit()}{Initialize the library}
+\ShortlistEnd
+
+
+\subsection{Low-level functions}
+%-------------------------------
+The following functions are, semantically, at kernel level. However,
+they are not defined in the kernel proper. This ist to keep the kernel
+as small as possible.
+
+\Shortlist
+\Short{zsub()}{Finite field subtraction}
+\Short{zdiv()}{Finite field division}
+\ShortlistEnd
+
+\Shortlist
+\Short{zmoverow()}{Copy a row}
+\Short{zswaprow()}{Exchange two rows}
+\Short{zcmprow()}{Compare two rows}
+\ShortlistEnd
+
+
+
+\subsection{Error handling}\label{sec:liberr}
+%-----------------------
+\index{error handling}
+
+\Shortlist
+\Short{mtxerrno}{Last error code}
+\Short{mtxerraction}{Determines what to do if an error occurs}
+\Short{ERR\_xxx}{Error codes}
+\Short{mtxerror()}{Print error message}
+\Short{ErrorExit()}{Exit program with error message}
+\Short{errexit()}{Exit program (obsolete)}
+\ShortlistEnd
+
+
+\subsection{Miscellaneous}
+%-------------------------
+\Shortlist
+\Short{gcd()}{Greatest common divisor}
+\Short{lcm()}{Least common multiple}
+\Short{RandInit()}{Initialize the random number generator}
+\Short{Random()}{Make a random number}
+\Short{RandInt()}{Make a random number in a specified interval}
+\ShortlistEnd
+
+
+
+\subsection{Memory}
+%------------------
+\Shortlist
+\Short{zalloc()}{Allocate and initialize rows}
+\Short{zsize()}{Determine the number of bytes occupied by $n$ rows}
+\Short{zadvance()}{Increment row pointer}
+\ShortlistEnd
+
+
+
+
+\subsection{Data conversion}\label{sec:convert}
+%---------------------------
+\index{data conversion}
+The following functions described in provide support for
+external (non-{\MeatAxe}) data formats.
+Currently there are two external data formats supported,
+Integers and GAP format. GAP format is yet incomplete,
+because you can convert from internal format to GAP format,
+but not vice versa.
+\Shortlist
+\Short{zftoi()}{Convert field element to integer}
+\Short{zitof()}{Convert integer to field element}
+\Short{zftogap()}{Convert field element to GAP format}
+\ShortlistEnd
+
+
+
+\subsection{The seed vector generator}
+%-------------------------------------
+\index{seed vector generator}
+
+\Shortlist
+\Short{zpseed\_vec}{Seed vector}
+\Short{zpseed\_init()}{Initialize the seed vector generator}
+\Short{zpseed\_make()}{Make a seed vector}
+\Short{zpseed\_next()}{Make the next seed vector}
+\ShortlistEnd
+
+
+\subsection{CPU time}
+%-----------------------
+\index{CPU time}
+\index{time limit}
+\Shortlist
+\Short{STimeUsed()}{CPU time usage}
+\Short{prtimes()}{Print CPU time}
+\Short{STimeLimit()}{Set CPU time limit}
+\ShortlistEnd
+
+
+\subsection{Spin-up, split, and standard basis}
+%----------------------------------------------
+\index{spin-up}
+\index{splitting a module}
+\index{standard basis}
+
+The functions in this section take a set of seed vectors and calculate
+the closure of the vectors under a given set of generators (matrices or
+permutations). The closure is the smallest subspaces containing all
+seed vectors and being invariant under the generators. If the closure
+is a proper subspace, the action of the generators on both subspace and
+quotient can be calculated. This is called splitting the module.
+
+\Shortlist
+\Short{spinup()}{Spin up a vector or a subspace}
+\Short{split()}{Split a representation}
+\Short{quotproj()}{Project vectors on the quotient}
+\Short{sbasis()}{Make the standard basis}
+\Short{chbasis()}{Transform generators to a new basis}
+\ShortlistEnd
+
+
+\subsection{Characteristic and minimal polynomial}
+%-------------------------------------------------
+\index{characteristic polynomial}
+\index{polynomial!characteristic}
+\index{minimal polynomial}
+\index{polynomial!minimal}
+\Shortlist
+\Short{charpolfactor()}{Calculate the next factor of the
+                        characteristic polynomial}
+\Short{charpol()}{Calculate and factorize the characteristic polynomial}
+\Short{CharPolSeed}{A global variable which controls the start vector
+	used for spin-up.}
+\Short{minpolfactor()}{Calculate the next factor of the
+                        minimal polynomial}
+\ShortlistEnd
+
+
+
+
+\subsection{File i/o}
+%--------------------
+\index{file i/o}
+These functions are used for input/output operations on streams.
+\Shortlist
+\Short{zreadhdr()}{Open for reading}
+\Short{zwritehdr()}{Open for writing}
+\Short{zreadlong()}{Read integers}
+\Short{zwritelong()}{Write integers}
+\Short{zreadvec()}{Read packed rows}
+\Short{zwritevec()}{Write packed rows}
+\Short{zseek()}{Move to another position}
+\ShortlistEnd
+
+
+\subsection{Gaussian elimination and related functions}
+%------------------------------------------------------
+\index{gaussian elimination}
+\Shortlist
+\Short{zmkpivot()}{Build a pivot table for a matrix in semi-echelon
+form}
+\Short{zcleanrow()}{Clean a row with a matrix}
+\Short{zcleanrow2()}{Clean a row and store the operations}
+\Short{zmkechelon()}{Convert a matrix to semi-echelon form}
+\Short{znullsp()}{Calculate the null-space of a matrix}
+\ShortlistEnd
+
+
+
+\subsection{Projection on the quotient}
+%--------------------------------------
+\index{quotient spaces}
+\Shortlist
+\Short{zquotinit()}{Initialize before projection}
+\Short{zquot()}{Projection onto quotient}
+\Short{zquotop()}{Calculate the action of a matrix on the quotient}
+\ShortlistEnd
+
+
+
+
+
+\subsection{Bit Strings}\label{sec:bitstrings}
+%-----------------------
+\index{bit strings}
+
+\Shortlist
+\Short{bitstring\_t}{The bit string data type}
+\Short{bs\_setlen()}{Set bit string length}
+\Short{bs\_alloc()}{Allocate a bit string}
+\Short{bs\_free()}{Free a bit string}
+\Short{bs\_read()}{Read a bit string from a file}
+\Short{bs\_write()}{Write a bit string to a file}
+\Short{bs\_reset()}{Clear a bit string}
+\Short{bs\_set()}{Set a bit}
+\Short{bs\_clear()}{Clear a bit}
+\Short{bs\_test()}{Test a bit}
+\Short{bs\_cmp()}{Compare two bit strings}
+\Short{bs\_cpy()}{Copy a bit string}
+\Short{bs\_and()}{Logical and}
+\Short{bs\_or()}{Logical or}
+\Short{bs\_minus()}{Difference of two bit strings}
+\Short{bs\_match()}{Find matching 1's in two bit strings}
+\Short{bs\_issub()}{Incidence relation between bit strings}
+\ShortlistEnd
+
+
+
+\subsection{Matrices}\label{sec:matrix}
+%--------------------
+\index{matrix operations}
+\Shortlist
+\Short{matrix\_t}{Matrix data type}
+\Short{matalloc()}{Allocate a matrix}
+\Short{matfree()}{Free a matrix}
+\Short{matid()}{Identity matrix}
+\Short{matinsert()}{Insert a matrix into a polynomial}
+\Short{matdup()}{Duplicate a matrix}
+\Short{matmove()}{Copy a matrix}
+\Short{matextract()}{Extract rows}
+\Short{matread()}{Read a matrix from a file}
+\Short{matwrite()}{Write a matrix to a file}
+\Short{matload()}{Open a file, read a single matrix, and close}
+\Short{matsave()}{Open a file, write a single matrix, and close}
+\Short{matadd()}{Add two matrices}
+\Short{matmul()}{Multiply two matrices}
+\Short{mattr()}{Transpose a matrix}
+\Short{matinv()}{Matrix inversion}
+\Short{matpower()}{Power of a matrix}
+\Short{zmatinv()}{Matrix inversion (low-level version)}
+\Short{matorder()}{Order of a matrix}
+\ShortlistEnd
+
+
+\subsection{Null-spaces and echelon form}
+%----------------------------------------
+\Shortlist
+\Short{nullity()}{Nullity of a matrix}
+\Short{nullity\_()}{Nullity of a matrix (modifies the matrix)}
+\Short{nullity\_\_()}{Nullity of a matrix (destroys the matrix)}
+\Short{nullspace()}{Null-space of a matrix}
+\Short{nullspace\_()}{Null-space of a matrix (modifies the matrix)}
+\Short{nullspace\_\_()}{Null-space of a matrix (destroys the matrix)}
+\Short{echelon()}{Returns the echelon form of a matrix}
+\Short{echelon\_()}{Converts a matrix to echelon form}
+\ShortlistEnd
+
+\subsection{Subspaces}
+%---------------------
+Here are some function that compare subspaces of a given vector space.
+In the {\MeatAxe}, vector spaces are represented by matrices. The
+space represented by a given matrix is the linear hull of its rows.
+Most functions dealing with vector spaces expect the matrix to be
+in echelon form. There are only a few functions which are capable
+to transform the input to echelon form as required.
+
+\Shortlist
+\Short{spccomp()}{Compare two subspaces}
+\Short{spcequal()}{Check if two subspaces are equal}
+\Short{spccontains()}{Check if one subspace contains another subspace}
+\ShortlistEnd
+
+
+
+\subsection{Permutations}\label{sec:perms}
+%------------------------
+\index{permutations}
+\Shortlist
+\Short{perm\_t}{Permutation data type}
+\Short{permorder()}{Order of a permutation}
+\Short{permalloc()}{Create a new permutation}
+\Short{permfree()}{Free a permutation}
+\Short{permdup()}{Duplicate a permutation}
+\Short{permmove()}{Copy a permutation}
+\Short{permread()}{Read a permutation from a file}
+\Short{permwrite()}{Write a permutation to a file}
+\Short{permload()}{Read a permutation from a file}
+\Short{permsave()}{Write a permutation to a file}
+\Short{permmul()}{Multiply permutations}
+\Short{permpower()}{Power of a permutation}
+\ShortlistEnd
+
+
+\subsection{Sets}\label{sec:sets}
+%----------------
+\index{sets}
+\Shortlist
+\Short{set\_t}{The set data type}
+\Short{set\_allocstrategy()}{Change the allocation strategy for sets}
+\Short{set\_alloc()}{Create a new set}
+\Short{set\_insert()}{Insert an element into a set}
+\Short{set\_contains()}{Test if a set contains a given element}
+\Short{set\_read()}{Read a set from a file}
+\Short{set\_write()}{Write a set to a file}
+\ShortlistEnd
+
+
+
+\subsection{Polynomials}\label{sec:poly}
+%-----------------------
+\index{polynomials}
+\Shortlist
+\Short{poly\_t}{Polynomial data type}
+\Short{polalloc()}{Create a new polynomial}
+\Short{polfree()}{Free a polynomial}
+\Short{poldup()}{Duplicate a polynomial}
+\Short{polcmp()}{Compare polynomials}
+\Short{polread()}{Read a polynomial from a file}
+\Short{polwrite()}{Write a polynomial to a file}
+\Short{polprint()}{Print a polynomial}
+\Short{poladd()}{Add two polynomials}
+\Short{polmul()}{Multiply two polynomials}
+\Short{poldivmod()}{Polynomial division}
+\Short{polmod()}{Reduce modulo $p(x)$}
+\Short{polshiftmod()}{Multiply by $x^n$ and reduce modulo $p(x)$}
+\Short{polderive()}{Derive a polynomial}
+\Short{polgcd()}{Greatest common divisor of two polynomials}
+\Short{vec2pol()}{Convert vector to polynomial}
+\Short{pol2vec()}{Convert polynomial to vector}
+\Short{polpack()}{Convert polynomial to vector}
+\Short{fpoly\_t}{Factored polynomial data type}
+\Short{fpolalloc()}{Create a factored polynomial}
+\Short{fpolfree()}{Free a factored polynomial}
+\Short{fpolmulp()}{Add an irreducible factor}
+\Short{fpolmul()}{Multiply two factored polynomials}
+\Short{factorization()}{Factorize a polynomial}
+\Short{matinsert()}{Insert a matrix into a polynomial}
+\ShortlistEnd
+
+
+
+\subsection{Command line parsing}
+%--------------------------------
+\index{options!command line}
+\index{command line parsing}
+\index{help texts}
+\Shortlist
+\Short{proginfo\_t}{Data structure used to store program information}
+\Short{opt\_ind}{Index of the next argument}
+\Short{opt\_char}{Last option found by |zgetopt()|}
+\Short{opt\_text}{Argument for last option}
+\Short{opt\_text\_ptr}{Argument for last option (pointer)}
+\Short{init\_args()}{Initialization. Must be used before
+	|zgetopt()|.}
+\Short{zgetopt()}{Process command line options}
+\Short{getint()}{Read an integer argument}
+\ShortlistEnd
+
+
+\subsection{Files}
+%-----------------
+\Shortlist
+\Short{os\_mkfilename()}{Convert any string into a valid file name}
+\Short{SFOpen()}{Open a file}
+\Short{SFSeek()}{Move the file pointer}
+\ShortlistEnd
+
+
+
+\subsection{The word generator}\label{sec:words}
+%------------------------------
+\index{word generator}
+\Shortlist
+\Short{WGInit()}{Initialize the word generator}
+\Short{WGFree()}{Free a {\tt basis\_t} structure}
+\Short{MakeWord()}{Make a word}
+\Short{SymbolicName()}{Return the formal expression for a word}
+\ShortlistEnd
+
+
+
+\subsection{Sequences}\label{sec:seq}
+%---------------------
+\index{sequences}
+\Shortlist
+\Short{sequence\_t}{Sequence data type}
+\Short{seq\_alloc()}{Create a new sequence}
+\Short{seq\_free()}{Free a sequence}
+\Short{seq\_insert()}{Insert an element into a sequence}
+\Short{seq\_remove()}{Remove an element from a sequence}
+\Short{seq\_read()}{Read a sequence from a file}
+\Short{seq\_write()}{Write a sequence to a file}
+\ShortlistEnd
+
+
+
+
+
+\section{Library functions by name}
+%----------------------------------
+
+
+%---------------------------------------------------------------------
+\Type{bitstring_t}{bitstring\protect\_t}{Bit string data type}
+typedef struct { ... } bitstring_t;
+\end{verbatim}
+\Description
+The |bitstring_t| type represents a string of 0's and 1'. You
+may also think of it as a subset of $\{1,2,\ldots,N\}$, where
+each 1 in the bit string means that the subset contains the
+corresponding element.
+Unlike the |set_t| type (see section \ref{sec:sets}) bit
+strings are static objects which cannot change size.
+
+\SeeAlso |set_t|
+
+
+%---------------------------------------------------------------------
+\Function{bs_alloc}{bs\protect\_alloc}{Allocate a bit string}
+bitstring_t *bs_alloc(void);
+\end{verbatim}
+\Description
+\verb"bs_alloc()" allocates a bit string and returns a pointer
+to the new bit string, or \verb"NULL" on error occurs. The new
+bit string is initially filled with zeroes.
+
+\SeeAlso \verb"bitstring_t", \verb"bs_free()"
+
+%---------------------------------------------------------------------
+\Function{bs_and}{bs\protect\_and}{Logical and}
+void bs_and(bitstring_t *dest, bitstring_t *src);
+\end{verbatim}
+\Description
+This function computes the logical `and' of two bit strings
+and stores the result in \verb"dest".
+
+
+%---------------------------------------------------------------------
+\Function{bs_clear}{bs\protect\_clear}{Clear a bit in a bit string}
+void bs_clear(bitstring_t *b, int i);
+\end{verbatim}
+\Description
+\verb"bs_clear" clears bit number \verb"i" of the bit string \verb"b".
+There is no check if \verb"i" is inside the bounds.
+
+\SeeAlso \verb"bs_set()", \verb"bs_test()", \verb"bs_reset()"
+
+
+%---------------------------------------------------------------------
+\Function{bs_cmp}{bs\protect\_cmp}{Compare bit strings}
+int bs_cmp(bitstring_t *a, bitstring_t *b);
+\end{verbatim}
+\Description
+This function compares two bit strings. The return value is 0 if
+the two strings are equal and different from 0 otherwise.
+\verb"a" and \verb"b" must be bit strings of equal length, or the
+result is undefined.
+
+
+%---------------------------------------------------------------------
+\Function{bs_cpy}{bs\protect\_cpy}{Copy bit strings}
+void bs_cpy(bitstring_t *a, bitstring_t *b);
+\end{verbatim}
+\Description
+This function copies the bit string \verb"src" to \verb"dest".
+Both \verb"src" and \verb"dest" must be bit strings of equal
+length.
+
+
+%---------------------------------------------------------------------
+\Function{bs_free}{bs\protect\_free}{Free a bit string}
+void bs_free(bitstring_t *b);
+\end{verbatim}
+\Description
+\verb"bs_free()" frees a bit string.
+
+%---------------------------------------------------------------------
+\Function{bs_issub}{bs\protect\_issub}{Incidence relation}
+int bs_issub(bitstring_t *a, bitstring_t *b);
+\end{verbatim}
+\Description
+\verb"bs_issub()" compares two bit strings and checks if \verb"a",
+interpreted as a set, is a subset of \verb"b". The return value is
+1 for yes (i.e., every bit which is set in \verb"x" is also set in
+\verb"x") or 0 for no.
+
+
+%---------------------------------------------------------------------
+\Function{bs_minus}{bs\protect\_minus}{Difference of two bit strings}
+void bs_minus(bitstring_t *dest, bitstring_t *src);
+\end{verbatim}
+\Description
+\verb"bs_minus()" computes the (set theoretical) difference of two
+bit strings, i.e., each bit in the result is set if and only if
+it is set in \verb"dest" and cleared in \verb"src". 
+\verb"src" and \verb"dest" must have have equal size. The result
+is stored in \verb"dest".
+
+
+%---------------------------------------------------------------------
+\Function{bs_match}{bs\protect\_match}{Match two bit strings}
+int bs_match(bitstring_t *x, bitstring_t *y);
+\end{verbatim}
+\Description
+This function compares two bit strings of equal size looking for
+bits which are set in both strings. The return value is 0 if there
+are no matching bits, 1 if there is exactly one matching bit, and
+2 if there are 2 or more matching bits.
+
+
+%---------------------------------------------------------------------
+\Function{bs_or}{bs\protect\_or}{Logical or}
+void bs_or(bitstring_t *dest, bitstring_t *src);
+\end{verbatim}
+\Description
+This function computes the logical `or' of two bit strings
+and stores the result in \verb"dest".
+
+
+%---------------------------------------------------------------------
+\Function{bs_read}{bs\protect\_read}{Read a bit string from a file}
+bitstring_t *bs_read(FILE *f);
+\end{verbatim}
+\Description
+This function reads a bit string from a file. The bit string size must
+have been set previosly with \verb"bs_setlen()".
+The return value is a pointer to the bit string or \verb"NULL" on error.
+
+\SeeAlso \verb"bs_write()"
+
+
+%---------------------------------------------------------------------
+\Function{bs_reset}{bs\protect\_reset}{Clear a bit string}
+void bs_reset(bitstring_t *x);
+\end{verbatim}
+\Description
+\verb"bs_reset()" sets all positions of the bitstring \verb"x" to
+zero. Note that this is done automatically by \verb"bs_alloc()".
+
+
+%---------------------------------------------------------------------
+\Function{bs_set}{bs\protect\_set}{Set a bit in a bit string}
+void bs_set(bitstring_t *b, int i);
+\end{verbatim}
+\Description
+\verb"bs_set" sets bit number \verb"i" of the bit string \verb"b"
+to 1. There is no check if \verb"i" is inside the bounds.
+
+\SeeAlso \verb"bs_clear()", \verb"bs_test()", \verb"bs_reset()"
+
+
+%---------------------------------------------------------------------
+\Function{bs_setlen}{bs\protect\_setlen}{Set bit string length}
+void bs_setlen(int l);
+\end{verbatim}
+\Description
+This function sets the bit string length for subsequent
+allocations and other bit string operations.
+
+\SeeAlso \verb"bs_alloc()"
+
+
+%---------------------------------------------------------------------
+\Function{bs_test}{bs\protect\_test}{Test a bit in a bit string}
+int bs_test(bitstring_t *b, int i);
+\end{verbatim}
+\Description
+
+\verb"bs_test" tests bit number \verb"i" of the bit string \verb"b".
+The return value is 0 (bit cleared) or 1 (bit set).
+
+
+\SeeAlso \verb"bs_set()", \verb"bs_clear()", \verb"bs_reset()"
+
+
+%---------------------------------------------------------------------
+\Function{bs_write}{bs\protect\_write}{Write a bit string to a file}
+void bs_write(FILE *f, bitstring_t *b);
+\end{verbatim}
+\Description
+This function writes a bit string to a file. The bit string size must
+have been set previosly with \verb"bs_setlen()".
+
+\SeeAlso \verb"bs_read()"
+
+
+%---------------------------------------------------------------------
+\Function{charpol}{charpol}{Characteristic polynomial}
+fpoly_t *charpol(matrix_t *mat);
+\end{verbatim}
+\Description
+This function calculates the characteristic polynomial of a matrix and
+returns its factorization. Thus, the return value is a pointer to a
+\verb"fpoly_t" structure.
+
+\SeeAlso \verb"charpolfactor()", \verb"factorization()",
+	\verb"CharPolSeed"
+
+
+%---------------------------------------------------------------------
+\Function{charpolfactor}{charpolfactor}{Characteristic polynomial}
+poly_t *charpolfactor(matrix_t *mat);
+\end{verbatim}
+\Description
+This function returns one factor of the characteristic polynomial of
+a given matrix. Further calls with a \verb"NULL" argument return
+more factors or \verb"NULL", if there are no more factors. 
+Note that these polynomials are in general not irreducible.
+
+Here is how \verb"charpolfactor()" works:
+If the \verb"mat" argument is different from \verb"NULL",
+\verb"charpol()" initializes its internal data and starts
+computing one cyclic subspace. The choice of starting vector for this
+first subspace depends on the global variable \verb"CharPolSeed".
+Usually, this variable has a value of 1, corresponding to the vector
+$(1,0,\ldots,0)$. Then, the
+polynomial of the matrix restricted to that cyclic
+subspace is constructed and returned to the caller.
+
+If \verb"mat==NULL" on the next call, \verb"charpolfactor()"
+resumes at the point where it returned the last time,
+calculates the next cyclic subspace and so on.
+
+{\em Note:} Since the function uses static variables to store
+information across multiple calls, your program must not use
+\verb"charpolfactor()" on more than one matrix at the same time.
+
+\SeeAlso \verb"charpol()", \verb"CharPolSeed"
+
+%----------------------------------------------------------------------
+\Variable{CharPolSeed}{CharPolSeed}{Characteristic Polynomial}
+extern long CharPolSeed;
+\end{verbatim}
+\Description
+This variable is used by \verb"charpolfactor()" to select the first
+seed vector. Initially \verb"CharPolSeed" has the value 1, i.e., the
+first seed vector is $(1,0,\ldots,0)$. Assigning the value 2 selects
+the start vector $(0,1,\ldots,0)$ in all subsequent calls to
+\verb"charpolfactor()".
+If the \verb"CharPolSeed" is out of bounds, \verb"charpolfactor()" will
+reset it to 1.
+
+\SeeAlso \verb"charpolfactor()"
+
+
+%---------------------------------------------------------------------
+\Function{chbasis}{chbasis}{Change basis}
+int chbasis(matrix_t *basis, int ngen, matrix_t *gen[], *newgen[]);
+\end{verbatim}
+\Description
+This function transforms a set of generators into a new basis.
+The new generators are calculated as
+\[
+	g_i' = B g_i B^{-1}
+\]
+and stored in \verb"newgen[]". You may pass the same value in
+\verb"gen" and \verb"newgen" to overwrite the existing generators.
+
+
+%---------------------------------------------------------------------
+\Function{echelon}{echelon}{Convert to echelon form}
+matrix_t *echelon(matrix_t *mat);
+matrix_t *echelon_(matrix_t *mat);
+\end{verbatim}
+\Description
+\index{echelon form}
+These function return the echelon form of a matrix. \verb"echelon()"
+creates a new matrix and leaves the original matrix intact.
+\verb"echelon_()" reduces the matrix itself to echelon form and returns
+\verb"mat".
+
+\SeeAlso \verb"zmkechelon()"
+
+
+
+%---------------------------------------------------------------------
+\Function{ErrorExit}{ErrorExit}{Print error message and exit}
+void ErrorExit(char *fmt, ...);
+\end{verbatim}
+\Description
+This function prints an error message and stops the program. |fmt| is
+the message and may contain special format characters. See
+|Message()| for a full description. In particular, |%E| takes an integer
+argument and produces the corresponding {\MeatAxe} error message.
+Here is an example:
+\begin{verbatim}
+    ErrorExit("%s: %E",FileName,ERR_NOTMATRIX);
+\end{verbatim}
+This would procude the following error message:
+\msg{{\it FileName}: Not a matrix}
+
+\SeeAlso
+|Message()|
+
+
+%---------------------------------------------------------------------
+\Function{errexit}{errexit}{Exit program on error}
+void errexit(int errno, char *text);
+\end{verbatim}
+\Description
+This function prints an error message and stops the program. The
+message depends on the value of \verb"code", which must be a valid
+error code (see the description of \verb"ERR_xxx" for a list).
+The only exception is \verb"code=-1" which means `take the current
+value of \verb"mtxerrno"'.
+The second argument is printed together with the error message.
+Here is a short example:
+\begin{verbatim}
+    if (malloc(100000) == NULL)
+	errexit(ERR_NOMEM,"malloc()");
+\end{verbatim}
+This would produce the following messages:
+\begin{verbatim}
+malloc(): Not enough memory
+\end{verbatim}
+
+{\em NOTE:} This function is obsoleted by |ErrorExit()|.
+
+
+%---------------------------------------------------------------------
+\Constant{ERR_xxx}{ERR\protect\_xxx}{Error codes}
+\def\el#1#2{\item[{\tt ERR\_#1}\hfill]#2}
+\begin{list}{}{\leftmargin 4cm\labelwidth 38mm\labelsep 2mm
+\parsep 0mm\itemsep 0mm}
+\el{BADARG}{Bad argument}
+\el{BADTYPE}{Bad type}
+\el{BADUSAGE}{Bad usage}
+\el{DIV0}{Division by zero or attempt to invert a singular matrix}
+\el{FILEFMT}{File format error}
+\el{FILEOPEN}{Could not open}
+\el{FILEREAD}{File read error}
+\el{FILEWRITE}{File write error}
+\el{GAMEOVER}{Time limit exceeded}
+\el{INCOMPAT}{Arguments are incompatible}
+\el{NARGS}{Illegal number of arguments singular matrix}
+\el{NOMEM}{Out of memory}
+\el{NOTECH}{Matrix not in chelon form}
+\el{NOTMATRIX}{Not a matrix}
+\el{NOTPERM}{Not a permutation}
+\el{NOTPOLY}{Not a polynomial}
+\el{NOTSQUARE}{Matrix not square}
+\el{OPTION}{Unknown or badly formed option}
+\el{RANGE}{Out of range}
+\end{list}
+
+
+%---------------------------------------------------------------------
+\Function{factorization}{factorization}{Polynomial factorization}
+fpoly_t *factorization(poly_t *pol);
+\end{verbatim}
+\Description
+This function factors a polynomial using the Berlekamp algorithm.
+The original polynomial is not changed.
+
+
+%---------------------------------------------------------------------
+\Function{fpolalloc}{fpolalloc}{Allocate a factored polynomial}
+fpoly_t *fpolalloc(void);
+\end{verbatim}
+\Description
+This function creates a new factored polynomial. Initially there
+are no factors.
+
+\SeeAlso \verb"fpoly_t", \verb"fpolfree()"
+
+
+%---------------------------------------------------------------------
+\Function{fpolfree}{fpolfree}{Free a factored polynomial}
+void fpolfree(fpoly_t *x);
+\end{verbatim}
+\Description
+This function frees a factored polynomial.
+
+\SeeAlso \verb"fpoly_t", \verb"fpolalloc()"
+
+
+%---------------------------------------------------------------------
+\Function{fpolmulp}{fpolmulp}{Insert an irreducible factor}
+fpoly_t *fpolmulp(fpoly_t *dest, poly_t *src, long pwr);
+\end{verbatim}
+\Description
+This function adds an power of an irreducible factor to a factored
+polynomial.  \verb"dest" is the factored polynomial, \verb"src" ist
+the irreducible factor, and \verb"pwr" is the power. If the factor
+already exists, its multiplicity is increased by \verb"pwr".
+The return value is \verb"dest" or \verb"NULL" on error.
+
+\SeeAlso \verb"fpolmul()"
+
+
+%---------------------------------------------------------------------
+\Function{fpolmul}{fpolmul}{Multiply two factored polynomials}
+fpoly_t *fpolmul(fpoly_t *dest, fpoly_t *src);
+\end{verbatim}
+\Description
+This function multiplies two factored polynomials, stores the
+result in \verb"dest" and returns \verb"dest".
+
+\SeeAlso \verb"fpolmulp()"
+
+
+%---------------------------------------------------------------------
+\Type{fpoly_t}{fpoly\protect\_t}{Factored polynomial data type}
+typedef struct
+{
+    long len;
+    poly_t **p;
+    long *e;
+} fpoly;
+\end{verbatim}
+\Description
+The \verb"fpoly_t" structure is used to store a polynomial in
+factorized form. The irreducible factors are stored in \verb"p",
+and the corresponding multiplicities in \verb"e". \verb"len" is
+the number of irreducible factors. The factors are ordered by
+ascending degree.
+
+
+%---------------------------------------------------------------------
+\Function{gcd}{gcd}{Greatest common divisor}
+long gcd(long a, long b);
+\end{verbatim}
+\index{greatest common divisor}
+\Description
+This function returns the greatest common divisor of two integers.
+If one or both arguments are negative, the result may be negative.
+There is no error checking.
+
+\SeeAlso
+|lcm()|
+
+
+%---------------------------------------------------------------------
+\Function{getint}{getint}{Read an integer argument}
+long getint(void);
+\end{verbatim}
+\Description
+This function can be used to read an integer argument which follows
+a command line option. \verb"getint()" should be used immediately
+after \verb"zgetopt()". \verb"opt_text_ptr" must point to a string
+of decimal digits. \verb"zgetint()" scans this string, returns the
+integer value,
+and increments \verb"opt_text_ptr" to the character after the
+last digit. If the argument is not a number in decimal notation
+\verb"getint()" returns the value \verb"GETINT_ERR".
+
+\SeeAlso \verb"zgetopt()" (example)
+
+
+%---------------------------------------------------------------------
+\Function{initargs}{initargs}{Initialize the command line parser}
+void initargs(int argc, char **argv, proginfo_t *pi);
+\end{verbatim}
+\Description
+This function must be called before \verb"zgetopt()". Typically
+this is done at the beginning of the program's \verb"main()"
+function. \verb"argv" and \verb"argc" contain the command line,
+and \verb"pi" is a pointer to a structure containing additional
+program information. While the command line is passed as arguments
+to \verb"main()" by the operating system, the \verb"proginfo_t"
+structure must be supplied by the program.
+
+\SeeAlso \verb"zgetopt()" (example), \verb"proginfo_t"
+
+
+
+%---------------------------------------------------------------------
+\Function{lcm}{lcm}{Least common multiple}
+long lcm(long a, long b);
+\end{verbatim}
+\index{least common multiple}
+\Description
+This function returns the least common multiple of two integers.
+If one or both arguments are negative, the result may be negative.
+There is no error checking. If both arguments are zero, |lcm()|
+returns zero.
+
+\SeeAlso
+|gcd()|
+
+
+
+%---------------------------------------------------------------------
+\Type{matrix_t}{matrix\protect\_t}{Matrix data type}
+typedef struct {
+    long fl, nor, noc;
+    PTR d;
+} matrix_t;
+\end{verbatim}
+\Description
+Matrices are represented by the type \verb"matrix_t". \verb"fl",
+\verb"nor" and \verb"fl" are the field, the number of rows and the
+number of columns, respectively.
+
+
+%---------------------------------------------------------------------
+\Function{matadd}{matadd}{Add two matrices}
+matrix_t *matadd(matrix_t *dest, matrix_t *src);
+\end{verbatim}
+\Description
+This function adds \verb"src" to \verb"dest" and returns \verb"dest".
+The matrices must be over the same field and have the same size.
+
+
+%---------------------------------------------------------------------
+\Function{matalloc}{matalloc}{Allocate a matrix}
+matrix_t *matalloc(long fl, long nor, long noc);
+\end{verbatim}
+\Description
+This function creates a new matrix with \verb"nor" rows and
+\verb"noc" columns over the field
+GF(\verb"fl"). The return value is a pointer to the allocated
+\verb"matrix_t" structure, or \verb"NULL" if there is not enough
+memory. In the latter case, \verb"mtxerrno" is set to \verb"ERR_NOMEM".
+
+\SeeAlso \verb"matrix_t", \verb"matfree()"
+
+
+%---------------------------------------------------------------------
+\Function{matdup}{matdup}{Duplicate a matrix}
+matrix_t *matdup(matrix_t *src);
+\end{verbatim}
+\Description
+This function duplicates a given matrix and returns the copy.
+A return value of \verb"NULL" indicated an error.
+
+
+\SeeAlso \verb"matmove()"
+
+
+%---------------------------------------------------------------------
+\Function{matextract}{matextract}{Extract rows}
+matrix_t *matextract(matrix_t *src, long first, long last);
+\end{verbatim}
+\Description
+This function extracts the rows \verb"first"--\verb"last" from
+the matrix \verb"mat". The return value is a matrix with the same 
+number of columns as \verb"src" and $\verb"last"-\verb"first"+1$ rows.
+
+
+%---------------------------------------------------------------------
+\Function{matfree}{matfree}{Free a matrix}
+void matfree(matrix_t *matrix);
+\end{verbatim}
+\Description
+This function frees a matrix which was allocated previously
+with \verb"matalloc()". It frees the data area as well as the
+\verb"matrix_t" structure itself. Thus, you must not use
+\verb"matfree()" on variables of type \verb"matrix_t".
+Indeed, you should never declare variables of type \verb"matrix_t"
+but only pointers to \verb"matrix_t".
+
+\SeeAlso \verb"matrix_t", \verb"matalloc()"
+
+
+%---------------------------------------------------------------------
+\Function{matid}{matid}{Identity matrix}
+matrix_t *matid(long fl, long nor);
+\end{verbatim}
+\Description
+This function returns the identity matrix with \verb"nor" rows over
+GF(\verb"fl"). A return value of \verb"NULL" indicates an error, and an
+error code is stored in \verb"mtxerrno". Note that on each call to
+\verb"matid()" a new matrix is allocated.
+
+
+%---------------------------------------------------------------------
+\Function{matinsert}{matinsert}{Insert a matrix into a polynomial}
+matrix_t *matinsert(matrix_t *mat, poly_t *pol);
+matrix_t *matinsert_(matrix_t *mat, poly_t *pol);
+\end{verbatim}
+\Description
+This function inserts a matrix into a polynomial. The first form leaves
+the matrix unchanged and returns a new matrix containing the result. The
+second form overwrites the matrix with the result and returns
+\verb"mat".
+
+
+%---------------------------------------------------------------------
+\Function{matinv}{matinv}{Invert a matrix}
+matrix_t *matinv(matrix_t *src);
+\end{verbatim}
+\Description
+\index{matrix inversion}
+This function calculates and returns the inverse of a matrix. The
+argument must be a square, non-singular matrix. A return value of
+\verb"NULL" indicates an error.
+
+\SeeAlso \verb"zmatinv()"
+
+
+%---------------------------------------------------------------------
+\Function{matload}{matload}{Read a matrix from a file}
+matrix_t *matload(char *fn);
+\end{verbatim}
+\Description
+This function opens a file, reads a single matrix, and closes the file.
+\verb"fn" is the file name. The return value is a pointer to the
+matrix or \verb"NULL" on error.
+
+\SeeAlso \verb"matread()"
+
+
+%---------------------------------------------------------------------
+\Function{matmove}{matmove}{Copy a matrix}
+int matmove(matrix_t *dest, matrix_t *src);
+\end{verbatim}
+\Description
+This function copies a matrix from \verb"src" to \verb"dest".
+Source and destination must be matrices of equal dimension over the
+same field. The return value is 0 if the matrix was copied or
+-1 on error.
+
+
+%---------------------------------------------------------------------
+\Function{matmul}{matmul}{Multiply two matrices}
+matrix_t *matmul(matrix_t *dest, matrix_t *src);
+\end{verbatim}
+\Description
+This function multiplies \verb"dest" from the right by \verb"src" and
+returns \verb"dest". The matrices must be over the same field and
+compatible for multiplication.
+
+
+%---------------------------------------------------------------------
+\Function{matorder}{matorder}{Order of a matrix}
+long matorder(matrix_t *mat);
+\end{verbatim}
+\Description
+\index{order!of a matrix}
+This function calculates the order of a matrix.
+If the matrix is singular or not square, the order is not defined
+and the function returns -1. This may also happen if the order on any
+cyclic subspace is greater than 1000.
+
+
+%---------------------------------------------------------------------
+\Function{matpower}{matpower}{Power of a matrix}
+matrix_t *matpower(matrix_t *mat, long n);
+\end{verbatim}
+\Description
+This function raises the matrix \verb"mat" the the \verb"n"-th
+power and returns the result.
+
+
+%---------------------------------------------------------------------
+\Function{matread}{matread}{Read a matrix from a file}
+matrix_t *matread(FILE *f);
+\end{verbatim}
+\Description
+This function reads a matrix from a file and returns the
+matrix. A return value of \verb"NULL" indicates an error.
+
+\SeeAlso \verb"matload()"
+
+
+%---------------------------------------------------------------------
+\Function{matsave}{matsave}{Write a matrix from a file}
+int matsave(matrix_t *mat, char *fn);
+\end{verbatim}
+\Description
+This function opens a file, writes a single matrix, and closes the file.
+\verb"fn" is the file name. The return value is a pointer to the
+matrix or \verb"NULL" on error.
+
+\SeeAlso \verb"matwrite()"
+
+
+%---------------------------------------------------------------------
+\Function{mattr}{mattr}{Transpose a matrix}
+matrix_t *mattr(matrix_t *src);
+\end{verbatim}
+\Description
+This function calculates and returns the transpose of a matrix.
+
+
+%---------------------------------------------------------------------
+\Function{matwrite}{matwrite}{Write a matrix from a file}
+int matwrite(FILE *f, char *fn);
+\end{verbatim}
+\Description
+This function writes a matrix to a file. The return value is
+0 if the matrix has been successfully written, and -1 otherwise.
+
+\SeeAlso \verb"matsave()"
+
+
+%---------------------------------------------------------------------
+\Function{minpolfactor}{minpolfactor}{Minimal polynomial}
+poly_t *minpolfactor(matrix_t *m);
+\end{verbatim}
+\Description
+This function returns one factor of the minimal polynomial of
+a given matrix. Further calls with a \verb"NULL" argument return
+more factors or \verb"NULL", if there are no more factors. 
+The polynomials returned by this function are in general not
+irreducible.
+
+{\em Note:} Since the function uses static variables to store
+information across multiple calls, your program must not use
+\verb"minpolfactor()" on more than one matrix at the same time.
+
+\SeeAlso \verb"charpolfactor()"
+
+
+%---------------------------------------------------------------------
+\Function{MakeWord}{MakeWord}{Word generator}
+matrix_t *MakeWord(wgdata_t *x, long n);
+\end{verbatim}
+\Description
+This function calculates a `random' element in a matrix algebra.
+The algebra, i.e., a set of generating matrices, must be specified with
+\verb"WGInit()", and \verb"x" is the pointer returned by
+\verb"WGInit()".
+\verb"n" is the number of the element to calculate. Refer to section
+\ref{sec:chop} for more details.
+
+Here is an example demonstating the usage of the word generator:
+\begin{verbatim}
+    matrix_t *mat[3];
+    wgdata_t *wg;
+    matrix_t *word;
+    long nul;
+    ...
+    wg = WGInit(3,mat);
+    if (wg == NULL) error();
+    word = MakeWord(wg,1833);
+    nul = nullity__(word);
+    printf("Word 1833 has nulity %ld\n",nul);
+    WGFree(wg);
+\end{verbatim}
+This example initializes the word generator with three matrices,
+calculates the word number 1833 and prints out its nullity.
+
+\SeeAlso \verb"SymbolicName()", \verb"WGInit()", \verb"WGFree()"
+
+
+%---------------------------------------------------------------------
+\Function{Message}{Message}{Print a message}
+int Message(FILE *f, const char *fmt, ...);
+\end{verbatim}
+\Description
+This function behaves like |fprintf()|, but it accepts only a
+small number of format characters in |fmt|. The following format
+characters are understood:
+\begin{center}
+\TABllp
+\hline
+Format    & Argument   & Output \\
+\hline
+\verb|%d| & \verb|long| & A (long) integer in base 10.\\
+\verb|%s| & \verb|char *| & A string.\\
+\verb|%E| & \verb|int| & {\MeatAxe} error message. The argument
+must be one of the \verb|ERR_xxx| constants defined in
+\verb|meataxe.h|. Most library functions put an error code in
+the global variable \verb|mtxerrno| to.\\
+\hline
+\eTAB
+\end{center}
+|Message()| is typically used to generate error messages without
+exiting the program. Here is an example:
+\begin{verbatim}
+    if ((mat = matread(file)) == NULL)
+    	Message(stderr,"%s: %E\n",filename,mtxerrno);
+    else if (mat->fl != vector->fl)
+    	Message(stderr,"%s and %s: %E\n",vecname,filename,ERR_INCOMPAT);
+\end{verbatim}
+
+\SeeAlso
+|ErrorExit()|, |mtxerrno|, |ERR_xxx|
+
+%----------------------------------------------------------------------
+\Variable{mtxerraction}{mtxerraction}{Error handling}
+extern int mtxerraction;
+\end{verbatim}
+\Description
+The default action on errors is to store the error code in
+\verb"mtxerrno" and return a special value to the
+caller. This behaviour can be modified by setting the variable
+\verb"mtxerraction". There are four possible values:
+\begin{center}
+\TABll
+\hline
+\verb"mtxerraction" & Meaning \\
+\hline
+0 & Do nothing.\\
+1 & Set \verb"mtxerrno" and return special `error' value
+    (default) \\
+2 & As before but print an error message.\\
+3 & Print error message and exit program immediately.\\
+\hline
+\eTAB
+\end{center}
+Values 2 and 3 are intended for debugging programs which do not
+always check the return value from {\MeatAxe} library functions.
+
+
+%----------------------------------------------------------------------
+\Variable{mtxerrno}{mtxerrno}{Last error code}
+extern int mtxerrno;
+\end{verbatim}
+\Description
+If a {\MeatAxe} library function fails, it stores an error code in
+this variable. See the description of \verb"ERR_xxx" for a list of
+possible error codes.
+
+
+%---------------------------------------------------------------------
+\Function{mtxerror}{mtxerror}{Print error message}
+\begin{verbatim}
+void mtxerror(char *text);
+\end{verbatim}
+\Description
+This function function is used to print a message after an error
+occurred. It works like the standard \verb"perror()", i.e., it prints
+the argument followed by a message depending on the value in
+\verb"mtxerrno". Here is an example:
+\begin{verbatim}
+     f = fopen("mat1","r");
+     m1 = matread(f);
+     if (m1 == NULL)  /* matread() failed ? */
+     {
+	 mtxerror("mat1");
+	 exit(1);
+     }
+\end{verbatim}
+This piece of code would produce the following error message
+if \verb"mat1" cannot be read:
+\msg{mat1: Error reading file.}
+
+
+%---------------------------------------------------------------------
+\Function{mtxinit}{mtxinit}{Initialize the library}
+int mtxinit(void);
+\end{verbatim}
+\Description
+This function initializes the library including finite field
+arithmetic and file i/o functions. It must be called before any
+other {\MeatAxe} library function. \verb"mtxinit()" returns a
+version number which is different for each implementation of the
+arithmetic. Currently there are two versions, a small one for fields
+up to GF(256) and a big version for field orders up to $2^{16}$.
+
+
+
+%---------------------------------------------------------------------
+\Function{nullity}{nullity}{Nullity of a matrix}
+long nullity(matrix_t *mat);
+long nullity_(matrix_t *mat);
+long nullity__(matrix_t *mat);
+\end{verbatim}
+\Description
+These functions calculate the nullity of a matrix, i.e., the dimension
+of its null-space. There are three different versions:
+\verb"nullity()" leaves the matrix intact, \verb"nullity_()" reduces
+the matrix to echelon form, and \verb"nullity__()" destroys the matrix.
+
+\SeeAlso \verb"nullspace()", \verb"echelon()"
+
+
+%---------------------------------------------------------------------
+\Function{nullspace}{nullspace}{Null-space of a matrix}
+matrix_t *nullspace(matrix_t *mat);
+matrix_t *nullspace_(matrix_t *mat);
+matrix_t *nullspace__(matrix_t *mat);
+\end{verbatim}
+\Description
+These functions calculate the null-space of a matrix. There are three
+versions: \verb"nullspace()" does not change the matrix,
+\verb"nullspace_()" reduces the matrix to echelon form, and
+\verb"nullspace__()" destroys the matrix.
+
+\SeeAlso \verb"nullity()", \verb"echelon()"
+
+
+%---------------------------------------------------------------------
+\Function{os_mkfilename}{os\protect\_mkfilename}{Make file name}
+char *os_mkfilename(char *name);
+\end{verbatim}
+\Description
+This function converts any string into a valid file name. Note that
+different arguments might result in the same file name. The return
+value is a pointer to a static buffer which is overwritten on each
+call.
+
+
+%---------------------------------------------------------------------
+\Function{SFOpen}{SFOpen}{Open a file}
+FILE *SFOopen(char *name, int mode);
+\end{verbatim}
+\Description
+This function opens a file. \verb"mode" must be any of
+\verb"FM_READ" (open for reading), \verb"FM_CREAT" (create a new
+file) or \verb"FM_APPEND" (append to existing file or create a new
+file).  Additional flags may be or'ed to the mode:
+\begin{center}
+\TABlp
+\hline
+Mode & Meaning \\
+\hline
+\verb"FM_LIB" & If the file does not exist in the current directory,
+	look in the library directory. The library directory is
+	defined either by the environment variable \verb"MTXLIB" or
+	at compile-time by the symbol \verb"MTXLIB".\\
+\verb"FM_TEXT" & Open in text mode. This flag must be used on some
+	systems (e.g., MS-DOS) to open text files. By default, files
+	are assumed to contain binary data.\\
+\hline
+\eTAB
+\end{center}
+The return value is a pointer to the open file or NULL on error.
+Possible error codes are (in \verb"mtxerrno") are \verb"ERR_BADARG"
+indicating an invalid mode, or \verb"ERR_FILEOPEN" if the file could
+not be opened for whatever reason.
+
+
+%---------------------------------------------------------------------
+\Function{SFSeek}{SFSeek}{Seek}
+int SFSeek(FILE *f,long pos);
+\end{verbatim}
+\Description
+This function seeks to position \verb"pos". If $\verb"pos"\geq 0$,
+it is interpreted as an obsolute address. A negative value of
+\verb"pos" seeks to the end of file.
+
+\SeeAlso \verb"zseek()"
+
+
+%---------------------------------------------------------------------
+\Type{perm_t}{perm\protect\_t}{Permutation data type}
+typedef struct {
+    long deg;
+    PTR d;
+} perm_t;
+\end{verbatim}
+\Description
+The \verb"perm_t" data type represents a permutation. \verb"deg"
+is the degree and \verb"d" is a pointer to the permutation proper,
+which is stored internally as an array of long integers. You should
+never declare static variables of type \verb"perm_t". Instead, use
+\verb"permalloc()" and \verb"permfree()" and work with pointers 
+of type \verb"perm_t *".
+
+
+%---------------------------------------------------------------------
+\Function{permalloc}{permalloc}{Allocate a permutation}
+perm_t *permalloc(long deg);
+\end{verbatim}
+\Description
+This function creates a permutation of the specified degree. It
+returns a pointer to the new permutation or \verb"NULL" on error.
+
+\SeeAlso \verb"perm_t", \verb"permfree()"
+
+
+%---------------------------------------------------------------------
+\Function{permdup}{permdup}{Duplicate a permutation}
+perm_t *permdup(perm_t *src);
+\end{verbatim}
+\Description
+This function creates a copy of an existing permutation. If
+there is not enough memory for the copy, the return value is
+\verb"NULL".
+
+\SeeAlso \verb"permmove()"
+
+
+%---------------------------------------------------------------------
+\Function{permfree}{permfree}{Free a permutation}
+void permfree(perm_t *m);
+\end{verbatim}
+\Description
+This function deletes a permutation and returns the memory to
+the system. Do not use \verb"free()" on permutations because this
+would only free the \verb"perm_t" structure but not the data buffer.
+
+\SeeAlso \verb"perm_t" \verb"permalloc()"
+
+
+%---------------------------------------------------------------------
+\Function{permload}{permload}{Read a permutation from a file}
+perm_t *permload(char *filename);
+\end{verbatim}
+\Description
+This function opens a file, reads a single permutation, and
+closes the file. The return value is a pointer to the permutation
+or \verb"NULL" on error. If the file contains more than one
+permutation, only the first one is read.
+
+\SeeAlso \verb"permread()"
+
+
+%---------------------------------------------------------------------
+\Function{permmove}{permmove}{Copy a permutation}
+perm_t *permmove(perm_t *dest, perm_t *src);
+\end{verbatim}
+\Description
+This function copies a permutation from \verb"src" to \verb"dest".
+
+\SeeAlso \verb"permdup()"
+
+
+%---------------------------------------------------------------------
+\Function{permmul}{permmul}{Multiply permutations}
+perm_t *permmul(perm_t *dest, perm_t *src);
+\end{verbatim}
+\Description
+This function multiplies \verb"dest" from the right with
+\verb"src" and returns \verb"dest".
+
+
+%---------------------------------------------------------------------
+\Function{permorder}{permorder}{Order of a permutation}
+long permorder(perm_t *perm);
+\end{verbatim}
+\Description
+\index{order!of a permutation}
+This function calculates and returns the order of a permutation.
+
+
+%---------------------------------------------------------------------
+\Function{permpower}{permpower}{Power of permutations}
+perm_t *permpower(perm_t *p, long n);
+\end{verbatim}
+\Description
+This function calculates the \verb"n"-th power of a permutation.
+It allocates and returns a new permutation on each call.
+
+
+%--------------------------------------------------------------------
+\Function{permread}{permread}{Read a permutation from a file}
+perm_t *permread(FILE *f);
+\end{verbatim}
+\Description
+This function reads a permutation from the file \verb"f".
+The return value is a pointer to the permutation or \verb"NULL"
+on error.
+
+\SeeAlso \verb"permload()"
+
+
+%---------------------------------------------------------------------
+\Function{permsave}{permsave}{Write a permutation to a file}
+int permsave(perm_t *perm, char *filename);
+\end{verbatim}
+\Description
+This function opens a file, writes a single permutation, and closes
+the file. The return value is a pointer to the permutation
+or \verb"NULL" on error. If the file contains more than one
+permutation, only the first one is read.
+
+\SeeAlso \verb"permwrite()"
+
+
+%---------------------------------------------------------------------
+\Function{permwrite}{permwrite}{Write a permutation to a file}
+int permwrite(FILE *f, perm_t *perm);
+\end{verbatim}
+\Description
+This function writes a permutation to the file \verb"f".
+The return value is 0 on success or $-1$ on error.
+
+\SeeAlso \verb"permsave()"
+
+
+%---------------------------------------------------------------------
+\Type{poly_t}{poly\protect\_t}{Polynomial data type}
+typedef struct {
+   long fl;
+   long deg;
+   size_t size;
+   FEL *buf;
+} poly_t;
+\end{verbatim}
+\Description
+Polynomials are represented by the \verb"poly_t" structure. This
+structure has four fields: \verb"fl" is the finite field, \verb"deg"
+is the degree,
+\verb"buf" is a pointer to an array of field elements --- the
+coefficients --- and \verb"size" is the size of this array. The
+\verb"size" field is used for internal purposes. You should never
+modify it value directly.
+The coefficients are stored in \verb"buf" as an (unpacked) array of
+field elements in increasing order. Thus, \verb"buf[0]" is the
+coefficient of $x^0$, and \verb"buf[deg]" is the leading coefficient,
+which is always nonzero.
+The zero polynomial is a special case, it is represented by
+\verb"deg=-1".
+
+\SeeAlso \verb"fpoly_t"
+
+
+%---------------------------------------------------------------------
+\Function{pol2vec}{pol2vec}{Convert polynomial to vector}
+int pol2vec(poly_t *pol, PTR vec);
+\end{verbatim}
+\Description
+This function converts a polynomial to a packed vector. If the
+polynomial has degree $n$, the resulting vector has length $n$,
+and the marks are the coeficients of $x^0$,\ldots,$x^{n-1}$. If
+the leading coefficient $a$ is not one, the vector is normalized 
+by mnultiplying with $1/a$.
+
+\SeeAlso \verb"vec2pol()", \verb"polpack()"
+
+
+%---------------------------------------------------------------------
+\Function{poladd}{poladd}{Add two polynomials}
+poly_t *poladd(poly_t *dest, poly_t *src);
+\end{verbatim}
+\Description
+Thus function adds \verb"src" to \verb"dest" and returns \verb"dest".
+The polynomials must be over the same field. Otherwise, the return
+value is \verb"NULL".
+
+
+%---------------------------------------------------------------------
+\Function{polalloc}{polalloc}{Allocate a polynomial}
+poly_t *polalloc(long fl, long degree);
+\end{verbatim}
+\Description
+This function returns the polynomial $x^n$, with $n=\verb"degree"$,
+over GF(\verb"fl").
+
+
+%---------------------------------------------------------------------
+\Function{polcmp}{polcmp}{Compare polynomials}
+int polcmp(poly_t *a, poly_t *b);
+\end{verbatim}
+\Description
+This function compares two polynomials. The return value is 0
+if the polynomials are equal, $-1$ if $a<b$, or $1$ if $a>b$.
+The order of polynomials is defined as follows: If $a$ and $b$
+are over different fields, the polynomials over the larger field
+is greater. Otherwise, if they have different degrees, the polynomial
+with the larger degreee is greater. If both field and degree are
+equal, the result of the comparison depends on the internal
+representation of the field elements and does not have any 
+significance.
+
+
+%---------------------------------------------------------------------
+\Function{polderive}{polderive}{Derivation}
+poly_t *polderive(poly_t *a);
+\end{verbatim}
+\Description
+This function derives a polynomial. The original polynomial is
+overwritten, and the return value is \verb"a".
+
+
+%---------------------------------------------------------------------
+\Function{poldup}{poldup}{Duplicate a polynomial}
+poly_t *poldup(poly_t *x);
+\end{verbatim}
+\Description
+This function
+makes a copy of an existing polynomial and returns a pointer to the
+copy. All functions return \verb"NULL" on error.
+
+
+%---------------------------------------------------------------------
+\Function{poldivmod}{poldivmod}{Polynomial division}
+poly_t *poldivmod(poly_t *a, poly_t *b);
+\end{verbatim}
+\Description
+This function performs a polynomial division ($a/b$) and returns
+the quotient. The remainder is stored in \verb"a", while \verb"b"
+remains unchanged.
+
+
+%---------------------------------------------------------------------
+\Function{polfree}{polfree}{Free a polynomial}
+void polfree(poly_t *x);
+\end{verbatim}
+\Description
+This function frees a polynomial. You cannot use \verb"free()"
+with polynomials, because the standard \verb"free()" function does
+not know about \verb"poly_t"'s internal structure.
+
+
+%---------------------------------------------------------------------
+\Function{polgcd}{polgcd}{Polynomial g.c.d.}
+poly_t *polgcd(poly_t *a, poly_t *b);
+\end{verbatim}
+\Description
+This function calculates the greates common divisor of two
+polynomials.  Unlike the other arithmetic functions \verb"polgcd()" is
+non-destructive, i.e., the polynomials passed as arguments
+remain intact.
+
+
+%---------------------------------------------------------------------
+\Function{polmod}{polmod}{Reduce modulo $p(x)$}
+poly_t *polmod(poly_t *a, poly_t *b);
+\end{verbatim}
+\Description
+This function reduces \verb"a" modulo \verb$b$ and returns \verb$a$.
+
+
+%---------------------------------------------------------------------
+\Function{polmul}{polmul}{Multiply two polynomials}
+poly_t *polmul(poly_t *dest, poly_t *src);
+\end{verbatim}
+\Description
+Thus function multiplies \verb"dest" by \verb"src" and returns
+\verb"dest". The polynomials must be over the same field. Otherwise,
+the return value is \verb"NULL".
+
+
+%---------------------------------------------------------------------
+\Function{polpack}{polpack}{Convert polynomial to vector}
+int polpack(poly_t *pol, PTR vec);
+\end{verbatim}
+\Description
+This is an alternate polynomial to vector conversion.
+\verb"polpack()" stores the coefficients of a polynomial into a packed
+row, starting with the coefficient of $x^0$ at column 1.
+This function also changes the current row size to $n+1$,
+where $n$ is the degree of the polynomial.
+
+\SeeAlso \verb"pol2vec()"
+
+
+%---------------------------------------------------------------------
+\Function{polprint}{polprint}{Print a polynomial}
+void polprint(char *name, poly_t *p);
+\end{verbatim}
+\Description
+This function prints a polynomial to the standard output in the
+form `name=p(x)' including a linefeed.
+If \verb"name" is \verb"NULL", only the polynomial without
+linefeed is printed.
+
+
+%---------------------------------------------------------------------
+\Function{polread}{polread}{Read a polynomial from a file}
+poly_t *polread(FILE *f);
+\end{verbatim}
+\Description
+This function reads a polynomial from a file. The return value is
+a pointer to the polynomial or \verb"NULL" on error.
+
+
+%---------------------------------------------------------------------
+\Function{polshiftmod}{polshiftmod}{Multiply by $x^n$ and reduce}
+poly_t *polshiftmod(poly_t *p, long n, poly_t *q);
+\end{verbatim}
+\Description
+This function multiplies $p(x)$ by $x^n$ and reduces the result
+modulo $q(x)$. \verb"polshiftmod()" is more effective than a
+combination of \verb"polmul()" and "verb"polgcd()".
+
+
+%---------------------------------------------------------------------
+\Function{polwrite}{polwrite}{Write a polynomial to a file}
+int polwrite(FILE *f, poly_t *p);
+\end{verbatim}
+\Description
+This function writes a polynomial to a file. The return value is
+0 on success, or $-1$ on error.
+
+
+%---------------------------------------------------------------------
+\Type{proginfo_t}{proginfo\protect\_t}{Program information structure}
+typedef struct {
+    char *name;
+    char *shortdesc;
+    char *rcsrev;
+    char **helptext;
+    } proginfo_t;
+\end{verbatim}
+\Description
+This data structure is used to store information about the program.
+It is used by the command line parser, e.g., to display the help
+text.
+
+The meanings of the fields are as follows. \verb"name" is the program
+name, usually the same name as the executable file. \verb"shortdesc"
+is a one-line description of the program which will be included in the
+help text. \verb"rcsrev" should contain the RCS version number. If
+you don't use RCS, you can insert the version number by hand, e.g.
+\begin{verbatim}
+    rcsversion = "$Revision: 2.11";
+\end{verbatim}
+\verb"helptext" is the help text, which will be displayed if the user
+uses the \verb"-help" option. See \verb"zgetopt()" for an example.
+
+\SeeAlso \verb"initargs()", \verb"zgetopt()"
+
+
+%---------------------------------------------------------------------
+\Function{prtimes}{prtimes}{Print CPU time}
+void prtimes(void);
+\end{verbatim}
+\Description
+This function prints a message containing the CPU time to stdout.
+
+\SeeAlso \verb"STimeUsed()", \verb"TimeLimit()"
+
+
+%---------------------------------------------------------------------
+\Function{quotproj}{quotproj}{Projection on the quotient}
+matrix_t *quotproj(matrix_t *subspace, matrix_t *vectors);
+\end{verbatim}
+\Description
+This function calculates the projection of a matrix onto
+the quotient by a subspace. As with \verb"split()", the subspace need
+not be in echelon form, but it will be converted to echelon form.
+The return value is a pointer to the projection or \verb"NULL" on
+error.
+
+\SeeAlso \verb"split()"
+
+
+%---------------------------------------------------------------------
+\Function{RandInit}{RandInit}{Initialize the random number
+  generator}
+void RandInit(unsigned seed);
+\end{verbatim}
+\Description
+\index{random numbers}
+This function initializes the random number generator with
+a given `seed'. For each value of \verb"seed" a different sequence
+of random numbers is generated. By default, the generator behaves
+as if initialized with \verb"RandInit(0)".
+
+\SeeAlso |Random()|
+
+
+%---------------------------------------------------------------------
+\Function{RandInt}{RandInt}{Make a random number}
+unsigned RandInt(unsigned max);
+\end{verbatim}
+\Description
+This function returns a random number $x$ with
+$0\leq x \leq$\verb"max".
+Actually, \verb"RandInt()" calls \verb"Random()" and takes
+the result modulo \verb"max". Hence \verb"RandInt(0)" will result
+in a run-time error.
+
+\SeeAlso |Random()|, |RandInit()|
+
+%---------------------------------------------------------------------
+\Function{Random}{Random}{Make a random number}
+long Random(void);
+\end{verbatim}
+\Description
+This function generates a sequence of (pseudo-)random numbers. The
+period of this sequence is very large, approximately
+$31\cdot(2^{31}-1)$.
+
+\SeeAlso |RandInit()|, |RandInt()|
+
+
+
+%---------------------------------------------------------------------
+\Function{sbasis}{sbasis}{Standard basis}
+matrix_t *sbasis(matrix_t *seed, int ngen, matrix_t *gen[]);
+\end{verbatim}
+\Description
+This function takes one seed vector and spins it up 'canonically'.
+The result, usually a basis for the whole space, consists of images
+of the seed vector under products of the generators. It is not in
+semi-echelon form. See the description of the ZSB program for more
+details. 
+
+Note: While the operation of this function is quite
+similar to \verb"matspin()", it takes the double amount of menory.
+
+\SeeAlso \verb"chbasis()"
+
+
+%---------------------------------------------------------------------
+\Function{seq_alloc}{seq\protect\_alloc}{Allocate a sequence}
+sequence_t *seq_alloc(size_t size);
+\end{verbatim}
+\Description
+\verb"seq_alloc()" makes
+a new, empty sequence. The \verb"size" parameter controls
+the initial memory allocation for subsequent insert operations.
+It may always bet set to zero --- the sequence grows automatically
+if you add members. If you know in advance how many members the
+sequence will eventually have, you may specify the size when 
+you allocate the sequence. This avoids further memory allocations.
+
+\SeeAlso \verb"sequence_t", \verb"seq_free()"
+
+
+%---------------------------------------------------------------------
+\Type{sequence_t}{sequence\protect\_t}{Sequence data type}
+\begin{verbatim}
+typedef struct {
+   size_t len;
+   void **buf;
+} sequence_t;
+\end{verbatim}
+\Description
+A sequence is a collection of (non-simple) {\MeatAxe} objects.
+The members of a sequence may have different types and different
+sizes. The members are in linear order, their number is
+limited only by the amount of physical memory. Internally,
+a sequence is represented by a \verb"sequence_t" structure.
+\verb"len" is the length of the sequence, i.e., the
+number of members, and \verb"buf" points to an array of
+pointers to the members. The pointers als well as the
+fields of \verb"sequence_t" are maintained automatically.
+You should never change them directly.
+
+{\em Important note:} In order to avoid memory corruption the following
+rules must be obeyd when using sequences.
+\begin{itemize}
+\item 
+  Only non-simple {\MeatAxe} objects may be inserted into sequences.
+  For example, you may insert a sequence into another sequence, but
+  you must not insert a packed row into a sequence.
+\item
+  Do not insert one object multiple times into the same sequence
+  or into different sequences.
+\item 
+  Do not free, except with \verb"seq_free()" or \verb"seq_remove()",
+  any object which belongs to a sequence.
+\end{itemize}
+
+\SeeAlso \verb"seq_alloc()", \verb"seq_insert()", \verb"seq_read()"
+
+
+%---------------------------------------------------------------------
+\Function{seq_free}{seq\protect\_free}{Free a sequence}
+void seq_free(sequence_t *s);
+\end{verbatim}
+\Description
+This function deletes a sequence, including all its members.
+
+\SeeAlso \verb"sequence_t", \verb"seq_alloc()"
+
+
+%---------------------------------------------------------------------
+\Function{seq_insert}{seq\protect\_insert}{Insert into a sequence}
+int seq_insert(sequence_t *s, int pos, void *x);
+\end{verbatim}
+\Description
+This function inserts a new member into a sequence. \verb"x"
+must be a pointer to a non-simple {\MeatAxe} object as defined in
+section \ref{sec:intdata}. The \verb"pos" parameter determines
+where the new member is inserted. If \verb"pos" is a valid index, the
+new member is inserted at that position, otherwise it is appended at
+the end.  A return value of $-1$ indicates that there is not enough
+memory for the insert operation.
+
+\SeeAlso \verb"seq_remove()"
+
+%---------------------------------------------------------------------
+\Function{seq_read}{seq\protect\_read}{Read a sequence}
+sequence_t *seq_read(FILE *f);
+\end{verbatim}
+\Description
+This function reads a sequence from a file.
+\SeeAlso \verb"seq_write()"
+
+
+%---------------------------------------------------------------------
+\Function{seq_remove}{seq\protect\_remove}{Remove from a sequence}
+int seq_remove(sequence_t *s, int pos);
+\end{verbatim}
+\Description
+This function removes an object from a sequence and deletes the
+object. \verb"pos" is the index of the object to remove. The first
+object in a sequence has index 0.
+
+\SeeAlso \verb"seq_insert()"
+
+
+%---------------------------------------------------------------------
+\Function{seq_write}{seq\protect\_write}{Write a sequence}
+int seq_write(FILE *f, sequence_t *s);
+\end{verbatim}
+\Description
+This function writes a sequence to a file.
+\SeeAlso \verb"seq_read()"
+
+
+%---------------------------------------------------------------------
+\Type{set_t}{set\protect\_t}{Set data type}
+typedef struct {
+    size_t len, max;
+    long *buf;
+} set_t;
+\end{verbatim}
+\Description
+The type \verb"set_t" represents a set of (long) integers.
+Internally, the set is stored as a sorted list. \verb"set_t"
+should be used if the number of elements in the set is typically
+much less than the elements themselves.
+In other cases, when the number of elements is comparable to the
+elements themselves, the \verb"bitstring_t" type may be more
+suitable.
+
+
+%---------------------------------------------------------------------
+\Function{set_alloc}{set\protect\_alloc}{Allocate a set}
+set_t *set_alloc(void);
+int set_allocstrategy(size_t first,size_t blocksize);
+\end{verbatim}
+\Description
+\verb"set_alloc()" allocates a new set and returns a pointer to
+the allocated set. If there is not enough memory available,
+\verb"mtxerrno" is set to \verb"ERR_NOMEM", and the function returns
+\verb"NULL".
+
+\verb"set_allocstrategy()"  controls the memory allocation for
+sets. In order to avoid \verb"malloc()" calls each time
+an element is added to a set, memory is allocated in blocks.
+When created by \verb"set_alloc()", a set has an initial size
+up to which is can grow without further memory requests. The
+initial size is set via the \verb"first" argument.
+If the set has grown to its maximal size, adding a new element
+causes the size to be incremented by a fixed value --- the block
+size, and new memory is allocated with. The block
+size is set via the \verb"blocksize" argument. It must also be
+greater than 0.
+The return value is 0 on success and -1 on error. An error means
+that one of the arguments was zero or negative. In this case,
+\verb"mtxerrno" is set to \verb"ERR_RANGE".
+
+\SeeAlso \verb"set_t", \verb"set_free()"
+
+
+%---------------------------------------------------------------------
+\Function{set_contains}{set\protect\_contains}{Test for an element}
+int set_contains(set_t *set, long elem);
+\end{verbatim}
+\Description
+This function checks if a given set contains a specific
+element.  The return value is 0 for `no' and 1 for `yes'.
+
+
+%---------------------------------------------------------------------
+\Function{set_free}{set\protect\_free}{Free a set}
+void set_free(set_t *x);
+\end{verbatim}
+\Description
+This function frees an integer set. The argument must be a
+\verb"set_t" structure which has previously been allocated with
+\verb"set_alloc()". Note that \verb"set_free()" expects a pointer
+as its argument. Do not use \verb"set_free()" on variables of type
+\verb"set_t"!
+
+\SeeAlso \verb"set_t", \verb"set_alloc()"
+
+
+%---------------------------------------------------------------------
+\Function{set_insert}{set\protect\_insert}{Insert an element}
+int set_insert(set_t *set, long elem);
+\end{verbatim}
+\Description
+This function inserts an element into a set. The return value is
+$0$ on success or $-1$ on error. In the latter case, \verb"mtxerrno" is
+set to \verb"ERR_NOMEM", indicating that there is not enough memory.
+
+
+%---------------------------------------------------------------------
+\Function{set_read}{set\protect\_read}{Read a set from a file}
+set_t *set_read(FILE *f);
+\end{verbatim}
+\Description
+This function reads a set from a file. It returns a pointer
+to a \verb"set_t" structure which contains the set. On error, the
+return value is \verb"NULL", and \verb"mtxerrno" is set to
+\verb"ERR_NOMEM" (not enough memory) or \verb"ERR_FILEREAD" (error
+reading file).
+
+
+%---------------------------------------------------------------------
+\Function{set_write}{set\protect\_write}{Write a set to a file}
+int set_write(FILE *f, set_t *set);
+\end{verbatim}
+\Description
+This function writes a set to a file. The return value is
+$0$ on success or $-1$ on error. In the latter case,
+\verb"mtxerrno" is set to \verb"ERR_FILEWRITE".
+
+
+%---------------------------------------------------------------------
+\Function{spccomp}{spccomp}{Compare two subspaces}
+int spccomp(matrix_t *m1, matrix_t *m2, long n);
+\end{verbatim}
+\Description
+This function compares two spaces. Both \verb"m1" and \verb"m2"
+must be in echelon form. The third parameter, \verb"n", is
+usually zero. If it is positive, \verb"spccomp()" assumes that
+the spaces are generated by the first \verb"n" basis vectors.
+The return value is 
+\begin{center}\begin{tabular}{ll}
+$-1$ & if ${\tt m1}<{\tt m2}$ \\
+$0$  & if ${\tt m1}={\tt m2}$ \\
+$1$  & if ${\tt m1}>{\tt m2}$ \\
+$9$  & else \\
+$-9$  & on error
+\end{tabular}\end{center}
+
+\SeeAlso \verb"spcequal()", \verb"spccontains()"
+
+
+%---------------------------------------------------------------------
+\Function{spccontains}{spccontains}{Incidence relation for spaces}
+int spccontains(matrix_t *m1, matrix_t *m2);
+\end{verbatim}
+\Description
+This function decides wether the space \verb"m1" contains
+the space \verb"m2". Arguments are the same as for \verb"spcequal()".
+The return value is 0 for `no', 1 for `yes' and $-1$ on error.
+
+\SeeAlso \verb"spcequal()", \verb"spccomp()"
+
+
+%---------------------------------------------------------------------
+\Function{spcequal}{spcequal}{Equality test for spaces}
+int spcequal(matrix_t *m1, matrix_t *m2);
+\end{verbatim}
+\Description
+This function compares two spaces and decides wether they are
+identical or not. While \verb"m1" must be in echelon form, \verb"m2"
+may be any matrix. However, the rows of \verb"m2" are assumed to form
+a basis. If they are not linearly independent, the result may be
+wrong. The return value is 1 if both spaces are equal, 0 if they
+are different, or $-1$ on error.
+
+\SeeAlso \verb"spccomp()", \verb"spccontains()"
+
+
+%---------------------------------------------------------------------
+\Function{spinup}{spinup}{Spin up}
+int spinup(matrix_t *seed,int ngen,matrix_t *gen[],int options,
+    matrix_t **subspace);
+\end{verbatim}
+\Description
+This function takes a `seed' matrix, a set of matrices (\verb"gen"),
+and tries to find invariant subspaces under the generators using the
+rows of \verb"seed" as seed vectors. The \verb"options" argument
+controls how the seed matrix is treated. \verb"options" may take any
+of the following values (defined in \verb"meataxe.h"):
+\begin{list}{}{\leftmargin 35mm\labelwidth 33mm\labelsep 2mm
+\itemsep 0mm\parsep 0mm}
+\item[{\tt SPL\_SEED\_MAKE}]
+	Try each vector in the linear hull of the rows of \verb"seed".
+\item[{\tt SPL\_SEED\_EACH}]
+	Try each row of \verb"seed", but do not make linear
+	combinations.
+\item[{\tt SPL\_SEED\_FIRST}]
+	Try only the first row of \verb"seed".
+\item[{\tt SPL\_SEED\_SPACE}]
+	Take the whole matrix as seed space and make its closure under
+	the generators.
+\end{list}
+
+The function returns if there are no more seed vectors, of if an
+invariant subspace has been found. A return value of 1 indicates
+that a proper invariant subspace has been found.
+A return value of 0 means that no invariant subspace has been found. 
+In any case, the subspace is stored in \verb"subspace".
+If an error occurs, the function returns -1.
+
+\SeeAlso \verb"split()"
+
+
+%---------------------------------------------------------------------
+\Function{split}{split}{Split a representation}
+int split(matrix_t *subspace, int ngen, matrix_t *gen[],
+	matrix_t **sub, matrix_t **quot);
+\end{verbatim}
+\Description
+This function splits a representation. The input is an invariant
+subspace and a set of generators. \verb"split()"
+calculates the action of the generators on both subspace and
+quotient. If the subspace is not already in echelon form it will
+be converted to echelon form.
+The result consists of \verb"ngen" matrices for both subspace and
+quotient.  Pointers to these matrices are stored in \verb"sub" and
+\verb"quot", respectively.
+
+The \verb"sub" and \verb"quot" arguments must be pointers to
+arrays of \verb"matrix_t" pointers. Any of these (or both)
+may be \verb"NULL", indicating that the corresponding action
+should not be calculated.
+The return value is 0 or -1 on error.
+
+\medskip\noindent
+Here is an example for \verb"spinup()" and \verb"split()":
+\begin{verbatim}
+matrix_t *gens[5];      	/* Generators */
+matrix_t *sub[5], quot[5];	/* Action of subspace, and quotient */
+matrix_t *seedvector;
+matrix_t *subspace;
+...
+if (spinup(seedvector,5,gens,SPL_SEED_FIRST,&subspace) == 1)
+{
+    printf("Split!\n");
+    split(subspace,5,gens,sub,quot);
+}
+else
+    printf("Not split!\n");
+matfree(subspace);
+\end{verbatim}
+
+
+\SeeAlso \verb"spinup()", \verb"quotproj()"
+
+
+%---------------------------------------------------------------------
+\Function{SymbolicName}{SymbolicName}{Word generator}
+char *nameof(wgdata_t *wg,long n);
+\end{verbatim}
+\Description
+This function returns a text representation of the word number \verb"n"
+in the matrix algebra specified by \verb"wg". The return value is a
+pointer to a static buffer which is overwritten on each call.
+
+\SeeAlso \verb"MakeWord()", \verb"WGInit()"
+
+
+%---------------------------------------------------------------------
+\Function{STimeLimit}{STimeLimit}{Set CPU time limit}
+void STimeLimit(long nsecs);
+\end{verbatim}
+\Description
+This function sets a limit for the CPU time in seconds.
+This function is available only in the UNIX version. After the
+specified time has been used the program will be stopped with
+an error message.
+
+\SeeAlso \verb"STimeUsed()"
+
+
+%---------------------------------------------------------------------
+\Function{STimeUsed}{STimeUsed}{CPU time}
+long STimeUsed(void);
+\end{verbatim}
+\Description
+This function returns the CPU time, in units of 1/10 seconds, used
+by the program.
+
+\SeeAlso \verb"prtimes()", \verb"STimeLimit()"
+
+
+%---------------------------------------------------------------------
+\Function{vec2pol}{vec2pol}{Convert vector to polynomial}
+int vec2pol(PTR vec, poly_t *pol);
+\end{verbatim}
+\Description
+This function convert a packed row vector to a polynomial, using the
+current row size. If the vector has length $n$, the corresponding
+polynomial is of degree $n$ with a leading coefficient of 1. The other
+coefficients are the entries of the vector.
+
+\SeeAlso \verb"pol2vec()", \verb"zsetlen()"
+
+
+%---------------------------------------------------------------------
+\Function{WGFree}{WGFree}{Terminate the word generator}
+int WGFree(wgdata_t *wg);
+\end{verbatim}
+\Description
+This function terminates the word generator specified by \verb"wg"
+and cleans up internal data structures. Note that the generators that
+were passed to \verb"WGInit()" are {\em not} freed.
+
+The function returns 0 on success and $-1$ on error.
+
+\SeeAlso \verb"WGInit()", \verb"MakeWord()"
+
+
+%---------------------------------------------------------------------
+\Function{WGInit}{WGInit}{Initialize the word generator}
+wgdata_t *WGInit(int ngen, matrix_t *gen[]);
+\end{verbatim}
+\Description
+This function initializes the word generator for a given matrix
+algebra. \verb"ngen" is the number of generators, and \verb"gen"
+is an array of pointers to the generators. The generators must be
+square matrices of the same dimension over the same field.
+
+On success, \verb"WGInit()" returns a pointer to an internal data
+structure. This pointer is in subsequent calls to \verb"MakeWord()"
+and \verb"WGFree()". If an error occurs, the return value is NULL.
+
+Note that the word generator does not make internal copies of the
+generators. The caller must assure that the generators are not 
+deleted or modyfied in any way as long as the word generator is
+used.
+
+\SeeAlso \verb"WGFree()", \verb"MakeWord()" (example)
+
+
+
+%---------------------------------------------------------------------
+\Function{zadd}{zadd}{Finite field addition}
+FEL zadd(FEL a, FEL b);
+\end{verbatim}
+\Description
+This function returns the sum ${\tt a}+{\tt b}$. The field must have
+been selected with \verb"zsetlen()". Both arguments must be valid field
+elements, but this is not checked.
+
+
+%---------------------------------------------------------------------
+\Function{zaddmulrow}{zaddmulrow}{Add a multiple of a row}
+PTR zaddmulrow(PTR dest,PTR src,FEL f);
+\end{verbatim}
+\Description
+This function adds a multiple of \verb"src" to \verb"dest"
+and returns \verb"dest".
+
+\SeeAlso \verb"zsetlen()", \verb"zmulrow()", \verb"zaddrow()"
+
+
+%---------------------------------------------------------------------
+\Function{zaddrow}{zaddrow}{Add rows}
+PTR zaddrow(PTR dest,PTR src);
+\end{verbatim}
+\Description
+This function adds \verb"src" to \verb"dest" and returns \verb"dest".
+Both arguments must be
+pointer to packed rows, and the row size must have been set with
+\verb"zsetlen()".
+
+\SeeAlso \verb"zsetlen()", \verb"zaddmulrow()", \verb"zmulrow()"
+
+
+%---------------------------------------------------------------------
+\Function{zadvance}{zadvance}{Increment row pointer}
+void zadvance(PTR *ptr, long nrows);
+\end{verbatim}
+\Description
+\verb"zadvance()" increments a pointer by \verb"nrows" rows using the
+current row size. This functions is typically used to step through the
+rows of a matrix. Before it can be used, the row size must have been
+set with \verb"zsetlen()". Here is an example:
+\begin{verbatim}
+PTR mat;
+zsetlen(3,100);    /* GF(3), dimension=100 */
+mat = zalloc(100); /* Allocate a 100x100 matrix */
+zadvance(&mat,49); /* Increment by 49 rows */
+\end{verbatim}
+After this sequence, \verb"mat" points to the 50th row of the
+matrix.
+
+\medskip\noindent
+{\em Note:} As the C language uses call-by-value, the first
+argument of \verb"zadvance()" is not a \verb"PTR" but a \verb"*PTR",
+i.e., a pointer to a \verb"PTR"! If you want to use \verb"zadvance()"
+on a \verb"PTR" variable, you must use the \verb"&" operator, as in
+the example above. \verb"zadvance(mat,49)" would be an error, but
+your compiler might not warn you about this, so be careful.
+
+
+%---------------------------------------------------------------------
+\Function{zalloc}{zalloc}{Allocate rows}
+PTR zalloc(long nrows);
+\end{verbatim}
+\Description
+This function allocates memory for |nrows| rows, using the current
+row size. The row size must have been specified previously with
+\verb"zsetlen()". The memory is initialized, i.e., all entries are
+zero.\footnote{What this actually means depends on the data
+representation used by the kernel. |zalloc()| calls the kernel
+function |zmulrow()| to initialize memory.}
+Memory allocated with |zalloc()| may be freed using |free()|.
+
+
+%----------------------------------------------------------------------
+\Variable{zchar}{zchar}{Current characteristic}
+long zchar;
+\end{verbatim}
+\Description
+This variable contains the characteristic of the current field. E.g.,
+if the the current field is GF(25), the value of \verb"zchar" is 5.
+Like \verb"zfl", this variable may be used anywhere, but it must not
+be modified directly.
+
+
+%---------------------------------------------------------------------
+\Function{zcleanrow}{zcleanrow}{Clean a row}
+int zcleanrow(PTR row,PTR matrix,long nor,long *piv);
+int zcleanrow2(PTR row,PTR matrix,long nor,long *piv,PTR row2);
+\end{verbatim}
+\Description
+
+\verb"zcleanrow()" `cleans' a row with a matrix, i.e., it adds
+suitable multiples of the rows of \verb"matrix" to \verb"row"
+such that all pivot positions in \verb"row" are zero.
+\verb"nor" is the number of rows in \verb"matrix". The number of
+columns (for \verb"matrix" and \verb"row") must have been set
+previously with \verb"zsetlen()". \verb"piv" is a pointer to the pivot
+table of \verb"matrix", which can be generated with \verb"zmkpivot()".
+The return value is always 0.
+
+\verb"zcleanrow2()" acts exactly as \verb"zcleanrow()". In addition,
+it stores the operations performed in \verb"row2".
+\verb"row2" must be a row of at least \verb"nor" entries. It must
+be initialized to zero by the caller, or the results are not defined.
+On return, \verb"row2" contains the coefficients by which the rows
+of \verb"matrix" were multiplied and then subtracted from \verb"row".
+The return value is always 0.
+
+\SeeAlso \verb"zmkpivot()" \verb"zmkechelon()"
+
+
+%---------------------------------------------------------------------
+\Function{zcmprow}{zcmprow}{Compare rows}
+int zcmprow(PTR dest, PTR src);
+\end{verbatim}
+\Description
+This function compares two rows at \verb"src" and \verb"dest".
+The return value is 0, if the two rows are identical, and
+1 otherwise.
+
+\SeeAlso \verb"zsetlen()"
+
+
+%---------------------------------------------------------------------
+\Function{zdiv}{zdiv}{Finite field division}
+FEL zdiv(FEL a, FEL b);
+\end{verbatim}
+\Description
+This function returns the quotient ${\tt a}/{\tt b}$. The field must
+have been selected with \verb"zsetlen()". Both arguments must be valid
+field elements, but this is not checked. Division by zero results in
+program termination.
+
+
+%---------------------------------------------------------------------
+\Function{zextract}{zextract}{Extract a mark from a row}
+FEL zextract(PTR row, long col);
+\end{verbatim}
+\Description
+This function returns the entry at position \verb"col" of a
+row.  Remember that \verb"col=1" and not \verb"col=0" corresponds
+to the first entry and so on.  Like \verb"zinsert()", this function
+does not depend on the current row size. Reading beyond the end of
+a row will probably not produce an error, but the result is undefined.
+
+Packed rows must be initialized before they are used. \verb"zextract()"
+(and many other row operations) will produce strange results if used
+with uninitialized rows. See \verb"zinsert()" for details.
+
+\SeeAlso \verb"zinsert()", \verb"zfindpiv()"
+
+
+%---------------------------------------------------------------------
+\Function{zextractcol}{zextractcol}{Extract a column from a matrix}
+PTR zextractcol(PTR mat, long nor, long col, PTR result);
+\end{verbatim}
+\Description
+This function extracts one column out of a matrix and stores it as
+a row vector in \verb"result". The number of columns of the matrix
+must be set with \verb"zsetlen()". \verb"nor" is the number of rows
+int the matrix. The result is a row with \verb"nor" entries.
+The function returns \verb"result".
+
+
+%---------------------------------------------------------------------
+\Function{zembed}{zembed}{Embed from a subfield}
+FEL zembed(FEL a, long subfield)
+\end{verbatim}
+
+\Description
+This function embeds an element of a subfield into the
+current field.
+
+In the {\MeatAxe} there is a `standard' generator for each finite
+field. The generator for the field currently in use
+is available in the \verb"zgen" variable. Thus, if $a$ and $a'$ are the
+{\MeatAxe} generators of GF($q$) and GF($q'$), respectively, and
+$q'=q^n$, there is a `standard' embedding of GF($q$) into GF($q'$)
+defined by $a\mapsto (a')^n$.
+However, field elements which are identified under this embedding
+are usually not represented by the same number. For this reason
+there are two functions, \verb"zembed()" and \verb"zrestrict()",
+which provide the embedding of subfields into the current field.
+Note that the {\MeatAxe} is not well suited for calculations involving
+different fields at the same time because of its table driven
+arithmetics.
+
+
+\medskip\noindent
+Here is a short example.
+The following code converts a vector over GF(3) to GF(27). The
+{\MeatAxe} cannot handle two fields at the same time, so it is
+necessary to unpack the row over GF(3), change to GF(27) and
+pack the embedded elements into a new row.
+\begin{verbatim}
+PTR row1, row2;
+FEL buf[10];
+...
+zsetlen(3,10);
+for (i = 1; i <= 10; ++i) buf[i-1] = zextract(row1,i);
+zsetlen(27,10);
+for (i = 1; i <= 10; ++i) zinsert(row2,i,zembed(buf[i-1],3));
+\end{verbatim}
+
+
+%---------------------------------------------------------------------
+\Function{zinsert}{zinsert}{Insert a mark into a row}
+void zinsert(PTR row, long col, FEL mark);
+\end{verbatim}
+\Description
+Logically, vectors are arrays of field elements. However, they
+are stored internally in packed form, so you cannot access
+entries with the usual bracket operator. Instead the {\MeatAxe}
+library provides functions which store and extract marks. A second
+difference is that the first entry in a vector has index 1, not
+0 as in C arrays.
+
+\verb"zinsert()" inserts the field element \verb"mark" at position
+\verb"col" into \verb"row". Before this function can be used, a
+field must be selected with \verb"zsetlen()". Once a field is
+selected, \verb"zinsert()" works with any row, regardless of the
+current row size. So, if you are working with two rows of different
+size, you do not have to call \verb"zsetlen()" prior to each
+\verb"zinsert()". On the other hand, this means that there
+is no protection against writing beyond the end of a row. The caller
+must assure that \verb"row" points to a row of at least \verb"col"
+columns. Otherwise the program may crash or produce undefined results.
+
+Packed rows must be initialized before they are used. \verb"zinsert()"
+(and many other row operations) will produce strange results if used
+with uninitialized rows. Memory is initialized automatically in the
+following cases: allocation with \verb"zalloc()", copying a row with
+\verb"zmoverow()", reading a row from a file. A row can be initialized
+manually by multiplication with zero: \verb"zmulrow(ptr,F_ZERO)".
+The latter works even if no field has been selected. 
+
+\SeeAlso \verb"zextract()", \verb"zfindpiv()"
+
+%---------------------------------------------------------------------
+\Function{zfindpiv}{zfindpiv}{Find pivot element}
+long zfindpiv(PTR row,FEL *mark);
+\end{verbatim}
+\Description
+This function scans the vector \verb"row" and finds the first
+nonzero mark. The mark is stored into \verb"mark" and its position
+(counting from 1) is returned. If the whole vector is zero,
+\verb"zfindpiv()" returns 0 and leaves \verb"mark" unchanged.
+
+\SeeAlso {\tt zinsert()}, \verb"zextract()"
+
+
+%----------------------------------------------------------------------
+\Variable{zfl}{zfl}{Current field}
+long zfl;
+\end{verbatim}
+\Description
+This variable contains the current field. E.g., if the the current
+field is GF(7), the value of \verb"zfl" is 7. This variable may be used
+anywhere, but it must not be modified directly. Use \verb"zsetlen()" to
+change the current field.
+
+
+%---------------------------------------------------------------------
+\Function{zftogap}{zftogap}{Convert field element to GAP format}
+char *zftogap(FEL f);
+\end{verbatim}
+\Description
+This function takes a field element and returns the GAP
+representation of this element. The return value is a pointer
+to a static buffer which is overwritten on each call.
+
+
+%---------------------------------------------------------------------
+\Function{zftoi}{zftoi}{Convert field element to integer}
+long zftoi(FEL f);
+\end{verbatim}
+\Description
+This function converts a field element to an integer, using a
+`canonical' representation of field elements as integers which is
+different from the internal representation. \verb"zftoi()" should
+be used whenever field elements are {\tt printf}'ed.
+The integer assigned to the field element ${\it f}$ is obtained by
+inserting the characteristic $p$ into the polynomial which represents
+$f$. As a consequence, the prime field GF$(p)$ is mapped onto
+integer numbers $0$,\ldots,$p-1$.
+
+\SeeAlso \verb"zitof()"
+
+
+%----------------------------------------------------------------------
+\Variable{zgen}{zgen}{Generator for the current field}
+FEL zgen;
+\end{verbatim}
+\Description
+This variable contains the `standard' generator for the current field.
+Like \verb"zfl", this variable may be used anywhere, but it must not
+be modified directly.
+
+
+%---------------------------------------------------------------------
+\Function{zgetopt}{getopt}{Process command options}
+extern char opt_char;		/* Current option */
+extern char opt_text[50];	/* Option text */
+extern char *opt_text_ptr;	/* Current position in option text */
+extern int opt_ind;		/* Index in argv[] list */
+int zgetopt(char *pattern);
+\end{verbatim}
+\Description
+This function is very similar to \verb"getopt()". It scans the
+command line for options (i.e., arguments beginning with `{\tt -}')
+and returns options, one by one, until it reaches the first
+non-option argument or the end of the command line.
+Before you use \verb"zgetopt()", you must initialize the parser
+wi \verb"initargs()".
+
+\verb"pattern" is a list of valid options. Each option consists of
+one character, optionally followed by a period indicating that
+the option takes an argument. The options \verb"-Q", \verb"-V" and
+\verb"-T" are handled automatically. These options need not be
+specified in \verb"pattern".
+
+\verb"zgetopt()" returns the option character or the special
+value \verb"OPT_END" if there are no more options.
+In addition, some global variables are set on return:
+\begin{itemize}
+\item
+    \verb"opt_char" contains the option character.
+\item
+    \verb"opt_ind" contains the index of the argument to be read
+    next. For example, if \verb"zgetopt()" return \verb"OPT_END",
+    \verb"opt_ind" is the index of the first non-optional argument.
+\item
+    \verb"opt_text", an array of characters, contains the argument
+    (if present).
+\item
+    \verb"opt_text_ptr" points to \verb"opt_text[0]".
+\end{itemize}
+
+This setting enables \verb"getint()" to access the argument
+immediately after \verb"zgetopt()" returns.
+
+\medskip\noindent
+Here is an example:
+\begin{verbatim}
+static char *helptext[] = {
+  "SYNTAX",
+  "    dummy [-ab] [-x <First>-<Last>] <File> ...",
+  "",
+  "DESCRIPTION",
+  "    This program does nothing.",
+  NULL};
+static proginfo_t pinfo =
+  { "dummy", "Do Nothing", "$Revision 1.16$", helptext };
+
+int main(int argc, char *argv[])
+{
+    init_args(argc, argv, &pinfo);
+    while (zgetopt("abx:") != OPT_END)
+    {   switch (opt_char)
+        {   
+            case 'a': ignore_a(); break;
+	    case 'b': ignore_b(); break;
+            case 'x':
+                first = getint();
+                if (*opt_text_ptr++ != '-') error();
+                last = getint();
+		break;
+        }
+    }
+    ...
+}
+\end{verbatim}
+In this example, the \verb"-x" option takes an argument of the
+form {\it first}--{\it last}. After the first \verb"getint()"
+\verb"opt_text_ptr" points to the `-' and must be incremented
+for the next \verb"getint()" to work.
+
+
+\SeeAlso \verb"initargs()", \verb"zgetint()"
+
+
+%---------------------------------------------------------------------
+\Function{zinv}{zinv}{Multiplicative inverse}
+FEL zinv(FEL f);
+\end{verbatim}
+\Description
+This function returns the multiplicative inverse of a field element.
+\verb"f" must be different from \verb"F_ZERO".
+
+\SeeAlso \verb"zneg()", \verb"zmul()"
+
+
+%---------------------------------------------------------------------
+\Function{zitof}{zitof}{Convert integer to field element}
+FEL zitof(long i);
+\end{verbatim}
+\Description
+\verb"zitof()" converts an integer to a field element using the
+same mapping as explained with \verb"zftoi()".
+\verb"zitof()" should
+be used whenever field elements are {\tt scanf}'ed.
+
+\SeeAlso \verb"zftoi()"
+
+
+%---------------------------------------------------------------------
+\Function{zmaprow}{zmaprow}{Multiply a row by a matrix}
+PTR zmaprow(PTR row,PTR mat,long nor,PTR result);
+\end{verbatim}
+\Description
+This function multiplies the vector \verb"row" from the right by
+the matrix \verb"mat" and stores the result into \verb"result".
+\verb"nor" is the number of rows of the matrix which must coincide
+with the size (number of columns) of the vector. The number of
+columns in both \verb"mat" and \verb"result" is determined by the
+current row size. The function returns \verb"result".
+
+\medskip\noindent
+{\em Note:} \verb"result" must be different from \verb"row", but this
+is not checked.
+
+\SeeAlso \verb"zsetlen()", \verb"zpermrow()"
+
+
+%---------------------------------------------------------------------
+\Function{zmatinv}{zmatinv}{Matrix inversion}
+int zmatinv(PTR mat, PTR result);
+\end{verbatim}
+\Description
+\index{matrix inversion}
+This is a is a low-level, destructive matrix inversion.
+Unlike \verb"matinv()", this function does not allocate a temporary
+matrix.
+Both \verb"mat" and \verb"result" must be square matrices, and
+the row size must be set by the caller. \verb"result" need not
+be initialized. A return value of 0 indicates success. In this
+case, \verb"result" contains the inverse matrix. If the matrix is
+singular, the function returns -1 and sets \verb"mtxerrno" to
+\verb"ERR_DIV0". In any case the original matrix is destroyed.
+
+\SeeAlso \verb"matinv()"
+%---------------------------------------------------------------------
+\Function{zmkpivot}{zmkpivot}{Make pivot table}
+int zmkpivot(PTR matrix, long nor, long *piv);
+\end{verbatim}
+\Description
+This function is used to find the pivot elements of a matrix
+which is already in semi-echelon form (see \verb"zmkechelon()").
+\verb"nor" is the number
+of rows in \verb"matrix". The number of columns must have been set
+previously with \verb"zsetlen()". \verb"piv" must be a pointer to an
+array of at least \verb"nor+1" long integers. The pivot positions
+are stored here, beginning with \verb"piv[1]" for the first row.
+The return value is $0$ on success. If the matrix is not in
+semi-echelon form, \verb"zerrno" is set to \verb"ERR_NOTECH" and
+the function returns $-1$.
+
+The pivot table is used by some functions like \verb"zcleanrow()"
+which perform Gaussian elimination.
+
+\SeeAlso \verb"zmkechelon()"
+
+
+%---------------------------------------------------------------------
+\Function{zmkechelon}{zmkechelon}{Convert to echelon form}
+int zmkechelon(PTR matrix, long nor, long *piv);
+\end{verbatim}
+\Description
+This function converts a matrix to semi-echelon form and
+builds a pivot table ready for use with \verb"zcleanrow()".
+A matrix is said to be in
+\begin{itemize}
+\item {\em semi-echelon form} if each row contains a first
+      nonzero element (pivot element), and all entries below
+      this element are zero.
+      \index{semi-echelon form}
+\item {\em normalized semi-echelon form} if it is in semi-echelon form
+      and each pivot element is equal to 1.
+      \index{echelon form}
+\end{itemize}
+In the {\MeatAxe}, matrices are often stored in semi-echelon form.
+Many functions and programs expect their arguments to be in
+semi-echelon form.
+
+\verb"matrix" is a matrix of \verb"nor" rows. The number of columns
+must have been set with \verb"zsetlen()". \verb"piv" must be a pointer
+to an array of at least \verb"nor+1" long integers.
+On return, \verb"matrix" is in semi-echelon form. Zero rows are moved
+to the end, and the number of non-zero rows (i.e., the rank) is
+stored in \verb"piv[0]". The rest of the \verb"piv" array contains the
+pivot table, beginning with \verb"piv[1]" for the first row.
+The return value is the rank.
+
+\SeeAlso \verb"zmkpivot()"
+
+
+%---------------------------------------------------------------------
+\Function{zmoverow}{moverow}{Copy a row}
+void zmoverow(PTR dest, PTR src);
+\end{verbatim}
+This function copies one row from \verb"src" to \verb"dest". The row
+size must have been set with \verb"zsetlen()".
+
+\SeeAlso \verb"zswaprow()"
+
+
+%---------------------------------------------------------------------
+\Function{zmul}{zmul}{Finite field multiplication}
+FEL zmul(FEL a, FEL b);
+\end{verbatim}
+\Description
+This function returns the product ${\tt a}\cdot{\tt b}$. The field must
+have been selected with \verb"zsetlen()". Both arguments must be valid
+field elements, but this is not checked.
+
+
+%---------------------------------------------------------------------
+\Function{zmulrow}{zmulrow}{Multiply row with scalar}
+PTR zmulrow(PTR row,FEL mark);
+\end{verbatim}
+\Description
+This function multiplies \verb"row" by the scalar \verb"mark"
+using the current row size and returns \verb"row".
+Multiplying a row with zero (\verb"F_ZERO") initializes the
+memory. 
+
+\SeeAlso \verb"zsetlen()", \verb"zaddrow()", \verb"zaddmulrow()"
+
+
+%---------------------------------------------------------------------
+\Function{zneg}{zneg}{Additive inverse}
+FEL zneg(FEL f);
+\end{verbatim}
+\Description
+This function returns the multiplicative inverse of a field element.
+
+\SeeAlso \verb"zinv()", \verb"zadd()"
+
+%----------------------------------------------------------------------
+\Variable{znoc}{znoc}{Current row size}
+long znoc;
+\end{verbatim}
+\Description
+This variable contains the current number of columns used for all
+row operations. \verb"znoc" is updated automatically when the row
+size is changed with \verb"zsetlen()". 
+
+
+%---------------------------------------------------------------------
+\Function{znullsp}{znullsp}{Calculate the null-space}
+long znullsp(PTR matrix, long nor, long *piv, PTR nsp);
+\end{verbatim}
+\Description
+This function calculates the null-space of a matrix. The matrix
+is passed as first argument, \verb"nor" is the number of rows,
+\verb"piv" must be a pointer to at least \verb"nor+1" integers,
+and \verb"nsp" must be a pointer to a
+matrix of dimension $\verb"nor"\times\verb"nor"$.
+
+The function returns the dimension of the null-space and stores
+the result as follows:
+\begin{list}{}{\itemsep 0mm\parsep 0mm}
+\item[-] \verb"matrix" is reduced to echelon form
+\item[-] \verb"nsp" contains the null-space in echelon form
+\item[-] \verb"piv" contains a pivot table for the null space, and
+	the null-space dimension is duplicated in \verb"piv[0]".
+\end{list}
+
+
+%---------------------------------------------------------------------
+\Function{zpermrow}{zpermrow}{Multiply a row by a permutation}
+PTR zpermrow(PTR row,long *perm,PTR result);
+\end{verbatim}
+\Description
+This function multiplies the vector \verb"row" from the right with
+the permutation \verb"perm" and stores the result into \verb"result".
+Multiplication of vectors by permutations is defined as follows:
+If the permutation maps point $i$ to point $k$, then the $i$-ith
+mark of the vector is stored in the $k$-th position of the
+result. The return value is always \verb"result".
+
+\medskip\noindent
+{\em Note:} \verb"result" must be different from \verb"row", although
+this is not checked.
+
+\SeeAlso \verb"zsetlen()", \verb"zmaprow()"
+
+
+%---------------------------------------------------------------------
+\Function{zpseed_init}{pseed\protect\_init}{Initialize the seed vector
+generator}
+int zpseed_init(PTR sbasis, long sdim);
+\end{verbatim}
+\Description
+The seed vector generator takes a basis and calculates
+one representant of each one-dimensional subspace of the
+space spanned by the basis vectors. Once a basis is fixed,
+each seed vector has a unique number which is assigned as
+follows: Let $b_1$,\ldots,$b_n$ be the basis and
+$v=\lambda_1b_1+\ldots\lambda_nb_n$ a vector in the span.
+The coefficients $\lambda_i\in\GF(q)$ are identified with
+positive integers in the usual way and
+\[
+ N(v):=\lambda_1+\lambda_2q+\lambda_3q^2+\ldots\lambda_nq^{n-1}
+\]
+is the `number of $v$'. To avoid scalar multiples, the
+leading coefficient is always one.
+
+To use the seed vector generator you must first call
+\verb"zpseed_init()".  \verb"sbasis" is the basis of the
+seed space (i.e., a matrix) and \verb"sdim" specifies the
+number of basis vectors. Remember that the row size must
+be set before with \verb"zsetlen()".
+\verb"sbasis" may be any basis, not necessarily in semi-echelon form.
+It is not checked that the basis vectors are linearly independent. If
+they are not, you will get seed vectors which are multiples of each
+other or different number will produce the same vector.
+There is no internal buffer for the basis. \verb"zpseed_init()" just
+saves a pointer to the basis for internal use. For this reason,
+you must not modify the basis after initialization.
+
+\SeeAlso \verb"zpseed_make()", \verb"zpseed_next()"
+
+
+%---------------------------------------------------------------------
+\Function{zpseed_make}{pseed\protect\_make}{Make a seed vector}
+long zpseed_make(long number);
+\end{verbatim}
+\Description
+This function makes a seed vector given its number. The seed vector
+generator must have been initialized with \verb"zpseed_init()".
+The seed vector is stored in \verb"zpseed_vec" and its number is
+returned. A return value of -1 indicates an error.
+\verb"zpseed_make()" will not reject a number which corresponds to
+a non-normalized seed vector.
+
+\SeeAlso \verb"zpseed_init()", \verb"zpseed_next()"
+
+
+%---------------------------------------------------------------------
+\Function{zpseed_next}{pseed\protect\_next}{Make the next seed vector}
+long zpseed_next();
+\end{verbatim}
+\Description
+This function calculates the next seed vector and stores it in
+\verb"zpseed_vec". Multiple calls of \verb"zpseed_next()" will step
+through all seed vectors. The return value is the number of the seed
+vector or -1 on error.
+
+If you call \verb"zpseed_make(N)", \verb"zpseed_next()" will continue
+with the next normalized seed vector.
+
+\SeeAlso \verb"zpseed_init()", \verb"zpseed_make()"
+
+
+%----------------------------------------------------------------------
+\Variable{zpseed_vec}{zpseed\protect\_vec}{Seed vector}
+PTR zpseed_vec;
+\end{verbatim}
+\Description
+This variable is used by the seed vector generator to store the seed
+vector.
+
+\SeeAlso \verb"zpseed_make()", \verb"zpseed_next()"
+
+
+%---------------------------------------------------------------------
+\Function{zquot}{zquot}{Projection on the quotient}
+int zquot(PTR space, long dim,PTR quot);
+\end{verbatim}
+\index{quotient!projection on}
+\Description
+Given two subspaces $U,W\leq V$, this function calculates the
+projection of $U$ on the quotient $V/W$. Before you can use
+\verb"zquot()", the subspace $W$ must be specified with
+\verb"zquotinit()".
+
+The projection depends on the basis for the subspace $W$. It is
+calculated in the following way:
+Let $V=F^{n\times n}$ and $w_1,\ldots,w_s$ be a basis for the subspace
+$W\leq V$. The basis, written as a matrix of row vectors, is assumed
+to be in semi-echelon form. By looking at the pivot columns we can
+construct the vectors $w_{s+1},\ldots,w_n$ by taking all vectors which
+have a exactly one 1 at any non-pivot position and are zero otherwise.
+Then, $(w_1,\ldots,w_s,w_{s+1},\ldots,w_n)$ is a basis for $V$ in
+semi-echelon form and defines the decomposition of any vector into
+subspace and quotient part.
+
+The result is stored in \verb"quot", which must be a matrix with
+\verb"dim" rows and $n-s$ columns. On return, the $i$-th row of
+\verb"quot" contains the projection of the $i$-th row of
+\verb"space". The result is not in semi-echelon form and some of
+the rows may be zero.
+The return value is 0 on success or -1 on error.
+
+\SeeAlso \verb"zquotinit()", \verb"zquotop()"
+
+
+%---------------------------------------------------------------------
+\Function{zquotinit}{zquotinit}{Initialize for projection}
+int zquotinit(PTR subspace, long dim, long *piv);
+\end{verbatim}
+\Description
+This function must be called before \verb"zquot()" or \verb"zquotop()"
+is used. \verb"subspace" is the subspace, which must be in semi-echelon
+form, and \verb"dim" is the dimension of the space. If a pivot table
+for the matrix has already been built, it may be passed as \verb"piv".
+A value of \verb"NULL" indicates that the table should be built by
+\verb"zquotinit()".
+
+The return value is 0 on success or -1 on error.
+Possible error codes (stored in
+\verb"mtxerrno" are \verb"ERR_NOTECH" (matrix not in echelon
+form) and \verb"ERR_NOMEM" (not enough memory).
+
+
+%---------------------------------------------------------------------
+\Function{zquotop}{zquotop}{Operation on the quotient}
+int zquotop(PTR matrix, PTR op);
+\end{verbatim}
+\Description
+After a subspace has been specified with \verb"zquotinit()", this
+function calculates the operation of any matrix on the quotient.
+Of course, this makes sense only if the subspace is invariant
+under the matrix, but this is not checked. If the subspace is
+not invariant, the results are undefined.
+\verb"matrix" must be a pointer to a square matrix with the
+same number of columns as the subspace, and \verb"op" must be a square
+matrix with the dimension of the quotient. The result is stored here.
+The return value is 0 on success or -1 on error.
+
+\SeeAlso \verb"zquotinit()", \verb"zquot()"
+
+
+%---------------------------------------------------------------------
+\Function{zreadheader}{zreadheader}{Open for reading}
+FILE *zreadhdr(char *name,long *field,long *nrows,long *ncols);
+\end{verbatim}
+\Description
+This function opens a data file for input and reads the file header.
+The header is always 3 long integers which are stored in into
+\verb"fl", \verb"nor" and \verb"noc". The exact meaning of these
+three numbers depends on the file type. For a matrix they are
+`field order', `number of rows' and `number of columns'.
+
+
+%---------------------------------------------------------------------
+\Function{zreadlong}{zreadlong}{Read integers}
+size_t zreadlong(FILE *f,long *buf,size_t n);
+\end{verbatim}
+\Description
+This function reads \verb"n" long integers from the file \verb"f"
+into the array \verb"buf". \verb"buf" must point to a memory area of
+at least \verb"n*sizeof(long)" bytes and \verb"f" must be open
+for reading. This function reads long integers in a machine-independent
+way. Externally, each number is stored as a 4-byte integer with the
+least significant byte first and the most significant byte last.
+This makes data files machine-independent, but there are some
+disadvantages:
+\begin{enumerate}
+\item 
+    The conversion to and from machine-independent involves several
+    arithmetic operations for each number read/written.
+\item
+    The highest number which can be read/written is $2^{32}-1$, even
+    if your machine's long integers are 64 bit wide.
+\end{enumerate}
+
+\verb"zreadlong()" returns the number of integers (not bytes) that were
+successfully read. A return different from \verb"n" indicates an error.
+
+
+\SeeAlso \verb"zwritelong()"
+
+
+%---------------------------------------------------------------------
+\Function{zreadvec}{zreadvec}{Read rows}
+size_t zreadvec(FILE *f, PTR buf, size_t n);
+\end{verbatim}
+\Description
+This function reads \verb"n" rows from the file \verb"f" into the
+buffer \verb"buf", using the current row size.
+
+\SeeAlso \verb"zwritevec()"
+
+
+%---------------------------------------------------------------------
+\Function{zrestrict}{zrestrict}{Restrict to a subfield}
+FEL zrestrict(FEL a, long subfield)
+\end{verbatim}
+\Description
+This function restricts a field element to a subfield. See the
+description of \verb"zembed()" for details on the embedding used
+in the {\MeatAxe}.
+
+The return value represents the same element (under the standard
+identification explained above) but with respect to the subfield.
+\verb"a" must be of the form \verb"zembed(g,subfield)". Otherwise
+the result is undefined. For example, restricting from GF(8) to
+GF(2) works only with the prime field elements, i.e., $0$ and $1$.
+Note that you cannot use the return value of \verb"zrestrict()"
+(for field arithmetic, say) until you change to the subfield
+with \verb"zsetlen(subfield,...)".
+
+
+%----------------------------------------------------------------------
+\Variable{zrowsize}{zrowsize}{Row size}
+extern size_t zrowsize;
+extern size_t zrowsize_io;
+\end{verbatim}
+\Description
+These variables are defined in the kernel.
+\verb"zrowsize" is the current row size, i.e., the number of bytes
+occupied by one row. This is always a multiple of \verb"sizeof(long)".
+\verb"zrowsize_io" reflects the `true' size of a row, i.e., the number
+of bytes that are actually used. This value is used by file i/o
+functions.
+
+
+%---------------------------------------------------------------------
+\Function{zseek}{zseek}{Move file pointer}
+int zseek(FILE *f, long pos);
+\end{verbatim}
+\Description
+This function sets the read/write pointer of file \verb"f"
+to position \verb"pos". I.e., the next read/write will access
+the row number \verb"pos", where the first row has index 1.
+Use of \verb"zseek()"
+is preferable to \verb"fseek()" because \verb"zseek()"
+knows about {\MeatAxe} file headers and adjusts the file pointer
+appropriately. If \verb"pos" is different from 1, the row size must
+have been set before with \verb"zsetlen()". The return value is
+0 on success or -1 on error.
+
+
+%---------------------------------------------------------------------
+\Function{zsetfield}{zsetfield}{Select the field}
+int zsetfield(long field);
+\end{verbatim}
+\Description
+This function sets the current field to GF(\verb"field") and initializes
+the field arithmetic. Most library functions require that a field has
+been selected before they are used.
+The default kernel's \verb"zsetfield()'" reads an arithmetic table
+file into memory. If it does not exist, \verb"zsetlen()" tries to
+generate one by executing the \verb"maketab".
+
+\verb"zsetfield()" returns 0 if the operation was successfull and
+$-1$ otherwise.
+
+%---------------------------------------------------------------------
+\Function{zsetlen}{zsetlen}{Set row size}
+int zsetlen(long ncols);
+\end{verbatim}
+\Description
+This function sets the current row size to \verb"ncols". The row size
+is used for low-level row operations, {e.g.} \verb"zaddrow()".
+The return value is 0 if the operation was successfull and
+$-1$ otherwise.
+
+%---------------------------------------------------------------------
+\Function{zsize}{zsize}{Size of rows}
+size_t zsize(long nrows);
+\end{verbatim}
+\Description
+This function returns the number of bytes occupied by \verb"nrows"
+rows of the current row size. The row size must have been specified
+previously with \verb"zsetlen()".
+This function can be used whenever you need to know the
+size of a matrix or vector in bytes. Here are some examples:
+\begin{verbatim}
+PTR x, y;
+memcpy(y,x,zsize(10));      /* Copy 10 rows from x to y */
+if (memcmp(x,y,zsize(1))    /* Compare first row */
+    printf("Identical!\n");
+fwrite(x,zsize(1),5,f);     /* Write 5 rows to file f */
+\end{verbatim}
+{\em Note:} You should not allocate rows with
+\verb"malloc(zsize(...))" because \verb"malloc()" does not
+initialize memory. Instead, use \verb"zalloc()".
+
+
+%---------------------------------------------------------------------
+\Function{zsub}{zsub}{Finite field subtraction}
+FEL zsub(FEL a, FEL b);
+\end{verbatim}
+\Description
+This function returns the difference ${\tt a}-{\tt b}$. The field must
+have been selected with \verb"zsetlen()". Both arguments must be valid
+field elements, but this is not checked.
+
+
+%---------------------------------------------------------------------
+\Function{zswaprow}{zswaprow}{Swap rows}
+void zswaprow(PTR dest, PTR src);
+\end{verbatim}
+\Description
+This function exchanges the contents of two rows using the current row
+size.
+
+\SeeAlso \verb"zsetlen()", \verb"zmoverow()"
+
+
+%---------------------------------------------------------------------
+\Function{zwriteheader}{zwriteheader}{Open for writing}
+FILE *zwritehdr(char *name,long field,long nrows,long ncols);
+\end{verbatim}
+\Description
+\verb"zwritehdr()" opens a file for output and writes the file
+header. If the file already exists, its contents are destroyed.
+
+
+%---------------------------------------------------------------------
+\Function{zwritelong}{zwritelong}{Write integers}
+size_t zwritelong(FILE *f,long *buf,size_t n);
+\end{verbatim}
+\Description
+This function writes \verb"n" long integers from the the array
+\verb"buf" to the file \verb"f". \verb"buf" must point to a memory
+area of at least \verb"n*sizeof(long)" bytes and \verb"f" must be open
+for reading.
+
+\SeeAlso \verb"zreadlong()"
+
+
+%---------------------------------------------------------------------
+\Function{zwritevec}{zwritevec}{Write rows}
+size_t zwritevec(FILE *f, PTR buf, size_t n);
+\end{verbatim}
+\Description
+This function writes \verb"n" rows from \verb"buf" to the file
+\verb"f", using the current row size.
+
+\SeeAlso \verb"zreadvec()"
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeleteShortVerb{|}

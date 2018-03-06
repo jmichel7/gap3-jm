@@ -1,0 +1,398 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvhrep.tex       CHEVIE documentation       Meinolf Geck, Frank Luebeck,
+%A                                                Jean Michel, G"otz Pfeiffer
+%%
+%Y  Copyright (C) 1992 - 1996  Lehrstuhl D f\"ur Mathematik, RWTH Aachen, IWR
+%Y  der Universit\"at Heidelberg, University of St. Andrews, and   University
+%Y  Paris VII.
+%%
+%%  This  file  contains  the  description  of  the  GAP functions of CHEVIE
+%%  dealing with representations of Iwahori-Hecke algebras.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{Representations of Iwahori-Hecke algebras}
+
+Let  $W,S$ be a  finite Coxeter system  and $H =  H(W, R, \{u_{s,i}\}_{s\in
+S,i\in\{0,1\}})$ a corresponding Iwahori-Hecke algebra over the ring $R$ as
+defined   in  chapter  "Iwahori-Hecke  algebras".  We  shall  now  describe
+functions for dealing with representations and characters of $H$.
+
+The  fact that we know a presentation of  $H$ makes it easy to check that a
+list  of matrices  $M_s \in  R^{d \times  d}$ for  $s\in S$ gives rise to a
+representation\:\  there is a  (unique) representation $\rho\:H \rightarrow
+R^{d  \times d}$ such that $\rho(T_s)=M_s$ for all $s\in S$, if and only if
+the  matrices $M_s$ satisfy the same  relations as those for the generators
+$T_s$ of $H$.
+
+A  general approach for the construction  of representations is in terms of
+$W$-graphs,   see   \cite[p.165]{KL79}.   Any   such  $W$-graph  carries  a
+representation  of $H$. Note that in this approach, it is necessary to know
+the  square  roots  of  the  parameters  of  $H$. The simplest example, the
+standard $W$-graph defined in \cite[Ex.~6.2]{KL79} yields a
+``deformation\'\' of the natural reflection representation of $W$. This can
+be produced in {\CHEVIE} using the function
+'HeckeReflectionRepresentation'.
+
+Another  possibility   to  construct    $W$-graphs   is by   using    the
+Kazhdan-Lusztig theory of left cells (see \cite{KL79}); see the following
+chapter for more details.
+
+In  a similar  way as  the ordinary  character table  of the finite Coxeter
+group  $W$ is defined, one also has a character table for the Iwahori-Hecke
+algebra  $H$ in the  case when the  ground ring $A$  is a field such $H$ is
+split  and semisimple.  The generic  choice for  such a  ground ring is the
+rational   function   field   $K=\overline{\Q}(v_s)_{s\in   S}$  where  the
+parameters of the corresponding algebra $H_K$ satisfy
+$-u_{s,0}/u_{s,1}=v_s^2$ for all~$s$.
+
+By Tits\'\ Deformation Theorem (see \cite[Sec.~68]{CR87}, for example), the
+algebra  $H_K$ is (abstractly) isomorphic to  the group algebra of $W$ over
+$K$.  Moreover, we have  a bijection between  the irreducible characters of
+$H_K$  and $W$, given as follows. Let $\chi$ be an irreducible character of
+$H_K$. Then we have $\chi(T_w) \in A$ where $A=\overline{\Z}[v_s]_{s\in S}$
+and   $\overline{\Z}$   denotes   the   ring   of   algebraic  integers  in
+$\overline{\Q}$.  We  can  find  a  ring  homomorphism  $f\:  A \rightarrow
+\overline{\Q}$  such  that  $f(a)=a$  for  all  $a  \in  \overline{\Z}$ and
+$f(v_s)=1$  for $s\in S$. Then it turns  out that the function $\chi_f \: w
+\mapsto   f(\chi(T_w))$  is  an  irreducible  character  of  $W$,  and  the
+assignment   $\chi  \mapsto   \chi_f$  defines   a  bijection  between  the
+irreducible characters of $H_K$ and $W$.
+
+Now this bijection does depend on the choice of $f$. But one should keep in
+mind that this only plays a role in the case where $W$ is a
+non-crystallographic  Coxeter group. In all  other cases, as is well-known,
+the  character  table  of  $W$  is  rational;  moreover,  the values of the
+irreducible  characters of  $H_K$ on  basis elements  $T_w$ lie in the ring
+$\Z[v_s]_{s\in S}$.
+
+The  character  table of $H_K$   is   defined to  be  the square   matrix
+$(\chi(T_w))$ where $\chi$ runs  over the irreducible characters of $H_K$
+and $w$ runs over a set of representatives of {\em minimal length} in the
+conjugacy classes of $W$.  The character tables of Iwahori-Hecke algebras
+(in this sense) are known  for all types\:\  the  table for type $A$  was
+first  computed   by Starkey (see    the   description of   his work   in
+\cite{Car86});  then different   descriptions with  different proofs were
+given  in  \cite{Ram91} and   \cite{Pfe94b}.    The tables for  the   non
+crystallographic types $I_2(m)$, $H_3$, $H_4$ can be constructed from the
+explicit   matrix    representations    given   in \cite[Sec.~67C]{CR87},
+\cite{Lus81} and \cite{AL82}, respectively.  For  the classical types $B$
+and  $D$ see \cite{HR94} and  \cite{Pfe96}.  The tables for the remaining
+exceptional  types   were  computed  in  \cite{Gec94},  \cite{Gec95}  and
+\cite{GM97}.
+
+If $H$  is an Iwahori-Hecke algebra over  an arbitrary ground ring $R$ as
+above, then the {\GAP}  function 'CharTable' applied to the corresponding
+record returns a character table record which  is build up in exactly the
+same way as for the finite Coxeter group  $W$ itself but where the record
+component 'irreducibles' contains the character values which are obtained
+from  those of the generic multi-parameter  algebra $H_K$ by specializing
+the indeterminates $v_i$ to the variables in 'rootParameter'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{HeckeReflectionRepresentation}
+\index{HeckeReflectionRepresentation}
+
+'HeckeReflectionRepresentation( <W> )'
+
+returns a list  of matrices which give  the reflection  representation of
+the Iwahori-Hecke algebra  corresponding to the  Coxeter group <W>.   The
+function 'Hecke' must have been applied to the record <W>.
+
+|    gap> v:= X( Rationals );;  v.name := "v";;
+    gap> H := Hecke(CoxeterGroup( "B", 2) , v^2, v);
+    Hecke(B2,v^2,v)
+    gap> ref:= HeckeReflectionRepresentation( H );
+    [ [ [ -v^0, 0*v^0 ], [ -v^2, v^2 ] ],
+      [ [ v^2, -2*v^0 ], [ 0*v^0, -v^0 ] ] ] |
+
+|    gap> H := Hecke( CoxeterGroup( "H", 3 ));;
+    gap> HeckeReflectionRepresentation( H );
+    [ [ [ -1, 0, 0 ], [ -1, 1, 0 ], [ 0, 0, 1 ] ],
+      [ [ 1, E(5)+2*E(5)^2+2*E(5)^3+E(5)^4, 0 ], [ 0, -1, 0 ],
+          [ 0, -1, 1 ] ], [ [ 1, 0, 0 ], [ 0, 1, -1 ], [ 0, 0, -1 ] ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CheckHeckeDefiningRelations}
+\index{CheckHeckeDefiningRelations}
+
+'CheckHeckeDefiningRelations( <H> , <t> )'
+
+returns true or false, according  to whether a  given set <t> of matrices
+corresponding to the standard generators  of the Coxeter group <Group(H)>
+defines a representation of the Iwahori-Hecke algebra <H> or not.
+
+|    gap> H := Hecke(CoxeterGroup( "F", 4 ));;
+    gap> r := HeckeReflectionRepresentation( H );;
+    gap> CheckHeckeDefiningRelations( H, r );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharTable for Hecke algebras}
+\index{CharTable}
+'CharTable( <H> )'
+
+'CharTable'  returns the  character  table record  of the  Iwahori-Hecke
+algebra <H>.  This is  basically the  same as the  character table  of a
+Coxeter group  described earlier with  the exception that  the component
+'irreducibles'  contains the  matrix of  the values  of the  irreducible
+characters  of  the generic  Iwahori-Hecke  algebra  specialized at  the
+parameters  in the  component 'parameter'  of  <H>. Thus,  if all  these
+parameters are  equal to~$1  \in \Q$  then the  component 'irreducibles'
+just contains  the ordinary  character table  of the  underlying Coxeter
+group.
+
+The  function 'CharTable'  first recognizes  the  type of <H>, then calls
+special functions  for each type involved  in  <H> and finally  forms the
+direct product of all these tables.
+
+
+|    gap> W := CoxeterGroup( "G", 2 );;
+    gap> u := X( Rationals );;  u.name := "u";;
+    gap> v := X( LaurentPolynomialRing( Rationals ) );; v.name := "v";;
+    gap> u := u * v^0;;
+    gap> H := Hecke( W, [ u^2, v^2 ], [ u, v ] );
+    Hecke(G2,[u^2,v^2],[u,v])
+    gap> Display( CharTable( H ) );
+    H(G2)
+    
+                2  2     2     2      1       1        2
+                3  1     .     .      1       1        1
+    
+                  A0   ~A1    A1     G2      A2   A1+~A1
+               2P A0    A0    A0     A2      A2       A0
+               3P A0   ~A1    A1 A1+~A1      A0   A1+~A1
+    
+    phi{1,0}       1   v^2   u^2 u^2v^2  u^4v^4   u^6v^6
+    phi{1,6}       1    -1    -1      1       1        1
+    phi{1,3}'      1   v^2    -1   -v^2     v^4     -v^6
+    phi{1,3}''     1    -1   u^2   -u^2     u^4     -u^6
+    phi{2,1}       2 v^2-1 u^2-1    -uv -u^2v^2  2u^3v^3
+    phi{2,2}       2 v^2-1 u^2-1     uv -u^2v^2 -2u^3v^3
+    |
+
+As  mentioned before,  the record  components 'classparam', 'classnames'
+and  'irredinfo' contain canonical labels and parameters for the classes
+and  the  characters  (see  the  introduction  to  chapter  "Classes and
+representations  for reflection groups"  and also "ChevieCharInfo"). For
+direct  products, sequences of  such canonical labels  of the individual
+types are given.
+
+We can also  have character tables  for algebras where the parameters are
+not necessarily indeterminates\:
+
+|    gap> H1 := Hecke( W, [ E(6)^2, E(6)^4 ],[ E(6), E(6)^2 ] );
+    Hecke(G2,[E3,E3^2],[-E3^2,E3])
+    gap> ct := CharTable( H1 );
+    CharTable( "H(G2)" )
+    gap> Display( ct );
+    H(G2)
+    
+                2  2             2             2      1    1      2
+                3  1             .             .      1    1      1
+    
+                  A0           ~A1            A1     G2   A2 A1+~A1
+               2P A0            A0            A0     A2   A2     A0
+               3P A0           ~A1            A1 A1+~A1   A0 A1+~A1
+    
+    phi{1,0}       1          E3^2            E3      1    1      1
+    phi{1,6}       1            -1            -1      1    1      1
+    phi{1,3}'      1          E3^2            -1  -E3^2   E3     -1
+    phi{1,3}''     1            -1            E3    -E3 E3^2     -1
+    phi{2,1}       2 (-3-ER(-3))/2 (-3+ER(-3))/2      1   -1     -2
+    phi{2,2}       2 (-3-ER(-3))/2 (-3+ER(-3))/2     -1   -1      2
+    
+    gap> RankMat( ct.irreducibles );
+    5|
+
+The last result tells us that the  specialized character table is no more
+invertible.
+
+Character tables   of    Iwahori--Hecke  algebras were   introduced    in
+\cite{GP93}; see also  the  introduction  to  this  chapter  for  further
+information about the origin of the various tables.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Representations for Hecke algebras}
+\index{Representations}
+'Representations( <H>, <l> )'
+
+This  function  returns  the  list  of representations of the Iwahori-Hecke
+algebra <H>. Each representation is returned as a list of the matrix images
+of the generators $T_s$.
+
+If  there is a  second argument, it  can be a  list of indices (or a single
+integer) and only the representations with these indices (or that index) in
+the list of all representations are returned.
+
+|    gap> W:=CoxeterGroup("I",2,5);
+    CoxeterGroup("I",2,5)
+    gap> q:=X(Cyclotomics);;q.name:="q";;
+    gap> H:=Hecke(W,q);
+    Hecke(I2(5),q)
+    gap> Representations(H);
+    [ [ [ [ q ] ], [ [ q ] ] ], [ [ [ -q^0 ] ], [ [ -q^0 ] ] ],
+      [ [ [ -q^0, q^0 ], [ 0*q^0, q ] ],
+          [ [ q, 0*q^0 ], [ (-E(5)-2*E(5)^2-2*E(5)^3-E(5)^4)*q, -q^0 ] ] ],
+      [ [ [ -q^0, q^0 ], [ 0*q^0, q ] ], [ [ q, 0*q^0 ], [ (-2*E(5)-E(5)^2
+                     -E(5)^3-2*E(5)^4)*q, -q^0 ] ] ] ]|
+
+The   models  implemented  for  types  $B_n$  and  $D_n$  involve  rational
+fractions, thus work only with algebras whose parameters are 'Mvp's.
+
+|    gap> W:=CoxeterGroup("B",3);
+    CoxeterGroup("B",3)
+    gap> H:=Hecke(W,Mvp("x"));
+    Hecke(B3,x)
+    gap> Representations(H,2);
+    [ [ [ -1, 0, 0 ], [ 0, x, 0 ], [ 0, 0, x ] ], 
+      [ [ (-x+x^2)/(1+x), (1+x^2)/(1+x), 0 ], 
+          [ 2x/(1+x), (-1+x)/(1+x), 0 ], [ 0, 0, -1 ] ], 
+      [ [ -1, 0, 0 ], [ 0, -1/2+1/2x, 1/2+1/2x ], 
+          [ 0, 1/2+1/2x, -1/2+1/2x ] ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PoincarePolynomial}
+\index{PoincarePolynomial}
+
+'PoincarePolynomial( <H> )'
+
+The  Poincar{\accent19 e}  polynomial of  the Hecke  algebra <H>,  which is
+equal  to 'SchurElements(<H>)[<ind>]'  where <ind>  is the  position of the
+1-dimensional  index representation in the character table of <H>, that is,
+the   representation  which  maps  $T_s$  to  the  corresponding  parameter
+$u_{s,0}$.
+
+|    gap> q := X( Rationals );; q.name := "q";;
+    gap> W := CoxeterGroup( "G", 2 );; H := Hecke( W, q );
+    Hecke(G2,q)
+    gap> PoincarePolynomial( H );
+    q^6 + 2*q^5 + 2*q^4 + 2*q^3 + 2*q^2 + 2*q + 1 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SchurElements for Iwahori-Hecke algebras}
+\index{SchurElements}
+
+'SchurElements( <H> )'
+
+returns the list of constants  $S_\chi$ arising from the Schur relations
+for the irreducible characters $\chi$  of the Iwahori-Hecke algebra <H>,
+that is $\delta_{w,1}=\sum_\chi \chi(T_w)/S_\chi$  where $\delta$ is the
+Kronecker symbol.
+
+The  element  $S_\chi$ also  equal  to  $P/D_\chi$  where $P$  is  the
+Poincare  polynomial and  $D_\chi$ is  the generic  degree of  $\chi$.
+Note, however, that  this only works if $D_\chi \ne  0$. (We can have
+$D_\chi=0$  if the  parameters of  $H$  are suitably  chosen roots  of
+unity, for example.)  The ordering of the Schur  elements corresponds to
+the ordering of the characters  as returned by the function 'CharTable'.
+
+|    gap> u := X( Rationals );; u.name := "u";;
+    gap> v := X( LaurentPolynomialRing( Rationals ) );; v.name := "v";;
+    gap> W := CoxeterGroup("G",2);;
+    gap> schur := SchurElements( Hecke( W, [ u ^ 2, v ^ 2 ]));
+    #warning\:\ u\*v chosen as 2nd root of (u\^2)\*v\^2
+    [ (u^6 + u^4)*v^6 + (u^6 + 2*u^4 + u^2)*v^4 + (u^4 + 2*u^2 + 1)*v^
+        2 + (u^2 + 1), (1 + u^(-2)) + (1 + 2*u^(-2) + u^(-4))*v^(
+        -2) + (u^(-2) + 2*u^(-4) + u^(-6))*v^(-4) + (u^(-4) + u^(-6))*v^(
+        -6), (u^(-4) + u^(-6))*v^6 + (u^(-2) + 2*u^(-4) + u^(-6))*v^4 + (
+        1 + 2*u^(-2) + u^(-4))*v^2 + (1 + u^(-2)),
+      (u^2 + 1) + (u^4 + 2*u^2 + 1)*v^(-2) + (u^6 + 2*u^4 + u^2)*v^(
+        -4) + (u^6 + u^4)*v^(-6), (2*u^0)*v^2 + (2*u - 2*u^(-1))*v + (2*u^
+        2 - 2 + 2*u^(-2)) + (-2*u + 2*u^(-1))*v^(-1) + (2*u^0)*v^(-2),
+      (2*u^0)*v^2 + (-2*u + 2*u^(-1))*v + (2*u^2 - 2 + 2*u^(-2)) + (2*u -
+        2*u^(-1))*v^(-1) + (2*u^0)*v^(-2) ] |
+
+The  Poincar{\accent19   e}  polynomial   is  just  the   Schur  element
+corresponding to the trivial (or index) representation\:
+
+|    gap> schur[PositionId(W)];
+    (u^6 + u^4)*v^6 + (u^6 + 2*u^4 + u^2)*v^4 + (u^4 + 2*u^2 + 1)*v^
+    2 + (u^2 + 1)|
+
+(note  that the  trivial character  is not  always the  first character,
+which is why we use  'PositionId') For further information about generic
+degrees and connections with the  representation theory of finite groups
+of Lie type, see \cite{BC72} and \cite{Car85}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SchurElement for Iwahori-Hecke algebras}
+\index{SchurElement}
+
+'SchurElement( <H>, <phi> )'
+
+returns  the  Schur  element  (see  'Schur  Elements  for  Iwahori-Hecke
+algebras')  of  the  Iwahori-Hecke   algebra  <H>  for  the  irreducible
+character  of  <H>  of  parameter <phi>  (see  'CharParams'  in  section
+"CHEVIE utility functions").
+
+|    gap> u := X( Rationals );; u.name := "u";;
+    gap> v := X( LaurentPolynomialRing( Rationals ) );; v.name := "v";;
+    gap> H := Hecke( CoxeterGroup( "G", 2 ), [ u , v]);
+    Hecke(G2,[u,v])
+    gap> SchurElement( H, [ [ 1, 3, 1] ] );
+    (u^(-2) + u^(-3))*v^3 + (u^(-1) + 2*u^(-2) + u^(-3))*v^2 + (1 + 2*u^(
+    -1) + u^(-2))*v + (1 + u^(-1))|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GenericDegrees}
+\index{GenericDegrees}
+
+We  do not  have a  function for  the generic  degrees of  an Iwahori-Hecke
+algebra  since they are not always  defined (for example, if the parameters
+of  the  algebra  are  roots  of  unity).  If they are defined, they can be
+computed with the command\:
+
+'   List( SchurElements( <H> ), x -> PoincarePolynomial( <H> ) / x );'
+
+(See "PoincarePolynomial" and "SchurElement".)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LowestPowerGenericDegrees for Hecke algebras}
+\index{LowestPowerGenericDegrees}
+
+'LowestPowerGenericDegrees( <H> )'
+
+<H>  should  be  an  Iwahori-Hecke  algebra  all  of  whose  parameters are
+monomials  in the same indeterminate. 'LowestPowerGenericDegrees' returns a
+list  holding  the  $a$-function  for  all  irreducible  characters of this
+algebra,  that is,  for each  character $\chi$,  the valuation of the Schur
+element  of $\chi$. The ordering of  the result corresponds to the ordering
+of  the characters  in 'CharTable(H)'.  One should  note that this function
+first  computes  explicitly  the  Schur  elements,  so  for a one-parameter
+algebra, 'LowestPowerGenericDegrees(Group(H))' may be much faster.
+
+|    gap> q:=X(Rationals);;q.name:="q";;
+    gap> H:=Hecke(CoxeterGroup("B",4),[q^2,q]);
+    Hecke(B4,[q^2,q,q,q])
+    gap> LowestPowerGenericDegrees(H);
+    [ 7, 6, 7, 12, 20, 3, 5, 3, 7, 6, 13, 2, 3, 10, 1, 4, 2, 7, 0, 3 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{HeckeCharValuesGood}
+\index{HeckeCharValuesGood}
+
+'HeckeCharValuesGood( <H>, <w> )'
+
+Let <H>  be a Hecke  algebra for the Coxeter  group 'CoxeterGroup(<H>)',
+let  <w>  be  a  good   element  of  'CoxeterGroup(<H>)'  in  the  sense
+of  \cite{GM97}  (the representatives  of  conjugacy  classes stored  in
+{\CHEVIE} are such elements), and let $d$ be the order of $w$.
+
+'HeckeCharValuesGood' computes the values  of the irreducible characters
+of the  Iwahori-Hecke algebra  <HW> on  $T_w^d$. The  point is  that the
+character  table of  the Hecke  algebra is  not used,  and that  all the
+eigenvalues of $T_w^d$  are monomials in 'H.parameters', so  this can be
+used to  find the  absolute value  of the eigenvalues  of $T_w$,  a step
+towards computing the character table of the Hecke algebra.
+
+|    gap> q:=X(Rationals);;q.name:="q";;
+    gap> H:=Hecke(CoxeterGroup("B",4),[q^2,q]);
+    Hecke(B4,[q^2,q,q,q])
+    gap> HeckeCharValuesGood( H, [ 1, 2, 3 ] );
+    [ q^12, 4*q^12, 3*q^12 + 3*q^8, 3*q^8 + 1, q^0, 2*q^18 + q^12,
+      6*q^12, 2*q^18 + 3*q^16 + 3*q^12, 3*q^12 + 3*q^8 + 2*q^6,
+      3*q^16 + 3*q^8, 2*q^6 + 1, 2*q^18, 3*q^16 + 3*q^12, 2*q^6,
+      q^24 + 2*q^18, 4*q^12, q^24 + 3*q^16, q^12 + 2*q^6, q^24, q^12 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

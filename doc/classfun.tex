@@ -1,0 +1,788 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  classfun.tex                GAP documentation               Thomas Breuer
+%%
+%A  @(#)$Id: classfun.tex,v 1.1.1.1 1996/12/11 12:36:43 werner Exp $
+%%
+%Y  Copyright 1993-1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%H  $Log: classfun.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:43  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.4.1.1  1995/11/27  15:19:58  vfelsch
+%H  updated after fix in OrbitsCharacters
+%H
+%H  Revision 3.4  1994/06/10  02:41:39  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.3  1994/06/03  08:57:20  mschoene
+%H  changed a few things to avoid LaTeX warnings
+%H
+%H  Revision 3.2  1994/05/19  13:54:00  sam
+%H  rearranged the chapter
+%H
+%%
+\Chapter{Class Functions}
+
+This chapter introduces class functions and group characters in {\GAP}.
+
+First section "Why Group Characters" tells about the ideas
+why to use these structures besides the characters and character tables
+described in chapters "Character Tables" and "Characters".
+
+The subsequent section "More about Class Functions" tells details about
+the implementation of group characters and class functions in {\GAP}.
+
+Sections "Operators for Class Functions" and "Functions for Class Functions"
+tell about the operators and functions for class functions and (virtual)
+characters.
+
+Sections "ClassFunction", "VirtualCharacter", "Character", and "Irr"
+describe how to construct such class functions and group characters.
+
+Sections "IsClassFunction", "IsVirtualCharacter", and "IsCharacter"
+describe the characteristic functions of class functions and virtual
+characters.
+
+Then sections "InertiaSubgroup" and "OrbitsCharacters" describe other
+functions for characters.
+
+Then sections "Storing Subgroup Information", "NormalSubgroupClasses",
+"ClassesNormalSubgroup", and "FactorGroupNormalSubgroupClasses" tell
+about some functions and record components to access and store frequently
+used (normal) subgroups.
+
+The final section "Class Function Records" describes the records that
+implement class functions.
+
+\vspace{3mm}
+
+In this chapter, all examples use irreducible characters of the
+symmetric group $S_4$.  For running the examples, you must first
+define the group and its characters as follows.
+
+|    gap> S4:= SolvableGroup( "S4" );;
+    gap> irr:= Irr( S4 );; |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Why Group Characters}
+
+When one says ``$\chi$ is a character of a group $G$\'\'\ then this object
+$\chi$ carries a lot of information.  $\chi$ has certain properties such as
+being irreducible or not.  Several subgroups of $G$ are related to $\chi$,
+such as the kernel and the centre of $\chi$.  And one can apply operators
+to $\chi$, such as forming the conjugate character under the action of an
+automorphism of $G$, or computing the determinant of $\chi$.
+
+In {\GAP}, the characters known from chapters "Character Tables" and
+"Characters" are just lists of character values.  This has several
+disadvantages.  Firstly one cannot store knowledge about a character
+directly in the character, and secondly for every computation that requires
+more than just the character values one has to regard this list explicitly as
+a character belonging to a character table.
+In practice this means that the user has the task to put the objects into
+the right context, or --more concrete-- the user has to supply lots of
+arguments.
+
+This works nicely for characters that are used without groups, like
+characters of library tables.  And if one deals with incomplete character
+tables often it is necessary to specify the arguments explicitly, for
+example one has to choose a fusion map or power map from a set of
+possibilities.
+
+But for dealing with a group and its characters, and maybe also subgroups
+and their characters, it is desirable that {\GAP} keeps track of the
+interpretation of characters.
+
+Because of this it seems to be useful to introduce an alternative concept
+where a group character in {\GAP} is represented as a record that contains
+the character values, the underlying group or character table, an
+appropriate operations record, and all the knowledge about the group
+character.
+
+Together with characters, also the more general class functions and
+virtual characters are implemented.
+
+Here is an *example* that shows both approaches.
+First we define the groups.
+
+|    gap> S4:= SolvableGroup( "S4" );;
+    gap> D8:= SylowSubgroup( S4, 2 );; D8.name:= "D8";; |
+
+We do some computations using the functions described in chapters
+"Characters" and "Character Tables".
+
+|    gap> t   := CharTable( S4 );;
+    gap> tD8 := CharTable( D8 );;
+    gap> FusionConjugacyClasses( D8, S4 );;
+    gap> chi:= tD8.irreducibles[2];
+    [ 1, -1, 1, 1, -1 ]
+    gap> Tensored( [ chi ], [ chi ] )[1];
+    [ 1, 1, 1, 1, 1 ]
+    gap> ind:= Induced( tD8, t, [ chi ] )[1];
+    [ 3, -1, 0, 1, -1 ]
+    gap> List( t.irreducibles, x -> ScalarProduct( t, x, ind ) );
+    [ 0, 0, 0, 1, 0 ]
+    gap> det:= DeterminantChar( t, ind );
+    [ 1, 1, 1, -1, -1 ]
+    gap> cent:= CentralChar( t, ind );
+    [ 1, -1, 0, 2, -2 ]
+    gap> rest:= Restricted( t, tD8, [ cent ] )[1];
+    [ 1, -1, -1, 2, -2 ] |
+
+And now we do the same calculations with the class function records.
+
+|    gap> irr   := Irr( S4 );;
+    gap> irrD8 := Irr( D8 );;
+    gap> chi:= irrD8[2];
+    Character( D8, [ 1, -1, 1, 1, -1 ] )
+    gap> chi * chi;
+    Character( D8, [ 1, 1, 1, 1, 1 ] )
+    gap> ind:= chi ^ S4;
+    Character( S4, [ 3, -1, 0, 1, -1 ] )
+    gap> List( irr, x -> ScalarProduct( x, ind ) );
+    [ 0, 0, 0, 1, 0 ]
+    gap> det:= Determinant( ind );
+    Character( S4, [ 1, 1, 1, -1, -1 ] )
+    gap> cent:= Omega( ind );
+    ClassFunction( S4, [ 1, -1, 0, 2, -2 ] )
+    gap> rest:= Character( D8, cent );
+    Character( D8, [ 1, -1, -1, 2, -2 ] ) |
+
+Of course we could have used the 'Induce' and 'Restricted' function
+also for lists of class functions.
+
+|    gap> Induced( tD8, t, tD8.irreducibles{ [ 1, 3 ] } );
+    [ [ 3, 3, 0, 1, 1 ], [ 3, 3, 0, -1, -1 ] ]
+    gap> Induced( irrD8{ [ 1, 3 ] }, S4 );
+    [ Character( S4, [ 3, 3, 0, 1, 1 ] ), 
+      Character( S4, [ 3, 3, 0, -1, -1 ] ) ] |
+
+If one deals with complete character tables then often the table
+provides enough information, so it is possible to use the table
+instead of the group.
+
+|    gap> s5 := CharTable( "A5.2" );; irrs5 := Irr( s5  );;
+    gap> m11:= CharTable( "M11"  );; irrm11:= Irr( m11 );;
+    gap> irrs5[2];
+    Character( CharTable( "A5.2" ), [ 1, 1, 1, 1, -1, -1, -1 ] )
+    gap> irrs5[2] ^ m11;
+    Character( CharTable( "M11" ), [ 66, 2, 3, -2, 1, -1, 0, 0, 0, 0 ] )
+    gap> Determinant( irrs5[4] );
+    Character( CharTable( "A5.2" ), [ 1, 1, 1, 1, -1, -1, -1 ] ) |
+
+In this case functions that compute *normal* subgroups related to
+characters will return the list of class positions corresponding to that
+normal subgroup.
+
+|    gap> Kernel( irrs5[2] );
+    [ 1, 2, 3, 4 ] |
+    
+But if we ask for non-normal subgroups of course there is no chance to get
+an answer without the group, for example inertia subgroups cannot be
+computed from character tables.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Class Functions}
+
+Let $G$ be a finite group.  A *class function* of $G$ is a function from
+$G$ into the complex numbers (or a subfield of the complex numbers) that is
+constant on conjugacy classes of $G$.
+Addition, multiplication, and scalar multiplication of class functions are
+defined pointwise.  Thus the set of all class functions of $G$ is an
+algebra (or ring, or vector space).
+
+\vspace{3mm}
+
+*Class functions and (virtual) group characters*
+
+Every mapping with source $G$ that is constant on conjugacy classes of $G$
+is called a *class function* of $G$.
+Differences of characters of $G$ are called *virtual characters* of $G$.
+
+Class functions occur in a natural way when one deals with characters.
+For example, the central character of a group character is only a class
+function.
+
+Every character is a virtual character, and every virtual character is a
+class function.
+Any function or operator that is applicable to a class function can of
+course be applied to a (virtual) group character.  There are functions
+only for (virtual) group characters, like 'IsIrreducible', which doesn\'t
+make sense for a general class function, and there are also functions
+that do not make sense for virtual characters but only for characters,
+like 'Determinant'.
+
+\vspace{3mm}
+
+*Class functions as mappings*
+
+In {\GAP}, class functions of a group $G$ are mappings (see chapter
+"Mappings") with source $G$ and range 'Cyclotomics' (or a subfield).
+All operators and functions for mappings (like "Image" 'Image', "PreImages"
+'PreImages') can be applied to class functions.
+
+*Note*, however, that the operators '\*' and '\^' allow also other
+arguments than mappings do (see "Operators for Class Functions").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operators for Class Functions}
+
+'<chi> = <psi>' \\
+'<chi> \<\ <psi>' 
+
+Equality and comparison of class functions are defined as for mappings
+(see "Comparisons of Mappings"); in case of equal source and range the
+'values' components are used to compute the result.
+
+|    gap> irr[1]; irr[2];
+    Character( S4, [ 1, 1, 1, 1, 1 ] )
+    Character( S4, [ 1, 1, 1, -1, -1 ] )
+    gap> irr[1] < irr[2];
+    false
+    gap> irr[1] > irr[2];
+    true
+    gap> irr[1] = Irr( SolvableGroup( "S4" ) )[1];
+    false    # The groups are different. |
+
+\vspace{3mm}
+
+'<chi> + <psi>' \\
+'<chi> - <psi>'
+
+'+' and '-' denote the addition and subtraction of class functions.
+
+\vspace{5mm}
+
+'<n> \*\ <chi>' \\
+'<chi> \*\ <psi>'
+
+'\*' denotes (besides the composition of mappings,
+see "Operations for Mappings") the multiplication of a class function
+<chi> with a scalar <n> and the tensor product of two class functions.
+
+\vspace{3mm}
+
+'<chi> / <n>'
+
+'/' denotes the division of the class function <chi> by a scalar <n>.
+
+|    gap> psi:= irr[3] * irr[4];
+    Character( S4, [ 6, -2, 0, 0, 0 ] )
+    gap> psi:= irr[3] - irr[1];
+    VirtualCharacter( S4, [ 1, 1, -2, -1, -1 ] )
+    gap> phi:= psi * irr[4];
+    VirtualCharacter( S4, [ 3, -1, 0, -1, 1 ] )
+    gap> IsCharacter( phi ); phi;
+    true
+    Character( S4, [ 3, -1, 0, -1, 1 ] )
+    gap> psi:= ( 3 * irr[2] - irr[3] ) * irr[4];
+    VirtualCharacter( S4, [ 3, -1, 0, -3, 3 ] )
+    gap> 2 * psi ;
+    VirtualCharacter( S4, [ 6, -2, 0, -6, 6 ] )
+    gap> last / 3;
+    ClassFunction( S4, [ 2, -2/3, 0, -2, 2 ] ) |
+
+\vspace{3mm}
+
+'<chi> \^\ <n>' \\
+'<g> \^\ <chi>'
+
+denote the tensor power by a nonnegative integer <n> and the image of the
+group element <g>, like for all mappings (see "Operations for Mappings").
+
+'<chi> \^\ <g>'
+
+is the conjugate class function by the group element <g>, that must
+be an element of the parent of the source of <chi> or something else that
+acts on the source via '\^'.
+If '<chi>.source' is not a permutation group then <g> may also be a
+permutation that is interpreted as acting by permuting the classes
+(This maybe useful for table characters.).
+
+'<chi> \^\ <G>'
+
+is the induced class function.
+
+|    gap> V4:= Subgroup( S4, S4.generators{ [ 3, 4 ] } );
+    Subgroup( S4, [ c, d ] )
+    gap> V4.name:= "V4";;
+    gap> V4irr:= Irr( V4 );;
+    gap> chi:= V4irr[3];
+    Character( V4, [ 1, -1, 1, -1 ] )
+    gap> chi ^ S4;
+    Character( S4, [ 6, -2, 0, 0, 0 ] )
+    gap> chi ^ S4.2;
+    Character( V4, [ 1, -1, -1, 1 ] )
+    gap> chi ^ ( S4.2 ^ 2 );
+    Character( V4, [ 1, 1, -1, -1 ] )
+    gap> S4.3 ^ chi; S4.4 ^ chi;
+    1
+    -1
+    gap> chi ^ 2;
+    Character( V4, [ 1, 1, 1, 1 ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for Class Functions}
+\index{Centre for class functions}
+\index{Degree for class functions}
+\index{Determinant for characters}
+\index{Kernel for class functions}
+\index{Norm for class functions}
+\index{Omega for characters}
+
+Besides the usual *mapping functions* (see chapter "Mappings" for
+the details.), the following polymorphic functions are overlaid in
+the 'operations' records of class functions and (virtual) characters.
+They are listed in alphabetical order.
+
+% 'IsInjective', 'IsSurjective', 'ImagesSource', 'ImageElm',
+% 'ImagesElm', 'ImagesSet', 'PreImagesRange', 'PreImagesElm',
+% 'PreImagesSet', 'PreImagesRepresentative'.
+
+'Centre( <chi> )': \\ centre of a class function
+
+'Constituents( <chi> )': \\ set of irreducible characters of a virtual
+                            character
+
+'Degree( <chi> )': \\ degree of a class function
+
+'Determinant( <chi> )': \\  determinant of a character
+
+'Display( <chi> )': \\ displays the class function with the table head
+
+'Induced( <list>, <G> )': \\ induced class functions corresp. to
+              class functions in the list <list> from subgroup <H> to
+              group <G>
+
+'IsFaithful( <chi> )': \\ property check (virtual characters only)
+
+'IsIrreducible( <chi> )': \\ property check (characters only)
+
+'Kernel( <chi> )': \\ kernel of a class function
+
+'Norm( <chi> )': \\ norm of class function
+
+'Omega( <chi> )': \\ central character
+
+'Print( <chi> )': \\ prints a class function
+
+'Restricted( <list>, <H> )': \\ restrictions of class functions in
+              the list <list> to subgroup <H>
+
+'ScalarProduct( <chi>, <psi> )': \\ scalar product of two class functions
+
+% \vspace{3mm}
+% 
+% |     gap> tens:= irr[3] * irr[4];
+%      Character( S4, [ 6, -2, 0, 0, 0 ] )
+%      gap> Constituents( tens );
+%      [ Character( S4, [ 3, -1, 0, 1, -1 ] ), 
+%        Character( S4, [ 3, -1, 0, -1, 1 ] ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ClassFunction}
+
+'ClassFunction( <G>, <values> )'
+
+returns the class function of the group <G> with values list <values>.
+
+'ClassFunction( <G>, <chi> )'
+
+returns the class function of <G> corresponding to the class function
+<chi> of $H$.  The group $H$ can be a factor group of <G>, or <G> can be
+a subgroup or factor group of $H$.
+
+|    gap> phi:= ClassFunction( S4, [ 1, -1, 0, 2, -2 ] );
+    ClassFunction( S4, [ 1, -1, 0, 2, -2 ] )
+    gap> coeff:= List( irr, x -> ScalarProduct( x, phi ) );
+    [ -1/12, -1/12, -1/6, 5/4, -3/4 ]
+    gap> ClassFunction( S4, coeff );
+    ClassFunction( S4, [ -1/12, -1/12, -1/6, 5/4, -3/4 ] )
+    gap> syl2:= SylowSubgroup( S4, 2 );;
+    gap> ClassFunction( syl2, phi );
+    ClassFunction( D8, [ 1, -1, -1, 2, -2 ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{VirtualCharacter}
+
+'VirtualCharacter( <G>, <values> )'
+
+returns the virtual character of the group <G> with values list <values>.
+
+'VirtualCharacter( <G>, <chi> )'
+
+returns the virtual character of <G> corresponding to the virtual character
+<chi> of $H$.  The group $H$ can be a factor group of <G>, or <G> can be
+a subgroup or factor group of $H$.
+
+|    gap> syl2:= SylowSubgroup( S4, 2 );;
+    gap> psi:= VirtualCharacter( S4, [ 0, 0, 3, 0, 0 ] );
+    VirtualCharacter( S4, [ 0, 0, 3, 0, 0 ] )
+    gap> VirtualCharacter( syl2, psi );
+    VirtualCharacter( D8, [ 0, 0, 0, 0, 0 ] )
+    gap> S3:= S4 / V4;
+    Group( a, b )
+    gap> VirtualCharacter( S3, irr[3] );
+    VirtualCharacter( Group( a, b ), [ 2, -1, 0 ] ) |
+
+*Note* that it is not checked whether the result is really a virtual
+character.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Character}
+
+'Character( <repres> )'
+
+returns the character of the group representation <repres>.
+
+'Character( <G>, <values> )'
+
+returns the character of the group <G> with values list <values>.
+
+'Character( <G>, <chi> )'
+
+returns the character of <G> corresponding to the character
+<chi> with source $H$.
+The group $H$ can be a factor group of <G>, or <G> can be
+a subgroup or factor group of $H$.
+
+|    gap> syl2:= SylowSubgroup( S4, 2 );;
+    gap> Character( syl2, irr[3] );
+    Character( D8, [ 2, 2, 2, 0, 0 ] )
+    gap> S3:= S4 / V4;
+    Group( a, b )
+    gap> Character( S3, irr[3] );
+    Character( Group( a, b ), [ 2, -1, 0 ] )
+    gap> reg:= Character( S4, [ 24, 0, 0, 0, 0 ] );
+    Character( S4, [ 24, 0, 0, 0, 0 ] ) |
+
+*Note* that it is not checked whether the result is really a
+character.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsClassFunction}
+
+'IsClassFunction( <obj> )'
+
+returns 'true' if <obj> is a class function, and 'false' otherwise.
+
+|    gap> chi:= S4.charTable.irreducibles[3];
+    [ 2, 2, -1, 0, 0 ]
+    gap> IsClassFunction( chi );
+    false
+    gap> irr[3];
+    Character( S4, [ 2, 2, -1, 0, 0 ] )
+    gap> IsClassFunction( irr[3] );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsVirtualCharacter}
+
+'IsVirtualCharacter( <obj> )'
+
+returns 'true' if <obj> is a virtual character, and 'false' otherwise.
+For a class function <obj> that does not know whether it is a virtual
+character, the scalar products with all irreducible characters of the
+source of <obj> are computed.  If they are all integral then
+<obj> is turned into a virtual character record.
+
+|    gap> psi:= irr[3] - irr[1];
+    VirtualCharacter( S4, [ 1, 1, -2, -1, -1 ] )
+    gap> cf:= ClassFunction( S4, [ 1, 1, -2, -1, -1 ] );
+    ClassFunction( S4, [ 1, 1, -2, -1, -1 ] )
+    gap> IsVirtualCharacter( cf );
+    true
+    gap> IsCharacter( cf );
+    false
+    gap> cf;
+    VirtualCharacter( S4, [ 1, 1, -2, -1, -1 ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCharacter}
+
+'IsCharacter( <obj> )'
+
+returns 'true' if <obj> is a character, and 'false' otherwise.
+For a class function <obj> that does not know whether it is a
+character, the scalar products with all irreducible characters of the
+source of <obj> are computed.  If they are all integral and nonegative then
+<obj> is turned into a character record.
+
+|    gap> psi:= ClassFunction( S4, S4.charTable.centralizers );
+    ClassFunction( S4, [ 24, 8, 3, 4, 4 ] )
+    gap> IsCharacter( psi ); psi;
+    true
+    Character( S4, [ 24, 8, 3, 4, 4 ] )
+    gap> cf:= ClassFunction( S4, irr[3] - irr[1] );
+    ClassFunction( S4, [ 1, 1, -2, -1, -1 ] )
+    gap> IsCharacter( cf ); cf;
+    false
+    VirtualCharacter( S4, [ 1, 1, -2, -1, -1 ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Irr}
+
+'Irr( <G> )'
+
+returns the list of irreducible characters of the group <G>.
+If necessary the character table of <G> is computed.
+The succession of characters is the same as in 'CharTable( <G> )'.
+
+|    gap> Irr( SolvableGroup( "S4" ) );
+    [ Character( S4, [ 1, 1, 1, 1, 1 ] ), 
+      Character( S4, [ 1, 1, 1, -1, -1 ] ), 
+      Character( S4, [ 2, 2, -1, 0, 0 ] ), 
+      Character( S4, [ 3, -1, 0, 1, -1 ] ), 
+      Character( S4, [ 3, -1, 0, -1, 1 ] ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InertiaSubgroup}
+
+'InertiaSubgroup( <G>, <chi> )'
+
+For a class function <chi> of a normal subgroup $N$ of the group <G>,
+'InertiaSubgroup( <G>, <chi> )' returns the inertia subgroup $I_G(<chi>)$,
+that is, the subgroup of all those elements $g \in <G>$ that satisfy
+$<chi> \^ g = <chi>$.
+ 
+|    gap> V4:= Subgroup( S4, S4.generators{ [ 3, 4 ] } );
+    Subgroup( S4, [ c, d ] )
+    gap> irrsub:= Irr( V4 );
+    &W  Warning: Group has no name
+    [ Character( Subgroup( S4, [ c, d ] ), [ 1, 1, 1, 1 ] ), 
+      Character( Subgroup( S4, [ c, d ] ), [ 1, 1, -1, -1 ] ), 
+      Character( Subgroup( S4, [ c, d ] ), [ 1, -1, 1, -1 ] ), 
+      Character( Subgroup( S4, [ c, d ] ), [ 1, -1, -1, 1 ] ) ]
+    gap> List( irrsub, x -> InertiaSubgroup( S4, x ) );
+    [ Subgroup( S4, [ a, b, c, d ] ), Subgroup( S4, [ a*b^2, c, d ] ),
+      Subgroup( S4, [ a*b, c, d ] ), Subgroup( S4, [ a, c, d ] ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrbitsCharacters}
+
+'OrbitsCharacters( <irr> )'
+
+returns a list of orbits of the characters <irr> under the action of
+Galois automorphisms and multiplication with linear characters in <irr>.
+This is used for functions that need to consider only representatives
+under the operation of this group, like "TestSubnormallyMonomial".
+
+'OrbitsCharacters' works also for <irr> a list of character value lists.
+In this case the result contains orbits of these lists.
+
+*Note* that 'OrbitsCharacters' does not require that <irr> is closed
+under the described action, so the function may also be used to
+*complete* the orbits.
+
+|    gap> irr:= Irr( SolvableGroup( "S4" ) );;
+    gap> OrbitsCharacters( irr );
+    [ [ Character( S4, [ 1, 1, 1, -1, -1 ] ),
+          Character( S4, [ 1, 1, 1, 1, 1 ] ) ],
+      [ Character( S4, [ 2, 2, -1, 0, 0 ] ) ],
+      [ Character( S4, [ 3, -1, 0, -1, 1 ] ),
+          Character( S4, [ 3, -1, 0, 1, -1 ] ) ] ]
+    gap> OrbitsCharacters( List( irr{ [1,2,4] }, x -> x.values ) );
+    [ [ [ 1, 1, 1, -1, -1 ], [ 1, 1, 1, 1, 1 ] ],
+      [ [ 3, -1, 0, 1, -1 ], [ 3, -1, 0, -1, 1 ] ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Storing Subgroup Information}
+
+Many computations for a group character $\chi$ of a group $G$, such as that
+of kernel or centre of $\chi$, involve computations in (normal) subgroups or
+factor groups of $G$.
+
+There are two aspects that make it reasonable to store relevant information
+used in these computations.
+
+First it is possible to use the character table of a group for computations
+with the group.  For example, suppose we know for every normal subgroup $N$
+the list of positions of conjugacy classes that form $N$.  Then we can
+compute the intersection of normal subgroups efficiently by intersecting
+the corresponding lists.
+
+Second one should try to reuse (expensive) information one has computed.
+Suppose you need the character table of a certain subgroup $U$ that was
+constructed for example as inertia subgroup of a character.  Then it may be
+probable that this group has been constructed already.  So one should look
+whether $U$ occurs in a list of interesting subgroups for that the tables
+are already known.
+
+This section lists several data structures that support storing and using
+information about subgroups.
+
+\vspace{5mm}
+
+*Storing Normal Subgroup Information*
+
+In some cases a question about a normal subgroup $N$ can be answered
+efficiently if one knows the character table of $G$ and the $G$-conjugacy
+classes that form $N$, e.g., the question whether a character of $G$
+restricts irreducibly to $N$.
+But other questions require the computation of the group $N$ or even more
+information, e.g., if we want to know whether a character restricts
+homogeneously to $N$ this will in general require the computation of the
+character table of $N$.
+
+In order to do such computations only once, we introduce three components
+in the group record of $G$ to store normal subgroups, the corresponding
+lists of conjugacy classes, and (if known) the factor groups, namely
+
+'nsg': \\        a list of (not necessarily all) normal subgroups of $G$,
+
+'nsgclasses': \\ at position $i$ the list of positions of conjugacy
+                 classes forming the $i$-th entry of the 'nsg' component,
+
+'nsgfactors': \\ at position $i$ (if bound) the factor group
+                 modulo the $i$-th entry of the 'nsg' component.
+
+The functions
+
+'NormalSubgroupClasses',\\
+'FactorGroupNormalSubgroupClasses',\\
+'ClassesNormalSubgroup'
+
+initialize these components and update them.
+They are the only functions that do this.
+
+So if you need information about a normal subgroup of $G$ for that you know
+the $G$-conjugacy classes, you should get it using 'NormalSubgroupClasses'.
+If the normal subgroup was already stored it is just returned, with all the
+knowledge it contains.  Otherwise the normal subgroup is computed and
+added to the lists, and will be available for the next call.
+
+\vspace{3mm}
+
+*Storing information for computing conjugate class functions*
+
+The computation of conjugate class functions requires the computation of
+permutatins of the list of conjugacy classes.  In order to minimize the
+number of membership tests in conjugacy classes it is useful to store
+a partition of classes that is respected by every admissible permutation.
+This is stored in the component 'globalPartitionClasses'.
+
+If the normalizer $N$ of $H$ in its parent is stored in $H$, or if $H$ is
+normal in its parent then the component 'permClassesHomomorphism' is used.
+It holds the group homomorphism mapping every element of $N$ to the
+induced permutation of classes.
+
+Both components are generated automatically when they are needed.
+
+% For example, conjugate
+% classes must have same representative order and centralizer order, and if
+% the group of table automorphisms is known then its orbits provide such a
+% partition.  Both are independent of the class function for that a conjugate
+% shall be computed.
+% 
+% If the full group of table automorphisms is known (that is, stored in the
+% 'charTable' component of $H$) it can be used.  Namely we have to
+% compute the image classes under the action of the conjugating element only
+% for the points of a base of this permutation group.
+% 
+% Suppose we are given a class function of the group $H$, and the
+% conjugating element $g$ lies in the normalizer $N$ of $H$ in its parent
+% group.  Then we can write $g$ in terms of the generators of $N$, and
+% provided that the action of these generators on the classes of $H$ are
+% known we can compute the action of $g$.
+% 
+% Thus the component 'permInfo' is initialized for $H$ when a conjugate class
+% function under the action of a normalizing element of the parent group
+% shall be computed.  This is a record with at least the component
+% 'partition'.
+
+\vspace{3mm}
+
+*Storing inertia subgroup information*
+
+Let $N$ be the normalizer of $H$ in its parent, and $\chi$ a character
+of $H$.  The inertia subgroup $I_N(\chi)$ is the stabilizer
+in $N$ of $\chi$ under conjugation of class functions.  Characters with
+same value distribution, like Galois conjugate characters, have the
+same inertia subgroup.  It seems to be useful to store this information.
+For that, the 'inertiaInfo' component of $H$ is initialized when needed,
+a record with components 'partitions' and 'stabilizers', both lists.
+The 'stabilizers' component contains the stabilizer in $N$ of the
+corresponding partition.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NormalSubgroupClasses}
+
+'NormalSubgroupClasses( <G>, <classes> )'
+
+returns the normal subgroup of the group <G> that consists of the
+conjugacy classes whose positions are in the list <classes>.
+
+If '<G>.nsg' does not contain the required normal subgroup, and if $G$
+contains the component '<G>.normalSubgroups' then the result and the
+group in '<G>.normalSubgroups' will be identical.
+
+|    gap> ccl:= ConjugacyClasses( S4 );
+    [ ConjugacyClass( S4, IdAgWord ), ConjugacyClass( S4, d ), 
+      ConjugacyClass( S4, b ), ConjugacyClass( S4, a ), 
+      ConjugacyClass( S4, a*d ) ]
+    gap> NormalSubgroupClasses( S4, [ 1, 2 ] );
+    Subgroup( S4, [ c, d ] ) |
+
+The list of classes corresponding to a normal subgroup is returned by
+"ClassesNormalSubgroup".
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ClassesNormalSubgroup}
+
+'ClassesNormalSubgroup( <G>, <N> )'
+
+returns the list of positions of conjugacy classes of the group <G> that
+are contained in the normal subgroup <N> of <G>.
+
+|    gap> ccl:= ConjugacyClasses( S4 );
+    [ ConjugacyClass( S4, IdAgWord ), ConjugacyClass( S4, d ), 
+      ConjugacyClass( S4, b ), ConjugacyClass( S4, a ), 
+      ConjugacyClass( S4, a*d ) ]
+    gap> V4:= NormalClosure( S4, Subgroup( S4, [ S4.4 ] ) );
+    Subgroup( S4, [ c, d ] )
+    gap> ClassesNormalSubgroup( S4, V4 );
+    [ 1, 2 ] |
+    
+The normal subgroup corresponding to a list of classes is returned by
+"NormalSubgroupClasses".
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FactorGroupNormalSubgroupClasses}
+
+'FactorGroupNormalSubgroupClasses( <G>, <classes> )'
+
+returns the factor group of the group <G> modulo the normal subgroup of
+<G> that consists of the conjugacy classes whose positions are in the
+list <classes>.
+
+|    gap> ccl:= ConjugacyClasses( S4 );
+    [ ConjugacyClass( S4, IdAgWord ), ConjugacyClass( S4, d ), 
+      ConjugacyClass( S4, b ), ConjugacyClass( S4, a ), 
+      ConjugacyClass( S4, a*d ) ]
+    gap> S3:= FactorGroupNormalSubgroupClasses( S4, [ 1, 2 ] );
+    Group( a, b ) |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Class Function Records}
+
+Every class function has the components
+
+'isClassFunction' : \\  always 'true',
+
+'source': \\  the underlying group (or character table),
+
+'values': \\  the list of values, corresponding to the
+              'conjugacyClasses' component of 'source',
+
+'operations': \\ the operations record which is one of
+                 'ClassFunctionOps', 'VirtualCharacterOps', 'CharacterOps'.
+
+Optional components are
+
+'isVirtualCharacter': \\ The class function knows to be a virtual
+                         character.
+
+'isCharacter': \\ The class function knows to be a character.
+

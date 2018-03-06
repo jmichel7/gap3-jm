@@ -1,0 +1,1287 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  xgaplatt.tex                XGAP documentation               Frank Celler
+%%
+%A  @(#)$Id: xgaplatt.tex,v 1.1.1.1 1996/12/11 12:39:53 werner Exp $
+%%
+%Y  Copyright 1995-1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%H  $Log: xgaplatt.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:39:53  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 1.3  1995/08/16  12:49:48  fceller
+%H  fixed some more typos
+%H
+%H  Revision 1.2  1995/08/10  18:04:54  fceller
+%H  fixed some typos
+%H
+%H  Revision 1.1  1995/08/09  10:49:05  fceller
+%H  Initial revision
+%%
+\def\XGAP{{\sf XGAP}}
+\Chapter{XGAP - Graphic Lattices}
+
+{\XGAP} provides a graphical interface to the  lattice or partial lattice
+of subgroups of groups.  For finitely  presented groups it gives you easy
+access to the   low  index,  prime quotient   and   Reidemeister-Schreier
+algorithms in order to build a partial  lattice interactively.  For other
+types of groups  it provides easy access to  many of  the group functions
+(for example, the normalizer, normal subgroups, and Sylow subgroups).
+
+This chapter explains how to  use this interface.  Using various examples
+the first  sections "The Subgroup  Lattice of $D_8$", "A Partial Subgroup
+Lattice of $S_6$", "A Partial Subgroup Lattice of  $C_2$", and "A Partial
+Subgroup  Lattice  of $K_3$" explain  most  features.  The later sections
+give details about the various options and menus available.  This chapter
+will  not describe  how  to write  your   own programs  using the graphic
+extension supplied  by {\XGAP}, see  chapter "XGAP  - Graphic Extensions"
+for details.
+
+It is assumed that you have already started {\XGAP}.  On most systems you
+do this by typing
+
+|    user@host:~> xgap |
+
+on  the  command line.   Ask your  system administrator  if this does not
+work.  This   command  will create   a new window,   the so-called {\GAP}
+window, in which {\GAP} is awaiting your input.   Depending on the window
+system and window manager  you use, placing a new  window on your  screen
+might be  done  automatically or might  require  you to use the  mouse to
+choose a position for the  window and pressing the  left mouse button  to
+place the window.
+
+The small arrow   or cross you see on   your screen is  called a pointer.
+Although the device used to move this pointer can be anything, a mouse, a
+trackball, a glide-pad, or even something as exotic as a rat, we will use
+the term mouse to refer to this pointer device.
+
+In  case that some computation  takes  longer than expected, for instance
+the low index and the prime quotient can be quite time consuming, you can
+always interrupt  a computation  by  making the {\GAP}  window active and
+pressing <CTR-C>.  Again, making  a  window active  is system and  window
+manager dependent.   In most cases  you either have  to  move the pointer
+inside  the {\GAP} window or you  have to click on the   title bar of the
+{\GAP} window.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Subgroup Lattice of $D_8$}
+
+This  section   gives  you an   example    on how  to    use the function
+'GraphicLattice' (see "GraphicLattice" for  details), which will  display
+the Hasse diagram of the subgroup lattice of a given group.
+
+Using the dihedral group of  size $8$ as  example the following will show
+you most features of the 'GraphicLattice' program.  This exercise is best
+carried out in front of {\XGAP}, trying the various commands yourself.
+
+First  you   have to define a  group   in {\GAP},  this example  uses the
+dihedral group defined as permutation group.
+
+|    gap> d8 := DihedralGroup(8);
+    Group( (1,2,3,4), (2,4) )
+    gap> d8.name := "d8";; |
+
+'ConjugacyClassesSubgroups' computes and returns the conjugacy classes of
+subgroups, so summing  up the sizes  of the classes   tells you how  many
+elements the lattice has.
+
+|    gap> Sum( List( ConjugacyClassesSubgroups(d8), Size ) );
+    10 |
+
+$10$ is small enough to use  'GraphicLattice' without painting the screen
+black.  After you have entered
+
+|    gap> s := GraphicLattice(d8);
+    <graphic lattice> |
+
+{\XGAP} will  open a window containing  a  new graphic  sheet, a menu bar
+(menus are described below) above the graphic sheet and a title.  On most
+systems the  title will be  either below the  graphic sheet or  above the
+menu bar.  The dimension of the graphic sheet is fixed, changing the size
+of the window will   *not* change the size   of  the graphic sheet,   see
+"GraphicLattice,  Resize Menu"  how to resize  the  graphic sheet.  It is
+possible  that the graphic  sheet is larger (depending  on the lattice it
+might be much larger) than  the  window.  In  this  case the window  will
+contain so-called scrollbars which allow you to select the portion of the
+graphic sheet which will be displayed.
+
+'GraphicLattice' then draws the  Hasse diagram onto the graphic sheet and
+finally returns a {\GAP} record describing this sheet.
+
+The   following initial  remarks  can    be  made  about  the   graphical
+representation of the subgroup lattice\:
+
+-- The vertex representing the trivial subgroup is labeled $1$.
+
+-- Vertices representing subgroups of the same size are drawn at the same
+height.  In  our example the subgroups that  belong to  the vertices $2$,
+$3$, $4$, $5$ and $6$ all have size 2, and the subgroups of $7$, $8$, and
+$9$ have  size $4$.   The default  behaviour is  to place a  vertex above
+another one if the  size of the subgroup  represented by the first vertex
+is larger     than  the size    of subgroup   of the  second,     but see
+"GraphicLattice" for details.
+
+-- Vertices  belonging to the same  conjugacy   class  are placed closely
+together.  In our example the subgroups of $5$ and $6$ form one conjugacy
+class.
+
+The initial placement  of the vertices  chosen by 'GraphicLattice'  might
+not be optimal or  you might want  to choose a  different one in order to
+exploit certain  features  of the diagram.  It   is therefore possible to
+move the vertices around using the mouse.
+
+The mouse  together with the  left mouse button can be  used to  move and
+select vertices. A selected  vertex is represented  by a thicker  circle,
+colored red  if your screen  supports color.   For  example, in  order to
+*move* vertex $6$ use  the mouse to  place the pointer inside  the circle
+around $6$  and  press the *left*  mouse button.   Keep the  mouse button
+pressed and start  moving the  mouse.   The vertex  will  now follow  the
+pointer.  Because of the height restrictions given  by the size it is not
+possible to move $6$ above $7$, $8$ or $9$ or  below $1$.  If you release
+the  left mouse button vertex  $6$ will stay at  its current position and
+the rest of  the conjugacy class (in  this example $5$)  will be moved to
+this new position.
+
+In order  to  *select* vertex $10$  place the  pointer inside  the circle
+around  $10$, press the *left* mouse  button and  release it immediately.
+Do not move the mouse while you hold down the left  mouse button.  Vertex
+$10$ now has a slightly thicker  boundary and is red  if you have a color
+screen.  There are  two different ways  to select more than  one  vertex,
+see "A Partial Subgroup  Lattice of $S_6$" or "GraphicLattice,  Selecting
+Vertices".
+
+On the top of the window, above the graphic sheet,  you can see a list of
+menu names\:\  <GAP>, <Resize>, <Subgroups>, and  <CleanUp>.  In order to
+open any of these *pull  down menus* place the  pointer inside the button
+containing   the menu name  and press  the  left  mouse button.  Keep the
+button pressed.  A pull down menu will be shown and by moving the pointer
+down you  can choose  a   menu entry.  By choosing    an entry and   then
+releasing  the  mouse button  the entry   is  selected, the corresponding
+function is executed and  the pull down menu is  closed.  If  you release
+the mouse button while the pointer is outside the pull down menu the menu
+is closed without selecting any entry.
+
+Now select  <Relabel Vertex> from the  <CleanUp> menu.  If this  entry is
+not available you have  failed to select   vertex $10$.  After  selecting
+<Relabel Vertex> a small  dialog box is opened  asking for a label.  Type
+in |D8| and press the <return> key or click on <OK>.  The label of vertex
+$10$ will now be changed to $D8$.
+
+In order to find  out which vertex  represents the centre of $D_8$, first
+select vertex $D8$ and then the menu entry <Centres> from the <Subgroups>
+menu.   In  case of  a  color screen, vertex $D8$   will  be selected and
+colored  red, and vertex  $2$ will  be selected  and  colored green.  The
+color green  indicates that vertex $2$  is  the result  of a computation.
+There will also be a message in the {\GAP} window  saying that vertex $2$
+represents the centre of the group belonging to vertex $D8$.
+
+|    &I  Centre(D8) = 2 |
+
+Most of  the menu entries  in <Subgroups> should be self-explanatory, for
+details and  the   difference   between  <Closure>  and    <Closures> see
+"GraphicLattice, Subgroups Menu".
+
+If you have selected some  vertices (in the example  $D8$ and $2$ are now
+selected), and you  want to investigate  the  subgroups corresponding  to
+these vertices further in {\GAP},  the function 'Selected' will return  a
+list of these subgroups.
+
+|    gap> Selected(s);
+    [ d8, Subgroup( d8, [ (1,3)(2,4) ] ) ] |
+
+On the other hand, the functions supplied via the <Subgroups> menu are by
+far not all functions applicable to groups.  In  order to show results of
+a computation   in {\GAP} in  the diagram,   you  can use  'Select'.  The
+function 'Select' allows you to  mark any series or  subgroup of $D_8$ in
+the diagram.
+
+For instance,  $D_8$ is  represented as  a permutation group,  so you can
+compute a stabilizer chain in {\GAP}.
+
+|    gap> b := Base(d8);
+    [ 2, 1 ]
+    gap> sc := [ d8, Stabilizer(d8,1), TrivialSubgroup(d8) ];
+    [ d8, Subgroup( d8, [ (2,4) ] ), Subgroup( d8, [  ] ) ]
+    gap> Select( s, last );
+    [ <vertex "D8">, <vertex "3">, <vertex "1"> ] |
+
+This stabilizer chain corresponds to the vertices $D8$, $3$ and $1$ which
+will now be selected.  To summarize the  above\:\ the function 'Selected'
+can  be  used to  transfer  information from the   diagram to {\GAP}, the
+function 'Select' can be used to  transfer information from {\GAP} to the
+diagram.
+
+While pull down menus are bound to a menu button and  will be pulled down
+as soon as  this button is  pressed, there is  another type of  menu, the
+so-called *pop up menu*.  One of these pop up menus can be used to adjust
+the size of the graphic sheet.  In order to adjust the left margin, place
+the pointer  outside of any  vertex and press  the *right*  mouse button,
+keep the button pressed.  A small menu will pop up.
+
+|    Left Margin
+    Right Margin
+    Top Margin
+    Bottom Margin |
+
+Select <Left Margin>.   This will narrow  the graphic sheet,  setting the
+new left margin  to the x coordinate of   your mouse click.   Repeat this
+process with the right margin.  Depending on the window system and window
+manager   narrowing  the graphic   sheet   might also   narrow the window
+containing  the  graphic sheet.  If  not,  you  have to use  the standard
+method of your window system/manager to change the size of this window.
+
+In order to  finish this example, close  the  window by selecting  <close
+graphic   sheet>  from  the  <GAP>  menu.    This will  close  the window
+containing the Hasse diagram of $D_8$.
+
+In this example you have learned, how to display the Hasse diagram of the
+subgroup lattice of a group using  'GraphicLattice', how to use the mouse
+to move and  select  vertices, how to select   a  menu entry  and  how to
+transfer information between the Hasse diagram  and {\GAP} using 'Select'
+and 'Selected'.
+
+In  order to learn  more about  the menus  <GAP>, <Resize> and <CleanUp>,
+which  were only mentioned  very briefly, see "GraphicLattice, GAP Menu",
+"GraphicLattice, Resize Menu" and  "GraphicLattice, CleanUp Menu".   This
+example  also didn\'t    discuss  two   additional  menus,  namely    the
+<Information> and <Sheet  Menu>.  The  first is  discussed in "A  Partial
+Subgroup Lattice  of $S_6$"  and "GraphicLattice, Information  Menu", the
+latter in "GraphicLattice, Sheet Menu".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{A Partial Subgroup Lattice of $S_6$}
+
+This section investigates the subgroup lattice of $S_6$.
+
+|    gap> s6 := SymmetricGroup(6);
+    Group( (1,6), (2,6), (3,6), (4,6), (5,6) )
+    gap> s6.name := "s6";;
+    gap> cc := ConjugacyClassesSubgroups(s6);;
+    gap> Sum( List( cc, Size ) );
+    1455 |
+
+As  there are $1455$ subgroups, displaying the whole lattice of subgroups
+would not be helpful  because there are simply  too many.  Therefore this
+example builds  only a partial subgroup  lattice.  We assume that you are
+familiar with  the general  ideas,  mouse actions and menus,   which were
+discussed in "The Subgroup Lattice of $D_8$".
+
+In  order  to build  a  partial  lattice, use   'InteractiveLattice' (see
+"InteractiveLattice") instead of  the  function 'GraphicLattice'.   After
+you have entered
+
+|    gap> s := InteractiveLattice(s6);
+    <interactive graphic lattice> |
+
+{\XGAP}  will open  a window  containing  a new  graphic  sheet with  two
+connected vertices   labeled  $1$ and $2$.     Vertex  $1$ represents the
+trivial subgroup and  vertex $2$ the group $S_6$.   Vertex $2$ is already
+selected, so it will be red if your screen supports color.
+
+In order  to  find all subgroups   of size $60$, we  cannot   not use the
+<Subgroups> menu directly, so go back into the  {\GAP} window and extract
+the conjugacy classes of <cc> whose representatives have size $60$.
+
+|    gap> c60 := Filtered( cc, x -> Size(Representative(x)) = 60 );;
+    gap> r60 := List( c60, Representative );
+    [ Subgroup( s6, [ (1,3)(2,4), (1,6,4) ] ), 
+      Subgroup( s6, [ (1,3)(2,4), (1,3,4)(2,5,6) ] ) ] |
+
+Again,  use the  function 'Select'  to  add  these two subgroups  to your
+partial lattice.  The Hasse diagram now contains four vertices.
+
+|    gap> Select( s, r60 );
+    [ <vertex "3">, <vertex "4"> ] |
+
+The  new  vertices  are   selected automatically.    Selecting <Conjugate
+Subgroups> from the <Subgroups> menu adds the complete conjugacy classes.
+In order  to find out what  type of subgroups  we are  looking at,  use a
+another kind of menu not discussed so far, namely the <Information> menu.
+Place the pointer inside vertex  $3$, press the  *right* mouse button and
+release it immediately.  This  will pop up a  new window, containing some
+text describing  vertex $3$ (as  mentioned above, depending on the window
+system   and window manager,  placing   this window on  the  screen might
+require some interaction with the mouse).
+
+|    Size            2^2*3*5
+    Index           12
+    IsAbelian       unknown
+    IsCentral       unknown
+    IsCyclic        unknown
+    IsNilpotent     unknown
+    IsNormal        unknown
+    IsPerfect       unknown
+    IsSimple        unknown
+    IsSolvable      unknown
+    Isomorphism     unknown |
+
+Place the pointer on top of the entry  <Isomorphism> and press the *left*
+mouse button.  After a while this entry is changed to
+
+|    Isomorphism     A5 |
+
+telling you that the subgroup represented by  vertex $3$ is isomorphic to
+the alternating group  on   five symbols.  Select  <close>  to  close the
+<Information>  menu.  Repeat this with vertex  $4$, you will see that the
+subgroup of  vertex $4$ is also isomorphic   to $A_5$, however  these two
+$A_5$ inside $S_6$ are  not conjugate in $S_6$.   The information menu is
+described in detail in "GraphicLattice, Information Menu".
+
+Now we want to compute the  normalizers of the  elements of the conjugacy
+class containing the  subgroup of vertex  $3$.   You could either  select
+vertex  $3$ and  then  <Normalizers>  and repeat   this process for   the
+vertices $5$ to $9$, or you can first select the vertices $3$, $5$ to $9$
+and  then select <Normalizers>.  But how  to select more than one vertex?
+If you first select $3$ and  then $5$, vertex $3$  will get deselected as
+soon as $5$ gets selected.  However, if you  select vertex $3$, place the
+pointer inside vertex $5$, hold down the <SHIFT> key on your keyboard and
+then select vertex $5$ using  the left mouse button,  vertex $5$ will  be
+selected in addition to  vertex $3$.  Another  method to select more than
+one  vertex is  to  use  the  rubber   band  to catch vertices  inside  a
+rectangle.  Place  the pointer  left and  a  bit  higher than  vertex $3$
+*outside*  any other vertex.   Press the *left*  mouse button and hold it
+down.  Now, using  the mouse, move the  pointer right and slightly  below
+vertex $9$.  You  see a rectangle, one corner  at your start position and
+the other   following the pointer.   If  vertex $3$,  $5$ to $9$  are all
+inside this rectangle, release the mouse  button.  Now these vertices are
+selected.  Select <Normalizers> from the  <Subgroups> menu to compute and
+display the normalizers.
+
+Now select   vertex  $3$ and  $12$ and   compute   the intersection.  The
+intersection is of size $10$.  Select this intersection and use  'Select'
+to get a {\GAP} record describing the subgroup.
+
+|    gap> l := Selected(s);
+    [ Subgroup( s6, [ (2,3)(4,6), (1,2)(3,4) ] ) ]
+    gap> u := l[1];
+    Subgroup( s6, [ (2,3)(4,6), (1,2)(3,4) ] ) |
+
+In order  to find out which subgroups  of the complete lattice  lie above
+the subgroup <u> you can  use the following  sequence of {\GAP} commands.
+<cc>,   which  was  defined above,   contains   all conjugacy  classes of
+subgroups of $S_6$.
+
+|    gap> l := List(cc, x->Filtered(Elements(x), y->IsSubgroup(y,u)));;
+    gap> l := Concatenation(l);
+    [ Subgroup( s6, [ (1,6,2,3,4), (1,4)(3,6) ] ), 
+      Subgroup( s6, [ (1,6,2,3,4), (1,4)(3,6), (1,6,4,3) ] ), 
+      Subgroup( s6, [ (1,3)(2,4), (1,6,4) ] ), 
+      Subgroup( s6, [ (1,3)(2,6), (1,3,6)(2,4,5) ] ), 
+      Subgroup( s6, [ (1,3)(2,4), (1,6,4), (4,6) ] ), 
+      Subgroup( s6, [ (1,3)(2,6), (1,3,6)(2,4,5), (3,6,4,5) ] ), 
+      Subgroup( s6, [ (1,5,2,4,6), (2,3)(5,6) ] ), s6 ]
+    gap> Select( s, l ); |
+
+There is another feature we have not seen yet.  Close the current graphic
+sheet and start again with a fresh one.
+
+|    gap> s := InteractiveLattice(s6); |
+
+In order to compute a Sylow $2$ subgroup select <Sylow Subgroup> from the
+<Subgroups> menu.   A small dialog box  will  pop up asking  for a prime,
+type in  $2$ and press <return> or  click on <OK>.   Now select  this new
+vertex $3$   representing the Sylow $2$  subgroup  and compute its normal
+subgroups.  This is rather slow because the  function checks for each new
+vertex if the corresponding  subgroup is conjugate to  an old one  of the
+same size.  There  is however a  limit on the  index of the normalizer or
+subgroup up to which this test is performed.
+
+|    gap> s.limits.conjugates;
+    100 |
+
+If  'limit.conjugates' contains a   positive  number  the index  of   the
+normalizer of the new subgroup is checked. If 'limit.conjugates' contains
+a negative number, only the index of the  subgroup itself is checked.  If
+the index  is less  than the  absolute  value then the conjugacy  test is
+carried out.  Change this limit to $-10$.
+
+|    gap> s.limits.conjugates := -10;
+    -10 |
+
+Select vertex $3$   and compute a  random conjugate  by selecting <Random
+Conjugate> from the <Subgroups> menu.  Select this new vertex and compute
+its  normal subgroups.  You will  see  that now  the vertices  of the new
+subgroups appear  faster on  the   graphic sheet, however,  they  have  a
+different shape.  They are  represented by a square  instead of a circle.
+A square  is meant as  a danger sign,  because {\GAP} has not  checked if
+subgroups associated  with square vertices  are  conjugate to any  of the
+other subgroups.  Therefore these subgroups might be (and in this example
+will be) conjugate to an old subgroup.
+
+In order  to untangle the Hasse diagram you  can  move the new (selected)
+vertices  en block.  Hold down  the <SHIFT> key and   move any of the new
+vertices to the right.  All selected vertices will automatically be moved
+as soon as you release the left mouse button.
+
+This is  now the  end  of the investigation   of  the (partial)  subgroup
+lattice   of  $S_6$, close the    graphic  sheet(s) using  <close graphic
+lattice> of the <GAP> menu.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{A Partial Subgroup Lattice of $C_2$}
+
+This  section  investigates the  following  finitely presented group, the
+so-called Cavicchioli-group $C_2$.
+$$
+\langle a, b \;;\; aba^{-2}ba=b, (b^{-1}a^3b^{-1}a^{-3})^2=a^{-1}\rangle.
+$$
+
+The following {\GAP} commands define $C_2$.
+
+|    gap> f := FreeGroup( "a", "b" );  a := f.1;;  b := f.2;;
+    Group( a, b )
+    gap> c2 := f / [ a*b*a^-2*b*a/b, (b^-1*a^3*b^-1*a^-3)^2*a ];
+    Group( a, b )
+    gap> c2.name := "c2";; |
+
+We  again  assume that you are  familiar   with the general  ideas, mouse
+actions  and menus,  which were  discussed  in "The  Subgroup Lattice  of
+$D_8$" and "A Partial Subgroup Lattice of $S_6$".
+
+In order  to build a  partial lattice of a  finitely presented group, you
+again use the function  'InteractiveLattice'.  But if the first  argument
+to 'InteractiveLattice' is a finitely presented group the available menus
+are different  from the example in  the previous section.  After you have
+entered
+
+|    gap> s := InteractiveLattice(c2);
+    <interactive graphic lattice> |
+
+{\XGAP} will open a window  containing a new  graphic sheet.  Compared to
+the  interactive  lattice of  a permutation   group  as described  in the
+previous section, there are the following differences\:
+
+-- There is only one  vertex instead of two.   This vertex labeled $1$ is
+not the trivial  group, as in the last  two sections but  the whole group
+$C_2$.  There is no vertex for the trivial subgroup (yet).
+
+-- The shape of  vertex $1$ is not a  circle but a diamond.  Whenever you
+see a diamond this  means that the subgroup  belonging to this vertex  is
+normal in the whole group *and* {\GAP} knows this fact.
+
+-- If you pull down the <Subgroups> menu, you will see  that this menu is
+now   very different.   It gives  you   access to various algorithms  for
+finitely presented  groups  but most of  the  entries  from the last  two
+examples  are missing because most of  the {\GAP}  functions behind these
+entries are not applicable to (infinite) finitely presented groups.
+
+This  example will show  you how to prove that  $C_2$ is infinite.  First
+look at the abelian invariants in order to see what the commutator factor
+group is.   In  order  to  compute the abelian    invariants pop  up  the
+<Information> menu.   This is done in exactly  the same manner  as in the
+previous section.  Place the pointer inside vertex $1$, press the *right*
+mouse button and release   it  immediately.  This <Information> menu   is
+described  in   detail in  "InteractiveLattice  for FpGroups, Information
+Menu".
+
+|    Index                  1
+    IsNormal               true
+    Abelian Invariants     unknown
+    Presentation           2 gens, 2 rels
+    Coset Table            known
+    Factor Fp Group        unknown |
+
+This tells you what {\GAP} already knows  about the group associated with
+vertex $1$.   In order to compute the  abelian invariants click onto this
+line.  After a while this entry will change to
+
+|    Abelian Invariants     perfect |
+
+telling you  that $C_2$  is perfect.   So none   of the  <Subgroups> menu
+entries <Abelian  Prime Quotient>,  <All Overgroups>,  <Conjugacy Class>,
+<Cores>,  <Derived Subgroups>,  <Intersection>,   <Normalizer> or  <Prime
+Quotient> will compute any new subgroups.
+
+In order  to avoid accidents  the menu entries  <Abelian Prime Quotient>,
+<All Overgroup>, <Conjugacy Class>, <Epimorphisms>, <Low Index Subgroups>
+and  <Prime  Quotient> from the  <Subgroups>  menu are only selectable if
+exactly one vertex is selected because the functions behind these entries
+are in general quite time and space consuming.
+
+Close the <Information> window and select <Low  Index Subgroups> from the
+<Subgroups> menu.  A small dialog box will  pop up asking  for a limit on
+the index.  Type in $12$ and press <return> or click on <OK>.  In general
+it  is hard to say what   kind of index  limit  will still work, for some
+groups even $5$ might be too  much while for others  $20$ works fine, see
+also "LowIndexSubgroupsFpGroup".
+
+{\GAP} computes $10$ subgroups  of index $11$  and $8$ subgroups of index
+$12$.  If you now start to check the abelian invariants of the index $12$
+subgroups you will  find out that all  subgroups represented by  vertices
+$2$ to $9$  have  a finite  commutator  factor group except  the subgroup
+belonging  to  vertex  $3$    which has  an infinite    abelian quotient.
+Therefore the group $C_2$ itself is infinite.
+
+Now we want to investigate $C_2$ a little further using {\GAP}.  Selected
+vertices  $2$, $3$, and   $4$ and  switch   to  the {\GAP}  window.   Use
+'Selected' to get the subgroups associated with these vertices.
+
+|    gap> u := Selected( s );
+    [ Subgroup( c2, [ a, b*a^2*b^-2, b*a*b^2*a^-1*b^-1*a^-1*b^-1,
+                      b^4*a^-2*b^-2, b^2*a^3*b^-1*a^-1*b^-2 ] ), 
+    Subgroup( c2, [ a, b^2*a*b^-1*a^-1*b^-1, b^3*a^-1*b^-1,
+                    b*a*b*a^3*b^-1 ] ), 
+    Subgroup( c2, [ a, b^2*a*b^-1*a^-1*b^-1, b*a^3*b^-2, b^4*a^-1*b^-3, 
+                    b*a*b^3*a^-1*b^-1 ] ) ] |
+
+'OperationCosetsFpGroup' computes for each of  these subgroups $u_i$  the
+operation of  $C_2$ on its cosets. The  operation on $u_i$ is therefore a
+permutation representation of the factor group $$C_2 / Core(u_i).$$ Using
+'DisplayCompositionSeries' we can identify these factor groups.
+
+|    gap> p := List( u, x -> OperationCosetsFpGroup( c2, x ) );;
+    gap> for x  in p  do DisplayCompositionSeries(x);  Print("\n\n");  od;
+    <G> (2 gens, size 95040)
+     I M(12)
+    <1> (0 gens)
+
+    <G> (2 gens, size 660)
+     I A(1,11) = L(2,11) ~ B(1,11) = O(3,11) ~ C(1,11) = S(2,11)
+     I ~ 2A(1,11) = U(2,11)
+    <1> (0 gens)
+
+    <G> (2 gens, size 239500800)
+     I A(12)
+    <1> (0 gens) |
+
+So $C_2$  contains the Mathieu group  $M_{12}$, the alternating  group on
+$12$ symbols and $PSL(2,11)$ as  factor groups.  Therefore it would  have
+been possible to   find vertex $3$ using  <Epimorphisms>  instead of <Low
+Index Subgroups>.  Close  the graphic sheet by  selecting  the menu entry
+<close graphic sheet> from the <GAP> menu and start with a fresh one.
+
+|    s := InteractiveLattice(c2);
+    <interactive graphic lattice> |
+
+Select <Epimorphisms> from  the <Subgroups> menu.   This  pops up a  menu
+similar to the <Information> menu  (see "InteractiveLattice for FpGroups,
+Subgroups Menu").
+
+|    Sym(n)
+    Alt(n)
+    Sym(n) > Alt(n)
+    PSL(d,q)
+    Library
+    User Defined |
+
+Select  <Library>, which  pops   up a file  selector.   Choose  the  file
+|l2_11.grp| and click on <OK>.  After a while the entry will change to
+
+|    Library (l2_11)      1 found |
+
+telling  you,  that  {\GAP}  has   found $1$  epimorphism   (up to  inner
+automorphisms  of  $PSL(2,11)$) from  $C_2$   onto $PSL(2,11)$.  Click on
+<display> to create a  new vertex representing a  subgroup $u$ such  that
+the   factor group of  $C_2  /  Core(u)$  is  isomorphic to  $PSL(2,11)$.
+Instead of <Library> you could have chosen <PSL(d,q)>.
+
+This  is now  the  end of  the investigation   of the (partial)  subgroup
+lattice  of $C_2$, you have  seen  that $C_2$   is infinite and  contains
+$M_{12}$, $Alt(12)$, and $PSL(2,11)$ as factor groups.  Close the graphic
+sheet by selecting <close graphic sheet> from the <GAP> menu.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{A Partial Subgroup Lattice of $K_3$}
+
+This  section  investigates the  following  finitely presented group, the
+trefoil knot group $K_3$.
+$$
+    \langle a, b \;;\; aba = bab \rangle
+$$
+
+|    gap> f := FreeGroup( "a", "b" );
+    Group( a, b )
+    gap> k3 := f / [ f.1*f.2*f.1 / (f.2*f.1*f.2) ];
+    Group( a, b )
+    gap> s := InteractiveLattice(k3);
+    <interactive graphic lattice> |
+
+If you compute the   abelian invariants of  $K_3$  you will see  that the
+commutator factor group  is isomorphic to the  infinite cyclic group.  If
+you try  to compute the   derived subgroups  {\GAP}  will print  a  short
+warning
+
+|    &W  abelian quotient of 1 is infinite. |
+
+because  'InteractiveLattice'  cannot   deal  with subgroups of  infinite
+index.  So  use <Prime Quotient> to   compute a $2$-quotient  of $K_3$ of
+class $4$ instead.  This creates a new vertices $2$, $3$, $4$ and $5$ for
+the $2$-quotients of  class $1$ up to $4$  which however have a different
+shape. They are diamonds inside a square.  A diamond again indicates that
+the associated subgroup  is normal.  A square is  meant as a danger sign,
+whenever you see a square, {\GAP} has not yet  computed a coset table for
+this subgroup in the group.  Because no coset  table is known, {\GAP} has
+*not  checked* if this  subgroup is  equal or conjugate   to any of these
+other  subgroups nor has  it checked  any  inclusions.  So it is possible
+that  there are two  vertices on  the sheet (where    at least one has  a
+square) which   represent  the *same* subgroup.    We   will see  such  a
+constellation now.
+
+In order to further investigate $K_3$, compute the  subgroups of index at
+most $4$.  There is one normal subgroup of  index $2$ belonging to vertex
+$8$ and one of index $4$.  However, because the quotient  of $K_3$ by the
+subgroup of vertex $2$ is  the largest elementary abelian $2$-quotient of
+$K_3$, the subgroups belonging to vertex  $2$ and $8$ must  be equal.  In
+order  to check this,  pop up the  <Information> menu for vertex $2$, and
+compute a coset table.  As soon  as {\GAP} knows  a coset table it checks
+this table against the other known coset tables. If it discovers that two
+subgroups are equal, {\GAP} deletes   one vertex and updates the  partial
+lattice.  In this example, {\GAP} deletes vertex $8$, and connects vertex
+$9$ with $2$.
+
+You can force this check for a set of vertices by selecting the vertices,
+in our example  $3$, $4$ and $5$, and  then <Check Coset Tables> from the
+<CleanUp> menu.  But keep in mind that  especially the results of a prime
+quotient can have huge indices.
+
+This is  now   the end  of the investigation   of  the (partial) subgroup
+lattice of $K_3$,  close the graphic  sheet  by selecting <close  graphic
+sheet> from the <GAP> menu.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicLattice}
+
+'GraphicLattice( <g> )'
+
+'GraphicLattice' creates a new graphic sheet containing the Hasse diagram
+of the  subgroup lattice of <g>.  The  next next sections describe how to
+select  and  move  vertices   and the  following  sections  describe  the
+available menus.
+
+|    gap> GraphicLattice( DihedralGroup(8) );
+    <graphic lattice> |
+
+'GraphicLattice( <g>, <width>, <height> )'
+
+In   this form  'GraphicLattice'  creates  a   graphic sheet  of  initial
+dimensions <width>    times <height>.  It is   however  still possible to
+change these dimensions  later using either "GraphicLattice, Resize Menu"
+or "GraphicLattice, Sheet Menu".
+
+'GraphicLattice( <g>, \"prime\"\ )'
+
+If you supply the parameter \"prime\", then a vertex will be placed above
+another  vertex  if the   number  of prime factors   in  the size  of the
+corresponding subgroup is larger than the number of  prime factors in the
+size  of  the  subgroup belonging   to  the second  vertex.   The default
+behaviour is to compare the sizes instead of number of prime factors.
+
+|    gap> GraphicLattice( CyclicGroup(20) );;
+    gap> GraphicLattice( CyclicGroup(20), "prime" );; |
+
+'GraphicLattice( <g>, \"normal subgroups\"\ )'
+
+If you supply the parameter  \"normal subgroups\", then only the  lattice
+of normal subgroups of <g> will be drawn on the graphic sheet.
+
+|    gap> GraphicLattice( DihedralGroup(8), "normal subgroups" );' |
+
+It is possible to abbreviate \"prime\"\  and \"normal subgroups\"\ and to
+supply one or both.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicLattice, Moving Vertices}
+
+In order to move a vertex, place the  pointer inside the vertex using the
+mouse, and press the *left* mouse button.  Hold the mouse button pressed,
+and start moving  the pointer by moving  the mouse.  The  vertex will now
+follow the pointer, but it is not possible to move the vertex higher than
+a vertex  of bigger size  (or number of prime  factors, if \"prime\"\ was
+given as parameter to 'GraphicLattice') or lower than a vertex of smaller
+size (or number of prime factors).  As soon as you release the left mouse
+button the vertex will stop following the pointer  and, if the vertex was
+a member of a  conjugacy class, the remaining elements  of the class  are
+moved.
+
+If you hold  down  the <SHIFT> key before  moving  a vertex as  described
+above then  not only is the  class  of the vertex   moved but all classes
+containing at least one selected vertex.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicLattice, Selecting Vertices}
+
+Selected vertices are  represented by a slightly  thicker circle and,  if
+your screen  supports color, are colored red   or green.  There  are five
+different ways to select or deselect a vertex or a bunch of vertices.
+
+Place the  pointer inside  a  vertex and press   the *left* mouse button.
+Release   the button immediately   without  moving the  mouse.  This will
+deselect all other vertices  and select this vertex.   If the vertex  was
+already the only selected vertex it is deselected.
+
+Place the  pointer inside a vertex, hold  down the <SHIFT> key, and press
+the  *left* mouse button.   Release the button immediately without moving
+the    mouse, release the   <SHIFT> key  afterwards.   If  the vertex was
+deselected this action will  select it in  addition to any other selected
+vertices. If the vertex was already selected it will be deselected.
+
+Place the pointer  outside any vertex  and press the *left* mouse button.
+Keep the button pressed and start moving the pointer.  This will create a
+rubber band rectangle.  One corner at the position  where you pressed the
+mouse button, the opposite corner following  the pointer.  As soon as you
+release the left mouse button,   all  vertices inside the rectangle   are
+selected, all vertices outside the rectangle are deselected.
+
+Place the pointer outside any vertex, hold down the <SHIFT> key and press
+the *left*  mouse button.  Again  you see a rubber  band, however, now as
+soon as you release  the mouse button,  all vertices inside the rectangle
+are selected in addition to any other selected vertices.
+
+Call   the function 'Select' with   a subgroup or   list  of subgroups to
+select.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicLattice, GAP Menu}
+
+The <GAP> menu will  be pulled down if  you place the pointer inside  the
+<GAP> button  and press the left mouse  button.  Keep the button down and
+choose an entry by moving the pointer on  top of this entry.  Release the
+mouse button to select an entry.
+
+'save as postscript'
+
+Selecting this entry pops up a file  selector.  If you  enter a file name
+and click on <OK>, this will save a  description of the graphic sheet and
+graphic objects on  the sheet as postscript  output.  However, only plain
+postscript is created without any encapsulation whatsoever.
+
+'close graphic sheet'
+
+This entry will close the current graphic sheet and the window containing
+the sheet  and all  <Information> menus related  to  this sheet.  On some
+window system or using  some window manager the window  itself has also a
+close button or menu entry.  However,  using the window close method will
+not close associated <Information> menus.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicLattice, Resize Menu}
+
+The <Resize> menu will be pulled down if you place the pointer inside the
+<Resize> button and  press the left mouse  button.  Keep  the button down
+and choose an entry by moving the pointer on top of  this entry.  Release
+the mouse button to select an entry.
+
+'Double Lattice'
+
+Selecting the entry will  double the dimensions  of the graphic sheet and
+enlarge the lattice accordingly.
+
+'Halve Lattice'
+
+Selecting  the entry will halve the  dimensions  of the graphic sheet and
+shrink the lattice accordingly.
+
+'Resize Lattice'
+
+Selecting  this entry will  pop up a dialog   box asking for   an x and y
+factor  separated by  a comma.   You   can enter integers,  quotients  or
+decimal numbers. If you enter only  one number this is used  for x and y.
+The graphic sheet is then enlarged or shrinked and the lattice is resized
+accordingly.
+
+'Resize Graphic Sheet'
+
+This  entry is similar to 'Resize  Lattice' except that  only the graphic
+sheet is changed, the lattice remains unchanged.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicLattice, Subgroups Menu}
+
+The <Subgroups> menu will be pulled down  if you place the pointer inside
+the <Subgroups> button and press the left mouse  button.  Keep the button
+down and choose an entry   by moving the pointer  on  top of this  entry.
+Release the mouse button to select an entry.
+
+The result   of of a computation from   any of the  following  entries is
+colored green, if your screen supports color.  There will also be a short
+information message in the {\GAP} window about the result.
+
+In the following descriptions   we use \"vertices\"\ as abbreviation  for
+\"subgroups associated with vertices\".
+
+'Centralizers'
+
+computes  and displays the   centralizers of  the selected  vertices with
+respect to the whole group.  Requires at  least one selected vertex.  See
+also "Centralizer".
+
+'Centres'
+
+computes and displays  the centre of  the selected vertices.  Requires at
+least one selected vertex. See also "Centre".
+
+'Closure'
+
+computes and    displays the common  closure  of  the  selected vertices.
+Requires at least two selected vertices. See also "Closure".
+
+'Closures'
+
+computes  and  displays the pairwise  closures of  the selected vertices.
+Requires at least three selected vertices. See also "Closure".
+
+'Commutator Subgroups'
+
+computes and displays  the pairwise commutator  subgroups of the selected
+vertices.    Requires  at  least    two   selected  vertices. See    also
+"CommutatorSubgroup".
+
+'Cores'
+
+computes and displays the cores of  the selected vertices with respect to
+the whole group.  Requires at least one selected vertex. See also "Core".
+
+'Derived Series'
+
+For   each  selected vertex  'Derived  Series'  computes and displays its
+derived series.   Requires  at   least  one selected vertex.    See  also
+"DerivedSeries".
+
+'Derived Subgroups'
+
+computes and  displays the  derived  subgroups of the selected  vertices.
+Requires at least one selected vertex.  See also "DerivedSubgroup".
+
+'Fitting Subgroups'
+
+computes and   displays   the   Fitting   subgroups   of   the   selected
+vertices.  Requires    at   least one      selected  vertex.   See   also
+"FittingSubgroup".
+
+'Intersection'
+
+computes and  displays the common intersection  of the selected vertices.
+Requires at least two selected vertices.  See also "Intersection".
+
+'Intersections'
+
+computes and displays the pairwise intersection of the selected vertices.
+Requires at least three selected vertices.  See also "Intersection".
+
+'Normalizers'
+
+computes   and displays  the normalizers   of  the selected vertices with
+respect to the whole group.  Requires at least  one selected vertex.  See
+also "Normalizer".
+
+'Normal Closures'
+
+For   each  selected vertex 'Normal  Closure'  computes  and displays the
+normal closure of this vertex with respect  to the whole group.  Requires
+at least one selected vertex.  See also "NormalClosure".
+
+'Normal Subgroups'
+
+For   each selected vertex 'Normal  Subgroups'  computes and displays the
+normal subgroups of the subgroup associated  with this vertex.  These new
+subgroups are not  necessarily  normal in the  whole  group.  Requires at
+least one selected vertex.  See also "NormalSubgroups".
+
+'Sylow Subgroups'
+
+pops  up a dialog  box asking   for prime.   After entering  a  prime and
+pressing  <return> or  clicking  <OK> it computes   and displays  a Sylow
+subgroup  for   each selected vertex.  Requires   at   least one selected
+vertex.  See also "SylowSubgroup".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicLattice, CleanUp Menu}
+
+The  <CleanUp> menu will  be pulled down if you  place the pointer inside
+the <CleanUp> button and press  the left mouse  button.  Keep the  button
+down and  choose an entry   by moving the pointer on   top of this entry.
+Release the mouse button to select an entry.
+
+'Average Y Levels'
+
+selecting this entry will average the y coordinates of all vertices whose
+associated subgroups have the same size.
+
+'Average X Levels'
+
+selecting this entry  will  average the x   coordinates  of two or   more
+selected vertices.  This will only work if the corresponding subgroups do
+not have the same size. Requires at least two selected vertices.
+
+'Rotate Conjugates'
+
+rotates the selected vertices of a conjugacy class cyclicly.  Requires at
+least two selected vertices.
+
+'Deselect All'
+
+deselects all vertices.  Requires at least one selected vertex.
+
+'Relabel Vertices'
+
+selecting  this entry will pop  up a dialog  box for each selected vertex
+asking for a new label.  Clicking on <CANCEL>  will cancel the relabeling
+of the remaining vertices but will not reset the already changed labels.
+
+'Select Representatives'
+
+deselects  all vertices    and  then selects a   representative  for each
+conjugacy class.
+
+'Use Black\&White'
+
+switches to black and white in case of a color screen.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicLattice, Information Menu}
+
+Placing the pointer  inside a vertex (selected  or not)  and pressing the
+*right* mouse button pops up the  <Information> menu.  Clicking on any of
+the text  lines will compute  the corresponding  property of the subgroup
+$u$ associated  with  this vertex.  Clicking   on <all> will  compute all
+properties, clicking on <close> will close the <Information> menu.
+
+'Size'
+
+computes and displays the size of $u$.  See also "Size".
+
+'Index'
+
+computes and displays the  index  of $u$ in   the whole group.  See  also
+"Index".
+
+'IsAbelian' \\
+'IsCyclic' \\
+'IsNilpotent' \\
+'IsPerfect' \\
+'IsSimple' \\
+'IsSolvable'
+
+computes  and displays  the corresponding property    of $u$.   See  also
+"IsAbelian",  "IsCyclic",  "IsNilpotent",  "IsPerfect",  "IsSimple",  and
+"IsSolvable".
+
+
+'IsCentral' \\
+'IsNormal'
+
+computes and displays the corresponding  property of $u$ with respect  to
+the whole group.  See also "IsCentral" and "IsNormal".
+
+'Isomorphism'
+
+computes and displays  the isomorphism type of  $u$.  This will only work
+if the size of $u$ is small.  See "GroupId" for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicLattice, Sheet Menu}
+
+In order to adjust any margin place the pointer outside of any vertex and
+press the  *right* mouse  button,  keep the button  pressed.  The <Sheet>
+menu will pop up.
+
+'Left Margin'
+
+selecting <Left  Margin> will narrow the  graphic sheet, setting  the new
+left margin to the x coordinate of your mouse click.
+
+'Right Margin'
+
+selecting <Right  Margin> will narrow the graphic  sheet, setting the new
+right margin to the x coordinate of your mouse click.
+
+'Top Margin'
+
+selecting <Top Margin> will narrow the graphic sheet, setting the new top
+margin to the y coordinate of your mouse click.
+
+'Bottom Margin'
+
+selecting <Bottom Margin> will narrow the graphic  sheet, setting the new
+bottom margin to the y coordinate of your mouse click.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InteractiveLattice}
+
+'InteractiveLattice( <g> )'
+
+'InteractiveLattice' creates a new graphic sheet $s$ containing the Hasse
+diagram of a partial subgroup lattice of a group <g>.  Initially only two
+vertices representing <g> and the trivial subgroup are present.
+
+Note that    <g>  must  not   be a    finitely  presented  group.     See
+"InteractiveLattice for FpGroups" if <g> is a finitely presented group.
+
+Moving  vertices, selecting vertices,  the <GAP>, <Resize>, <Information>
+and <sheet> menus   are  identical to  the  'GraphicLattice'  case.   See
+"GraphicLattice,  Moving Vertices", "GraphicLattice, Selecting Vertices",
+"GraphicLattice,    GAP       Menu",    "GraphicLattice,  Resize   Menu",
+"GraphicLattice,  Information Menu",  and  "GraphicLattice,  Sheet  Menu"
+respectively.
+
+The next  next sections describe the  differences in  the <Subgroups> and
+<CleanUp> menus and the different vertex shapes.
+
+The inclusions shown  in the Hasse  diagram of  the  partial lattice will
+always be correct.  New subgroups are always  be checked for conjugation,
+if  the  normalizer  of   the a  new   subgroup  has an index   less than
+'$s$.limits.conjugates'.  If this number is negative the check is carried
+out     if   the     index of   the       new  subgroup   is   less  than
+'-$s$.limits.conjugates'.
+
+'InteractiveLattice( <g>, <width>, <height> )'
+
+In  this  form 'InteractiveLattice' creates   a  graphic sheet of initial
+dimensions <width>  times <height>.   It   is however still possible   to
+change these dimensions  later using either "GraphicLattice, Resize Menu"
+or "GraphicLattice, Sheet Menu".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InteractiveLattice, Subgroups Menu}
+
+In addition to "GraphicLattice, Subgroups Menu" the following entries are
+available.
+
+'Conjugate Subgroups'
+
+computes and displays the conjugacy  classes (with  respect to the  whole
+group) of each  selected vertex.  Requires  at least one selected vertex.
+See also "ConjugacyClass".
+
+'Random Conjugates'
+
+computes and  displays   a  random conjugate  for  each  conjugacy  class
+containing a selected vertex.  Requires at least one selected vertex.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InteractiveLattice, CleanUp Menu}
+
+In addition  to "GraphicLattice, Subgroups  Menu"  the following entry is
+available.
+
+'Merge Classes'
+
+merges two conjugacy classes. Use this in  case the conjugation check was
+not  carried out   (see "InteractiveLattice")  but you  know   that a new
+subgroup is conjugate to an old one.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InteractiveLattice, Vertex Shapes}
+
+The following vertex shapes can appear in an interactive lattice.
+
+circle:\\
+    conjugation for the subgroup associated with  the vertex was checked.
+    If the subgroup is conjugate  to any other  subgroup of a vertex both
+    vertices are drawn closely together.
+
+square:\\
+    conjugation was not  checked  for the  subgroup associated with  this
+    vertex.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InteractiveLattice for FpGroups}
+
+'InteractiveLattice( <g> )'
+
+'InteractiveLattice' creates a new graphic sheet $s$ containing the Hasse
+diagram of a  partial subgroup lattice of  finitely presented  group <g>.
+Initially only one vertex representing <g> is present.
+
+See "InteractiveLattice" if <g> is not a finitely presented group.
+
+Moving  vertices, selecting  vertices,  the <GAP>, <Resize>,  and <sheet>
+menus are identical  to the 'GraphicLattice' case.   See "GraphicLattice,
+Moving  Vertices", "GraphicLattice, Selecting Vertices", "GraphicLattice,
+GAP Menu",  "GraphicLattice,   Resize Menu", and  "GraphicLattice,  Sheet
+Menu" respectively.
+
+'InteractiveLattice( <g>, <width>, <height> )'
+
+In  this  form 'InteractiveLattice' creates   a  graphic sheet of initial
+dimensions <width>  times <height>.   It   is however still possible   to
+change these dimensions  later using either "GraphicLattice, Resize Menu"
+or "GraphicLattice, Sheet Menu".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InteractiveLattice for FpGroups, Subgroups Menu}
+
+The <Subgroups> menu will be pulled down  if you place the pointer inside
+the <Subgroups> button and press the  left mouse button.  Keep the button
+down and  choose an entry by  moving  the pointer on   top of this entry.
+Release the mouse button to select an entry.
+
+The result of  of  a computation  from any  of  the following entries  is
+colored green, if  your screen supports color.   In most cases there will
+also be short information message in the {\GAP} window about the result.
+
+In  the following descriptions, we  use \"vertices\"\ as abbreviation for
+\"subgroups associated with vertices\".
+
+'Abelian Prime Quotient'
+
+pops  up a dialog  box asking  for a  prime  $p$.  It  then computes  and
+displays the largest elementary   abelian  $p$ quotient of  the  selected
+vertex.  If no presentation for the  subgroup associated to the vertex is
+known   a presentation is  first computed  using  a modified Todd-Coxeter
+algorithm.     It then calls    'PrimeQuotient' to   compute  the largest
+elementary abelian quotient.  Requires exactly one selected vertex.
+
+'All Overgroups'
+
+computes and displays all over-groups  of the selected vertex.  It  first
+computes the permutation action of the whole  group on the consets of the
+subgroup associated with  the selected vertex and  then searches  for all
+block systems.  Requires exactly one selected vertex.
+
+'Conjugacy Class'
+
+computes and  displays  the   conjugacy  class of  the   selected vertex.
+Requires  exactly  one selected vertex.  
+
+'Cores'
+
+computes and  displays the cores  of the selected vertices.   Requires at
+least one selected vertex.
+
+
+'Derived Subgroups'
+
+computes and displays the derived subgroups of the selected vertices.  It
+will  only  display  those derived    subgroups  whose index is   finite.
+Requires at least one selected vertex.
+
+'Epimorphisms'
+
+pops up another menu. Requires exactly one selected vertex.
+
+|    Sym(n)
+    Alt(n)
+    Sym(n) > Alt(n)
+    PSL(d,q)
+    Library
+    User Defined |
+
+Click on any of these entries to try to find a quotient isomorphic to the
+symmetric  group (|Sym(n)|), the     alternating group  (|Alt(n)|),   the
+symmetric or the alternating   group (|Sym(n) > Alt(n)|),  the projective
+special  linear group  (|PSL(d,q)|), a group  in a  library supplied with
+{\XGAP} (this will   pops up a file   selector), or a user defined  group
+stored   in   the  variable  |PERM_GROUP|.   After  supplying  additional
+parameters,  for  example, the  degree of   the   symmetric group  or the
+dimension and field of $PSL$  using dialog boxes, the corresponding entry
+will change, for example to something like
+
+|    Sym(3)        3 found|
+
+After one or more quotients were found click <display> to display them.
+
+'Intersections'
+
+computes and   displays   the pairwise   intersections  of  the  selected
+vertices.  Requires at least two selected vertices.
+
+'Low Index Subgroups'
+
+pops up a dialog box asking for index  limit $k$.  It  will then do a low
+index subgroup search for  subgroup of index at  most $k$ of the selected
+vertex using 'LowIndexSubgroupsFpGroup'.    If no  presentation  for  the
+subgroup   associated to  the vertex  is  known a  presentation  is first
+computed using a  modified  Todd-Coxeter algorithm. Requires  exactly one
+selected vertex.
+
+'Normalizers'
+
+computes and displays the normalizers of the selected vertices.  Requires
+at least one selected vertex.
+
+'Prime Quotient'
+
+pops up a dialog box asking for a prime $p$ and another dialog box asking
+for a class $c$.  It then  computes and displays the largest $p$-quotient
+of class $c$ of the selected vertex.  If no presentation for the subgroup
+associated to the vertex is known a  presentation is first computed using
+a   modified  Todd-Coxeter algorithm.   It    then calls 'PrimeQuotient'.
+Requires exactly one selected vertex.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InteractiveLattice for FpGroups, CleanUp Menu}
+
+'Check Coset Table'
+
+will compute  coset tables  for the selected   vertices and  checks these
+coset  tables against the other known  tables.  If equal coset tables are
+discovered the corresponding vertices are  merged.  Requires at least one
+selected vertex.
+
+'Deselect All'
+
+deselects all vertices.  Requires at least one selected vertex.
+
+'Delete Vertex'
+
+deletes  a selected vertex.   *Handle with  care*, if  the vertex is  the
+start  point  of  a  prime quotient  or   a derived subgroup all  related
+vertices are deleted.  Requires at least one selected vertex.
+
+'Use Black\&White'
+
+switches to black and white in case of a color screen.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InteractiveLattice for FpGroups, Information Menu}
+
+Placing the pointer  inside a vertex (selected  or not) and  pressing the
+*right* mouse button pops up the <Information>  menu.  Clicking on any of
+the text  lines will compute the corresponding   property of the subgroup
+$u$  associated  with this  vertex. Clicking  on <close>  will  close the
+<Information> menu.  Let $s$ be the graphic sheet.
+
+'Index'
+
+displays  the index of  $u$ in the whole  group.  The  index is stored in
+'$s$.result'.
+
+'IsNormal'
+
+checks  if $u$ is  normal  in the  whole group.    The result  ('true' or
+'false') is stored in '$s$.result'.
+
+'Abelian Invariants'
+
+computes  and  displays  the  abelian invariants  of  $u$.   The  abelian
+invariants are stored in '$s$.result'.
+
+'Presentation'
+
+computes a presentation of $u$ and displays  the number of generators and
+relators   of   this presentation.     The   presentation is    stored in
+'$s$.result'.
+
+'Coset Table'
+
+computes   a   coset table for   $u$.    The  coset  table  is  stored in
+'$s$.result'.
+
+'Factor Fp Group'
+
+computes a presentation  for the factor group  of the whole group by $u$,
+if $u$ is normal.  The presentation is stored in '$s$.result'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InteractiveLattice for FpGroups, Vertex Shapes}
+
+The following vertex shapes can appear in an interactive lattice.
+
+circle:\\
+    a vertex for which  a coset table for  associated subgroup is  known.
+    These vertices are checked for equality among each other.
+
+square:\\
+    a vertex for which  no coset table for  associated subgroup is known.
+    These vertices are not checked for equality among all vertices.
+
+diamond:\\
+    as  a 'circle' but   the associated subgroup  is  normal in the whole
+    group *and* {\GAP} knows this.
+
+diamond with square:\\
+    as a  'square'  but the associated subgroup  is  normal in  the whole
+    group *and* {\GAP} knows this.

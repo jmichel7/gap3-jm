@@ -1,0 +1,566 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  GAP documentation                                   Goetz.Pfeiffer@UCG.IE
+%%
+%A  $Id: monoid.tex,v 2.2 1997/11/26 09:59:49 goetz Exp $
+%%
+%Y  Copyright (C) 1997, Mathematics Dept, University College Galway, Ireland.
+%%
+%%  This file documents the general functions for monoids & semigroups.
+%%
+\Chapter{Monoids and Semigroups}
+
+Semigroups and, even  more,  monoids are not  far  away  from being  like
+groups.  But, surprisingly, they have not  received much attention yet in
+the form  of {\GAP} programs.  This  small collection of files and manual
+chapters is an attempt to start closing this gap.
+
+The only difference  between a semigroup  and a monoid is one  element\:\ 
+the  identity.  Although this   may  lead to   subtle differences in  the
+behavior of these structures the underlying  assumption of these programs
+is that you can always, by means of adding an element with the properties
+of an identity, turn a semigroup into a monoid.  So most of the functions
+will only be available  for monoids and not  for semigroups.   The actual
+process of adding an identity is also not supported at the moment.
+
+The emphasis of  this package is on  transformation monoids (see  chapter
+"Transformation  Monoids").   However, it seemed  to  be a  good idea to
+provide  some of the framework for  general monoids (this chapter) before
+concentrating on   the   special  case.    Separate   chapters  introduce
+transformations (see chapter "Transformations") and binary relations (see
+chapter "Binary Relations") as special types of monoid elements.  Another
+chapter treats  several ways of how a  monoid can  act on certain domains
+(see chapter "Actions of Monoids").
+
+For  a general treatment  of  the theory  of  monoids and  transformation
+monoids   see~\cite{Lallement79}  and   \cite{Howie95}.      A   detailed
+description  of  this implementation and   the theory behind  it is given
+in~\cite{LPRR1} and ~\cite{LPRR2}.
+
+A semigroup is constructed by the  function 'SemiGroup' (see "SemiGroup")
+and a monoid is constructed by the function 'Monoid' (see "Monoid").
+
+Note that monoid elements usually  exist independently of a monoid, e.g.,
+you can write down two transformations  and compute their product without
+ever defining a monoid that contains them.
+
+The chapter starts with a description  of monoid elements, i.e. all those
+objects that  can be  element   of  a semigroup  or    of a monoid   (see
+"Comparisons of Monoid  Elements", "Operations for Monoid  Elements", and
+"IsMonoidElement").  Then the    functions which  construct   monoids and
+semigroups  and the  functions which  test  whether  a given  object is a
+monoid or a    semigroup are described   (see "SemiGroup", "IsSemiGroup",
+"Monoid" and "IsMonoid").
+
+Monoids  and semigroups are domains, so  every set theoretic function for
+domains is applicable  to them (see  "Set Functions for Monoids").  There
+are functions which  construct Green Classes of  various types as subsets
+of   a  monoid (see "Green  Classes",    "RClass", "LClass", "DClass" and
+"HClass"), functions  which test whether a given  object is a Green class
+of   a certain    type (see   "IsRClass",    "IsLClass", "IsDClass"   and
+"IsHClass"), and functions which determine the  list of all Green Classes
+of some  given type of  a monoid (see  "RClasses", "LClasses", "DClasses"
+and "HClasses").
+
+The next sections describe how set functions are applied to Green classes
+(see "Set Functions for Green Classes")  and how to compute various kinds
+of Sch\accent127utzenberger groups (see "SchutzenbergerGroup").
+
+The final sections describe how to determine the  idempotents of a monoid
+(see   "Idempotents"), the lack  of  support for homomorphisms of monoids
+(see "Monoid Homomorphisms") and how  monoids are represented by  records
+in {\GAP} (see "Monoid Records and Semigroup Records").
+
+The functions described here are in the file '\"monoid.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Monoid Elements}%
+\index{equality!of monoid elements}%
+\index{ordering!of monoid elements}
+
+'<s> = <t>' \\
+'<s> \<> <t>'
+
+The equality operator '=' evaluates to 'true'  if the monoid elements <s>
+and <t> are   equal and to 'false'  otherwise.    The inequality operator
+'\<>' evaluates to  'true'  if the monoid elements   <s> and <t>  are not
+equal and to 'false' otherwise.
+
+You can compare monoid  elements with objects of  other types.  Of course
+they are never equal.  Standard monoid  elements are transformations (see
+chapter "Transformations")   and binary relations   (see chapter  "Binary
+Relations").
+
+\vspace{5mm}
+'<s> \<\ <t>' \\
+'<s> \<= <t>' \\
+'<s> >= <t>' \\
+'<s> > <t>'
+
+The operators '\<', '\<=', '>=' and '>'  evaluate to 'true' if the monoid
+element <s> is strictly less than, less than or equal to, greater than or
+equal to and strictly  greater than the monoid  element <t>.  There is no
+general ordering on monoid elements.
+
+Standard monoid   elements may be  compared  with objects of  other types
+while generic monoid elements may disallow such a comparison.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Monoid Elements}
+
+'<s> \*\ <t>'%
+\index{product!of monoid elements}
+
+The operator '\*' evaluates to the product of the two monoid elements <s>
+and <t>.   The  operands must of  course lie  in a  common parent monoid,
+otherwise an error is signaled.
+
+\vspace{5mm}
+'<s> \^\ <i>'%
+\index{power!of monoid elements}
+
+The powering  operator '\^' returns the  <i>-th power of a monoid element
+<s> and a positive integer <i>.  If <i> is zero  the identity of a parent
+monoid of <s> is returned.
+
+\vspace{5mm}
+'<list> \*\ <s>'%
+\index{product!of list and monoid element}\\
+'<s> \*\ <list>'
+
+In this form the operator '\*' returns a new list where each entry is the
+product of <s>  and the   corresponding  entry  of <list>.    Of   course
+multiplication must be defined between <s> and each entry of <list>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsMonoidElement}%
+\index{test!for monoid element}
+
+'IsMonoidElement( <obj> )'
+
+'IsMonoidElement' returns  'true' if the  object  <obj>, which may  be an
+object of arbitrary type, is a monoid element, and 'false' otherwise.  It
+will signal an error if <obj> is an unbound variable.
+
+|    gap> IsMonoidElement( 10 );
+    false
+    gap> IsMonoidElement( Transformation( [ 1, 2, 1 ] ) );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SemiGroup}
+
+'SemiGroup( <list> )'
+
+'SemiGroup' returns  the semigroup   generated   by the list  <list>   of
+semigroup elements.
+
+|    gap> SemiGroup( [ Transformation( [ 1, 2, 1 ] ) ] );
+    SemiGroup( [ Transformation( [ 1, 2, 1 ] ) ] ) |
+
+\vspace{5mm}
+'SemiGroup( <gen1>, <gen2>, ... )'
+
+In this form 'SemiGroup' returns the   semigroup generated by the  semigroup  elements
+<gen1>, <gen2>, ...
+
+|    gap> SemiGroup( Transformation( [ 1, 2, 1 ] ) );                     
+    SemiGroup( [ Transformation( [ 1, 2, 1 ] ) ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSemiGroup}%
+\index{test!for semigroup}
+
+'IsSemiGroup( <obj> )'
+
+'IsSemiGroup' returns 'true' if the object <obj>,  which may be an object
+of an  arbitrary  type, is a semigroup,  and  'false' otherwise.  It will
+signal an error if <obj> is an unbound variable.
+
+|    gap> IsSemiGroup( SemiGroup( Transformation( [ 1, 2, 1 ] ) ) );
+    true
+    gap> IsSemiGroup( Group( (2,3) ) ); 
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Monoid}
+
+'Monoid( <list> )'\\
+'Monoid( <list> , <id> )'
+
+'Monoid'  returns  the monoid generated  by  the  list <list>  of  monoid
+elements.  If present, <id> must be the identity of this monoid.
+
+|    gap> Monoid( [ Transformation( [ 1, 2, 1 ] ) ], 
+    > IdentityTransformation( 3 ) );
+    Monoid( [ Transformation( [ 1, 2, 1 ] ) ] ) |
+
+\vspace{5mm}
+'Monoid( <gen1>, <gen2>, ... )'
+
+In this form 'Monoid' returns the monoid generated by the monoid elements
+<gen1>, <gen2>, ...
+
+|    gap> Monoid( Transformation( [ 1, 2, 1 ] ) );                     
+    Monoid( [ Transformation( [ 1, 2, 1 ] ) ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsMonoid}%
+\index{test!for monoid}
+
+'IsMonoid( <obj> )'
+
+'IsMonoid' returns 'true' if the object <obj>,  which may be an object of
+an arbitrary type, is a monoid, and 'false' otherwise.  It will signal an
+error if <obj> is an unbound variable.
+
+|    gap> IsMonoid( Monoid( Transformation( [ 1, 2, 1 ] ) ) );
+    true
+    gap> IsMonoid( Group( (2,3) ) ); 
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Functions for Monoids}
+
+Monoids and semigroups  are domains.   Thus  all set theoretic  functions
+described  in chapter \"Domains\"\   should be  applicable  to   monoids. 
+However, no generic method is  installed yet.  Of particular interest are
+the functions 'Size'   and  'Elements' which will  have   special methods
+depending on the kind of monoid being dealt with.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Green Classes}
+
+Green classes  are special subsets of a  monoid.  In particular, they are
+domains    so all  set  theoretic   functions  for   domains (see chapter
+\"Domains\")  can be   applied to Green  classes.   This  is described in
+section  "Set  Functions for   Green  Classes".  The  following  sections
+describe how Green classes can be constructed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RClass}
+
+'RClass( <M>, <s> )'
+
+'RClass' returns the R class of the element <s> in the monoid <M>.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ), 
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> RClass( M, Transformation( [ 1, 2, 2 ] ) );
+    RClass( M, Transformation( [ 1, 2, 2 ] ) ) |
+
+The  R class of  <s>  in <M> is  the  set of  all  elements of <M>  which
+generate the same  right ideal in <M>, i.e.,  the set of  all $m$  in <M>
+with $<s> <M> = m <M>$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRClass}%
+\index{test!for R class}
+
+'IsRClass( <obj> )'
+
+'IsRClass' returns 'true' if the object <obj>, which  may be an object of
+arbitrary type, is an R class, and 'false' otherwise  (see "RClass").  It
+will signal an error if <obj> is an unbound variable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RClasses}
+
+'RClasses( <M> )'\\
+'RClasses( <dClass> )'
+
+'RClasses' returns the list  of R classes the monoid  <M>.  In the second
+form 'RClasses' returns the list of R classes in the D class <dClass>.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> RClasses( M );
+    [ RClass( M, Transformation( [ 1, 2, 3 ] ) ), 
+      RClass( M, Transformation( [ 2, 1, 2 ] ) ), 
+      RClass( M, Transformation( [ 1, 2, 2 ] ) ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LClass}
+
+'LClass( <M>, <s> )'
+
+'LClass' returns the L class of the element <s> in the monoid <M>.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> LClass( M, Transformation( [ 1, 2, 2 ] ) );
+    LClass( M, Transformation( [ 1, 2, 2 ] ) ) |
+
+The  L class of  <s>  in <M> is  the  set of  all  elements of <M>  which
+generate the same  left  ideal in <M>, i.e.,  the set of  all $m$  in <M>
+with $<M> <s> = <M> m$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsLClass}%
+\index{test!for L Class}
+
+'IsLClass( <obj> )'
+
+'IsLClass' returns 'true' if the object <obj>, which  may be an object of
+arbitrary type, is an L class, and  'false' otherwise (see "LClass").  It
+will signal an error if <obj> is an unbound variable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LClasses}
+
+'LClasses( <M> )'\\
+'LClasses( <dClass> )'
+
+'LClasses' returns the list  of L classes  the monoid <M>.  In the second
+form 'LClasses' returns the list of L classes in the D class <dClass>.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> LClasses( M );
+    [ LClass( M, Transformation( [ 1, 2, 3 ] ) ), 
+      LClass( M, Transformation( [ 2, 1, 2 ] ) ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DClass}
+
+'DClass( <M>, <s> )'
+
+'DClass' returns the D class of the element <s> in the monoid <M>.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> DClass( M, Transformation( [ 1, 2, 2 ] ) );
+    DClass( M, Transformation( [ 1, 2, 2 ] ) ) |
+
+The D  class  of <s> in  <M>  is the set   of all elements  of  <M> which
+generate the same ideal in <M>, i.e., the set of all $m$ in <M> with $<M>
+<s> <M> = <M> m <M>$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsDClass}%
+\index{test!for D class}
+
+'IsDClass( <obj> )'
+
+'IsDClass' returns 'true' if the object <obj>, which  may be an object of
+arbitrary type, is  a D class, and 'false'  otherwise (see "DClass").  It
+will signal an error if <obj> is an unbound variable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DClasses}
+
+'DClasses( <M> )'
+
+'DClasses' returns the list of D classes the monoid <M>.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> DClasses( M );
+    [ DClass( M, Transformation( [ 1, 2, 3 ] ) ), 
+      DClass( M, Transformation( [ 2, 1, 2 ] ) ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{HClass}
+
+'HClass( <M>, <s> )'
+
+'HClass' returns the H class of the element <s> in the monoid <M>.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> HClass( M, Transformation( [ 1, 2, 2 ] ) );
+    HClass( M, Transformation( [ 1, 2, 2 ] ) ) |
+
+The H class of <s>  in <M> is the intersection  of the R  class of <s> in
+<M> and the L class of <s> in <M> (see "RClass" and "LClass").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsHClass}%
+\index{test!for H class}
+
+'IsHClass( <obj> )'
+
+'IsHClass' returns 'true' if the object <obj>,  which may be an object of
+arbitrary type, is an H class, and 'false' otherwise  (see "HClass").  It
+will signal an error if <obj> is an unbound variable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{HClasses}
+
+'HClasses( <M> )'\\
+'HClasses( <class> )'
+
+'HClasses' returns the list of  H classes the  monoid <M>.  In the second
+form 'HClasses'  returns  the list of  all   H classes in  <class>  where
+<class> is an R class, an L class or a D class.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> HClasses( M );
+    [ HClass( M, Transformation( [ 1, 2, 3 ] ) ), 
+      HClass( M, Transformation( [ 2, 1, 2 ] ) ), 
+      HClass( M, Transformation( [ 2, 1, 1 ] ) ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Functions for Green Classes}
+
+Green classes are domains so all set theoretic  functions for domains can
+be  applied to them.  Most  of the  set functions  will  work via default
+methods once the following methods have been implemented.
+
+'Size( <class> )'%
+\index{Size!of a Green class}
+
+determines the size of Green class <class>.
+
+'Elements( <class> )'%
+\index{Elements!of a Green class}
+
+returns the set of all elements of the Green class <class>
+
+'<obj> in <class>'%
+\index{in!for Green classes}%
+\index{membership test!for Green classes}
+
+returns 'true' if  <obj>  is a member  of   the Green class <class>   and
+'false' otherwise.
+
+However, no generic methods are provided.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Green Class Records}
+
+A Green class is represented  by a domain  record with the following  tag
+components.
+
+'isDomain': \\
+        is always 'true'.
+
+'isRClass', 'isLClass', 'isDClass', or 'isHClass': \\
+        present and 'true' depending on what kind of Green class is being
+        dealt with.
+
+The Green class is determined by the following identity components, which
+every Green class record must have.
+
+'monoid': \\
+        the monoid.
+
+'representative': \\
+        an element of the class.  Which one is unspecified.
+
+In addition to these a Green class record may have the following optional
+information components.
+
+'elements': \\
+        if present the proper set of elements of the class.
+
+'size': \\
+        if present the size of the class.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SchutzenbergerGroup}
+
+'SchutzenbergerGroup( <M>, <s> )'\\
+'SchutzenbergerGroup( <class> )'
+
+'SchutzenbergerGroup'  returns  the Sch\accent127utzenberger group of the
+element <s> in the monoid <M> as a group.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> SchutzenbergerGroup( M, Transformation( [ 2, 1, 2 ] ) );
+    Group( (1,2) ) |
+
+In   the     second      form      'SchutzenbergerGroup'   returns    the
+Sch\accent127utzenberger group of the Green class <class> of a monoid.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Idempotents}
+
+'Idempotents( <M> )'\\
+'Idempotents( <class> )'
+
+returns  the set of  idempotents  in the monoid <M>  or  in a Green class
+<class>.
+
+|    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> Idempotents( M );
+    [ Transformation( [ 1, 2, 1 ] ), Transformation( [ 1, 2, 2 ] ), 
+      Transformation( [ 1, 2, 3 ] ) ] 
+    gap> Idempotents( DClass( M, Transformation( [ 2, 1, 2 ] ) ) );
+    [ Transformation( [ 1, 2, 1 ] ), Transformation( [ 1, 2, 2 ] ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Monoid Homomorphisms}%
+\index{homomorphisms!of monoids}
+
+The homomorphisms between monoids  are of interest  as soon as  there are
+monoids.  However, no effort  has been  made to  provide any map  between
+monoids.  Here certainly some work needs to be done.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Monoid Records and Semigroup Records}
+
+Like  other domains  semigroups and monoids  are  represented by records. 
+While it is possible to construct such a  record by hand it is preferable
+to have  the  functions 'SemiGroup'  (see "SemiGroup")  or  'Monoid' (see
+"Monoid") do this for you.
+
+After such  a record is  created one can add  record components.  But you
+may not alter the values of components which are already present.
+
+A semigroup or monoid record has the following category components.
+
+'isDomain': \\
+        is always 'true' since a monoid or a semigroup is a domain.
+
+'isSemiGroup':\\
+        is always 'true' for semigroups.
+
+'isMonoid': \\
+        is always 'true' for monoids.
+        
+The following components are the identification components of a semigroup
+or monoid record.
+
+'generators': \\
+        is   a  list of  generators  of   the monoid  or   the semigroup. 
+        Duplicates are allowed in this list, but in  the case of a monoid
+        none of the generators may be the identity.
+
+'identity': \\
+        is the indentity in the case of a monoid.
+
+Other components which contain information about  the semigroup or monoid
+may be present.
+
+'size': \\
+        is the size of the monoid or the semigroup (see \"Size\"). 
+
+'elements': \\
+        is the  set  of elements  of the  monoid  or the  semigroup  (see 
+        \"Elements\").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               LaTeX
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  TeX-master:         "manual"
+%%  eval:               (outline-minor-mode)
+%%  End:
+%%
+

@@ -1,0 +1,719 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  field.tex                   GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: field.tex,v 1.1.1.1 1996/12/11 12:36:44 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the operators and functions of finite field elements.
+%%
+%H  $Log: field.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:44  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.12  1994/06/03  08:57:20  mschoene
+%H  changed a few things to avoid LaTeX warnings
+%H
+%H  Revision 3.11  1994/03/18  14:22:47  ahulpke
+%H  Fixed 'Conjugates' and its relatives for nonabelian extensions
+%H
+%H  Revision 3.10  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.9  1993/02/15  09:49:57  felsch
+%H  another example fixed
+%H
+%H  Revision 3.8  1993/02/13  08:49:49  felsch
+%H  error messages in examples fixed
+%H
+%H  Revision 3.7  1993/02/12  17:19:25  felsch
+%H  examples adjusted to line length 72
+%H
+%H  Revision 3.6  1992/05/25  18:13:25  martin
+%H  fixed a typo in "Field Homomorphisms"
+%H
+%H  Revision 3.5  1992/04/06  15:19:57  martin
+%H  fixed some more typos
+%H
+%H  Revision 3.4  1992/03/25  15:37:32  martin
+%H  added new sections for field homomorphisms
+%H
+%H  Revision 3.3  1992/03/11  15:50:48  sam
+%H  renamed chapter "Number Fields" to "Subfields of Cyclotomic Fields"
+%H
+%H  Revision 3.2  1991/12/30  12:07:53  martin
+%H  fixed a few incorrect references
+%H
+%H  Revision 3.1  1991/12/30  11:45:29  martin
+%H  changed incorrect reference to "CyclotomicField"
+%H
+%H  Revision 3.0  1991/12/27  16:10:27  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Fields}
+
+Fields  are important algebraic  domains.  Mathematically a *field*  is a
+commutative  ring  $F$  (see  chapter  "Rings"), such that  every element
+except $0$ has a multiplicative inverse.  Thus $F$ has two operations '+'
+and '\*' called addition  and multiplication.  $(F,+)$ must be an abelian
+group,  whose identity  is called  $0_F$.   $(F-\{0_F\},\*)$  must  be an
+abelian group, whose identity element is called $1_F$.
+
+{\GAP} supports  the field  of rationals (see "Rationals"),  subfields of
+cyclotomic  fields  (see  "Subfields of Cyclotomic Fields"),  and  finite
+fields (see "Finite Fields").
+
+This chapter begins with sections  that describe how  to  test whether  a
+domain is a field (see "IsField"), how to find the smallest field and the
+default  field  in  which  a  list  of  elements lies  (see  "Field"  and
+"DefaultField"),  and how  to view a field  over  a subfield (see "Fields
+over Subfields").
+
+The next sections describes  the operation applicable  to field  elements
+(see  "Comparisons  of  Field  Elements"   and   "Operations  for   Field
+Elements").
+
+The next sections  describe the  functions that are applicable  to fields
+(see   "GaloisGroup")  and their   elements  (see   "Conjugates", "Norm",
+"Trace", "CharPol",  and  "MinPol").
+
+The  following  sections  describe  homomorphisms  of fields  (see "Field
+Homomorphisms",     "IsFieldHomomorphism",     "KernelFieldHomomorphism",
+"Mapping Functions for Field Homomorphisms").
+
+The  last  section  describes how  fields are represented internally (see
+"Field Records").
+
+Fields  are domains, so all functions  that are applicable to all domains
+are also applicable to fields (see chapter "Domains").
+
+All functions for fields are in 'LIBNAME/\"field.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsField}
+
+'IsField( <D> )'
+
+'IsField'   returns  'true' if the   object <D>  is  a field  and 'false'
+otherwise.
+
+More precisely 'IsField' tests whether <D>  is a field record (see "Field
+Records").  So, for example, a matrix group  may in fact be a field,  yet
+'IsField' would return 'false'.
+
+|    gap> IsField( GaloisField(16) );
+    true
+    gap> IsField( CyclotomicField(9) );
+    true
+    gap> IsField( rec( isDomain := true, isField := true ) );
+    true    # it is possible to fool 'IsField'
+    gap> IsField( AsRing( Rationals ) );
+    false    # though this ring is, as a set, still 'Rationals' |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Field}
+
+'Field( <z>,.. )'
+'Field( <list> )'
+
+In the first  form 'Field' returns  the smallest field  that contains all
+the elements <z>,.. etc.  In the second form 'Field' returns the smallest
+field that contains all the elements in  the list <list>.  If any element
+is not an element of a  field or the  elements lie in no common  field an
+error is raised.
+
+|    gap> Field( Z(4) );
+    GF(2^2)
+    gap> Field( E(9) );
+    CF(9)
+    gap> Field( [ Z(4), Z(9) ] );
+    Error, CharFFE: <z> must be a finite field element, vector, or matrix
+    gap> Field( [ E(4), E(9) ] );
+    CF(36) |
+
+'Field' differs from  'DefaultField'   (see "DefaultField") in    that it
+returns the     smallest  field  in  which   the   elements    lie, while
+'DefaultField' may return a larger field if that makes sense.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DefaultField}
+
+'DefaultField( <z>,.. )'
+'DefaultField( <list> )'
+
+In the first form 'DefaultField' returns the  default field that contains
+all the elements <z>,.. etc.  In the  second form 'DefaultField' returns
+the default field that contains all the elements in  the list <list>.  If
+any element is not an element of a field or the elements lie in no common
+field an error is raised.
+
+The field returned by  'DefaultField'  need not be the  smallest field in
+which the elements lie.  For example for elements  from cyclotomic fields
+'DefaultField' may  return the  smallest  cyclotomic field  in  which the
+elements lie, which need not be the  smallest field overall,  because the
+elements may  in  fact lie  in  a  smaller number field which   is  not a
+cyclotomic field.
+
+For the exact   definition of  the default field  of a   certain type  of
+elements read  the chapter describing  this type (see "Finite Fields" and
+"Subfields of Cyclotomic Fields").
+
+'DefaultField' is used  by 'Conjugates', 'Norm', 'Trace',  'CharPol', and
+'MinPol' (see "Conjugates", "Norm",  "Trace", "CharPol", and "MinPol") if
+no explicit field is given.
+
+|    gap> DefaultField( Z(4) );
+    GF(2^2)
+    gap> DefaultField( E(9) );
+    CF(9)
+    gap> DefaultField( [ Z(4), Z(9) ] );
+    Error, CharFFE: <z> must be a finite field element, vector, or matrix
+    gap> DefaultField( [ E(4), E(9) ] );
+    CF(36) |
+
+'Field' (see "Field") differs from  'DefaultField' in that it returns the
+smallest field in which the elements lie, while 'DefaultField' may return
+a larger field if that makes sense.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Fields over Subfields}
+
+'<F> / <G>'
+
+The quotient operator '/' evaluates to a new  field  <H>.  This field has
+the same elements as <F>, i.e., is a domain equal to <F>.  However <H> is
+viewed as a field over the field <G>, which must be a subfield of <F>.
+
+What subfield a field  is viewed over  determines  its Galois  group.  As
+described in    "GaloisGroup" the Galois group  is   the group   of field
+automorphisms  that  leave the subfield   fixed.  It also  influences the
+results of "Norm",  "Trace",  "CharPol", and  "MinPol", because they  are
+defined in terms of the Galois group.
+
+|    gap> F := GF(2^12);
+    GF(2^12)
+    gap> G := GF(2^2);
+    GF(2^2)
+    gap> Q := F / G;
+    GF(2^12)/GF(2^2)
+    gap> Norm( F, Z(2^6) );
+    Z(2)^0
+    gap> Norm( Q, Z(2^6) );
+    Z(2^2)^2 |
+
+The operator '/' calls '<G>.operations./( <F>, <G> )'.
+
+The default function called this  way is 'FieldOps./', which simply makes
+a copy  of <F> and enters <G>  into the record component '<F>.field' (see
+"Field Records").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Field Elements}
+
+'<f> =   <g>' \\
+'<f> \<> <g>'
+
+The equality operator  '=' evaluates to 'true' if the  two field elements
+<f> and <g> are equal, and to 'false' otherwise.  The inequality operator
+'\<>' evaluates to 'true' if the two field  elements <f> and <g>  are not
+equal, and to 'false' otherwise.  Note that any two field elements can be
+compared, even  if they  do  not lie in compatible fields.   In this case
+they cn, of course, never be equal.  For each type of fields the equality
+of those field elements is given in the respective chapter.
+
+Note that you can compare field elements with elements of other types; of
+course they are never equal.
+
+'<f> \<\ <g>' \\
+'<f> \<= <g>' \\
+'<f> >   <g>' \\
+'<f> >=  <g>'
+
+The  operators '\<', '\<=', '>', and '>=' evaluate to 'true' if the field
+element <f> is less than, less than or equal to, greater than, or greater
+than  or equal to the field  element  <g>.  For each  type of fields  the
+definition of  the ordering of  those  field  elements is  given  in  the
+respective  chapter.   The  ordering  of  field  elements is as  follows.
+Rationals are smallest, next  are  cyclotomics, followed by  finite field
+elements.
+
+Note that  you can compare field elements with elements of  other  types;
+they are smaller than everything else.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Field Elements}
+
+The following operations  are always available for   field elements.   Of
+course the operands must lie in compatible fields,  i.e., the fields must
+be equal, or at least have a common superfield.
+
+'<f> + <g>'
+
+The operator '+' evaluates to  the sum of  the two field elements <f> and
+<g>, which must lie in compatible fields.
+
+'<f> - <g>'
+
+The operator  '-'  evaluates to the difference of  the two field elements
+<f> and <g>, which must lie in compatible fields.
+
+'<f> \*\ <g>'
+
+The operator '\*' evaluates to the product  of the two field elements <f>
+and <g>, which must lie in compatible fields.
+
+'<f> / <g>'
+
+The operator '/' evaluates to the quotient of the two field  elements <f>
+and <g>, which must  lie  in compatible fields.  If the  divisor is  0 an
+error is signalled.
+
+'<f> \^\ <n>'
+
+The operator '\^' evaluates to the <n>-th power of the field element <f>.
+If <n> is a  positive  integer  then  '<f>\^<n>'  is  '<f>\*<f>\*..\*<f>'
+(<n> factors).  If <n> is a negative integer  '<f>\^<n>'  is  defined  as
+$1 / {<f>^{-<n>}}$.   If 0 is  raised  to  a negative power   an error is
+signalled.  Any field element, even 0, raised to the 0-th power yields 1.
+
+For the precedence of the operators see "Operations".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GaloisGroup}
+\index{Galois group!of a field}
+\index{automorphism group!of a field}
+
+'GaloisGroup( <F> )'
+
+'GaloisGroup' returns the Galois group of  the field <F>  as a group (see
+"Groups") of field automorphisms (see "Field Homomorphisms").
+
+The Galois group of a field <F> over a subfield '<F>.field' is the  group
+of automorphisms of <F> that  leave the subfield '<F>.field' fixed.  This
+group can be interpreted as a permutation group  permuting  the zeroes of
+the characteristic polynomial of a primitive  element of <F>.  The degree
+of this group is equal to the number of zeroes, i.e., to the dimension of
+<F>  as  a vector  space  over  the subfield  '<F>.field'.   It  operates
+transitively on those  zeroes.   The normal divisors of the  Galois group
+correspond to the subfields between '<F>' and '<F>.field'.
+
+|    gap> G := GaloisGroup( GF(4096)/GF(4) );;
+    gap> Size( G );
+    6
+    gap> IsCyclic( G );
+    true    # the Galois group of every finite field is
+            # generated by the Frobenius automorphism
+    gap> H := GaloisGroup( CF(60) );;
+    gap> Size( H );
+    16
+    gap> IsAbelian( H );
+    true |
+
+The default function 'FieldOps.GaloisGroup'  just raises  an error, since
+there is no general method to compute the Galois  group of a field.  This
+default function is overlaid by more specific functions for special types
+of domains (see "Field Functions  for Finite Fields" and "GaloisGroup for
+Number Fields").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MinPol}
+\index{minimal polynom!of a field element}
+
+'MinPol( <z> )' \\
+'MinPol( <F>, <z> )'
+
+In the first form 'MinPol' returns the coefficients of the minimal
+polynomial  of the element
+<z> in its default field over its prime field  (see  "DefaultField").  In
+the  second form 'MinPol' returns  the coefficients of the minimal
+polynomial of  the element
+<z>  in the field <F>  over   the  subfield  '<F>.field'.
+
+Let $F/S$ be a field extension and $L$ a minimal normal extension of $S$,
+containing $F$.
+The *minimal polynomial* of $z$ in $F$  over $S$  is the squarefree
+polynomial
+whose roots  are precisely  the  conjugates of  $z$ in $L$ (see
+"Conjugates").  Because  the set of
+conjugates  is  fixed  under  the Galois  group  of  $L$  over  $S$  (see
+"GaloisGroup"),  so is the polynomial.  Thus all  the coefficients of the
+minimal polynomial lie in $S$.
+
+|    gap> MinPol( Z(2^6) );
+    [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0 ]
+    gap> MinPol( GF(2^12), Z(2^6) );
+    [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0 ]
+    gap> MinPol( GF(2^12)/GF(2^2), Z(2^6) );
+    [ Z(2^2), Z(2)^0, Z(2)^0, Z(2)^0 ] |
+
+The default function 'FieldOps.MinPol', which works only for extensions with
+abelian Galois group, multiplies  the  linear factors $x - c$
+with  <c>  ranging  over  the  set  of  conjugates  of  <z> in  <F>  (see
+"Conjugates"). For generic algebraic extensions, it is overlayed by solving
+a system of linear equations, given by the coefficients of powers of <z>
+in respect to a given base.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharPol}
+\index{characteristic polynom!of a field element}
+
+'CharPol( <z> )' \\
+'CharPol( <F>, <z> )'
+
+In the first form 'CharPol'  returns the coefficients of the characteristic
+polynomial of the element  <z>   in   its  default  field   over  its
+prime   field  (see "DefaultField").  In the second form 'CharPol' returns
+the coefficients of the characteristic
+polynomial of  the  element  <z>  in  the  field  <F>  over the  subfield
+'<F>.field'.  The characteristic polynomial  is  returned  as  a  list of
+coefficients, the <i>-th entry is the coefficient of $x^{i-1}$.
+
+The *characteristic polynomial*  of an element  $z$ in a field $F$ over a
+subfield $S$  is the $\frac{[F\:S]}{{\rm deg } \mu}$-th power of $\mu$, where
+$\mu$ denotes the minimal polynomial of $z$ in $F$ over $S$. It is fixed under
+the Galois group of the normal closure of $F$.
+Thus all  the coefficients  of the characteristic polynomial
+lie in  $S$.  The constant  term is
+$(-1)^{F.degree/S.degree}=(-1)^{[F\:S]}$ times  the
+norm of  $z$ (see  "Norm"), and the  coefficient  of  the  second highest
+degree  term  is  the negative of the  trace of $z$  (see  "Trace").
+The roots (including their multiplicities) in $F$ of the characteristic
+polynomial of <z> in $F$ are the conjugates (see "Conjugates") of $z$ in
+$F$.
+
+|    gap> CharPol( Z(2^6) );
+    [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0 ]
+    gap> CharPol( GF(2^12), Z(2^6) );
+    [ Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 
+      Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ]
+    gap> CharPol( GF(2^12)/GF(2^2), Z(2^6) );
+    [ Z(2^2)^2, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ] |
+
+The default  function 'FieldOps.CharPol' multiplies the linear factors $x - c$
+with <c>  ranging over  the conjugates of <z> in <F>  (see "Conjugates").
+For nonabelian extensions, it is overlayed by a function, which computes the
+appropriate power of the minimal polynomial.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Norm}
+\index{norm!of a field element}
+
+'Norm( <z> )' \\
+'Norm( <F>, <z> )'
+
+In the first form 'Norm' returns the norm of the field element <z> in its
+default field over  its prime field  (see "DefaultField").  In the second
+form 'Norm' returns the norm  of  <z> in the field  <F> over the subfield
+'<F>.field'.
+
+The  *norm* of an element $z$ in  a field $F$ over a subfield  $S$ is
+$(-1)^{F.degree/S.degree}=(-1)^{[F\:S]}$  times  the  constant  term  of  the
+characteristic polynomial of $z$ (see "CharPol"). Thus the norm lies in $S$.
+The norm is the product of all conjugates of $z$ in the normal closure of
+$F$ over $S$ (see "Conjugates").
+
+|    gap> Norm( Z(2^6) );
+    Z(2)^0
+    gap> Norm( GF(2^12), Z(2^6) );
+    Z(2)^0
+    gap> Norm( GF(2^12)/GF(2^2), Z(2^6) );
+    Z(2^2)^2 |
+
+The default function 'FieldOps.Norm'  multiplies the conjugates of <z> in
+<F>  (see  "Conjugates"). For nonabelian extensions, it is overlayed by a
+function, which obtains the norm from the characteristic polynomial.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Trace}
+\index{trace!of a field element}
+
+'Trace( <z> )' \\
+'Trace( <F>, <z> )'
+
+In the first form 'Trace' returns the trace  of the  field element <z> in
+its  default field over   its prime field (see  "DefaultField").   In the
+second form 'Trace' returns the trace of the element <z> in the field <F>
+over the subfield '<F>.field'.
+
+The  *trace* of an element $z$ in a field $F$ over a  subfield $S$ is the
+negative  of the coefficient of  the  second  highest degree
+term of the characteristic polynomial of $z$ (see "CharPol").
+Thus the trace lies in $S$. The trace is the
+sum  over  all  conjugates  of $z$  in the normal closure of $F$  over $S$
+(see "Conjugates").
+
+|    gap> Trace( Z(2^6) );
+    0*Z(2)
+    gap> Trace( GF(2^12), Z(2^6) );
+    0*Z(2)
+    gap> Trace( GF(2^12)/GF(2^2), Z(2^6) );
+    0*Z(2) |
+
+The default function 'FieldOps.Trace' adds the conjugates  of <z>  in <F>
+(see "Conjugates").  For nonabelian extensions, this is overlayed by a
+function, which obtains the trace from the characteristic polynomial.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Conjugates}
+\index{Galois conjugates!of a field element}
+\index{conjugates!of a field element, Galois}
+
+'Conjugates( <z> )' \\
+'Conjugates( <F>, <z> )'
+
+In the  first form 'Conjugates'   returns the list   of conjugates of the
+field element  <z>  in  its  default  field   over its prime   field (see
+"DefaultField").  In the second  form  'Conjugates'  returns the list  of
+conjugates of  the field element <z>  in the field <F> over  the subfield
+'<F>.field'.  In either case the list may contain  duplicates if <z> lies
+in a proper subfield of its default field, respectively of <F>.
+
+The *conjugates* of an element $z$ in a field  $F$ over a subfield $S$
+are the roots in $F$ of the characteristic polynomial of $z$ in $F$ (see
+"CharPol"). If $F$ is a normal extension of $S$, then the conjugates of $z$
+are the images of $z$ under all elements of the Galois group of $F$
+over $S$ (see "GaloisGroup"), i.e., under those automorphisms of $F$ that leave
+$S$  fixed.  The number of  different conjugates of  $z$  is given by the
+degree of the smallest extension of $S$ in which $z$ lies.\\
+For a normal extension $F$,
+'Norm' (see "Norm") computes the product,  'Trace' (see "Trace") the  sum
+of  all  conjugates.  'CharPol' (see "CharPol")  computes the  polynomial
+that has precisely the conjugates with their corresponding multiplicities
+as roots,  'MinPol' (see  "MinPol") the  squarefree  polynomial  that has
+precisely the conjugates as roots.
+
+|    gap> Conjugates( Z(2^6) );
+    [ Z(2^6), Z(2^6)^2, Z(2^6)^4, Z(2^6)^8, Z(2^6)^16, Z(2^6)^32 ]
+    gap> Conjugates( GF(2^12), Z(2^6) );
+    [ Z(2^6), Z(2^6)^2, Z(2^6)^4, Z(2^6)^8, Z(2^6)^16, Z(2^6)^32, Z(2^6),
+      Z(2^6)^2, Z(2^6)^4, Z(2^6)^8, Z(2^6)^16, Z(2^6)^32 ]
+    gap> Conjugates( GF(2^12)/GF(2^2), Z(2^6) );
+    [ Z(2^6), Z(2^6)^4, Z(2^6)^16, Z(2^6), Z(2^6)^4, Z(2^6)^16 ] |
+
+The  default  function 'FieldOps.Conjugates' applies the automorphisms of
+the Galois group of <F> (see "GaloisGroup")  to  <z> and returns the list
+of images. For nonabelian extensions, this is overlayed by a factorization
+of the characteristic polynomial.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Field Homomorphisms}%
+\index{homomorphisms!of fields}
+
+Field homomorphisms  are an  important  class  of homomorphisms in {\GAP}
+(see chapter "Homomorphisms").
+
+A *field  homomorphism* $\phi$ is a mapping that maps  each element of  a
+field $F$,  called the  source of $\phi$, to  an element of another field
+$G$, called the range of $\phi$, such that for each pair  $x,y \in F$  we
+have $(x+y)^\phi =  x^\phi + y^\phi$ and $(xy)^\phi = x^\phi y^\phi$.  We
+also  require  that  $\phi$ maps the one of $F$ to  the  one of $G$ (that
+$\phi$  maps the zero of $F$  to the zero of $G$  is implied by the above
+relations).
+
+An  Example of a field  homomorphism  is the Frobinius automorphism of  a
+finite   field   (see   "FrobeniusAutomorphism").    Look   under  *field
+homomorphisms*   in  the  index   for  a  list  of  all  available  field
+homomorphisms.
+
+Since field homomorphisms are just a  special case of  homomorphisms, all
+functions described  in  chapter  "Homomorphisms"  are applicable  to all
+field homomorphisms, e.g., the function to test if a homomorphism is a an
+automorphism   (see   "IsAutomorphism").    More   general,  since  field
+homomorphisms are just a special case of mappings all functions described
+in chapter "Mappings" are also applicable,  e.g., the function to compute
+the image of an element under a homomorphism (see "Image").
+
+The following sections describe the functions that test whether a mapping
+is a field homomorphism (see  "IsFieldHomomorphism"), compute the  kernel
+of  a  field  homomorphism  (see  "KernelFieldHomomorphism"), and how the
+general mapping functions are implemented for field homomorphisms.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsFieldHomomorphism}%
+\index{IsHomomorphism!for fields}
+
+'IsFieldHomomorphism( <map> )'
+
+'IsFieldHomomorphism' returns  'true'  if  the  mapping <map> is a  field
+homomorphism and 'false' otherwise.  Signals an error if <map> is a multi
+valued mapping.
+
+A mapping $map$ is a field homomorphism if  its source  $F$ and range $G$
+are both fields and  if  for each  pair of elements $x, y  \in F$ we have
+$(x+y)^{map} = x^{map} + y^{map}$ and $(xy)^{map} = x^{map} y^{map}$.  We
+also require that $1_F^{map} = 1_G$.
+
+|    gap> f := GF( 16 );
+    GF(2^4)
+    gap> fun := FrobeniusAutomorphism( f );
+    FrobeniusAutomorphism( GF(2^4) )
+    gap> IsFieldHomomorphism( fun );
+    true |
+
+'IsFieldHomomorphism' first tests if the flag '<map>.isFieldHomomorphism'
+is bound.  If the flag is bound, 'IsFieldHomomorphism' returns its value.
+Otherwise it calls \\
+'<map>.source.operations.IsFieldHomomorphism(  <map>  )',  remembers  the
+returned value in '<map>.isFieldHomomorphism', and returns it.  Note that
+of course all  functions  that create  field  homomorphism  set  the flag
+'<map>.isFieldHomomorphism'  to 'true', so that no function is called for
+those field homomorphisms.
+
+The default function called this way is 'MappingOps.IsFieldHomomorphism'.
+It computes all the elements of the source of <map> and  for each pair of
+elements  $x, y$ tests whether $(x+y)^{map}  =  x^{map}  +  y^{map}$  and
+$(xy)^{map} = x^{map} y^{map}$.  Look under *IsHomomorphism* in the index
+to see for which mappings this function is overlaid.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{KernelFieldHomomorphism}%
+\index{Kernel!for fields}
+
+'KernelFieldHomomorphism( <hom> )'
+
+'KernelFieldHomomorphism' returns  the  kernel  of the field homomorphism
+<hom>.
+
+Because the kernel must be a  ideal in the source  and it can not  be the
+full source  (because we  require that the one of the source is mapped to
+the one of the range), it must be the trivial ideal.  Therefor the kernel
+of  every field homomorphism is the set  containing  only the zero of the
+source.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Mapping Functions for Field Homomorphisms}%
+\index{IsInjective!for field homomorphisms}%
+\index{IsSurjective!for field homomorphisms}%
+\index{equality!for field homomorphisms}%
+\index{Image!for field homomorphisms}%
+\index{Images!for field homomorphisms}%
+\index{PreImage!for field homomorphisms}%
+\index{PreImages!for field homomorphisms}
+
+This  section describes how  the mapping  functions  defined  in  chapter
+"Mappings" are implemented for field homomorphisms.  Those  functions not
+mentioned here are implemented by the default functions described in  the
+respective sections.
+
+\vspace{5mm}
+'IsInjective( <hom> )'
+
+Always returns 'true' (see "KernelFieldHomomorphism").
+
+\vspace{5mm}
+'IsSurjective( <hom> )'
+
+The  field  homomorphism  <hom> is surjective if  the  size  of the image
+'Size(  Image( <hom> ) )' is equal  to  the  size  of  the  range  'Size(
+<hom>.range )'.
+
+\vspace{5mm}
+'<hom1> = <hom2>'
+
+The  two field homomorphism <hom1> and <hom2> are are equal  if  the have
+the  same  source and range and  if the images of the generators  of  the
+source under <hom1> and <hom2> are equal.
+
+\vspace{5mm}
+'Image( <hom> )' \\
+'Image( <hom>, <H> )' \\
+'Images( <hom>, <H> )'
+
+The  image  of  a  subfield  under a  field homomorphism  is computed  by
+computing the images  of  a  set of  generators of the  subfield, and the
+result is the subfield generated by those images.
+
+\vspace{5mm}
+'PreImage( <hom> )' \\
+'PreImage( <hom>, <H> )' \\
+'PreImages( <hom>, <H> )'
+
+The preimages of a subfield  under a  field  homomorphism are computed by
+computing the  preimages of all the generators  of  the subfield, and the
+result is the subfield generated by those elements.
+
+Look in the index under *IsInjective*, *IsSurjective*, *Image*, *Images*,
+*PreImage*,   *PreImages*, and   *equality*   to   see for  which   field
+homomorphisms these functions are overlaid.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Field Records}
+
+A field is represented by  a record  that contains important  information
+about this field.  The {\GAP} library predefines some  field records, for
+example  'Rationals'  (see  "Rationals").  Field  constructors  construct
+others,  for  example  'Field'  (see  "Field"),  and  'GaloisField'  (see
+"GaloisField").  Of course you may also create such a record by hand.
+
+All field  records contain the  components 'isDomain', 'isField', 'char',
+'degree', 'generators', 'zero',  'one', 'field', 'base', and 'dimension'.
+They  may  also   contain the  optional  components  'isFinite',  'size',
+'galoisGroup'.   The  contents  of  all  components of   a field <F>  are
+described below.
+
+'isDomain': \\
+        is always 'true'.  This indicates that <F> is a domain.
+
+'isField': \\
+        is always 'true'.  This indicates that <F> is a field.
+
+'char': \\
+        is the characteristic of <F>.  For finite fields this is always a
+        prime, for infinite fields this is 0.
+
+'degree': \\
+        is the degree of  <F> *as extension of the  prime field*,  not as
+        extension of  the subfield <S>.   For finite fields the  order of
+        <F> is given by '<F>.char\^ <F>.degree'.
+
+'generators': \\
+        a list of elements  that together generate <F>.   That is  <F> is
+        the smallest field over the prime  field given by '<F>.char' that
+        contains the elements of '<F>.generators'.
+
+'zero': \\
+        is the additive neutral element of the finite field.
+
+'one': \\
+        is the multiplicative neutral element of the finite field.
+
+'field': \\
+        is  the subfield  <S> over which   <F> was constructed.  This  is
+        either a field  record for <S>, or the  same value as '<F>.char',
+        denoting the prime field (see "Fields over Subfields").
+
+'base': \\
+        is a list of elements  of <F> forming a  base  for <F> as  vector
+        space over the subfield <S>.
+
+'dimension': \\
+        is the dimension of <F> as vector space over the subfield <S>.
+
+'isFinite': \\
+        if present this is 'true' if the field  <F> is finite and 'false'
+        otherwise.
+
+'size': \\
+        if present this is the size of the field <F>.  If <F> is infinite
+        this holds the string \"infinity\".
+
+'galoisGroup': \\
+        if    present   this holds  the     Galois    group of  <F>  (see
+        "GaloisGroup").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

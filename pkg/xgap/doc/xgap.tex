@@ -1,0 +1,1069 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  xgap.tex                    XGAP documentation               Frank Celler
+%%
+%A  @(#)$Id: xgap.tex,v 1.1.1.1 1996/12/11 12:39:53 werner Exp $
+%%
+%Y  Copyright 1995-1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%H  $Log: xgap.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:39:53  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 1.3  1995/08/16  12:49:48  fceller
+%H  fixed some more typos
+%H
+%H  Revision 1.2  1995/08/10  18:04:54  fceller
+%H  fixed some typos
+%H
+%H  Revision 1.1  1995/08/09  10:48:53  fceller
+%H  Initial revision
+%%
+\def\XGAP{{\sf XGAP}}
+\Chapter{XGAP - Graphic Extensions}
+
+This chapter describes how  to write your own  programs using the graphic
+extensions supplied by  {\XGAP},  it will  not describe  how to use   the
+graphical interface  to the lattice program,  see chapter "XGAP - Graphic
+Lattices" for details.
+
+By now  you should be  familiar  with windows,  graphic sheets, pull down
+menus, pop up  menus, pointers, and mice.   These terms are explained  in
+chapter "XGAP - Graphic Lattices".
+
+Note that color  instead  of colour  and dialog instead  of dialogue were
+chosen  because these spellings  are  normally found   in the context  of
+graphic programms.  {\GAP} in general prefers the english spelling (e.g.,
+centre instead of center).
+
+The  first section gives  a small example, the best   way to work through
+this section is to start  {\XGAP}, an editor  and to try the functions of
+this section for yourself.
+
+The following sections  describe how to create a  new graphic sheet  (see
+"GraphicSheet") with  pull down menu (see  "Menu") attached to it, how to
+select colors  (see "Color Models"  and "Recolor"), what  graphic objects
+can be  put into graphic sheets  (see "Box", "Circle", "Diamond", "Disc",
+"Line", "Rectangle"),  how to  put  text (see  "Text") and vertices  (see
+"Vertex")   onto a graphic sheet,   how  to manipulate   the objects (see
+"Reshape",  "MoveDelta", "Move",  and   "SetWidth"), how  to  test  if  a
+coordinate lies  inside  an object  (see "in  for Graphic  Objects"), and
+finally section "Delete" tells you how to delete graphic objects.
+
+The  following sections then  deal with objects  not (directly) associated
+with graphic  sheets, namely    pop  up menus (see    "PopupMenu"),  text
+selectors (see "TextSelectors") and dialog boxes (see "Dialog").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Creating a Graph}
+
+This  section  gives a small   example  how to  use the  {\XGAP}  library
+extension.  The goal  is to write functions  to  create a  graphic sheet,
+such  that clicking  on this  graphic sheet  with  the right mouse button
+creates a new vertex at the position of the click, clicking with the left
+mouse button  selects a vertex,   pressing <SHIFT>  and clicking  adds  a
+vertex to the list  of selected vertices.  It should  also be possible to
+move  vertices using  the mouse and  to  connect  and disconnect vertices
+using menus.
+
+In order to avoid name conflicts, the functions we write  are stored in a
+record |XGraphOps|.  Initially this record is a copy of |GraphicSheetOps|
+which contains  the  basic methods  for  graphic sheets.  If  you are not
+familiar with operations records  you can think of  it simply as a record
+containing our functions, because this  is the only way  we will use this
+record in the following, but see "Dispatchers" for details.
+
+Initially the graphic  sheet should have  room for $10$ by $10$ vertices.
+The  diameter of a vertex is  stored in |VERTEX.diameter| (see "Vertex").
+The diameter depends on the size of the tiny  font and hopefully the user
+has chosen a readable one, we don\'t use absolute values because there is
+no way to tell what kind of screen the user is  looking at (it might be a
+small LCD display or a large 20 inch color display).
+
+|    XGraphOps := OperationsRecord( "XGraphOps", GraphicSheetOps );
+    XGraph := function( title )
+        local   sheet,  dim;
+ 
+        # create a new graphic sheet
+        dim   := 10*VERTEX.diameter;
+        sheet := GraphicSheet( title, dim, dim );
+ 
+        # change its operations record to <XGraphOps>
+        sheet.operations := XGraphOps;
+ 
+        # and return the new sheet
+        return sheet;
+ 
+    end;|
+
+Calling 'XGraph' will create a new graphic sheet with one menu, the <GAP>
+menu  containing the entries <save    as postscript> and <close   graphic
+sheet>.  Both entries already work, as  'GraphicSheet' already installs a
+method for them, however, at the moment there is not much  work to do for
+<save as postscript>.
+
+The following function creates a new vertex at position <x> and <y>, this
+vertex  will be labeled with  a  unique number.   We  store the next free
+number in  the '<sheet>.number'.  The vertices   created by this function
+are stored in '<sheet>.vertices'.
+
+|    XGraphOps.CreateVertex := function( sheet, x, y )
+        local   label,  v;
+
+        # the next number is stored in <sheet>.number
+        label := String(sheet.number);
+
+        # create a new vertex
+        v := Vertex( sheet, x, y, rec( label := label ) );
+        Add( sheet.vertices, v );
+
+        # increment the number
+        sheet.number := sheet.number+1;
+
+    end;|
+
+Now test these  two functions,  first create a  new graphic  sheet  using
+'XGraph', fix '<sheet>.number' and  '<sheet>.vertices' (which are at  the
+moment    not  set by   'XGraph'),   and    create  two  vertices   using
+'XGraphOps.CreateVertex'.
+
+|    gap> sheet := XGraph( "Nice Graph" );
+    <graphic lattice>
+    gap> sheet.number := 1;;  sheet.vertices := [];;
+    gap> sheet.operations.CreateVertex( sheet, 10, 10 );
+    gap> sheet.operations.CreateVertex( sheet, 50, 10 ); |
+
+How to  convince {\GAP} to  call 'XGraphOps.CreateVertex'  as soon as the
+user has pressed the right mouse button inside the new graphic sheet?  In
+order to  do that we have  to install a new  method for the 'RightPBDown'
+(which stands for right pointer/mouse  button down) event of this graphic
+sheet using 'InstallGSMethod'.
+
+
+|    gap> InstallGSMethod(sheet, "RightPBDown", XGraphOps.CreateVertex);|
+
+Now pressing the right mouse button inside the graphic sheet <sheet> will
+automatically call the  function |XGraphOps.CreateVertex| with parameters
+<sheet> and  the  x  and  y coordinate  of  the  pointer.   The following
+modified  function |XGraph|  will   create a  graphic sheet  and  install
+'XGraphOps.CreateVertex' as method for 'RightPBDown' so that pressing the
+right mouse button inside this graphic sheet creates a new vertex.
+
+|    XGraph := function( title )
+        local   dim,  sheet;
+
+        # create a new graphic sheet
+        dim   := 10*VERTEX.diameter;
+        sheet := GraphicSheet( title, dim, dim );
+
+        # change its operations record to <XGraphOps>
+        sheet.operations := XGraphOps;
+
+        # set the next free number to 1
+        sheet.number := 1;
+
+        # store the vertices in <sheet>.vertices
+        sheet.vertices := [];
+        
+        # install a method for the right mouse button
+        InstallGSMethod(sheet,"RightPBDown",XGraphOps.CreateVertex);
+
+        # and return the new sheet
+        return sheet;
+
+    end; |
+
+Close the current sheet, create a new one and try the right mouse button.
+
+|    gap> sheet := XGraph( "Nicer Graph" ); |
+
+We  want to use  the left mouse button  to select a  vertex.  If the user
+clicks in the graphic sheet with the left button  we have to check if the
+position of the pointer lies within any vertex in '<sheet>.vertices'.  If
+there is such a vertex we highlight and recolor  it.  |COLORS| contains a
+a list  of available colors,  if an  entry  is 'false'  this color is not
+available.   Say,   that    the   color    blue   is   available,    then
+'XGraphOps.SelectVertex' could be written as follows.
+
+|    XGraphOps.SelectVertex := function( sheet, x, y )
+        local   pos,  v;
+
+        # check if any vertex contains position <x>, <y>
+        pos := [ x, y ];
+        for v  in sheet.vertices  do
+            if pos in v  then
+                Highlight( v );
+                Recolor( v, COLORS.blue );
+            fi;
+        od;
+
+    end; |
+
+Now  bind this to the  left mouse button down event  and  try to select a
+vertex with the left mouse button.
+
+|    gap> InstallGSMethod(sheet,"LeftPBDown",XGraphOps.SelectVertex); |
+
+The 'XGraph' function should do the  following in addition to the current
+version\:\ install the  select  vertex method for  the left  mouse button
+down   event, a method for   selecting more than  one  vertex by pressing
+<SHIFT> together with the left mouse button,  and also select a color for
+a selected vertex.
+
+|    XGraph := function( title )
+        local   dim,  sheet;
+
+        # create a new graphic sheet
+        dim   := 10*VERTEX.diameter;
+        sheet := GraphicSheet( title, dim, dim );
+
+        # change its operations record to <XGraphOps>
+        sheet.operations := XGraphOps;
+
+        # set the next free number to 1
+        sheet.number := 1;
+
+        # store the vertices in <sheet>.vertices
+        sheet.vertices := [];
+
+        # store selected vertices in <sheet>.selected
+        sheet.selected := [];
+
+        # install a method for the right mouse button
+        InstallGSMethod(sheet,"RightPBDown",XGraphOps.CreateVertex);
+
+        # install a method for the right mouse button
+        InstallGSMethod(sheet,"LeftPBDown",XGraphOps.SelectVertex);
+        InstallGSMethod(sheet,"ShiftLeftPBDown",XGraphOps.SelectVertices);
+
+        # choose a color for selected vertices
+        if COLORS.blue <> false  then
+            sheet.color := COLORS.blue;
+        else
+            sheet.color := COLORS.black;
+        fi;
+
+        # and return the new sheet
+        return sheet;
+
+    end; |
+
+The select vertex method  is also not optimal  because it is not possible
+to deselect a  vertex. In  order to change   this we  keep track of   the
+selected vertices in '<sheet>.selected'.  If the users clicks on a selected
+vertex and  this vertex is the only  selected vertex it is deselected. If
+the users clicks on  a vertex and there  are other selected vertices, the
+chosen vertex is selected and all the other vertices are deselected.
+
+|    XGraphOps.SelectVertex := function( sheet, x, y )
+        local   pos,  v,  a;
+
+        # check if any vertex contains position <x>, <y>
+        pos := [ x, y ];
+        for v  in sheet.vertices  do
+            if pos in v  then
+
+                # if <v> is selected and the only selected vertex, deselect
+                if v in sheet.selected and 1 = Length(sheet.selected)  then
+                    Highlight( v, false );
+                    Recolor( v, COLORS.black );
+                    sheet.selected := [];
+
+                # if more vertices are selected, select <v>, deselect other
+                elif v in sheet.selected and 1<Length(sheet.selected) then
+                    for a  in sheet.selected  do
+                        if a <> v  then
+                            Highlight( a, false );
+                            Recolor( a, COLORS.black );
+                        fi;
+                    od;
+                    sheet.selected := [v];
+
+                # if <v> is deselected, select it, deselect other
+                else
+                    for a  in sheet.selected  do
+                        if a <> v  then
+                            Highlight( a, false );
+                            Recolor( a, COLORS.black );
+                        fi;
+                    od;
+                    Highlight(v);
+                    Recolor( v, sheet.color );
+                    sheet.selected := [v];
+                fi;
+            fi;
+        od;
+
+    end; |
+
+The function |XGraphOps.SelectVertices| bound to  <SHIFT> plus left mouse
+button is similar to |XGraphOps.SelectVertex|  except that it will select
+a vertex in addition to the already selected vertices.
+
+|    XGraphOps.SelectVertices := function( sheet, x, y )
+        local   pos,  v,  a;
+
+        # check if any vertex contains position <x>, <y>
+        pos := [ x, y ];
+        for v  in sheet.vertices  do
+            if pos in v  then
+
+                # if <v> is selected, deselect <v>
+                if v in sheet.selected  then
+                    Highlight( v, false );
+                    Recolor( v, COLORS.black );
+                    sheet.selected := Filtered(sheet.selected,x -> x<>v);
+
+                # if <v> is deselected, select it
+                else
+                    Highlight(v);
+                    Recolor( v, sheet.color );
+                    Add( sheet.selected, v );
+                fi;
+            fi;
+        od;
+
+    end; |
+
+Now try  if the  functions  work as  expected.   But  how to connect  and
+disconnect  vertices?  We could either  use some clever  mouse actions or
+use a menu  which will allow the  user to connect and disconnect selected
+vertices.  We take the latter approach  in this example. 'Menu' is called
+with the  <sheet>, a  menu name, and  a  list of menu  entries/associated
+functions which will be called as soon as the entry is selected.
+
+Change 'XGraph' to add a menu. Add after
+
+|    # store selected vertices in <sheet>.selected
+    sheet.selected := []; |
+
+in 'XGraph' the following lines.
+
+|    # add the <Vertices> menu
+    Menu( sheet, "Vertices",
+          [ "Connect",    XGraphOps.Connect,
+            "Disconnect", XGraphOps.Disconnect ] ); |
+
+This will add  a  menu named <Vertices> to  the  graphic sheet  which two
+entries <Connect>    and <Disconnect>.  If the  user    selects the entry
+<Connect>    the  function  'XGraphOps.Connect' is    called  with  three
+arguments, the first   is  the graphic  sheet, the  second  is a   record
+describing  the menu (the same  record is also  returned by 'Menu' but we
+don\'t use it), and a string containing the name of the selected entry.
+
+In our example we can ignore the last two arguments, the only interesting
+argument is the graphic sheet.
+
+|    XGraphOps.Connect := function( sheet, menu, entry )
+        local   i,  j;
+
+        # connect all pairs of selected vertices
+        for i  in [ 1 .. Length(sheet.selected) ]  do
+            for j  in  [ i+1 .. Length(sheet.selected) ]  do
+                Connection( sheet.selected[i], sheet.selected[j] );
+            od;
+        od;
+    end;
+
+    XGraphOps.Disconnect := function( sheet, menu, entry )
+        local   i,  j,  v,  w;
+
+        # disconnect all pairs of selected vertices
+        for i  in [ 1 .. Length(sheet.selected) ]  do
+            for j  in [ i+1 .. Length(sheet.selected) ]  do
+                v := sheet.selected[i];
+                w := sheet.selected[j];
+                if v in w.connections  then
+                    Disconnect( v, w );
+                fi;
+            od;
+        od;
+    end; |
+
+What is  left is a way  to move a vertex around.   In order to accomplish
+this      we   replace   the    'LeftPBDown'   method    by  a   function
+'XGraphOps.DragSelect' which will either move or select a vertex.
+
+Change  'XGraphOps.SelectVertices'  such that  it  will  expect  only two
+arguments, the graphic sheet and the vertex to select.
+
+
+|    XGraphOps.SelectVertex := function( sheet, v )
+        local   a;
+
+        # if <v> is selected and the only selected vertex, deselect
+        if v in sheet.selected and 1 = Length(sheet.selected)  then
+            Highlight( v, false );
+            .
+            .
+            .
+            Recolor( v, sheet.color );
+            sheet.selected := [v];
+        fi;
+    end; |
+
+The  function 'XGraphOps.DragSelect'   will be called   if   the user has
+pressed the left mouse  button.  The function has  to check if there is a
+vertex  underneath the pointer and then  uses 'Drag' to move this vertex.
+If   the   user   doesn\'t   move   the vertex     the   function   calls
+'XGraphOps.SelectVertices' to  select this  vertex instead.  The function
+'Drag'  expects five  arguments.  The first   is  the graphic  sheet, the
+second and the third  the current position of  the pointer, the fourth is
+the mouse button to monitor, either |BUTTONS.left| or |BUTTONS.right|, as
+soon as this button  is released the  function returns, the last argument
+is a function which is called if the user moves the mouse.
+
+|    XGraphOps.DragSelect := function( sheet, x, y )
+        local   pos,  ver,  move,  drag;
+
+        # check <x>, <y> lies within a vertex
+        pos := [x,y];
+        if not ForAny( sheet.vertices, ver -> pos in ver )  then
+            return;
+        fi;
+        ver := First( sheet.vertices, ver -> pos in ver );
+
+        # set <move> to 'true' if the vertex was moved
+        move := false;
+
+        # this function will be used to drag a vertex
+        drag := function( nx, ny )
+            if nx < 0 or ny < 0  then
+                return;
+            fi;
+            if nx <> x or ny <> y  then
+                move := true;
+            fi;
+            Move( ver, nx, ny );
+        end;
+
+        # start dragging the vertex
+        Drag( sheet, x, y, BUTTONS.left, drag );
+
+        # if the vertex has not moved, call select
+        if not move  then
+            sheet.operations.SelectVertex( sheet, ver );
+        fi;
+
+    end;|
+
+You  also  have   to change   'XGraph'   to install  this  function   for
+'LeftPBDown' instead of the function 'XGraphOps.SelectVertex'.
+
+|    XGraph := function( title )
+        .
+        .
+        InstallGSMethod(sheet,"LeftPBDown",XGraphOps.DragSelect);
+        .
+        .
+    end ;|
+
+Now try the function 'XGraph'.
+
+This ends  this example.  If  you feel adventurous,  try to  add a resize
+menu to resize the graphic  sheet or a way to  delete a vertex or write a
+function to mark the connected component of a selected vertex.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GraphicSheet}
+
+'GraphicSheet( <name>, <width>, <height> )'
+
+creates   a graphic  sheet with  title   <name> and dimension <width>  by
+<height>.  A graphic sheet  is the basic  tool  to draw something, it  is
+like a piece of  paper on which you can  put your graphic objects, and to
+which  you can attach  your menus.   The coordinate  $(0,0)$ is the upper
+left corner, $(<width>,<height>)$ the lower right.
+
+It  is possible to change  the  default behaviour  of  a graphic sheet by
+install methods (or sometimes called callbacks) for the following events.
+For example to   install the function 'MyLeftPBDown'  for  the left mouse
+button   down event   of   a   graphic   <sheet>,   you  have  to    call
+'InstallGSMethod' as follows.
+
+|    gap> InstallGSMethod( sheet, "LeftPBDown", MyLeftPBDown ); |
+
+'Close':\\
+    the function  will  be called  as  soon as  the user  selects  <close
+    graphic  sheet>, the installed  function gets  the  graphic  sheet to
+    close as argument.
+
+'LeftPBDown':\\
+    the function will be   called as soon as  the  user presses  the left
+    mouse button  inside the graphic  sheet, the installed function  gets
+    the graphic sheet, the x  coordinate and y  coordinate of the pointer
+    as arguments.
+    
+'RightPBDown':\\
+    same as 'LeftPBDown' except that the user has pressed the right mouse
+    button.
+
+'ShiftLeftPBDown':\\
+    same as 'LeftPBDown' except that the user  has pressed the left mouse
+    button together with the <SHIFT> key on the keyboard.
+
+'ShiftRightPBDown':\\
+    same as 'LeftPBDown' except that the user has pressed the right mouse
+    button together with the <SHIFT> key on the keyboard.
+
+'CtrlLeftPBDown':\\
+    same as 'LeftPBDown' except that the user has  pressed the left mouse
+    button together with the <CTR> key on the keyboard.
+
+'CtrlRightPBDown':\\
+    same as 'LeftPBDown' except that the user has pressed the right mouse
+    button together with the <CTR> key on the keyboard.
+
+The following functions are applicable to graphic sheets.
+
+'Close( <sheet> )'
+
+closes the  graphic sheet, this is equivalent  to  the user selecting
+<close graphic sheet> from the <GAP> menu.
+
+'FastUpdate( <sheet> )'
+
+puts the graphic sheet in a fast update mode, during this mode the screen
+is no longer updated completely if a graphic  object is moved or deleted.
+You should call fast update before  you start large rearrangements of the
+graphic objects and at the end 'FastUpdate( <sheet>, false )'.
+
+'FastUpdate( <sheet>, false )'
+
+switches off the fast update mode and refreshes the graphic sheet.
+
+'Resize( <sheet>, <width>, <height> )'
+
+changes the dimension of the graphic sheet.
+
+'SetTitle( <sheet>, <name> )'
+
+changes the title of the graphic sheet.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Menu}
+
+'Menu( <sheet>, <title>, <entries> )'
+
+creates a new menu for the window  containing the graphic sheet described
+by <sheet> and returns a {\GAP} record <menu> describing  this menu.  The
+name  (or title) of the  menu is given by the  string  <title>.  The menu
+entries are described by the list <entries> which  must be a list $[ s_1,
+f_1, ... ]$ of  strings $s_i$ and functions $f_i$.   As soon as  the user
+selects a  menu entry $s_i$ the function  $f_i$ is called with parameters
+<sheet>, <menu> and $s_i$.
+
+'Enable( <menu>, <entry> )'
+
+enables (makes it selectable) an <entry> which must be one of the strings
+$s_i$.
+
+'Enable( <menu>, <entry>, false )'
+
+disables <entry> which must be one of the strings $s_i$.
+
+'Check( <menu>, <entry> )'
+
+puts a check mark next to <entry> which must be one of the strings $s_i$.
+
+'Check( <menu>, <entry>, false )'
+
+removes a check mark set with 'Check'.
+
+See "Creating a Graph" for an example of a menu.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Color Models}
+
+The variable |COLORS| contains a  list of available  colors.  If an entry
+is  'false' this color is not  available on your screen.  Possible colors
+are\:\   'black', 'white',  'lightGrey',   'dimGrey', 'red',  'blue', and
+'green'.
+
+The  following example opens   a new graphic sheet  (see "GraphicSheet"),
+puts  a black box (see  "Box") onto it and  changes its color.  Obviously
+you need a color display for this example.
+
+|    gap> sheet := GraphicSheet( "Nice Sheet", 300, 300 );
+    <graphic sheet "Nice Sheet">
+    gap> box := Box( sheet, 10, 10, 290, 290 );
+    <box>
+    gap> Recolor( box, COLORS.green );
+    gap> Recolor( box, COLORS.blue );
+    gap> Recolor( box, COLORS.red );
+    gap> Recolor( box, COLORS.lightGrey );
+    gap> Recolor( box, COLORS.dimGrey );
+    gap> Close(sheet); |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Recolor}
+
+'Recolor( <obj>, <color> )'
+
+'Recolor' changes the color of a graphic object described by <obj> on its
+graphic sheet.  See "Color Models" for how to select a <color>.
+
+The following example  opens  a new  graphic sheet (see  "GraphicSheet"),
+puts a red disc (see "Disc") in its centre and  changes the disc\'s color
+to blue.  Obviously you need a color display for this example.
+
+|    gap> s := GraphicSheet(  "Hallo", 300, 300 );
+    <graphic sheet "Hallo">
+    gap> d := Disc( s, 150, 150, 100, rec( color := COLORS.red ) );
+    <disc>
+    gap> Recolor( d, COLORS.blue );
+    gap> Close(s);|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Box}
+
+'Box( <sheet>, <x>, <y>, <w>, <h> )'
+
+'Box' creates a  new graphic object, namely  a filled  black box, on  the
+graphic sheet <sheet> and returns a {\GAP} record describing this object.
+The  for   corners   of  the   box    are  $(<x>,<y>)$,  $(<x>+<w>,<y>)$,
+$(<x>+<w>,<y>+<h>)$, and $(<x>,<y>+<h>)$.
+
+Note that the box is $<w>+1$ pixel wide and $<h>+1$ pixels high.
+
+The following functions   can be  used  for  boxes\:\ 'in'  (see "in  for
+Graphic   Objects"), 'Reshape'   (see  "Reshape"),  'Move'  (see "Move"),
+'MoveDelta' (see   "MoveDelta"), 'Recolor' (see "Recolor"),  and 'Delete'
+(see "Delete").
+
+'Box( <sheet>, <x>, <y>, <w>, <h>, rec( color \:= <color> ) )'
+
+works like the first version of 'Box',  except that the  color of the box
+will be <color>.  See "Color Models" for how to select a <color>.
+
+The following examples opens a new graphic sheet (see "GraphicSheet") and
+puts a black and a green box onto it.
+
+|    gap> sheet := GraphicSheet(  "Hallo", 300, 300 );
+    <graphic sheet "Hallo">
+    gap> b1 := Box(sheet, 10, 100, 10, 20);
+    <box>
+    gap> b2 := Box(sheet, 200, 200, 20, 30, rec(color := COLORS.green));
+    <box> |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Circle}
+
+'Circle( <sheet>, <x>, <y>, <r> )'
+
+'Circle'  creates a  new  graphic object, namely a  black  circle, on the
+graphic sheet <sheet> and returns a {\GAP} record describing this object.
+The centre of  this circle is at position  $(<x>,<y>)$ and its  radius is
+<r>.
+
+The following functions can  be used for  circles\:\  'in', (see "in  for
+Graphic   Objects"),   'Reshape'   (see   "Reshape"),   'SetWidth'   (see
+"SetWidth"), 'Move'  (see   "Move"),  'MoveDelta'    (see   "MoveDelta"),
+'Recolor' (see "Recolor"), and 'Delete' (see "Delete").
+
+'Circle( <sheet>, <x>, <y>, <r>, rec( color \:= <color> ) )'
+
+works like the first  version of 'Circle',  except that the color  of the
+circle will be <color>.  See "Color Models" for how to select a <color>.
+
+'Circle( <sheet>, <x>, <y>, <r>, rec( width \:= <width> ) )'
+
+works like the first version of 'Circle', except that the circle width of
+the circle will be <width>.
+
+The options 'color' and 'width' can be mixed together.
+
+The following example opens a  new graphic sheet (see "GraphicSheet") and
+puts a black and blue circle onto it.
+
+|    gap> sheet := GraphicSheet( "Hallo", 300, 300 );
+    <graphic sheet "Hallo">
+    gap> c1 := Circle( sheet, 100, 100, 10 );
+    <circle>
+    gap> c2 := Circle( sheet, 200, 100, 30, rec(color := COLORS.red) );
+    <circle> |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Diamond}
+
+'Diamond( <sheet>, <x>, <y>, <w>, <h> )'
+
+'Diamond' creates a  new graphic object, namely  a black diamond, on  the
+graphic sheet <sheet> and returns a {\GAP} record describing this object.
+The  four corners  of  the diamond  are $(<x>,<y>)$, $(<x>+<w>,<y>+<h>)$,
+$(<x>+2<w>,<y>)$, and $(<x>+<w>,<y>-<h>)$.
+
+The  following functions can be used  for rectangles\:\ 'in' (see "in for
+Graphic   Objects"),  'Reshape'    (see   "Reshape"),   'SetWidth'   (see
+"SetWidth"),   'Move'    (see "Move"),  'MoveDelta'    (see "MoveDelta"),
+'Recolor' (see "Recolor"), and 'Delete' (see "Delete").
+
+'Diamond( <sheet>, <x1>, <y1>, <x2>, <y2>, rec( color \:= <color> ) )'
+
+works like the first  version of 'Diamond',  except that the color  of the
+diamond will be <color>.  See "Color Models" for how to select a <color>.
+
+'Diamond( <sheet>, <x1>, <y1>, <x2>, <y2>, rec( width \:= <width> ) )'
+
+works like the first version of 'Diamond',  except that the diamond width
+of the diamond will be <width>.
+
+The options 'color' and 'width' can be mixed together.
+
+The following example opens a  new graphic sheet (see "GraphicSheet") and
+puts a black and red diamond onto it.
+
+|    gap> sheet := GraphicSheet( "Hallo", 300, 300 );
+    <graphic sheet "Hallo">
+    gap> d1 := Diamond(sheet, 40, 200, 10, 10);
+    <diamond>
+    gap> d2 := Diamond(sheet, 70, 200, 10, 20, rec(color:=COLORS.red));
+    <diamond> |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Disc}
+
+'Disc( <sheet>, <x>, <y>, <r> )'
+
+'Disc' creates a new  graphic object, namely a filled  black disc, on the
+graphic sheet <sheet> and returns a {\GAP} record describing this object.
+The centre of this disc is at position $(<x>,<y>)$ and its radius is <r>.
+
+The following   functions can  be used  for  discs\:\  'in' (see  "in for
+Graphic Objects"), 'Reshape'     (see "Reshape"), 'Move'   (see  "Move"),
+'MoveDelta'  (see  "MoveDelta"), 'Recolor'  (see "Recolor"), and 'Delete'
+(see "Delete").
+
+'Disc( <sheet>, <x>, <y>, <r>, rec( color \:= <color> ) )'
+
+works like the first version of 'Disc', except that the color of the disc
+will be <color>.  See "Color Models" for how to select a <color>.
+
+The following examples opens a new graphic sheet (see "GraphicSheet") and
+puts  a  black and blue disc onto it.
+
+|    gap> sheet := GraphicSheet(  "Hallo", 300, 300 );
+    <graphic sheet "Hallo">
+    gap> d1 := Disc( sheet, 100, 100, 8 );
+    <disc>
+    gap> d2 := Disc( sheet, 200, 100, 29, rec( color := COLORS.blue ) );
+    <disc> |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Line}
+\index{Relabel!for lines}
+
+'Line( <sheet>, <x>, <y>, <w>, <h> )'
+
+'Line' creates a new graphic object, namely  a black line, on the graphic
+sheet  <sheet> and returns a  {\GAP} record describing  this object.  The
+line runs from position $(<x>,<y>)$ to $(<x>+<w>,<y>+<h>)$.
+
+The following  functions  can be used   for lines\:\  'in',  (see "in for
+Graphic  Objects"),  'Relabel'  (see  below), 'Reshape' (see  "Reshape"),
+'SetWidth'  (see  "SetWidth"),   'Move'  (see "Move"),  'MoveDelta'  (see
+"MoveDelta"), 'Recolor' (see "Recolor"), and 'Delete' (see "Delete").
+
+'Line( <sheet>, <x>, <y>, <w>, <h>, rec( color \:= <color> ) )'
+
+works like the first version of 'Line', except that the color of the line
+will be <color>.  See "Color Models" for how to select a <color>.
+
+'Line( <sheet>, <x>, <y>, <w>, <h>, rec( width \:= <width> ) )'
+
+works like the first version of 'Line', except that the line width of the
+line will be <width>.
+
+'Line( <sheet>, <x>, <y>, <x>, <y>, rec( label \:= <label> ) )'
+
+works like the first version of 'Line', except that the line will contain
+a <label>, which must be a string.
+
+The options 'color', 'width', and 'label' can be mixed together.
+
+The following example opens a  new graphic sheet (see "GraphicSheet") and
+puts a black and blue onto it.
+
+|    gap> sheet := GraphicSheet( "Hallo", 300, 300 );
+    <graphic sheet "Hallo">
+    gap> l1 := Line( sheet, 10, 200, 10, 90 );
+    <line>
+    gap> l2 := Line( sheet, 15, 200, 10, 90, rec(color:=COLORS.blue) );
+    <line> |
+
+'Relabel( <line>, <label> )'
+
+'Relabel' attaches a  <label> to  <line>,  replacing any old label  which
+might be  present.  If <line> is moved  or  reshaped, the label  is moved
+accordingly.   If  <label> is 'false', any   label attached to  <line> is
+removed.
+
+|    gap> Relabel( l2, "Hallo" );
+    gap> Relabel( l2, "New Label" );
+    gap> Relabel( l2, false );|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rectangle}
+
+'Rectangle( <sheet>, <x>, <y>, <w>, <h> )'
+
+'Rectangle' creates  a new graphic object, namely  a black  rectangle, on
+the  graphic sheet  <sheet> and returns  a  {\GAP} record describing this
+object.  The  four     corners   of  the  rectangle  are     $(<x>,<y>)$,
+$(<x>+<w>,<y>)$, $(<x>+<w>,<y>+<h>)$, and $(<x>,<y>+<h>)$.
+
+Note that the rectangle is $<w>+1$ pixel wide and $<h>+1$ pixel high.
+
+The  following functions can be used  for rectangles\:\ 'in' (see "in for
+Graphic   Objects"),  'Reshape'    (see   "Reshape"),   'SetWidth'   (see
+"SetWidth"),   'Move'    (see "Move"),  'MoveDelta'    (see "MoveDelta"),
+'Recolor' (see "Recolor"), and 'Delete' (see "Delete").
+
+'Rectangle( <sheet>, <x>, <y>, <w>, <h>, rec( color \:= <color> ) )'
+
+works like the first version of 'Rectangle', except that the color of the
+rectangle will  be  <color>.  See  "Color Models"  for   how to select  a
+<color>.
+
+'Rectangle( <sheet>, <x>, <y>, <w>, <h>, rec( width \:= <width> ) )'
+
+works like the first  version of 'Rectangle',  except that  the rectangle
+width of the rectangle will be <width>.
+
+The options 'color' and 'width' can be mixed together.
+
+The following example opens a  new graphic sheet (see "GraphicSheet") and
+puts a black and a red rectangle onto it.
+
+|    gap> sheet := GraphicSheet( "Hallo", 300, 300 );
+    <graphic sheet "Hallo">
+    gap> r1 := Rectangle(sheet, 10, 10, 30, 20);
+    <rectangle>
+    gap> r2 := Rectangle(sheet, 50, 50, 10, 10, rec(color:=COLORS.red));
+    <rectangle> |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Text}
+\index{Relabel!for texts}
+
+'Text( <sheet>, <font>, <x>, <y>, <str> )'
+
+'Text' creates a new graphic object, namely  a text <str>, on the graphic
+sheet <sheet> and returns  a {\GAP} record  describing this object.   The
+start of the  text baseline is at position  $(<x>,<y>)$.  There  are five
+font  sizes  available\:\  'FONTS.tiny',  'FONTS.small',  'FONTS.normal',
+'FONTS.large', and 'FONTS.huge'.
+
+The following functions  can be used  for text objects\:\ 'Relabel'  (see
+below), 'Move'   (see "Move"), 'MoveDelta'  (see "MoveDelta"),  'Recolor'
+(see "Recolor"), and 'Delete' (see "Delete").
+
+'Text( <sheet>, <font>, <x>, <y>, <str>, rec( color \:= <color> ) )'
+
+works like the first version of 'Text', except that the color of the text
+will be <color>.  See "Color Models" for how to select a <color>.
+
+The following example opens a new  graphic sheet (see "GraphicSheet") and
+puts a black and blue text onto it.
+
+|    gap> sheet := GraphicSheet( "Hallo", 300, 300 );
+    <graphic sheet "Hallo">
+    gap> t1 := Text( sheet, FONTS.small, 100, 10, "Hallo" );
+    <text>
+    gap> Text(sheet,FONTS.large,150,20,"Hallo",rec(color:=COLORS.blue));
+    <text> |
+
+'Relabel( <text>, <str> )'
+
+changes the text of the text object <text> to <str>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Vertex}
+\index{Relabel!for Vertices}
+\index{Highlight!for vertices}
+
+'Vertex( <sheet>, <x>, <y> )'
+
+'Vertex' creates a  new graphic  object, namely a  black  vertex, on  the
+graphic    sheet <sheet> and  returns a    {\GAP} record describing  this
+object. A vertex is a circle big enough to  hold up to four characters of
+text.  The outline of  the a vertex can  be changed using  'Reshape', the
+labeling with 'Relabel'.  The vertex  is centered at position $(<x>,<y>)$
+and has radius 'VERTEX.radius'.
+
+The following   functions can be used  for  rectangles\:\ 'Highlight' and
+'Relabel'  (see  below), 'in'  (see  "in for Graphic Objects"), 'Reshape'
+(see  "Reshape"), 'Move'  (see  "Move"),  'MoveDelta'  (see "MoveDelta"),
+'Recolor' (see "Recolor"), and 'Delete' (see "Delete").
+
+'Vertex( <sheet>, <x>, <y>, rec( color \:= <color> ) )'
+
+works like the first  version of 'Vertex',  except that the color of  the
+vertex will be <color>.  See "Color Models" for how to select a <color>.
+
+'Vertex( <sheet>, <x>, <y>, rec( label \:= <label> ) )'
+
+works like the first  version of 'Vertex',  except that the vertex has a
+initial <label>.
+
+The options 'color' and 'label' can be mixed.
+
+'Highlight( <ver> )'
+
+makes the circle (or whatever shape is used) slightly thicker.
+
+'Highlight( <ver>, false )'
+
+makes the circle (or whatever shape is used) slightly thinner.
+
+'Relabel( <ver>, <label> )'
+
+'Relabel'  attaches  a <label> to  <ver>, replacing  any old  label which
+might be present.  If <ver> is moved, the label is moved accordingly.  If
+<label> is 'false', any label attached to <ver> is removed.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Reshape}
+
+'Reshape( <obj>, <w>, <h> )'
+
+changes the width and height of  <obj> which must  be a box, a diamond, a
+line, or a rectangle.
+
+'Reshape( <obj>, <r> )'
+
+changes the radius of <obj> which must be a circle or a disc.
+
+'Reshape( <vertex>, <shape> )'
+
+changes   the outline  of   <vertex>.  The   parameter  <shape>   can  be
+'VERTEX.circle', 'VERTEX.diamond', or  'VERTEX.rectangle' or  any sum  of
+these.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MoveDelta}
+
+'MoveDelta( <obj>, <dx>, <dy> )'
+
+moves the graphic object <obj> by <dx> pixel to the right (or <-dx> pixel
+to the left if <dx>  is negative) and <dy> down  (or -<dy> up if <dy>  is
+negative).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Move}
+
+'Move( <obj>, <x>, <y> )'
+
+moves the graphic object <obj> to position $(<x>,<y>)$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SetWidth}
+
+'SetWidth( <obj>, <width> )'
+
+changes the line width of the graphic  object <obj> to <width> which must
+be a positive integer.   <obj> can be a circle,  a diamond, a line, or  a
+rectangle.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{in for Graphic Objects}
+
+'[<x>,<y>] in <obj>'
+
+returns 'true'   if the  coordinate  $(<x>,<y>)$  lies  inside or  on the
+boundary of the graphic object <obj> and 'false' otherwise.  <obj> can be
+a box, a circle, a diamond, a disc, a rectangle, or a <vertex>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Delete}
+
+'Delete( <obj> )'
+
+'Delete' removes the graphic object described by <obj> from its graphic
+sheet.
+
+'Delete( <menu> )'
+
+'Delete' removes the menu from its window.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PopupMenu}
+
+'PopupMenu( <title>, <entries> )'
+
+creates a  pop up menu  <pop> with title given  by the string <title> and
+entries  given by the list  of  strings <entries>.   This  pop up menu is
+*not* put onto the  screen when calling this  function.  You have  to use
+'Query'.
+
+'Query( <pop> )'
+
+pops  up the pop up menu  <pop> and waits until the  user has selected an
+entry or closed the menu.   In the first case  the string of the entry is
+returned, in the latter 'false'.  The  menu is poped down  as soon as the
+user selects an entry.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TextSelectors}
+
+'TextSelector( <title>, <entries>, <buttons> )'
+
+creates a new text  selector <sel>.  The name (or  title) of the selector
+is given by the  string <title>.  The text  lines  are given by  the list
+<entries> which must be  of the form $[  t_1, f_1, ...]$ where $t_i$  are
+strings and $f_i$ functions.  The window  will also contain buttons given
+by the parameter <buttons> which again must be a list of the form $[ s_1,
+g_1, ... ]$.
+
+As soon as the user presses the left mouse button while the pointer is on
+top of a line  $t_i$ the function $f_i$ is  called with  parameters <sel>
+and $t_i$.   As soon  as the  user presses  the  left mouse  button while
+inside a button $s_i$ the function  $g_i$ is called with parameters <sel>
+and $s_i$.
+
+'Enable( <sel>, <button> )'
+
+enables <button> which must be one the strings $s_i$.
+
+'Enable( <sel>, <button>, false )'
+
+disables <button> which must be one the strings $s_i$.
+
+'Relabel( <sel>, <entries> )'
+
+changes the test lines, <entries> must be list of new strings $t_i$.
+
+'Reset( <sel> )'
+
+removes any highlighting of   text lines after   the user has  selected a
+line.
+
+'Close( <sel> )'
+
+closes the text selector.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Dialog}
+
+'Dialog( \"OKcancel\", <title> )'
+
+creates  a dialog box <dial>  with title given  by the string <title> and
+buttons labeled <OK> and <CANCEL>.  The dialog box  is *not* put onto the
+screen when calling this function.  You have to use 'Query'.
+
+'Dialog( \"Filename\", <title> )'
+
+creates a file requestor/selector <dial>. Again you must use 'Query'.
+
+'Query( <dial> )'
+
+pops up the  dialog box <dial>  and waits until the user  has  typed in a
+text or selected a file  and pressed one of the  button.  It then returns
+this text or filename or 'false' if the user has canceled the dialog box.
+
+'Query( <dial>, <def> )'
+
+works as the first version but supplies the string <def> as default.
+

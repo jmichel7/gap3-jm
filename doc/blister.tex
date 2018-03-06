@@ -1,0 +1,333 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  blister.tex                 GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: blister.tex,v 1.1.1.1 1996/12/11 12:36:43 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the functions  that mainly operate  on boolean lists.
+%%  Because boolean lists are  just a special case  of lists many  things are
+%%  described in the list package.
+%%
+%H  $Log: blister.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:43  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.3  1993/02/05  08:09:55  felsch
+%H  examples fixed
+%H
+%H  Revision 3.2  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:05:10  martin
+%H  Initial revision under RCS.
+%H
+%%
+\Chapter{Boolean Lists}\index{lists!boolean}\index{subsets}\index{blist}
+
+This chapter describes boolean lists.   A *boolean list*  is a list  that
+has no holes and contains only boolean values, i.e., 'true'  and 'false'.
+In function names we call boolean lists *blist* for brevity.
+
+Boolean lists can be used  in various ways, but  maybe the most important
+application is their use for the description of *subsets* of finite sets.
+Suppose <set>  is a finite set,  represented  as  a list.   Then a subset
+<sub>  of <set> is represented  by a boolean  list   <blist>  of the same
+length as <set> such that '<blist>[<i>]' is 'true'  if '<set>[<i>]' is in
+<sub> and 'false' otherwise.
+
+This package contains functions to  switch between the representations of
+subsets of  a   finite set either  as  sets  or as   boolean  lists  (see
+"BlistList",  "ListBlist"),  to test  if  a  list is a  boolean list (see
+"IsBlist"), and to count the number of  'true' entries in  a boolean list
+(see "SizeBlist").
+
+Next there are functions for the standard set  operations for the subsets
+represented  by    boolean  lists   (see  "IsSubsetBlist",  "UnionBlist",
+"IntersectionBlist",   and   "DifferenceBlist").   There  are    also the
+corresponding destructive procedures  that  change their  first  argument
+(see  "UniteBlist", "IntersectBlist",  and  "SubtractBlist").  Note  that
+there is no   function to add or   delete a single  element   to a subset
+represented by a boolean list, because this  can be achieved by assigning
+'true' or 'false' to the corresponding  position in the boolean list (see
+"List Assignment").
+
+Since boolean lists are just a special case  of lists, all the operations
+and functions for lists, can be used for boolean  lists just as well (see
+"Lists").  For  example 'Position' (see  "Position") can be used  to find
+the  'true'  entries in  a  boolean list, allowing   you to loop over the
+elements of the subset represented by the boolean list.
+
+There is also a section  about internal details  (see "More about Boolean
+Lists").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BlistList}
+
+'BlistList( <list>, <sub> )'
+
+'BlistList' returns a new boolean list that describes the list <sub> as a
+sublist of  the  list <list>,   which  must  have  no holes.   That    is
+'BlistList' returns  a boolean list <blist> of  the same length as <list>
+such  that '<blist>[<i>]'  is 'true' if  '<list>[<i>]'   is in <sub>  and
+'false' otherwise.
+
+<list>  need not be a proper  set (see "Sets"),  even though in this case
+'BlistList' is most     efficient.   In particular  <list> may    contain
+duplicates.   <sub> need not  be a proper  sublist of <list>, i.e., <sub>
+may contain  elements that are  not in <list>.   Those elements of course
+have no influence on the result of 'BlistList'.
+
+|    gap> BlistList( [1..10], [2,3,5,7] );
+    [ false, true, true, false, true, false, true, false, false, false ]
+    gap> BlistList( [1,2,3,4,5,2,8,6,4,10], [4,8,9,16] );
+    [ false, false, false, true, false, false, true, false, true, false ]|
+
+'ListBlist' (see "ListBlist") is the inverse function to 'BlistList'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ListBlist}
+
+'ListBlist( <list>, <blist> )'
+
+'ListBlist' returns the sublist <sub> of the list <list>, which must have
+no holes, represented  by the boolean  list <blist>, which  must have the
+same length   as  <list>.   <sub> contains  the  element '<list>[<i>]' if
+'<blist>[<i>]'     is  'true' and   does    not contain   the element  if
+'<blist>[<i>]'  is 'false'.  The  order of  the elements  in <sub> is the
+same as the order of the corresponding elements in <list>.
+
+|    gap> ListBlist([1..8],[false,true,true,true,true,false,true,true]);
+    [ 2, 3, 4, 5, 7, 8 ]
+    gap> ListBlist( [1,2,3,4,5,2,8,6,4,10],
+    > [false,false,false,true,false,false,true,false,true,false] );
+    [ 4, 8, 4 ] |
+
+'BlistList' (see "BlistList") is the inverse function to 'ListBlist'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsBlist}
+
+'IsBlist( <obj> )'
+
+'IsBlist' returns  'true' if <obj>, which  may be an  object of arbitrary
+type, is a boolean list and 'false' otherwise.   A boolean list is a list
+that has no holes and contains only 'true' and 'false'.
+
+|    gap> IsBlist( [ true, true, false, false ] );
+    true
+    gap> IsBlist( [] );
+    true
+    gap> IsBlist( [false,,true] );
+    false    # has holes
+    gap> IsBlist( [1,1,0,0] );
+    false    # contains not only boolean values
+    gap> IsBlist( 17 );
+    false    # is not even a list |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SizeBlist}
+
+'SizeBlist( <blist> )'
+
+'SizeBlist' returns  the number of  entries of  the boolean  list <blist>
+that are 'true'.   This  is the size  of  the subset represented  by  the
+boolean list <blist>.
+
+|    gap> SizeBlist( [ true, true, false, false ] );
+    2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSubsetBlist}
+
+'IsSubsetBlist( <blist1>, <blist2> )'
+
+'IsSubsetBlist' returns 'true' if  the boolean list  <blist2> is a subset
+of  the boolean list <list1>, which  must have equal  length, and 'false'
+otherwise.   <blist2> is  a    subset if  <blist1>  if '<blist1>[<i>]   =
+<blist1>[<i>] or <blist2>[<i>]' for all <i>.
+
+|    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> IsSubsetBlist( blist1, blist2 );
+    false
+    gap> blist2 := [ true, false, false, false ];;
+    gap> IsSubsetBlist( blist1, blist2 );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{UnionBlist}\index{union!of boolean lists}
+
+'UnionBlist( <blist1>, <blist2>.. )' \\
+'UnionBlist( <list> )'
+
+In the  first form 'UnionBlist'  returns the union  of the  boolean lists
+<blist1>, <blist2>, etc., which must have equal length.  The *union* is a
+new boolean list such that '<union>[<i>] = <blist1>[<i>] or <blist2>[<i>]
+or ..'.
+
+In  the second form  <list> must  be a  list  of boolean lists  <blist1>,
+<blist2>, etc.,  which  must have  equal length,  and 'Union' returns the
+union of those boolean list.
+
+|    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> UnionBlist( blist1, blist2 );
+    [ true, true, true, false ] |
+
+Note  that 'UnionBlist'  is  implemented   in terms  of    the  procedure
+'UniteBlist' (see "UniteBlist").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IntersectionBlist}\index{intersection!of boolean lists}
+
+'IntersectionBlist( <blist1>, <blist2>.. )'\\
+'IntersectionBlist( <list> )'
+
+In the first  form 'IntersectionBlist'  returns  the intersection  of the
+boolean  lists <blist1>, <blist2>,  etc., which  must  have equal length.
+The  *intersection*  is a  new boolean   list such  that  '<inter>[<i>] =
+<blist1>[<i>] and <blist2>[<i>] and ..'.
+
+In  the  second form <list>   must be a  list of  boolean lists <blist1>,
+<blist2>, etc., which   must have equal  length,  and 'IntersectionBlist'
+returns the intersection of those boolean lists.
+
+|    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> IntersectionBlist( blist1, blist2 );
+    [ true, false, false, false ] |
+
+Note that 'IntersectionBlist'  is implemented in terms  of  the procedure
+'IntersectBlist' (see "IntersectBlist").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DifferenceBlist}\index{difference!of boolean lists}
+
+'DifferenceBlist( <blist1>, <blist2> )'
+
+'DifferenceBlist'  returns the  asymmetric  set  difference  of the   two
+boolean  lists <blist1> and <blist2>, which  must have equal length.  The
+*asymmetric set difference* is a new boolean list such that '<union>[<i>]
+= <blist1>[<i>] and not <blist2>[<i>]'.
+
+|    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> DifferenceBlist( blist1, blist2 );
+    [ false, true, false, false ] |
+
+Note  that 'DifferenceBlist'  is implemented in   terms  of the procedure
+'SubtractBlist' (see "SubtractBlist").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{UniteBlist}\index{union!of boolean lists}
+
+'UniteBlist( <blist1>, <blist2> )'
+
+'UniteBlist'   unites the boolean list  <blist1>   with the boolean  list
+<blist2>,   which must  have the  same  length.    This is equivalent  to
+assigning '<blist1>[<i>] \:= <blist1>[<i>] or <blist2>[<i>]' for all <i>.
+'UniteBlist' returns nothing, it is only called to change <blist1>.
+
+|    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> UniteBlist( blist1, blist2 );
+    gap> blist1;
+    [ true, true, true, false ] |
+
+The  function  'UnionBlist'   (see "UnionBlist") is   the  nondestructive
+counterpart to the procedure 'UniteBlist'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IntersectBlist}\index{intersection!of boolean lists}
+
+'IntersectBlist( <blist1>, <blist2> )'
+
+'IntersectBlist' intersects the  boolean list  <blist1> with the  boolean
+list <blist2>,  which must have the same  length.  This is  equivalent to
+assigning '<blist1>[<i>]\:= <blist1>[<i>] and <blist2>[<i>]' for all <i>.
+'IntersectBlist' returns nothing, it is only called to change <blist1>.
+
+|    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> IntersectBlist( blist1, blist2 );
+    gap> blist1;
+    [ true, false, false, false ] |
+
+The  function 'IntersectionBlist'    (see  "IntersectionBlist")   is  the
+nondestructive counterpart to the procedure 'IntersectBlist'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SubtractBlist}\index{subtract!a boolean list from another}
+
+'SubtractBlist( <blist1>, <blist2> )'
+
+'SubtractBlist' subtracts the boolean list <blist2> from the boolean list
+<blist1>, which must have equal length.   This is equivalent to assigning
+'<blist1>[<i>] \:= <blist1>[<i>]  and  not <blist2>[<i>]'  for all   <i>.
+'SubtractBlist' returns nothing, it is only called to change <blist1>.
+
+|    gap> blist1 := [ true, true, false, false ];;
+    gap> blist2 := [ true, false, true, false ];;
+    gap> SubtractBlist( blist1, blist2 );
+    gap> blist1;
+    [ false, true, false, false ] |
+
+The function   'DifferenceBlist'    (see   "DifferenceBlist")    is   the
+nondestructive counterpart to the procedure 'SubtractBlist'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Boolean Lists}
+
+In  the previous section (see "Boolean  Lists") we defined a boolean list
+as a list that has no holes and contains  only 'true' and 'false'.  There
+is a special internal representation for boolean lists  that needs only 1
+bit for every entry.  This bit is set if the entry is 'true' and reset if
+the entry is 'false'.  This representation is of course much more compact
+than the ordinary representation of lists, which needs 32 bits per entry.
+
+Not every boolean list is represented in this compact representation.  It
+would be too much work to test every time a list is changed, whether this
+list has become  a boolean  list.   This section  tells  you under  which
+circumstances  a      boolean  list  is  represented    in   the  compact
+representation, so  you can write  your functions in  such a way that you
+make best use of the compact representation.
+
+The   results  of  'BlistList',   'UnionBlist',   'IntersectionBlist' and
+'DifferenceBlist' are known to be boolean lists by construction, and thus
+are represented in the compact representation upon creation.
+
+If  an argument of 'IsBlist', 'IsSubsetBlist', 'ListBlist', 'UnionBlist',
+'IntersectionBlist',  'DifferenceBlist',   'UniteBlist', 'IntersectBlist'
+and 'SubtractBlist' is a list represented in the ordinary representation,
+it  is tested to  see if  it is in  fact a boolean list.  If  it is  not,
+'IsBlist' returns 'false' and the other functions signal an error.  If it
+is,   the   representation of  the  list    is  changed  to   the compact
+representation.
+
+If  you change  a   boolean list that  is    represented in   the compact
+representation by assignment (see "List Assignment") or 'Add' (see "Add")
+in  such a way  that  the  list  remains a  boolean list   it will remain
+represented  in the compact  representation.   Note  that changing a list
+that is not represented in the compact  representation,  whether it  is a
+boolean list or not,  in  such a way that  the  resulting list becomes  a
+boolean list, will never change the representation of the list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

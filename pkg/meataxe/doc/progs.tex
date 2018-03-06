@@ -1,0 +1,3040 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This file is part of the C Meat-Axe.                                 %
+% Written by Michael Ringe <mringe@tiffy.math.rwth-aachen.de>          %
+% (C) Copyright 1992-1995:  Lehrstuhl D fuer Mathematik                %
+%                           RWTH Aachen                                %
+%                           Aachen, Germany                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Programs} \label{chap:progs}
+%=================
+\def\myparagraph#1{\subsubsection*{\sc #1}}
+\def\Syntax{\myparagraph{Usage}}
+\def\Description{\myparagraph{Description}}
+\def\Examples{\myparagraph{Examples}}
+\def\Bugs{\myparagraph{Bugs}}
+\def\Limits{\myparagraph{Limits}}
+\def\Messages{\myparagraph{Messages}}
+\def\Implementation{\myparagraph{Implementation}}
+\def\SeeAlso{\myparagraph{See Also}}
+
+\def\Typeout#1{}
+%\def\Typeout#1{\typeout{#1}}
+
+
+\section{General Features}
+%=========================
+
+The following options are used throughout the whole {\MeatAxe}
+system. Not every program supports all of these options, but
+the meaning is always the same.
+\begin{list}{}{\leftmargin 1cm\labelwidth 5mm\labelsep 2mm
+\parsep 0mm\itemsep 0mm}
+\item[{\tt -help}\hfill]
+    Print a help screen.
+\item[{\tt -g}\hfill]
+    Set the number of generators. This option must be followed
+    by a positive integer.
+\item[{\tt -G}\hfill]
+    Generate output in GAP format.
+\item[{\tt -Q}\hfill]
+    Quiet, do not print any message except errors and results.
+\item[{\tt -V}\hfill]
+    Verbose, print more messages. Repeat this option (e.g.,
+    {\tt -VVV}) to see more detailed information.
+\item[{\tt -T}\hfill]
+    Time limit. This option must be followed by a positive
+    integer specifying the maximal CPU time which may be used.
+\end{list}
+
+
+
+\section{Utility Programs}
+%=========================
+
+\subsection{MAKETAB and BIGMKTAB} \label{sec:maketab}\Typeout{MAKETAB}
+%---------------------------------
+\index{table files}
+\index{arithmetic tables}
+\Syntax
+\msg{maketab {\it fieldorder}\\bigmktab {\it fieldorder}}
+
+\Description
+These programs generate lookup tables for fast field arithmetic.
+Tables are stored in a file (one file for each field) which is
+loaded by the ZZZ module at run-time. {\it fieldorder} must be a
+positive integer (a prime power, actually) less than or equal to
+256 for MAKETAB, or 65536 for BIGMKTAB.
+
+MAKETAB creates tables for the small field version, up to GF(256).
+The output file is named {\tt pXXX.zzz}, where XXX is the field order.
+The size of this file is approximately 130 KBytes and does not depend on
+the field order.
+
+BIGMKTAB creates tables for the large field version. The output file is
+named {\tt pXXXXX.zzz}, where XXXXX is the field order. This file is
+usually (i.e., for comparable field orders) much smaller than the
+`zzz' file, but its size increases linearly with $q$.
+
+The table file is needed whenever a program performs finite field
+operations, i.e., when working with matrices. The programs look for
+the table file first in the current directory and then, if it is not
+there, in the library directory (see section \ref{sec:libdir}). Thus,
+table files for the most commonly used fields can be kept in the
+library, and additional table files can be created in the current
+directory when they are needed.
+Usually, the name of the library directory is defined at compile-time,
+but this may be changed at any time by defining the environment
+variable {\tt MTXLIB}. 
+
+\subsection{ZZZTEST: Test the Field Arithmetic}
+%----------------------------------------------
+\index{testing the field arithmetic}
+\Syntax
+\msg{zzztest [-b] [-t] {\it field}}
+
+\Description
+This program tests the finite field arithmetic. There must be exactly
+one argument, {\it field}, specifying the field order. If the \verb"-b"
+option is used, the program performs a benchmark and prints some
+information about the computer's speed. \verb"-t" prints the addition
+and multiplication tables for the finite field.
+
+
+
+
+
+\section{File Conversion and Manipulation}\label{sec:fileconv}
+%=========================================
+
+
+\subsection{CONV: Convert binary files}\Typeout{CONV}
+%-----------------------------------
+\index{file conversion}
+\Syntax
+	\msg{conv [-o] {\it File} \ldots}
+
+
+\Description
+This program is used to convert {\MeatAxe} (binary) data files which
+have been created on a different machine or with an old version
+of the {\MeatAxe}.  {\it File}\ldots\ is a list of files to be
+converted.
+
+Binary data files are in general not compatible between different
+machines because they depend on the machines word size and on the
+way integers are stored (`little-endian' or `big-endian'). Data
+files from previous releases of the {\MeatAxe} may also be unreadable
+because the file format has changed.\footnote{For a description
+of data and file formats see section \ref{sec:intdata}}.
+This program provides a way to exchange data files in such cases
+without having to convert to text format using ZPR/ZCV.
+
+The input may be any file. CONV will detect automatically if an input
+file is a {\MeatAxe} data file, perform the necessary operations, and
+replace the input file with the converted file.
+Non-{\MeatAxe} files remain unchanged. 
+
+The {\tt -o} option converts files to an older format. This
+format should be readable by the FORTRAN version of the {\MeatAxe}.
+Note that {\tt conv\ -o} does not necessarily reverse a previous
+{\tt conv}.
+
+
+\Bugs
+CONV cannot convert for a different `target machine'.
+There is no backup of the original file.
+
+
+
+
+\subsection{ZCF: Change format}\label{sec:zcf} \Typeout{ZCF}
+%-----------------------------
+\index{changing the field}
+\Syntax
+\msg{zcf {\it NewField} [{\it Input} {\it Result}]}
+
+\Description
+This program converts between various data types. Currently
+there are two kinds of conversions available:
+\begin{enumerate}
+\item
+	If {\it Input} is a matrix, the field is changed to
+	{\it NewField}. The result is a matrix of the same
+	size over GF({\it NewField}).
+\item
+	If {\it Input} is a permutation of degree $n$, it is
+	converted into the corresponding ($n\times n$) permutation
+	matrix over GF({\it NewField}).
+\end{enumerate}
+The result is written to {\it Result}.  Default file names are G1
+for input and P2 for output.
+
+If {\it Input} is a matrix it can be restricted to a subfield or
+embedded into a larger field. In the first case, of course, the
+entries must already be in the subfield. The conversion is done in two
+steps. First, all entries of the matrix are converted to integers.
+Then, they are mapped to the new field and reassembled into rows.
+The result is written out row by row.
+
+In case of permutations the output matrix is generated row by
+row by inserting ones at the positions specified by the
+permutation.
+
+
+\Limits
+If the input is a matrix, the whole matrix must fit into memory.
+Additionally, the
+program needs $n\cdot m\cdot s$ bytes of memory, where $m$ and $n$
+are the dimensions of the input matrix and $s=1$ for the small
+arithmetic version and $s=2$ for the big version.
+
+In case of permutations, the input permutation and one row
+of the output file must fit into memory.
+
+
+\subsection{ZCV: Convert from Text to Binary Format}\label{sec:zcv}
+%---------------------------------------------------
+\Typeout{ZCV}
+\Syntax
+\msg{zcv [$\left\{\mbox{\begin{tabular}{@{}c@{}}{\it
+Textfile}\\=\end{tabular}}\right\}$[{\it BinFile}]]}
+
+\Description
+This program reads a text file, and outputs a matrix or permutation
+in internal format depending on the input to {\it BinFile} (default:
+P2). If the input file name is '=', input is read from stdin. If no
+arguments are given, T1 is used as input file and output goes to P2.
+Here are some examples:
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Command         & Conversion \\
+\hline
+\tt zcv		& T1    $\rightarrow$ P2 \\
+\tt zcv txt	& Txt   $\rightarrow$ P2 \\
+\tt zcv txt z1	& Txt   $\rightarrow$ z1 \\
+\tt zcv = z1	& standard input $\rightarrow$ z1 \\
+\hline
+\end{tabular}
+\end{center}
+To convert text from a file called `{\tt =}' you must use input
+redirection:
+\msg{zcv = binfile < =}
+
+\paragraph{Text file format}
+%- - - - - - - - - - - - - - 
+The first row of the input file is a header consisting of 4 integers,
+namely the mode
+({\tt MM}), the field parameter ({\tt FFFFFF}), the number of rows
+({\tt RRRRRR}) and the number of columns ({\tt CCCCCC}). They can
+be in fixed format,
+\msg{MMFFFFFFRRRRRRCCCCCC}
+or in free format with at least one separating between the numbers.
+For example, the following headers are equivalent
+\begin{verbatim}
+0100002000024000024
+ 1    2    24    24
+1 2 24 24
+\end{verbatim}
+The exact meaning of the 4 integers depends on the value of the `mode',
+as does the format of the rest of the file.
+\begin{center}
+\small
+\begin{tabular}{|c|c|c|c|p{0.32\linewidth}|}
+\hline
+Mode  &\tt FFFFFF &\tt RRRRRR&\tt CCCCCC & Rest of file \\
+\hline
+ 1 & field size   &    rows  &  columns  & 80I1 -- a matrix \\
+ 2 &     "        &     "    &   "       & A permutation (to be
+	converted to matrix form)\\
+ 5 &     "        &     "    &   "       & An integer matrix (to
+	be reduced mod $p$) \\
+ 6 &     "        &     "    &   "       & A matrix \\
+12 &     1    &  no.\ of points & no.\ of perms.&
+	One or more permutations\\
+\hline
+\end{tabular}
+\end{center}
+
+In mode 1 the input format is fixed. There must be at most 80
+characters per line, lines must be filled as much as possible,
+and each row of the matrix starts with a new input line. There
+are no blanks allowed to separate numbers. This format can be
+used for fields up to GF(9).
+
+In all other modes, the input consists of a sequence of integers
+in free format, separated by any combination of blanks, tabs,
+or newlines.
+
+Empty lines and any characters following a `\#' are ignored, even
+in mode 1.
+
+Here are some examples:
+\begin{center}
+\begin{tabular}{@{}|l|l|@{}}
+\hline
+\multicolumn{1}{|c|}{Input} & \multicolumn{1}{c|}{Result} \\
+\hline
+\begin{tabular}{@{}l@{}}
+\verb:01000005000005000003:\\
+\verb:114:\\
+\verb:210:\\
+\verb:011:\\
+\verb:131:\\
+\verb:411:\\
+\end{tabular}
+&
+Matrix over GF(5):
+$\left(\begin{array}{ccc}1&1&4\\2&1&0\\0&1&1\\1&3&1\\4&1&1\end{array}
+\right)$
+\\
+\hline
+\begin{tabular}{@{}l@{}}
+\verb:02000005000003000006:\\
+\verb:     4:\\
+\verb:     6:\\
+\verb:     1:\\
+\end{tabular}
+&
+Matrix over GF(5):
+$\left(\begin{array}{cccccc}
+	0&0&0&1&0&0\\0&0&0&0&0&1\\1&0&0&0&0&0
+\end{array}\right)$
+\\
+\hline
+\begin{tabular}{l}
+\verb:12     1     3     2:\\
+\verb: 1 3 2:\\
+\verb: 2 3 1:\\
+\end{tabular}
+&
+2 Permutations: (23) and (123)
+\\
+\hline
+\begin{tabular}{@{}l@{}}
+\verb: 5     7     3     3:\\
+\verb:   4  -1   0:\\
+\verb:   6   2  -1:\\
+\verb:   1   1   9:\\
+\end{tabular}
+&
+Matrix over GF(7):
+$\left(\begin{array}{ccc}
+	4&6&0\\6&2&6\\1&1&2
+\end{array}\right)$
+\\
+\hline
+\end{tabular}
+\end{center}
+
+
+Another use of this program is, together with ZPR, to convert between
+various types of object. See the documentation of ZPR for examples.
+
+
+
+\subsection{ZPR: Print a Matrix or Permutation}\label{sec:zpr}
+%----------------------------------------------
+\Typeout{ZPR}
+\Syntax
+\msg{zpr [-Gs] [-r {\em Range}] [{\it Datafile} [{\it Textfile}]]}
+
+\Description
+This program reads a matrix or permutation(s) from {\it Datafile} (G1
+by default), and outputs the object(s) therein to {\it Textfile} in a
+format suitable for reading by a human, or by the ZCV program. If
+{\it Datafile} but no {\em Textfile} is specified, output is written to
+the standard output by default. However, if ZPR is invoked without any
+arguments input is read from G1 and output is written to T1. This is
+for compatibility with the FORTRAN {\MeatAxe}.
+
+There are several options to change the output format:
+\begin{list}{}{\parsep 0mm \itemsep 0mm}
+\item[\tt-G]	GAP output.
+\item[\tt-s]	Print only a summary (file header fields).
+\item[\tt-r]	Select an output range i.e., a range of rows within a
+		matrix or a range of permutations if the input file is
+		a list of permutations. By default ZPR prints all
+                rows of a matrix or all permutations in a file,
+                respectively. {\it Range} may be a single number or
+		an interval in the form {\it First}{\tt-}{\it Last}
+		as in the following examples:
+		\begin{list}{}{}
+		\item\begin{tabular}{|l|l|l|}
+                  \hline
+		  Option&\multicolumn{2}{c|}{Meaning for}\\
+			& Matrices & Permutations \\
+		  \hline
+		  \tt -r5& Row 5 & 5th Permutation \\
+                  \hline
+                  \tt -r5-10&Rows 5--10 & 5th -- 10th Permutation\\
+                  \hline
+		\end{tabular}\end{list}
+\end{list}
+If neither {\tt-c} nor {\tt-G} is specified, ZPR uses the standard
+output format described below.
+
+The program starts by inspecting the input file to see what sort of
+thing it is, and a suitable output format is chosen as described in
+the table below. The next step is to write out a `header' record.
+This has 4 integers in it.  The first integer (2 digits) describes
+which format is in use. The other 3 (6 digits each) describe the
+object.  For a matrix, they are field size, number of rows, number
+of columns. For a permutation they are `1', number of points, and
+number of permutations.
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+Description of object    &mode&   FL  &      NOR     &    NOC \\
+\hline
+Matrix over $GF(q),q<10$  &01&  field &no.\ of rows&no.\ of columns\\
+Matrix, 10$<$q$<$100      &03&  field &no.\ of rows&no.\ columns\\
+Matrix, 100$<$q$<10^6$    &04&  field &no.\ of rows&no.\ of columns\\
+Permutation               &12&   1   &no.\ points&no.\ of permutations\\
+\hline
+\end{tabular}
+\end{center}
+
+This format exactly matches the input format of the ZCV program. Hence
+these programs can be used freely to convert between internal and
+readable formats, and it is recommended that archive material be kept
+in the readable format, since this is more likely to be readable in a
+few years time.
+
+Another use of this pair of programs is, with a little
+use of an editor, to convert between various types of objects. For
+example, to convert a permutation to a matrix, use ZPR and then edit
+the type from 12 to 2.
+You may also convert between the `small' and `big' arithmetic versions.
+In order to do this, you need two versions of both ZPR and ZCV, one
+compiled with the big and one with the small ZZZ module.
+Let these programs be called {\tt bigzpr}, {\tt smallzpr}, {\tt bigzcv}
+and {\tt smallzcv}. Then, conversion from small to big version is
+done with
+\msg{smallzpr matrix.small | bigzcv - matrix.big}
+and from big to small version with
+\msg{bigzpr matrix.big | smallzcv - matrix.small}
+
+
+\SeeAlso
+ZCV
+
+
+\subsection{ZCT: Cut}\Typeout{ZCT}
+%--------------------
+\index{cut}
+\Syntax
+\msg{zct {\it Rows}[:{\it Columns}] [{\it Input} [{\it Result}]]}
+
+\Description
+This program cuts a piece, specified by {\it Rows} and {\it Columns},
+out of the file {\it Input}, and writes the piece to {\it Result}.
+{\it Input} may be a matrix or a set of permutations.
+If no file names are specified, input is read from G1 and the result
+goes out to P2. If only {\it Result} is omitted, the output file name
+is formed by appending "1" to {\it Input}.
+
+Both {\it Rows} and {\it Columns} are lists of positive
+integers or ranges (e.g., `13-25') separated by commas.
+If {\it Input} is a matrix, the corresponding
+rows and columns are cut, and the resulting rectangular pieces
+are combined to one rectangular matrix which is written to
+{\it Result}. If the {\it Columns} list is omitted, all columns
+of the selected rows are cut.
+
+Here are some examples. Let {\it Input} be the 5 by 10 matrix
+\begin{center}
+\begin{tabular}{l}
+ \verb:1 2 3 4 5 6 7 8 9 0:\\
+ \verb:0 1 2 3 4 5 6 7 8 9:\\
+ \verb:0 0 1 2 3 4 5 6 7 8:\\
+ \verb:0 0 0 0 0 0 0 0 0 0:\\
+ \verb:9 8 7 6 5 4 3 2 1 0:
+\end{tabular}
+\end{center}
+Then, ZCT would produce the output shown below for several
+{\it Rows}:{\it Columns} lists:
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+{\it Rows}:{\it Columns}  &  {\it Result} \\
+\hline
+{\tt 1,4-5} &
+\begin{tabular}{l}
+ \verb:1 2 3 4 5 6 7 8 9 0:\\
+ \verb:0 0 0 0 0 0 0 0 0 0:\\
+ \verb:9 8 7 6 5 4 3 2 1 0:
+\end{tabular}
+\\
+\hline
+{\tt 1-3:8-10} &
+\begin{tabular}{l}
+ \verb:8 9 0:\\
+ \verb:7 8 9:\\
+ \verb:6 7 8:
+\end{tabular}
+\\
+\hline
+{\tt 1-2:2,5-7,9} &
+\begin{tabular}{l}
+ \verb:2 5 6 7 9:\\
+ \verb:1 4 5 6 8:
+\end{tabular}
+\\
+\hline
+{\tt 1-2,5:1-3,9-10} &
+\begin{tabular}{l}
+ \verb:1 2 3 9 0:\\
+ \verb:0 1 2 8 9:\\
+ \verb:9 8 7 1 0:
+\end{tabular}
+\\
+\hline
+\end{tabular}
+\end{center}
+
+The rows and columns which select the piece need not occur in
+ascending order, but the output depends on the ordering.
+For example, {\tt zct~1,2} and {\tt zct~2,1} both extract
+the first two rows of a matrix, but the second form will also permute
+the rows. Another example:
+\msg{zct 3-4,1-2:3-4,1-2 inp out}
+would perform the following operation on a 4 by 4 matrix:
+\begin{center}
+\begin{tabular}{cc}
+{\tt inp} & {\tt out} \\
+\begin{tabular}{l}
+ \verb:1 1 2 2:\\
+ \verb:1 1 2 2:\\
+ \verb:3 3 4 4:\\
+ \verb:3 3 4 4:
+\end{tabular}
+&
+\begin{tabular}{l}
+ \verb:4 4 3 3:\\
+ \verb:4 4 3 3:\\
+ \verb:2 2 1 1:\\
+ \verb:2 2 1 1:
+\end{tabular}
+\end{tabular}
+\end{center}
+
+With permutations the program works in the same way as with
+matrices.
+Each permutation is treated as a row. The {\it Columns} list
+must be empty in  this case, because ZCT can cut only entire
+permutations.
+
+\Limits
+The number of entries in the {\it Rows} and {\it Columns} list
+must not be greater than 10. One row (or permutation, respectively)
+of the input file and the whole result of the cut must fit into
+memory.
+
+\SeeAlso
+ZPT
+
+
+
+\subsection{ZPT: Paste}\Typeout{ZPT}
+%----------------------
+\index{paste}
+\Syntax
+\msg{zpt
+[-\Big\{\begin{tabular}{@{}c@{}}r\\ R\end{tabular}\Big\} {\it \#Rows}] 
+[-\Big\{\begin{tabular}{@{}c@{}}c\\ C\end{tabular}\Big\} {\it \#Cols}] 
+{\it Out} {\it Inp}\ldots}
+
+\Description
+This program reads matrices or permutations from {\it Inp},
+pastes them together, and writes the result to {\it Out}. The
+way in which the pieces are pasted together is controlled by
+two parameters, {\it \#Rows} and {\it \#Cols}. For example,
+\msg{zpt -r 2 -c 3 x aa ab ac ba bb bc}
+would paste together 6 matrices ({\tt aa}\ldots{\tt bc}) in two
+rows and three columns like this:
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+{\tt aa} & {\tt ab} & {\tt ac} \\
+\hline
+{\tt ba} & {\tt bb} & {\tt bc} \\
+\hline
+\end{tabular}
+\end{center}
+The file name `{\tt -}' is treated specially: No file is read in,
+and the corresponding piece of the output matrix is left empty. This
+can be used to calculate the direct sum of two representations. For
+example,
+\msg{zpt -r 2 -c 2 A+B A - - B}
+creates the following matrix in block diagonal form:
+\begin{center}
+{\tt A+B}$=$\begin{tabular}{|c|c|}
+\hline
+{\tt A} & 0 \\
+\hline
+0 & {\tt B} \\
+\hline
+\end{tabular}
+\end{center}
+
+If {\tt -R} and {\tt -C} are used instead of {\tt -r} and {\tt -c},
+ZPT will take {\it Inp} as `base name'. This means, the actual
+input file names are formed by appending one or two numbers to
+the base name. Thus, the following commands are equivalent:
+\msg{zpt -r 2 -c 2 x x11 x12 x21 x22\\
+     zpt -r 2 -C 2 x x1 x2\\
+     zpt -R 2 -C 2 x x}
+However,
+\msg{zpt -R 2 -c 2 x x1 x2}
+is different, because {\tt x1} and {\tt x2} are now interpreted as
+base names of columns rather than rows. The latter command would
+paste together the same matrices as before, but with {\tt x12} and
+{\tt x21} exchanged.
+
+With permutations the program works in the same way, but {\it \#Cols}
+must be equal to 1. That means, permutations can only be concatenated.
+
+If only one of {\it \#Rows} and {\it \#Cols} is specified, the other
+parameter is assumed to be one. If both parameters are omitted,
+{\it \#Cols} is assumed to be one and {\it \#Rows} is determined by
+th number of {\it Inp} arguments. This is useful, for example,
+to concatenate several files with permutations without having to
+count the number of files:
+\msg{zpt Out File1 xxs test re233.1 re233.2 z1 z2}
+or for vectors:
+\msg{zpt List Vector*}
+
+Together with ZMU, ZPT can be used to perform a piecewise
+multiplication of two matrices (see section \ref{sec:zmu}).
+
+
+\Limits
+Permutations are read and written one by one, so only one
+permutation must fit into memory. In the case of matrices, the
+memory requirement depends on the sizes of the pieces.
+
+\Bugs
+Using {\tt -R} and {\tt -C} simultaneously with arguments greater than
+10 will cause trouble because, for example, a file name like
+{\tt file111} is ambiguous.
+
+
+\SeeAlso
+ZCT, ZMU
+
+
+
+
+\section{Main Programs}
+%======================
+
+
+\subsection{ZAD: Add Two Matrices}
+%---------------------------------
+\index{zad@{\tt zad} (program)}
+
+\Syntax
+\msg{zad [{\em Mat1} {\em Mat2} {\em Result}]}
+
+\Description
+This program reads two matrices from {\em Mat1} and {\em Mat2}
+(G1 and G2 by default) and outputs their sum to {\em Result}
+(default: P3).
+
+Both input files must be matrices over the same field with equal
+number of rows and columns. The matrices need not be square.
+The program reads one row at a time of each matrix, adds them
+together, and writes out the result.
+
+\Limits
+Two rows must fit into memory.
+
+
+
+\subsection{ZBL: Bottom Left (Clear Above Main Diagonal)}
+%-------------------------------------------------------
+\index{zbl@{\tt zbl} (program)}
+\Syntax
+\msg{zbl [{\em Matrix} {\em Result}]}
+
+\Description
+This program reads in a matrix, zeroizes all entries above the
+main diagonal, and writes out the result. If file names are omitted,
+the matrix is read from G1 and output goes to P2.
+
+The input matrix is read row by row, and all entries above the main
+diagonal are replaced by zero. All entries on or below the main
+diagonal remain unchanged, and the resulting matrix, row by row, is
+written out.
+
+As an example, the following conversion would take place:
+\begin{center}
+\begin{verbatim}
+	       G1                    P2
+      12100201201212212122  10000000000000000000
+      21000000000000001111  21000000000000000000
+      12212120101201201201  12200000000000000000
+      01020010020102012012  01020000000000000000
+      12100012101201012012  12100000000000000000
+      12120212121012012012  12120200000000000000
+\end{verbatim}
+\end{center}
+
+Notice that the input matrix need not be square, and the output
+matrix has always the same shape and size as the input matrix.
+
+The purpose of this program is to enable the {\MeatAxe} to check if an
+irreducible representation in characteristic 2 fixes a quadratic form.
+This job is not particularly simple --- in many ways it is just a
+bodge, but it is possible:
+\begin{enumerate}
+\item	Put the representation into standard basis using ZSB
+\item	Find the symplectic form fixed by using ZSB to make the
+	matrix that conjugates the representation to its dual.
+\item	Quadratic forms can be represented by lower triangular matrices.
+	Since the representation is in standard basis (so all the basis
+	vectors are images of the first under the group) the diagonal
+	entries of any fixed quadratic form must all be equal, so try
+	each field entry in turn by adding that scalar matrix to the
+	bottom half of the symplectic form.
+\item	For each quadratic form made as in 3, test if it is fixed by
+	forming
+	$G^{tr}QG$ for each generator $G$, and checking that the
+	diagonal is still the same as it was before (the symplectic
+	form should have been checked before starting). The check can
+	be done by adding the form to the result, then doing ZBL,
+	ZTR and ZBL again --- the result will be the zero matrix (use
+	ZNU) iff the form was fixed (given that the symplectic one was).
+\end{enumerate}
+
+\Limits
+One row of the matrix must fit into memory.
+
+
+
+\subsection{ZCL: `Clean' a Matrix by a Space}\Typeout{ZCL}
+%-----------------------------------------
+\index{zcl@{\tt zcl} (program)}
+\Syntax
+\msg{zcl [{\it Space} {\it Matrix} {\it CleanedMat} {\it RowOps}]}
+
+\Description
+This program reads in two matrices from {\it Space} and {\it Matrix},
+and `cleans' {\it Matrix} with {\it Space}. It puts out two matrices
+to {\it CleanedMat} and {\it RowOps} such that
+\[
+	{\it Matrix} = {\it RowOps}\cdot{\it Space}+{\it CleanedMat}
+\]
+and {\it CleanedMat} has as many zero columns as possible. Default
+file names are G1, G2, P3 and P4.
+The two input matrices must be over the same field and have the same
+number of columns. Also, {\it Space} must be in echelon form.
+
+The first matrix is read in, and pointers to the significant columns
+(pivots) are calculated.
+The second matrix ({\it Matrix}) is then processed a row at a time.
+Row operations are performed to clear out the pivot points
+of the input row using the rows of the first input matrix. A row
+describing what was done is written out to {\it RowOps}, and the
+remnant (clean) row is output to {\it CleanedMat}.
+
+One use of this program is to calculate the action of a generator
+on an invariant subspace: Take the subspace in echelon form (as it
+is on output from ZSP), multiply it by a generator. Feed the original
+echelon form into {\it Space} and the result of the multiplication into
+{\it Matrix}. {\it CleanedMat} should be zero, and {\it RowOps} is the
+action of the generator on the invariant subspace.
+The action on the quotient of a given subspace can be calculated with
+the ZQT program (see section \ref{sec:zqd}).
+
+\Limits
+The entire first matrix and one row of the second matrix must fit
+into memory.
+
+\Bugs
+The program does not perform a full check that {\it Space}
+is in echelon form.
+
+
+\subsection{ZCP: Characteristic and Minimal Polynomial of a Matrix}
+%------------------------------------------------------------------
+\index{zcp@{\tt zcp} (program)}
+\index{characteristic polynomial}
+\index{minimal polynomial}
+\Syntax
+\msg{zcp [-Gfm] {\it Matrix}}
+
+\Description
+This program reads in a matrix, and calculates its characteristic or
+minimal polynomial. With no options, the characteristic polynomial is
+computed in a partially factorized form (see below). The output can be
+changed using the following options:
+\begin{list}{}{\labelwidth 8mm \leftmargin 10mm \labelsep 0.2cm
+\parsep 0mm\itemsep 0mm}
+\item[{\tt -f}]	Complete factorization.
+\item[{\tt -m}]	Calculate the minimal polynomial.
+\item[{\tt -G}]	Output in GAP format.
+\end{list}
+Without \verb"-G", the output is in text format. Each line contains one
+factor (as defined below) of the characteristic or minimal polynomial.
+The {\tt -G} option may be used to generate output which
+is readable by the GAP computer program. The output, then, is a
+sequence of sequences of finite field elements, representing the
+coefficients of the factors in ascending order.
+
+\Implementation
+The characteristic polynomial of a matrix $A$ is computed by
+constructing a sequence
+\[
+	0=U_0<U_1<\ldots<U_n=V
+\]
+of $A$-invariant subspaces $U_i$, where $U_i/U_{i-1}$ is $A$-cyclic.
+In the $i$-th step, $U_i$ is constructed by chosing a random vector
+$u\not\in U_{i-1}$ and calculating $u,uA,uA^2,\ldots$ until some
+linear combination of these vectors falls into $U_{i-1}$. This yields
+a polynomial $p_i(x)$ with $up_i(A)\in U_{i-1}$. $p_i(x)$ is the
+characteristic polynomial of $A$ on $U_i/U_{i-1}$, and the full
+characteristic polynomial of $A$ is the product of all $p_i$'s.
+
+The algorithm for the minimal polynomial uses the same technique of
+constructing a sequence $(U_i)$ of $A$-invariant subspaces. In the
+$i$-th step, images $uA,uA^2,\ldots$ of a seed vector $u$ are
+calculated, until a linear combination of these vectors vanishes
+(this is the main difference to the algorithm above). This yields a
+polynomial $p_i(x)$ of minimal degree with $up_i(A)=0$, and the
+minimal polynomial of $A$ is the least common multiple of the
+$p_i$'s.
+
+
+
+\Limits
+There must be enough memory to hold three (four for the minimal
+polynomial) matrices of the same size as the input matix.
+
+
+
+\subsection{ZEF: Reduce to (Semi) Echelon Form}\Typeout{ZEF}
+%-------------------------------------------
+\index{zef@{\tt zef} (program)}
+\index{echelon form}
+\Syntax
+\msg{zef [-GQV] {\it Matrix} {\it Result}}
+
+\Description
+This program reads in a matrix, performs a Gaussian elimination to put
+the matrix into semi-echelon form, and writes out the result.
+
+A matrix is in semi-echelon form, if the first non-zero entry in each
+row entry is a 1, and all entries exactly below that 1 are zero. Here
+is an example:
+\begin{center}
+\begin{verbatim}
+     000112312312342412123
+     012012312312231231233
+     000000001345121223233
+     102012330332333312212
+     001021230333323123123
+     000001230311212112121
+\end{verbatim}
+\end{center}
+A matrix is in (full) echelon form if the rows are further permuted so
+that the first non-zero entry in each row is later than the first
+non-zero entry in all previous rows. There is no real need to do this
+row permutation in the {\MeatAxe} system, and the permutation is not
+done by this program.
+
+At the end, the matrix may have fewer rows than it started with, since
+the rows may have been linearly dependent. The rows of the output matrix
+are always linearly independent and span the same space
+as the rows of the input matrix. A message
+	\msg{RANK nnn}
+is printed at the end of the run to notify the operator of the size of
+the output matrix. This program may be used to find the rank of 
+matrix, being faster than the null-space program. There is no need for
+the input matrix to be square, and the output may also not be square.
+
+
+\Limits
+The entire input matrix and the pivot table (4 bytes for each row)
+must fit into memory.
+
+
+
+
+\subsection{ZEV: Eigenvalues}\Typeout{ZEV}
+%-------------------------
+\index{zev@{\tt zev} (program)}
+\Syntax
+\msg{zev [-G] [{\it Matrix} [{\it Poly} [{\it Group}]]]}
+
+\Description
+This program reads a matrix from {\it Matrix} and a list of polynomials
+from {\it Poly}. For each input polynomial, it evaluates that function
+of the input matrix, calculates the nullity, and puts out this nullity,
+divided by the degree, along with a text from the input.
+By default, the matrix is read from G1, and polynomials from the
+standard input. The {\tt -G} option produces output in GAP format.
+
+\index{Brauer characters}
+The program was specifically designed to assist in the calculation of
+the Brauer characters of diagonalizable matrices, with the text giving
+the complex number which is the Brauer character of the companion
+matrix for that polynomial. Usually the polynomials have been prepared
+in a separate data file and are fed into ZEV by giving the file name or
+by redirecting its input. The preparation of the input polynomials
+is generally a time-consuming task if it is done by hand, but there are
+data files available for the most commonly used fields. These
+files should be located in the library directory (see section
+\ref{sec:libdir}). They are distributed with this release of the C
+{\MeatAxe}. If the user is familiar with the computer program system
+GAP, he will find it easy to create his own data files.
+
+If the nullity is not a multiple of the degree, ZEV prints a
+warning message.
+
+\paragraph{Polynomial file format}
+%- - - - - - - - - - - - - - - - - 
+The data file contains the polynomials in text form. Several
+polynomials can be comprised in a `group', and the data file
+can contain any number of groups of polynomials.
+This allows several sets of polynomials to be kept in one data file
+(for example, all polynomials for a given field), the appropriate
+polynomials being selected trough the {\it Group} argument on the
+command line.
+
+The file is read and interpreted line by line. There are three
+types of lines:
+\begin{enumerate}
+\item Comment lines, beginning with a `{\tt \#}'. These lines
+      are simply ignored by ZEV, as are empty lines.
+\item Group headers. Each line beginning with a non-space character
+      is interpreted as the beginning of a new group of polynomials.
+      Such lines contain only one text field, the name of the group
+      (up to 1023 characters).
+\item Lines beginning with a space are interpreted as polynomials.
+      The format is
+	\msg{[space]{\it Name} {\it Coefficients}}
+      where {\it Name} is any text (up to 1023 characters), and
+      {\it Coefficients} are the coefficients of the polynomial (in
+      free format). Note that the first character must be an ordinary
+      space charcter, a TAB is not allowed!
+      The coefficients must use the names as specified by the arithmetic
+      --- usually $0,1,\ldots q-1$.  The one exception is $-1$, which
+      the program treats specially as `0'-`1' so that the cyclotomic
+      polynomials can be used over {\em all} fields. The coefficients
+      are in decreasing degree, starting with the coefficient of the
+      highest power of x and continuing, ending up with the constant
+      term.
+\end{enumerate}
+
+
+\noindent Here is an example:
+\begin{verbatim}
+# Sample input file for ZEV
+# Some polynomials over GF(5)
+#
+p11b11
+  1         1 4
+  b11       1 4 4 1 3 4
+  -1-b11    1 2 4 1 1 4
+p13c13
+  1         1 4
+  c13       1 3 0 3 1
+  c13*3     1 1 4 1 1
+  c13*9     1 2 1 2 1
+\end{verbatim}
+This file contains 7 polynomials in two groups. The polynomial
+`b11' in group `p11b11' is $f(x)=x^5+4x^4+4x^3+x^2+3x+4$.
+
+
+\paragraph{Output format}
+% - - - - - - - - - - - -
+There are two output formats. By default the nullities are printed in
+tabular form giving group, name, degree and multiplicity (i.e., nullity
+divided by degree) for each
+polynomial. If the {\tt -G} option is given, ZEV prints an algebraic
+expression which can be read from GAP.
+Here is an example with an 8 by 8 matrix over GF(3), polynomials being
+read from {\tt poly3} ({\tt \$} is the shell prompt):
+\begin{verbatim}
+   $ zev mat poly3 p8i2
+         p8i2                    1    1    1
+         p8i2                   -1    1    4
+         p8i2                    0    2    2
+         p8i2                   i2    2    0
+         p8i2                  -i2    2    1
+   $ zev -G mat poly3 p8i2
+   MeatAxe.BrauerChar := 1*(1) + 4*(-1) + 2*(0) + 1*(-i2);
+\end{verbatim}
+Note that {\tt i2} does not appear in the expression because its
+coefficient is zero.
+
+\Limits
+There must be enough memory to hold the input matrix and two
+more matrices of the same size.
+Lines in the polynomial input file must not be longer than 1023
+characters. Group and polynomial names must be shorter than 1023
+characters.
+
+
+\Bugs
+It is not checked that the input file is a matrix.
+TAB characters at the beginning of a line are not interpreted
+as space.
+
+
+
+\subsection{ZFR: Frobenius Automorphism}\Typeout{ZFR}
+%------------------------------------
+\index{zfr@{\tt zfr} (program)}
+\index{Frobenius automorphism}
+\Syntax
+\msg{zfr [{\it Matrix} {\it Result}]}
+
+\Description
+This program reads a matrix, applies
+the Frobenius automorphism $x\mapsto x^p$, where $p$ is the
+characteristic of the field, to each entry and writes out the
+result. Default file names are G1 for input and P2 for output.
+
+The program first calculates the characteristic by repeatedly
+adding 1 to itself until zero is reached. A message of the form
+	\msg{CHARACTERISTIC IS {\it p}}
+is printed to inform the user which $p$ was used. Then the matrix
+is read row by row, the Frobenius automorphism is applied to
+each entry, and the resulting row is written out.
+
+\Limits
+One row of the matrix must fit into memory.
+
+
+
+\subsection{ZIV: Invert a Matrix or Permutation}\Typeout{ZIV}
+%--------------------------------------------
+\index{ziv@{\tt ziv} (program)}
+\index{matrix inversion}
+\Syntax
+\msg{ziv [{\it Input} {\it Result}]}
+
+\Description
+This program reads a matrix or a permutation from {\it Input}
+and writes its inverse out to {\it Result}. If no file names
+are specified, input is read from G1 and output goes to P2.
+
+First the input file is inspected. If it is a matrix, it
+is read in and an identity matrix is made
+in memory. Inversion proceeds by row operations as follows: The
+original matrix is reduced to the identity matrix, and the same
+operations are done to the other matrix that started as the identity
+matrix. At the end of this process, the second matrix is the inverse
+of the original matrix, so is written out as the answer.
+
+If the input file contains a permutation it is read in and its
+inverse is calculated point by point. I.e., if the input permutation
+maps $i$ to $k$, the inverse permutation is set up to map $k$ to $i$.
+The inverse permutation is then written out.
+If the input file contains more than one permutation, only the first
+one is inverted and written out. A message saying
+\msg{ZIV WARNING - ONLY 1 OF {\em n} PERMUTATIONS WILL BE INVERTED}
+is printed in this case.
+
+\Limits
+There must be enough memory to hold two matrices or two permutations,
+respectively.
+
+
+
+
+\subsection{ZKD: Kondense a Permutation}
+%---------------------------------------
+\index{zkd@{\tt zkd} (program)}
+\index{kondensation}
+\Syntax
+\msg{zkd {\it Field} {\it OrbSz} {\it Perm} {\em Result}}
+
+\Description
+This program reads an orbit sizes file ({\it OrbSz}) and a permutation
+from {\it Perm}. It outputs the kondensed form, i.e., a matrix
+over GF({\it Field}) to {\it Result}. The field must be specified
+on the command line because the other input data is
+is all to do with permutations and the program would
+otherwise not know which field was intended.
+
+The orbit sizes are read from {\it OrbSz}. This file is an integer
+matrix with one row and $n$ columns, where $n$ is the number of
+orbits. Normally this file would be produced by the ZMO (make
+orbits) program.
+
+The second input file, {\it Perm}, must be one, or more, permutations.
+Notice that only the first permutation is read in and kondensed. If
+there are more than one permutation, the others are ignored. It is
+assumed, that the orbits are contiguous, i.e., if $l_1,l_2,\ldots,l_r$
+are the orbit sizes, then the orbits are given by
+\begin{eqnarray*}
+	O_i & = & \{s_i,s_i+1,\ldots,s_i+l_i-1\}\hspace{1cm}
+		(1\leq i \leq r)\\
+	\mbox{where } s_i & =& 1+\sum_{k=1}^{i-1}l_k
+\end{eqnarray*}
+This is normally achieved by conjugating the original group generators
+by the permutation that comes out of ZMO (see the ZMO description).
+
+The next step is to calculate the largest power ($m$) of the
+characteristic that divides any of the orbit sizes. ZKD assumes that
+this is the order of the Sylow-$p$ subgroup of the kondensation
+subgroup, but it prints out its findings with the message
+    \msg{p-part taken has order {\it n}}
+so the user can check it. If this is not the order of the Sylow-$p$
+subgroup of the kondensation group, the program will not `know', so
+will continue. Normally, however, the kondensation subgroup $K$ will
+have trivial Sylow-$p$ subgroup, or at any rate the Sylow subgroup
+will have a regular orbit, and in this case at least the kondensation
+is legitimate.
+
+The output is a square matrix with one row and one column for each
+orbit of $K$. Abstractly, the kondensation can be described as follows.
+Let $G$ be a permutation group of degree $n$, $F$ a field of
+characteristic $p$ and $K\leq G$ a $p'$-subgroup. Then, there is an
+idempotent
+\[
+	e = \frac{1}{|K|} \sum_{h\in K} h \in FG
+\]
+associated to $K$. Now, let $V$ be a $FG$-module, for example (as in
+this program) the natural permutation module $V=F^n$, where $G$ acts
+by permuting the entries of vectors. Then, $Ve$ is an $e(FG)e$-module,
+and for any $\pi\in G$, the kondensed form is $e\pi e$, regarded as a
+linear map on $Ve$.
+
+To calculate the action of $e\pi e$, let $(v_1,\ldots,v_n)$ be the
+standard basis such that $v_i\pi=v_{i\pi}$ for $\pi\in G$. As explained
+above, the $K$-orbits are assumed to be contiguous. Thus, a basis of
+$Ve$ is given by the orbit sums
+\[
+	w_i = v_{s_i}+\ldots v_{s_i+l_i-1}\hspace{1cm}(1\leq i\leq r)
+\]
+and with respect to this basis we have
+\[
+	w_i (e\pi e) = \sum_{k\in O_i} \frac{1}{l_{[k\pi]}} w_{[k\pi]}
+\]
+where $[m]$ denotes the orbit to which point $m$ belongs (i.e.,
+$s_{[m]}\leq m<s_{[m]}+l_{[m]}$).
+
+If $K$ is not a $p'$-subgroup, $e$ is no longer defined. However, the
+last formula can still be given a sense by replacing
+\[
+	\frac{1}{l_{[i\pi]}} \to \lambda_{[i\pi]}:=
+	\left\{\begin{array}{ll}
+	\frac{1}{l_{[i\pi]}/p^m}  & p^m|l_{[i\pi]}\\
+	0                         & \mbox{else}
+	\end{array}\right.
+\]
+where $m$ is the highest power of the characteristic which divides
+any of the orbit sizes. Thus, all but the orbits with maximal $p$-part
+are discarded, and the corresponding columns in the output matrix are
+zero.
+
+
+\subsection{ZMO: Make Orbits under Permutations}\Typeout{ZMO}
+%--------------------------------------------
+\index{zmo@{\tt zmo} (program)}
+\index{orbits}
+\Syntax
+\msg{zmo [-s {\it Seed}] {\it Perm1} {\it Perm2}
+     {\it Orbits} {\it Sizes}}
+\msg{zmo [-g {\it\#Perms}] [-s {\it Seed}] {\it Perms}
+     {\it Orbits} {\it Sizes}}
+
+\Description
+This program reads two permutations from {\it Perm1} and {\it Perm2},
+and finds the orbits under the permutations. The points are written
+to {\it Orbits} in an order such that the points in one orbit
+occur together. The orbit sizes are written to {\it Sizes}.
+
+The |-g| may be used if the number of permutations is not
+two. In this case, {\it Perm} is treated as a base name, and one
+permutation is read from the files {\it Perms}{\tt.1},
+{\it Perms}{\tt.2}, \ldots{} For example,
+\msg{zmo -g 3 p orb orbs}
+reads three permutations from {\tt p.1}, {\tt p.3}, {\tt p.3}.
+If any of the input files contains more than one permutation,
+only the first one is read.
+
+\Implementation
+The orbits are calculated by a recursive
+technique. The first permutation is used to remember which points have
+already been output, by making the point number negative. A stack is
+kept of those points that have been found in the orbit but have not
+yet been multiplied by the generators. The outer loop consists of
+looking through the points and `doing' that point if it is not already
+marked as done. The point is put onto the stack, and operation then
+continues by taking a point off the stack, and for each generator in
+turn, if its image is new, putting it on the stack and marking it as
+done. Points are output as they are multiplied by the generators.
+
+By default, ZMO starts with point 1. A different starting point may
+be selected with the \verb"-s" option.
+
+The program produces 2 files of output. {\it Orbits} is a
+permutation-format list of all the points in the first orbit, followed
+by all the points in the second etc.\ This permutation can be used to
+conjugate permutations such that the orbits are contiguous.
+$X\cdot G\cdot X^{-1}$ is the relevant calculation.
+
+The second file, {\it Sizes}, is an integer matrix with one row
+containing the orbit sizes. This file can be used as input to ZKD
+or ZUK.  Since it is not known until the end how many
+orbits there will be, and this is needed at the head of the sizes
+file, the orbit sizes are held in memory.
+
+Finally, a message is printed to tell the user to describe what
+happened. If there are at most 15 distinct orbit sizes, the program
+prints a list of
+	\msg{nnn Orbit(s) of size nnn}
+messages. If there are more than 15, then a message
+	\msg{nnn DISTINCT ORBIT SIZES}
+is produced. If there are more than 200 orbit sizes, the message will
+say
+	\msg{MORE THAN 200 DISTINCT ORBIT SIZES}
+
+
+\Limits
+The number of permutation must be less than 50. 
+All permutations must fit into memory at the same time. The number
+of orbits must be less than or equal to 20000 (2000 for the PC
+version). Also the stack size is limited to 50000 positions (10000
+for the PC version).
+
+
+
+\subsection{ZMU: Multiply}\Typeout{ZMU}\label{sec:zmu}
+%-------------------------
+\index{zmu@{\tt zmu} (program)}
+\index{multiply (program)}
+\Syntax
+\msg{zmu [-r {\it Row}[.{\it \#Pieces}]] [-c {\it Col}[.{\it \#Pieces}]]
+	[{\it File1} {\it File2} {\it Result}]}
+
+\Description
+This program reads in two matrices or permutations from {\it File1} and
+{\it File2} and outputs their product ({\it File1}*{\it File2}) to 
+{\it Result}. Default file names are G1,  G2 and P3.
+
+The input files must contain two `compatible' objects, i.e., their
+product must be defined. Currently,  ZMU can handle the following
+data types:
+\begin{enumerate}
+\item	Both files are matrices over the same field, and the
+	number of columns of {\it File1} equals the number of rows of
+        {\it File2}.
+     	They are multiplied using the ordinary matrix product: Each
+	row of the first matrix is multiplied by the second matrix
+	giving one row of the result. This is written out before the
+        next row is multiplied, so only one row of the product is in
+        memory at a time.
+\item	A one by one matrix is treated as a single field
+	element. It can be multiplied from both sides with any
+	matrix over the same field.
+\item	Both input files are permutations of degree $n_1$ and $n_2$,
+	respectively. The result, in this case, is a permutation of
+	degree $n:=$max($n_1$,$n_2$). If $n_1\neq n_2$, the smaller
+	permutation is extended to degree $n$ by adding fixed points.
+	Then, the usual product is
+	calculated by mapping each point first by the left then by
+	the right permutation and storing the image in the resulting
+	permutation.
+\item	{\it File1} is a matrix, {\it File2} is a permutation and the
+        degree of the permutation equals the number of columns of the
+        matrix.
+	The result is a matrix of the same size which is calculated
+	from the input matrix by permuting the marks of each row in
+	the following way: The $i^{th}$ mark of the row is stored as
+	the $k^{th}$ mark of the result if point $i$ maps to point $k$
+	under the permutation. This can be written as
+	\[
+		(v_1,\ldots,v_n)\cdot\pi =
+		(v_{1\pi^{-1}},\ldots,v_{n\pi^{-1}})
+	\]
+	where $v_1,\ldots,v_n$ are the marks in one row and $\pi$ is
+	the permutation.
+\item	{\it File1} is a permutation of degree $m$, and {\it File2} is
+	a $m$ by $n$ matrix. The result is again a $m$ by $n$ matrix
+	which consists of the rows of the input matrix, rearranged
+	according to the permutation. If the permutation maps $i$ to
+	$k$, then the $k^{th}$ row of the input matrix becomes the
+	$i^{th}$ row of the output matrix.
+	Here is an example:
+	\[
+		(123)\cdot\left(\begin{array}{cc}
+		1&1\\2&2\\3&3\end{array}\right)
+		=
+		\left(\begin{array}{cc}
+		2&2\\3&3\\1&1\end{array}\right)
+	\]
+\end{enumerate}
+
+With these conventions, products between matrices and permutations are
+defined in a consistent way. The associative law $a(bc)=(ab)c$
+holds whenever $ab$ and $bc$ are defined ($a,b,c=$ matrix or
+permutation). A permutation matrix created with ZCV or ZCF, if
+multiplied with another matrix, produces the same result as the
+original permutation.
+
+In the case of two matrices, a piecewise multiplication can be
+performed using the {\tt -r} and {\tt -c} options. If one or both of
+these options are specified on the command line, ZMU will read only
+some rows of {\it File1} and/or some columns of {\it File2}.
+Multiplying the two pieces together yields a rectangular piece of the
+result. By default the result is divided into 4 pieces of (almost)
+equal size. To calculate the 4 pieces successively, type
+\msg{zmu -r 1 -c 1 m1 m2 tmp11\\
+     zmu -r 1 -c 2 m1 m2 tmp12\\
+     zmu -r 2 -c 1 m1 m2 tmp21\\
+     zmu -r 2 -c 2 m1 m2 tmp22}
+The resulting matrices {\tt tmpXX} can then be pasted together
+using ZPT:
+\msg{zpt -R 2 -C 2 result tmp}
+This procedure can be used in a multi-processor environment
+where each piece of the result is computed on a separate machine.
+
+By adding an additional parameter to {\tt -r} and/or {\tt -c} you can
+control the number of vertical or horizontal pieces. For example,
+\msg{zmu -r 3.5}
+means: Cut {\em File1} horizontally into five pieces and use the third
+piece for multiplication. {\it \#Pieces} must not be greater than the
+number of rows.
+
+\Bugs
+If any of the input files contains more than one permutation,
+only the first one is read in and multiplied.
+
+\SeeAlso
+ZPT
+
+
+
+
+
+\subsection{ZNU: Matrix Null-Space}\Typeout{ZNU}
+%-------------------------------
+\index{znu@{\tt znu} (program)}
+\index{null-space (program)}
+\Syntax
+\msg{znu [-GQV] {\it Matrix} [{\it Nullspace}]}
+
+\Description
+This program reads in a matrix from {\it Matrix} and outputs a basis
+for its null-space in semi-echelon form to {\it Nullspace}. If the
+{\it Nullspace} argument is omitted the null-space is not written
+out, but its dimension is still displayed.
+
+Notice that the input matrix does not need to be square. The
+matrix is read in, and the program generates the $n\times n$
+identity matrix in memory where $n$ is the number of rows. It then
+proceeds to do row operations to the input matrix, and the same
+operations to the other one. The input matrix is reduced to
+semi-echelon form, and whenever a zero vector is made, the
+corresponding row of the other matrix is marked for output.
+
+When the echelon form process has been completed, the dimension
+of the null-space is reported as
+	\msg{NULLITY nnn}
+Then, the basis for the null-space is reduced to semi-echelon
+form and written out.
+
+\Limits
+There must be enough memory for the input matrix and a square
+matrix with the same number of rows.
+
+
+
+\subsection{ZOR: Order of Permutations Or a Matrix}\Typeout{ZOR}
+%-----------------------------------------------
+\index{zor@{\tt zor} (program)}
+\index{order (program)}
+\Syntax
+\msg{zor [-qGQV] [-m {\it MaxOrder}] {\it Input}}
+
+\Description
+This program reads a file, containing either permutations, or a
+square matrix, and calculates the order(s).
+
+
+\Implementation
+In any case the whole input file is read into memory. If it is a matrix,
+the order is found by calculating the orders on cyclic subspaces
+and taking the least common multiple. The algorithm works as follows:
+\begin{enumerate}
+\item Let $A\in F^{n\times n}$ be the given matrix and $V=F^n$ the
+      space where $A$ acts. Set $W:=\{0\}$ (the trivial subspace)
+      and $o:=1$.
+\item Chose a vector $v\in V\setminus W$. Calculate the cyclic subspace
+      $\langle v\rangle_A$ generated by $v$ and the order $o_v$ of $A$
+      acting on $\langle v\rangle_A$.
+      This is done by repeatedly multiplying the vector $v$ with $A$
+      until it returns to where it started.
+\item Set $o:=\mbox{lcm}(o,o_v)$.
+\item Set $W:=W+\langle v\rangle_A$. If $W<V$, continue with
+      step 2. Otherwise, $o$ is the order of $A$.
+\end{enumerate}
+Gaussian elimination is used to maintain a basis of $W$ in
+semi-echelon form. 
+At the end, the result is printed in the format
+     \msg{ORDER IS $o$}
+In order to avoid infinite loops, there is a limit $o_v$. If the vector
+does not return after 1000 multiplications the order is assumed to be
+infinite and the program stops with an error message. This happens also
+if the value of $o$ exceeds 100000.
+
+There are two options which can reduce the run-time of the program.
+With the {\tt -m} option the user may specify a maximal order. If in
+the process described above $o$ reaches this limit, ZOR will assume
+that $o$ is the order. If $o$ becomes greater than {\it MaxOrder},
+the program stops with an error message.
+The second option, {\tt -q} (`quick'), makes ZOR stop if the dimension
+of $W$ reaches 1/10 of the dimension of the whole space. In this
+case, $o$ may be less than the order of the matrix, so the result
+is printed as
+    \msg{ORDER IS A MULTIPLE OF $o$}
+
+
+
+If the input file contains permutations, each one is read in and
+its order is calculated as the least common multiple of the orbit
+sizes. The result is printed in the format
+     \msg{ELEMENT nn HAS ORDER nnn}
+The {\tt -q} and {\tt -m} options have no effect for permutations.
+
+
+\Limits
+The whole matrix plus a second matrix of the same size must fit into
+memory. In the case of permutations, there must be enough memory for
+one permutation.
+
+
+
+\subsection{ZPC: Permutation Chop}\Typeout{ZPC}
+%------------------------------
+\index{zpc@{\tt zpc} (program)}
+\index{permutation chop}
+\Syntax
+\msg{zpc [-b] [{\it Gen1} {\it Gen2} {\it Seed} [{\it Sub1} {\it Sub2}
+	[{\it Quot1} {\it Quot2}]]]}
+\msg{zpc [-b] -g {\it \#Perm}[.{\it \#Gen}] {\it Gen} {\it Seed}
+	{\it Sub} {\it Quot}}
+
+\Description
+If invoked without any options, this program reads two permutations
+from {\it Gen1} and {\it Gen2} and a point from {\it Seed}. The orbit
+containing that point is made, and the action on the orbit is written
+to {\it Sub1} and {\it Sub2}. If any points remain, the action on these
+is written to {\it Quot1} and {\it Quot2}.
+Default file names are G1 and G2 (permutations), G3 (seed), P4 and P5
+(action on the orbit), and P6 and P7 (action on the remaining points).
+
+With the {\tt -b} option, {\it Seed} is taken as a list of points
+defining one block of a block system for the permutation group, and
+the program computes the action of both the generators on the block
+system. Nothing is written to {\it Quot1} and {\it Quot2} in this case,
+even if the group generated by the two permutations does not act
+transitively on the block system.
+
+A number of permutations different from 2 can be specified by using the
+{\tt -g} option. {\it \#Perm} is the number of permutations to chop, and
+{\it \#Gen} specifies how many of these are sufficient to generate the
+whole permutation group. For example {\tt -g 5.2} means `chop 5
+permutations, but assume that the first two generate the whole group'.
+{\it \#Gen} may be omitted, the default being {\it \#Perm}. Thus,
+instead of {\tt -g 5.5} you may simply type {\tt -g 5}.
+When the {\tt -g} option is used there must be exactly 4 Arguments, 3
+of which ({\it Gen}, {\it Sub} and {\it Quot}) are interpreted as
+`base names'. For example,
+	\msg{zpc -g 3  z seed s q}
+would read three permutations from {\tt z1}, {\tt z2} and {\tt z3},
+and a point from {\tt seed}. The actions on the orbit would be
+written to {\tt s1}, {\tt s2} and {\tt s3}, and the actions on the
+remaining points to {\tt q1}, {\tt q2} and {\tt q3}.
+
+The program checks the input files to see if they contain reasonable
+data. Failure of any of these checks produces an error message
+and the program stops.
+If all goes well, the first point of the permutation in {\it Seed} is
+taken to be the first point in the orbit. The orbit is then calculated
+by applying the generators to all new points.
+The points of the orbit are renumbered, and, for each of the
+permutations, the action on the orbit is written out. If this orbit is
+all the points, the message
+	\msg{TRANSITIVE ON {\em n} POINTS}
+appears, and the program stops. If any points remain, these are also
+renumbered, and the action on the remaining points is written out, too
+(unless {\tt -b} was used). In this case
+	\msg{INTRANSITIVE - 'SUB' {\it n}  'QUOT' {\it m}}
+is written to stdout, the 'SUB' being the orbit of the given
+point.
+
+With the {\tt -b} option, the orbit is calculated in the same way, but
+a whole block, i.e., a set of points, is read from {\it Seed} and
+taken as the starting `point'. The points are then renumbered in such
+a way that the orbit containing the seed is $\{1,2,\ldots,N\}$, where
+$N$ is a multiple of the block size, and the blocks are contiguous.
+After this rearrangement, point number $n$ belongs to block
+$\lfloor (n-1)/b\rfloor+1$, where $b$ is the block size. The action
+of the permutations on the blocks can then be calculated by simply
+dividing the point numbers by the block size. Of course, the block
+size must be a divisor of the permutation's degree. Otherwise the
+program stops with
+\msg{ZPC ERROR - BLOCK SIZE DOES NOT DIVIDE DEGREE}
+
+It might turn out during the computation, that two points in one
+block are mapped to images in different blocks. This means that
+{\it Seed} was not a block of any block system for the given
+representation and the program will stop with the error message
+     \msg{ZPC ERROR - NOT A BLOCK SYSTEM}
+If all goes well, the user is informed with one of the messages
+	\msg{TRANSITIVE ON {\em n} BLOCKS\\
+	     INTRANSITIVE - 'SUB' {\it n}  'QUOT' {\it m}}
+and the result is written to {\it Sub1} and {\it Sub2}. {\it Quot1}
+and {\it Quot2} are never written when {\tt -b} is specified, even
+if the action on blocks is intransitive.
+
+The use if this program is twofold. Firstly it can be used to obtain
+transitive constituents from intransitive permutation representations.
+Secondly, if the starting point is in some sense canonical, the
+resulting renumbered representation will be according to a `standard'
+numbering of the points. It should be noticed that this comment only
+applies to the representation on the 'SUB' --- that written to
+{\it Sub1} and {\it Sub2}.
+If this standard-base-like property of the
+output is not required, there is no particular reason to choose
+{\it Seed}, and point 1, or indeed one of the permutations can be
+used.
+
+\Limits
+The number of permutations, specified with {\tt -g}, must not be greater
+than 10. All permutations are held in memory at the same time.
+
+
+
+\subsection{ZQT: Clean and Quotient}\Typeout{ZQD}\label{sec:zqd}
+%--------------------------------
+\index{zqt@{\tt zqt} (program)}
+\Syntax
+\msg{zqt [-i] [{\em Subsp} {\em Matrix} {\em Quot}]}
+
+\Description
+This program reads in a subspace from {\em Subsp} and applies the
+canonical map to its quotient on the matrix {\em Matrix}, the result
+being written out to {\em Quot}. Default file names are G1 (subspace),
+G2 (matrix), and P3 (output).
+
+{\it Subsp} should be a matrix in semi-echelon form, and the two
+input matrices must have the same field parameter and the same number
+of columns. If this is not the case the program stops with an error
+message.
+Otherwise the program reads in {\it Subsp}, builds a table of pivot
+columns and then proceeds, row by row, through {\it Matrix}. For
+each row, the significant entries are zeroized by adding the correct
+multiple of rows of {\it Subsp}. The insignificant columns are then
+extracted and written out to {\em Quot}. Hence
+\begin{list}{}{\labelwidth 16mm \labelsep 2mm \leftmargin 20mm}
+  \item[\it Subsp\hfill] has A rows, B columns and is in echelon form,
+  \item[\it Matrix\hfill] has C rows, B columns and is otherwise
+  	arbitrary, and
+  \item[\it Quot\hfill] has C rows and B-A columns.
+\end{list}
+In other words:
+the program projects {\em Matrix} onto the B-A
+dimensional quotient space defined by {\it Subsp}.
+
+If the {\tt -i} option is used, ZQT calculates the action of
+{\it Matrix} on the quotient by {\it Subsp}. This is done
+by projecting the matrix as explained above, and taking only the
+`insignificant' rows. Insignificant rows are defined by treating
+the pivot table as a table of {\em rows} rather than columns.
+
+Example: Let {\tt spc} be an invariant subspace and {\tt z1} an
+algebra element (a square matrix). Then, after
+	\msg{zqt -i spc z1 q1}
+{\tt q1} contains the action of {\tt z1} on the quotient by {\tt spc}.
+
+Another, less obvious use of ZQT is to kondense a matrix
+representation. First, find an element E of the group algebra with
+stable rank, i.e.\ rank(E*E) = rank(E). This can be found by taking
+any element F of the group algebra and raising it to higher powers
+until the rank stabilizes. We may then kondense onto the kernel of E
+as follows
+\begin{verbatim}
+    zef E X        X is the echelon form of Image(E)
+    znu E Y        Y is the kernel of E
+    zqt X Y Z      calculate the canonical projection of Y ...
+    ziv Z T        ... and adjust Y so that the canonical ...
+    zmu T Y Y1     ... projection of Y1 is the identity
+    zmu Y1 Z1 T1   calculate KZ1 = kondensed Z1
+    zqt X T1 KZ1
+    zmu Y1 Z2 T1   calculate KZ2 = kondensed Z2
+    zqt X T1 KZ2
+\end{verbatim}
+
+\Bugs
+It is not completely checked that {\it Subspace} is in echelon form.
+
+\Limits
+The first matrix ({\it Subspace}) and one row of {\it Matrix} must
+fit into memory.
+
+
+\subsection{ZSB: Standard Basis}\Typeout{ZSB}
+%----------------------------
+\index{zsb@{\tt zsb} (program)}
+\index{standard basis}
+\Syntax
+\msg{zsb {\it Matrix1} \ldots {\it MatrixN} {\it Seed}
+	{\it SBasis} [{\it Op}]}
+\msg{zsb [-g{\it\#Gen}] {\it Matrix} {\it Seed} {\it SBasis} [{\it Op}]}
+
+\Description
+This program reads in two or more matrices from ({\it Matrix1} \ldots %
+{\it MatrixN}) and one or more vectors from {\it Seed}, and outputs a
+square non-singular matrix to {\it SBasis} whose production from the
+input is basis independent.
+Hence the program produces the `standard basis'. In fact all the rows
+of the output matrix are images of the input vector, and each row
+consists of the first image of the vector that is independent of all
+the preceding vectors.
+
+If there are more than two generators, the second form (with
+{\tt -g}) must be used. In this case, {\it Matrix} is the base
+name and actual file names are built by appending `.1', `.2'
+and so on.
+
+The last argument, {\it Op}, is optional. If it is present, it is
+taken as a file name and a record of all operations is written to
+this file. The format is an integer matrix with two columns and
+one row for each vector in {\it SBasis}. The first column is the
+source vector number. The second column specifies by which generator
+the source vector was multiplied. 
+
+The vector is taken as the top row of the matrix in {\it Seed}. The
+program starts with some checks --- the input matrices must be square,
+and the same size and field as each other and the seed vectors.
+If these checks are passed, two bases for the same space are set up to
+contain the first seed vector. One is the (growing) output matrix, and
+the other is the same space, but in near-echelon form. The program
+proceeds by multiplying the vectors of the output matrix in turn by the
+generators. The resulting vector is tested for linear independence with
+the preceding vectors using the echelon form matrix. If the new vector
+is dependent, it is merely discarded and the next new vector is made.
+If it is independent, it is appended to the output matrix, and the
+echelon form matrix is also updated (by the remnants of the test for
+linear independence).
+
+If the first seed vector spans a proper subspace (or if it is
+zero) the program reads from {\it Seed} until it find a vector
+which is not contained already in the subspace found so far.
+Then it repeats the procedure outlined above, appending the resulting
+vectors to the output matrix.
+For each seed vector a message is printed which tells the
+user the dimension of the invariant subspace:
+	\msg{VECTOR {\it nnnn} SPANS {\it dddd}}
+
+The program stops if either the maximal dimension is reached or
+if there are no more seed vectors. In the latter case the output
+is not a basis and a message saying
+	\msg{ZSB WARNING: SPAN IS ONLY {\it nnnn} OF SPACE {\it dddd}}
+is written to stderr. In case of success, the program checks
+for unused seed vectors in the input file. If there are vectors
+left, the message
+	\msg{ZSB WARNING: ONLY {\it n} OF {\it m} SEED VECTORS
+	     WERE USED}
+is printed. In any case the output matrix is written to
+{\it SBasis}.
+
+This program is primarily designed to put a representation into a
+standard basis, so that equivalent representations are identical. This
+can be achieved by finding a matrix in the group algebra of nullity 1,
+and using the null vector and the two generators as input to this
+program. Calling the output matrix X, form X * G1 * inverse(X) to
+bring the generators into standard basis.
+If an equivalent representation is then
+found, and the same group algebra elements null vector is used in the
+same way, a proof of equivalence has been found, since both
+representations have been conjugated so they look identical.
+
+Another use of this program is to find the bilinear form (if any)
+fixed by a representation. This is done by running ZSB twice, once on
+a representation and once on the transpose-inverse representation,
+calculating the matrix that conjugates the first to the second.
+
+
+\Limits
+This program currently works only on matrices, although there are
+similar jobs that need to be done with permutation representations.
+
+
+\subsection{ZSI: Sum and Intersection}
+%----------------------------------
+\index{zsi@{\tt zsi} (program)}
+\index{sum of two spaces}
+\index{intersection of two spaces}
+\Syntax
+\msg{zsi [-GQV] {\em Space1} {\em Space2} {\em Sum} {\em Intersection}\\
+     zsi -s [-GQV] {\em Space1} {\em Space2} {\em Sum}}
+
+\Description
+This program reads in two spaces from {\em Space1} and {\em Space2}
+and writes out their sum and intersection, in semi-echelon form, to
+{\em Sum} and {\em Intersection}, respectively. The second form,
+using the \verb"-s" option, calculates only the sum.
+
+The input files must be matrices over the same field and with the
+same number of columns. They need not be in (semi-)echelon form.
+Before the program writes out the result it prints one of the
+following messages:
+\msg{SUM {\em Dim1} INTERSECTION {\em Dim2}\\
+     SUM {\em Dim1}}
+
+
+\Limits
+In normal mode, there must be enough memory to hold two copies of
+each of the two spaces at the same time. If only the sum is
+calculated (using \verb"-s") the program assumes the worst case
+($n_0$) for the dimension of the sum, and allocates an appropriate
+memory block. $n_0$ is given by the total number of rows in both
+input files or the number of columns, whatever is smaller.
+
+
+\subsection{ZSM: Small Matrices Package}\Typeout{ZSM}
+%---------------------------------------
+\index{zsm@{\tt zsm} (program)}
+\Syntax
+\msg{zsm [-g {\it NGen}] {\it Command} {\it File(s)}}
+
+\Description
+This program performs operations on matrices and --- at least
+to some extent --- on permutations. {\it File(s)} is a list of
+file names for input and/or output, depending on the operation.
+{\it Command} is any of the following
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Command & Description \\
+\hline
+\tt pwr	& Power of a matrix or permutation \\
+\tt ro	& Random orders of matrices or permutations \\
+\tt fp	& Fingerprint (matrices only) \\
+\tt mw	& Make word (matrices only) \\
+\hline
+\end{tabular}
+\end{center}
+Most commands take one or more additional arguments (see below).
+Available options are:
+\begin{list}{}{\labelwidth 8mm \leftmargin 10mm \labelsep 0.2cm
+\parsep 0mm\itemsep 0mm}
+\item[{\tt -g}]	Set number of generators (default is 2 generators).
+    This option has no effect on the {\tt pwr} command. See the
+    description of the {\tt ro} subcommand below for more information.
+\item[{\tt -G}]	Produces GAP output.
+\end{list}
+
+
+\paragraph{Power}
+%----------------
+ZSM can raise a matrix or permutation to its n-th power. The syntax is
+\msg{zsm pwr{\it Num} {\it File} {\it Result}}
+where {\it Num} is a positive integer. {\it File} may be a square
+matrix or a permutation. The result is written to {\it Result}.
+
+
+\paragraph{Random orders}
+%------------------------
+\index{random orders}
+This command can be used to find the group generated by a given set
+of matrices or permutations. The syntax is
+\msg{zsm ro[{\it Num}] {\it Gen1} {\it Gen2}\\
+     zsm -g{\it\#Gen} ro[{\it Num}] {\it Gen}}
+where {\it Num} is a positive integer.
+The first form reads two generators from {\it Gen1} and {\it Gen2} ---
+both square matrices and permutations are allowed, but not mixed.
+If the {\tt -g} option is used, {\it Gen} is treated as `base name',
+and actual file names are built by appending `.1', `.2',\ldots\ to
+the base name.
+
+The program calculates {\it Num} (pseudo) random products of the
+generators and prints out their orders. If the number is omitted it
+defaults to 120.
+
+
+\paragraph{Fingerprint}
+%----------------------
+\index{fingerprint}
+The command
+\msg{zsm fp {\it Gen1} {\it Gen2}\\
+     zsm -g {\it \#Gen} fp {\it Gen}}
+reads in two or more generators as explained above and calculates
+their fingerprint, i.e., the nullities of 6 `standard' elements in
+the algebra generated. Only matrices are allowed, not permutations.
+
+More nullities can be calculated by specifying one or two
+additional arguments to the {\tt fp} command as follows 
+\msg{zsm fp{\it Num} \ldots\\
+     zsm fp{\it First}-{\it Last} \ldots}
+With this command, the program calculates the first {\it Num} words
+(or words from {\it First} up to {\it Last}, respectively), and
+prints out their nullities.
+The numbering of algebra elements is described below.
+
+\paragraph{Make Word}
+%--------------------
+The command
+\msg{zsm mw{\it Num} {\it Gen1} {\it Gen2} {\it Word} [{\it Nullsp}]\\
+     zsm -g {\it\#NGen} mw{\it Num} {\it Gen} {\it Word} [{\it Nullsp}]}
+reads two or more matrices and calculates the word number {\it Num} in
+the algebra generated by the matrices. The word is written to
+{\it Word} and, if an additional argument is specified,
+its null-space is written to {\it Nullsp}.
+
+Enumeration of words is defined as follows.
+First, a fixed set $t_1,t_2,\ldots$ of monomials in the generators
+is calculated. The choice of these monomials depends only on the number
+$n$ of generators. E.g., if there are two generators $a$ and $b$, the
+first monomials are $a$, $b$, $ab$, $b^2$, $ba$, $ab^2$,\ldots{}
+Any word generated by ZSM is a linear combination of the $t_i$'s
+with coefficient 0 or 1. The number of a word is obtained by
+interpreting the sequence of coefficients as a number in base 2.
+
+This scheme is the same as used in the lattice package
+(see section \ref{sec:lattice}). Thus, the `make word' function
+can be used, for example, to evaluate peak words (given by their number)
+on submodules or quotients.
+
+To produce a multiple of the unit matrix, the syntax
+\msg{zsm mw{\it Num}id {\it Gen1} {\it Gen2} {\it Word}]}
+may be used. E.g., `\verb"mw3id"' calculates $3\cdot I$.
+
+\Limits
+Contrary to the program name there is no explicit limit on the
+size of matrices or permutations.
+
+
+\SeeAlso
+CHOP, PWKOND
+
+
+\subsection{ZSP: Spin Up and Split}
+%----------------------------------
+\index{zsp@{\tt zsp} (program)}
+\index{split (program)}
+\index{spin up (program)}
+\Syntax
+\msg{zsp [{\it Options}] [{\em Gen1} {\em Gen2} {\em Seed}
+     [\Big\{\begin{tabular}[c]{@{}c@{}}
+     {\em Sub1} {\em Sub2} {\em Quot1} {\em Quot2}\\
+     {\em Space}\end{tabular}\Big\}]]}
+\msg{zsp -g {\it \#Mat}[.{\it \#Gen}] [{\it Options}]
+     [{\em Gen} {\em Seed} [\Big\{\begin{tabular}[c]{@{}c@{}}
+     {\em Sub} {\em Quot}\\{\em Space}\end{tabular}\Big\}]]}
+
+\Description
+This program reads in two or more matrices or permutations and a space
+(from
+{\it Seed}), and tries to find a subspace which is invariant under the
+action of the matrices. If a proper invariant subspace is found, the
+program can either write out this space or `split' the representation,
+i.e., calculate the action of the matrices on both the subspace and its
+quotient.
+
+In order to find an invariant subspace the program starts with one
+or more `seed' vectors taken from {\it Seed} and calculates the
+smallest invariant subspace containing these vectors (`spin-up').
+This is done by retaining
+always a semi-echelon form of the space found so far, and multiplying
+the rows of this by all the generators, appending the
+(Gaussian-eliminated) result to the space if it is not already in, and
+continuing until all vectors in the semi-echelon form have been
+treated. If at any stage the dimension reaches the dimension of the
+entire space or the limit specified via {\tt -d}, the
+process is aborted, and the program continues with the next seed
+vector(s).
+
+This program is rather complex, because it can perform several
+different tasks.\footnote{In earlier versions of the {\MeatAxe} these
+tasks were performed by different programs (ZIS, ZPS), but this
+resulted in program code being duplicated. I found it more
+satisfactory to collect all programs dealing with spin-up into
+one universal program.}
+What the program does exactly depends on the setting of command
+line options. Available options are:
+\begin{list}{}{\labelwidth 8mm \leftmargin 10mm \labelsep 0.2cm
+\parsep 0mm\itemsep 0mm}
+\item[{\tt -g}]	Set number of matrices (if not 2)
+\item[{\tt -s}]	Select the `seed method' (see below)
+\item[{\tt -n}] Spin up and write out the invariant subspace, but
+	do not split
+\item[{\tt -d}]	Set a limit on the dimension of the invariant subspace
+\item[{\tt -t}]	Quick (and unsecure) mode. See below for details.
+\item[{\tt -o}]	No output to files, messages only
+\item[{\tt -v}]	Verbose.
+\end{list}
+All but the {\tt -o} and {\tt -n} options take one or more arguments.
+They are described in more detail below.
+
+\paragraph{Two or more generators}
+%- - - - - - - - - - - - - - - - -
+There are two ways of invoking ZSP. Without the {\tt -g} option, it is
+assumed that the group has two generators. Matrices and seed space are
+read from {\it Gen1}, {\it Gen2} and {\em Seed}, respectively, or from
+G1, G2, G3 by default. The output matrices, unless {\tt -n} is used, are
+written to {\it Sub1}, {\it Sub2}, {\it Quot1}, {\it Quot2}. Default
+output file names are P4, P5, P6 and P7, respectively.
+
+If there are more than two generators, the second form must be used.
+{\it \#Mat} is the number of matrices, an integer greater or equal to
+2. In this case all arguments except {\it Seed} are understood as
+`base names', i.e., ZSP will append a number to the argument
+--- `1' for the first matrix, `2' for the second and so on --- to
+build the file name. For example,
+	\msg{zsp -g 3 mat sd subsp quotsp}
+reads three matrices from {\tt mat1, mat2, mat3}, seed vectors from
+{\tt sd}, and writes the action on the subspace to {\tt subsp1},
+{\tt subsp2}, {\tt subsp3} and the action on the quotient space to
+{\tt quotsp1}, {\tt quotsp2}, {\tt quotsp3}.
+
+{\it \#Gen} is an optional second argument, which must be separated
+from {\it \#Mat} by a dot. {\it \#Gen} must be an integer with
+$2\leq{\it \#Gen}\leq{\it \#Mat}$. If used, ZSP assumes that
+the first {\it \#Gen} matrices are sufficient to generate the whole
+group. For example, {\tt -g 5.3} means `split 5 matrices, but use
+only the first three to spin up the seed vector'. By default, all
+matrices are assumed to be generators, so {\tt -g 5.5} is equivalent
+to {\tt -g 5}.
+
+\paragraph{Working with permutations}
+%- - - - - - - - - - - - - - - - - -
+The generators may be permutations which act on vectors as usual 
+(see the ZMU documentation). However, matrices and permutations
+must not be mixed. If an input file contains more than one
+permutation, only the first one is read in, and a warning message is
+printed telling the user that the rest of the file has been ignored.
+A further restriction is that only the action on the subspace, not
+on the quotient, is calculated.
+
+
+
+\paragraph{Seed modes}
+%- - - - - - - - - - - -
+With the {\tt -s} option the user controls how the program creates
+seed vectors from the {\it Seed} space. There are three methods
+available:
+\begin{list}{}{\labelwidth 15mm \leftmargin 17mm \labelsep 2mm
+\parsep 0mm\itemsep 0mm}
+\item[{\tt -sg[{\it Num}]}]
+	Generate seed vectors by forming linear combinations of the
+	vectors read from {\it Seed}. This is the default.
+	An additional integer number, may be appended to select
+	a single vector. Notice that there must be no space
+	between {\tt -sg} and the number.
+\item[{\tt -sr[{\it Num}]}]
+	Read seed vectors one by one from {\it Seed} and spin up
+	each vector individually. Again, a single vector can be
+	selected by appending a number to the option.
+\item[{\tt -ss}]
+	Read a whole space from {\it Seed} and calculate its closure
+	under the operation of the matrices.
+\end{list}
+In the default mode ({\tt -sg}) ZSP will try each vector in the
+linear span of the rows of {\it Seed} modulo scalar multiples.
+Each linear combination is assigned a number in the following way:
+Let $v_1$,\ldots,$v_n$ be the rows in {\it Seed}, and
+\[
+	k = k_nq^{n-1} + k_{n-1}q^{n-2} + \ldots + k_2q + k_1
+	\qquad(0\leq k_i<q)
+\]
+an integer. Then, the linear combination corresponding to $k$ is
+\[
+	v(k) = k_nv_n + k_{n-1}v_{n-1} + \ldots + k_1v_1
+\]
+Where the coefficients $k_i$ are identified with field elements
+(as defined by the ZZZ arithmetic module). In order to avoid scalar
+multiples, the first non-vanishing coefficient is required to be one.
+
+
+\paragraph{Output Options}
+%- - - - - - - - - - - - - 
+The {\tt -n} and {\tt -o} options control the program's output.
+By default, seed vectors are spinned up until an invariant
+subspace is found or there are no more seed vectors. In the
+first case, the action of all matrices on subspace and quotient
+is calculated, and a message saying
+\msg{VECTOR {\it Num} SPLITS: SUBSPACE {\it SDim} QUOTIENT {\it QDim}}
+is printed. Otherwise the message is
+\msg{SPANS WHOLE SPACE}
+or
+\msg{EVERY SEED VECTOR SPANS WHOLE SPACE}
+depending on the seed method.
+
+The {\tt -n} option can be used if only the invariant subspace
+is needed, but not the action of the matrices. Instead of {\it SubX}
+and {\it QuotX} there is one single argument, {\it Space}, which is
+taken as a base name for the invariant subspaces generated. The actual
+file name is built by appending a 4-digit number to {\it Space} which
+identifies the corresponding seed vector. By default, subspaces are
+written to {\tt V}{\it nnnn}. For each seed vector, a message of the
+form
+\msg{VECTOR {\it n} SPINS UP TO {\it Dim1} QUOTIENT {\it Dim2}}
+is printed. Note that there is no output, if a vector spins up to
+the whole space. If the {\tt -ss} option is used, there is only one
+output file, and no number is appended to {\it Space}.
+
+With the {\tt -o} option no output files are generated, but the
+same messages as above are printed.
+
+
+\paragraph{Setting a dimension limit}
+%- - - - - - - - - - - - - - - - - - -
+If it is known that there are no proper invariant subspaces of
+dimension greater than {\it Maxdim}, you can tell this to ZSP with
+\begin{list}{}{\labelwidth 15mm \leftmargin 17mm \labelsep 2mm}
+\item{-d~{\it Maxdim}}
+\end{list}
+Then, if during the spin-up process the subspace dimension reaches
+{\it Maxdim}, ZSP assumes that the vector spans the whole space and
+stops with
+\msg{SPANS WHOLE SPACE}
+
+
+\paragraph{Quick mode}
+%- - - - - - - - - - -
+If the {\tt -t} option is used, ZSP runs in `quick mode'.
+For example,
+\msg{zsp -t 5 -n gen1 gen2 seed}
+spins up vectors from {\tt seed} under the gererators {\tt gen1} and
+{\tt gen2}. If, during the spin-up process, 5 vectors in sequence
+have their images under the generators already in the subspace, the
+space found so far is considered invariant. Note that this assumption
+may be valid in many cases, but in general it is not! In the above
+example, a non-invariant subspace may be written out with no warning.
+Trying to split with a noninvariant subspace (i.e., if you don't use
+the {\tt -n} option) will produce a warning message, though.
+
+
+
+\paragraph{Input files}
+%- - - - - - - - - - - -
+The matrices must be square, of the same size, and over the same
+field. There is no requirement
+for the matrices to be non-singular, and they often are not (e.g.,
+if they are kondensed matrices).
+
+{\it Seed} must have the same number of columns and be over the same
+field as the matrices. The rows of {\it Seed} should be linearly
+independent but need not be in echelon form. It is not checked that
+the rows of {\it Seed} form a basis, but if they are linearly
+dependent the program becomes ineffective and will probably produce
+the following error message:
+   \msg{ZSP ERROR - CANNOT SPIN UP ZERO VECTOR}
+
+
+\Examples
+Let {\tt spc} be a subspace and {\tt m1}, {\tt m2}, \ldots be
+matrices. To calculate the closure of {\it spc} under {\tt m1}
+and {\tt m2} type
+\msg{zsp -ss m1 m2 spc closure}
+The same, but for 5 matrices {\tt m1}, \ldots, {\tt m5} is done
+with
+\msg{zsp -ss -g 5 m spc closure}
+
+Another use of this program is in Norton's criterion of irreducibility.
+To prove that a given module is irreducible, find an element in the
+algebra with small nullity ($\leq 3$ is preferable). Let {\tt z1} and
+{\tt z2} be the action of the generators and {\tt a} the algebra
+element. If the module is irreducible, this can be proved as follows
+({\tt \$} is the shell prompt):
+\begin{center}
+\begin{tabular}{ll}
+\verb|$ znu a nsp|	          & Calculate the null space\ldots\\
+\verb|NULLITY 3|                  & it has dimension 3\\
+\verb|$ zsp z1 z2 nsp s1 s2 q1 q2|  & Try to split\ldots \\
+\verb|EVERY SEED VECTOR SPANS WHOLE SPACE| & it fails!\\
+\verb|$ ztr z1 z1t|	&  Transpose first generator \\
+\verb|$ ztr z2 z2t|	&  Transpose second generator \\
+\verb|$ ztr a at|	&  Transpose the algebra element \\
+\verb|$ znu at nsp|	& Calculate the null space \\
+\verb|$ zsp -s1 z1t z2t nsp s1 s2 q1 q2|  & Try to split\ldots \\
+\verb|SPANS WHOLE SPACE| & The module is irreducible!
+\end{tabular}
+\end{center}
+
+
+\Limits
+All matrices plus one extra matrix (holding the subspace) must
+fit into memory. Additional memory is required for the seed
+vectors and for the pivot table, but the latter grow only linearly
+with the dimension.
+
+With {\tt -sg}, the dimension of the seed space must be less than 10.
+The maximal number of seed vectors generated and used for splitting is
+$(q^n-1)/(q-1)$, where $q$ is the field order and $n$ is the
+dimension of the seed space. Thus, when working with large fields,
+the run time may become very long. E.g., if $q=19$ and $n=6$ there
+are 2613660 seed vectors.
+
+The number of matrices must be less than or equal to 10.
+
+
+\Messages
+\msg{ZSP ERROR - CANNOT SPIN UP ZERO VECTOR}
+The seed vector for the spin-up process was zero. This error occurs if
+the seed space basis is linearly dependent or if a zero vector has been
+read from {\it Seed}.
+
+\msg{ZSP ERROR - CANNOT MAKE THIS SEED VECTOR}
+The requested seed vector does not exist. If you are using
+{\tt -sr}, the highest possible vector number is the number
+of rows in {\it Seed}. With {\tt -sg}, the highest possible
+number is $2q^{n-1}-1$, where $q$ is the field order and $n$ ist
+the number of rows in {\it Seed}.
+
+
+
+\subsection{ZSY: Symmetrized Tensor Product}
+%-------------------------------------------
+\index{zsy@{\tt zsy} (program)}
+\index{symmetrization}
+\Syntax
+\msg{zsy {\it Mode} [{\it Inp} [{\it Out}]]}
+
+\Description
+This program reads a matrix or permutation from {\it Inp}, calculates
+its symmetrized tensor product according to {\it Mode}, and writes out
+the result to {\it Out}. Default file names are G1 for input and P2 for
+output.
+
+The {\it Mode} argument specifies the tensor product to be taken
+and the kind of symmetrization to be performed. Currently there are
+5 Modes available: {\tt s2}, {\tt e2}, {\tt e3}, {\tt e4} and {\tt m3}.
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+{\it Mode} & Description & Size of result ($m$) \\
+\hline
+{\tt s2} & Symmetric square & $n(n+1)/2$ \\
+{\tt e2} & Antisymmetric square & $n(n-1)/2$ \\
+{\tt e3} & Antisymmetric cube & $n(n-1)(n-2)/6$ \\
+{\tt e4} & Antisymmetric fourth power & $n(n-1)(n-2)(n-3)/24$ \\
+{\tt m3} & Tensor cube, mixed symmetry & $n(n-1)(n+1)/3$ \\
+\hline
+\end{tabular}
+\end{center}
+The meaning of the last column in this table is as follows:
+If {\it Inp} is a square matrix of dimension $n$, the output is
+a square matrix of dimension $m$. If {\it Inp} is a permutation of
+degree $n$, the output is a permutation of degree $m$. Since the
+typical application of ZSY is to generate new representations from 
+existing ones, it will usually be used with square matrices. However,
+the input is not required to be square, except for {\tt m3}.
+
+
+\paragraph{Permutations}
+%- - - - - - - - - - - -
+Currently, only modes S2, E2 and E3 are available for permutations.
+The result gives the operation of the input permutation on unordered
+pairs (E2, S2) or triples (E3) of points. More precisely, if the given
+permutation operates on $\{1,\ldots,n\}$, then:
+\begin{eqnarray*}
+\mbox{E2} & = & \mbox{operation on }\{(i,k)\,|\,1\leq i < k\leq n\} \\
+\mbox{S2} & = & \mbox{operation on }\{(i,k)\,|\,1\leq i\leq k\leq n\}\\
+\mbox{E3} & = & \mbox{operation on }\{(i,k,l)\,|\,1\leq i<k<l\leq n\}
+\end{eqnarray*}
+In the output, pairs and triples are numbered lexicographically.
+For example, E2 uses the following order:
+(1,2), (1,3), (2,3), (1,4), \ldots, ($n-1$,$n$).
+Notice that the symmetric square is never transitive but 
+decomposes into the diagonal and the antisymmetric square.
+
+Here are some examples:
+\begin{eqnarray*}
+	\pi & = & (1\ 5\ 4\ 3\ 2) \\
+	E2(\pi) & = & (1\ 7\ 10\ 6\ 3)(2\ 8\ 4\ 9\ 5) \\
+	S2(\pi) & = & (1\ 15\ 10\ 6\ 3)(2\ 11\ 14\ 9\ 5)
+		(7\ 14\ 8\ 4\ 12) \\
+	E3(\pi) & = & (1\ 5\ 8\ 10\ 4)(2\ 6\ 9\ 3\ 7)
+\end{eqnarray*}
+
+
+\paragraph{Matrices}
+%- - - - - - - - - -
+The $r$-th exterior
+power (E2, E3, E4) has as its entries the determinants of
+$r\times r$ submatrices of the input. Rows and columns are ordered
+lexicographically, which is equivalent to taking the following
+basis in the tensor product:
+\begin{list}{}{\labelwidth 5mm \leftmargin 7mm \labelsep 2mm\parsep 0mm
+\itemsep 0mm}
+\item[E2:\hfill]
+	$v_i\wedge v_j$ with $1\leq i<j\leq n$
+\item[E3:\hfill]
+	$v_i\wedge v_j\wedge v_k$ with $1\leq i<j<k\leq n$
+\item[E4:\hfill]
+	$v_i\wedge v_j\wedge v_k\wedge v_l$ with $1\leq i<j<k<l\leq n$
+\end{list}
+The ordering of basis vectors is lexicographical, for example (E2):
+$v_1\wedge v_2$, $v_1\wedge v_3$, \ldots, $v_1\wedge v_n$,
+$v_2\wedge v_3$, $v_2\wedge v_4$, \ldots, $v_3\wedge v_n$,
+\ldots, $v_{n-1}\wedge v_n$.
+
+The symmetric square of a matrix with $r$ rows and $c$ columns is a
+matrix with $r(r+1)/2$ rows and $c*(c+1)/2$ columns, with entries
+given by the formulae
+\[
+\begin{array}{c|cc}
+	  &  c(c-1)/2  & c  \\ \hline
+r*(r-1)/2 & ad+bc      & ac \\
+	r &  2ab       & a^2
+\end{array}
+\]
+where the upper left is the $r(r-1)/2$ by $c(c-1)/2$ matrix of
+permanents. The program orders both the rows and the columns in
+lexicographical order, i.e.
+$v_1v_2$, $v_1v_3$, \ldots, $v_1v_n$, $v_2v_3$, $v_2v_4$, \ldots,
+$v_2v_n$, $v_3v_4$, \ldots, $v_{n-1}v_n$, $v_1v_1$, $v_2v_2$,\ldots,
+$v_nv_n$
+with the assumption that $v_iv_j = v_jv_i$, i.e. the action is on
+quadratic polynomials.
+
+The symmetric square is, in general, irreducible except in
+characteristic 2. In that case there is a copy of the Frobenius square
+as an invariant submodule, as can be seen from the $2ab$ in the above
+formulae. Invariant subspaces in characteristic 2 correspond to special
+groups (i.e.\ groups of the form $2^n\times 2^m$) on which the group
+given acts on the quotient $2^n$.
+
+The mixed symmetry component of the tensor cube (M3) is calculated
+with respect to the basis
+\begin{eqnarray*}
+	w_{ikl} & := & v_i\otimes v_k\otimes v_l
+		+ v_l\otimes v_k\otimes v_i
+		- v_k\otimes v_i\otimes v_l
+		- v_k\otimes v_l\otimes v_i \\
+	\mbox{where }i & = & 1,\ldots,n-1\\
+	k & = & i+1,\ldots,n\\
+	l & = & i,\ldots,n\\
+\end{eqnarray*}
+
+Here are some examples:
+\begin{eqnarray*}
+E2\left(\begin{array}{cccc}
+    1&2&1&3\\
+    0&1&2&1\\
+    1&2&2&3
+\end{array}\right)
+& = &
+\left(\begin{array}{cccccc}
+    1&2&1&3&6&2\\
+    0&1&0&2&0&4\\
+    6&5&6&5&1&4
+\end{array}\right)
+\ \ (\mbox{mod }7)\\
+%
+E3\left(\begin{array}{ccccc}
+     1&0&2&0&2\\
+     1&1&2&1&2\\
+     3&3&2&3&2\\
+     1&2&3&1&0
+\end{array}\right)
+& = &
+\left(\begin{array}{cccccccccc}
+     1&0&1&4&0&1&0&0&0&0\\
+     1&4&3&4&0&3&2&1&3&4\\
+     1&2&2&3&2&3&1&3&4&2\\
+     4&0&4&0&2&0&4&2&1&3
+\end{array}\right)
+\ \ (\mbox{mod }5)\\
+%
+S2\left(\begin{array}{cccc}
+    1&2&1&3 \\
+    0&1&2&1 \\
+    1&2&2&3
+\end{array}\right)
+& = &
+\left(\begin{array}{cccccccccc}
+  1 & 2 & 1 & 5 & 5 & 7 & 0 & 2 & 2 & 3 \\
+  4 & 3 & 6 & 6 &12 & 9 & 1 & 4 & 2 & 9 \\
+  1 & 2 & 1 & 6 & 5 & 8 & 0 & 2 & 4 & 3 \\
+  4 & 2 & 6 & 4 &12 & 6 & 1 & 4 & 1 & 9 \\
+  0 & 0 & 0 & 4 & 2 & 4 & 0 & 1 & 4 & 1 \\
+  4 & 4 & 6 & 8 &12 &12 & 1 & 4 & 4 & 9
+\end{array}\right)
+\ (\mbox{mod }13)
+\end{eqnarray*}
+
+
+
+\Bugs
+If the input file contains more than one permutation, only the
+first permutation is read in and processed.
+
+\Limits
+If the input is a matrix, the whole input matrix and one row of the
+result must fit into memory. In case of permutations both the input
+and the result must fit into memory.
+
+
+
+\subsection{ZTC: Trace}
+%----------------------
+\index{ztc@{\tt ztc} (program)}
+\index{trace (program)}
+\Syntax
+\msg{ztc [-GQV] [{\it Input}]}
+
+\Description
+This program reads a matrix or permutations from {\it Input} (or
+from G1, if no file name is given), calculates its trace and
+outputs this to the user.
+
+First the input file is checked. If it is neither a matrix nor a
+permutation, the program writes
+	\msg{ZTC ERROR - UNKNOWN TYPE}
+and stops.
+
+If the input file is a matrix, it is read row by row and the diagonal
+entries are added up using the finite field arithmetic. Notice that the
+matrix does not need to be square. The result is printed in the form
+	\msg{TRACE IS {\it n}}
+What this means depends on the external format of the arithmetic
+routines in use, but it is hoped that these will conform to the naming
+system described in section \ref{sec:intdata}. In particular, elements
+of the prime field should be denoted by $0,1,\ldots,p-1$.
+
+Permutations are read one by one from the input file, and their trace,
+i.e., the number of fixed points is calculated. The result is printed
+in the form
+	\msg{ELEMENT {\it i} HAS TRACE {\it n}}
+
+The {\tt -G} option produces GAP output.
+
+
+
+\subsection{ZTE: Tensor Product of Matrices or Permutations}
+%-----------------------------------------------------------
+\index{zte@{\tt zte} (program)}
+\index{tensor product}
+\Syntax
+\msg{zte [{\it A} {\it B} {\it Result}]}
+
+\Description
+This program reads in two matrices or permutations from {\it A} and
+{\it B} and writes out their tensor product to {\it Result}. If no file
+names are specified, input is read from G1 and G2, and the result goes
+out to P3.
+
+The program first reads in the input files. If they are matrices,
+their tensor product is calculated row by row and written to the
+output file. The tensor product of a $m\times n$ matrix $A$ with
+a $m'\times n'$ matrix $B$ is a $mm'\times nn'$ matrix $C$ the entries
+of which are formed by multiplying the entries of $A$ by the entries
+of $B$. The standard ordering is used, i.e., the entries of $A$ are
+used to direct the placing of matrix $B$ in the result:
+\[
+	C_{(i-1)m'+k,(j-1)n'+l} = A_{i,j} B_{k,l}
+\]
+An example may make this clearer:
+\[	\begin{array}{ccccc}
+	G1 & & G2 & & P3 \\
+	\left(\begin{array}{ccc}1&2&3\\1&1&0\end{array}\right) &
+	\bigotimes &
+	\left(\begin{array}{cc}2&0\\1&3\end{array}\right) & = &
+	\left(\begin{array}{cccccc}
+		2 & 0 & 4 & 0 & 6 & 0\\
+		1 & 3 & 2 & 6 & 3 & 9\\
+		2 & 0 & 2 & 0 & 0 & 0\\
+		1 & 3 & 1 & 3 & 0 & 0\\
+	\end{array}\right)
+	\end{array}
+\]
+
+If the input is two permutations on $n$ and $n'$ points, respectively,
+then the result is a permutation on $nn'$ points, which describes
+the action of $(A,B)$ on ordered pairs of points. This action
+is defined in the obvious way: $(i,k)$ maps to $(iA,kB)$. In the
+output, pairs are represented as numbers using the lexicographic
+ordering $(1,1)$, \ldots, $(1,n')$, $(2,1)$, \ldots, $(n,n')$.
+
+\Limits
+Both input files and, in the case of matrices, one row of the output
+matrix must fit into memory at the same time.
+
+
+\subsection{ZTM: Tensor multiply}
+%--------------------------------
+\index{ztm@{\tt ztm} (program)}
+\index{tensor multiply}
+\Syntax
+\msg{ztm {\it A} {\it B} {\it Vectors} {\it Result}}
+
+\Description
+This program reads two matrices from {\it A} and {\it B}, a list of
+vectors from {\it Vectors}, and calculates the image of the vectors
+under $A\tensor B$. The result is written to {\it Result}. Thus,
+{\it A} and {\it B} must be square matrices of dimension $m$
+and $n$ over the same field, {\it Vectors} must be a matrix over the
+same field with $mn$ columns and an arbitrary number of rows, and
+{\it Result} has the same size as {\it Vectors}.
+This calculation could be done with the ZMU and ZTE programs, but using
+ZTM avoids the memory-consuming calculation of $A\tensor B$.
+
+
+\Implementation
+Let $m$, $n$ be the dimenstions of $A$ and $B$, respectively. For each
+input vector $v\in F^{1\times mn}$, the program computes the $m\times n$
+matrix $\hat{v}$ with
+\[
+	\hat{v}_{ik} = v_{(i-1)n + k}\qquad
+	(1\leq i\leq m,\ 1\leq k\leq n)
+\]
+Then, $v(A\tensor B)$ can be computed by ordinary matrix operations:
+\[
+    \widehat{v(A\tensor B)} = A^{tr}\cdot\hat{v}\cdot B
+\]
+
+\Limits
+Both matrices and one vector must fit into memory at the same time.
+
+
+
+
+\subsection{ZTR: Transpose a Matrix}
+%--------------------------------
+\index{ztr@{\tt ztr} (program)}
+\index{tensor product}
+\Syntax
+\msg{ztr {\it Matrix} {\it Result}}
+
+\Description
+This program reads in a matrix, calculates its transpose in memory
+and writes out the result.
+
+\Limits
+The whole matrix plus one additional row must fit into memory.
+
+
+\subsection{ZUK: Unkondense}
+%---------------------------
+\index{zuk@{\tt zuk} (program)}
+\Syntax
+\msg{zuk {\it Space} {\it OrbSz} {\it Result}}
+ 
+\Description
+This program reads a matrix which is assumed to be a kondensed
+space of a permutation representation whose orbit sizes are in the
+file {\it OrbSz}. The vectors of {\it Space} are elongated so as to
+lie in the original permutation space and written out to the file
+{\it Result}.
+ 
+{\it OrbSz} must be an orbit sizes file, i.e., an integer matrix
+with one row and the same number of columns as {\it Space}.
+
+If these checks are passed, the program reads the orbit sizes into
+memory, and then proceeds row by row through the input matrix using
+the orbit sizes to dictate how often to repeat each entry of the
+input vector.
+
+Here is an example:
+\[
+	{\it Space}= \left(\begin{array}{ccc}
+		2 & 0 & 4 \\
+		1 & 3 & 2 \\
+		2 & 0 & 2 \\
+	\end{array}\right),\quad
+	{\it OrbSz} = ( 2,4,3 ),\quad
+	{\it Result}= \left(\begin{array}{ccccccccc}
+		2 & 2 & 0 & 0 & 0 & 0 & 4 & 4 & 4\\
+		1 & 1 & 3 & 3 & 3 & 3 & 2 & 2 & 2\\
+		2 & 2 & 0 & 0 & 0 & 0 & 2 & 2 & 2\\
+	\end{array}\right)
+\]
+
+
+
+\subsection{ZVP: Vector Permute}\Typeout{ZVP}
+%----------------------------
+\index{zvp@{\tt zvp} (program)}
+\Syntax
+\msg{
+zvp [{\it Options}] {\it Mat1 Mat2 Seed Perm1 Perm2} [{\it Orbit}]\\
+zvp -g {\it\#Mat} [{\it Options}] {\it Mat Seed Perm} [{\it Orbit}]
+}
+
+\Description
+This program reads two or more matrices and one
+or more vectors from {\it Seed}, and finds the orbit of the vector
+under the matrices. The action of the matrices on the orbit is
+written out in permutation form.
+
+{\it Mat1} and {\it Mat2} must be square matrices of equal size
+over the same field. {\it Seed} must be a matrix over the same
+field with an equal number of columns.
+
+If used without the {\tt -g} option, ZVP reads two matrices from
+{\it Mat1} and {\it Mat2}, and output goes to {\it Perm1} and
+{\it Perm2}. A number of matrices greater than 2 can be specified with
+the {\tt -g} option. In this case, {\it Mat} and {\it Perm} are
+taken as base names, i.e., ZVP reads matrices from {\it Mat}{\tt 1},
+{\it Mat}{\tt 2},\ldots and writes permutations to
+{\it Perm}{\tt 1}, {\it Perm}{\tt 2}, \ldots
+
+Available options are:
+\nopagebreak
+\begin{list}{}{\labelwidth 1.8cm \leftmargin 2cm \labelsep 0.2cm\parsep 0mm
+\itemsep 0mm}
+\item[{\bf Option}] {\bf Meaning}
+\nopagebreak
+\item[{\tt -g}]	Select number of matrices (see above).
+\item[{\tt -n}]	No output to files, messages only.
+\item[{\tt -p}]	`Projective' mode. In this mode ZVP operates on
+	1-dimensional subspaces rather than vectors. All vectors
+	in the orbit file will be normalized (i.e., their first
+	non-zero entry is equal to one).
+\item[{\tt -v}]	Write the orbit to {\it Orbit}.
+\item[{\tt -l} {\it Limit}] Set the maximal orbit size. ZVP
+	will not try to calculate orbits greater than this limit.
+	The default value for the maximal orbit size is 100000.
+\item[{\tt -sg}[{\it Num}]]
+	Take {\it Seed} as a basis and produce seed vectors from this
+	basis by linear combination. This is also the default.
+	{\it Num} is the first vector to be used as seed vector. Here
+	the numbering of seed vectors is the same as in the ZSP program.
+	Note that there must be no space between {\tt -sg} and
+	{\it Num}.
+\item[{\tt -sr}[{\it Num}]]
+	Read seed vectors one by one from {\it Seed}, do not make
+	linear combinations.
+\end{list}
+The {\tt -l} option can be used to allow for orbits longer than
+100000 vectors, or to save memory if the orbit is known to be
+short. Notice that {\tt -sg} and {\tt -sr} work the same way as with
+ZSP.
+
+After initializing everything and reading the input files the program
+enters the main loop. The next seed vector is read in, or generated,
+and the orbit is set up initially to contain only this vector.
+Then, the complete orbit is calculated by applying the two
+matrices to vectors in the orbit until no new vectors appear,
+or until the limit is reached. In the latter case, the program
+prints a message
+\msg{ORBIT {\it n} HAS MORE THAN {\it m} VECTORS}
+and proceeds with the next seed vector.
+If an orbit has been found,
+the action of the two matrices on the orbit is written out as
+two permutations and the user is informed with the message
+\msg{ORBIT {\it n} HAS {\it m} VECTORS}
+If the {\tt -v} option was used, also the orbit is written out.
+
+
+\Limits
+The matrices, seed vectors, and all vectors in the orbit must fit
+into memory.
+
+
+ 
+\section{The Lattice Package} \label{sec:lattice}
+%=============================
+
+\subsection{Introduction}
+%------------------------
+The {\MeatAxe} module lattice package is a collection of programs
+which extends the set of standard {\MeatAxe} programs. Its purpose
+is to calculate all submodules of a given module. 
+
+It is assumed that the algebra is generated by two elements. These
+generators must be available as two matrices in the files {\tt X.1}
+and {\tt X.2}, say (of course, {\tt X} can be any other name). At the
+end of the calculation there will be a file {\tt X.out} containing a
+list of all submodules of the given module.
+
+The whole process consists of 7 steps each of which is done by a
+separate program. For example, given the two generators in {\tt X.1}
+and {\tt X.2}, one would execute the following commands:
+\msg{chop X\\
+     pwkond X\\
+     mkcycl X\\
+     mkinc X\\
+     mkdotl X\\
+     mksub X}
+Instead of typing these lines separately you may want to
+create a shell script which calls all programs automatically. If all
+programs have been run without errors you will find the results in the
+following files:
+\begin{center}
+\begin{tabular}{lp{0.6\linewidth}}
+{\tt X.out} & A text file containing the submodule lattice. This is
+	probably the only output file you want to look at. The files
+	listed below are more difficult to read.\\
+{\tt X.cfinfo} & A list of all composition factors including
+	dimension, multiplicity, number of mountains and number
+	of dotted lines.\\
+{\tt X.dot} & The dotted lines (binary format).\\
+{\tt X.inc} & The incidence matrix (binary format).
+\end{tabular}
+\end{center}
+Only the {\tt .out} and {\tt .cfinfo} files are intended as output to
+the user. The other files contain important information, too, but they
+are in binary format and cannot be read directly.
+Besides, there will be a lot of other files which have been created
+during the computation. See the following sections for an explanation
+of these files.
+
+
+
+\subsection{CHOP: Composition Series}\label{sec:chop}
+%------------------------------------
+\index{chop@{\tt chop} (program)}
+\index{composition series}
+\Syntax
+\msg{chop [-G] [-g {\it NGen}] [-s {\it Start}]
+     [-n {\it MaxNul}] [-d {\it MaxDeg}]] {\it Name}}
+
+\Description
+This program reads two matrices from {\it Name}{\tt .1} and
+{\it Name}{\tt .2} describing the action of two generators on
+the module, and calculates a composition series of the module.
+For each composition factor it writes out two generators to
+{\it CFName}{\tt .1}, {\it CFName}{\tt .2}. {\it CFName} is the
+name of the composition factor, which is built by appending the
+dimension and a letter to the module name. For example, {\tt X10a.1}
+is the first generator of the first composition factor of dimension
+10 of the module {\tt X}. If a second, inequivalent composition factor
+of dimension 10 is found, it will be named {\tt X10b} and so on.
+CHOP also creates a file called {\it Name}{\tt .cfinfo} containing
+a list of all composition factors. This file is used by all subsequent
+programs.
+
+Available options are:
+\begin{list}{}{\leftmargin 1cm\labelwidth 5mm\labelsep 2mm}
+\item[{\tt -help}\hfill]
+    Print a help screen.
+\item[{\tt -G}\hfill]
+    Generate output in GAP format.
+\item[{\tt -g {\it NGen}}\hfill]
+    Set number of generators, if different from two.
+\item[{\tt -s {\it Start}}\hfill]
+    Beginn calculating words at position {\it Start} (see
+    description below).
+\item[{\tt -n {\it MaxNul}}\hfill]
+    Controls the treatment of null-spaces appearing in the chopping
+    process. Only null-spaces with a dimension less than or equal to
+    this limit are searched completely.
+\item[{\tt -d {\it MaxDeg}}\hfill]
+    Sets a limit for the degrees of polynomials used in the chopping
+    process.
+\end{list}
+
+CHOP repeatedly splits a module into submodule and quotient
+until it arrives at the irreducible constituents. Thus, it finds a
+composition series. The program assumes that the algebra generated
+by the input matrices contains the unit matrix.
+
+In order to split a given module or to prove its irreducibility the
+algorithm needs an element of the algebra with a non-trivial but
+low-dimensional kernel. Such elements are searched by taking linear
+combinations of certain products of the generators.
+See the description of the ZSM program for more details on the
+word generator.
+
+For each element $A$ generated in this way, the program calculates
+its characteristic polynomial and examines the irreducible factors.
+If $p(x)$ is an irreducible factor, $p(A)$ has a non-trivial kernel.
+Then, one vector of the kernel is chosen and the smallest submodule
+containing this vector is calculated.
+If the vector lies in a proper submodule, the action of the generators
+on this submodule as well as on the quotient are calculated and
+the same procedure is applied recursively to both submodule and
+quotient.
+
+To avoid expensive matrix multiplications in the calculation of $p(A)$,
+there is a limit on the degree of $p(x)$. This limit can be set with
+the \verb"-m" option and defaults to 5.
+
+If a module cannot be split by the program, it may be irreducible.
+In order to prove this, CHOP uses Norton's criterion. This
+requires, however, to find an algebra element with a small kernel,
+because up to scalar multiples each vector in the kernel must be
+examined to see whether it spins up to the whole module. For this
+reason a `nullity threshold' $m$ is maintained by the program.
+Initially $m$ is set to 3, but the user may choose a different value
+at run-time by using the {\tt -m~{\it Init}} option. Each algebra
+element
+$a$ with $\mbox{dim}(\mbox{ker}\,a)\leq m$ is used for the Norton test.
+
+The option {\tt -s~{\it Start}} may be used to make CHOP start with
+a word different from 1.
+
+Algebra elements with trivial kernel are useless for the algorithm, so
+an attempt is made to avoid unnecessary computation of such elements.
+Once an element is known to have a trivial kernel on a given module
+$M$, the program will mark it as invertible and ignore it for all
+constituents of $M$.
+
+If a constituent is irreducible but not absolutely irreducible, the
+nullity of any element in the algebra will be a multiple of $[E:F]$,
+where $F$ is the ground field and $E$ the splitting field. This
+situation is recognized by calculating the greatest
+common divisor $d$ of all nullities which occur during the search.
+In order to prove that the splitting field degree is equal to
+$d$, the following method is used: Take a word with nullity $d$
+and two vectors $v_1, v_2$ in its null-space. Use these vectors as
+seeds for a standard basis algorithm. If the resulting representations
+are different, $[E:F]$ is less than $d$, and the word is discarded.
+Otherwise, the linear map
+which transforms one standard basis into the other is an endomorphism
+$e$ of the module. If $v_1$, under the action of $e$, spins up to
+the whole null space, then $[E:F]=d$. Otherwise, take a third vector
+not in the span and repeat the procedure above. Again, this yields an
+endomorphism, or it turns out that $[E:F]<d$.
+These steps are repeated until a word with Nullity $[E:F]$ is found.
+
+\SeeAlso
+CFCOMP
+
+\subsection{PWKOND: Peak Word Kondensation}
+%------------------------------------------
+\index{pwkond@{\tt pwkond} (program)}
+\index{peak words}
+\index{kondensation}
+\Syntax
+\msg{pwkond [-Q] [-V] [-n] [-p] [-T {\it \#Seconds}] [-e {\it List}]
+	{\it Name}}
+
+\Description
+For each irreducible constituent $V_i$, this program finds a `peak word'
+and calculates the corresponding kondensed module.
+A peak word for $V_i$ is an algebra element $a_i$ with the property
+\begin{eqnarray*}
+	\dim\ker(a_i)|_{V_i} & = & n\\
+	(a_i)|_{V_j} & = & 0\mbox{\ \ \ for }i\neq j
+\end{eqnarray*}
+where $n=[E:F]$ is the degree of the splitting field extension.
+
+The {\tt -e} option can be used to exclude `bad' peak words from
+the search (see below). {\it List} is a list of integers or ranges
+of integers, for example
+\msg{-e 57,82-112,289}
+
+Internally, a peak word is represented by a pair $(n,p(x))$ where $n$ is
+the canonical number of the word\footnote{See the description of the ZSM
+program for details.}, and $p(x)$ is a polynomial. The peak
+word represented by this pair is $p(W_n)$, $W_n$ being the $n$-th word.
+Without \verb"-p", PWKOND considers only linear polynomials. If the 
+\verb"-p" option is used, PWKOND can find polynomials of any degree.
+
+Whenever a peak word is found, the generalized kondensation 
+is calculated as follows: The
+peakword, given by its canonical number, is evaluated as a matrix
+acting on $V$ and then repeatedly raised to higher powers until the
+nullity stabilizes. The stable nullity equals the multiplicity $k$
+of the constituent times the degree $[E:F]$ of the splitting field
+extension. Having a power $w^{N}$ of the peakword with stable
+nullity, the condensation onto its kernel, i.e.,
+the projection of $V$ onto $V/\mbox{im}(w^{N})$, is determined in
+the same way as it is also implemented in the ZQT program.
+
+The option \verb"-n" disables the kondensation. If this option is used,
+the program stops after the peak words have been found.
+
+
+
+For each composition factor there are several output files. If, for
+example, one composition factor is \verb"X10a", PWKOND would produce
+the following files:
+\begin{list}{}{\leftmargin 14mm \labelwidth 12mm \labelsep 2mm\parsep 0mm
+\itemsep 0mm}
+\item[\tt X10a.1k\hfill] Kondensed first generator
+\item[\tt X10a.2k\hfill] Kondensed second generator
+\item[\tt X10a.np\hfill] Kondensed peak word. This is a nilpotent
+	matrix.
+\item[\tt X10a.im\hfill] Image of the peak word.
+\item[\tt X10a.k\hfill] Kernel of the peak word.
+\end{list}
+
+
+\subsection{MKCYCL: Make Cyclic Submodules}
+%---------------------------------------
+\index{mkcycl@{\tt mkcycl} (program)}
+\Syntax
+\msg{mkcycl {\it Name}}
+
+\Description
+For each of the condensed modules a representative of each cyclic
+submodule is found. This is done by spinning up each vector, up to
+scalar multiples, and maintaining a list of different cyclic
+submodules. As the dimension of the module grows, the number
+of vectors to spin up quickly becomes very large. This poses an upper
+limit on the dimension of condensed modules, i.e., on the
+multiplicity of irreducible constituents. Over GF(2), for example, a
+16-dimensional condensed module requires about 20 hours of CPU time
+on a workstation.
+
+The output is, for each composition factor, a list of vectors (in
+matrix form) which generate all cyclic submodules. Its file name
+is {\it CFName}{\tt .v}, for example {\tt X10a.v}.
+
+A second limit concerns the number of cyclic submodules. Usually there
+are much less cyclic submodules, invariant under both generators, as
+1-spaces. Sometimes, however, it may happen that the peak word found
+in the second step is `bad' in the sense that the condensed generators
+commute. In such a case one finds a large number of cyclic submodules
+and the following steps will probably take too much time. For this
+reason, the peak word program has an option to exclude one or more
+specified peak words from the search. So, if the peak word turns out
+to be `bad', the user can try another one.
+
+
+\subsection{MKINC: Mountains And Incidence Matrix}
+%-------------------------------------------------
+\index{mkinc@{\tt mkinc} (program)}
+\Syntax
+\msg{mkinc {\it Name}}
+
+\Description
+This program runs in two steps. During the first step, all cyclic
+cyclic submodules found by {\tt mkcycl} are unkondensed, giving the
+local submodules (`mountains') of the original module. Then, each
+local submodule is projected back to the kondensed module, and all
+cyclic vectors which are contained in the image are found.
+At the end of this step, there is a list of local submodules and,
+for each local submodule, a list of cyclic subspaces in the
+kondensed module. This information is written to {\it Name}{\tt .mnt}.
+
+In the second step, MKINC computes the incidence relation between
+local submodules. The result is a matrix which contains a `1' for
+each incidence. This matrix is written to the file
+{\it Name}{\tt.inc}.
+
+Note that the whole calculation of step 2 is done in the kondensed
+modules. This is possible because incidences between local submodules 
+do not change if they are kondensed.
+Usually this saves a lot of both memory and CPU time because one does
+not have to keep all mountains simultaneously, and the kondensed
+modules have a smaller dimension.
+
+
+
+
+
+\subsection{MKDOTL: Dotted Lines}
+%--------------------------------
+\index{mkdotl@{\tt mkdotl} (program)}
+\Syntax
+\msg{mkdotl {\it Name}}
+
+\Description
+This program calculates a set of dotted lines between the local
+submodules. More precisely, it computes one dotted line for
+each submodule with head $\cong S\oplus S$, $S$ irreducible.
+It can be shown that this set of dotted lines is sufficient to
+determine the complete submodule lattice as described by
+Benson and Conway.
+
+Input for this program are the incidence matrix calculated by
+MKINC and the cyclic submodules from {\tt mkcycl}. Again, the
+whole calculation takes place in the kondensed
+modules, so there is no need to unkondense the cyclic submodules.
+
+It is known that all dotted lines have length $q+1$, where $q$ is the
+order of the splitting field. This information is used by the program
+to determine if a dotted line is complete.
+
+A list of all dotted lines is written to {\it Name}{\tt.dot}.
+
+
+\subsection{MKSUB: Find Submodules}
+%-----------------------------------
+\index{mksub@{\tt mksub} (program)}
+\index{submodule lattice}
+\index{radical series}
+\index{socle series}
+\Syntax
+\msg{mksub [-b] [-o{\it Format}] {\it Name}}
+
+\Description
+This program calculates the submodule lattice using the output
+generated by MKINC and MKDOTL. In this final step no
+matrix operations are involved. Instead the program works with
+bit strings representing the incidences and dotted-lines.
+The lattice may be decomposed into blocks using the {\tt -b} option
+(see below).
+
+Submodules are calculated generation by generation, the first
+generation consisting of all submodules generated by one 
+local submodule. In the $n^{th}$ generation all submodules generated
+by a submodule of generation $n$ plus one local submodule are
+calculated. If no more submodules appear, the algorithm terminates.
+
+Output is written to three text files and one binary file. The first
+file,
+{\it Name}{\tt .out}, contains a list of irreducible constituents, the
+incidence matrix, the dimensions of all local submodules, a list of
+dotted lines, a list of all submodules, the radical and socle series,
+and a list of all local submodules (`mountains').
+The second output file is {\it Name}{\tt .lat}. It contains
+the lattice as a list in GAP format. This list contains, for each
+submodule, its dimension, maximal submodules and isomorphism types
+of simple factors are given (see the example below).
+The third output file, {\it Name}{\tt .gra}, contains a description
+of the submodule lattice
+together with some additional information. This file is read by the
+MKGRAPH program to produce a graphical representation of the lattice.
+A further output file, {\it Name}{\tt.sub} contains the
+submodule lattice is binary format. This file is read by
+GENMOD (see below).
+
+
+
+Here is an example:
+
+File {\tt m11.out}:
+\begin{verbatim}
+Irreducibles:
+    Type   Mult   SF   Mountains           Dotted lines
+    1a     4      1    5 (0-4)             1 (0-0)             
+    10a    2      1    2 (5-6)             0                   
+    44a    2      1    3 (7-9)             1 (1-1)             
+
+Mountains:
+    No     Dim    Maximal Submountains
+    0      112    2 6 7 9 
+    1      46     8 
+    2      56     5 8 
+    3      12     5 
+    4      1      
+    5      11     4 
+    6      66     1 5 
+    7      56     3 
+    8      45     4 
+    9      56     3 
+
+Incidence matrix:
+      0: ++++++++++
+      1: .+..+...+.
+      2: ..+.++..+.
+      3: ...+++....
+      4: ....+.....
+      5: ....++....
+      6: .+..+++.+.
+      7: ...+++.+..
+      8: ....+...+.
+      9: ...+++...+
+
+Dotted lines:
+    .+++......
+    .......+++
+
+Submodules:
+    No    Dim  Flags  Ident                           Max
+    0     0     R     ..........                      
+    1     1    MRS    ....+.....                      0
+    2     11   M      ....++....                      1
+    3     12   M      ...+++....                      2
+    4     45   M      ....+...+.                      1
+    5     55    RS    ....++..+.                      2,4
+    6     46   M      .+..+...+.                      4
+    7     56   M      ...+++.+..                      3
+    8     56          .+..++..+.                      5,6
+    9     56   M      ...+++...+                      3
+    10    56          ...+++..+.                      3,5
+    11    66   M      .+..+++.+.                      8
+    12    56   M      ..+.++..+.                      5
+    13    57    RS    .+++++..+.                      8,10,12
+    14    100         ...+++.+++                      7,9,10
+    15    67          .++++++.+.                      11,13
+    16    101         .+++++.+++                      13,14
+    17    111   RS    .+++++++++                      15,16
+    18    112  M S    ++++++++++                      17
+
+Radical series:
+    Layer 1: Dim=111   1a 
+    Layer 2: Dim=57    10a 44a 
+    Layer 3: Dim=55    1a 1a 
+    Layer 4: Dim=1     10a 44a 
+    Layer 5: Dim=0     1a 
+\end{verbatim}
+
+\noindent File {\tt m11.gra}:
+\begin{verbatim}
+19
+.r.  0
+mrs  1 0 0
+m..  1 1 1
+m..  1 2 0
+m..  1 1 2
+.rs  2 2 2 4 1
+m..  1 4 0
+m..  1 3 2
+...  2 5 0 6 1
+m..  1 3 2
+...  2 3 2 5 0
+m..  1 8 1
+m..  1 5 0
+.rs  3 8 0 10 0 12 0
+...  3 7 2 9 2 10 2
+...  2 11 0 13 1
+...  2 13 2 14 0
+.rs  2 15 2 16 1
+m.s  1 17 0
+\end{verbatim}
+
+
+\paragraph{Blocks}
+%-----------------
+If the {\tt -b} option is used, MKSUB tries to decompose the lattice
+into `blocks'. By definition, a block is a set of one or more
+composition factors which is closed under incidences of local
+submodules. For a decomposition into blocks to be possible, there 
+must be direct summands with no common irreducible constituent.
+If a decomposition exists, the whole lattice can be reconstructed
+from its blocks by forming direct sums.
+
+Output files are created separately for each block, and a number
+is appended to the name. For example, if the representation is
+called {\tt psl277} and the lattice decomposes into 3 blocks,
+{\tt mksub~-b~psl211} creates 9 output files:
+\msg{psl211.out.1 psl211.lat.1 psl211.gra.1\\
+     psl211.out.2 psl211.lat.2 psl211.gra.2\\
+     psl211.out.3 psl211.lat.3 psl211.gra.3}
+
+
+\paragraph{Changing the output format}
+%-------------------------------------
+The default output as shown above may be changed by using the
+{\tt -o} option. {\it Format} is any combination of {\tt m},
+{\tt d}, {\tt i}, {\tt e}, {\tt s}, {\tt r}, {\tt s}. Each
+letter corresponds to a certain piece of output:
+\begin{list}{}{\parsep 0mm
+\itemsep 0mm}
+\item[{\tt m}\hfill] Mountains
+\item[{\tt d}\hfill] Dotted lines
+\item[{\tt i}\hfill] Incidence matrix
+\item[{\tt e}\hfill] {\tt .lat} and {\tt .gra} files
+\item[{\tt s}\hfill] Submodules
+\item[{\tt r}\hfill] Radical series
+\item[{\tt o}\hfill] Socle series
+\end{list}
+
+
+\subsection{GENMOD: Make Submodules}
+%-----------------------------------
+\index{genmod@{\tt genmod} (program)}
+\Syntax
+\msg{mksub [-m] {\it Name} {\it Number}}
+
+\Description
+This program makes a submodule, i.e., it takes the mountains
+contained in that submodule and spins them up. The result
+is written to {\it Name}{\tt .s}{\it Number}.
+
+If the {\tt -m} option is used, {\it Number} is treated as the
+number of a mountain. This mountain is generated and written
+to {\it Name}{\tt .m}{\it Number}.
+
+
+

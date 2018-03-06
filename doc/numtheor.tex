@@ -1,0 +1,409 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  numtheor.tex                GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: numtheor.tex,v 1.1.1.1 1996/12/11 12:36:48 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes those functions that mainly deal with prime residues.
+%%
+%H  $Log: numtheor.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:48  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.8  1993/02/07  13:26:29  felsch
+%H  more examples fixed
+%H
+%H  Revision 3.7  1993/02/01  13:48:06  felsch
+%H  examples fixed
+%H
+%H  Revision 3.6  1992/04/06  16:40:34  martin
+%H  fixed some more typos
+%H
+%H  Revision 3.5  1992/01/24  08:20:03  martin
+%H  fixed the description of 'Phi' and 'IsPrimitiveRootMod'
+%H
+%H  Revision 3.4  1991/12/27  16:07:04  martin
+%H  revised everything for GAP 3.1 manual
+%H
+%H  Revision 3.3  1991/07/26  12:34:01  martin
+%H  improved the index
+%H
+%H  Revision 3.2  1991/07/26  11:18:27  martin
+%H  added provisions for the bibliography
+%H
+%H  Revision 3.1  1991/07/25  16:16:59  martin
+%H  fixed some minor typos
+%H
+%H  Revision 3.0  1991/04/11  11:32:33  martin
+%H  Initial revision under RCS
+%H
+%%
+\Chapter{Number Theory}%
+\index{prime residue group}
+
+The integers  relatively prime to  $m$ form a  group under multiplication
+modulo $m$, called the *prime residue group*.  This chapter describes the
+functions that deal with this group.
+
+The  first  section  describes the  function  that  computes  the  set of
+representatives of the group (see "PrimeResidues").
+
+The next sections describe  the functions that  compute the  size and the
+exponent of the group (see "Phi" and "Lambda").
+
+The next  section  describes the function that computes  the  order of an
+element in the group (see "OrderMod").
+
+The  next  section  describes the functions that test  whether  a residue
+generates the group or computes a  generator of the group, provided it is
+cyclic (see "IsPrimitiveRootMod", "PrimitiveRootMod").
+
+The next section describes  the functions that test whether an element is
+a square in the group (see "Jacobi" and "Legendre").
+
+The next  sections  describe the functions that compute general  roots in
+the group (see "RootMod" and "RootsUnityMod").
+
+All these functions are in the file 'LIBNAME/\"numtheor.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrimeResidues}%
+\index{prime residue group}
+
+'PrimeResidues( <m> )'
+
+'PrimeResidues' returns the set of integers  from the range $0..Abs(m)-1$
+that are relatively prime to the integer <m>.
+
+$Abs(m)$ must be less than $2^{28}$, otherwise the set would probably  be
+too large anyhow.
+
+The integers  relatively prime to $m$ form  a group  under multiplication
+modulo $m$,  called the *prime residue group*.   $\phi(m)$ (see "Phi") is
+the order  of this  group, $\lambda(m)$ (see "Lambda")  the exponent.  If
+and only if $m$ is 2, 4, an odd prime power $p^e$, or twice an  odd prime
+power $2 p^e$, this group is cyclic.  In this case the generators  of the
+group, i.e., elements of order $\phi(m)$, are called primitive roots (see
+"IsPrimitiveRootMod", "PrimitiveRootMod").
+
+|    gap> PrimeResidues( 0 );
+    [  ]
+    gap> PrimeResidues( 1 );
+    [ 0 ]
+    gap> PrimeResidues( 20 );
+    [ 1, 3, 7, 9, 11, 13, 17, 19 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Phi}%
+\index{Eulers totient function}%
+\index{prime residue group!order}%
+\index{order!of the prime residue group}
+
+'Phi( <m> )'
+
+'Phi' returns the value of the *Euler totient function* $\phi(m)$ for the
+integer <m>.  $\phi(m)$   is defined as the  number  of positive integers
+less than or equal to <m> that are relatively prime to <m>.
+
+Suppose that $m = p_1^{e_1} p_2^{e_2} ...  p_k^{e_k}$.  Then $\phi(m)$ is
+$p_1^{e_1-1} (p_1-1)  p_2^{e_2-1} (p_2-1)  ...  p_k^{e_k-1} (p_k-1)$.  It
+follows that $m$ is a prime if and only if $\phi(m) = m - 1$.
+
+The  integers relatively prime  to $m$ form  a group under multiplication
+modulo $m$, called  the *prime residue  group*.  It can be  computed with
+'PrimeResidues'  (see "PrimeResidues").  $\phi(m)$  is the order of  this
+group, $\lambda(m)$  (see "Lambda") the exponent.  If  and only if $m$ is
+2, 4, an odd prime power $p^e$, or twice an odd prime power $2 p^e$, this
+group is  cyclic.  In  this  case  the generators   of the   group, i.e.,
+elements   of    order $\phi(m)$,   are   called   primitive  roots  (see
+"IsPrimitiveRootMod", "PrimitiveRootMod").
+
+'Phi' usually spends most of its time factoring <m> (see "FactorsInt").
+
+|    gap> Phi( 12 );
+    4
+    gap> Phi( 2^13-1 );
+    8190        # which proves that $2^{13}-1$ is a prime
+    gap> Phi( 2^15-1 );
+    27000 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Lambda}%
+\index{Carmichaels lambda function}%
+\index{prime residue group!exponent}%
+\index{exponent!of the prime residue group}
+
+'Lambda( <m> )'
+
+'Lambda' returns the  exponent of the group  of relatively prime residues
+modulo the integer <m>.
+
+$\lambda(m)$ is the smallest positive integer $l$ such that for every $a$
+relatively  prime  to $m$  we have  $a^l=1$  mod  $m$.  Fermat\'s theorem
+asserts $a^{\phi(m)}=1$ mod $m$, thus $\lambda(m)$ divides $\phi(m)$ (see
+"Phi").
+
+Carmichael\'s theorem states that  $\lambda$ can  be computed as  follows
+$\lambda(2)=1$, $\lambda(4)=2$ and $\lambda(2^e) = 2^{e-2}$ if $3 \<= e$,
+$\lambda(p^e) = (p-1) p^{e-1}$  ($= \phi(p^e)$) if $p$ is  an  odd prime,
+and  $\lambda(n m) = Lcm(\lambda(n),\lambda(m))$ if $n, m$ are relatively
+prime.
+
+Composites for which $\lambda(m)$ divides $m - 1$ are called Carmichaels.
+If $6k+1$, $12k+1$ and $18k+1$ are primes their product is such a number.
+It is believed but unproven that there are infinitely  many  Carmichaels.
+There are only  1547  Carmichaels below $10^{10}$ but  455052511  primes.
+
+The  integers  relatively prime to  $m$ form a group under multiplication
+modulo $m$, called the *prime residue group*.   It can  be  computed with
+'PrimeResidues'  (see   "PrimeResidues").   $\phi(m)$ (see "Phi")  is the
+order of this group, $\lambda(m)$ the exponent.  If and only if $m$ is 2,
+4, an odd prime  power $p^e$, or  twice an odd prime  power $2 p^e$, this
+group is cyclic.   In   this  case   the  generators of the  group, i.e.,
+elements   of  order   $\phi(m)$,   are   called  primitive   roots  (see
+"IsPrimitiveRootMod", "PrimitiveRootMod").
+
+'Lambda'    usually  spends  most   of    its  time factoring <m>    (see
+"FactorsInt").
+
+|    gap> Lambda( 10 );
+    4
+    gap> Lambda( 30 );
+    4
+    gap> Lambda( 561 );
+    80        # 561 is the smallest Carmichael number |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrderMod}%
+\index{multiplicative order of an integer}
+
+'OrderMod( <n>, <m> )'
+
+'OrderMod' returns the multiplicative order of the integer <n> modulo the
+positive integer <m>.   If <n> is  less than 0 or  larger than  <m> it is
+replaced by its remainder.  If <n> and  <m>  are not relatively prime the
+order of <n> is not defined and 'OrderMod' will return 0.
+
+If  $n$ and  $m$ are  relatively prime  the  multiplicative order of  $n$
+modulo $m$ is the smallest positive  integer $i$ such that  $n^i = 1$ mod
+$m$.  Elements of maximal order are called primitive roots (see "Phi").
+
+'OrderMod' usually spends  most of its  time  factoring <m> and $\phi(m)$
+(see "FactorsInt").
+
+|    gap> OrderMod( 2, 7 );
+    3
+    gap> OrderMod( 3, 7 );
+    6        # 3 is a primitive root modulo 7 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPrimitiveRootMod}%
+\index{test!for a primitive root}%
+\index{prime residue group!generator}%
+\index{generator!of the prime residue group}
+
+'IsPrimitiveRootMod( <r>, <m> )'
+
+'IsPrimitiveRootMod' returns  'true' if  the integer  <r>  is a primitive
+root modulo the positive integer <m> and  'false' otherwise.  If  <r>  is
+less than 0 or larger than <m> it is replaced by its remainder.
+
+The integers  relatively prime to $m$ form  a group  under multiplication
+modulo  $m$, called the  prime  residue  group.  It  can be computed with
+'PrimeResidues'  (see   "PrimeResidues").   $\phi(m)$ (see  "Phi") is the
+order of this  group, $\lambda(m)$  (see "Lambda") the  exponent.  If and
+only if $m$  is  2, 4, an  odd prime power $p^e$, or  twice  an odd prime
+power $2 p^e$, this group is cyclic.  In  this case the generators of the
+group, i.e., elements of  order $\phi(m)$,  are called  *primitive roots*
+(see also "PrimitiveRootMod").
+
+|    gap> IsPrimitiveRootMod( 2, 541 );
+    true
+    gap> IsPrimitiveRootMod( -539, 541 );
+    true        # same computation as above
+    gap> IsPrimitiveRootMod( 4, 541 );
+    false
+    gap> ForAny( [1..29], r -> IsPrimitiveRootMod( r, 30 ) );
+    false        # there does not exist a primitive root modulo 30 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrimitiveRootMod}%
+\index{primitive root modulo an integer}%
+\index{prime residue group!generator}%
+\index{generator!of the prime residue group}
+
+'PrimitiveRootMod( <m> )' \\
+'PrimitiveRootMod( <m>, <start> )'
+
+'PrimitiveRootMod' returns    the  smallest  primitive   root modulo  the
+positive integer <m>  and 'false' if  no such primitive  root exists.  If
+the optional second integer argument  <start> is given 'PrimitiveRootMod'
+returns the smallest primitive root that is strictly larger than <start>.
+
+The integers  relatively prime to  $m$ form a group under  multiplication
+modulo $m$,  called the  prime residue group.    It can be computed  with
+'PrimeResidues'  (see  "PrimeResidues").  $\phi(m)$ (see   "Phi") is  the
+order of this group,  $\lambda(m)$ (see "Lambda")  the exponent.   If and
+only  if $m$  is 2, 4,  an odd prime  power $p^e$, or twice an  odd prime
+power $2 p^e$, this group is cyclic.  In  this case the generators of the
+group, i.e., elements  of  order  $\phi(m)$, are called *primitive roots*
+(see also "IsPrimitiveRootMod").
+
+|    gap> PrimitiveRootMod( 409 );
+    21        # largest primitive root for a prime less than 2000
+    gap> PrimitiveRootMod( 541, 2 );
+    10
+    gap> PrimitiveRootMod( 337, 327 );
+    false        # 327 is the largest primitive root mod 337
+    gap> PrimitiveRootMod( 30 );
+    false        # the exists no primitive root modulo 30 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Jacobi}%
+\index{quadratic residue}\index{residue!quadratic}
+
+'Jacobi( <n>, <m> )'
+
+'Jacobi'  returns  the value of  the *Jacobi symbol*  of  the integer <n>
+modulo the integer <m>.
+
+Suppose that $m = p_1 p_2 .. p_k$ as a product of primes, not necessarily
+distinct.   Then for $n$  relatively prime to $m$   the Jacobi  symbol is
+defined by $J(n/m) =  L(n/p_1)  L(n/p_2) ..  L(n/p_k)$, where $L(n/p)$ is
+the Legendre symbol (see  "Legendre").   By convention $J(n/1)  = 1$.  If
+the gcd of $n$ and $m$ is larger than 1 we define $J(n/m) = 0$.
+
+If $n$ is an *quadratic residue* modulo $m$, i.e., if there exists an $r$
+such that  $r^2 =  n$ mod  $m$  then $J(n/m)  = 1$.  However $J(n/m) = 1$
+implies the existence of such an $r$ only if $m$ is a prime.
+
+'Jacobi' is very efficient, even for large values of <n> and <m>,  it  is
+about as fast as the Euclidean algorithm (see "Gcd").
+
+|    gap> Jacobi( 11, 35 );
+    1         # $9^2 = 11$ mod $35$
+    gap> Jacobi( 6, 35 );
+    -1        # thus there is no $r$ such that $r^2 = 6$ mod $35$
+    gap> Jacobi( 3, 35 );
+    1         # even though there is no $r$ with $r^2 = 3$ mod $35$ |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Legendre}%
+\index{quadratic residue}\index{residue!quadratic}
+
+'Legendre( <n>, <m> )'
+
+'Legendre' returns the value of the *Legendre symbol*  of the integer <n>
+modulo the positive integer <m>.
+
+The value  of  the Legendre  symbol $L(n/m)$ is 1 if  $n$ is a *quadratic
+residue* modulo $m$, i.e., if there exists an  integer $r$ such that $r^2
+= n$ mod $m$ and -1 otherwise.
+
+If a root of <n> exists it can be found by 'RootMod' (see "RootMod").
+
+While the value of the Legendre symbol usually  is only defined for <m> a
+prime, we have extended the  definition to include composite moduli  too.
+The  Jacobi  symbol  (see "Jacobi")  is    another generalization  of the
+Legendre symbol for composite moduli that is  much  cheaper  to  compute,
+because it does not need the factorization of <m> (see "FactorsInt").
+
+|    gap> Legendre( 5, 11 );
+    1         # $4^2 = 5$ mod $11$
+    gap> Legendre( 6, 11 );
+    -1        # thus there is no $r$ such that $r^2 = 6$ mod $11$
+    gap> Legendre( 3, 35 );
+    -1        # thus there is no $r$ such that $r^2 = 3$ mod $35$ |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RootMod}%
+\index{quadratic residue}\index{residue!quadratic}%
+\index{root!of an integer modulo another}
+
+'RootMod( <n>, <m> )' \\
+'RootMod( <n>, <k>, <m> )'
+
+In the first  form 'RootMod'  computes a square  root of the  integer <n>
+modulo the positive integer <m>, i.e., an integer <r> such that $r^2 = n$
+mod <m>.  If no such root exists 'RootMod' returns 'false'.
+
+A root of  <n> exists only if 'Legendre(<n>,<m>)  = 1' (see  "Legendre").
+If <m> has  <k> different prime factors  then  there are $2^k$  different
+roots of <n> mod  <m>.  It is  unspecified  which  one 'RootMod' returns.
+You can, however, use  'RootsUnityMod' (see  "RootsUnityMod")  to compute
+the full set of roots.
+
+In the  second form 'RootMod'  computes a <k>th  root of the  integer <n>
+modulo the positive integer <m>, i.e., an integer <r> such that $r^k = n$
+mod <m>.  If no such root exists 'RootMod' returns 'false'.
+
+In the current implementation <k> must be a prime.
+
+'RootMod' is efficient even for large values of <m>,  actually  most time
+is usually spent factoring <m> (see "FactorsInt").
+
+|    gap> RootMod( 64, 1009 );
+    1001        # note 'RootMod' does not return 8 in this case but -8
+    gap> RootMod( 64, 3, 1009 );
+    518
+    gap> RootMod( 64, 5, 1009 );
+    656
+    gap> List( RootMod( 64, 1009 ) * RootsUnityMod( 1009 ),
+    >          x -> x mod 1009 );
+    [ 1001, 8 ]        # set of all square roots of 64 mod 1009 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RootsUnityMod}%
+\index{modular roots}%
+\index{root!of 1 modulo an integer}
+
+'RootsUnityMod( <m> )' \\
+'RootsUnityMod( <k>, <m> )'
+
+In the first form 'RootsUnityMod' computes the square  roots of  1 modulo
+the integer  <m>, i.e.,  the set of all positive  integers <r> less  than
+<n> such that $r^2 = 1$ mod <m>.
+
+In the second form 'RootsUnityMod'  computes the <k>th  roots of 1 modulo
+the integer  <m>, i.e., the  set of  all positive integers <r>  less than
+<n> such that $r^k = 1$ mod <m>.
+
+In  general  there are  $k^n$ such  roots if  the  modulus  <m>  has  <n>
+different prime factors <p> such that $p  = 1$ mod $k$.  If $k^2$ divides
+$m$ then there are $k^{n+1}$ such roots; and especially if $k = 2$  and 8
+divides $m$ there are $2^{n+2}$ such roots.
+
+If you are interested in the full set of roots  of another number instead
+of 1 use 'RootsUnityMod' together with 'RootMod' (see "RootMod").
+
+In the current implementation <k> must be a prime.
+
+'RootsUnityMod' is efficient even for large values  of <m>, actually most
+time is usually spent factoring <m> (see "FactorsInt").
+
+|    gap> RootsUnityMod(7*31);
+    [ 1, 92, 125, 216 ]
+    gap> RootsUnityMod(3,7*31);
+    [ 1, 25, 32, 36, 67, 149, 156, 191, 211 ]
+    gap> RootsUnityMod(5,7*31);
+    [ 1, 8, 64, 78, 190 ]
+    gap> List( RootMod( 64, 1009 ) * RootsUnityMod( 1009 ),
+    >          x -> x mod 1009 );
+    [ 1001, 8 ]        # set of all square roots of 64 mod 1009 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

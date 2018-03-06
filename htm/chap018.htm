@@ -1,0 +1,511 @@
+<html><head><title>GAP3 Manual: 18 Finite Fields</title></head>
+<body bgcolor="ffffff">
+<h1>18 Finite Fields</h1>
+<P><P>
+<A name = "I0"></a>
+<A name = "I1"></a>
+<A name = "I2"></a>
+
+<P>
+Finite fields comprise an important algebraic  domain.  The elements in a
+field  form   an   additive  group   and  the  nonzero  elements  form  a
+multiplicative  group.  For  every prime power <I>q</I> there exists  a unique
+field of  size  <I>q</I> up to isomorphism.  <strong>GAP3</strong> supports finite fields  of
+size at most <I>2<sup>16</sup></I>.
+<P>
+The first section in this chapter describes how you can enter elements of
+finite fields and how <strong>GAP3</strong> prints them (see <a href="chap018.htm#SECT001">Finite Field Elements</a>).
+<P>
+The  next sections describe  the  operations applicable to  finite  field
+elements (see <a href="chap018.htm#SECT002">Comparisons of  Finite Field Elements</a> and <a href="chap018.htm#SECT003">Operations for
+Finite Field Elements</a>).
+<P>
+The next section describes the function that tests whether an object is a
+finite field element (see <a href="chap018.htm#SECT004">IsFFE</a>).
+<P>
+The  next sections describe   the functions  that give  basic information
+about finite field elements (see <a href="chap018.htm#SECT005">CharFFE</a>, <a href="chap018.htm#SECT006">DegreeFFE</a>, and <a href="chap018.htm#SECT007">OrderFFE</a>).
+<P>
+The next  sections  describe  the functions  that compute  various  other
+representations of finite field elements (see <a href="chap018.htm#SECT008">IntFFE</a> and <a href="chap018.htm#SECT009">LogFFE</a>).
+<P>
+The next section  describes  the  function that constructs a finite field
+(see <a href="chap018.htm#SECT010">GaloisField</a>).
+<P>
+Finite  fields  are  domains,  thus  all  set  theoretic   functions  are
+applicable to them (see  chapter <a href="chap004.htm">Domains</a> and <a href="chap018.htm#SECT012">Set Functions  for Finite
+Fields</a>).
+<P>
+Finite  fields  are  of course  fields,  thus  all  field  functions  are
+applicable to them and to their elements (see chapter <a href="chap006.htm">Fields</a> and <a href="chap018.htm#SECT013">Field
+Functions for Finite Fields</a>).
+<P>
+All functions are in <code>LIBNAME/"finfield.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap018.htm#SECT001">Finite Field Elements</a>
+<LI> <A HREF="chap018.htm#SECT002">Comparisons of Finite Field Elements</a>
+<LI> <A HREF="chap018.htm#SECT003">Operations for Finite Field Elements</a>
+<LI> <A HREF="chap018.htm#SECT004">IsFFE</a>
+<LI> <A HREF="chap018.htm#SECT005">CharFFE</a>
+<LI> <A HREF="chap018.htm#SECT006">DegreeFFE</a>
+<LI> <A HREF="chap018.htm#SECT007">OrderFFE</a>
+<LI> <A HREF="chap018.htm#SECT008">IntFFE</a>
+<LI> <A HREF="chap018.htm#SECT009">LogFFE</a>
+<LI> <A HREF="chap018.htm#SECT010">GaloisField</a>
+<LI> <A HREF="chap018.htm#SECT011">FrobeniusAutomorphism</a>
+<LI> <A HREF="chap018.htm#SECT012">Set Functions for Finite Fields</a>
+<LI> <A HREF="chap018.htm#SECT013">Field Functions for Finite Fields</a>
+</ol>
+<A NAME="SECT001"><h2>18.1 Finite Field Elements</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>Z( <var>p</var>^<var>d</var> )</code>
+<P>
+The function <code>Z</code> returns  the designated generator of  the multiplicative
+group of the finite field with <code><var>p</var>^<var>d</var></code> elements.  <var>p</var>  must be a prime
+and <code><var>p</var>^<var>d</var></code> must be less than or equal to <I>2<sup>16</sup> = 65536</I>.
+<P>
+The  root returned by <code>Z</code> is  a generator of  the multiplicative group of
+the finite field with <I>p<sup>d</sup></I> elements, which  is cyclic.  The order of the
+element is  of course <I>p<sup>d</sup>-1</I>.  The <I>p<sup>d</sup>-1</I>  different powers of the root
+are exactly the nonzero elements of the finite field.
+<P>
+Thus  all nonzero elements of the  finite field  with <code><var>p</var>^<var>d</var></code> elements
+can  be entered  as <code>Z(<var>p</var>^<var>d</var>)^<var>i</var></code>.  Note that this is  also the form
+that <strong>GAP3</strong> uses to output those elements.
+<P>
+The additive neutral element  is <code>0*Z(<var>p</var>)</code>.  It  is  different from the
+integer <code>0</code> in subtle ways.  First <code>IsInt( 0*Z(<var>p</var>)  )</code> (see <a href="chap010.htm#SECT005">IsInt</a>) is
+<code>false</code> and <code>IsFFE( 0*Z(<var>p</var>) )</code>  (see <a href="chap018.htm#SECT004">IsFFE</a>) is  <code>true</code>, whereas it is
+just the other way around for the integer 0.
+<P>
+The multiplicative neutral element is <code>Z(<var>p</var>)^0</code>.   It is different from
+the integer <code>1</code> in subtle ways.  First <code>IsInt( Z(<var>p</var>)^0 )</code> (see <a href="chap010.htm#SECT005">IsInt</a>)
+is <code>false</code> and <code>IsFFE( Z(<var>p</var>)^0 )</code> (see  <a href="chap018.htm#SECT004">IsFFE</a>) is  <code>true</code>, whereas it
+is just the  other  way around for   the  integer 1.  Also <code>1+1</code>  is <code>2</code>,
+whereas, e.g., <code>Z(2)^0 + Z(2)^0</code> is <code>0*Z(2)</code>.
+<P>
+The  various  roots  returned  by  <code>Z</code>  for  finite  fields  of the  same
+characteristic  are  compatible  in  the  following  sense.  If the field
+<I>GF(p<sup>n</sup>)</I> is a  subfield of the  field  <I>GF(p<sup>m</sup>)</I>, i.e., <I>n</I> divides <I>m</I>,
+then <I>Z(p<sup>n</sup>) = Z(p<sup>m</sup>)<sup>(p<sup>m</sup>-1)/(p<sup>n</sup>-1)</sup></I>.  Note that this is the simplest
+relation that may  hold  between a generator of <I>GF(p<sup>n</sup>)</I> and  <I>GF(p<sup>m</sup>)</I>,
+since <I>Z(p<sup>n</sup>)</I> is an element of order <I>p<sup>m</sup>-1</I> and <I>Z(p<sup>m</sup>)</I>  is an element
+of order  <I>p<sup>n</sup>-1</I>.  This is achieved  by choosing <I>Z(p)</I> as  the smallest
+primitive  root modulo <I>p</I>  and  <I>Z(p<sup>n</sup>)</I> as a root of the <I>n</I>-th  Conway
+polynomial of  characteristic <I>p</I>.   Those polynomials  where  defined by
+J.H. Conway and computed by R.A. Parker.
+<P>
+<pre>    gap> z := Z(16);
+    Z(2^4)
+    gap> z*z;
+    Z(2^4)^2 </pre>
+<P><A NAME="SECT002"><h2>18.2 Comparisons of Finite Field Elements</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code><var>z1</var> = <var>z2</var></code><BR> 
+<code><var>z1</var> <> <var>z2</var></code>
+<P>
+The equality  operator  <code>=</code> evaluates to <code>true</code>  if the two elements in a
+finite  field <var>z1</var> and   <var>z2</var> are equal   and to <code>false</code> otherwise.   The
+inequality operator <code><></code> evaluates to  <code>true</code> if  the two  elements in a
+finite finite field <var>z1</var> and <var>z2</var> are not equal and to <code>false</code> otherwise.
+<P>
+Note that the integer  0 is not equal to  the  zero element in any finite
+field.  There comparisons <code><var>z</var> = 0</code> will always evaluate to <code>false</code>.  Use
+<code><var>z</var> = 0*<var>z</var></code> instead, or even better <code><var>z</var> = <var>F</var>.zero</code>, where <var>F</var> is the
+field record for a finite field of the same characteristic.
+<P>
+<pre>    gap> Z(2^4)^10 = Z(2^4)^25;
+    true    # <code>Z(2^4)</code> has order 15
+    gap> Z(2^4)^10 = Z(2^2)^2;
+    true    # shows the embedding of <code>GF(4)</code> into <code>GF(16)</code>
+    gap> Z(2^4)^10 = Z(3);
+    false </pre>
+<P>
+<code><var>z1</var> < <var>z2</var></code><BR> 
+<code><var>z1</var> <= <var>z2</var></code><BR> 
+<code><var>z1</var>  >  <var>z2</var></code><BR> 
+<code><var>z1</var>  >= <var>z2</var></code>
+<P>
+The operators  <code><</code>,  <code><=</code>, <code>></code>,  and  <code>=></code> evaluate to  <code>true</code>  if  the
+element  in  a finite field <var>z1</var>  is  less  than, less than or equal  to,
+greater than, and greater than or equal to the element  in a finite field
+<var>z2</var>.
+<P>
+Elements in finite fields  are ordered as follows.   If the two  elements
+lie in fields of different characteristics the one that lies in the field
+with the  smaller characteristic is smaller.  If  the two elements lie in
+different fields  of  the same characteristic  the  one that  lies in the
+smaller field is smaller.  If the two elements lie  in the same field and
+one is  the zero and the  other is not, the zero  element is smaller.  If
+the  two elements lie  in  the same field and   both are nonzero, and are
+represented as <I>Z(p<sup>d</sup>)<sup>i<sub>1</sub></sup></I>  and <I>Z(p<sup>d</sup>)<sup>i<sub>2</sub></sup></I> respectively, then  the
+one with the smaller <I>i</I> is smaller.
+<P>
+You can  compare elements in a  finite field with objects of other types.
+Integers, rationals, and  cyclotomics are smaller than elements in finite
+fields, all other objects are larger.  Note especially that the integer 0
+is smaller than the zero in every finite field.
+<P>
+<pre>    gap> Z(2) &lt; Z(3);
+    true
+    gap> Z(2) &lt; Z(4);
+    true
+    gap> 0*Z(2) &lt; Z(2);
+    true
+    gap> Z(4) &lt; Z(4)^2;
+    true
+    gap> 0 &lt; 0*Z(2);
+    true
+    gap> Z(4) &lt; [ Z(4) ];
+    true </pre>
+<P><A NAME="SECT003"><h2>18.3 Operations for Finite Field Elements</h2></a>
+<P><P><P>
+<code><var>z1</var>  +  <var>z2</var></code><BR> 
+<code><var>z1</var>  -  <var>z2</var></code><BR> 
+<code><var>z1</var> * <var>z2</var></code><BR> 
+<code><var>z1</var>  /  <var>z2</var></code>
+<P>
+The  operators <code>+</code>, <code>-</code>,  <code>*</code> and <code>/</code> evaluate to  the sum,  difference,
+product,  and quotient of the two  finite field elements  <var>z1</var> and  <var>z2</var>,
+which  must lie in fields  of the same characteristic.  For  the quotient
+<code>/</code> <var>z2</var> must of course be nonzero.  The result  must of course lie  in a
+finite field of size less than  or equal to  <I>2<sup>16</sup></I>, otherwise an error
+is signalled.
+<P>
+Either operand may also be an integer <var>i</var>.  If <var>i</var> is zero it is taken as
+the  zero  in the finite  field, i.e.,  <code><var>F</var>.zero</code>, where  <var>F</var> is a field
+record for the finite  field in which the other  operand lies.  If <var>i</var> is
+positive, it is  taken as <var>i</var>-fold  sum <code><var>F</var>.one+<var>F</var>.one+..+<var>F</var>.one</code>.  If
+<var>i</var> is negative it is taken as the additive inverse of <code>-<var>i</var></code>.
+<P>
+<pre>    gap> Z(8) + Z(8)^4;
+    Z(2^3)^2
+    gap> Z(8) - 1;
+    Z(2^3)^3
+    gap> Z(8) * Z(8)^6;
+    Z(2)^0
+    gap> Z(8) / Z(8)^6;
+    Z(2^3)^2
+    gap> -Z(9);
+    Z(3^2)^5 </pre>
+<P>
+<code><var>z</var> ^ <var>i</var></code>
+<P>
+The powering operator <code>^</code> returns the <var>i</var>-th power of the  element  in a
+finite field <var>z</var>.  <var>i</var> must be an integer.  If  the exponent <var>i</var> is zero,
+<code><var>z</var>^<var>i</var></code> is  defined as the one  in the finite  field,  even if  <var>z</var> is
+zero; if <var>i</var> is positive, <code><var>z</var>^<var>i</var></code> is  defined as the  <var>i</var>-fold product
+<code><var>z</var>*<var>z</var>*..*<var>z</var></code>; finally, if  <var>i</var> is negative, <code><var>z</var>^<var>i</var></code> is  defined
+as <code>(1/<var>z</var>)^-<var>i</var></code>.  In this case <var>z</var> must of course be nonzero.
+<P>
+<pre>    gap> Z(4)^2;
+    Z(2^2)^2
+    gap> Z(4)^3;
+    Z(2)^0    # is in fact 1
+    gap> (0*Z(4))^0;
+    Z(2)^0 </pre>
+<P><A NAME="SECT004"><h2>18.4 IsFFE</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>IsFFE( <var>obj</var> )</code>
+<P>
+<code>IsFFE</code> returns <code>true</code> if <var>obj</var>, which may be  an object  of an arbitrary
+type, is an element in a finite field and <code>false</code> otherwise.  Will signal
+an error if <var>obj</var> is an unbound variable.
+<P>
+Note that integers,  even though they can  be multiplied with elements in
+finite fields, are not  considered themselves elements in  finite fields.
+Therefore <code>IsFFE</code> will return <code>false</code> for integer arguments.
+<P>
+<pre>    gap> IsFFE( Z(2^4)^7 );
+    true
+    gap> IsFFE( 5 );
+    false </pre>
+<P><A NAME="SECT005"><h2>18.5 CharFFE</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>CharFFE( <var>z</var> )</code> or <code>CharFFE( <var>vec</var> )</code> or <code>CharFFE( <var>mat</var> )</code>
+<P>
+<code>CharFFE</code> returns the characteristic  of the finite  field <var>F</var> containing
+the  element <var>z</var>, respectively  all  elements of the  vector <var>vec</var> over a
+finite field (see <a href="chap032.htm">Vectors</a>), or matrix  <var>mat</var> over  a  finite field (see
+<a href="chap034.htm">Matrices</a>).
+<P>
+<pre>    gap> CharFFE( Z(16)^7 );
+    2
+    gap> CharFFE( Z(16)^5 );
+    2
+    gap> CharFFE( [ Z(3), Z(27)^11, Z(9)^3 ] );
+    3
+    gap> CharFFE( [ [ Z(5), Z(125)^3 ], [ Z(625)^13, Z(5) ] ] );
+    Error, CharFFE: &lt;z> must be a finite field element, vector, or matrix
+    # The smallest finite field which contains all four of these elements
+    # is too large for <strong>GAP3</strong> </pre>
+<P><A NAME="SECT006"><h2>18.6 DegreeFFE</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>DegreeFFE( <var>z</var> )</code> or <code>DegreeFFE( <var>vec</var> )</code> or <code>DegreeFFE( <var>mat</var> )</code>
+<P>
+<code>DegreeFFE</code>  returns  the   degree of  the   smallest  finite field   <var>F</var>
+containing the element <var>z</var>, respectively all elements of the vector <var>vec</var>
+over a finite field (see <a href="chap032.htm">Vectors</a>), or matrix  <var>mat</var> over a finite field
+(see <a href="chap034.htm">Matrices</a>).  For vectors and matrices, an error is signalled if the
+smallest finite field containing all elements of the vector or matrix has
+size larger than <I>2<sup>16</sup></I>.
+<P>
+<pre>    gap> DegreeFFE( Z(16)^7 );
+    4
+    gap> DegreeFFE( Z(16)^5 );
+    2
+    gap> DegreeFFE( [ Z(3), Z(27)^11, Z(9)^3 ] );
+    6
+    gap> DegreeFFE( [ [ Z(5), Z(125)^3 ], [ Z(625)^13, Z(5) ] ] );
+    Error, DegreeFFE: &lt;z> must be a finite field element, vector, or matrix
+    # The smallest finite field which contains all four of these elements
+    # is too large for <strong>GAP3</strong> </pre>
+<P><A NAME="SECT007"><h2>18.7 OrderFFE</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>OrderFFE( <var>z</var> )</code>
+<P>
+<code>OrderFFE</code> returns the order of  the element <var>z</var> in  a finite field.  The
+order  is the smallest positive integer <var>i</var> such  that  <code><var>z</var>^<var>i</var></code>  is 1.
+The order of the zero in a finite field is defined to be 0.
+<P>
+<pre>    gap> OrderFFE( Z(16)^7 );
+    15
+    gap> OrderFFE( Z(16)^5 );
+    3
+    gap> OrderFFE( Z(27)^11 );
+    26
+    gap> OrderFFE( Z(625)^13 );
+    48
+    gap> OrderFFE( Z(211)^0 );
+    1 </pre>
+<P><A NAME="SECT008"><h2>18.8 IntFFE</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code>IntFFE( <var>z</var> )</code>
+<P>
+<code>IntFFE</code> returns the integer corresponding to the element <var>z</var>, which must
+lie in  a finite  prime field.   That is  <code>IntFFE</code> returns  the  smallest
+nonnegative integer <var>i</var> such that <code><var>i</var> * <var>z</var>^ 0 = <var>z</var></code>.
+<P>
+The  correspondence between   elements   from a finite   prime field   of
+characteristic <var>p</var> and the integers between 0  and  <code><var>p</var>-1</code> is defined by
+choosing <code>Z(<var>p</var>)</code>  the     smallest  primitive  root    mod   <var>p</var>    (see
+<a href="chap011.htm#SECT006">PrimitiveRootMod</a>).
+<P>
+<pre>    gap> IntFFE( Z(13) );
+    2
+    gap> PrimitiveRootMod( 13 );
+    2
+    gap> IntFFE( Z(409) );
+    21
+    gap> IntFFE( Z(409)^116 );
+    311
+    gap> 21^116 mod 409;
+    311 </pre>
+<P><A NAME="SECT009"><h2>18.9 LogFFE</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<A name = "I11"></a>
+
+<P>
+<code>LogFFE( <var>z</var> )</code> <BR> 
+<code>LogFFE( <var>z</var>, <var>r</var> )</code>
+<P>
+In the first form <code>LogFFE</code> returns  the discrete logarithm of the element
+<var>z</var> in a finite field with respect to the  root <code>FieldFFE(<var>z</var>).root</code>.  An
+error is signalled if <var>z</var> is zero.
+<P>
+In the second form <code>LogFFE</code> returns the discrete logarithm of the element
+<var>z</var> in  a  finite  field with  respect  to  the  root <var>r</var>.   An  error is
+signalled if <var>z</var> is zero, or if <var>z</var> is not a power of <var>r</var>.
+<P>
+The <strong>discrete logarithm</strong> of an element <I>z</I> with  respect to a root <I>r</I> is
+the smallest nonnegative integer <I>i</I> such that <I>r<sup>i</sup> = z</I>.
+<P>
+<pre>    gap> LogFFE( Z(409)^116 );
+    116
+    gap> LogFFE( Z(409)^116, Z(409)^2 );
+    58 </pre>
+<P><A NAME="SECT010"><h2>18.10 GaloisField</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+<code>GaloisField( <var>p</var>^<var>d</var> )</code> <BR> 
+<code>GF( <var>p</var>^<var>d</var> )</code> <BR> 
+<code>GaloisField( <var>p</var>\|<var>S</var>, <var>d</var>\|<var>pol</var>\|<var>bas</var> )</code> <BR> 
+<code>GF( <var>p</var>\|<var>S</var>, <var>d</var>\|<var>pol</var>\|<var>bas</var> )</code>
+<P>
+<code>GaloisField</code> returns a  field record (see  <a href="chap006.htm#SECT017">Field Records</a>) for a finite
+field.  It takes two arguments.  The form  <code>GaloisField(<var>p</var>,<var>d</var>)</code>,  where
+<var>p</var>,<var>d</var> are integers, can also be given as <code>GaloisField(<var>p</var>^<var>d</var>)</code>.  <code>GF</code>
+is an abbreviation for <code>GaloisField</code>.
+<P>
+The first argument  specifies the subfield <var>S</var>  over which the new  field
+<var>F</var> is to be taken.  It can be  a prime or  a finite field record.  If it
+is a prime <var>p</var>, the  subfield is the  prime field of this characteristic.
+If it is a field record <var>S</var>, the subfield is the  field described by this
+record.
+<P>
+The  second  argument specifies the extension.  It can be an integer,  an
+irreducible polynomial, or a base.   If  it is an  integer  <var>d</var>, the  new
+field  is  constructed  as  the  polynomial  extension  with  the  Conway
+polynomial  of degree <var>d</var> over the subfield <var>S</var>.  If it is an irreducible
+polynomial <var>pol</var>,  in which case the elements  of the list <var>pol</var> must all
+lie  in  the  subfield <var>S</var>, the new field  is  constructed as  polynomial
+extension  of the  subfield <var>S</var> with  this  polynomial.  If  it is a base
+<var>bas</var>,  in which  case  the elements  of  the list <var>bas</var>  must be  linear
+independently  over the  subfield  <var>S</var>,  the  new field is constructed as
+a linear vector space over the subfield <var>S</var>.
+<P>
+Note that the subfield over which a field was constructed determines over
+which field the Galois group, conjugates, norm,  trace,  minimal polynom,
+and characteristic polynom are computed (see <a href="chap006.htm#SECT007">GaloisGroup</a>, <a href="chap006.htm#SECT012">Conjugates</a>,
+<a href="chap006.htm#SECT010">Norm</a>, <a href="chap006.htm#SECT011">Trace</a>, <a href="chap006.htm#SECT008">MinPol</a>, <a href="chap006.htm#SECT009">CharPol</a>, and   <a href="chap018.htm#SECT013">Field  Functions for  Finite
+Fields</a>).
+<P>
+<pre>    gap> GF( 2^4 );
+    GF(2^4)
+    gap> GF( GF(2^4), 2 );
+    GF(2^8)/GF(2^4) </pre>
+<P><A NAME="SECT011"><h2>18.11 FrobeniusAutomorphism</h2></a>
+<P><P>
+<A name = "I13"></a>
+
+<A name = "I14"></a>
+
+<A name = "I15"></a>
+
+<A name = "I16"></a>
+
+<P>
+<code>FrobeniusAutomorphism( <var>F</var> )</code>
+<P>
+<code>FrobeniusAutomorphism</code>  returns the Frobenius automorphism of the finite
+field <var>F</var> as a field homomorphism (see <a href="chap006.htm#SECT013">Field Homomorphisms</a>).
+<P>
+The  Frobenius automorphism <I>f</I> of  a finite field <I>F</I>  of characteristic
+<I>p</I>  is  the function that  takes  each element <I>z</I> of  <I>F</I> to its <I>p</I>-th
+power.    Each  automorphism  of  <I>F</I>  is  a   power   of  the  Frobenius
+automorphism.  Thus the  Frobenius  automorphism  is a generator  for the
+Galois group of <I>F</I> (and an appropriate power of it is a generator of the
+Galois group of <I>F</I> over a subfield <I>S</I>) (see <a href="chap006.htm#SECT007">GaloisGroup</a>).
+<P>
+<pre>    gap> f := GF(16);
+    GF(2^4)
+    gap> x := FrobeniusAutomorphism( f );
+    FrobeniusAutomorphism( GF(2^4) )
+    gap> Z(16) ^ x;
+    Z(2^4)^2 </pre>
+<P>
+The image  of an  element  <var>z</var> under the  <var>i</var>-th  power  of the Frobenius
+automorphism  <var>f</var> of a finite field  <var>F</var> of characteristic <var>p</var> is  simply
+computed by computing the <code><var>p</var>^<var>i</var></code>-th power of <var>z</var>.  The product of the
+<var>i</var>-th power and the <var>j</var>-th  power of <var>f</var> is  the  <var>k</var>-th power  of  <var>f</var>,
+where <var>k</var> is  <code><var>i</var>*<var>j</var> mod (Size(<var>F</var>)-1)</code>.   The zeroth  power of <var>f</var> is
+printed as <code>IdentityMapping( <var>F</var> )</code>.
+<P><A NAME="SECT012"><h2>18.12 Set Functions for Finite Fields</h2></a>
+<P><P>
+<A name = "I17"></a>
+
+<A name = "I18"></a>
+<A name = "I19"></a>
+
+<A name = "I20"></a>
+
+<A name = "I21"></a>
+
+<P>
+Finite  fields are of course domains.  Thus all  set theoretic  functions
+are  applicable  to finite fields (see chapter <a href="chap004.htm">Domains</a>).   This section
+gives  further  comments on the definitions and  implementations of those
+functions for finite fields.  All  set theoretic  functions not mentioned
+here are not treated specially for finite fields.
+<P>
+<code>Elements</code>
+<P>
+The elements  of a  finite field  are computed  using the  fact that  the
+finite field is a vector space over its prime field.
+<P>
+<code>in</code>
+<P>
+The membership test is  of course  very simple,  we  just  have  to  test
+whether the  element is a  finite field element with <code>IsFFE</code>,  whether it
+has the  correct characteristic  with <code>CharFFE</code>, and  whether its  degree
+divides  the  degree of the  finite field  with <code>DegreeFFE</code> (see <a href="chap018.htm#SECT004">IsFFE</a>,
+<a href="chap018.htm#SECT005">CharFFE</a>, and <a href="chap018.htm#SECT006">DegreeFFE</a>).
+<P>
+<code>Random</code>
+<P>
+A random element of <I>GF(p<sup>n</sup>)</I> is  computed by  computing a random integer
+<I>i</I>  from  <I>[0..p<sup>n</sup>-1]</I>    and returning  <I>0*Z(p)</I>  if  <I>i   = 0</I>    and
+<I>Z(p<sup>n</sup>)<sup>i-1</sup></I> otherwise.
+<P>
+<code>Intersection</code>
+<P>
+The  intersection  of  <I>GF(p<sup>n</sup>)</I>  and  <I>GF(p<sup>m</sup>)</I>   is the   finite  field
+<I>GF(p<sup>Gcd(n,m)</sup>)</I>, and is returned as finite field record.
+<P><A NAME="SECT013"><h2>18.13 Field Functions for Finite Fields</h2></a>
+<P><P>
+<A name = "I22"></a>
+
+<A name = "I23"></a>
+
+<A name = "I24"></a>
+
+<P>
+Finite fields  are, as the name  already implies, fields.  Thus all field
+functions are applicable to finite fields and their elements (see chapter
+<a href="chap006.htm">Fields</a>).  This section  gives further comments on  the  definitions and
+implementations  of  those  functions  for   finite fields.   All  domain
+functions not mentioned here are not treated specially for finite fields.
+<P>
+<code>Field</code> and <code>DefaultField</code>
+<P>
+Both  <code>Field</code>   and <code>DefaultField</code>  return  the   smallest   finite field
+containing the arguments as  an extension of  the  prime field.
+<P>
+<code>GaloisGroup</code>
+<P>
+The Galois  group of a finite field <I>F</I> of size <I>p<sup>m</sup></I> over a subfield <I>S</I>
+of size <I>q =  p<sup>n</sup></I> is a cyclic  group of  size <I>m/n</I>.  It is generated by
+the  <strong>Frobenius automorphism</strong>  that takes every  element of  <I>F</I>  to  its
+<I>q</I>-th power.  This automorphism of  <I>F</I>  leaves exactly the subfield <I>S</I>
+fixed.
+<P>
+<code>Conjugates</code>
+<P>
+According  to the above theorem about  the Galois  group, each element of
+<I>F</I> has  <I>m/n</I> conjugates, <I>z,  z<sup>q</sup>,  z<sup>q<sup>2</sup></sup>, ..., z<sup>q<sup>m/n-1</sup></sup></I>.
+<P>
+<code>Norm</code>
+<P>
+The  norm is the  product of the conjugates, i.e., <I>z<sup>{p<sup>m</sup>-1/p<sup>n</sup>-1}</sup></I>.
+Because  we  have <I>Z(p<sup>n</sup>) =  Z(p<sup>m</sup>)<sup>{p<sup>m</sup>-1/p<sup>n</sup>-1}</sup></I>, it  follows  that
+<I>Norm( GF(p<sup>m</sup>)/GF(p<sup>n</sup>), Z(p<sup>m</sup>)<sup>i</sup> ) = Z(p<sup>n</sup>)<sup>i</sup></I>.
+<P><a href ="chap017.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap019.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

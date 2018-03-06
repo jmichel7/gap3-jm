@@ -1,0 +1,331 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  GAP documentation                                   Goetz.Pfeiffer@UCG.IE
+%%
+%A  $Id: action.tex,v 2.1 1997/11/24 17:36:51 goetz Exp $
+%%
+%Y  Copyright (C) 1997, Mathematics Dept, University College Galway, Ireland.
+%%
+%%  This file documents the functions for actions of monoids.
+%%
+\Chapter{Actions of Monoids}%
+\index{action}%
+\index{grading}
+
+A very natural concept and important tool in  the study of monoids is the
+idea of having monoids acting on certain  (finite) sets.  This provides a
+way to turn any monoid into a (finite) transformation monoid.
+
+Let $M$ be a monoid and $D$ a set.  An *action* of $M$ on $D$ is a map
+\[
+  (d, m) \mapsto d\^m \colon D \times M \to D
+\]
+such that $d\^1 = d$ for all $d \in D$ (and the identity $1$ of $M$), and
+that $(d\^{m_1})\^{m_2} = d\^{(m_1 m_2)}$ for all $d \in D$ and all $m_1,
+m_2  \in M$.  In this  situation we also say that  $M$ *acts on* $D$, or,
+that $D$ is an *$M$-set*.
+
+In contrast to group operations (see chapter \"Operations of Groups\"), a
+monoid action  often comes with a  natural grading  that  can be  used to
+carry out  certain calculations more  efficiently.  To be precise we work
+with the following concept.  Let  $M$ be a monoid  acting on the set $D$. 
+A *grading* is a map $g \colon D \to \{1, 2,  3, \dots\}$ such that $g(d)
+\geq g(d\^m)$ for all $d \in  D$ and all $m  \in M$.  The trivial grading
+is the map given by $g(d) = 1$ for all $d \in D$.
+
+In  {\GAP} a monoid usually  acts on a set via  the caret  operator '\^'. 
+This action is  refered to  as the  *canonical action*.   It is, however,
+possible to define other actions (see "Other Actions").
+
+This chapter describes   functions  that deal   with finite  actions   of
+monoids.  There  are functions for  different types of orbit calculations
+depending on whether a  grading is  used and  if so  how (see "Orbit  for
+Monoids", "ShortOrbit", "GradedOrbit").   Then there are functions  which
+construct the transformation monoid corresponding  to a particular action
+of a monoid $M$  on a set  $D$ (see "Action" and "ActionWithZero") where,
+if necessary, an additional point $0$ is added to the domain $D$.
+
+The functions described here are in the file '\"action.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Other Actions}
+\index{OnPoints}%
+\index{OnPairs}%
+\index{OnTuples}%
+\index{OnSets}%
+\index{OnRight}%
+\index{OnLeft}%
+\index{OnLClasses}%
+\index{OnRClassesAntiAction}%
+
+Most of  the operations for groups can  be applied as monoid actions (see
+\"Other Operations\").  In    addition to these there   are  a couple  of
+actions which are particular to monoids.
+
+The functions described in this chapter generally deal with the action of
+monoid elements defined by the canonical action  that is denoted with the
+caret ('\^') in {\GAP}.   However, they also  allow you to  specify other
+actions.  Such actions are specified by functions,  which are accepted as
+optional argument by all the  functions described here.
+
+An action function must accept two arguments.  The first argument will be
+the point and the  second will be the  monoid element.  The function must
+return the image of the point under the monoid element in the action that
+it specifies.
+
+As an example, the function 'OnPairs'  that specifies the action on pairs
+could be defined as follows\\
+|    OnPairs := function ( pair, m )
+        return [ pair[1] ^ m, pair[2] ^ m ];
+    end; |
+
+The following monoid actions are predefined.
+
+'OnPoints':\\
+        specifies the canonical default action.  Passing this function is
+        equivalent to specifying no action.  This function exists because
+        there are places where the action in not an option.
+
+'OnPairs':\\
+        specifies the componentwise action of monoid elements on pairs of
+        points, which are represented by lists of length 2.
+
+'OnTuples':\\
+        specifies the componentwise  action of monoid elements on  tuples
+        of  points, which  are represented  by  lists.  'OnPairs' is  the
+        special case of 'OnTuples' for tuples with two elements.
+
+'OnSets':\\
+        specifies the action of monoid elements  on sets of points, which
+        are represented by sorted lists of points without duplicates (see
+        chapter \"Sets\").
+
+'OnRight':\\
+        specifies that  monoid  elements act by   multiplication from the
+        right.
+
+'OnLeftAntiAction':\\
+        specifies  that  monoid elements act   by multiplication from the
+        left.
+
+'OnLClasses':\\
+        specifies that  monoid  elements act by  multiplication  from the
+        right on $L$ classes (see "LClasses").
+
+'OnRClassesAntiAction':\\
+        specifies that monoid   elements act by multiplication   from the
+        left on $R$ classes (see "RClasses").
+
+Note that it is your responsibility to make sure that the elements of the
+domain <D>  on  which you are  acting  are already  in  normal form.  The
+reason is that all functions will compare points using the '=' operation.
+For example,  if you are acting on  sets with 'OnSets',  you  will get an
+error message it not all elements of the domain are sets.
+
+|    gap> OnSets(Transformation( [ 1, 2 ] ), [ 2, 1 ] );
+    Error, OnSets: <tuple> must be a set |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Orbit for Monoids}
+
+'Orbit( <M>, <d> )'\\
+'Orbit( <M>, <d>, <action> )'
+
+The *orbit* of  a point <d> under the  action of a monoid  <M> is the set
+$\{d\^m \mid m \in M\}$ of  all points that  are images of <d> under some
+element $m \in M$.
+
+In  the first  form  'Orbit' computes the   orbit of point  <d> under the
+monoid <M> with respect to the canonical action 'OnPoints'.
+
+In the second form  'Orbit'  computes the orbit   of point <d> under  the
+monoid <M> with respect to the action <action>.
+
+|    gap> M:= Monoid( [ Transformation( [ 5, 4, 4, 2, 1 ] ), 
+    > Transformation( [ 2, 5, 5, 4, 1 ] ) ] ) ;;
+    gap> Orbit(M, 1); 
+    [ 1, 5, 2, 4 ]
+    gap> Orbit(M, 3, OnPoints);
+    [ 3, 4, 5, 2, 1 ]
+    gap> Orbit(M, [1,2], OnSets);
+    [ [ 1, 2 ], [ 4, 5 ], [ 2, 5 ], [ 1, 4 ], [ 1, 5 ], [ 2, 4 ] ]
+    gap> Orbit(M, [1,2], OnPairs);
+    [ [ 1, 2 ], [ 5, 4 ], [ 2, 5 ], [ 1, 4 ], [ 4, 1 ], [ 5, 1 ], [ 5, 2 ], 
+      [ 2, 4 ], [ 4, 2 ], [ 1, 5 ], [ 4, 5 ], [ 2, 1 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{StrongOrbit}
+
+'StrongOrbit( <M>, <d>, <action> )'\\
+'StrongOrbit( <M>, <d>, <action>, <grad> )'
+
+The *strong orbit* of the point <d>  in $D$ under the  action of <M> with
+respect  to the  grading <grad> is  the  set $\{d\^{m_1} \mid  m_1 \in M,
+d\^(m_1 m_2) = d \mbox{ for some } m_2 \in M\}$.
+
+Note that  the orbit  of a point   in general consists of several  strong
+orbits.
+
+In the first form 'StrongOrbit' determines  the strong orbit of point <d>
+under <M> with respect to the  action <action> and the trivial grading.
+
+In the second form 'StrongOrbit' determines the strong orbit of point <d>
+under <M>  with respect  to the action   <action>.  Moreover, the grading
+<grad>  is used to facilitate the  calculations.  Note, however, that the
+strong orbit of a point does not depend on the chosen grading.
+
+|    gap> M:= Monoid( [ Transformation( [ 5, 4, 4, 2, 1 ] ), 
+    > Transformation( [ 2, 5, 5, 4, 1 ] ) ] ) ;;
+    gap> Orbit( M, 3 );
+    [ 3, 4, 5, 2, 1 ]
+    gap> StrongOrbit( M, 3, OnPoints );
+    [ 3 ] |
+    
+Note that 'StrongOrbit' always requires  the argument <action> specifying
+how the monoid acts (see "Other Actions").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GradedOrbit}
+
+'GradedOrbit( <M>, <d>, <action>, <grad> )'
+
+The *graded orbit* of the point <d>  in $D$ under the  action of <M> with
+respect to the grading <grad> is the list '[$O_1$, $O_2$, ...  ]' of sets
+$O_i = \{d\^m \mid m \in M, <grad>(d\^m)  = i\}$.  Thus  the orbit of <d>
+is simply the union of the sets $O_i$.
+
+The function 'GradedOrbit' determines the graded orbit of point <d> under
+<M> with respect to the grading <grad> and the action <action>.
+
+|    gap> M:= Monoid( [ Transformation( [ 5, 4, 4, 2, 1 ] ), 
+    > Transformation( [ 2, 5, 5, 4, 1 ] ) ] ) ;;
+    gap> Orbit( M, [ 1, 2, 3 ], OnSets );
+    [ [ 1, 2, 3 ], [ 4, 5 ], [ 2, 5 ], [ 1, 2 ], [ 1, 4 ], [ 1, 5 ], 
+      [ 2, 4 ] ]
+    gap> GradedOrbit( M, [ 1, 2, 3 ], OnSets, Size );
+    [ [  ], [ [ 4, 5 ], [ 2, 5 ], [ 1, 2 ], [ 1, 4 ], [ 1, 5 ], [ 2, 4 ] ],
+    [ [ 1, 2, 3 ] ] ]|
+
+Note that 'GradedOrbit' always requires  the argument <action> specifying
+how the monoid acts (see "Other Actions").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ShortOrbit}
+
+'ShortOrbit( <M>, <d>, <action>, <grad> )'
+
+The *short orbit* of  the point <d> in $D$  under the action of  <M> with
+respect  to  the grading   <grad> is  the   set  $\{d\^m  \mid m   \in M,
+<grad>(d\^m) = <grad>(d)\}$.
+
+The function 'ShortOrbit' determines  the short  orbit  of the  point <d>
+under <M> with respect to the grading <grad> and the action <action>.
+
+|   gap> M:= Monoid( [ Transformation( [ 5, 4, 4, 2, 1 ] ), 
+   > Transformation( [ 2, 5, 5, 4, 1 ] ) ] ) ;;
+   gap> Orbit(M, [1, 2, 3], OnSets); 
+   [ [ 1, 2, 3 ], [ 4, 5 ], [ 2, 5 ], [ 1, 2 ], [ 1, 4 ], [ 1, 5 ], 
+     [ 2, 4 ] ]
+   gap> ShortOrbit(M, [1, 2, 3], OnSets, Size);
+   [ [ 1, 2, 3 ] ]|
+
+Note that 'ShortOrbit'  always requires the  argument <action> specifying
+how the monoid acts (see "Other Actions").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Action}
+
+'Action( <M>, <D> )'\\
+'Action( <M>, <D>, <action> )'
+
+'Action'   returns  a  transformation   monoid with  the  same  number of
+generators as <M>, such that  each generator of the transformation monoid
+acts on the set '[1..Length(<D>)]'  in the same  way as the corresponding
+generator of the monoid <M> acts on the  domain <D>, which  may be a list
+of arbitrary type.
+
+It is not allowed that <D> is a proper subset of a domain, i.e., <D> must
+be invariant under <M>.
+
+'Action' accepts a  function  <action> of two  arguments  <d> and  <m> as
+optional third argument, which specifies  how the elements  of <M> act on
+<D> (see "Other Actions").
+
+'Action' calls \\
+'<M>.operations.Action( <M>, <D>, <action> )' \\
+and returns the value.  Note that the  third argument is not optional for
+functions called this way.
+
+The default function called this  way is 'MonoidOps.Action', which simply
+applies   each generator of  <M>  to all  the  points of   <D>, finds the
+position of the image in  <D>, and finally constructs the  transformation
+(see "Transformation") defined by the list of those positions.
+
+|    gap> M:= Monoid( [ Transformation( [ 5, 4, 4, 2, 2 ] ), 
+    > Transformation( [ 2, 5, 5, 4, 1 ] ) ] );;
+    gap> Action(M, LClasses(M), OnLClasses);
+    Monoid( [
+    Transformation( [2, 6, 9, 2, 2, 6, 13, 9, 6, 9, 7, 13, 12, 13, 14] ), 
+    Transformation( [5, 3, 4, 2, 5, 7, 8, 6, 10, 11, 9, 12, 14, 15, 13] )
+    ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ActionWithZero}
+
+'ActionWithZero( <M>, <D> )'\\
+'ActionWithZero( <M>, <D>, <action> )'
+
+'ActionWithZero' returns a transformation  monoid with the same number of
+generators as <M>, such that each  generator of the transformation monoid
+acts on the set '[1..Length(<D>)+1]' in the same way as the corresponding
+generator of the monoid  <M> acts on the  domain $<D> \cup  \{0\}$, which
+may be a list of arbitrary type.
+
+Here it is not  required that <D> be invariant  under <M>.   Whenever the
+image of a point <d> under the monoid element <m> does not  lie in <D> it
+is set  to $0$.  The image  of $0$ under every  monoid element  is set to
+$0$.  Note that  this way the resulting monoid  is a homomorphic image of
+<M>  if and only  if <D> is a  union of strong orbits.   The point $0$ is
+represented by  'Length(<D>)  + 1'  in the  domain of  the transformation
+monoid returned by 'ActionWithZero'.
+
+'ActionWithZero' accepts a function <action> of two arguments <d> and <m>
+as optional third argument, which  specifies how the  elements of <M> act
+on <D> (see "Other Actions").
+
+'ActionWithZero' calls \\
+'<M>.operations.ActionWithZero( <M>, <D>, <action> )' \\
+and returns the value.  Note that the  third argument is not optional for
+functions called this way.
+
+The default function called this way is 'MonoidOps.ActionWithZero', which
+simply applies each generator of <M> to all  the points of <D>, finds the
+position of  the image in <D>, and  finally constructs the transformation
+(see  "Transformation") defined  by   the  list  of those  positions  and
+'Length(<D>)+1' for every image not in <D>.
+
+|    gap> M:= Monoid( [ Transformation( [ 5, 4, 4, 2, 2 ] ), 
+    > Transformation( [ 2, 5, 5, 4, 1 ] ) ] );;
+    gap> M.name:= "M";;
+    gap> class:= LClass( M, Transformation( [ 1, 4, 4, 5, 5 ] ) );
+    LClass( M, Transformation( [ 1, 4, 4, 5, 5 ] ) )
+    gap> orb:= ShortOrbit(M, class, OnLClasses, Rank);
+    [ LClass( M, Transformation( [ 1, 4, 4, 5, 5 ] ) ), 
+      LClass( M, Transformation( [ 2, 4, 4, 1, 1 ] ) ), 
+      LClass( M, Transformation( [ 4, 2, 2, 5, 5 ] ) ) ]
+    gap> ActionWithZero(M, orb, OnLClasses);
+    Monoid( [ Transformation( [ 4, 3, 4, 4 ] ), 
+     Transformation( [ 2, 3, 1, 4 ] ) ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               LaTeX
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  TeX-master:         "manual"
+%%  eval:               (outline-minor-mode)
+%%  End:
+%%

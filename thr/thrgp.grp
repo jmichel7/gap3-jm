@@ -1,0 +1,610 @@
+#############################################################################
+##
+#A  thrgp.grp                   GAP group library              Eamonn O'Brien
+#A                                                             & Colin Rhodes
+##
+#A  @(#)$Id: thrgp.grp,v 1.1.1.1 1996/12/11 12:44:32 werner Exp $
+##
+#Y  Copyright 1993,  E.A. O'Brien and Colin Rhodes
+#Y  School of Mathematical Sciences
+#Y  Australian National University, Canberra, Australia
+##
+##  This   file contains the   extraction,  selection  and  example functions
+##  for the library of 3-groups of size  dividing 729.  The  descriptions  of
+##  those groups are stored in the secondary files "gps*.grp".
+##
+##  These functions are modelled on the functions developed by Alice Niemeyer
+##  and Eamonn O'Brien which are part of the 2-groups library.
+##
+#H  $Log: thrgp.grp,v $
+#H  Revision 1.1.1.1  1996/12/11 12:44:32  werner
+#H  Preparing 3.4.4 for release
+#H
+#H  Revision 3.2  1993/02/10  15:21:32  martin
+#H  changed call of 'READ' to 'ReadPath'
+#H
+#H  Revision 3.1  1993/01/22  14:04:07  martin
+#H  initial revision under RCS
+#H
+##
+
+
+#############################################################################
+##
+#F  InfoThreeGroup1( <arg> )  . . . . . . . . . . . . . . package information
+#F  InfoThreeGroup2( <arg> )  . . . . . . . . . . . package debug information
+##
+if not IsBound( InfoThreeGroup1 )  then InfoThreeGroup1 := Print;   fi;
+if not IsBound( InfoThreeGroup2 )  then InfoThreeGroup2 := Ignore;  fi;
+
+
+#############################################################################
+##
+#V  ThGParts  . . . . . . . . . . . . . . . . . . . . list of secondary files
+##
+##  The 3-groups  are stored  in several  parts,  each   part residing   on a
+##  secondary file. 
+##
+##  'ThGParts'  is   a list  that  specifies those  parts.  For each  part it
+##  contains a record with the following components:
+##
+##  'sizes'     the sizes of the groups in this part;
+##
+##  'ranks'     the ranks of the groups in this part; 
+##
+##  'pclasses'  the exponent-p classes of groups in this part;
+##
+##  'number'    the number of groups in this part (needed if not  all  groups
+##              of one size are in one part);
+##
+##  'name'      the filename  of the  secondary  file  containing  this  part.
+##
+##  'status'    a string describing the status of this file:
+##              "unknown"       means that no attempt was made load the file;
+##              "loaded"        means  that  this  part  is currently loaded;
+##              "unloaded"      means that the part  was  unloaded  again  to
+##                              make room for other parts;
+##              "userloaded"    means that this part was loaded by  the  user
+##                              and must not be unloaded;
+##              "unloadable"    means that the file could not be read.
+##
+##  <grps>      a list containing the descriptions  of groups  in  this  part
+##              (is unbounded  unless <status> is  "loaded" or "userloaded");
+##
+ThGParts := rec(
+ 3   := rec( sizes := [ 3 ],    ranks := [1],       pclasses := [1],
+             number := 1,       name := "thrgp3",   status := "unknown" ),
+ 9   := rec( sizes := [ 9 ],    ranks := [1..2],    pclasses := [1..2],
+             number := 2,       name := "thrgp9",   status := "unknown" ),
+ 27  := rec( sizes := [ 27 ],   ranks := [1..3],    pclasses := [1..3],
+             number := 5,       name := "thrgp27",  status := "unknown" ),
+ 81  := rec( sizes := [ 81 ],   ranks := [1..4],    pclasses := [1..4],
+             number := 15,      name := "thrgp81",  status := "unknown" ),
+ 243 := rec( sizes := [ 243 ],  ranks := [1..5],    pclasses := [1..5],
+             number := 67,      name := "thrgp243", status := "unknown" ),
+ 729 := rec( sizes := [ 729 ],  ranks := [1..6],    pclasses := [1..6],
+             number := 504,     name := "thrgp729", status := "unknown" )
+);
+
+
+#############################################################################
+##
+#F  ThGLoad(<part>) . . . . . . load a secondary file of the 3-groups library
+##
+##  'ThGLoad' loads a part <part>, which  must be a record as described above,
+##  and returns  the list of group  descriptions of that  part.  If a part is
+##  already loaded, only the list is returned.
+##
+##  Before loading a part all other parts are unloaded, i.e.,  their 'groups'
+##  component is  unbound and their status is set to  "unloaded".  Note  that
+##  user loaded parts (those with status "userloaded") are not unloaded.
+##
+##  If a file can not be loaded the empty list is returned and a  warning  is
+##  printed (but only once).
+##
+##  'ThGLoad' finds  the  files  in  the directory  specified  by  'THRNAME',
+##  this variable is set in the init file 'LIBNAME/\"init.g\"'.
+##
+ThGLoad := function ( part )
+    local   name;
+
+    # test whether we actually need to load this file
+    if part.status = "loaded"  or part.status = "userloaded"  then
+        return part.groups;
+    fi;
+
+    # test whether the file can be loaded
+    if part.status = "unloadable"  then
+        return [];
+    fi;
+
+    # unload the other files
+    for name  in RecFields( ThGParts )  do
+        if ThGParts.(name) <> part and ThGParts.(name).status = "loaded" then
+            Unbind( ThGParts.(name).groups );
+            ThGParts.(name).status := "unloaded";
+        fi;
+    od;
+
+    # try to load the file
+    InfoThreeGroup2( "#I  loading secondary three groups file ",part.name,"\n");
+    if ReadPath( THRNAME, part.name, ".grp", "ReadThr" )  then
+        part.status := "loaded";
+        return part.groups;
+    else
+        InfoThreeGroup1("#W  cannot load secondary 3-groups file ",name,"\n");
+        part.status := "unloadable";
+        return [];
+    fi;
+
+end;
+
+
+#############################################################################
+##
+#F  ThGGroup(p, <desc>) . . . . . . . . . . . . . . . . . .  create a 3-group
+##
+##  'ThGGroup' creates a 3-group from the description <desc>.
+##  The  prime  3  is  handed  to the routine  to permit complete generality.
+##
+##  Each 3-group is compactly described by a list of 4 integers.  The 
+##  integers have the following meaning:
+##       1st integer: The rank of the Frattini quotient of group
+##       2nd integer: The number of pcp generators of the group 
+##       3rd integer: The exponent-p class of the group
+##       4th integer: A long integer encoding the pc-presentation
+##
+##  The pc-presentation is encoded in the following way. 
+##  Let $G$ be a 3-group described by a pc-presentation on 
+##  $n$ generators,  $g_1, \ldots, g_n$, and with relations
+##  $g_i^3 = g_{i+1}^{e^{i,i}_{i+1}} \cdots g_n^{e^{i,i}_n}$ for 
+##  $1 \le i \le n$ and the relations 
+##  $[g_i, g_j]  = g_{i+1}^{e^{i,j}_{i+1}} \cdots g_n^{e^{i,j}_n}$ for 
+##  $1 \le j < i \le n$. 
+##  Since the group is a 3-group, all exponents, $e^{i,j}_k$, lie in 
+##  $0,1,2$.  We order the exponents occuring on the right hand sides
+##  of the relations as a sequence. We view the sequence as the 3-adic 
+##  expansion of an integer and use this integer to encode the presentation. 
+##
+ThGGroup := function ( p, desc )
+    local   grp,        # group described by 'desc', result
+            gens,       # generators of the group
+            rels,       # relators of the group
+            exps,       # exponent bit string
+            rhs,        # right hand sides of the relators
+            i, k, l;    # loop variables
+
+    # make the generators
+    gens := [];
+    for i  in [1..desc[2]]  do
+        gens[i] := AbstractGenerator(ConcatenationString("a",String(i)));
+    od;
+
+    # make the right hand sides of the relations
+    exps := desc[4];
+    rhs := [];
+    for i  in [1..desc[2]]  do
+        rhs[i] := [];
+        for k  in [1..i-1]  do
+            rhs[i][k] := gens[1]^0;
+            for l  in [k..i-1]  do
+                rhs[l][k] := rhs[l][k] * gens[i]^(exps mod p);
+                exps := QuoInt( exps, p );
+            od;
+        od;
+        rhs[i][i] := gens[1]^0;
+    od;
+
+    # make the relators
+    rels := [];
+    for i  in [1..desc[2]]  do
+        Add( rels, gens[i]^p/rhs[i][i] );
+        for k  in [1..i-1]  do
+            Add( rels, Comm(gens[i],gens[k])/rhs[i][k] );
+        od;
+    od;
+
+    # make the finitely presented group
+    grp := Group( gens, gens[1]^0 );
+    grp.relators := rels;
+
+    # make the finite polycyclic group and enter rank and pclass
+    grp := AgGroupFpGroup( grp );
+    grp.rank               := desc[1];
+    grp.pclass             := desc[3];
+    grp.abstractGenerators := gens;
+    grp.abstractRelators   := rels;
+
+    # return the finite polycyclic group
+    return grp;
+end;
+
+
+#############################################################################
+##
+#F  ThreeGroup(<size>,<number>) . . . .  extract one 3-group from the library
+##
+##  'ThreeGroup' returns the <number>-th group of size <size>  from  library.
+##
+ThreeGroup := function ( size, number )
+    local   name,       # name of a part of the three groups library
+            total;      # total number of groups of size 'size'
+
+    # check the size and the size
+    if not size in [3,9,27,81,243,729]  then
+        Error("<size> must be a power of 3 at most 729");
+    fi;
+    if not IsInt( number )  or number <= 0  then
+        Error("<number> must be a positive integer");
+    fi;
+
+    # find the file
+    total := 0;
+    for name  in RecFields( ThGParts )  do
+        if size in ThGParts.(name).sizes  then
+            if number <= total + ThGParts.(name).number then
+                ThGLoad( ThGParts.(name) );
+                return ThGGroup( 3,ThGParts.(name).groups[number-total] );
+            else
+                total := total + ThGParts.(name).number;
+            fi;
+        fi;
+    od;
+
+    # if we end here <number> was too large
+    Error("<number> must be at most ",total);
+end;
+
+
+#############################################################################
+##
+#F  AllThreeGroups(<fun1>,<val1>,..)  select groups from the 3-groups library
+##
+##  'AllThreeGroups' returns a list of all 3-groups that have the  properties
+##  given as arguments.  Each <funi> is a function that can be applied to the
+##  groups; the corresponding <vali> is  either a  single value or a  list of
+##  values that <funi> must return in order to select that group.
+##
+AllThreeGroups := function ( arg )
+    local   result,     # list of selected groups, result
+            sizes,      # list of sizes of the wanted groups
+            ranks,      # list of the ranks of the wanted groups
+            max,        # maximal rank in 'ranks'
+            pclasses,   # list of the pclasses of the wanted groups
+            name,       # name of a part of the library
+            part,       # that part of the library
+            grps,       # list of surviving groups in this part
+            grps2,      # temporary list of groups
+            grp,        # one group
+            funs,       # properties other than 'Size', 'Rank', 'pClass'
+            vals,       # corresponding value arguments
+            i;          # loop variable
+
+    # loop over the arguments
+    sizes    := [3,9,27,81,243,729];
+    ranks    := [1..6];
+    pclasses := [1..6];
+    funs     := [];
+    vals     := [];
+    for i  in [ 1 .. Length(arg)/2 ]  do
+
+        # special case for 'Size'
+        if arg[2*i-1] = Size  then
+            if IsInt( arg[2*i] )  then
+                sizes := Intersection( sizes, [ arg[2*i] ] );
+                if sizes = []  then
+                    InfoThreeGroup1("#I  no group has this size\n");
+                    return [];
+                fi;
+            else
+                sizes := Intersection( sizes, arg[2*i] );
+                if sizes = []  then
+                    InfoThreeGroup1("#I  no group has one of those sizes\n");
+                    return [];
+                elif sizes <> Set( arg[2*i] )  then
+                    InfoThreeGroup1("#I  size restricted to ",sizes,"\n");
+                fi;
+            fi;
+
+        # special case for 'Rank'
+        elif arg[2*i-1] = Rank  then
+            if IsInt( arg[2*i] )  then
+                ranks := Intersection( ranks, [ arg[2*i] ] );
+                if ranks = []  then
+                    InfoThreeGroup1("#I  no group has this rank\n");
+                    return [];
+                fi;
+            else
+                ranks := Intersection( ranks, arg[2*i] );
+                if ranks = []  then
+                    InfoThreeGroup1("#I  no group has one of those ranks\n");
+                    return [];
+                elif ranks <> Set( arg[2*i] )  then
+                    InfoThreeGroup1("#I  rank restricted to ",ranks,"\n");
+                fi;
+            fi;
+
+        # special case for 'pClass'
+        elif arg[2*i-1] = pClass  then
+            if IsInt( arg[2*i] )  then
+
+                pclasses := Intersection( pclasses, [ arg[2*i] ] );
+                if pclasses = []  then
+                    InfoThreeGroup1("#I  no group has this p class\n");
+                    return [];
+                fi;
+            else
+                pclasses := Intersection( pclasses, arg[2*i] );
+                if pclasses = []  then
+                  InfoThreeGroup1("#I  no group has one of those p classes\n");
+                  return [];
+                elif pclasses <> Set( arg[2*i] )  then
+                  InfoThreeGroup1("#I  p class restricted to ",pclasses,"\n");
+                fi;
+            fi;
+
+        # general case
+        elif IsFunc( arg[2*i-1] )  then
+            Add( funs, arg[2*i-1] );
+            Add( vals, arg[2*i]   );
+
+        # error message
+        else
+            Error("<fun",i,"> must be a function");
+        fi;
+
+    od;
+
+    # we have not yet selected a group
+    result := [];
+
+    # loop over all parts of the library
+    for name  in RecFields( ThGParts )  do
+        part := ThGParts.(name);
+
+        # sieve the groups through the 'Size' filter
+        if IsSubset( sizes, part.sizes )  then
+            grps := "all";
+        else
+            grps := [];
+        fi;
+
+        # sieve the groups through the 'Rank' filter
+        grps2 := [];
+        if IsSubset( ranks, part.ranks )  then
+            grps2 := grps;
+        elif Intersection( ranks, part.ranks ) <> []  then
+            if grps = "all"  then  grps := ThGLoad( part );  fi;
+            max := Maximum( Intersection( ranks, part.ranks ) );
+            i := 1;
+            while i <= Length(grps)  and grps[i][1] <= max  do
+                if grps[i][1]  in ranks  then
+                    Add( grps2, grps[i] );
+                fi;
+                i := i + 1;
+            od;
+        else
+            grps2 := [];
+        fi;
+        grps := grps2;
+
+        # sieve the groups through the 'pClass' filter
+        grps2 := [];
+        if IsSubset( pclasses, part.pclasses )  then
+            grps2 := grps;
+        elif Intersection( pclasses, part.pclasses ) <> []  then
+            if grps = "all"  then  grps := ThGLoad( part );  fi;
+            for grp  in grps  do
+                if grp[3] in pclasses  then
+                    Add( grps2, grp );
+                fi;
+            od;
+        else
+            grps2 := [];
+        fi;
+        grps := grps2;
+
+        # sieve the groups through the other properties
+        if grps = "all"  then grps := ThGLoad( part );  fi;
+        for grp  in grps  do
+            grp := ThGGroup( 3,grp );
+            i := 1;
+            while     i <= Length(funs)
+                  and (funs[i]( grp ) = vals[i]
+                       or IsList( vals[i] )  and funs[i]( grp ) in vals[i])
+            do
+                i := i + 1;
+            od;
+            if i = Length(funs)+1  then
+                Add( result, grp );
+            fi;
+        od;
+
+    od;
+
+    # return the result
+    return result;
+end;
+
+
+#############################################################################
+##
+#F  OneThreeGroup(<fun1>,<val1>,..)select one group from the 3-groups library
+##
+##  'OneThreeGroups' returns one 3-group that  has  the  properties  given as
+##  arguments.  Each <funi> is a function that can be  applied to the groups;
+##  the corresponding <vali> is  either a  single value or a  list of  values
+##  that <funi> must return in order to select that group.
+##
+OneThreeGroup := function ( arg )
+    local   sizes,      # list of sizes of the wanted groups
+            ranks,      # list of the ranks of the wanted groups
+            max,        # maximal rank in 'ranks'
+            pclasses,   # list of the pclasses of the wanted groups
+            name,       # name of a part of the library
+            part,       # that part of the library
+            grps,       # list of surviving groups in this part
+            grps2,      # temporary list of groups
+            grp,        # one group
+            funs,       # properties other than 'Size', 'Rank', 'pClass'
+            vals,       # corresponding value arguments
+            i;          # loop variable
+
+    # loop over the arguments
+    sizes    := [3,9,27,81,243,729];
+    ranks    := [1..6];
+    pclasses := [1..6];
+    funs     := [];
+    vals     := [];
+    for i  in [ 1 .. Length(arg)/2 ]  do
+
+        # special case for 'Size'
+        if arg[2*i-1] = Size  then
+            if IsInt( arg[2*i] )  then
+                sizes := Intersection( sizes, [ arg[2*i] ] );
+                if sizes = []  then
+                    InfoThreeGroup1("#I  no group has this size\n");
+                    return [];
+                fi;
+            else
+                sizes := Intersection( sizes, arg[2*i] );
+                if sizes = []  then
+                    InfoThreeGroup1("#I  no group has one of those sizes\n");
+                    return [];
+                elif sizes <> Set( arg[2*i] )  then
+                    InfoThreeGroup1("#I  size restricted to ",sizes,"\n");
+                fi;
+            fi;
+
+        # special case for 'Rank'
+        elif arg[2*i-1] = Rank  then
+            if IsInt( arg[2*i] )  then
+                ranks := Intersection( ranks, [ arg[2*i] ] );
+                if ranks = []  then
+                    InfoThreeGroup1("#I  no group has this rank\n");
+                    return [];
+                fi;
+            else
+                ranks := Intersection( ranks, arg[2*i] );
+                if ranks = []  then
+                    InfoThreeGroup1("#I  no group has one of those ranks\n");
+                    return [];
+                elif ranks <> Set( arg[2*i] )  then
+                    InfoThreeGroup1("#I  rank restricted to ",ranks,"\n");
+                fi;
+            fi;
+
+        # special case for 'pClass'
+        elif arg[2*i-1] = pClass  then
+            if IsInt( arg[2*i] )  then
+                pclasses := Intersection( pclasses, [ arg[2*i] ] );
+                if pclasses = []  then
+                    InfoThreeGroup1("#I  no group has this p class\n");
+                    return [];
+                fi;
+            else
+                pclasses := Intersection( pclasses, arg[2*i] );
+                if pclasses = []  then
+                  InfoThreeGroup1("#I  no group has one of those p classes\n");
+                  return [];
+                elif pclasses <> Set( arg[2*i] )  then
+                  InfoThreeGroup1("#I  p class restricted to ",pclasses,"\n");
+                fi;
+            fi;
+
+        # general case
+        elif IsFunc( arg[2*i-1] )  then
+            Add( funs, arg[2*i-1] );
+            Add( vals, arg[2*i]   );
+
+        # error message
+        else
+            Error("<fun",i,"> must be a function");
+        fi;
+
+    od;
+
+    # loop over all parts of the library
+    for name  in RecFields( ThGParts )  do
+        part := ThGParts.(name);
+
+        # sieve the groups through the 'Size' filter
+        if IsSubset( sizes, part.sizes )  then
+            grps := "all";
+        else
+            grps := [];
+        fi;
+
+        # sieve the groups through the 'Rank' filter
+        grps2 := [];
+        if IsSubset( ranks, part.ranks )  then
+            grps2 := grps;
+        elif Intersection( ranks, part.ranks ) <> []  then
+            if grps = "all"  then  grps := ThGLoad( part );  fi;
+            max := Maximum( Intersection( ranks, part.ranks ) );
+            i := 1;
+            while i <= Length(grps)  and grps[i][1] <= max  do
+                if grps[i][1]  in ranks  then
+                    Add( grps2, grps[i] );
+                fi;
+                i := i + 1;
+            od;
+        else
+            grps2 := [];
+        fi;
+        grps := grps2;
+
+        # sieve the groups through the 'pClass' filter
+        grps2 := [];
+        if IsSubset( pclasses, part.pclasses )  then
+            grps2 := grps;
+        elif Intersection( pclasses, part.pclasses ) <> []  then
+            if grps = "all"  then  grps := ThGLoad( part );  fi;
+            for grp  in grps  do
+                if grp[3] in pclasses  then
+                    Add( grps2, grp );
+                fi;
+            od;
+        else
+            grps2 := [];
+        fi;
+        grps := grps2;
+
+        # sieve the groups through the other properties
+        if grps = "all"  then grps := ThGLoad( part );  fi;
+        for grp  in grps  do
+            grp := ThGGroup( 3,	grp );
+            i := 1;
+            while     i <= Length(funs)
+                  and (funs[i]( grp ) = vals[i]
+                       or IsList( vals[i] )  and funs[i]( grp ) in vals[i])
+            do
+                i := i + 1;
+            od;
+            if i = Length(funs)+1  then
+                return grp;
+            fi;
+        od;
+
+    od;
+
+    # return the result
+    return false;
+end;
+
+
+#############################################################################
+##
+#E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+##
+##  Local Variables:
+##  mode:               outline
+##  outline-regexp:     "#F\\|#V\\|#E"
+##  fill-column:        73
+##  fill-prefix:        "##  "
+##  eval:               (hide-body)
+##  End:
+##
+
+
+

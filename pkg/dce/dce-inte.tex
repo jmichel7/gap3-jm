@@ -1,0 +1,338 @@
+\documentstyle[a4]{article}
+\def\Stab{\mathord{\mbox{Stab}}}
+\def\gen<#1>{\left\langle\,#1\,\right\rangle}
+\def\genr<#1|#2>{\left\langle\,#1\mid#2\,\right\rangle}
+\let\iso=\cong
+\def\split{\mathop{:}}
+\title{GAP Double Coset Enumerator --- Internals}
+\author{Steve Linton}
+\begin{document}
+\maketitle
+\section{About This Document}
+This document is not for the faint of heart. It describes the data
+structures and algorithms  of the double coset enumerator, as
+implemented in GAP. It should be read only when you are familiar with
+the user documentation, and especially the mathematical introduction.
+
+\section{The Structure of the Double Coset Table}
+A successful double coset enumeration returns a DCE universe {\tt u}
+containing the results of the enumeration and various pieces of
+ancillary data. The main piece of data stored is the Double Coset
+Table, which is stored in {\tt u.table}. 
+To understand its structure we first need to look at the pre-computed
+information stored for each gain group and generator.
+
+Throughout this section we consider only those parts of the data which
+have meaning in a closed table. Other fields may be present in the
+records.
+\subsection{The Gain Group Records}
+The gain group information supplied in the presentation is processed
+into records with the following fields (for a gain group $L$):
+\begin{description}
+\item[\tt dom] A GAP set on which {\tt u.K} acts like the action
+of $K$ on the left cosets of $L$ (note that the image under this action of
+$k$ on $k'L$ is $k^{-1}k'L$).
+\item[\tt op] The GAP operation by which {\tt u.K} acts on {\tt dom}.
+\item[\tt pt0] The member of {\tt dom} corresponding to $L$.
+\item[\tt stab] A function for computing the stabilizer of points in
+{\tt dom} under the action of subgroups of {\tt u.K}. This should have
+the same syntax as {\tt Stabilizer}, to which it defaults.
+\item[\tt L] The gain group itself. Should be equal to {\tt
+stab(u.K,pt0,op)}.
+\end{description}
+A list of these records is stored in {\tt u.GGrecs}.
+\subsection{The Generator Records}
+For each generator $x$ input or created as an inverse, a record is
+constructed. These records are listed in {\tt u.Xrecs}. The generators
+are usually referred to internally by indices into this list. The fields of
+each record are:
+\begin{description}
+\item[\tt CohortSize] The integer $|K:L_x|$.
+\item[\tt action] This field described how $x$ maps $L_x$ to $L^{(x)}$. It
+can be:
+\begin{description}
+\item[\tt false] indicating that $x$ commutes with $L_x$.
+\item[an element of $K$] indicating that $x$ acts as that element does
+by conjugation.
+\item[an explicit homomorphism] from $L_x$ to $L^{(x)}$, giving the
+action.
+\end{description}
+\item[\tt wgg] The index in {\tt u.GGrecs} of the gain group record
+corresponding to (a conjugate of) $L_x$. Let {\tt ggr} be that record.
+\item[\tt pt] The member of {\tt ggr.dom} corresponding to $L_x$.
+\item[\tt Reps] A set of left coset representatives of $L_x$ in $K$. These
+are ordered so that {\tt ggr.op(pt,Reps[i]\^\ -1) = ggr.dom[i]}.
+\item[\tt inverse] The index in {\tt u.Xrecs} of the record corresponding
+to $x^-1$.
+\item[\tt L] The gain group $L_x$.
+\item[\tt name] The name of $x$ as a word in abstract generators of length
+1.
+\item[\tt invol] Boolean, true if $x$ is was specified to be an involution.
+\item[\tt ggconj] An element of $K$ which conjugates {\tt ggr.L} to {\tt
+L}.
+\end{description} 
+
+\subsection{The Table itself}.
+This is an array of records, stored in {\tt u.table},
+each record {\tt d} corresponding to a double coset $D$ with
+representative $d$. The main fields in {\tt d} are:
+\begin{description}
+\item[\tt d.name] An integer used to print and store {\tt d}, and
+occasionally to refer to it (though mostly we use the record {\tt d}
+itself). Names are allocated in increasing order as double cosets are
+defined, and are {\em not} changed when the table is packed. Thus the
+final set of names will not usually be sequential. 
+\item[\tt d.muddle] The muddle group $M_d$ as a subgroup of {\tt
+u.K}. If $M_d = K$, then {\tt IsIdentical(u.K,d.muddle)} will be
+true. If $M_d$ is the trivial group then {\tt
+IsIdentical(u.triv,d.muddle)} will be true.
+\item[\tt d.cohorts] This contains the actual coset table entries. It
+is a list of lists (cohorts), one for each generator (and inverse, if
+necessary) in the same order as {\tt u.Xrecs}. The cohort for a
+generator $x$ has (in a closed table) $|K:L_x|$ entries. These can be
+of two kinds
+\begin{description}
+\item[alpha entries] These are GAP lists. If {\tt d.cohorts[x][i]} is
+a list, then it will have length 2. The first entry will be a row
+({\tt d1} corresponding to a double coset $D_1$ with representative
+$d_1$) of the table (the actual row, not an index), while the second
+will be an element $k_1$ of {\tt u.K}. This entry signifies that
+$$d.\mathord{\hbox{\tt u.Xrecs[x].Reps[i]}}x = d_1.k_1.$$
+\item[beta entries] These can only arise when $M_d$ is non-trivial. We
+only actually need one image per $(M_d,L_x)$ double coset to describe
+the action of $x$ on $D$. When such a double coset contains more than
+one left $L_x$ coset we use a beta-entry to redirect enquiries to the
+double-coset representative.
+Beta entries are GAP records, and have two components:
+\begin{description}
+\item[\tt col] The position in the cohort of the double-coset
+representative. This must always point to an alpha entry.
+\item[\tt elt] An element of $M_d$ with the following property:
+if a beta entry {\tt b} appears in column {\tt i} of the {\tt x} cohort then:
+$$\begin{array}{c}\hbox{\tt b.elt*u.Xreps[x].Reps[i] in} \\
+\qquad \hbox{\tt u.Xreps[x].Reps[b.col]*u.Xrecs[x].L}\end{array}$$
+\end{description}
+\end{description}
+\end{description}
+
+The use of these records is best understood by looking at the DCE
+internal function {\tt DCEFollow}, somewhat simplified by removing
+optimisations and provision for open tables.
+
+This function takes three arguments, the DCE Universe {\tt u}, a list
+{\tt dk} of length 2, containing a name $d.k$ for a single coset, and {\tt
+r}, which can be either an element of $K$ or a generator number. It
+computes a name for the product $d.k.r$ and overwrites {\tt dk} with it.
+
+\begin{verbatim}
+DCEFollow := function(u,dk,r)
+    local col,d,xrec,ggrec,cohort,op;
+    d := dk[1];
+    if IsInt(r) then
+        xrec := u.Xrecs[r];
+        ggrec := u.GGrecs[xrec.wgg];
+        cohort := d.cohorts[r];
+        op := ggrec.op;
+        col := PositionSorted(ggrec.dom,ggrec.op(xrec.pt,dk[2]^-1));
+        if  IsRec(cohort[col]) then
+            dk[2] := cohort[col].elt*dk[2];
+            col := cohort[col].col;
+        fi;
+        dk[1] := cohort[col][1];
+        dk[2] := cohort[col][2]*DCEXonEl(u,xrec.Reps[col] mod dk[2],r);
+    else
+        dk[2] := dk[2]*r;
+    fi;
+    return dk;
+end;
+\end{verbatim}
+
+As can be seen the problem splits immediately into two cases, as $r$
+is in $K$ or $X$. The first case (dealt with second in the code) is
+easy. In the other case, after loading up pointers to various
+records, we compute {\tt col}, the position in the cohort where the
+image of $dk$ would be found, were $M_d$ trivial. This makes use of
+the action which we supplied as part of our gain group information, to
+avoid computing with cosets of $L_r$.
+
+If this entry is a beta-entry (a record) then we must change {\tt dk}
+to another name for the same single coset, by multiplying {\tt dk[2]}
+(which is $k$) on the left by the {\tt elt} part of the beta
+entry. The product, the new
+value of $k$, lies in a different left $L_r$ coset, and so is looked up
+in a different column. We could compute which column, but we can access
+it more quickly by looking in the beta-entry.
+
+Now {\tt col} contains the index of an alpha-entry (in {\tt
+cohort}). Let $k_0$ be {\tt xrep.Reps[col]}. The alpha-entry tells us
+a name for $dk_0 r$. Furthermore $k\in k_0L_r$, so $k_0^{-1} k \in
+L_r$. The expression passed to {\tt DCEXonEl} represents this element,
+and {\tt DCEXonEl} computes its conjugate by $r$, which is defined by
+the definition of $L_r$. We are thus able to implement the fact that
+$$dkr = dk_0 (k_0^{-1}k) r = d k_0 r (k_0^{-1}k)^r$$
+and compute a name for $dkr$ from the alpha-entry.
+
+This routine is the heart of the algorithm. Everything else is
+essentially driven by the aim of making this work.
+
+\section{Functions for Accessing a Closed Double Coset Table}
+
+In this section we look at some of the routines used internally by DCE
+which might be useful to someone wanting to write further programs
+such as the Collapsed Adjacency Matrix programs that access the
+completed double coset table.
+
+We assume always that the enumeration is complete, and omit from our
+description the data structures, pre-conditions and return values not
+applicable to this case.
+
+Note that these functions are intended mainly for internal use and so
+{\em do not check their arguments}.
+
+As usual the first argument is normally a DCE Universe.
+
+\subsection{\tt DCEColumnRegular(u,k,x)}
+\begin{description}
+\item[\tt k] An element of {\tt u.K}
+\item[\tt x] A generator (ie the index of an entry in {\tt u.Xrecs})
+\end{description}
+Returns the position within the {\tt x} cohort of any row $D$ of the
+double coset table in {\tt u} with $M_d$ trivial, in which to look up
+the image $dkx$. This basically amounts to dealing with the action of
+$K$ on the left cosets of $L_x$, as stored in the appropriate gain
+group records.
+\subsection{\tt DCEColumn(u,dk,x)}
+\begin{description}
+\item[\tt dk] A name for a single coset $dk$, as a length 2 list.
+\item[\tt x] A generator (number)
+\end{description}
+This function returns the column within the {\tt x} cohort of 
+{\tt dk[1]} from which the image $dk.x$ will actually be computed,
+allowing for the action of $M_d$. As a side-effect, it may alter {\tt
+dk}, replacing it with another name for the same single coset. The
+return value will  always be the index of an alpha entry in the {\tt
+x} cohort of $d$.
+\subsection{\tt DCEXonEl(u,l,x)}
+\begin{description}
+\item[\tt l] An elements of $L_x$.
+\item[\tt x] A generator number.
+\end{description}
+
+Returns $l^x$, which must lie in $K$, by the construction of $L_x$.
+
+\subsection{\tt DCEXonSG(u,h,x)}
+
+\begin{description}
+\item[\tt h] A subgroup of $L_x$.
+\item[\tt x] A generator number.
+\end{description}
+
+Returns $h^x$, which must be a subgroup of $K$, by the construction of
+$L_x$.
+
+\subsection{\tt DCELin(u,M,x,k)}
+\begin{description}
+\item[\tt M] A subgroup of $K$.
+\item[\tt x] A generator number.
+\item[\tt k] An element of $K$.
+\end{description}
+
+Returns the subgroup $M\cap L_x^k$ of $K$, taking advantage of the
+extra information about $L_x$ which is stored, to compute the
+intersection more efficiently.
+
+\subsection{\tt DCEFollow(u,dk,x)}
+
+\begin{description}
+\item[\tt dk] A name for a single coset, stored as a length 2 list.
+\item[\tt x] A generator number.
+\end{description}
+
+This function replaces the entries in the list {\tt dk}, so that it
+represents a name for the single coset ${\tt dk}.{\tt x}$. The same
+list is returned.
+
+
+\section{Words and Relators}
+\subsection{Data Structures}
+
+The Double Coset Enumerator uses two representations for elements of
+the free product $K*F_X$. The {\bf external} representation is as DCE
+words (which are records), as described in the DCE user
+documentation. There is also an {\bf internal representation} as
+lists. Each element of such a list is either an element of $K$ or an
+integer, used as an index into {\tt u.Xrecs} and representing an
+element of $X\cup X^{-1}$.
+
+Conversion from external to internal form is achieved by the the
+function {\tt DCEProcessRelator(u,r)}. This also combines adjacent
+elements of $K$ and  expands out words in abstract generators.
+
+\subsection{A Little More Mathematics}
+
+The first section of the user documentation described the mathematics
+behind the encoding of a permutation action in a double coset
+table. An additional result gives considerable speed-ups in using that
+information.
+
+Let $w = r_1\cdots r_k$ be an element of $K*X$ and let $M$ be any
+subgroup of $K$. Define $M_1=M$ and $M_2,\ldots,M_{k+1}$ by 
+$$ M_{i+1} = \cases{M_i^{r_i}&$r_i\in K$\cr 
+\left(M_i\cap L_{r_i}\right)^r_i & $r_i\in X$}$$
+
+Now define $M^{(k+1)} = M_{k+1}$ and $M^{(k)},\ldots,M^{(1)}$ by
+$$ M^{(i)} = M^{(i+1)\;r_i^{-1}}$$
+The construction ensures that this expression will be defined even
+when $r_i\in X$.
+
+Finally let $$M_w = M^{(1)}.$$
+
+The group $M_w$ represents that subgroup of $M$ which remains ``in
+one piece'' under the action of $w$. That is: $$m\in M_w \Longrightarrow
+dkmw \in dkwM$$ for all single cosets $dk$. 
+
+This is a very useful result, most often in the case where $M=K$, but
+occasionally otherwise. The enumerator itself makes use of this to
+avoid unnecessary relator tracing, while the adjacency matrix
+calculations in {\tt DCEColAdjSingle} use the case where $M=K\cap H$.
+
+
+\subsection{More functions}
+
+\subsubsection{\tt DCEWordGroup(u,w[,M])}
+
+The theory of the preceding is implemented by the function {\tt
+DCEWordGroup}. This takes two compulsary arguments {\tt u} the DCE
+Universe and {\tt w} a word in internal form. The third (optional)
+argument is the subgroup {\tt M}, if it is absent the default is {\tt
+u.M} if that exists and otherwise {\tt u.K}.
+
+\subsubsection{\tt DCERin(u,r)}
+
+This function returns the inverse of {\tt r}, which should be an
+element of a relator in internal form. That is {\tt r} is either an
+element of {\tt u.K} or an integer (denoting an element of $X$).
+
+\subsubsection{\tt DCEMultiFollow(u, dk, rel, f, b, backwards)}
+
+This function computes the image of the single coset denoted by {\tt
+dk} (as usual a list of length 2), under the subword of {\tt rel} (a
+relator in internal form) beginning with position {\tt f} and ending
+before position {\tt b}. If the Boolean value {\tt backwards} is {\tt false}
+then {\tt f} should be less than {\tt b} and the subword is read
+forwards. If {\tt backwards} is {\tt true} then {\tt f} should be
+greater than {\tt b} and the subword is read backwards.
+
+It returns the index of the first letter of {\tt rel} not used, which
+in a closed table should always be {\tt b}.
+
+
+\end{document}
+
+
+
+
+
+
+
+

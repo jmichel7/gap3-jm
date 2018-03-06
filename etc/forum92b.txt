@@ -1,0 +1,2499 @@
+This file contains the mails sent to the  GAP forum in  April-June  1992.
+
+Name               Email address                           Mails    Lines
+Martin Schoenert   martin@bert.math.rwth-aachen.de            17     3087
+John Neil          neil@dehn.mth.pdx.edu                       4      173
+Daid Sibley        sibley@math.psu.edu                         4      118
+Allan Adler        ara@martigny.ai.mit.edu                     4       53
+Frank Celler       fceller@bert.math.rwth-aachen.de            3      109
+Joachim Neubueser  neubuese@samson.math.rwth-aachen.de         3       99
+Arnold Mandel      am@ime.usp.br                               3       54
+Thomas Breuer      sam@ernie.math.rwth-aachen.de               2       67
+Martin Wursthorn   pluto@phoebus.mathematik.uni-stuttgart.de   2       62
+Werner Nickel      werner@pell.anu.edu.au                      2       27
+Goetz Pfeiffer     goetz@ernie.math.rwth-aachen.de             1      403
+Peter Dobcsanyi    dobcsany@mat.aukuni.ac.nz                   1       75
+Steve Fisk         fisk@polar.bowdoin.edu                      1       15
+Steve Linton       sl25@cus.cam.ac.uk                          1       11
+Derek Holt         dfh@maths.warwick.ac.uk                     1        8
+Chris Herssens     ch@cage.rug.ac.be                           1        7
+Lewis Stiller      stiller@blaze.cs.jhu.edu                    1        4
+Gery Sherman       sherman@nextwork.rose-hulman.edu            1        4
+
+This  file is in Berkeley mail drop format, which means you can read this
+file with 'mail -f <name-of-the-file>'  or 'mailx -f <name-of-the-file>'.
+It is also possible however to read this file with any text editor.
+
+
+
+From stiller@blaze.cs.jhu.edu Tue Apr 14 21:35:20 1992
+From:       stiller@blaze.cs.jhu.edu "Lewis Stiller"
+Date:       Tue, 14 Apr 92 21:35:20 +0200
+Subject:    emacs and GAP
+
+Is there an emacs mode for gap ? I just built GAP 3.1 on SPARC and run
+in shell mode from within emacs but the shell echoes each line I type.
+How do I stop this?
+
+
+
+From goetz@ernie.math.rwth-aachen.de Wed Apr 15 18:47:09 1992
+From:       goetz@ernie.math.rwth-aachen.de "Goetz Pfeiffer"
+Date:       Wed, 15 Apr 92 18:47:09 +0200
+Subject:    Re: emacs and GAP
+
+stiller@blaze.cs.jhu.edu writes:
+> 
+> Is there an emacs mode for gap ? I just built GAP 3.1 on SPARC and run
+> in shell mode from within emacs but the shell echoes each line I type.
+> How do I stop this?
+> 
+
+The lines  are no longer  printed  twice  if you start GAP with option
+'-n'.  This will disable the command line editing.
+
+Here is, however, a first version of 'gap.el' which defines a GAP mode
+for GNU Emacs.  It carries some  of GAP's  features  to Emacs, such as
+command completion and the help  facility.  Any suggestions to improve
+and enhance 'gap.el' are welcome.
+
+Goetz Pfeiffer.
+
+--Cut here-------------------------------------------------------------------
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;A  gap.el                     GAP Filter                      Goetz Pfeiffer
+;; 
+;A  @(#)$Id: forum92b.txt,v 1.1.1.1 1996/12/11 12:37:13 werner Exp $
+;;
+;Y  Copyright 1992,   Lehrstuhl D fuer Mathematik,    RWTH Aachen,    Germany
+;;
+;;  This file contains the definition of a GAP mode for GNU Emacs.  This mode
+;;  is based on the shell mode of GNU Emacs.
+;;
+;;  GNU Emacs is free software;  you  can  redistribute  it  and/or modify it
+;;  under the terms of  the GNU  General Public License as  published by  the
+;;  Free Software Foundation; either version 1, or (at your option) any later
+;;  version.
+;;
+;;  GNU Emacs is distributed in the hope that it will be  useful, but WITHOUT
+;;  ANY  WARRANTY; without even the  implied  warranty of  MERCHANTABILITY or
+;;  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+;;  more details.
+;;
+;;  You should have received a copy of the  GNU General Public  License along
+;;  with GNU Emacs; see the file COPYING.  If not, write to the Free Software
+;;  Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;;
+;;  The GAP mode enables Emacs to run GAP  in a buffer.  Moreover  it enables
+;;  editing GAP library files with  command completion.  Start  a GAP process
+;;  in  buffer '*gap*' with  'M-x gap'.   Then 'TAB'  will  do  command  line
+;;  completion just like GAP does without Emacs.  To  get help about  a topic
+;;  enter '?'.  This is possible in any place of the  command line. The topic
+;;  defaults  to the  symbol  around point.  Hitting  <return> on  a previous
+;;  input line  in the  GAP buffer will send  that  line  again  to  the  GAP
+;;  process.
+;;
+;;  Editing a '*.g' file in GAP mode is  possible but  somehow dangerous.  To
+;;  enter GAP mode  type  'M-x gap-mode' in  the  buffer containing the '*.g'
+;;  file. Both the help facility ('?') and  command completion are available.
+;;  They will  refer to  the GAP process running in the buffer '*gap*'.  This
+;;  may cause big confusion if the GAP process is busy with other things.
+;;
+;H  $Log: forum92b.txt,v $
+;H  Revision 1.1.1.1  1996/12/11 12:37:13  werner
+;H  Preparing 3.4.4 for release
+;H
+;H  Revision 1.1  1992/04/15  15:45:15  goetz
+;H  Initial revision
+;H
+;;
+
+(provide 'gap)
+(require 'shell)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;V  gap-process-string
+;V  gap-start-options
+;V  gap-process-buffer
+;V  gap-prompt-pattern
+;;
+(defvar gap-process-string "/usd/gap/3.1/src/gap.ds"
+  "*A string to pass to the unix 'exec' function to start GAP")
+
+(defvar gap-start-options (list "-l" "/usd/gap/3.1/lib/" "-m" "2m")
+  "*The list of initial GAP options")
+
+(defvar gap-process-buffer 
+  "*gap*"
+  "The buffer normally running GAP.")
+
+(defvar gap-prompt-pattern "\\(gap\\)?> " 
+  "*Regexp used by Newline command in GAP mode to match prompt.")
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;V  gap-key-map . . . . . . . . . . . . . . . . . . . . . . . . key bindings.
+;;
+;;  The 'gap-key-map' defines the key bindings in gap mode.
+;;
+;;  The  <return>   key    is  bound to    'gap-send',  '\t' is    bound   to
+;;  'gap-complete' and the '?'  key is bound to 'gap-help'.
+;;
+(defvar gap-key-map nil) 
+
+(if gap-key-map nil
+  (setq gap-key-map (copy-keymap shell-mode-map))
+  (define-key gap-key-map "\C-m" 'gap-send)
+  (define-key gap-key-map "\t" 'gap-complete)
+  (define-key gap-key-map "?" 'gap-help))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;V  gap-syntax-table . . . . . . . . . . . . . . . . . . . . .  syntax table.
+;;
+;;  The 'gap-syntax-table' describes the syntax  of the  GAP  language.  This
+;;  is used to  determine  an identifier, for   example (see 'gap-complete').
+;;  Defines '#' to be the beginning of a comment and '\n' to be the end.
+;;
+(defvar gap-syntax-table nil
+  "Syntax table used while in gap mode.")
+
+(if gap-syntax-table ()
+  (setq gap-syntax-table (make-syntax-table))
+  (modify-syntax-entry ?# "<" gap-syntax-table)
+  (modify-syntax-entry ?\n ">" gap-syntax-table))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;F  (gap-send) . . . . . . . . . . . . . . . . . . . . . . send input to GAP.
+;;
+;;  'gap-send' sends the prepared input  to  GAP.  This function is  bound to
+;;  the <return> key in  gap mode. It has  to decide  whether  the  new input
+;;  has been  typed after the  last output or  whether a previous line  shall
+;;  be repeated.  In  the latter  case it   has to  strip off  an  occasional
+;;  prompt.
+;;
+(defun gap-send ()
+  "Send input to GAP."
+  (interactive "*")
+  (or (get-buffer-process (current-buffer))
+      (error "Current buffer has no process"))
+  (end-of-line)
+  (if (eobp)
+      (progn
+	(move-marker last-input-start
+		     (process-mark (get-buffer-process (current-buffer))))
+	(insert ?\n)
+	(move-marker last-input-end (point)))
+    (beginning-of-line)
+    (re-search-forward gap-prompt-pattern
+		       (save-excursion (end-of-line) (point)) t)
+    (let ((copy (buffer-substring (point)
+				  (progn (forward-line 1) (point)))))
+      (goto-char (point-max))
+      (move-marker last-input-start (point))
+      (insert copy)
+      (move-marker last-input-end (point))))
+  (let ((process (get-buffer-process (current-buffer))))
+    (process-send-region process last-input-start last-input-end)
+    (set-marker (process-mark process) (point)))
+  (setq gap-send-state 'echo))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;F  (gap-mode) . . . . . . . . . . . . . . . . . . . . . . . Emacs' GAP mode.
+;;
+(defun gap-mode ()
+  "Major mode for interacting with GAP and editing '*.g' files.
+
+\\[gap] starts GAP.
+
+\\[gap-send] sends input to GAP.
+
+\\[gap-help] gives help on a GAP subject.
+
+Most commands from the Emacs' shell mode are available as well.
+
+Entry to this mode calls the value of gap-mode-hook with no args,
+if that value is non-nil."
+
+
+  (interactive)
+  (kill-all-local-variables)
+  (setq major-mode 'gap-mode)
+  (setq mode-name "GAP")
+  (setq mode-line-process '(": %s"))
+  (use-local-map gap-key-map)
+
+  ;;  rebind RET if editing file
+  (or (get-buffer-process (current-buffer))
+      (local-set-key "\C-m" 'newline))
+  
+  (set-syntax-table gap-syntax-table)
+  (make-local-variable 'gap-send-state)
+  (setq gap-send-state 'normal)
+  (make-local-variable 'last-input-start)
+  (setq last-input-start (make-marker))
+  (make-local-variable 'last-input-end)
+  (setq last-input-end (make-marker))
+
+  (run-hooks 'gap-mode-hook))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;F  (gap-output-filter PROC STRING) . . . . . . . . . . .  handle GAP output.
+;;
+;;  The  filter 'gap-output-filter' is used to process GAP output  before
+;;  it is  echoed  in the  buffer.   It behaves according  to  its  state
+;;  'gap-send-state'.
+;;
+;;  The possible states are:
+;;
+;;  'normal': just put the output in the buffer.
+;;
+;;  'echo': suppress GAP echo of the command, then return to 'normal'.
+;;
+;;  'completing': handle command line completion.
+;;
+(defun gap-output-filter (proc string)
+  (cond
+    ((eq gap-send-state 'normal)
+     (insert string)
+     (set-marker (process-mark proc) (point)))
+    ((eq gap-send-state 'echo)
+     (if (string-equal string "\n") (setq gap-send-state 'normal)))
+    ((eq gap-send-state 'completing)
+      (if (string-equal string "\C-g")
+        (beep)
+        (if (not (or (string-equal string " ") (string-equal string "\C-h")))
+          (insert string)))
+      )))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;F  (gap-help-filter PROC STRING) . . . . . . . . . . . . handle help output.
+;;
+;;  The 'gap-help-filter'  takes  care  of GAP help  output.  The output of a
+;;  help request  is  put into the  '*Help*' buffer. This filter  deletes the
+;;  echo of  the request. As  GAP sends its help in   pages  we have  to type
+;;  <space>  at the end  of  each  page.  The  prompt indicates that help  is
+;;  complete.
+;;
+(defun gap-help-filter (proc string)
+  (let ((cbuf (current-buffer)))
+    (set-buffer "*Help*")
+    (goto-char (point-max))
+    (insert string)
+    (beginning-of-line)
+    (if (looking-at "    -- <space> for more --")
+        (progn
+          (delete-region (point) (point-max))
+          (process-send-string proc " ")))
+    (if (looking-at "\\( *[\C-h]+\\)\\|\\(\\?.*[\C-m]\\)")
+        (progn
+          (delete-region (point) (point-max))))
+    (if (looking-at "gap>")
+        (progn
+          (delete-region (point) (point-max))
+          (set-process-filter proc 'gap-output-filter)))
+    (set-buffer cbuf)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;F  (gap) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . runs GAP.
+;;
+(defun gap ()
+  "Run GAP, input and output via buffer *gap*."
+  (interactive)
+  (pop-to-buffer 
+   (start-gap-process "*gap*" "gap" gap-process-string gap-start-options))
+  (if (not (eq major-mode 'gap-mode)) (gap-mode))
+  (setq gap-process-buffer (current-buffer))
+  (set-process-filter (get-buffer-process gap-process-buffer) 
+		      'gap-output-filter))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;F  (gap-complete) . . . . . . . . . . . . . . . . . . . complete identifier.
+;;
+;;  'gap-complete' sends  the  partial  identifier  preceding  point  to  the
+;;  running  gap   process   and   asks  this  via   '\t'   to   complete the
+;;  identifier.   We  have   to  handle the   gap   output  of  the  complete
+;;  identifier.  Moreover we  have   to clear the GAP   input  line  via '^X'
+;;  while the intended input is still prepared in the Emacs buffer.
+;;
+(defun gap-complete ()
+  "Complete the partial identifier preceeding point."
+  (interactive "*")
+  (let ((process (get-buffer-process gap-process-buffer))
+	sent-successfully)
+    (if	(not (and process (memq (process-status process) '(run stop))))
+	(error "No GAP process running in buffer %s" gap-process-buffer))
+    (setq gap-completion-ident (gap-ident-around-point))
+
+    ;;  delete partial identifier from input line
+    (delete-backward-char (length gap-completion-ident))
+
+    ;;  ask for completion and clear input line
+    (setq gap-send-state 'completing)
+    (process-send-string process (concat gap-completion-ident "\t\C-x"))
+   ))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;F  (gap-ident-around-point) . . . . . . . . . . . . identifier around point.
+;;	      
+(defun gap-ident-around-point ()
+ "Return the identifier around the point as a string."
+ (save-excursion
+   (let (beg)
+     (if (not (eobp)) (forward-char 1))
+     (if (not (re-search-backward "\\w\\|\\s_" nil t))
+	 ""
+       (forward-char 1)
+       (backward-sexp)
+       (setq beg (point))
+       (forward-sexp)
+       (buffer-substring beg (point))))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;F  (gap-help TOPIC ARG) . . . . . . . . . . . . . . . . . . . . . . .  help.
+;;
+;;  'gap-help'  normally is  invoked  by pressing  the  '?'  key in gap mode.
+;;  The  minibuffer  is used to ask for  the help topic.  Here the identifier
+;;  around point   (see 'gap-ident-around-point') is used   as a default. The
+;;  chosen  topic   is  passed to  the   GAP  help facility.   The output  is
+;;  displayed in the '*Help' buffer.
+;;
+(defun gap-help (topic arg)
+  "Display GAP help about TOPIC in the *Help* buffer."
+  (interactive 
+   (let ((enable-recursive-minibuffers t)
+	 (try-word (gap-ident-around-point))
+	 val)
+     (if (string-equal try-word "gap>")
+	 (setq val (read-string "GAP topic: "))
+       (setq val (read-string (format "GAP topic (default %s): "
+				      try-word)))
+       (if (string-equal val "")
+	   (setq val try-word)))
+     (list val current-prefix-arg)))
+  (let ((process (get-buffer-process gap-process-buffer))
+	sent-successfully)
+    (if	(not (and process (memq (process-status process) '(run stop))))
+      (error "No gap process running in buffer %s" gap-process-buffer))
+    (unwind-protect
+	(progn
+	  (with-output-to-temp-buffer "*Help*"
+	    (print-help-return-message))
+          (set-process-filter process 'gap-help-filter)
+	  (process-send-string process (concat "?" topic "\n"))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;F  (start-gap-process ... ) . . . . . . . . . . . . . . . . . . . start GAP.
+;;
+(defun start-gap-process 
+  (bufferid name program switches)
+  (let ((buffer (get-buffer-create bufferid))
+	(disp  (getenv "DISPLAY"))
+	proc proc-args proc-more-args status size)
+    (setq proc (get-buffer-process buffer))
+    (if proc (setq status (process-status proc)))
+    (save-excursion
+      (set-buffer buffer)
+      (if (memq status '(run stop))
+	  nil
+	(if proc (delete-process proc))
+	(message "Starting GAP...")
+
+        (setq proc (apply 'start-process name buffer
+                          (concat exec-directory "env")
+                          (format "TERMCAP=emacs:co#%d:tc=unknown:"
+                                  (screen-width))
+                          "TERM=emacs"
+                          "EMACS=t"
+                          "-"
+                          program 
+                          switches))
+
+	(setq procname (process-name proc))
+	(goto-char (point-max))
+	(set-marker (process-mark proc) (point))
+	(shell-mode)))
+    buffer))
+
+(run-hooks 'gap-mode-load-hook)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+;;
+;;  Local Variables:
+;;  fill-column:         77
+;;  fill-prefix:         ";;  "
+;;  End:
+;;
+
+
+
+From ara@martigny.ai.mit.edu Thu Apr 16 22:18:47 1992
+From:       ara@martigny.ai.mit.edu "Allan Adler"
+Date:       Thu, 16 Apr 92 22:18:47 +0200
+Subject:    [GAP under Linux]
+
+Has anyone tried to install GAP on a 80386 PC under the public domain
+UNIX system LINUX? I for one would be interested in hearing about
+your experiences.
+
+Allan Adler
+ara@altdorf.ai.mit.edu
+
+
+
+From sibley@math.psu.edu Mon Apr 20 03:14:56 1992
+From:       sibley@math.psu.edu "David Sibley"
+Date:       Mon, 20 Apr 92 03:14:56 +0200
+Subject:    Confused about Image
+
+Probably I just don't understand this. But "Image" doesn't seem to be
+working as the manual says it should.
+
+I constructed GL(2,3) as a matrix group and got the permutation
+representation f (operation homomorphism) of it acting on vectors
+(including the zero vector -- on RowSpace(2,GF(3))).  Then I tried
+applying the homomorphism to a pre-defined matrix:
+
+gap> m1;
+[ [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ]
+gap> Image(f,m1);
+Error, <E> must be a domain or a set in
+DomainOps.IsSubset( G, H ) called from
+D.operations.IsSubset( D, E ) called from
+IsSubset( arg[1].source, arg[2] ) called from
+Image( f, m1 ) called from
+main loop
+brk> quit;
+gap> m1^f;   
+(4,5,6)(7,9,8)
+gap>
+
+As you can see, the "^" form worked, but "Image" itself did not.  And
+why is it worrying about subsets when I'm trying to use the element
+version of "Image"?
+
+When I tried the set version I got the same error message:
+
+gap> Image(f,[m1]);
+Error, <E> must be a domain or a set in
+DomainOps.IsSubset( G, H ) called from
+D.operations.IsSubset( D, E ) called from
+IsSubset( arg[1].source, arg[2] ) called from
+Images( map, elm ) called from
+fun( i ) called from
+..
+brk> quit;
+gap> 
+
+So the set version of "Image" doesn't work here either. This is
+especially mystifying, as the error message says [m1] is not a subset
+of f.source. At least I think that's what it means. But it IS a subset
+of f.source.
+
+What am I doing wrong?
+
+David Sibley
+sibley@math.psu.edu
+
+
+
+From neil@dehn.mth.pdx.edu Tue Apr 21 00:41:33 1992
+From:       neil@dehn.mth.pdx.edu "John Neil"
+Date:       Tue, 21 Apr 92 00:41:33 +0200
+Subject:    Love the finitely generated group stuff, but...
+
+I love the extensions to GAP which allow it to perform operations on finitely
+generated groups (since I'm a topologist by profession), but have run into
+a problem of sorts.  I have two presentations of the same group (I know that
+they are isomorphic for other reasons) that I would like to work with in GAP.
+The problem is, while GAP can compute the order of the group quite easily
+for one of the presentations, for the other it has EXTREME difficulty.  The
+group is of order 120 and I usually run GAP with 2MB of allocated storage.
+However, GAP crashes on the second presentation with this memory size.  The
+only way I've been able to get it to compute the order was to run GAP without
+the memory size restriction on a machine which has 128MB of resident memory.
+
+CAYLEY has no problem with either presentation UNLESS one uses the Felsch
+algorithm on the second presentation.  It then goes into an infinite loop
+and crashes pretty hard.
+
+I'm not sure if this is a bug (since my standalone Todd-Coxeter will compute
+either of these in under 10 seconds) or a limitation of the particular
+implementation of Todd-Coxeter that's resident in GAP.
+
+Here are the output files from the two runs.  The first is for the presentation
+which GAP has no problems with.  The second is the presentation which causes
+all the difficulty.
+
+(Note:  I am running GAP on a 20 processor Sequent with 128MB of memory using
+the DYNIX/ptx operating system (a System V variant)).
+
+------------Output File #1-------------------------------------------------
+                                                                      
+                 ########            Lehrstuhl D fuer Mathematik      
+               ###    ####           RWTH Aachen                      
+              ##         ##                                           
+             ##          #             #######            #########   
+            ##                        #      ##          ## #     ##  
+            ##           #           #       ##             #      ## 
+            ####        ##           ##       #             #      ## 
+             #####     ###           ##      ##             ##    ##  
+               ######### #            #########             #######   
+                         #                                  #         
+                        ##           Version 3              #         
+                       ###           Release 1              #         
+                      ## #            7 Apr 92              #         
+                     ##  #                                            
+                    ##   #           Johannes Meier, Martin Schoenert 
+                   ##    #           Alice Niemeyer, Werner Nickel    
+                  ##     #           Alex Wegner,    Thomas Bischops  
+                  ###   ##           Juergen Mnich,  Frank Celler     
+                   ######            Thomas Breuer,  Goetz Pfeiffer   
+                                     Udo Polis                        
+                                                                      
+                                     For help enter: ?<return>        
+gap> g := FreeGroup( 2, "g" );
+Group( g.1, g.2 )
+gap> g.relators := [ g.1^5*g.2^-8, g.2*g.1*g.2^-1*g.1^-4 ];
+[ g.1^5*g.2^-8, g.2*g.1*g.2^-1*g.1^-4 ]
+gap> Size( g );
+120
+gap> time;
+1240
+gap> quit;
+----------------End of Output File-----------------------------------------
+
+----------------Output File #2---------------------------------------------
+                                                                      
+                 ########            Lehrstuhl D fuer Mathematik      
+               ###    ####           RWTH Aachen                      
+              ##         ##                                           
+             ##          #             #######            #########   
+            ##                        #      ##          ## #     ##  
+            ##           #           #       ##             #      ## 
+            ####        ##           ##       #             #      ## 
+             #####     ###           ##      ##             ##    ##  
+               ######### #            #########             #######   
+                         #                                  #         
+                        ##           Version 3              #         
+                       ###           Release 1              #         
+                      ## #            7 Apr 92              #         
+                     ##  #                                            
+                    ##   #           Johannes Meier, Martin Schoenert 
+                   ##    #           Alice Niemeyer, Werner Nickel    
+                  ##     #           Alex Wegner,    Thomas Bischops  
+                  ###   ##           Juergen Mnich,  Frank Celler     
+                   ######            Thomas Breuer,  Goetz Pfeiffer   
+                                     Udo Polis                        
+                                                                      
+                                     For help enter: ?<return>        
+gap> g := FreeGroup( 2, "g" );
+Group( g.1, g.2 )
+gap> g.relators := [ g.1^5*g.2^-24, g.2*g.1^2*g.2^-1*g.1^-3 ];
+[ g.1^5*g.2^-24, g.2*g.1^2*g.2^-1*g.1^-3 ]
+gap> Size( g );
+120
+gap> time;
+2238310
+gap> quit;
+------------------End of Output File-------------------------------------
+
+--John Neil
+
+John Neil, Graduate Teaching Assistant           e-mail:  neil@math.mth.pdx.edu
+Mathematics Department                         NeXTMail:  neil@dehn.mth.pdx.edu
+Portland State University
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+
+From martin@bert.math.rwth-aachen.de Tue Apr 21 11:49:58 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Tue, 21 Apr 92 11:49:58 +0200
+Subject:    Re: Confused about Image
+
+David Sibley writes in his mail of 20-Apr-92
+
+    Probably I just don't understand this. But "Image" doesn't seem to be
+    working as the manual says it should.
+
+No,  it is not that you don't understand  the  manual.  You  have found a
+genuine bug.
+
+David Sibley continues
+
+    I constructed GL(2,3) as a matrix group and got the permutation
+    representation f (operation homomorphism) of it acting on vectors
+    (including the zero vector -- on RowSpace(2,GF(3))).  Then I tried
+    applying the homomorphism to a pre-defined matrix:
+
+    gap> m1;
+    [ [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ]
+    gap> Image(f,m1);
+    Error, <E> must be a domain or a set in
+    DomainOps.IsSubset( G, H ) called from
+    D.operations.IsSubset( D, E ) called from
+    IsSubset( arg[1].source, arg[2] ) called from
+    Image( f, m1 ) called from
+    main loop
+    brk> quit;
+
+The problem is that 'Image' sees  a list as  second argument  and assumes
+that this means that it was called in the 'Image( <map>, <list> )'  form.
+To be certain that this is really the case it tests if <list> is a subset
+of '<map>.source' with the call 'IsSubset( <map>.source,  <list> )'.  Now
+this test should really  be 'IsSubset( <map>.source,  Set(  <list> )  )'.
+Then it would return 'false' (instead of failing with the error message),
+and  'Image' would know that it was called in the 'Image( <map>, <elm> )'
+form.  I will send out a patch for this problem later this week.
+
+David Sibley continues
+
+    gap> m1^f;   
+    (4,5,6)(7,9,8)
+
+    As you can see, the "^" form worked, but "Image" itself did not.  And
+    why is it worrying about subsets when I'm trying to use the element
+    version of "Image"?
+
+Yes, the '^' works, and I suggest that you use it for the moment.
+
+David Sibley continues
+
+    When I tried the set version I got the same error message:
+
+    gap> Image(f,[m1]);
+    Error, <E> must be a domain or a set in
+    DomainOps.IsSubset( G, H ) called from
+    D.operations.IsSubset( D, E ) called from
+    IsSubset( arg[1].source, arg[2] ) called from
+    Images( map, elm ) called from
+    fun( i ) called from
+    ..
+    brk> quit;
+    gap>
+
+    So the set version of "Image" doesn't work here either. This is
+    especially mystifying, as the error message says [m1] is not a subset
+    of f.source. At least I think that's what it means. But it IS a subset
+    of f.source.
+
+This  is  the  same  error, because in  this  form  'Image' calls  itself
+(actually 'Images') for each element of the list.
+
+David Sibley continues
+
+    What am I doing wrong?
+
+    David Sibley
+    sibley@math.psu.edu
+
+You are not doing anything wrong.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From werner@pell.anu.edu.au Tue Apr 21 12:03:36 1992
+From:       werner@pell.anu.edu.au "Werner Nickel"
+Date:       Tue, 21 Apr 92 12:03:36 +0200
+Subject:    Re: Confused about Image
+
+Hi Martin,
+
+Du schreibst, dass Du einen Patch fuer den Bug in Image() senden willst.
+Ich wuerde die Patches gerne auf pell archivieren. Habt Ihr Euch schon
+Gedanken darueber gemacht, wie das geschehen soll ?
+
+Werner.
+
+
+
+From martin@bert.math.rwth-aachen.de Tue Apr 21 12:34:45 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Tue, 21 Apr 92 12:34:45 +0200
+Subject:    Re: Love the finitely generated group stuff, but...
+
+John Neil writes in his mail of 21-Apr-92:
+
+    I love the extensions  to GAP which allow it to perform operations on
+    finitely generated groups (since I'm a topologist by profession), but
+    have run into a problem  of  sorts.  I have two presentations  of the
+    same group (I know that they are isomorphic for other reasons) that I
+    would  like  to  work  with in GAP.  The  problem is,  while  GAP can
+    compute  the  order  of  the  group  quite  easily  for  one  of  the
+    presentations, for the other it has EXTREME difficulty.  The group is
+    of order  120 and I  usually run GAP  with 2MB of allocated  storage.
+    However,  GAP crashes  on  the second  presentation  with this memory
+    size.  The only way I've been able to get it to compute the order was
+    to run GAP without the memory size restriction on a machine which has
+    128MB of resident memory.
+
+    ...
+
+    gap> g := FreeGroup( 2, "g" );
+    Group( g.1, g.2 )
+    gap> g.relators := [ g.1^5*g.2^-24, g.2*g.1^2*g.2^-1*g.1^-3 ];
+    [ g.1^5*g.2^-24, g.2*g.1^2*g.2^-1*g.1^-3 ]
+    gap> Size( g );
+    120
+    gap> time;
+    2238310
+
+GAP uses the Felsch strategy  for the coset  enumeration.  Basically this
+enumerates the words of the free group on  two generators  systematically
+w.r.t.   to  length-lexicographical  ordering.   It uses the relators  to
+decide which words correspond to the same element in the group.  Actually
+in this case the  group defined by < g.1, g.2 | g.2*g.1^2*g.2^-1*g.1^-3 >
+is  infinite,  and  GAP  can   enumerate  the  elements  of  this   group
+systematically   (without    coincendences).    But   GAP    (and   other
+implementations of Felsch  TC) has to  enumerate 700000 words  until  the
+first relator can  be used to see  that two words are the same element in
+the group.  This is why  the enumeration takes so long.  (Note that after
+this  first  coincedence a  total  collapse  happens,  i.e.,  after  this
+coincedence  and its consequences  have been handled  the coset  table is
+complete.)
+
+A coset enumeration that uses  the HLT strategy to define new  cosets has
+no problems with this group.  This  is because it enumerates the words of
+the free group in such a way that relators can be used earlier.  A hybrid
+strategy  that uses Felsch  for  the relators  and  HLT for  the subgroup
+generators (e.g.,  the  coset  enumerator in SPAS), also has no  problems
+with this group.
+
+We intend to add the other strategies to GAP in a future release.
+
+However, there is a simple trick that you can use.  Note that the problem
+with your group is the large length of the first generator.  So the trick
+is to reduce the  length of this relator.  To do  this one introduces  an
+additional generator.
+
+    gap> g := FreeGroup( 3, "g" );
+    Group( g.1, g.2, g.3 )
+    gap> g.relators := [ g.1^5*g.3^-4, g.2*g.1^2*g.2^-1*g.1^-3, g.3/g.2^6 ];
+    [ g.1^5*g.3^-4, g.2*g.1^2*g.2^-1*g.1^-3, g.3*g.2^-6 ]
+    gap> Size( g );
+    120
+    gap> time;
+    3000
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From fisk@polar.bowdoin.edu Tue Apr 21 21:43:00 1992
+From:       fisk@polar.bowdoin.edu "Steve Fisk"
+Date:       Tue, 21 Apr 92 21:43:00 +0200
+Subject:    generating lots of groups
+
+I wish to determine the size of many (3*12^4) groups.  These groups
+are given by generators (4 generators)  and relations (16 relations).
+It was very easy to program it, and I was surprised to see that all
+the groups had order 2.  I suspected an error, and found it in Chapter
+21: you can not change the generators of a group!  I had fixed one
+group and just kept changing its generators.  
+	I do not see how to get around this problem, except by writing
+an AWK program to write 3*12^4 gap programs, and execute them, but
+there must be a better way.
+
+--
+Steve Fisk                              Department of Mathematics
+207-725-3574				Bowdoin College
+fisk@polar.bowdoin.edu			Brunswick, Me. 04011 USA
+
+
+
+From sibley@math.psu.edu Tue Apr 21 22:25:37 1992
+From:       sibley@math.psu.edu "David Sibley"
+Date:       Tue, 21 Apr 92 22:25:37 +0200
+Subject:    Inverse columns in character tables
+
+Is there some easy way to identify from the character table record
+which columns are inverses of which other columns? I'd like to be able
+to do this to, say, compute class multiplication constants
+automatically (by a pre-defined function) from the table. Everything
+else needed seems to be readily available in the record.
+
+One could figure this out from the power maps in the record, but that
+might be messy to do in a function.
+
+Alternatively, one could just use the complex conjugate of a column,
+but I don't even see how to do that in a function. Presumably this is
+somewhere in the automorphisms of the table, but how would I tell which
+automorphism is complex conjugation? Or identify that the table is
+real, so that complex conjugation does nothing, and is therefore not
+among the listed automorphisms.
+
+Is it efficient just to use column orthogonality? The one column not
+orthogonal to a given one is its inverse.
+
+Probably I'm just missing something obvious here.
+
+David Sibley
+sibley@math.psu.edu
+
+
+
+From sam@ernie.math.rwth-aachen.de Wed Apr 22 10:42:27 1992
+From:       sam@ernie.math.rwth-aachen.de "Thomas Breuer"
+Date:       Wed, 22 Apr 92 10:42:27 +0200
+Subject:    [Re: Inverse columns in character tables]
+
+David Sibley asked in his message from Apr 22 1992:
+
+    Is there some easy way to identify from the character table record
+    which columns are inverses of which other columns? I'd like to be able
+    to do this to, say, compute class multiplication constants
+    automatically (by a pre-defined function) from the table. Everything
+    else needed seems to be readily available in the record.
+
+There is a GAP function 'InverseClassesCharTable' that returns a list
+where at position <i> the position of the inverse class of class <i>
+is stored.  The power maps of the table are in general not sufficient
+to compute the inverse classes, so this is done using the 'irreducibles'
+component of the table record.  We do not store this information on the
+table, and do not use it (although it could be used for example by the
+scalar product) in order to avoid inconsistencies between character values
+and a list of inverses computed at an earlier stage.
+
+Class multiplication constants, or matrices of them, can be computed using
+'ClassMultCoeffCharTable' and 'MatClassMultCoeffsCharTable'.
+
+Thomas Breuer
+
+
+
+From martin@bert.math.rwth-aachen.de Wed Apr 22 11:52:33 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Wed, 22 Apr 92 11:52:33 +0200
+Subject:    Re: generating lots of groups
+
+Steve Fisk writes in his e-mail message of 21-Apr-92
+
+    I wish  to determine  the size of many (3*12^4) groups.  These groups
+    are  given by generators (4 generators) and relations (16 relations).
+    It was  very easy to  program it, and I was surprised to see that all
+    the  groups  had  order  2.  I suspected an  error,  and found it  in
+    Chapter  21: you can not  change the  generators of  a group!   I had
+    fixed one group and just kept changing its generators.
+
+Changing  the generators (or  relators) of a group after  any computation
+has been performed with this group is not allowed.  What probably happens
+in  this  case  is  that after the  first computation the  group has  the
+component 'g.size' (with  the  value 2),  and subsequent  calls to 'Size'
+will only return this value.
+
+Steve Fisk continues
+
+    I do not see how to get around this problem, except by writing an AWK
+    program to  write 3*12^4  gap  programs,  and execute them, but there
+    must be a better way.
+
+I am not certain that I understand your problem fully.  But the following
+code defines a number of groups and computes the size of each.  Does this
+do what you want?
+
+    gap> sizes := [];
+    gap> for i  in [4..10]  do
+    >        g := FreeGroup( 2, "g" );
+    >        g.relators := [ g.1^2, g.2^2, (g.1*g.2)^i ];
+    >        Add( sizes, Size( g ) );
+    >    od;
+    gap> sizes;
+    [ 8, 10, 12, 14, 16, 18, 20 ]
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From martin@bert.math.rwth-aachen.de Wed Apr 22 12:25:28 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Wed, 22 Apr 92 12:25:28 +0200
+Subject:    Re: Confused about Image
+
+We intend to  make  bug fixes available  via  'diff'  files  that can  be
+automatically applied  with  the 'patch' program by Larry Wall.  One such
+'diff' file will contain several  bug fixes,  to keep the number of  such
+files reasonably low.  Hopefully one 'diff' file every week will suffice.
+We will mail those 'diff' files on the  GAP  forum, and also  put them on
+'samson.math.rwth-aachen.de' for anonymous 'ftp'.  Of  course the manager
+of the other 'ftp' servers are encouraged to archive those files too.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From sibley@math.psu.edu Wed Apr 29 12:45:25 1992
+From:       sibley@math.psu.edu "David Sibley"
+Date:       Wed, 29 Apr 92 12:45:25 +0200
+Subject:    Can't find CoeffsFFE?
+
+I'm having great fun with GAP. A recent small problem is that I seem to
+have lost the function CoeffsFFE. Well, actually I don't know that I ever
+had it. Anyway, when I try to use it I get the message
+
+  Error, Variable: 'CoeffsFFE' must have a value
+
+Probably I lost a file or something when I installed GAP. The finite
+fields functions seem to be working other than this one, though.
+
+David Sibley
+sibley@math.psu.edu
+
+
+
+From dobcsany@mat.aukuni.ac.nz Wed Apr 29 12:51:37 1992
+From:       dobcsany@mat.aukuni.ac.nz "Peter Dobcsanyi"
+Date:       Wed, 29 Apr 92 12:51:37 +0200
+Subject:    gap bugs
+
+Hi,
+
+Last week I installed the new gap-3.1 in our departmental workstation (Sparc)
+network. I used the Gnu C compiler (gcc 2.1) and it worked fine.
+
+The improvement from gap-2.4 to gap-3.1 is quite big, MANY THANKS to
+ALL DEVELOPERS of GAP, in particular that they provide this enormous
+system free of charge.
+
+Started using the system we encountered two problems (See below).
+Because I have jointed to this mailing list just recently, I wouldn't be
+surprised if these problems were fixed for now. In that case, please,
+ignore my bug-report.
+
+............................................................................
+
+Bug 1
+-----
+
+In the "init.g" file the "ReplacedString" routine searches and replaces
+the "old" string segment from the beginning of the "string" so if one
+happens to install the gap library directories (lib,grp,...) in
+"/usr/local/lib/gap" the following function, for example,
+
+--  GRPNAME := ReplacedString( LIBNAME, "lib", "grp" );
+
+results "/usr/local/grp/gap/lib/" and not the desirable
+"/usr/local/lib/gap/grp/".
+
+My rather drastical fix for this
+
+++  GRPNAME := ConcatenationString(
+			SubString(LIBNAME,1,LengthString(LIBNAME)-4),
+			"grp/" );
+
+(I did similarly for TWONAME TBLNAME.)
+
+Bug 2
+-----
+
+There is an undiserable global variable (f) in the
+"ElementaryAbelianPermGroup" routine in the "permgrp.grp" file.
+Probably, it was a typing error.
+
+The original code:
+
+--  ElementaryAbelianPermGroup := function ( n )
+--      local   facs,       # factors of <n>
+--              C;          # cyclic group of prime order
+--  
+--      f := Factors( n );
+--      C := CyclicPermGroup( f[ 1 ] );
+--      return DirectProduct( List( f, n -> C ) );
+--  end;
+
+My fixed version:
+
+++  ElementaryAbelianPermGroup := function ( n )
+++      local   facs,       # factors of <n>
+++              C;          # cyclic group of prime order
+++  
+++      facs := Factors( n );
+++      C := CyclicPermGroup( facs[ 1 ] );
+++      return DirectProduct( List( facs, n -> C ) );
+++  end;
+
+Best regards
+
+	Peter Dobcsanyi
+
+	Department of Mathematics and Statistics
+	The University of Auckland
+	Auckland
+	New Zealand
+
+
+
+From martin@bert.math.rwth-aachen.de Thu Apr 30 12:58:02 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Thu, 30 Apr 92 12:58:02 +0200
+Subject:    Re: Can't find CoeffsFFE?
+
+You  have not lost 'CoeffsFFE' during  installation.  The problem lies in
+the  manual.  There is no function  'CoeffsFFE'.  The correct  way is  to
+call  'Coefficients(  <field>, <element>  )'  (see  9.10),  and  applying
+'IntFFE' to  the result if integer coefficients are  desired (see  17.8).
+Note that 'IntFFE'  can not only be applied to finite field elements, but
+also to finite field vectors and matrices, which are not mentioned in the
+manual.
+
+However, if you  call  'Coefficients( <finite-field>,  <element> )',  you
+will only get the  message  "not yet implemented"  as a result.  I simply
+forgot  to implement  this  function in the released library.   The first
+patch, which I intend to send out later today, adds  this function.  This
+patch  will, as a temporary  measure, also  add  a  function  'CoeffsFFE'
+(which calls 'Coefficients') to the library.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From martin@bert.math.rwth-aachen.de Thu Apr 30 13:04:36 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Thu, 30 Apr 92 13:04:36 +0200
+Subject:    Re: gap bugs
+
+Peter Dobscanyi writes in his e-mail of 29-Apr-92:
+
+    In the "init.g" file the "ReplacedString" routine searches and replaces
+    the "old" string segment from the beginning of the "string" so if one
+    happens to install the gap library directories (lib,grp,...) in
+    "/usr/local/lib/gap" the following function, for example,
+
+    --  GRPNAME := ReplacedString( LIBNAME, "lib", "grp" );
+
+    results "/usr/local/grp/gap/lib/" and not the desirable
+    "/usr/local/lib/gap/grp/".
+
+I  changed the function  'ReplacedString' to  replace  the last, not  the
+first  occurence  of  the  <old>  string.   So now  the  result would  be
+"/usr/local/lib/gap/grp/" as desired.  This change is  in the first patch
+that I intend to send out later today.
+
+He continues:
+
+    There is an undiserable global variable (f) in the
+    "ElementaryAbelianPermGroup" routine in the "permgrp.grp" file.
+    Probably, it was a typing error.
+
+I also assume that this  was a typing error.  Anyhow  your fix (replacing
+every occurence of  'f' with 'facs'  is of course correct.  Again this is
+in the first patch.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From ara@martigny.ai.mit.edu Thu Apr 30 20:53:07 1992
+From:       ara@martigny.ai.mit.edu "Allan Adler"
+Date:       Thu, 30 Apr 92 20:53:07 +0200
+Subject:    [GAP kernel in CWEB]
+
+I think it would be useful to prepare a CWEB file for the GAP kernel.
+I have looked at the source code a little for the kernel, even though
+I am not very good at it, and it seems to be well documented. But the       
+documentation of programs using WEB is, in my opinion, the best and most
+thorough documentation of source code that exists.
+
+Allan Adler
+ara@altdorf.ai.mit.edu
+
+
+
+From martin@bert.math.rwth-aachen.de Thu Apr 30 23:57:01 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Thu, 30 Apr 92 23:57:01 +0200
+Subject:    Upgrade for GAP 3.1 (V3R1) to patchlevel 1 (V3R1P1)
+
+This  file contains the  'uuencode'-d  'compress'-ed upgrade file for the
+first  upgrade  for  GAP  3.1.   This upgrade  brings version 3 release 1
+(V3R1) to version  3 release 1 patchlevel  1  (V3R1P1).  The  priority of
+this upgrade is low.
+
+Save  this mail as a file  with  name 'upg3r1p1.uue', unpack  the upgrade
+file with 'uudecode upg3r1p1.uue' (or 'uud upg3r1p1.uue') and 'uncompress
+upg3r1p1.dif.Z'.  Then read  the beginning  of  the unpacked upgrade file
+'upg3r1p1.dif', which contains instructions how to apply this upgrade.
+
+[removed the upgrade, it is available as 'upg3r1p1.dif.Z'  from the 'ftp'
+server 'samson.math.rwth-aachen.de']
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From neil@dehn.mth.pdx.edu Fri May  1 18:47:28 1992
+From:       neil@dehn.mth.pdx.edu "John Neil"
+Date:       Fri, 1 May 92 18:47:28 +0200
+Subject:    Problems with the patch kit on a NeXT
+
+I've just gotten the upgrade patch kit working and seems to work just great on
+our Sequent.  However, on the NeXT in our department, while there are no errors
+during the patch or during compilation, when I run gap, nothing I type is
+echoed to the screen.  I've been using the 'make bsd' option when compiling
+since this appeared to be the closest configuration.  Is there another option
+I should use or another fix which must be made?
+
+--John Neil
+
+John Neil, Graduate Teaching Assistant           e-mail:  neil@math.mth.pdx.edu
+Mathematics Department                         NeXTMail:  neil@dehn.mth.pdx.edu
+Portland State University
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+
+From martin@bert.math.rwth-aachen.de Sat May  2 15:14:38 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Sat, 2 May 92 15:14:38 +0200
+Subject:    Re: Problems with the patch kit on a NeXT
+
+John Neil writes in his e-mail of 1-May-92:
+
+    I've just gotten the upgrade patch kit working and seems to work just
+    great on our Sequent.  However, on the  NeXT in our department, while
+    there are  no errors during  the patch or during  compilation, when I
+    run gap, nothing I type is echoed to the screen.  I've been using the
+    'make  bsd' option  when compiling since  this  appeared  to  be  the
+    closest configuration.   Is there  another option  I  should  use  or
+    another fix which must be made?
+
+Well, I  messed up with the upgrade.  The new  version  works allright on
+little  endian machines (such as a DECstation  or a Sequent) but fails on
+big endian machines (such as a NeXT or a SUN).
+
+You have to make another small patch to 'system.bsd' and 'system.usg'.
+
+diff -u src/system.bsd src/system.bsd
+--- src/system.bsd	1992/04/28 13:48:54
++++ src/system.bsd	1992/05/02 13:02:21
+@@ -2,7 +2,7 @@
+ **
+ *A  system.bsd                  GAP source                   Martin Schoenert
+ **
+-*A  @(#)$Id: forum92b.txt,v 1.1.1.1 1996/12/11 12:37:13 werner Exp $
++*A  @(#)$Id: forum92b.txt,v 1.1.1.1 1996/12/11 12:37:13 werner Exp $
+ **
+ *Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ **
+@@ -13,6 +13,9 @@
+ **  This file must be copied or linked to 'system.c' before executing 'make'.
+ **
+ *H  $Log: forum92b.txt,v $
+ *H  Revision 1.1.1.1  1996/12/11 12:37:13  werner
+ *H  Preparing 3.4.4 for release
+ *H
++*H  Revision 3.13.1.2  1992/05/02  13:02:05  martin
++*H  fixed 'syPutch' for big endian machines
++*H
+ *H  Revision 3.13.1.1  1992/04/28  13:48:54  martin
+ *H  changed a few things to silence GCC
+ *H
+@@ -1094,7 +1097,9 @@
+     int                 ch;
+     long                fid;
+ {
+-    write( fileno(syBuf[fid].fp), (char*)&ch, 1 );
++    char                ch2;
++    ch2 = ch;
++    write( fileno(syBuf[fid].fp), (char*)&ch2, 1 );
+ }
+diff -u src/system.usg src/system.usg
+--- src/system.usg	1992/04/28 13:48:54
++++ src/system.usg	1992/05/02 13:02:25
+@@ -2,7 +2,7 @@
+ **
+ *A  system.usg                  GAP source                   Martin Schoenert
+ **
+-*A  @(#)$Id: forum92b.txt,v 1.1.1.1 1996/12/11 12:37:13 werner Exp $
++*A  @(#)$Id: forum92b.txt,v 1.1.1.1 1996/12/11 12:37:13 werner Exp $
+ **
+ *Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ **
+@@ -14,6 +14,9 @@
+ **  This file must be copied or linked to 'system.c' before executing 'make'.
+ **
+ *H  $Log: forum92b.txt,v $
+ *H  Revision 1.1.1.1  1996/12/11 12:37:13  werner
+ *H  Preparing 3.4.4 for release
+ *H
++*H  Revision 3.12.1.2  1992/05/02  13:02:05  martin
++*H  fixed 'syPutch' for big endian machines
++*H
+ *H  Revision 3.12.1.1  1992/04/28  13:48:54  martin
+ *H  changed a few things to silence GCC
+ *H
+@@ -1080,7 +1083,9 @@
+     int                 ch;
+     long                fid;
+ {
+-    write( fileno(syBuf[fid].fp), (char*)&ch, 1 );
++    char                ch2;
++    ch2 = ch;
++    write( fileno(syBuf[fid].fp), (char*)&ch2, 1 );
+ }
+ 
+I will add  this to  the second upgrade, which will be available probably
+at the end of next week.
+
+As  a  further   note.   You  really  should  be   using  the  executable
+'gapexe.next' available  on 'samson.math.rwth-aachen.de',  instead of the
+executable you get when you make GAP with 'make bsd' (which by the way is
+really the correct  option for the NeXT).  This executable allows GAP  to
+extend its working space during a computation.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From sam@ernie.math.rwth-aachen.de Mon May  4 18:55:01 1992
+From:       sam@ernie.math.rwth-aachen.de "Thomas Breuer"
+Date:       Mon, 4 May 92 18:55:01 +0200
+Subject:    [Bug in 'OperationHomomorphism']
+
+Dear Mr. Forum,
+
+I think I found a bug in GAP.  What I tried is to work a little with
+a matrix group, namely a representation of the group 'A5 x 2' as group
+of symmetries of a regular icosahedron.  (The session is documented
+below.)  The point 'p' is one of the corners of the icosahedron,
+and 'orb' contains all corners.  The block system 'bl' has pairs of
+opposite corners as blocks, and 'op' is the permutation group
+corresponding to the action on 'bl'.  Up to this moment all works well,
+but if I try to construct the homomorphism GAP runs into a break loop.
+What is wrong here?
+
+Thomas Breuer, Lehrstuhl D fuer Mathematik, RWTH Aachen
+(sam@ernie.math.rwth-aachen.de)
+
+gap> b:= - E(5)^2 - E(5)^3;;
+gap> mat1:= [ [ 0, 1, 0 ],
+>             [ 0, 0, 1 ],
+>             [ 1, 0, 0 ] ];;
+gap> mat2:= 1/2 * [ [ b-1,   1,  -b ],
+>                   [  -1,   b, b-1 ],
+>                   [   b, b-1,   1 ] ];;
+gap> g:= Group( mat1, mat2, - IdentityMat( 3 ) );;
+gap> p:= [ 0, b, 1 ];
+[ 0, -E(5)^2-E(5)^3, 1 ]
+gap> orb:= Set( Orbit( g, p ) );
+[ [ -1, 0, -E(5)^2-E(5)^3 ], [ -1, 0, E(5)^2+E(5)^3 ], 
+  [ 0, -E(5)^2-E(5)^3, -1 ], [ 0, -E(5)^2-E(5)^3, 1 ], 
+  [ 0, E(5)^2+E(5)^3, -1 ], [ 0, E(5)^2+E(5)^3, 1 ], [ 1, 0, -E(5)^2-E(5)^3 ],
+  [ 1, 0, E(5)^2+E(5)^3 ], [ -E(5)^2-E(5)^3, -1, 0 ], 
+  [ -E(5)^2-E(5)^3, 1, 0 ], [ E(5)^2+E(5)^3, -1, 0 ], [ E(5)^2+E(5)^3, 1, 0 ] 
+ ]
+gap> bl:= Blocks( g, orb );;
+gap> op:= Operation( g, bl, OnSets );
+Group( (1,5,3)(2,6,4), (1,2,6,3,5) )
+gap> OperationHomomorphism( g, op );
+Error, List assignment: <index> must be a positive int at
+hom.reps[k] := i ... in
+PermGroupOps.BlocksHomomorphism( G, P ) called from
+P.operations.OperationHomomorphism( G, P ) called from
+OperationHomomorphism( g, op1 ) called from
+main loop
+brk> gap> 
+gap> 
+
+
+
+From martin@bert.math.rwth-aachen.de Mon May  4 21:23:19 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Mon, 4 May 92 21:23:19 +0200
+Subject:    [Re: Bug in 'OperationHomomorphism']
+
+Thomas Breuer writes in his e-mail of 4-May-92:
+
+    I think I  found a bug in GAP.  What I tried is to work a little with
+    a matrix  group, namely a  representation  of  the group  'A5 x 2' as
+    group  of  symmetries  of a  regular  icosahedron.  (The  session  is
+    documented  below.)   The  point  'p' is one  of the  corners  of the
+    icosahedron, and  'orb' contains all corners.   The block system 'bl'
+    has pairs of opposite corners as blocks, and 'op' is  the permutation
+    group corresponding  to the  action on  'bl'.  Up  to this moment all
+    works well, but if I try to construct  the homomorphism GAP runs into
+    a break loop.  What is wrong here?
+
+      gap> b:= - E(5)^2 - E(5)^3;;
+      gap> mat1:= [ [ 0, 1, 0 ],
+      >             [ 0, 0, 1 ],
+      >             [ 1, 0, 0 ] ];;
+      gap> mat2:= 1/2 * [ [ b-1,   1,  -b ],
+      >                   [  -1,   b, b-1 ],
+      >                   [   b, b-1,   1 ] ];;
+      gap> g:= Group( mat1, mat2, - IdentityMat( 3 ) );;
+      gap> p:= [ 0, b, 1 ];
+      [ 0, -E(5)^2-E(5)^3, 1 ]
+      gap> orb:= Set( Orbit( g, p ) );;
+      gap> bl:= Blocks( g, orb );;
+      gap> op:= Operation( g, bl, OnSets );
+      Group( (1,5,3)(2,6,4), (1,2,6,3,5) )
+      gap> OperationHomomorphism( g, op );
+      Error, List assignment: <index> must be a positive int at
+      hom.reps[k] := i ... in
+      PermGroupOps.BlocksHomomorphism( G, P ) called from
+      P.operations.OperationHomomorphism( G, P ) called from
+      OperationHomomorphism( g, op1 ) called from
+      main loop
+
+The  problem was  that 'OperationHomomorphism'  dispatched  to  the wrong
+function,  namely 'op.operations.OperationHomomorphism'  (the permutation
+group     function     for    'OperationHomomorphism')     instead     of
+'g.operations.OperationsHomomorphism' (the generic function).
+
+This will be  fixed in the next upgrade  (which I plan to  release at the
+end of this week).
+
+The  immediate workaround is  to  do the dispatching  itself,  e.g., call
+'g.operations.OperationHomomorphism( g, op )' directy.
+
+This upgrade will also  fix  a  bug  in 'MatGroupOps.Intersection', which
+made it impossible to compute the kernel of the homomorphism, even if one
+constructed it as described above.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From martin@bert.math.rwth-aachen.de Tue May  5 17:59:38 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Tue, 5 May 92 17:59:38 +0200
+Subject:    A list of ports
+
+To  prepare the *makefile* for the  next release of GAP  I would like  to
+obtain a list of machines on which GAP has been sucessfully compiled.
+
+If  you compiled GAP on a machine  (or  with  an  operating system  or  a
+compiler) not mentioned in the list 'make'  prints, could you please mail
+me ('martin@samson.math.rwth-aachen.de') the following information.
+
+    manufactor of the computer          (e.g., DEC)
+    name of the series                  (e.g., DECstation)
+    name of the model                   (e.g., 5000/120)
+    operating system                    (e.g., Ultrix)
+    version of the operating system     (e.g., 4.2)
+    compiler used                       (e.g., gcc)
+    version of the compiler used        (e.g., 2.1)
+    option given to make                (e.g., 'bsd')
+    special CFLAGS one might use        (e.g., '-Wall -O2')
+    further comments                    (e.g., 'cc' warns that two functions
+                                         in 'system.bsd' cannot be optimized)
+
+Unless you explicitly  tell me otherwise I will  assume that the model of
+the computer, the version of the operating system, and the version of the
+compiler do not matter.  (In  the  above example  however the version  of
+'gcc' does matter, because earlier versions did not understand the option
+'-O2'.)
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From neil@dehn.mth.pdx.edu Tue May  5 21:11:48 1992
+From:       neil@dehn.mth.pdx.edu "John Neil"
+Date:       Tue, 5 May 92 21:11:48 +0200
+Subject:    Re: A list of ports 
+
+In message <9205051557.AA02636@bert.math.rwth-aachen.de> you write:
+>To  prepare the *makefile* for the  next release of GAP  I would like  to
+>obtain a list of machines on which GAP has been sucessfully compiled.
+>
+>If  you compiled GAP on a machine  (or  with  an  operating system  or  a
+>compiler) not mentioned in the list 'make'  prints, could you please mail
+>me ('martin@samson.math.rwth-aachen.de') the following information.
+>
+>    manufactor of the computer          (e.g., DEC)
+>    name of the series                  (e.g., DECstation)
+>    name of the model                   (e.g., 5000/120)
+>    operating system                    (e.g., Ultrix)
+>    version of the operating system     (e.g., 4.2)
+>    compiler used                       (e.g., gcc)
+>    version of the compiler used        (e.g., 2.1)
+>    option given to make                (e.g., 'bsd')
+>    special CFLAGS one might use        (e.g., '-Wall -O2')
+>    further comments                    (e.g., 'cc' warns that two functions
+>                                         in 'system.bsd' cannot be optimized)
+>
+>Unless you explicitly  tell me otherwise I will  assume that the model of
+>the computer, the version of the operating system, and the version of the
+>compiler do not matter.  (In  the  above example  however the version  of
+>'gcc' does matter, because earlier versions did not understand the option
+>'-O2'.)
+>
+>Martin.
+>
+>--
+>Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+>Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+>
+
+Martin,
+
+	To compile GAP on a Sequent Symmetry running DYNIX, you simply use
+the "make bsd" command and it compiles perfectly with no errors and no
+warnings.
+
+--John Neil
+
+John Neil, Graduate Teaching Assistant           e-mail:  neil@math.mth.pdx.edu
+Mathematics Department                         NeXTMail:  neil@dehn.mth.pdx.edu
+Portland State University
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+
+From dfh@maths.warwick.ac.uk Thu May  7 15:18:19 1992
+From:       dfh@maths.warwick.ac.uk "Derek Holt"
+Date:       Thu, 7 May 92 15:18:19 +0200
+Subject:    citing GAP
+
+The GAP manual requests that published papers using GAP should cite it
+in the same way as a paper is cited. I wish to do this now, and so I
+should welcome a recommendation from the authors for how best to go about it.
+I mean, should it be included amongst the list of references and, if so,
+how should this reference read exactly?
+
+Derek Holt.
+
+
+
+From neubuese@samson.math.rwth-aachen.de Fri May  8 14:51:51 1992
+From:       neubuese@samson.math.rwth-aachen.de "Joachim Neubueser"
+Date:       Fri, 8 May 92 14:51:51 +0200
+Subject:    re citing GAP
+
+Derek Holt asks how GAP should be cited. I think the best way  to cite
+a program system and  also the most  often used one  is  to  quote its
+manual:
+
+[S+ 92] Martin Sch"onert et.al.  GAP -- Groups, Algorithms, and Programming.
+        Lehrstuhl D f"ur Mathematik, Rheinisch Westf"alische Technische
+        Hochschule, Aachen, Germany, first edition, 1992.
+
+So a BibTeX entry for a quotation of the GAP manual should read:
+
+    @string{ RWTH      = "Rheinisch Westf{\accent127 a}lische Technische
+                          Hoch\-schule"                                     }
+    @string{ RWTHLDFM  = "Lehrstuhl D f{\accent127 u}r Mathematik,
+                          Rheinisch Westf{\accent127 a}lische Technische
+                          Hoch\-schule"                                     }
+    @string{ RWTH-A    = "Aachen, Germany"                                  }
+
+    @manual{Sch92,
+    author        = "Martin Sch{\accent127 o}nert and others",
+    title         = "{GAP} -- {Groups}, {Algorithms}, and {Programming}",
+    year          = "1992",
+    edition       = "first",
+    organization  = RWTHLDFM,
+    address       = RWTH-A,
+    notes         = "PAGES: 700",
+    keywords      = "groups; *; gap; manual"
+    }
+
+If you are not using BibTeX, here is the bibliography entry produced by
+BibTeX.  You can use this inside the bibliography environment of LaTeX.
+
+    \newcommand{\etalchar}[1]{$^{#1}$}
+
+    \bibitem[S{\etalchar{+}}92]{Sch92}
+              Martin Sch{\accent127 o}nert et~al.
+    \newblock {\em {GAP} -- {Groups}, {Algorithms}, and {Programming}}.
+    \newblock Lehrstuhl D f{\accent127 u}r Mathematik,
+              Rheinisch Westf{\accent127 a}lische Technische Hoch\-schule,
+              Aachen, Germany, first edition, 1992.
+
+Joachim Neubueser
+
+
+
+From sherman@nextwork.rose-hulman.edu Fri May  8 18:24:32 1992
+From:       sherman@nextwork.rose-hulman.edu "Gary Sherman"
+Date:       Fri, 8 May 92 18:24:32 +0200
+Subject:    GRAPE
+
+How does one get access to GRAPE?
+
+	Gary Sherman
+
+
+
+From am@ime.usp.br Mon May 11 17:39:01 1992
+From:       am@ime.usp.br "Arnaldo Mandel"
+Date:       Mon, 11 May 92 17:39:01 +0200
+Subject:    Installation problems on a Sun.
+
+	I was really impressed with the new look of gap, and even more
+impressed when both the compilation and the manual latexing went by
+without a single warning.  It was a bit disapointing that when I
+started it, it failed to echo back what I was typing.  It seems to be
+working, otherwise :-)
+
+	The system here is SunOS 4.1.1, and the machines are a variety
+of sparcstations.  The echo failure occurs whether gap is compiled
+with cc or gcc-2.1.  It occurs when gap is run on an xterm or on
+suns's console.  A different thing happens when gap is run in an emacs
+shell buffer, see this example:
+
+gap> 10;
+^@^@^@^@^@10
+gap> 10+10;
+^@^@^@^@^@^@20
+gap> Factorial(20);
+^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@2432902008176640000
+
+Each ^@ represents an actual ASCII 0, which I replaced so that it can
+go through mailers.  What I have shown about emacs happens whether
+emacs is running in its own window or in an xterm.
+
+Just for illustration, I started gap in an xterm, and typed in the
+same three input lines.  This is what I got:
+
+gap> 10
+gap> 20
+gap> 2432902008176640000
+
+Arnaldo
+.................................................................
+Arnaldo Mandel                    \    am@ime.usp.br
+Computer Science Dep.		   \.............................. 
+Universidade de S\~{a}o Paulo	   /   This space intentionally 
+S\~{a}o Paulo - SP - Brazil	  /    left blank ------> <-------
+
+
+
+From martin@bert.math.rwth-aachen.de Mon May 11 18:08:02 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Mon, 11 May 92 18:08:02 +0200
+Subject:    Re: Installation problems on a Sun.
+
+Arnaldo Mandel writes in his e-mail of 11-May-92:
+
+    I was  really  impressed with the new  look  of  gap, and  even  more
+    impressed when both  the  compilation and the manual latexing went by
+    without a  single warning.  It  was  a  bit disapointing that when  I
+    started it, it failed to echo back what I was typing.  It seems to be
+    working, otherwise :-)
+
+Well, I  messed up with the upgrade.  The new  version  works allright on
+little  endian machines (such as a DECstation  or a Sequent) but fails on
+big endian machines (such as a NeXT or a SUN).
+
+You have to make another small  patch to  'system.bsd' and  'system.usg'.
+To  do  this,  save this  e-mail message as 'xyz'  and issue  the command
+'patch -p0 < xyz' in the GAP directory.
+
+diff -u src/system.bsd src/system.bsd
+--- src/system.bsd	1992/04/28 13:48:54
++++ src/system.bsd	1992/05/02 13:02:21
+@@ -2,7 +2,7 @@
+ **
+ *A  system.bsd                  GAP source                   Martin Schoenert
+ **
+-*A  @(#)$Id: forum92b.txt,v 1.1.1.1 1996/12/11 12:37:13 werner Exp $
++*A  @(#)$Id: forum92b.txt,v 1.1.1.1 1996/12/11 12:37:13 werner Exp $
+ **
+ *Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ **
+@@ -13,6 +13,9 @@
+ **  This file must be copied or linked to 'system.c' before executing 'make'.
+ **
+ *H  $Log: forum92b.txt,v $
+ *H  Revision 1.1.1.1  1996/12/11 12:37:13  werner
+ *H  Preparing 3.4.4 for release
+ *H
++*H  Revision 3.13.1.2  1992/05/02  13:02:05  martin
++*H  fixed 'syPutch' for big endian machines
++*H
+ *H  Revision 3.13.1.1  1992/04/28  13:48:54  martin
+ *H  changed a few things to silence GCC
+ *H
+@@ -1094,7 +1097,9 @@
+     int                 ch;
+     long                fid;
+ {
+-    write( fileno(syBuf[fid].fp), (char*)&ch, 1 );
++    char                ch2;
++    ch2 = ch;
++    write( fileno(syBuf[fid].fp), (char*)&ch2, 1 );
+ }
+
+
+diff -u src/system.usg src/system.usg
+--- src/system.usg	1992/04/28 13:48:54
++++ src/system.usg	1992/05/02 13:02:25
+@@ -2,7 +2,7 @@
+ **
+ *A  system.usg                  GAP source                   Martin Schoenert
+ **
+-*A  @(#)$Id: forum92b.txt,v 1.1.1.1 1996/12/11 12:37:13 werner Exp $
++*A  @(#)$Id: forum92b.txt,v 1.1.1.1 1996/12/11 12:37:13 werner Exp $
+ **
+ *Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ **
+@@ -14,6 +14,9 @@
+ **  This file must be copied or linked to 'system.c' before executing 'make'.
+ **
+ *H  $Log: forum92b.txt,v $
+ *H  Revision 1.1.1.1  1996/12/11 12:37:13  werner
+ *H  Preparing 3.4.4 for release
+ *H
++*H  Revision 3.12.1.2  1992/05/02  13:02:05  martin
++*H  fixed 'syPutch' for big endian machines
++*H
+ *H  Revision 3.12.1.1  1992/04/28  13:48:54  martin
+ *H  changed a few things to silence GCC
+ *H
+@@ -1080,7 +1083,9 @@
+     int                 ch;
+     long                fid;
+ {
+-    write( fileno(syBuf[fid].fp), (char*)&ch, 1 );
++    char                ch2;
++    ch2 = ch;
++    write( fileno(syBuf[fid].fp), (char*)&ch2, 1 );
+ }
+
+
+ 
+I will add  this to  the second upgrade, which will be available probably
+at the end of this week.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From am@ime.usp.br Mon May 11 19:58:50 1992
+From:       am@ime.usp.br "Arnaldo Mandel"
+Date:       Mon, 11 May 92 19:58:50 +0200
+Subject:    Latex input mixed into online help.
+
+At least:
+
+ ?Examples of the ATLAS format for GAP tables
+
+pops up a lot of picture code.  This node cannot be read online. 
+.................................................................
+Arnaldo Mandel                    \    am@ime.usp.br
+Computer Science Dep.		   \.............................. 
+Universidade de S\~{a}o Paulo	   /   This space intentionally 
+S\~{a}o Paulo - SP - Brazil	  /    left blank ------> <-------
+
+
+
+From martin@bert.math.rwth-aachen.de Tue May 12 12:53:22 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Tue, 12 May 92 12:53:22 +0200
+Subject:    Re: GRAPE
+
+Gary Sherman writes in his e-mail message of 8-May-92:
+
+    How does one get access to GRAPE?
+
+Write to Leonard Soicher, the author of GRAPE.  His e-mail address is
+
+    leonard@maths.qmw.ac.uk
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From martin@bert.math.rwth-aachen.de Tue May 12 13:00:56 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Tue, 12 May 92 13:00:56 +0200
+Subject:    Re: Latex input mixed into online help.
+
+Arnaldo Mandel writes in his e-mail message of 11-May-92:
+
+    At least:
+
+      ?Examples of the ATLAS format for GAP tables
+
+    pops up a lot of picture code.  This node cannot be read online.
+
+Indeed.  This is a problem.  The online help function does not understand
+the LaTeX macros used in this section.  So it displays absolutely useless
+stuff.  We intend to fix this.  Basically we will add special comments to
+such  sections  that will be ignored by LaTeX, and  will be  displayed as
+they are by the online  help function.   However, this will probably have
+to wait until the second release of GAP.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From pluto@phoebus.mathematik.uni-stuttgart.de Tue May 12 17:07:26 1992
+From:       pluto@phoebus.mathematik.uni-stuttgart.de "Martin Wursthorn"
+Date:       Tue, 12 May 92 17:07:26 +0200
+Subject:    FreeGroup etc
+
+Hallo,
+Wir haben hier in Stuttgart gap auf folgenden Maschinen erfolgreich installiert:
+	SUN 3/60     (fertige Version)
+	IBM RS6000   (neu uebersetzt mit gcc2.1)
+	HP9000/730   (         "               )
+	ATARI ST/TT  (gcc2.1 mit Patch in system.c)
+	
+Bei der RS6000 funktioniert das gap shell script allerdings nicht so, wie
+im Installation Guide angegeben: die Bibliotheken werden nicht gefunden.
+
+Was den ATARI TT betrifft, so habe ich in SysGetmem die sbrk Funktion
+durch ein calloc ersetzt. Damit laeuft gap hervorragend auf dem TT und
+nutzt vor allem das Fastram aus. Auf meinem TT mit 32 MByte Fastram ist
+gap deutlich schneller als auf der SUN 3/60. Ein Blick in das GNU Quellfile
+von sbrk (library patchlevel 80) zeigt uebrigens, dass in der ATARI Version
+nicht garantiert wird, dass aufeinanderfolgende Aufrufe zusammenhaengende
+Bloecke liefern. Deshalb glaube ich, dass die calloc Methode sicherer ist,
+auch wenn man auf das nachtraegliche Vergroessern des Speichers verzichhten muss.
+
+Bei der Arbeit mit gap ist uns folgendes aufgefallen:
+
+Definiert man eine Gruppe durch Erzeugende und Relationen (FreeGroup), so
+kommen einige Routinen wie ConjugacyClasses anscheinend nicht damit klar.
+Sie belegen sukzessive den ganzen Speicher und brechen dann ab.
+Auch Versuche, die Gruppe mit AgGroup in eine AG Gruppe umrechnen zu lassen,
+scheiterten. Machen wir da etwas falsch ? (Warnungen im Handbuch Kap. 21.3)
+Hier ein Beispiel mit der Diedergruppe 5
+
+gap> g := FreeGroup ( 2, "g" );
+gap> Group( g.1, g.2 )
+gap> g.relators := [g.1^5, g.2^2, g.1^g.2 / g.1^4];
+gap> [ g.1^5, g.2^2, g.2^-1*g.1*g.2*g.1^-4 ]
+gap> Size(g);
+gap> 10
+gap> ConjugacyClasses(g);
+..(panic: corrupted heap ... (oder so aehnlich))
+
+Hat man eine Gruppe bereits in AG oder PAG Praesentation, so funktioniert
+gap hervorragend. So haben wir eine AG Gruppe von Ordnung 2^24 ohne Probleme
+in eine PQ Praesentation umrechnen lassen. Kann man eigentlich aus der
+PQ Datenstruktur wieder eine Gruppe gewinnen, die genau die Erzeugenden und
+PC Relationen hat, die in der Struktur angegeben sind ? Einige unserer 
+p-Gruppenprogramme brauchen solche Praesentationen.
+
+Martin Wursthorn
+
+
+
+From fceller@bert.math.rwth-aachen.de Thu May 14 08:31:12 1992
+From:       fceller@bert.math.rwth-aachen.de "Frank Celler"
+Date:       Thu, 14 May 92 08:31:12 +0200
+Subject:    Re: FreeGroup etc
+
+MW>  Sie belegen sukzessive den ganzen Speicher und brechen dann ab.
+MW>  Auch Versuche, die Gruppe mit AgGroup in eine AG Gruppe umrechnen
+MW>  zu lassen, scheiterten. Machen wir da etwas falsch ? (Warnungen
+MW>  im Handbuch Kap. 21.3) Hier ein Beispiel mit der Diedergruppe 5
+
+Aus demgleichen Grund, warum 'ConjugacyClasses' f"ur endlich pr"asentierte
+Gruppen nicht funktioniert (siehe Brief von M.Schoenert), scheitert auch
+'AgGroup'.  Es gibt deswegen eine spezielle Funktion 'AgGroupFpGroup',
+welche eine Potenz/Kommutator oder Potenz/Konjugierten Pr"azentation
+als Argument erwartet und die Ag-Gruppe zur"uckliefert. Diese Funktion
+nimmt *keine* Umstellungen der Pr"asentation vor, so dass die 
+Erzeuger nach Tiefe sortiert sein m"ussen.
+
+    gap> G := FreeGroup( 2, "g" );
+    Group( g.1, g.2 )
+    gap> G.relators := [ G.1^2, G.2^5, G.2^G.1/G.2^4 ];
+    [ g.1^2, g.2^5, g.1^-1*g.2*g.1*g.2^-4 ]
+    gap> 
+    gap> A := AgGroupFpGroup( G );
+    Group( g.1, g.2 )
+    gap> Size( A );
+    10
+    gap> ConjugacyClasses( A );
+    [ ConjugacyClass( Group( g.1, g.2 ), IdAgWord ), 
+      ConjugacyClass( Group( g.1, g.2 ), g.2 ), 
+      ConjugacyClass( Group( g.1, g.2 ), g.2^2 ), 
+      ConjugacyClass( Group( g.1, g.2 ), g.1 ) ]
+
+Folgende Funktion liefert zu jedem <n> die entsprechnde Ag-Diedergruppe,
+indem man 'DihedralGroup( AgWords, <n> )' aufruft.
+
+------------------ cut here --------------- cut here ------------------------
+#############################################################################
+##
+#F  AgWordsOps.DihedralGroup( <D>, <n> )  . . . . . . . . . .  dihedral group
+##
+AgWordsOps.DihedralGroup := function( AgWords, n )
+    local   F,  d,  s;
+
+    d := AbstractGenerator( "d" );
+    s := AbstractGenerator( "s" );
+    F := AgFpGroup( rec( generators := [s,d],
+    	    	    	 relators   := [s^2,d^(n/2),d^s*d] ) );
+    F.isGroup := true;
+    F.isAgGroup := true;
+    F.operations := AgGroupOps;
+    return RefinedAgSeries(F);
+
+end;
+----------------------------------------------------------------------------
+
+MW>  Hat man eine Gruppe bereits in AG oder PAG Praesentation, so
+MW>  funktioniert gap hervorragend. So haben wir eine AG Gruppe von
+MW>  Ordnung 2^24 ohne Probleme in eine PQ Praesentation umrechnen
+MW>  lassen. Kann man eigentlich aus der PQ Datenstruktur wieder eine
+MW>  Gruppe gewinnen, die genau die Erzeugenden und PC Relationen hat,
+MW>  die in der Struktur angegeben sind ? Einige unserer
+MW>  p-Gruppenprogramme brauchen solche Praesentationen.
+
+Ja, kann man. Eigentlich sollte 'AgGroup' dies machen, das ist aber im
+Moment noch nicht so. Um eine PQ-Datenstruktur umzuwandel, kann man
+'AgGroupPcp' verwenden.
+
+    gap> G := FreeGroup( 2, "g" );
+    Group( g.1, g.2 )
+    gap> G.relators := [];
+    [  ]
+    gap> P := pQuotient( G, 2, 5 );;
+    gap> B := AgGroupPcp( P.P );
+    Group( g1, g2, a3, a4, a5, a6, a7, a9, a12, a13, a14, a15, a17, a18, a19, 
+    a21, a24, a25, a26, a27, a28, a29, a30, a31, a32, a33, a35, a36, a37, a39, 
+    a42, a43 )
+
+  mfg Frank Celler
+
+
+
+From pluto@phoebus.mathematik.uni-stuttgart.de Thu May 14 14:11:09 1992
+From:       pluto@phoebus.mathematik.uni-stuttgart.de "Martin Wursthorn"
+Date:       Thu, 14 May 92 14:11:09 +0200
+Subject:    FpGroup
+
+FC> 'AgGroup'.  Es gibt deswegen eine spezielle Funktion 'AgGroupFpGroup',
+FC> welche eine Potenz/Kommutator oder Potenz/Konjugierten Pr"azentation
+FC> als Argument erwartet und die Ag-Gruppe zur"uckliefert. Diese Funktion
+FC> nimmt *keine* Umstellungen der Pr"asentation vor, so dass die
+FC> Erzeuger nach Tiefe sortiert sein m"ussen.
+
+Ja, aber in der Regel ist es doch so, dass man irgendeine
+Praesentation einer (aufloesbaren) Gruppe hat. Bei groesseren Gruppen
+kann es ziemlich muehsam sein, sie von Hand in eine Potenz/Kommutator
+oder Potenz/Konjugierten Praesentation umzurechnen. Wird es Routinen
+fuer diese Aufgabe geben ?
+
+Vielen Dank fuer die Informationen zum Thema PC-Praesentation
+
+Martin Wursthorn
+
+
+
+From fceller@bert.math.rwth-aachen.de Thu May 14 14:53:52 1992
+From:       fceller@bert.math.rwth-aachen.de "Frank Celler"
+Date:       Thu, 14 May 92 14:53:52 +0200
+Subject:    Re: FpGroup
+
+MW> Ja, aber in der Regel ist es doch so, dass man irgendeine
+MW> Praesentation einer (aufloesbaren) Gruppe hat. Bei groesseren
+MW> Gruppen kann es ziemlich muehsam sein, sie von Hand in eine
+MW> Potenz/Kommutator oder Potenz/Konjugierten Praesentation
+MW> umzurechnen. Wird es Routinen fuer diese Aufgabe geben ?
+
+Es wird in absehbarer Zeit Routinen geben, um eine (aufl"osbare)
+Permutationsgruppe in eine Ag-Gruppe umzuwandeln. Wenn man mit dem TC
+eine (treue) Permutationsdarstellung f"ur die endlich pr"asentierte
+Gruppe findet, kann man diese Routine anwenden. Allgemeine Routinen
+(ausser den PQ f"ur p-Gruppen) f"ur endlich pr"asentierte Gruppen wird
+es nicht geben.
+
+  mfg Frank Celler
+
+
+
+From neubuese@samson.math.rwth-aachen.de Thu May 14 16:37:04 1992
+From:       neubuese@samson.math.rwth-aachen.de "Joachim Neubueser"
+Date:       Thu, 14 May 92 16:37:04 +0200
+Subject:    Re: FpGroup
+
+Im Nachgang zu Frank Celler's Antwort: Dies ist nicht die ganze story.
+Es   gibt   fuer   beliebige   Praesentationen  neben   dem  pNQ,  der
+p-Faktorgruppen von steigender p-Klasse berechnet, und also  fuer eine
+Praesentation  einer   p-Gruppe  schliesslich  eine  pc  Praesentation
+liefert, auch verschiedene Vorschlaege  fuer einen SQ,  der  fuer eine
+endlich   praesentierte   Gruppe   AG   Praesentationen   aufloesbarer
+Faktorgruppen mit  steigender Anzahl von Hauptfaktoren bzw. steigender
+aufloesbarer Laenge sukzessiv berechnet, also  fuer eine Praesentation
+einer endlichen auloesbaren Gruppe schliesslich eine AG  Praesentation
+dieser Gruppe liefert.  Einer dieser Vorschlaege, der auf  W.  Plesken
+zurueckgeht,  ist von  A.  Wegner  in einer  aelteren Version von  GAP
+implementiert  und  soll  relativ  bald  GAP   3.1  angepasst  werden.
+Allerdings  ist dieser  Algorithmus recht  aufwendig und  sicher nicht
+fuer  sehr grosse  Gruppen  geeignet.  Verbesserungen der Pleskenschen
+Methode und  ihrer  Implementation sowie  Versuche mit anderen, bisher
+nicht  implementierten   Vorschlaegen  werden  daher  sicher  auf  der
+Tagesordnung  bleiben, allerdings  werden  Implementationen wohl  kaum
+sehr schnell zur Verfuegung stehen.
+
+Weiter  sollte  man  daran denken, dass man nicht gleich von einer PAG
+Praesentation   ausgehen   muss,   man   kann   durchaus   von   einer
+polyzyklischen  Praesentation  mit zyklischen  Faktoren ausgehen,  die
+nicht von Primzahlordnung sind, diese mit  AgGroupFpGroup  in  eine AG
+Gruppe  verwandeln  und  dann   mit  RefinedAgSeries   zu  einer   PAG
+Praesentation uebergehen, mit der  man weiterrechnet. Das ist manchmal
+schon  etwas besser als gleich eine  PAG Praesentation hinschreiben zu
+muessen.
+
+J. Neubueser
+
+
+
+From werner@pell.anu.edu.au Fri May 15 09:33:19 1992
+From:       werner@pell.anu.edu.au "Werner Nickel"
+Date:       Fri, 15 May 92 09:33:19 +0200
+Subject:    Re: FpGroup
+
+>  
+>  Es wird in absehbarer Zeit Routinen geben, um eine (aufl"osbare)
+>  Permutationsgruppe in eine Ag-Gruppe umzuwandeln. Wenn man mit dem TC
+>  eine (treue) Permutationsdarstellung f"ur die endlich pr"asentierte
+>  Gruppe findet, kann man diese Routine anwenden. Allgemeine Routinen
+>  (ausser den PQ f"ur p-Gruppen) f"ur endlich pr"asentierte Gruppen wird
+>  es nicht geben.
+   ^^^^^^^^
+   Da waere ich allerdings nicht so pessimistisch. Immerhin hat Alexander
+   Wegner doch eine Implementation des Pleskenschen Soluble Quotient
+   Algorithms, zumindest fuer GAP 2.4. Soweit ich weiss, ist es etwas
+   problematisch diese Implementation auf groessere Gruppen anzuwenden.
+   Hat Alex vor, seine Routinen auf GAP 3.X umzuschreiben oder es vielleicht
+   schon getan ?
+>  
+>    mfg Frank Celler
+>  
+   Werner Nickel
+
+
+
+From am@ime.usp.br Fri May 15 15:42:22 1992
+From:       am@ime.usp.br "Arnaldo Mandel"
+Date:       Fri, 15 May 92 15:42:22 +0200
+Subject:    Re: FreeGroup etc
+
+I really wished I could understand the current discussion on
+FreeGroup, etc., but unfortunately I am very limited on languages.
+Would anybody kindly summarize what is going on?
+
+Arnaldo Mandel
+
+
+
+From fceller@bert.math.rwth-aachen.de Wed May 20 08:55:06 1992
+From:       fceller@bert.math.rwth-aachen.de "Frank Celler"
+Date:       Wed, 20 May 92 08:55:06 +0200
+Subject:    FpGroup & AgGroup (short SUMMARY)
+
+Problem: Given a presentation as 'FpGroup' in GAP, how does one
+         convert this fp-group into an ag-group?  Why does 'AgGroup'
+         not work?
+
+Answer: 'AgGroup' only works for groups in which the elements can
+        be compared (see M.Schoenert's letter). For permutation groups
+        there will be a faster 'AgGroup' in the near future.
+
+	If your presentation happens to be a power/commutator
+        or power/conjugate presentations, use 'AgGroupFpGroup'.
+	Otherwise you can try to find a permutation representations
+	using a TC or, if your group is a p-group, use a p-quotient
+	algorithm ('pQuotient').
+
+	A solvable quotient algorithm will not be available
+	in the next few month.
+
+  mfg Frank Celler
+
+
+
+From martin@bert.math.rwth-aachen.de Wed May 20 15:01:51 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Wed, 20 May 92 15:01:51 +0200
+Subject:    Re: FreeGroup etc
+
+Arnaldo Mandel writes in his e-mail of 15-May-92:
+
+    I  really  wished  I  could  understand  the  current  discussion  on
+    FreeGroup, etc., but  unfortunately  I am  very limited on languages.
+    Would anybody kindly summarize what is going on?
+
+Well I will try, also adding a few comments on my own.
+
+For the future I  would like  to  ask  everybody to use  english  in this
+forum,  because the  majority of readers of this  forum  have english  as
+their native tongue (though I think quite a  few of them also  understand
+german).
+
+Martin Wursthorn writes in his e-mail message of 12-May-92:
+
+    If  one  defines  a  group  with  abstract  generators  and  relators
+    ('FreeGroup'), some function such as 'ConjugacyClasses' cannot handle
+    such  groups.  Those functions use up all  available memory and abort
+    when GAP  fails  to extend  its  workspace.   Also the  experiment to
+    convert such a  group into an AG group  fails.  Are we doing anything
+    wrong (check the warning in section 21.3 in the manual)?
+
+The functions that  fail are generic  functions  that should work for any
+group.  However they do  not work for  finitely presented groups, because
+one  basic assumption does not  hold for such  groups.  The assumption is
+that '<g> = <h>' evaluates to 'true' if and  only if the two elements <g>
+and <h>  are equal  *in their group*.   Now for finitely presented groups
+'<g> = <h>' evaluates to 'true' if and only  if  <g> and <h> are equal as
+words,  i.e., are equal *in the free group*.  But two different words may
+denote the  same element in a finitely presented group,  e.g., in $< a  |
+a^2 = 1 >$, the words $a$ and $a^3$  denote the same element.  The manual
+states this problem in  section 21.3 and  21.4, which say that you should
+*not* use the functions not mentioned in this sections.
+
+So  you  are  doing  something  wrong in  the  sense  that you  are using
+functions that you should not use.  Currently  there simply is no way  to
+compute the conjugacy classes of a finitely presented  group.  You could,
+of   course,  compute  a  permutation  representation  of  your  finitely
+presented group and then work with this.
+
+If the group you are  interested in is solvable, another possibilty would
+be to  convert  the  finitely presented group into an  AG group, and then
+work with this group.   Apperently  that is what  Martin Wursthorn tried,
+because he  mentioned 'AgGroup' in his e-mail message.  The catch is that
+'AgGroup' is also a generic  function, and  you  currently  *cannot*  use
+'AgGroup' for finitely presented groups.
+
+Frank Celler writes in his e-mail of 14-May-92:
+
+    'AgGroup'  fails  for  the  same  reason  as  'ConjugacyClasses'  for
+    finitely  presented groups (see M.Schoenert's  letter  [I never wrote
+    that letter,  but see  the  above comments]).   There  is  a  special
+    function  'AgGroupFpGroup',  which  accepts  a  power/commutator   or
+    power/conjugator  presentation  and   returns  the  AG  group.   This
+    function does not perform any transformation of the  presentation, so
+    the generators must be sorted w.r.t. to their depth.
+
+The trouble with 'AgGroupFpGroup' is mentioned in the last  sentence.  It
+does not perform  any transformations of the presentation, thus you  must
+provide   a   presentation   that  already   is  in  power/commutator  or
+power/conjugator  form.   This means  that  you cannot  take  a  finitely
+presented  solvable group with an arbitrary presentation and  convert  it
+into a  AG group.  So you  cannot use the efficient methods for AG groups
+unless you know a  power/commutator  or power/conjugator presentation for
+your group.
+
+Martin Wursthorn writes in his e-mail message of 14-May-92:
+
+    Yes, but usually one  has an arbitrary presentation for a  (solvable)
+    group.   With larger  groups it may be pretty difficult to  transform
+    them   by   hand  into   a   power/commutator   or   power/conjugator
+    presentation.  Will there be functions for this taks.
+
+Frank Celler replied in his e-mail message of 14-May-92:
+
+    There  will  be functions to  convert a (solvable)  permutation group
+    into  an  AG  group.   If  one can  find  a  (faithfull)  permutation
+    representation for a finitely presented  group  with the  TC, one can
+    use this function.  There will  be no other functions (except  the PQ
+    for p-groups) for finitely presented groups.
+
+Actually 'AgGroup'  can already convert a solvable permutation group into
+an AG group, but the new function will be much faster.
+
+Joachim Neubueser also replied in his e-mail message of 14-May-92:
+
+    Frank Celler's message does not contain the whole story.  There exist
+    suggestions for an SQ, which  computes AG presentations  for solvable
+    factor groups of increasing number of chief factors resp.  increasing
+    solvable length for a  finitely  presented group.  These methods will
+    eventually  compute  a  AG  presentation  for  a  finitely  presented
+    solvable group.   One  of  these  suggestions, which  was made by  W.
+    Plesken, was  implemented by  A. Wegner for an older version  of GAP,
+    and is currently being  ported  to GAP 3.1.  However, this  method is
+    quite  expensiv, and  is  certainly  not  suited  for  large  groups.
+    Improvements  of   this  method  and  implementation   of  the  other
+    suggestions will remain  on our agenda,  but will not be available in
+    the near future.
+
+    One should also note that it is not always  necessary to start with a
+    PAG presentation.   One could start  with  a  polycyclic presentation
+    with  cyclic   factors   of   composite   size,  convert   this  with
+    'AgGroupFpGroup'  into a AG  group,  and then use 'RefinedSeries'  to
+    convert this into a  PAG presentation.  This is sometimes easier than
+    to write down a PAG presentation immediatly.
+
+Werner Nickel also mentioned the PQ in his e-mail message of 15-May-92:
+
+   > There  will be no other functions (except the PQ for  p-groups)  for
+   > finitely presented groups.
+
+    I  would  not  be  so  pessimistic.   After all,  Alex  Wegner has an
+    implementation  of Plesken's  SQ , at least for GAP 2.4.  As far as I
+    know, it is problematic to  use this implementation for large groups.
+    Is  Alex  converting his functions  for GAP 3.X, or has  he  done  so
+    alread?
+
+Martin Wursthorn writes about a related topic in his first e-mail:
+
+    If one  already has a  AG or PAG presentation, GAP  works great.  For
+    example we had no problems converting a group of order 2^24 into a PQ
+    presentation.  Is it possible to obtain from such a PQ data structure
+    a group with abstract generators and relations corresponding  to  the
+    PQ presentation?  Some of our programs need such a presentation.
+
+Frank Celler answered:
+
+    Yes this is  possible.  'AgGroup' should do  this, but currently does
+    not.  You can use 'AgGroupPcp'.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From ch@cage.rug.ac.be Thu May 21 11:39:46 1992
+From:       ch@cage.rug.ac.be "Chris Herssens"
+Date:       Thu, 21 May 92 11:39:46 +0100
+Subject:    ['NormedVector' is missing]
+
+Dear Sir,
+
+I'm a frequent user of GAP V3, but I have found a bug, namely that the function
+'NormedVector' is not in your library.
+
+Chris
+
+
+
+From martin@bert.math.rwth-aachen.de Fri May 22 10:43:08 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Fri, 22 May 92 10:43:08 +0200
+Subject:    Re: 'NormedVector' is missing
+
+Chris Herssens writes in his e-mail message of 21-May-92:
+
+    I'm  a frequent  user of GAP V3, but  I have found a bug, namely that
+    the function 'NormedVector' is not in your library.
+
+You are right.  Well, take this one.
+
+    NormedVector := function ( vec )
+        local   zero, elm;
+        zero := vec[1] - vec[1];
+        for elm  in vec  do
+            if elm <> zero  then
+                return (1/elm) * vec;
+            fi;
+        od;
+        return vec;
+    end;
+
+I will include this patch in the second  upgrade, which will be posted to
+the  GAP Forum tomorrow.  I  have  also  forwarded your  mail to  the GAP
+Forum.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From martin@bert.math.rwth-aachen.de Tue Jun  2 13:47:15 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Tue, 2 Jun 92 13:47:15 +0200
+Subject:    Upgrade for GAP 3.1 patchlevel 1 (V3R1P1) to patchlevel 2 (V3R1P2)
+
+This  file contains the 'uuencode'-d 'compress'-ed  upgrade file for  the
+second upgrade  for  GAP 3.1.   This upgrade brings version 3  release  1
+patchlevel 1  (V3R1P1) to version 3 release 1 patchlevel 2 (V3R1P2).  The
+priority of this upgrade is high.
+
+To apply this upgrade you must first  apply the  first  upgrade.  You can
+obtain this upgrade via anonymous 'ftp' from 'samson.rwth-aachen.de'.  If
+you have already  applied the first upgrade you need  not (actually  must
+not) apply it again.
+
+Save  this mail as a file  with  name 'upg3r1p2.uue', unpack  the upgrade
+file with 'uudecode upg3r1p2.uue' (or 'uud upg3r1p1.uue') and 'uncompress
+upg3r1p2.dif.Z'.  Then read  the beginning  of  the unpacked upgrade file
+'upg3r1p2.dif', which contains instructions how to apply this upgrade.
+
+[removed the upgrade, it is available as 'upg3r1p2.dif.Z'  from the 'ftp'
+server 'samson.math.rwth-aachen.de']
+
+
+
+From martin@bert.math.rwth-aachen.de Tue Jun  2 13:59:07 1992
+From:       martin@bert.math.rwth-aachen.de "Martin Schoenert"
+Date:       Tue, 2 Jun 92 13:59:07 +0200
+Subject:    GAP for IBM PC compatibles with 386 or 486
+
+We now have an executable of GAP 3.1 for IBM PC compatibles with an Intel
+80386 or 80486 processor running MS-DOS 5.0.  It does *not* run on IBM PC
+compatibles  with an Intel 80186 or 80286 processor.  It also  does *not*
+run under Windows.
+
+To use it you need at least 2 MByte of main memory (less may be possible,
+but this would make GAP so slow that no serious work can be  done).  More
+is preferred for serious computations.  You also need a harddisk  with at
+least 3 MByte of free space.
+
+GAP will use up  to 128 MByte  of extended memory (using *XMS* or *VDISK*
+memory  allocation  strategies)  or up  to  128 MByte of  expanded memory
+(using *VCPI* programs, such as 'QEMM' and '386MAX') and  up to 128 MByte
+of disk space for swapping.
+
+The port was done by Steve  Linton (111 Ross St., Cambridge, CB1 3BS, UK,
++33 223 411661, 'sl25@cus.cam.ac.uk').  Many thanks to him for  his work.
+He used  DJ  Delorie's  port  of  the  Free  Software Foundation's  GNU C
+compiler  version  2.1.   This compiler  is copyrighted.  Please read the
+appropriate part of the file 'README'.
+
+The executable ('gapexe.386') can  be obtained  by  anonymous 'ftp'  from
+'samson.rwth-aachen.de'  (Internet number 137.226.152.6), and in the near
+future  also from 'dimacs.rutgers.edu' (Internet number 128.6.75.16)  and
+'pell.anu.edu.au' (Internet number 150.203.15.5).  Please do also get the
+file 'README',  which now  contains the copyright  notices  for the GNU C
+compiler and installation instructions.
+
+Martin.
+
+--
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,  +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, D 51 Aachen, Germany
+
+
+
+From ara@martigny.ai.mit.edu Tue Jun  2 15:08:31 1992
+From:       ara@martigny.ai.mit.edu "Allan Adler"
+Date:       Tue, 2 Jun 92 15:08:31 +0200
+Subject:    GAP for PC
+
+That is very good news about the speedy release of the PC version!
+
+The release says it runs under MSDOS 5.0. Does that mean it doesn't
+work under DOS 4.01 ?
+
+Allan Adler
+ara@altdorf.ai.mit.edu
+
+
+
+From sl25@cus.cam.ac.uk Tue Jun  2 15:54:43 1992
+From:       sl25@cus.cam.ac.uk "S. Linton"
+Date:       Tue, 2 Jun 92 15:54:43 +0200
+Subject:    Re: GAP for PC 
+
+Allan Adler asks about GAP under DOS 4.01:
+
+I have no way to test it under DOS 4.01, but know of no reason why it should
+not work. You must supply VCPI or EMS to support running in 386 32 bit
+mode, and must avoid various products (like Windows) which interfere
+with this.
+
+	Steve
+
+PS Why not upgrade to 5.0 - they tell me it's MUCH better than 4.x
+
+
+
+From sibley@math.psu.edu Mon Jun  8 20:40:04 1992
+From:       sibley@math.psu.edu "David Sibley"
+Date:       Mon, 8 Jun 92 20:40:04 +0200
+Subject:    homorphisms from fp groups
+
+Again I am a bit confused and would appreciate some pointers on how best
+to do the following.
+
+Note: I have not yet done either of the upgrades and that might be my
+problem.  We  are going to install Gap in a different place and I am
+waiting on the upgrade until we move it.
+
+I have a finitely presented group (it's M11) and a subgroup.  I use
+OperationCosetsFpGroup to get the permutation representation on the
+cosets of the subgroup.
+
+1.  OperationHomomorphism does not produce the homomorphism I want.
+I just get an error message that the permutation group is the wrong
+kind of thing.  Why doesn't this work?  (Even if it's not designed to,
+I think it should, just so one can do what I'm trying to do here.)
+
+2.  I use GroupHomomorphismByImages to produce the homomorphism I want
+anyway.  As recommended, I set the field isMapping to true.  I then
+try to compute an image: Image(f,a).  Since a is one of the original
+abstract generators, this should be trivial and instantaneous.  It's
+not.  After waiting a bit, I abort this operation and use
+ImagesRepresentative instead.  This gives an immediate answer. Why
+is Image not working here?
+
+Generally, I would think that for efficient computations one wants to
+use some small-degree permutation represenation of the group.  Yet one
+also must keep some connection to the original presentation of the
+group in most cases.  This is all I'm trying to do here.  If there's a
+better way, or this is the wrong idea, please let me know.
+
+David Sibley
+sibley@math.psu.edu
+
+
+
+From neil@dehn.mth.pdx.edu Wed Jun 17 21:17:39 1992
+From:       neil@dehn.mth.pdx.edu "John Neil"
+Date:       Wed, 17 Jun 92 21:17:39 +0200
+Subject:    FpGroups to PermGroups
+
+Is there a convient (that is, built-in) way to convert the table generated
+by the fpgroup information into that which would be usable by the general
+group functions?  We'd like to be able to define morphisms on finitely
+presented groups but have not been able to enact a method of doing so.
+
+John Neil, Graduate Teaching Assistant           e-mail:  neil@math.mth.pdx.edu
+Mathematics Department                         NeXTMail:  neil@dehn.mth.pdx.edu
+Portland State University
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+
+From neubuese@samson.math.rwth-aachen.de Fri Jun 19 10:24:12 1992
+From:       neubuese@samson.math.rwth-aachen.de "Joachim Neubueser"
+Date:       Fri, 19 Jun 92 10:24:12 +0200
+Subject:    letter of J. Neil
+
+John  Neil asks  for  a convenient  way to  convert  from  a  finitely
+presented group  to a permutation group  or some  other  way to  get a
+description that can be used in general group functions.
+
+The answer unfortunately has to be  that there cannot  be a  generally
+working  method,  because  already  the  word  problem   for  finitely
+presented  groups,  i.e.   the problem to  decide  if  a  word in  the
+generators of  a finitely presented group represents  the identity  of
+that  group, is  algorithmically  unsolvable.   All  methods  for  the
+investigation  of  finitely  presented groups  therefore either are in
+essence  trial-and-error  methods  such  as  the  Todd  Coxeter  coset
+enumeration   method,    which   *tries*   to   find   a   permutation
+representation, or only find factor groups of prescribed type like the
+p-Nilpotent Quotient algorithm. You can use these in GAP, but you have
+to decide whether  from  some  additional  information - e.g.  you may
+know that your  group is a p-group or  that the  group has  a subgroup
+with the property that the permutation representation on its cosets is
+faithful- you are sure that you obtain an isomorphic copy of you given
+f.p. group.  In GAP however -as it should be done from the theoretical
+point of view the f.p.  group and  its isomorphic image which may e.g.
+be a permutation group, are  treated as  different groups. You may use
+the  facilities  that  GAP   provides  for   setting   up   and  using
+homomorphisms to establish e.g. an isomorphism between the  f.p. group
+and its faithful image in a permutation representation.
+
+Joachim Neubueser
+
+
+
+From ara@martigny.ai.mit.edu Fri Jun 19 18:43:54 1992
+From:       ara@martigny.ai.mit.edu "Allan Adler"
+Date:       Fri, 19 Jun 92 18:43:54 +0200
+Subject:    fp --> perm
+
+I'm glad to see the recent articles on going from a finitely presented
+group to a permutation group in GAP. I have been having trouble with
+just this. I would find it helpful if someone would post a complete
+example of how this is done. Specifically:
+
+Let's say I define G as a finitely presented group and H as a subgroup:
+
+a:=AbstractGenerator("a");
+b:=AbstractGenerator("b");
+
+G:=Group(a,b);
+G.relators:=[a^2,b^3,(a*b)^5]
+
+H:=Subgroup(G,[a,(b*a)^2*b^-1];
+
+OperationCosetsFpGroup(G,H);
+
+So far, I am following the example of 21.5 of the GAP manual. According
+to that example, GAP now returns:
+
+Group( (2,3)(4,5), (1,2,4) );
+
+Can someone now post the code that (with this example) lets one take
+any word w in a,b and returns the corresponding permutation, along with
+a transcript showing that the code works?
+
+Allan Adler
+ara@altdorf.ai.mit.edu
+
+
+

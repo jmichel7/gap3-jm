@@ -1,0 +1,518 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  agwords.tex                 GAP documentation                Frank Celler
+%%
+%A  @(#)$Id: agwords.tex,v 1.2 1997/01/20 14:04:08 gap Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file contains descriptions of the  ag word  datatype,  the operations
+%%  and functions for this type.
+%%
+%H  $Log: agwords.tex,v $
+%H  Revision 1.2  1997/01/20 14:04:08  gap
+%H  vfelsch removed the hyphen in terms like AG-system or PAG-system
+%H
+%H  Revision 1.1.1.1  1996/12/11 12:36:42  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.12  1993/03/11  17:53:24  fceller
+%H  strings are now lists
+%H
+%H  Revision 3.11  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.10  1993/02/15  15:00:11  fceller
+%H  removed "%T" lines
+%H
+%H  Revision 3.9  1993/02/15  14:23:56  felsch
+%H  DefineName eliminated
+%H
+%H  Revision 3.8  1993/02/02  15:11:45  felsch
+%H  examples fixed
+%H
+%H  Revision 3.7  1993/01/04  10:59:55  fceller
+%H  changed 'DepthAgWord' applied to the identity
+%H
+%H  Revision 3.6  1992/04/07  08:25:20  fceller
+%H  fixed a few typos
+%H
+%H  Revision 3.5  1992/04/03  13:15:38  fceller
+%H  chnaged 'Shifted...' into 'Sifted...'
+%H
+%H  Revision 3.4  1992/03/30  07:51:02  fceller
+%H  changed 'Exponents' slightly
+%H
+%H  Revision 3.3  1992/02/07  18:27:21  fceller
+%H  Initial GAP 3.1 release.
+%H
+%H  Revision 3.1  1991/04/11  11:34:01  martin
+%H  Initial revision under RCS
+%%
+\Chapter{Words in Finite Polycyclic Groups}%
+\index{Ag Words}
+
+Ag words  are  the  {\GAP}  datatype  for  elements of finite  polycyclic
+groups.  Unlike permutations, which are all considered to be  elements of
+one  large symmetric group,  each  ag word belongs to  a specified group.
+Only ag words of the same finite polycyclic group can be multiplied.
+
+The following  sections describe  ag words  and their parent  groups (see
+"More  about Ag  Words"),   how  ag  words  are  compared (see  "Ag  Word
+Comparisons"), functions for ag words and some low level functions for ag
+words (starting at "CentralWeight" and "CanonicalAgWord").
+
+For operations  and functions defined  for group elements  in general see
+"Comparisons of Group Elements", "Operations for Group Elements".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{More about Ag Words}
+
+Let $G$ be a group and $G  = G_0 >  G_1 > ...  >  G_n = 1$ be a subnormal
+series of $G \neq 1$ with finite cyclic factors, i.e., $G_i \lhd G_{i-1}$
+for all $i=1, ..., n$ and $G_{i-1} = \langle G_i, g_i \rangle$.  Then $G$
+will  be  called  an  *ag group*  \index{ag group}  with  *AG  generating
+sequence*  \index{AG  generating  sequence}  or,  for short,  *AG system*
+\index{AG system} $(g_1,  ..., g_n)$. Let $o_i$ be the  order of $G_{i-1}
+/ G_i$. If all $o_1, ..., o_n$ are primes the system $(g_1, ..., g_n)$ is
+called a  *PAG system*  \index{PAG system}.  With respect to  a given  AG
+system the group $G$ has a so called *power-commutator presentation*
+
+\begin{center}
+  \begin{tabular}{lcll}
+    ${g_i}^{o_i}$ & $=$ & $w_{ii}(g_{i+1},..., g_n)$ &
+      for $1\leq i\leq n$,\\
+    $[g_i,g_j]$ & $=$ & $w_{ij}(g_{j+1},...,g_n)$ &
+      for $1\leq j\< i\leq n$\\
+  \end{tabular}
+\end{center}
+
+and a so called *power-conjugate presentation*
+
+\begin{center}
+  \begin{tabular}{lcll}
+    ${g_i}^{o_i}$ & $=$ & $w_{ii}(g_{i+1},..., g_n)$ & 
+      for $1\leq i\leq n$,\\
+    $g_i^{g_j}$ & $=$ & $w^{\prime}_{ij}(g_{j+1},...,g_n)$ &
+      for $1\leq j\< i\leq n$.\\
+  \end{tabular}
+\end{center}
+
+For both kinds of presentations we shall use  the term *AG presentation*.
+Each element $g$ of $G$ can be expressed uniquely in the form
+
+\begin{center}
+  \begin{tabular}{cc}
+    $g = g_1^{\nu_1}\* ...\* g_n^{\nu_n}$ & for $0 \leq \nu_i \< o_i$.
+  \end{tabular}
+\end{center}
+
+We call the composition series $G_0 > G_1 > ... > G_n$ the *AG series* of
+$G$ and define $\nu_i( g ) \:= \nu_i$.  If  $\nu_i = 0$ for  $i = 1, ...,
+k-1$ and $\nu_k  \neq 0$, we call $\nu_k$  the *leading exponent* and $k$
+the *depth* of $g$ and denote them by $\nu_k =\: \lambda( g )$ and $k =\:
+\delta( g )$.  We call $o_k$ the *relative order* of $g$.
+
+Each element $g$ of $G$ is called *ag  word* and we  say  that $G$ is the
+parent group of $g$.  A  parent group   is constructed in   {\GAP}  using
+'AgGroup' (see "AgGroup") or 'AgGroupFpGroup' (see "AgGroupFpGroup").
+
+Our standard example in the following sections is  the symmetric group of
+degree 4, defined by  the following sequence of {\GAP}  statements.   You
+should   enter  them  before running  any   example.    For  details   on
+'AbstractGenerators' see "AbstractGenerator".
+
+|    gap> a  := AbstractGenerator( "a" );;  # (1,2)
+    gap> b  := AbstractGenerator( "b" );;  # (1,2,3)
+    gap> c  := AbstractGenerator( "c" );;  # (1,3)(2,4)
+    gap> d  := AbstractGenerator( "d" );;  # (1,2)(3,4)
+    gap> s4 := AgGroupFpGroup( rec(
+    >        generators := [ a, b, c, d ],
+    >        relators   := [ a^2, b^3, c^2, d^2, Comm( b, a ) / b,
+    >                        Comm( c, a ) / d, Comm( d, a ),
+    >                        Comm( c, b ) / ( c*d ), Comm( d, b ) / c,
+    >                        Comm( d, c ) ] ) );
+    Group( a, b, c, d )
+    gap> s4.name := "s4";;
+    gap> a := s4.generators[1];; b := s4.generators[2];;
+    gap> c := s4.generators[3];; d := s4.generators[4];; |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ag Word Comparisons}
+\index{equality!of ag words}%
+\index{ordering!of ag words}
+
+'<g> \<\ <h>' \\
+'<g> \<= <h>' \\
+'<g> >= <h>' \\
+'<g> > <h>'
+
+The operators '\<', '>', '\<=' and '>=' return  'true' if <g> is strictly
+less,  strictly greater, not  greater, not less, respectively,  than <h>.
+Otherwise they return 'false'.
+
+If <g> and <h> have a common parent group they  are compared with respect
+to the AG series of this group.  If  two ag words have  different depths,
+the  one with the  higher depth is  less than the   other one.  If two ag
+words have the same  depth but different leading  exponents, the one with
+the smaller leading exponent is less  than  the other one.  Otherwise the
+leading generator is removed in both ag words and  the remaining ag words
+are compared.
+
+If <g>  and <h> do  not have a common parent  group, then the composition
+lengths of the parent groups are compared.
+
+You  can  compare  ag words with objects of other types.  Field elements,
+unkowns, permutations and abstract  words  are  smaller  than  ag  words.
+Objects of other types, i.e., functions, lists and records are larger.
+
+|    gap> 123/47 < a;
+    true
+    gap> (1,2,3,4) < a;
+    true
+    gap> [1,2,3,4] < a;
+    false
+    gap> true < a;
+    false
+    gap> rec() < a;
+    false
+    gap> c < a;
+    true
+    gap> a*b < a*b^2;
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CentralWeight}
+
+'CentralWeight( <g> )'
+
+'CentralWeight'  returns  the central  weight  of an  ag  word  <g>, with
+respect to the central  series used  in  the combinatorial  collector, as
+integer.
+
+This presumes  that  <g>  belongs  to   a parent  group   for   which the
+combinatorial collector is used. See "ChangeCollector" for details.
+
+If <g> is the identity, 0 is returned.
+
+Note that   'CentralWeight'   allows  records  that mimic   ag  words  as
+arguments.
+
+|    gap> d8 := AgGroup( Subgroup( s4, [ a, c, d ] ) );
+    Group( g1, g2, g3 )
+    gap> ChangeCollector( d8, "combinatorial" );
+    gap> List( d8.generators, CentralWeight );
+    [ 1, 1, 2 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CompositionLength}
+
+'CompositionLength( <g> )'
+
+Let $G$ be the parent group of the ag word <g>.  Then 'CompositionLength'
+returns the length of the AG series of $G$ as integer.
+
+Note  that 'CompositionLength' allows records  that mimic   ag  words  as
+arguments.
+
+|    gap> CompositionLength( c );
+    5 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Depth}
+
+'Depth( <g> )'
+
+'Depth' returns the depth of an ag word <g> with respect to the AG series
+of its parent group as integer.
+
+Let $G$ be the parent  group of <g> and  $G=G_0  > ...  > G_n=\{1\}$  the
+AG series of $G$.  Let $\delta$ be the maximal positive integer such that
+<g> is an element of $G_{\delta-1}$. Then $\delta$ is the *depth* of <g>.
+
+Note that 'Depth' allows record that mimic  ag  words as arguments.
+
+|    gap> Depth( a );
+    1
+    gap> Depth( d );
+    4
+    gap> Depth( a^0 );
+    5 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAgWord}
+
+'IsAgWord( <obj> )'
+
+'IsAgWord' returns 'true' if <obj>, which can be  an arbitrary object, is
+an ag word and 'false' otherwise.
+
+|    gap> IsAgWord( 5 );
+    false
+    gap> IsAgWord( a );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LeadingExponent}
+
+'LeadingExponent( <g> )'
+
+'LeadingExponent'  returns  the leading  exponent  of  an ag word  <g> as
+integer.
+
+Let $G$ be the parent group of <g> and $(g_1, ..., g_n)$ the AG system of
+$G$ and let $o_i$ be the relative order  of $g_i$.  Then the  element <g>
+can be  expressed uniquely in the form $g_1^{\nu_1}\*  ...\* g_n^{\nu_n}$
+for  integers $\nu_i$ such  that $0  \leq \nu_i  \<  o_i$.   The *leading
+exponent* of <g> is the first nonzero $\nu_i$.
+
+If <g> is the identity 0 is returned.
+
+Although  'ExponentAgWord(   <g>, Depth( <g>   ) )'  returns  the leading
+exponent of <g>, too, this function is faster and is able  to  handle the
+identity.
+
+Note  that  'LeadingExponent' allows  records   that  mimic ag   words as
+arguments.
+
+|    gap> LeadingExponent( a * b^2 * c^2 * d );
+    1
+    gap> LeadingExponent( b^2 * c^2 * d );
+    2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RelativeOrder}
+
+'RelativeOrder( <g> )'
+
+'RelativeOrder' returns the relative order of an ag word <g> as integer.
+
+Let $G$ be  the parent group of <g>  and $G=G_0  > ... >   G_n=\{1\}$ the
+AG series of $G$.  Let $\delta$ be the maximal positive integer such that
+<g> is an element of $G_{\delta-1}$.  The *relative  order* of <g> is the
+index of  $G_{\delta+1}$ in  $G_\delta$,   that   is  the  order  of  the
+factor group $G_\delta/G_{\delta+1}$.
+
+If <g> is the identity 1 is returned.
+
+Note that 'RelativeOrder' allows records that mimic agwords as arguments.
+
+|    gap> RelativeOrder( a );
+    2
+    gap> RelativeOrder( b );
+    3
+    gap> RelativeOrder( b^2 * c * d );
+    3 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CanonicalAgWord}
+
+'CanonicalAgWord( <U>, <g> )'
+
+Let <U> be an ag  group with  parent group $G$, let <g> be an element  of
+$G$. Let  $(u_1, ..., u_m)$ be  an  induced generating  system of <U> and
+$(g_1,  ...,  g_n)$  be  a  canonical  generating  system  of  $G$.  Then
+'CanonicalAgWord' returns a word  $x = <g> \* u = g_{i_1}^{e_1} \* ... \*
+g_{i_k}^{e_k}$ such that $u\in <U>$ and no $i_j$ is equal to the depth of
+any generator $u_l$.
+
+|    gap> v4 := MergedCgs( s4, [ a*b^2, c*d ] );
+    Subgroup( s4, [ a*b^2, c*d ] )
+    gap> CanonicalAgWord( v4, a*c );
+    b^2*d
+    gap> CanonicalAgWord( v4, a*b*c*d );
+    b
+    gap> (a*b*c*d) * (a*b^2);
+    b*c*d
+    gap> last * (c*d);
+    b |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DifferenceAgWord}
+
+'DifferenceAgWord( <u>, <v> )'
+
+'DifferenceAgWord' returns an ag word  $s$ representing the difference of
+the exponent vectors of <u> and <v>.
+
+Let $G$ be the parent group of <u> and <v>.  Let $(g_1, ..., g_n)$ be the
+AG system of $G$  and $o_i$ be the relative order or $g_i$.  Then <u> can
+be expressed uniquely as $g_1^{u_1}\* ...\* g_n^{u_n}$ for integers $u_i$
+between $0$ and $o_i-1$ and <v> can be expressed uniquely as $g_1^{v_1}\*
+...\*  g_n^{v_n}$  for integers  $v_i$  between  $0$  and  $o_i-1$.   The
+function  'DifferenceAgWord' returns an  ag word $s  = g_1^{s_1}\*  ...\*
+g_n^{s_n}$ with integer  $s_i$  such that $0 \leq  s_i \<  o_i$ and  $s_i
+\equiv u_i - v_i$ mod $o_i$.
+
+|    gap> DifferenceAgWord( a * b, a );
+    b
+    gap> DifferenceAgWord( a, b );
+    a*b^2 
+    gap> z27 := CyclicGroup( AgWords, 27 );
+    Group( c27_1, c27_2, c27_3 )
+    gap> x := z27.1 * z27.2;
+    c27_1*c27_2
+    gap> x * x;
+    c27_1^2*c27_2^2
+    gap> DifferenceAgWord( x, x );
+    IdAgWord |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReducedAgWord}
+
+'ReducedAgWord( <b>, <x> )'
+
+Let  <b> and <x>  be ag  words of the   same depth, then  'ReducedAgWord'
+returns an ag word <a> such that <a> is an element of  the coset $U <b>$,
+where $U$ is  the  cyclic group generated  by  <x>, and <a> has  a higher
+depth than <b> and <x>.
+
+Note that the relative order of <b> and <x> must be a prime.
+
+Let $p$ be the relative order  of <b> and  <x>.  Let $\beta$ and $\xi$ be
+the leading exponent of $b$ and  $x$ respectively.   Then  there exits an
+integer $i$ such that $\xi \* i = \beta$ modulo  $p$.  We  can set $<a> =
+<x>^{-i} <b>$.
+
+Typically this function is used when  <b>  and  <x> occur in a generating
+set of a subgroup $W$.  Then b can be replaced by  <a>  in the generating
+set of <W>, but <a> and <x> have different depth.
+
+|    gap> ReducedAgWord( a*b^2*c, a );
+    b^2*c
+    gap> ReducedAgWord( last, b );
+    c |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SiftedAgWord}
+
+'SiftedAgWord( <U>, <g> )'
+
+'SiftedAgWord' tries to sift  an ag word <g>, which must be an element of
+the parent group of an ag group <U>, through an induced generating system
+of <U>. 'SiftedAgWord' returns the remainder of this shifting process.
+
+The identity is returned if and only if <g> is an element of <U>.
+
+Let  $u_1, ..., u_m$  be an induced  generating system of  <U>.  If there
+exists an $u_i$ such that $u_i$ and <g> have the  same depth, then <g> is
+reduced  with $u_i$ using   'ReducedAgWord' (see  "ReducedAgWord").   The
+process is repeated until no $u_i$ can be found or the  <g> is reduced to
+the identity.
+
+'SiftedAgWord' allows factor group arguments.  See "Factor  Groups of Ag
+Groups" for details.
+
+Note that 'SiftedAgGroup' adds a record component '<U>.shiftInfo' to the
+ag group record of <U>.  This entry is used by  subsequent calls with the
+same ag group in order to speed up  computation.  If you  ever change the
+component '<U>.igs' by  hand,  not  using  'Normalize', you must   unbind
+'<U>.shiftInfo', otherwise all following  results of 'SiftedAgWord' will
+be corrupted.
+
+|    gap> s3 := Subgroup( s4, [ a, b ] );
+    Subgroup( s4, [ a, b ] )
+    gap> SiftedAgWord( s3, a * b^2 * c );
+    c |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SumAgWord}
+
+'SumAgWord( <u>, <v> )'
+
+'SumAgWord' returns an ag  word $s$ representing the  sum of the exponent
+vectors of <u> and <v>.
+
+Let $G$ be the parent group of <u> and <v>.  Let $(g_1, ..., g_n)$ be the
+AG system of $G$ and $o_i$ be the relative order or $g_i$.  Then  <u> can
+be expressed uniquely as $g_1^{u_1}\* ...\* g_n^{u_n}$ for integers $u_i$
+between $0$ and $o_i-1$ and <v> can be expressed uniquely as $g_1^{v_1}\*
+...\*  g_n^{v_n}$ for integers  $v_i$  between  $0$  and  $o_i-1$.   Then
+'SumAgWord'  returns an ag word  $s =  g_1^{s_1}\*  ...\* g_n^{s_n}$ with
+integer $s_i$  such that $0 \leq s_i \< o_i$ and  $s_i \equiv u_i  + v_i$
+mod $o_i$.
+
+|    gap> SumAgWord( b, a );
+    a*b
+    gap> SumAgWord( a*b, a );
+    b
+    gap> RelativeOrderAgWord( a );
+    2 
+    gap> z27 := CyclicGroup( AgWords, 27 );
+    Group( c27_1, c27_2, c27_3 )
+    gap> x := z27.1 * z27.2;
+    c27_1*c27_2
+    gap> y := x ^ 2;
+    c27_1^2*c27_2^2
+    gap> x * y;
+    c27_2*c27_3
+    gap> SumAgWord( x, y );
+    IdAgWord |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ExponentAgWord}
+
+'ExponentAgWord( <g>, <k> )'
+
+'ExponentAgWord' returns  the exponent of the <k>.th generator in  an  ag
+word <g> as integer,  where <k>  refers to the numbering of generators of
+the parent group of <g>.
+
+Let $G$ be the parent group of <g> and $(g_1, ..., g_n)$ the AG system of
+$G$ and let $o_i$ be the  relative order  of $g_i$.  Then the element <g>
+can be  expressed uniquely in the form $g_1^{\nu_1}\* ...\*  g_n^{\nu_n}$
+for integers  $\nu_i$  between  $0$  and $o_i-1$.  The *exponent*  of the
+<k>.th generator is $\nu_{<k>}$.
+
+See also "ExponentsAgWord" and "Exponents".
+
+|    gap> ExponentAgWord( a * b^2 * c^2 * d, 2 );
+    2
+    gap> ExponentAgWord( a * b^2 * c^2 * d, 4 );
+    1
+    gap> ExponentAgWord( a * b^2 * c^2 * d, 3 );
+    0
+    gap> a * b^2 * c^2 * d;
+    a*b^2*d |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ExponentsAgWord}
+
+'ExponentsAgWord( <g> )'\\
+'ExponentsAgWord( <g>, <s>, <e> )'\\
+'ExponentsAgWord( <g>, <s>, <e>, <root> )'
+
+In its first form 'ExponentsAgWord' returns  the exponent vector of an ag
+word <g>, with respect to the AG system of the supergroup of <g>, as list
+of integers.  In the second form 'ExponentsAgWord' returns the sublist of
+the  exponent  vector  of <g>  starting   at position  <s> and  ending at
+position <e>   as list of integers.  In   the third  form the  vector  is
+returned as list of finite field elements  over the same finite  field as
+<root>.
+
+Let $G$ be the parent group of <g> and $(g_1, ..., g_n)$ the AG system of
+$G$ and let $o_i$ be the relative order  of $g_i$.  Then  the element <g>
+can  be expressed uniquely in the  form $g_1^{\nu_1}\* ...\* g_n^{\nu_n}$
+for integers $\nu_i$ between $0$ and $o_i-1$.  The exponent vector of <g>
+is the list '[$\nu_1$, ..., $\nu_n$]'.
+
+Note that you must use 'Exponents' if  you want to  get the exponent list
+of <g>  with  respect not  to  the parent  group  of <g>  but  to a given
+subgroup, which contains <g>.  See "Exponents" for details.
+
+|    gap> ExponentsAgWord( a * b^2 * c^2 * d );
+    [ 1, 2, 0, 1 ]
+    gap> a * b^2 * c^2 * d;
+    a*b^2*d |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%Emacs setup
+%E Local Variables:
+%E mode:           outline
+%E outline-regexp: "\\\\Chapter\\|\\\\Section\\|\\%Emacs"
+%E fill-column:    73
+%E eval:           (hide-body)
+%E End:
+%%

@@ -1,0 +1,422 @@
+<html><head><title>GAP3 Manual: 16 Algebraic extensions of fields</title></head>
+<body bgcolor="ffffff">
+<h1>16 Algebraic extensions of fields</h1>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+If we adjoin a root <I>&alpha;</I> of an irreducible polynomial <I>p &isin; K[x]</I> to
+the field <I>K</I> we get an <strong>algebraic extension</strong> <I>K(&alpha;)</I>, which is again
+a field.  By Kronecker's construction, we may identify <I>K(&alpha;)</I> with
+the factor ring <I>K[x]/(p)</I>, an identification that also provides a method
+for computing in these extension fields.
+<P>
+Currently <strong>GAP3</strong> only allows extension fields of fields <I>K</I>, when <I>K</I>
+itself is not an extension field.
+<P>
+As it is planned to modify the representation of field extensions to
+unify vector space structures and to speed up computations, <strong> All
+information in this chapter is subject to change in future versions</strong>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap016.htm#SECT001">AlgebraicExtension</a>
+<LI> <A HREF="chap016.htm#SECT002">IsAlgebraicExtension</a>
+<LI> <A HREF="chap016.htm#SECT003">RootOf</a>
+<LI> <A HREF="chap016.htm#SECT004">Algebraic Extension Elements</a>
+<LI> <A HREF="chap016.htm#SECT005">Set functions for Algebraic Extensions</a>
+<LI> <A HREF="chap016.htm#SECT006">IsNormalExtension</a>
+<LI> <A HREF="chap016.htm#SECT007">MinpolFactors</a>
+<LI> <A HREF="chap016.htm#SECT008">GaloisGroup for Extension Fields</a>
+<LI> <A HREF="chap016.htm#SECT009">ExtensionAutomorphism</a>
+<LI> <A HREF="chap016.htm#SECT010">Field functions for Algebraic Extensions</a>
+<LI> <A HREF="chap016.htm#SECT011">Algebraic Extension Records</a>
+<LI> <A HREF="chap016.htm#SECT012">Extension Element Records</a>
+<LI> <A HREF="chap016.htm#SECT013">IsAlgebraicElement</a>
+<LI> <A HREF="chap016.htm#SECT014">Algebraic extensions of the Rationals</a>
+<LI> <A HREF="chap016.htm#SECT015">DefectApproximation</a>
+<LI> <A HREF="chap016.htm#SECT016">GaloisType</a>
+<LI> <A HREF="chap016.htm#SECT017">ProbabilityShapes</a>
+<LI> <A HREF="chap016.htm#SECT018">DecomPoly</a>
+</ol>
+<A NAME="SECT001"><h2>16.1 AlgebraicExtension</h2></a>
+<P><P><P>
+<code>AlgebraicExtension( <var>pol</var> )</code>
+<P>
+constructs the algebraic extension <var>L</var> corresponding to the polynomial
+<var>pol</var>.  <var>pol</var> must be an irreducible polynomial defined over a
+``defining'' field <var>K</var>.  The elements of <var>K</var> are embedded into <var>L</var> in
+the canonical way.  As <var>L</var> is a field, all field functions are applicable
+to <var>L</var>.  Similarly, all field element functions apply to the elements of
+<var>L</var>.
+<P>
+<var>L</var> is considered implicitely to be a field over the subfield <var>K</var>.  This
+means, that functions like <code>Trace</code> and <code>Norm</code> relative to subfields are
+not supported.
+<P>
+<pre>    gap> x:=X(Rationals);;x.name:="x";;
+    gap> p:=x^4+3*x^2+1;
+    x^4 + 3*x^2 + 1
+    gap> e:=AlgebraicExtension(p);
+    AlgebraicExtension(Rationals,x^4 + 3*x^2 + 1)
+    gap> e.name:="e";;
+    gap> IsField(e);
+    true
+    gap> y:=X(GF(2));;y.name:="y";;
+    gap> q:=y^2+y+1;
+    Z(2)^0*(y^2 + y + 1)
+    gap> f:=AlgebraicExtension(q);
+    AlgebraicExtension(GF(2),Z(2)^0*(y^2 + y + 1))</pre>
+<P><A NAME="SECT002"><h2>16.2 IsAlgebraicExtension</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>IsAlgebraicExtension( <var>D</var> )</code>
+<P>
+<code>IsAlgebraicExtension</code> returns <code>true</code> if the object <var>D</var> is an algebraic
+field extension and <code>false</code> otherwise.
+<P>
+More  precisely, <code>IsAlgebraicExtension</code>  tests whether  <var>D</var> is an algebraic
+field  extension  record  (see  <a href="chap016.htm#SECT011">Algebraic  Extension  Records</a>).  So,  for
+example,   a  matrix   ring  may   in  fact   be  a  field  extension,  yet
+<code>IsAlgebraicExtension</code> would return <code>false</code>.
+<P>
+<pre>    gap> IsAlgebraicExtension(e);
+    true
+    gap> IsAlgebraicExtension(Rationals);
+    false</pre>
+<P><A NAME="SECT003"><h2>16.3 RootOf</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>RootOf( <var>pol</var> )</code>
+<P>
+returns a root of the irreducible polynomial <var>pol</var> as element of the
+corresponding extension field <code>AlgebraicExtension(<var>pol</var>)</code>.  This root is
+called the <strong>primitive element</strong> of this extension.
+<P><P>
+<pre>    gap> r:=RootOf(p);
+    RootOf(x^4 + 3*x^2 + 1)
+    gap> r.name:="alpha";;</pre>
+<P><A NAME="SECT004"><h2>16.4 Algebraic Extension Elements</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<A name = "I4"></a>
+
+<P>
+According  to  Kronecker's  construction,  the  elements  of  an algebraic
+extension are considered to be polynomials in the primitive element. Unless
+they  are already in the defining field (in which case they are represented
+as  elements of this field), they are  represented by records in <strong>GAP3</strong> (see
+<a href="chap016.htm#SECT012">Extension  Element  Records</a>).  These  records  contain a representation a
+polynomial  in the primitive  element. The extension  corresponding to this
+primitive element is the default field for the algebraic element.
+<P>
+The usual field operations are applicable to algebraic elements.
+<P>
+<pre>    gap> r^3/(r^2+1);
+    -1*alpha^3-1*alpha
+    gap> DefaultField(r^2);
+    e</pre>
+<P><A NAME="SECT005"><h2>16.5 Set functions for Algebraic Extensions</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<A name = "I6"></a>
+
+<A name = "I7"></a>
+
+<P>
+As algebraic extensions are fields, all set theoretic functions are
+applicable to algebraic elements.  The following two routines are treated
+specially:
+<P>
+<P>
+<code>in</code>
+<P>
+tests,  whether a given object is  contained in an algebraic extension. The
+base  field  is  embedded  in  the  natural  way  into  the  extension. Two
+extensions are considered to be distinct, even if the minimal polynomial of
+one has a root in the other one.
+<P>
+<pre>    gap> r in e;5 in e;
+    true
+    true
+    gap> p1:=Polynomial(Rationals,MinPol(r^2));
+    x^2 + 3*x + 1
+    gap> r2:=RootOf(p1);
+    RootOf(x^2 + 3*x + 1)
+    gap> r2 in e;
+    false</pre>
+<P>
+<P>
+<code>Random</code>
+<P>
+A random algebraic element is computed by taking a linear combination of the
+powers of the primitive element with random coefficients from the ground
+field.
+<P>
+<pre>    gap> ran:=Random(e);
+    -1*alpha^3-4*alpha^2</pre>
+<P><A NAME="SECT006"><h2>16.6 IsNormalExtension</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>IsNormalExtension(<var>L</var>)</code>
+<P><P>
+An algebraic extension field is called a <strong>normal extension</strong>, if it is a
+splitting field of the defining polynomial.  The second version returns
+whether <var>L</var> is a normal extension of <var>K</var>.  The first version returns
+whether <var>L</var> is a normal extension of its definition field.
+<P>
+<pre>    gap> IsNormalExtension(e);
+    true
+    gap> p2:=x^4+x+1;;
+    gap> e2:=AlgebraicExtension(p2);
+    AlgebraicExtension(Rationals,x^4 + x + 1)
+    gap> IsNormalExtension(e2);
+    false</pre>
+<P><A NAME="SECT007"><h2>16.7 MinpolFactors</h2></a>
+<P><P><P>
+<code>MinpolFactors( <var>L</var> )</code>
+<P>
+returns the factorization of the defining polynomial of <var>L</var> over <var>L</var>.
+<P>
+<pre>    gap> X(e).name:="X";;
+    gap> MinpolFactors(e);
+    [ X + (-1*alpha), X + (-1*alpha^3-3*alpha), X + (alpha), 
+      X + (alpha^3+3*alpha) ]</pre>
+<P><A NAME="SECT008"><h2>16.8 GaloisGroup for Extension Fields</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<A name = "I10"></a>
+
+<P>
+<code>GaloisGroup( <var>L</var> )</code>
+<P>
+returns the Galois group of the field <var>L</var> if <var>L</var> is a normal extension
+and issues an error if not.  The Galois group is a group of extension
+automorphisms (see <a href="chap016.htm#SECT009">ExtensionAutomorphism</a>).
+<P>
+The computation of a Galois group is computationally relatively hard,
+and can take significant time.
+<P>
+<pre>    gap> g:=GaloisGroup(f);
+    Group( ExtensionAutomorphism(AlgebraicExtension(GF(2),Z(2)^0*(y^
+    2 + y + 1)),RootOf(Z(2)^0*(y^2 + y + 1))+Z(2)^0) )
+    gap> h:=GaloisGroup(e);
+    Group( ExtensionAutomorphism(e,alpha^3+
+    3*alpha), ExtensionAutomorphism(e,-1*alpha), ExtensionAutomorphism(e,
+    -1*alpha^3-3*alpha) )
+    gap> Size(h);
+    4
+    gap> AbelianInvariants(h);
+    [ 2, 2 ]</pre>
+<P><A NAME="SECT009"><h2>16.9 ExtensionAutomorphism</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code>ExtensionAutomorphism( <var>L</var>, <var>img</var> )</code>
+<P>
+is the automorphism of the extension <var>L</var>, that maps the primitive root of
+<var>L</var> to <var>img</var>.  As it is a field automorphism, section <a href="chap006.htm#SECT013">Field
+Homomorphisms</a> applies.
+<P><A NAME="SECT010"><h2>16.10 Field functions for Algebraic Extensions</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<A name = "I13"></a>
+
+<A name = "I14"></a>
+
+<A name = "I15"></a>
+
+<P>
+As already mentioned, algebraic extensions are fields.  Thus all field
+functions like <code>Norm</code> and <code>Trace</code> are applicable.
+<P>
+<pre>    gap> Trace(r^4+2*r);
+    14
+    gap> Norm(ran);
+    305</pre>
+<P>
+<code>DefaultField</code> always returns the algebraic extension, which contains the
+primitive element by which the number is represented, see <a href="chap016.htm#SECT004">Algebraic
+Extension Elements</a>.
+<P>
+<pre>    gap> DefaultField(r^2);
+    e</pre>
+<P>
+As subfields are not yet supported, <code>Field</code> will issue an error, if
+several elements are given, or if the element is not a primitive element
+for its default field.
+<P>
+You can create a polynomial ring over an algebraic extension to which all
+functions described in <a href="chap019.htm#SECT020">Ring Functions for Polynomial Rings</a> can be
+applied, for example you can factor polynomials.  Factorization is done
+--- depending on the polynomial --- by factoring the squarefree norem or
+using a hensel lift (with possibly added lattice reduction) as described
+in <A href="biblio.htm#Abb89"><cite>Abb89</cite></a>, using bounds from <A href="biblio.htm#BTW93"><cite>BTW93</cite></a>.
+<P>
+<pre>    gap> X(e).name:="X";;
+    gap> p1:=EmbeddedPolynomial(PolynomialRing(e),p1);
+    X^2 + 3*X + 1
+    gap> Factors(p1);
+    [ X + (-1*alpha^2), X + (alpha^2+3) ]</pre>
+<P><A NAME="SECT011"><h2>16.11 Algebraic Extension Records</h2></a>
+<P><P>
+<A name = "I16"></a>
+
+<P>
+Since every algebraic extension is a field, it is represented as a
+record.  This record contains all components, a field record will contain
+(see <a href="chap006.htm#SECT017">Field Records</a>).  Additionally, it contains the components
+<code>isAlgebraicExtension</code>, <code>minpol</code>, <code>primitiveElm</code> and may contain the
+components <code>isNormalExtension</code>, <code>minpolFactors</code> and <code>galoisType</code>.
+<P>
+<DL><DT><code>isAlgebraicExtension</code>:<DD> <BR> 
+    is always <code>true</code>. This indicates that <var>F</var> is an algebraic extension.
+</DL><P>
+<DL><DT><code>minpol</code>:<DD> <BR> 
+    is the defining polynomial of <var>F</var>.
+</DL><P>
+<DL><DT><code>primitiveElm</code>:<DD> <BR> 
+    contains <code>RootOf(<var>F</var>.minpol)</code>.
+</DL><P>
+<DL><DT><code>isNormalExtension</code>:<DD> <BR> 
+     indicates, whether <var>F</var> is a normal extension field.
+</DL><P>
+<DL><DT><code>minpolFactors</code>:<DD> <BR> 
+    contains a factorization of <code><var>F</var>.minpol</code> over <var>F</var>.
+</DL><P>
+<DL><DT><code>galoisType</code>:<DD> <BR> 
+    contains the Galois type of the normal closure of <var>F</var>.
+    See section <a href="chap016.htm#SECT016">GaloisType</a>.
+</DL><P><A NAME="SECT012"><h2>16.12 Extension Element Records</h2></a>
+<P><P>
+<A name = "I17"></a>
+
+<P>
+Elements of an algebraic extension are represented by a record.  The
+record for the element <var>e</var> of <var>L</var> contains the components
+<code>isAlgebraicElement</code>, <code>domain</code> and <code>coefficients</code>:
+<P>
+<DL><DT><code>isAlgebraicElement</code>:<DD> <BR> 
+    is always <code>true</code>, and indicates, that <var>e</var> is an algebraic element.
+</DL><P>
+<DL><DT><code>domain</code>:<DD> <BR> 
+    contains <var>L</var>.
+</DL><P>
+<DL><DT><code>coefficients</code>:<DD> <BR> 
+    contains the coefficients of <var>e</var> as a polynomial in the primitive
+    root of <var>L</var>.
+</DL><P><A NAME="SECT013"><h2>16.13 IsAlgebraicElement</h2></a>
+<P><P>
+<A name = "I18"></a>
+
+<P>
+<code>IsAlgebraicElement( <var>obj</var> )</code>
+<P>
+returns <code>true</code> if obj is an algebraic element, i.e., an element of an
+algebraic extension, that is not in the defining field, and <code>false</code>
+otherwise.
+<P>
+<pre>    gap> IsAlgebraicElement(r);
+    true
+    gap> IsAlgebraicElement(3);
+    false</pre>
+<P><A NAME="SECT014"><h2>16.14 Algebraic extensions of the Rationals</h2></a>
+<P><P><P>
+The following sections describe functions that are specific to algebraic
+extensions of <I>Q\mskip-11mu&prime;</I>.
+<P><A NAME="SECT015"><h2>16.15 DefectApproximation</h2></a>
+<P><P>
+<A name = "I19"></a>
+
+<P>
+<code>DefectApproximation( <var>L</var> )</code>
+<P>
+computes a multiple of the defect of the basis of <var>L</var>, given by the
+powers of the primitive element.  The <strong>defect</strong> indicates, which
+denominator is necessary in the coefficients, to express algebraic
+integers in <var>L</var> as a linear combination of the base of <var>L</var>.
+<code>DefectApproximation</code> takes the maximal square in the discriminant as a
+first approximation, and then uses Berwicks and Hesses method (see
+<A href="biblio.htm#Bra89"><cite>Bra89</cite></a>) to improve this approximation.  The number returned is not
+neccessarily the defect, but may be a proper multiple of it.
+<P>
+<pre>    gap> DefectApproximation(e);
+    1</pre>
+<P><A NAME="SECT016"><h2>16.16 GaloisType</h2></a>
+<P><P>
+<A name = "I20"></a>
+
+<P>
+<code>GaloisType( <var>L</var> )</code> <BR> 
+<code>Galois( <var>f</var> )</code>
+<P>
+The first version returns the number of the permutation isomorphism type
+of the Galois group of the normal closure of <var>L</var>, considered as a
+transitive permutation group of the roots of the defining polynomial (see
+<a href="chap038.htm#SECT006">The Transitive Groups Library</a>).  The second version returns the Galois
+type of the splitting field of <var>f</var>.  Identification is done by factoring
+appropriate Galois resolvents as proposed in <A href="biblio.htm#MS85"><cite>MS85</cite></a>.  This function
+is provided for rational polynomials of degree up to 15.  However, it may
+be not feasible to call this function for polynomials of degree 14 or 15,
+as the involved computations may be enormous.  For some polynomials of
+degree 14, a complete discrimination is not yet possible, as it would
+require computations, that are not feasible with current factoring
+methods.
+<P>
+<pre>    gap> GaloisType(e);
+    2
+    gap> TransitiveGroup(e.degree,2);
+    E(4) = 2[x]2</pre>
+<P><A NAME="SECT017"><h2>16.17 ProbabilityShapes</h2></a>
+<P><P><P>
+<code>ProbabilityShapes( <var>pol</var> )</code>
+<P>
+returns a list of numbers, which contains most likely the isomorphism
+type of the galois group of <var>pol</var> (see <a href="chap016.htm#SECT016">GaloisType</a>).  This routine only
+applies the cycle structure test according to Tschebotareff's theorem.
+Accordingly, it is very fast, but the result is not guaranteed to be
+correct.
+<P>
+<pre>    gap> ProbabilityShapes(e.minpol);
+    [ 2 ]</pre>
+<P><A NAME="SECT018"><h2>16.18 DecomPoly</h2></a>
+<P><P>
+<A name = "I21"></a>
+
+<A name = "I22"></a>
+
+<P>
+<code>DecomPoly( <var>pol</var> )</code><BR> 
+<code>DecomPoly( <var>pol</var>, "all" )</code>
+<P>
+returns an ideal decomposition of the polynomial <var>pol</var>.  An ideal
+decomposition is given by two polynomials <var>g</var> and <var>h</var>, such that <I>pol</I>
+divides <I>(go h)</I>.  By the Galois correspondence any ideal
+decomposition corresponds to a block system of the Galois group.  The
+polynomial <var>g</var> defines a subfield <I>K(&beta;)</I> of <I>K(&alpha;)</I> with
+<I>h(&alpha;)=&beta;</I>.  The first form finds one ideal decomposition, while
+the second form finds all possible different ideal decompositions
+(i.e. all subfields).
+<P>
+<pre>    gap> d:=DecomPoly(e.minpol);
+    [ x^2 + 5, x^3 + 4*x ]
+    gap> p:=x^6+108;;
+    gap> d:=DecomPoly(p,"all");
+    [ [ x^2 + 108, x^3 ], [ x^3 + 108, x^2 ], 
+      [ x^3 - 186624, x^5 + 6*x^2 ], [ x^3 + 186624, x^5 - 6*x^2 ] ]
+    gap> Value(d[1][1],d[1][2]);
+    x^6 + 108</pre>
+<P><a href ="chap015.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap017.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

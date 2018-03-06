@@ -1,0 +1,406 @@
+<html><head><title>GAP3 Manual: 73 Vector Enumeration</title></head>
+<body bgcolor="ffffff">
+<h1>73 Vector Enumeration</h1>
+<P><P><P>
+This chapter describes the <strong>VE</strong> (Version 3) share library package for
+computing matrix representations of finitely presented algebras.  See
+<a href="chap057.htm#SECT015">Installing the Vector Enumeration Package</a> for the installation of the
+package, and the <strong>VE</strong> manual <A href="biblio.htm#Lin93"><cite>Lin93</cite></a> for details of the
+implementation.
+<P>
+The default application of <strong>VE</strong>, namely the function <code>Operation</code> for
+finitely presented algebras (see chapter <a href="chap040.htm">Finitely Presented Algebras</a>),
+is described in <a href="chap073.htm#SECT001">Operation for Finitely Presented Algebras</a>.
+<P>
+The interface between <strong>GAP3</strong> and <strong>VE</strong> is described in <a href="chap073.htm#SECT002">More about Vector
+Enumeration</a>.
+<P>
+In <a href="chap073.htm#SECT003">Examples of Vector Enumeration</a> the examples given in the <strong>VE</strong> manual
+serve as examples for the use of <strong>VE</strong> with <strong>GAP3</strong>.
+<P>
+Finally, section <a href="chap073.htm#SECT004">Using Vector Enumeration with the MeatAxe</a> shows how
+the <strong>MeatAxe</strong> share library (see chapter <a href="chap069.htm">The MeatAxe</a>) and <strong>VE</strong> can work
+hand in hand.
+<P>
+The functions of the package can be used after loading the package with
+<P>
+<code>    gap> RequirePackage( "ve" ); </code>
+<P>
+The package is also loaded <strong>automatically</strong> when <code>Operation</code> is called for the
+action of a finitely presented algebra on a quotient module.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap073.htm#SECT001">Operation for Finitely Presented Algebras</a>
+<LI> <A HREF="chap073.htm#SECT002">More about Vector Enumeration</a>
+<LI> <A HREF="chap073.htm#SECT003">Examples of Vector Enumeration</a>
+<LI> <A HREF="chap073.htm#SECT004">Using Vector Enumeration with the MeatAxe</a>
+</ol>
+<A NAME="SECT001"><h2>73.1 Operation for Finitely Presented Algebras</h2></a>
+<P><P><P>
+<code>Operation( <var>F</var>, <var>Q</var> )</code>
+<P>
+This is the default application of <strong>VE</strong>.
+<var>F</var> is a finitely presented algebra (see chapter <a href="chap040.htm">Finitely Presented
+Algebras</a>), <var>Q</var> is a quotient of a free <var>F</var>-module,
+and the result is a matrix algebra representing a faithful action on <var>Q</var>.
+<P>
+If <var>Q</var> is the zero module then the matrices have dimension zero, so the
+result is a null algebra (see <a href="chap041.htm#SECT009">NullAlgebra</a>) consisting only of a zero
+element.
+<P>
+The algebra homomorphism, the isomorphic module for the matrix algebra,
+and the module homomorphism can be constructed as described in chapters
+<a href="chap039.htm">Algebras</a> and <a href="chap042.htm">Modules</a>.
+<P>
+<pre>    gap> a:= FreeAlgebra( GF(2), 2 );
+    UnitalAlgebra( GF(2), [ a.1, a.2 ] )
+    gap> a:= a / [ a.1^2 - a.one, # group algebra of <I>V<sub>4</sub></I> over <I>GF(2)</I>
+    >              a.2^2 - a.one,
+    >              a.1*a.2 - a.2*a.1 ];
+    UnitalAlgebra( GF(2), [ a.1, a.2 ] )
+    gap> op:= Operation( a, a^1 );
+    UnitalAlgebra( GF(2),
+    [ [ [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2), 0*Z(2),
+              Z(2)^0 ], [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ],
+          [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ] ],
+      [ [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ],
+          [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ],
+          [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ],
+          [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ] ] ] )
+    gap> Size( op );
+    16 </pre>
+<P><A NAME="SECT002"><h2>73.2 More about Vector Enumeration</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<A name = "I1"></a>
+
+<A name = "I2"></a>
+
+<A name = "I3"></a>
+
+<P>
+As stated in the introduction to this chapter, <strong>VE</strong> is a share library
+package.  The computations are done by standalone programs written in C.
+<P>
+The interface between <strong>VE</strong> and <strong>GAP3</strong> consists essentially of two parts,
+namely the global variable <code>VE</code>, and the function
+<code>FpAlgebraOps.OperationQuotientModule</code>.
+<P>
+<P>
+<P>
+<strong>The 'VE' record</strong>
+<P>
+<code>VE</code> is a record with components
+<P>
+<DL><DT><code>Path</code>:<DD> <BR> the full path name of the directory that contains the
+           executables of the standalones <code>me</code>, <code>qme</code>, <code>zme</code>,
+</DL><P>
+<DL><DT><code>options</code>:<DD> <BR> 
+  a string with command line options for <strong>VE</strong>;
+  it will be appended to the command string of <code>CallVE</code> (see below),
+  so the default options chosen there can be overwritten.
+  This may be useful for example in case of the <code>-v</code> option to enable the
+  printing of comments (see section 4.3 of <A href="biblio.htm#Lin93"><cite>Lin93</cite></a>), but you should
+  <strong>not</strong> change the output file (using <code>-o</code>) when you simply call
+  <code>Operation</code> for a finitely presented algebra.
+  <code>options</code> is defaulted to the empty string.
+</DL><P>
+<P>
+<P>
+<strong>FpAlgebraOps.OperationQuotientModule</strong>
+<P>
+This function is called automatically by <code>FpAlgebraOps.Operation</code>
+(see <a href="chap073.htm#SECT001">Operation for Finitely Presented Algebras</a>),
+it can also be called directly as follows.
+<P>
+<code>FpAlgebraOps.OperationQuotientModule( <var>A</var>, <var>Q</var>, <var>opr</var> )</code><BR> 
+<code>FpAlgebraOps.OperationQuotientModule( <var>A</var>, <var>Q</var>, "mtx" )</code>
+<P>
+It takes a finitely presented algebra <var>A</var> and a list of submodule
+generators <var>Q</var>, that is, the entries of <var>Q</var> are list of equal length,
+with entries in <var>A</var>, and returns the matrix representation computed by
+the <strong>VE</strong> program.
+<P>
+The third argument must be either one of the operations <code>OnPoints</code>,
+<code>OnRight</code>, or the string <code>"mtx"</code>.  In the latter case the output will
+be an algebra of <strong>MeatAxe</strong> matrices, see <a href="chap073.htm#SECT004">Using Vector Enumeration with
+the MeatAxe</a> for further explanation.
+<P>
+<P>
+<P>
+<strong>Accessible Subroutines</strong>
+<P>
+The following three functions are used by
+<code>FpAlgebraOps.OperationQuotientModule</code>.
+They are the real interface that allows to access <strong>VE</strong> from <strong>GAP3</strong>.
+<P>
+<code>PrintVEInput( <var>A</var>, <var>Q</var>, <var>names</var> )</code>
+<P>
+takes a finitely presented algebra <var>A</var>, a list of submodule generators
+<var>Q</var>, and a list <var>names</var> of names the generators shall have in the
+presentation that is passed to <strong>VE</strong>, and prints a string that represents
+the input presentation for <strong>VE</strong>.
+See section 3.1 of the <strong>VE</strong> manual <A href="biblio.htm#Lin93"><cite>Lin93</cite></a> for a description of
+the syntax.
+<P>
+<pre>    gap> PrintVEInput( a, [ [ a.zero ] ], [ "A", "B" ] );
+    2.
+    A B .
+    .
+    .
+    {1}(0).
+    A*A, B*B, :
+    A*B+B*A = 0, .  </pre>
+<P>
+<P>
+<P>
+<code>CallVE( <var>commandstr</var>, <var>infile</var>, <var>outfile</var>, <var>options</var> )</code>
+<P>
+calls <strong>VE</strong> with command string <var>commandstr</var>, presentation file
+<var>infile</var>, and command line options <var>options</var>, and prescribes the
+output file <var>outfile</var>.
+<P>
+If not overwritten in the string <var>options</var>, the default options
+<code>"-i -P -v0 -Y VE.out -L</code>#  <code>"</code> are chosen.
+<P>
+Of course it is not necessary that <var>infile</var> was produced using
+<code>PrintVEInput</code>, and also the output is independent of <strong>GAP3</strong>.
+<P>
+<pre>    gap> PrintTo( "infile.pres",
+    >             PrintVEInput( a, [ [ a.zero ] ], [ "A", "B" ] ) );
+    gap> CallVE( "me", "infile", "outfile", " -G -vs2" ); </pre>
+<P>
+(The option <code>-G</code> sets the output format to <strong>GAP3</strong>, <code>-vs2</code> chooses a
+more verbose mode.)
+<P>
+<P>
+<P>
+<code>VEOutput( <var>A</var>, <var>Q</var>, <var>names</var>, <var>outfile</var> )</code><BR> 
+<code>VEOutput( <var>A</var>, <var>Q</var>, <var>names</var>, <var>outfile</var>, "mtx" )</code>
+<P>
+returns the output record produced by <strong>VE</strong> that was written to the file
+<var>outfile</var>.
+A component <code>operation</code> is added that contains the information for the
+construction of the operation homomorphisms.
+<P>
+The arguments <var>A</var>, <var>Q</var>, <var>names</var> describe the finitely presented algebra,
+the quotient module it acts on, and the chosen generators names, i.e.,
+the original structures for that <strong>VE</strong> was called.
+<P>
+<pre>    gap> out:= VEOutput( a, [ [ a.zero ] ], [ "A", "B" ], "outfile" );;
+    gap> out.dim; out.operation.moduleinfo.preimagesBasis;
+    4
+    [ [ a.one ], [ a.2 ], [ a.1 ], [ a.1*a.2 ] ] </pre>
+<P>
+If the optional fifth argument <code>"mtx"</code> is present, the output is regarded
+as an algebra of <strong>MeatAxe</strong> matrices (see section <a href="chap073.htm#SECT004">Using Vector Enumeration
+with the MeatAxe</a>).  For that, an appropriate command string had to be passed
+to <code>CallVE</code>.
+<P><A NAME="SECT003"><h2>73.3 Examples of Vector Enumeration</h2></a>
+<P><P><P>
+We consider those of the examples given in chapter 8 of the <strong>VE</strong> manual
+that can be used in <strong>GAP3</strong>.
+<P>
+<strong>8.1 The natural permutation representation of <I>S<sub>3</sub></I></strong>
+<P>
+The symmetric group <I>S<sub>3</sub></I> is also the dihedral group <I>D<sub>6</sub></I>, and so is
+presented by two involutions with product of order 3.
+Taking the permutation action on the cosets of the cyclic group generated
+by one of the involutions we obtain the following presentation.
+<P>
+<pre>    gap> a:= FreeAlgebra( Rationals, 2 );;
+    gap> a:= a / [ a.1^2 - a.one, a.2^2 - a.one,
+    >              (a.1*a.2)^3 - a.one ];
+    UnitalAlgebra( Rationals, [ a.1, a.2 ] )
+    gap> a.name:= "a";; </pre>
+<P>
+We choose as module <code>q</code> the quotient of the regular module for <code>a</code>
+by the submodule generated by <code>a.1 - 1</code>, and compute the action of <code>a</code>
+on <code>q</code>.
+<P>
+<pre>    gap> m:= a^1;;
+    gap> q:= m / [ [ a.1 - a.one ] ];
+    Module( a, [ [ a.one ] ] ) / [ [ -1*a.one+a.1 ] ]
+    gap> op:= Operation( a, q );
+    UnitalAlgebra( Rationals, 
+    [ [ [ 1, 0, 0 ], [ 0, 0, 1 ], [ 0, 1, 0 ] ], 
+      [ [ 0, 1, 0 ], [ 1, 0, 0 ], [ 0, 0, 1 ] ] ] )
+    gap> op.name:= "op";; </pre>
+<P>
+<P>
+<P>
+<strong>8.2 A Quotient of a Permutation Representation</strong>
+<P>
+The permutation representation constructed in example 8.1 fixes the all-ones
+vector (as do all permutation representations).  This is the image of the
+module element <code>[ a.one + a.2 + a.2*a.1 ]</code> in the corresponding module for
+the algebra <code>op</code>.
+<P>
+<pre>    gap> ophom:= OperationHomomorphism( a, op );;
+    gap> opmod:= OperationModule( op );
+    Module( op, [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] )
+    gap> modhom:= OperationHomomorphism( q, opmod );;
+    gap> pre:= PreImagesRepresentative( modhom, [ 1, 1, 1 ] );;
+    gap> pre:= pre.representative;
+    [ a.one+a.2+a.2*a.1 ] </pre>
+<P>
+We could have computed such a preimage also by computing a matrix that maps
+the image of the submodule generator of <code>q</code> to the all-ones vector, and
+applying a preimage to the submodule generator.  Of course the we do not
+necessarily get the same representatives.
+<P>
+<pre>    gap> images:= List( Generators( q ), x -> Image( modhom, x ) );
+    [ [ 1, 0, 0 ] ]
+    gap> rep:= RepresentativeOperation( op, images[1], [ 1, 1, 1 ] );
+    [ [ 1, 1, 1 ], [ 1, 1, 1 ], [ 1, 1, 1 ] ]
+    gap> PreImagesRepresentative( ophom, rep );
+    a.one+a.1*a.2+a.2*a.1 </pre>
+<P>
+Now we factor out the fixed submodule by enlarging the denominator of
+the module <code>q</code>.  (Note that we could also compute the action of the matrix
+algebra if we were only interested in the 2-dimensional representation.)
+<P>
+Accordingly we can write down the following presentation for the
+quotient module.
+<P>
+<pre>    gap> q:= m / [ [ a.1 - a.one ], pre ];;
+    gap> op:= Operation( a, q );
+    UnitalAlgebra( Rationals, 
+    [ [ [ 1, 0 ], [ -1, -1 ] ], [ [ 0, 1 ], [ 1, 0 ] ] ] ) </pre>
+<P>
+<P>
+<P>
+<strong>8.3 A Non-cyclic Module</strong>
+<P>
+If we take the direct product of two copies of the permutation representation
+constructed in example 8.1, we can identify the fixed vectors in the two copies
+in the following presentation.
+<P>
+<pre>    gap> m:= a^2;;
+    gap> q:= m / [ [ a.zero, a.1 - a.one ], [ a.1 - a.one, a.zero ],
+    >              [ a.one+a.2+a.2*a.1, -a.one-a.2-a.2*a.1 ] ];
+    Module( a, [ [ a.one, a.zero ], [ a.zero, a.one ] ] ) / 
+    [ [ a.zero, -1*a.one+a.1 ], [ -1*a.one+a.1, a.zero ], 
+      [ a.one+a.2+a.2*a.1, -1*a.one+-1*a.2+-1*a.2*a.1 ] ] </pre>
+<P>
+We compute the matrix representation.
+<P>
+<pre>    gap> op:= Operation( a, q );
+    UnitalAlgebra( Rationals, 
+    [ [ [ 1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
+          [ 0, 0, 1, 0, 0 ], [ 1, -1, 1, 1, -1 ] ], 
+      [ [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 0, 1 ], [ 1, 0, 0, 0, 0 ], 
+          [ 0, 0, 0, 1, 0 ], [ 0, 1, 0, 0, 0 ] ] ] ) </pre>
+<P>
+In this case it is interesting to look at the images of the module generators
+and pre-images of the basis vectors.  Note that these preimages are elements
+of a factor module, corresponding elements of the free module are again
+found as representatives.
+<P>
+<pre>    gap> ophom:= OperationHomomorphism( a, op );;
+    gap> opmod:= OperationModule( op );;
+    gap> opmod.name:= "opmod";;
+    gap> modhom:= OperationHomomorphism( q, opmod );;
+    gap> List( Generators( q ), x -> Image( modhom, x ) );
+    [ [ 1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ] ]
+    gap> basis:= Basis( opmod );
+    CanonicalBasis( opmod )
+    gap> preim:= List( basis.vectors, x -> 
+    >               PreImagesRepresentative( modhom, x ) );;
+    gap> preim:= List( preim, Representative );
+    [ [ a.one, a.zero ], [ a.zero, a.one ], [ a.2, a.zero ], 
+      [ a.2*a.1, a.zero ], [ a.zero, a.2 ] ] </pre>
+<P>
+<P>
+<P>
+<strong>8.4 A Monoid Representation</strong>
+<P>
+The Coxeter monoid of type <I>B<sub>2</sub></I> has a transformation representation on four
+points.  This can be constructed as a matrix representation over GF(3), from
+the following presentation.
+<P>
+<pre>    gap> a:= FreeAlgebra( GF(3), 2 );;
+    gap> a:= a / [ a.1^2 - a.1, a.2^2 - a.2,
+    > (a.1*a.2)^2 - (a.2*a.1)^2 ];;
+    gap> q:= a^1 / [ [ a.1 - a.one ] ];;
+    gap> op:= Operation( a, q );
+    UnitalAlgebra( GF(3), 
+    [ [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3)^0,
+              0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ],
+          [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ],
+      [ [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ],
+          [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ],
+          [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ],
+          [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ] ] ) </pre>
+<P>
+<P>
+<P>
+<strong>8.7 A Quotient of a Polynomial Ring</strong>
+<P>
+The quotient of a polynomial ring by the ideal generated by some polynomials
+will be finite-dimensional just when the polynomials have finitely many common
+roots in the algebraic closure of the ground ring.
+For example, three polynomials in three variables give us the following
+presentation for the quotient of their ideal.
+<P>
+Define <code>a</code> to be the polynomial algebra on three variables.
+<P>
+<pre>    gap> a:= FreeAlgebra( Rationals, 3 );;
+    gap> a:= a / [ a.1 * a.2 - a.2 * a.1,
+    >              a.1 * a.3 - a.3 * a.1,
+    >              a.2 * a.3 - a.3 * a.2 ];; </pre>
+<P>
+Define the quotient module by the polynomials <code>A+B+C</code>, <code>AB+BC+CA</code>, <code>ABC-1</code>.
+<P>
+<pre>    gap> q:= a^1 / [ [ a.1+a.2+a.3 ],
+    >                [ a.1*a.2+a.2*a.3+a.3*a.1 ],
+    >                [ a.1*a.2*a.3-a.one ]        ];; </pre>
+<P>
+Compute the representation.
+<P>
+<pre>    gap> op:= Operation( a, q );
+    UnitalAlgebra( Rationals, 
+    [ [ [ 0, 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1, 0 ],
+          [ -1, 0, 0, 0, 0, -1 ], [ 0, 0, 1, 0, 0, 0 ],
+          [ 1, 0, 0, 0, 0, 0 ], [ 0, -1, 0, -1, 0, 0 ] ],
+      [ [ 0, 0, 0, 1, 0, 0 ], [ 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 1 ],
+          [ 0, 0, -1, 0, -1, 0 ], [ -1, 0, 0, 0, 0, -1 ],
+          [ 0, 1, 0, 0, 0, 0 ] ],
+      [ [ 0, -1, 0, -1, 0, 0 ], [ 0, 0, -1, 0, -1, 0 ],
+          [ 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1, 0 ],
+          [ 0, 0, 0, 0, 0, 1 ], [ 0, 0, 0, 1, 0, 0 ] ] ] ) </pre>
+<P><A NAME="SECT004"><h2>73.4 Using Vector Enumeration with the MeatAxe</h2></a>
+<P><P><P>
+One can deal with the matrix representation constructed by <strong>VE</strong> also using
+the <strong>MeatAxe</strong> share library.  This way the matrices are not read into <strong>GAP3</strong>
+but written to files and converted into internal <strong>MeatAxe</strong> format.
+See chapter <a href="chap069.htm">The MeatAxe</a> for details.
+<P>
+<pre>    gap> a:= FreeAlgebra( GF(2), 2 );;
+    gap> a:= a / [ a.1^2 - a.one, a.2^2 - a.one,
+    >              (a.1*a.2)^3 - a.one ];;
+    gap> RequirePackage("meataxe");
+    #I  The MeatAxe share library functions are available now.
+    #I  All files will be placed in the directory
+    #I     '/var/tmp/tmp.006103'
+    #I  Use 'MeatAxe.SetDirectory( &lt;path> )' if you want to change.
+    gap> op:= Operation( a, a^1, "mtx" );
+    UnitalAlgebra( GF(2), 
+    [ MeatAxeMat( "/var/tmp/tmp.006103/a/g.1", GF(2), [ 6, 6 ], a.1 ),
+      MeatAxeMat( "/var/tmp/tmp.006103/a/g.2", GF(2), [ 6, 6 ], a.2 ) ] )
+    gap> Display( op.1 );
+    #I  calling 'maketab' for field of size 2
+    MeatAxe.Matrix := [
+    [0,0,1,0,0,0],
+    [0,0,0,1,0,0],
+    [1,0,0,0,0,0],
+    [0,1,0,0,0,0],
+    [0,0,0,0,0,1],
+    [0,0,0,0,1,0]
+    ]*Z(2);
+    gap> MeatAxe.Unbind(); </pre>
+<P><a href ="chap072.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap074.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

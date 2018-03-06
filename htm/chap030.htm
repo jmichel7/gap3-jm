@@ -1,0 +1,374 @@
+<html><head><title>GAP3 Manual: 30 Strings and Characters</title></head>
+<body bgcolor="ffffff">
+<h1>30 Strings and Characters</h1>
+<P><P>
+<A name = "I0"></a>
+
+<A name = "I1"></a>
+<A name = "I2"></a>
+<A name = "I3"></a>
+
+<P>
+A <strong>character</strong>  is simply an object in <strong>GAP3</strong> that represents an arbitrary
+character from the character set  of  the  operating  system.   Character
+literals  can  be  entered  in  <strong>GAP3</strong>  by  enclosing  the  character  in
+<strong>singlequotes</strong> <code>'</code>.
+<P>
+<pre>    gap> 'a';
+    'a'
+    gap> '*';
+    '*' </pre>
+<P>
+A <strong>string</strong> is simply a dense list of characters.  Strings are used mainly
+in filenames and error messages.  A string literal can either be  entered
+simply  as  the  list of characters or by  writing the characters between
+<strong>doublequotes</strong> <code>"</code>.   <strong>GAP3</strong>  will always output strings  in  the latter
+format.
+<P>
+<pre>    gap> s1 := ['H','a','l','l','o',' ','w','o','r','l','d','.'];
+    "Hallo world."
+    gap> s2 := "Hallo world.";
+    "Hallo world."
+    gap> s1 = s2;
+    true
+    gap> s3 := "";
+    ""    # the empty string
+    gap> s3 = [];
+    true </pre>
+<P>
+Note that a string is just a special case  of a list.  So everything that
+is possible for lists (see  <a href="chap027.htm">Lists</a>)  is also possible for strings.  Thus
+you can  access  the characters in  such  a string (see <a href="chap027.htm#SECT004">List Elements</a>),
+test  for  membership (see  <a href="chap027.htm#SECT014">In</a>), etc.  You can  even assign  to such  a
+string (see <a href="chap027.htm#SECT006">List Assignment</a>).  Of course unless you  assign a character
+in such a way  that the  list  stays dense,  the  resulting  list will no
+longer be a string.
+<P>
+<pre>    gap> Length( s2 );
+    12
+    gap> s2[2];
+    'a'
+    gap> 'e' in s2;
+    false
+    gap> s2[2] := 'e';;  s2;
+    "Hello world." </pre>
+<P>
+If a string is displayed as result of an evaluation (see <a href="chap003.htm#SECT001">Main Loop</a>), it
+is  displayed  with enclosing   doublequotes.  However,  if  a  string is
+displayed by <code>Print</code>,  <code>PrintTo</code>, or <code>AppendTo</code> (see <a href="chap003.htm#SECT014">Print</a>,  <a href="chap003.htm#SECT015">PrintTo</a>,
+<a href="chap003.htm#SECT016">AppendTo</a>) the enclosing doublequotes are dropped.
+<P>
+<pre>    gap> s2;
+    "Hello world."
+    gap> Print( s2 );
+    Hello world.gap> </pre>
+<P>
+There  are a number  of <strong>special character  sequences</strong> that  can be  used
+between   the  single  quote  of  a  character  literal  or  between  the
+doublequotes  of  a  string  literal to  specify  characters,  which  may
+otherwise be inaccessible.  They consist of two characters.  The first is
+a  backslash <I> \ </I>.  The second may be any character.  The meaning
+is given in the following list
+<P>
+<DL><DT><code>n</code>:<DD>    <strong>newline character</strong>.  This  is  the character that, at   least on
+        UNIX systems, separates  lines in a  text file.  Printing of this
+        character in a string has the effect of moving  the  cursor  down
+        one line and back to the beginning  of the line.
+</DL><P>
+<DL><DT><code>"</code>:<DD>    <strong>doublequote character</strong>.  Inside  a string a doublequote  must be
+        escaped by the backslash,  because it is otherwise interpreted as
+        end of the string.
+</DL><P>
+<DL><DT><code>'</code>:<DD>    <strong>singlequote character</strong>.  Inside a character a  singlequote  must
+        escaped by the backslash, because it is  otherwise interpreted as
+        end of the character.
+</DL><P>
+<DL><DT><I> \ </I>:<DD>  <strong>backslash character</strong>.  Inside  a string a backslash  must
+        be   escaped  by  another  backslash,    because it is  otherwise
+        interpreted as first character of an escape sequence.
+</DL><P>
+<DL><DT><code>b</code>:<DD>    <strong>backspace character</strong>.  Printing this character should  have  the
+        effect of moving the cursor back one character.  Whether it works
+        or not is system dependent and should not be relied upon.
+</DL><P>
+<DL><DT><code>r</code>:<DD>    <strong>carriage return character</strong>.  Printing this character should have
+        the effect of moving the cursor back to the beginning of the same
+        line.  Whether this works or not is again system dependent.
+</DL><P>
+<DL><DT><code>c</code>:<DD>    <strong>flush character</strong>.  This character is not  printed.  Its  purpose
+        is to flush the output queue.  Usually <strong>GAP3</strong> waits until it sees
+        a <var>newline</var> before it prints a string.  If you want to display  a
+        string that does not include this character use <I> \  c</I>.
+</DL><P>
+<DL><DT>other:<DD>  For any other character the backslash is simply ignored.
+</DL><P>
+Again, if the line is displayed as result of  an evaluation, those escape
+sequences are displayed in the  same way that they  are input.  They  are
+displayed in their special way only by <code>Print</code>, <code>PrintTo</code>, or <code>AppendTo</code>.
+<P>
+<pre>    gap> "This is one line.\nThis is another line.\n";
+    "This is one line.\nThis is another line.\n"
+    gap> Print( last );
+    This is one line.
+    This is another line. </pre>
+<P>
+It is not allowed to enclose a <var>newline</var> inside the  string.  You can use
+the special  character  sequence  <I> \  n</I>  to  write  strings that
+include <var>newline</var>  characters.  If, however, a string  is too long to fit
+on a single line it is possible to <strong>continue</strong> it  over several lines.  In
+this case  the last character of  each  line, except the  last  must be a
+backslash.  Both backslash and <var>newline</var>  are thrown away.  Note that the
+same continuation mechanism is available for identifiers and integers.
+<P>
+<pre>    gap> "This is a very long string that does not fit on a line \ 
+    gap> and is therefore continued on the next line.";
+    "This is a very long string that does not fit on a line and is therefo\ 
+    re continued on the next line."
+    # note that the output is also continued, but at a different place </pre>
+<P>
+This chapter contains sections  describing  the function that creates the
+printable representation  of a string  (see <a href="chap030.htm#SECT001">String</a>), the functions that
+create new   strings  (see    <a href="chap030.htm#SECT002">ConcatenationString</a>,  <a href="chap030.htm#SECT003">SubString</a>),   the
+functions that tests  if an object  is   a  string  (see <a href="chap030.htm#SECT005">IsString</a>), the
+string comparisons (see <a href="chap030.htm#SECT004">Comparisons of Strings</a>), and the  function that
+returns the length of a string (see <a href="chap027.htm#SECT005">Length</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap030.htm#SECT001">String</a>
+<LI> <A HREF="chap030.htm#SECT002">ConcatenationString</a>
+<LI> <A HREF="chap030.htm#SECT003">SubString</a>
+<LI> <A HREF="chap030.htm#SECT004">Comparisons of Strings</a>
+<LI> <A HREF="chap030.htm#SECT005">IsString</a>
+<LI> <A HREF="chap030.htm#SECT006">Join</a>
+<LI> <A HREF="chap030.htm#SECT007">SPrint</a>
+<LI> <A HREF="chap030.htm#SECT008">PrintToString</a>
+<LI> <A HREF="chap030.htm#SECT009">Split</a>
+<LI> <A HREF="chap030.htm#SECT010">StringDate</a>
+<LI> <A HREF="chap030.htm#SECT011">StringTime</a>
+<LI> <A HREF="chap030.htm#SECT012">StringPP</a>
+</ol>
+<A NAME="SECT001"><h2>30.1 String</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>String( <var>obj</var> )</code> <BR> 
+<code>String( <var>obj</var>, <var>length</var> )</code>
+<P>
+<code>String</code> returns a representation of the <var>obj</var>, which may be an object of
+arbitrary type, as a string.   This string should approximate  as closely
+as possible the character sequence you see if you print <var>obj</var>.
+<P>
+If <var>length</var> is given it must be an integer.  The absolute value gives the
+minimal  length of the  result.  If  the string  representation of  <var>obj</var>
+takes  less than that  many  characters  it is   filled with blanks.   If
+<var>length</var> is positive it is filled on the left, if <var>length</var> is negative it
+is filled on the right.
+<P>
+<pre>    gap> String( 123 );
+    "123"
+    gap> String( [1,2,3] );
+    "[ 1, 2, 3 ]"
+    gap> String( 123, 10 );
+    "       123"
+    gap> String( 123, -10 );
+    "123       "
+    gap> String( 123, 2 );
+    "123" </pre>
+<P><A NAME="SECT002"><h2>30.2 ConcatenationString</h2></a>
+<P><P>
+<A name = "I5"></a>
+<A name = "I6"></a>
+
+<P>
+<code>ConcatenationString( <var>string1</var>, <var>string2</var> )</code>
+<P>
+<code>ConcatenationString</code>   returns   the  concatenation of the   two strings
+<var>string1</var> and  <var>string2</var>.   This is a  new string  that  starts  with the
+characters of <var>string1</var> and ends with the characters of <var>string2</var>.
+<P>
+<pre>    gap> ConcatenationString( "Hello ", "world.\n" );
+    "Hello world.\n" </pre>
+<P>
+Because strings are now lists, <code>Concatenation</code> (see <a href="chap027.htm#SECT022">Concatenation</a>) does
+exactly the  right  thing,  and  the  function  <code>ConcatenationString</code>  is
+obsolete.
+<P><A NAME="SECT003"><h2>30.3 SubString</h2></a>
+<P><P>
+<A name = "I7"></a>
+<A name = "I8"></a>
+
+<P>
+<code>SubString( <var>string</var>, <var>from</var>, <var>to</var> )</code>
+<P>
+<code>SubString</code>  returns the  substring of  the string  <var>string</var> that begins at
+position <var>from</var> and continues to position <var>to</var>. The characters at these two
+positions  are included.  Indexing is  done with  origin 1, i.e., the first
+character  is at position 1. <var>from</var> and  <var>to</var> must be integers and are both
+silently  forced into  the range  <code>1..Length(<var>string</var>)</code> (see  <a href="chap027.htm#SECT005">Length</a>). If
+<var>to</var> is less than <var>from</var> the substring is empty.
+<P>
+<pre>    gap> SubString( "Hello world.\n", 1, 5 );
+    "Hello"
+    gap> SubString( "Hello world.\n", 5, 1 );
+    "" </pre>
+<P>
+Because strings are  now  lists, substrings  can  also be extracted  with
+<code><var>string</var>{[<var>from</var>..<var>to</var>]}</code> (see <a href="chap027.htm#SECT004">List  Elements</a>).  <code>SubString</code>  forces
+<var>from</var> and <var>to</var> into  the range  <code>1..Length(<var>string</var>)</code>, which  the  above
+does not, but apart from that <code>SubString</code> is obsolete.
+<P><A NAME="SECT004"><h2>30.4 Comparisons of Strings</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code><var>string1</var> = <var>string2</var></code>, <code><var>string1</var> <> <var>string2</var></code>
+<P>
+The  equality  operator  <code>=</code>   evaluates to  <code>true</code>   if  the two strings
+<var>string1</var> and <var>string2</var> are equal and  <code>false</code> otherwise.  The inequality
+operator <code><></code> returns <code>true</code> if  the two strings <var>string1</var> and <var>string2</var>
+are not equal and <code>false</code> otherwise.
+<P>
+<pre>    gap> "Hello world.\n" = "Hello world.\n";
+    true
+    gap> "Hello World.\n" = "Hello world.\n";
+    false    # string comparison is case sensitive
+    gap> "Hello world." = "Hello world.\n";
+    false    # the first string has no <var>newline</var>
+    gap> "Goodbye world.\n" = "Hello world.\n";
+    false
+    gap> [ 'a', 'b' ] = "ab";
+    true </pre>
+<P>
+<code><var>string1</var> < <var>string2</var></code>, <code><var>string1</var> <= <var>string2</var></code>,
+<code><var>string1</var>  > <var>string2</var></code>, <code><var>string1</var>  => <var>string2</var></code>
+<P>
+The operators <code><</code>, <code><=</code>, <code>></code>, and <code>=></code> evaluate to <code>true</code> if the string
+<var>string1</var> is less than, less than or equal to, greater than, greater than
+or  equal to the string  <var>string2</var> respectively.  The ordering of strings
+is  lexicographically according  to the order  implied by the underlying,
+system dependent, character set.
+<P>
+You  can  also compare  objects  of other types, for example integers  or
+permutations with strings.  As strings  are  dense  character  lists they
+compare  with other objects  as lists  do, i.e., they are  never equal to
+those  objects, records  (see <a href="chap046.htm">Records</a>) are  greater  than  strings, and
+objects of every other type are smaller than strings.
+<P>
+<pre>    gap> "Hello world.\n" &lt; "Hello world.\n";
+    false    # the strings are equal
+    gap> "Hello World.\n" &lt; "Hello world.\n";
+    true    # in ASCII uppercase letters come before lowercase letters
+    gap> "Hello world." &lt; "Hello world.\n";
+    true    # prefixes are always smaller
+    gap> "Goodbye world.\n" &lt; "Hello world.\n";
+    true    # <code>G</code> comes before <code>H</code>, in ASCII at least </pre>
+<P><A NAME="SECT005"><h2>30.5 IsString</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+<code>IsString( <var>obj</var> )</code>
+<P>
+<code>IsString</code> returns <code>true</code> if the object <var>obj</var>, which  may be an object of
+arbitrary type, is a  string and <code>false</code> otherwise.   Will cause an error
+if <var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsString( "Hello world.\n" );
+    true
+    gap> IsString( "123" );
+    true
+    gap> IsString( 123 );
+    false
+    gap> IsString( [ '1', '2', '3' ] );
+    true
+    gap> IsString( [ '1', '2', , '4' ] );
+    false    # strings must be dense
+    gap> IsString( [ '1', '2', 3 ] );
+    false    # strings must only contain characters </pre>
+<P><A NAME="SECT006"><h2>30.6 Join</h2></a>
+<P><P><P>
+<code>Join( <var>list</var> [, <var>delimiter</var>] )</code>
+<P>
+The  function <code>Join</code> is similar  to the Perl function  of the same name. It
+first  applies the  function <code>String</code>  to all  elements of the <var>list</var>, then
+joins  the  resulting  strings,  separated  by  the  given  <var>delimiter</var> (if
+omitted, <code>","</code> is used as a delimiter)
+<P>
+<pre>   gap> Join([1..4]);
+   "1,2,3,4"
+   gap> Join([1..4],"foo");
+   "1foo2foo3foo4"</pre>
+<P><A NAME="SECT007"><h2>30.7 SPrint</h2></a>
+<P><P><P>
+<code>SPrint(<var>s1</var>,...,<var>sn</var>)</code>
+<P>
+<code>SPrint(<var>s1</var>,...,<var>sn</var>)</code> is a synonym for <code>Join([<var>s1</var>,...,<var>sn</var>],"")</code>. That
+is, it first applies the function <code>String</code> to all arguments, then joins the
+resulting  strings. If <code><var>s1</var>,...,<var>sn</var></code>  have string methods,  the effect of
+<code>Print(SPrint(<var>s1</var>,...,<var>sn</var>))</code> is the same as directly
+<code>Print(<var>s1</var>,...,<var>sn</var>)</code>.
+<P>
+<pre>   gap> SPrint(1,"a",[3,4]);
+   "1a[ 3, 4 ]"</pre>
+<P><A NAME="SECT008"><h2>30.8 PrintToString</h2></a>
+<P><P><P>
+<code>PrintToString(<var>s</var>,<var>s1</var>,...,<var>sn</var>)</code>
+<P>
+<code>PrintToString(<var>s</var>,<var>s1</var>,...,<var>sn</var>)</code>   appends  to  string   <var>s</var>  the  string
+<code>SPrint(<var>s1</var>,...,<var>sn</var>)</code>.
+<P>
+<pre>   gap> s:="a";
+   "a"
+   gap> PrintToString(s,[1,2]);
+   gap> s;
+   "a[ 1, 2 ]"</pre>
+<P><A NAME="SECT009"><h2>30.9 Split</h2></a>
+<P><P><P>
+<code>Split( <var>s</var> [, <var>delimiter</var>] )</code>
+<P>
+This function is similar to the Perl function of the same name. It splits
+the string <var>s</var> at each occurrence of the <var>delimiter</var> (a character).
+If <var>delimiter</var> is omitted, <code>','</code> is used as a delimiter.
+<P>
+<pre>   gap> Split("14,2,2,1,");
+    [ "14", "2", "2", "1", "" ]</pre>
+<P><A NAME="SECT010"><h2>30.10 StringDate</h2></a>
+<P><P><P>
+<code>StringDate(<var>days</var>)</code>
+<P>
+<code>StringDate([<var>day</var>, <var>month</var>, <var>year</var>])</code>
+<P>
+This  function converts to a readable string  a date, which can be a number
+of days since 1-Jan-1970 or a list <code>[<var>day</var>, <var>month</var>, <var>year</var>]</code>.
+<P>
+<pre>   gap> StringDate([11,3,1998]);
+   "11-Mar-1998"
+   gap> StringDate(2^14);
+   "10-Nov-2014"</pre>
+<P><A NAME="SECT011"><h2>30.11 StringTime</h2></a>
+<P><P><P>
+<code>StringTime(<var>msec</var>)</code>
+<P>
+<code>StringTime([<var>hour</var>, <var>min</var>, <var>sec</var>, <var>msec</var>])</code>
+<P>
+This function converts to a readable string atime,  which can be a number of
+milliseconds or a list <code>[<var>hour</var>, <var>min</var>, <var>sec</var>, <var>msec</var>]</code>.
+<P>
+<pre>   gap> StringTime([1,10,5,13]);
+   " 1:10:05.013"
+   gap> StringTime(2^22);
+   " 1:09:54.304"</pre>
+<P><A NAME="SECT012"><h2>30.12 StringPP</h2></a>
+<P><P><P>
+<code>StringPP(<var>int</var>)</code>
+<P>
+returns a string representing the prime factor decomposition of the integer
+int.
+<P>
+<pre>   gap> StringPP(40320);
+"2^7*3^2*5*7"</pre>
+<P><a href ="chap029.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap031.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

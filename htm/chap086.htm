@@ -1,0 +1,619 @@
+<html><head><title>GAP3 Manual: 86 Algebraic groups and semi-simple elements</title></head>
+<body bgcolor="ffffff">
+<h1>86 Algebraic groups and semi-simple elements</h1>
+<P><P><P>
+Let  us fix an algebraically closed field  <I>K</I> and let <I><strong>G</strong></I> be a connected
+reductive  algebraic group over <I>K</I>. Let <I><strong>T</strong></I> be a maximal torus of <I><strong>G</strong></I>,
+let  <I>X(<strong>T</strong>)</I>  be  the  character  group  of <I><strong>T</strong></I> (resp. <I>Y(<strong>T</strong>)</I> the dual
+lattice of one-parameter subgroups) and <I>&Phi;</I> (resp <I>&Phi;<sup>&or;</sup></I>) the roots
+(resp. coroots) of <I><strong>G</strong></I> with respect to <I><strong>T</strong></I>.
+<P>
+Then   <I><strong>G</strong></I>  is  determined   up  to  isomorphism   by  the  <strong>root  datum</strong>
+<I>(X(<strong>T</strong>),&Phi;,  Y(<strong>T</strong>),&Phi;<sup>&or;</sup>)</I>.  In  algebraic  terms, this consists in
+giving  a  root  system  <I>&Phi;  &sub;  X(<strong>T</strong>)</I>,  where <I>X(<strong>T</strong>)</I> is a free
+<I>&#x2124;</I>-lattice  of dimension  the <strong>rank</strong>  of <I><strong>G</strong></I>,  and giving similarly the
+dual roots <I>&Phi;<sup>&or;</sup>&sub; Y(<strong>T</strong>)</I>.
+<P>
+This  is obtained  by a  slight generalization  of our  setup for a Coxeter
+group  <I>W</I>. This time we assume the canonical basis of the vector space <I>V</I>
+on which <I>W</I> acts is a <I>&#x2124;</I>-basis of <I>X(<strong>T</strong>)</I>, and <I>&Phi;</I> is specified by a
+matrix  <code>W.simpleRoots</code> whose lines are the  simple roots expressed in this
+basis   of   <I>V</I>.   Similarly   <I>&Phi;<sup>&or;</sup></I>   is   described  by  a  matrix
+<code>W.simpleCoroots</code>  whose  lines  are  the  simple  coroots  in the basis of
+<I>Y(<strong>T</strong>)</I>  dual to the chosen basis of <I>X(<strong>T</strong>)</I>. The duality pairing between
+<I>X(<strong>T</strong>)</I>  and <I>Y(<strong>T</strong>)</I>  is the  canonical one,  that is the pairing between
+vectors  <I>x&isin; X(<strong>T</strong>)</I> and <I>y&isin; Y(<strong>T</strong>)</I> is given in <strong>GAP3</strong> by <code>x*y</code>. Thus,
+we must have the relation
+<code>W.simpleCoroots*TransposedMat(W.simpleRoots)=CartanMat(W)</code>.
+<P>
+We  get  that  by  a  new  form  of  the function <code>CoxeterGroup</code>, where the
+arguments  are  the  two  matrices  <code>W.simpleRoots</code>  and  <code>W.simpleCoroots</code>
+described  above. The roots need not generate <I>V</I>, so the matrices need not
+be  square. For instance, the root datum of  the linear group of rank 3 can
+be specified as:
+<P>
+<pre>    gap> W := CoxeterGroup( [ [ -1, 1, 0], [ 0, -1, 1 ] ],
+    >                       [ [ -1, 1, 0], [ 0, -1, 1 ] ] );
+    CoxeterGroup([[-1,1,0],[0,-1,1]],[[-1,1,0],[0,-1,1]])
+    gap> MatXPerm( W, W.1);
+    [ [ 0, 1, 0 ], [ 1, 0, 0 ], [ 0, 0, 1 ] ]</pre>
+<P>
+here  the symmetric  group on  3 letters  acts by  permutation of the basis
+vectors  of  <I>V</I>.  The  dimension  of  <I>V</I>  (the  length  of the vectors in
+<code>.simpleRoots</code>)  is called  the <strong>rank</strong>  and the  dimension of  the subspace
+generated  by  the  roots  (the  length of <code>.simpleroots</code>) the <strong>semi-simple
+rank</strong>.  In the  example the  rank is  3 and  the semisimple  rank is 2; the
+integral  elements of <I>V</I> correspond to  the characters of a maximal torus,
+and  the integral elements  of <I>V<sup>&or;</sup></I> to  one-parameter subgroups of that
+torus.
+<P>
+The  default form <code>W:=CoxeterGroup("A",2)</code> defines the adjoint algebraic
+group  (the group with a trivial center). In that case <I>&Phi;</I> is a basis of
+<I>X(<strong>T</strong>)</I>,  so <code>W.simpleRoots</code> is the  identity matrix and <code>W.simpleCoroots</code>
+is   the  Cartan  matrix  <code>CartanMat(W)</code>  of  the  root  system.  The  form
+<code>CoxeterGroup("A",2,"sc")</code>  constructs the  semisimple simply connected
+algebraic  group, where <code>W.simpleRoots</code> is the transposed of <code>CartanMat(W)</code>
+and <code>W.simpleCoroots</code> is the identity matrix.
+<P>
+There  is also a function <code>RootDatum</code> which understands some familiar names
+for  the algebraic groups and  gives the results that  could be obtained by
+giving the appropriate matrices <code>W.simpleRoots</code> and <code>W.simpleCoroots</code>:
+<P>
+<pre>    gap> RootDatum("sl",3);   # same as CoxeterGroup("A",2,"sc")  
+    RootDatum("sl",3)</pre>
+<P>
+It is also possible to compute with finite order elements of <I><strong>T</strong></I>. Over an
+algebraically closed field, finite order elements of <I><strong>T</strong></I> are in bijection
+with  elements of <I>&#x211A;/&#x2124;&otimes;  Y(<strong>T</strong>)</I> whose denominator  is prime to the
+characteristic  of the field. These are represented as elements of a vector
+space  of rank <I>r</I> over <I>&#x211A;</I>, taken  <code>Mod1</code> whenever the need arises, where
+<code>Mod1</code>  is the function which replaces the numerator of a fraction with the
+numerator  <code>mod</code> the  denominator; the  fraction <I>p/q</I> represents a
+primitive  <I>q</I>-th  root  of  unity  raised  to  the  <I>p</I>-th  power. In this
+representation, multiplication of roots of unity becomes addition <code>Mod1</code> of
+rationals  and raising to  the power <I>n</I>  becomes multiplication by <I>n</I>. We
+call this the ``additive'' representation of semisimple elements.
+<P>
+Here  is an example of computations  with semisimple-elements given as list
+in <I>&#x211A;/&#x2124;</I>.
+<P>
+<pre>    gap> G:=RootDatum("sl",4);
+    RootDatum("sl",4)
+    gap> L:=ReflectionSubgroup(G,[1,3]);
+    ReflectionSubgroup(RootDatum("sl",4), [ 1, 3 ])
+    gap> AlgebraicCentre(L);
+    rec(
+      Z0 := 
+       SubTorus(ReflectionSubgroup(RootDatum("sl",4), [ 1, 3 ]),[ [ 1, 2, \ 
+    1 ] ]),
+      AZ := Group( &lt;0,0,1/2> ),
+      descAZ := [ [ 1, 2 ] ] )
+    gap> SemisimpleSubgroup(last.Z0,3);
+    Group( &lt;1/3,2/3,1/3> )
+    gap> e:=Elements(last);
+    [ &lt;0,0,0>, &lt;1/3,2/3,1/3>, &lt;2/3,1/3,2/3> ]</pre>
+<P>
+First,  the group  <I><strong>G</strong>=SL<sub>4</sub></I> is  constructed, then  the Levi  subgroup <I>L</I>
+consisting  of block-diagonal matrices  of shape <I>2&times;  2</I>. The function
+<code>AlgebraicCentre</code>  returns a record with : the neutral component <I>Z<sup>0</sup></I> of
+the  centre <I>Z</I> of  <I>L</I>, represented by  a basis of  <I>Y(Z<sup>0</sup>)</I>, a complement
+subtorus  <I>S</I> of <I><strong>T</strong></I> to <I>Z<sup>0</sup></I> represented similarly by a basis of <I>Y(S)</I>,
+and  semi-simple elements  representing the  classes of  <I>Z</I> modulo <I>Z<sup>0</sup></I> ,
+chosen  in <I>S</I>. The classes <I>Z/Z<sup>0</sup></I> also biject to the fundamental group as
+given  by the  field <code>.descAZ</code>,  see <a href="chap086.htm#SECT011">AlgebraicCentre</a>  for an explanation.
+Finally the semi-simple elements of order 3 in <I>Z<sup>0</sup></I> are computed.
+<P>
+<pre>    gap> e[2]^G.2;
+    &lt;1/3,0,1/3>
+    gap> Orbit(G,e[2]);
+    [ &lt;1/3,2/3,1/3>, &lt;1/3,0,1/3>, &lt;2/3,0,1/3>, &lt;1/3,0,2/3>, &lt;2/3,0,2/3>,
+      &lt;2/3,1/3,2/3> ]</pre>
+<P>
+Since  over an algebraically  closed field <I>K</I>  the points of  <I><strong>T</strong></I> are in
+bijection  with <I>Y(<strong>T</strong>)&otimes; K<sup>&times;</sup></I>  it is also  possible to represent
+any  point of <I><strong>T</strong></I>  over <I>K</I> as  a list of  <code>Rank(T)</code> non-zero elements of
+<I>K</I>.   This  is  the   ``multiplicative''  representation  of  semisimple
+elements.  here is the same computation  as above performed with semisimple
+elements whose coefficients are in the finite field <code>GF(4)</code>:
+<P>
+<pre>    gap> s:=SemisimpleElement(G,List([1,2,1],i->Z(4)^i));     
+    &lt;Z(2^2),Z(2^2)^2,Z(2^2)>
+    gap> s^G.2;
+    &lt;Z(2^2),Z(2)^0,Z(2^2)>
+    gap> Orbit(G,s);
+    [ &lt;Z(2^2),Z(2^2)^2,Z(2^2)>, &lt;Z(2^2),Z(2)^0,Z(2^2)>, 
+      &lt;Z(2^2)^2,Z(2)^0,Z(2^2)>, &lt;Z(2^2),Z(2)^0,Z(2^2)^2>, 
+      &lt;Z(2^2)^2,Z(2)^0,Z(2^2)^2>, &lt;Z(2^2)^2,Z(2^2),Z(2^2)^2> ]</pre>
+<P>
+We  can  compute  the  centralizer  <I>C<sub><strong>G</strong></sub>(s)</I>  of  a semisimple element in
+<I><strong>G</strong></I>:
+<P>
+<pre>    gap> G:=CoxeterGroup("A",3);
+    CoxeterGroup("A",3)
+    gap> s:=SemisimpleElement(G,[0,1/2,0]);
+    &lt;0,1/2,0>
+    gap> Centralizer(G,s);
+    Extended((A1xA1)&lt;1,3>.(q+1))</pre>
+<P>
+The  result is an  extended reflection group;  the reflection group part is
+the Weyl group of <I>C<sub><strong>G</strong></sub><sup>0</sup>(s)</I> and the extended part are representatives of
+<I>C<sub><strong>G</strong></sub>(s)</I>  modulo  <I>C<sub><strong>G</strong></sub><sup>0</sup>(s)</I>  taken  as  diagram  automorphisms  of the
+reflection  part.  Here  is  is  printed  as a coset <I>C<sub><strong>G</strong></sub><sup>0</sup>(s)&phi;</I> which
+generates <I>C<sub><strong>G</strong></sub>(s)</I>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap086.htm#SECT001">CoxeterGroup (extended form)</a>
+<LI> <A HREF="chap086.htm#SECT002">RootDatum</a>
+<LI> <A HREF="chap086.htm#SECT003">Torus</a>
+<LI> <A HREF="chap086.htm#SECT004">FundamentalGroup for algebraic groups</a>
+<LI> <A HREF="chap086.htm#SECT005">IntermediateGroup</a>
+<LI> <A HREF="chap086.htm#SECT006">SemisimpleElement</a>
+<LI> <A HREF="chap086.htm#SECT007">Operations for Semisimple elements</a>
+<LI> <A HREF="chap086.htm#SECT008">Centralizer for semisimple elements</a>
+<LI> <A HREF="chap086.htm#SECT009">SubTorus</a>
+<LI> <A HREF="chap086.htm#SECT010">Operations for Subtori</a>
+<LI> <A HREF="chap086.htm#SECT011">AlgebraicCentre</a>
+<LI> <A HREF="chap086.htm#SECT012">SemisimpleSubgroup</a>
+<LI> <A HREF="chap086.htm#SECT013">IsIsolated</a>
+<LI> <A HREF="chap086.htm#SECT014">IsQuasiIsolated</a>
+<LI> <A HREF="chap086.htm#SECT015">QuasiIsolatedRepresentatives</a>
+<LI> <A HREF="chap086.htm#SECT016">SemisimpleCentralizerRepresentatives</a>
+</ol>
+<A NAME="SECT001"><h2>86.1 CoxeterGroup (extended form)</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>CoxeterGroup( <var>simpleRoots</var>, <var>simpleCoroots</var> )</code>
+<P>
+<code>CoxeterGroup( <var>C</var>[, "sc"] )</code>
+<P>
+<code>CoxeterGroup( <var>type1</var>, <var>n1</var>, ... , <var>typek</var>, <var>nk</var>[, "sc"] )</code>
+<P>
+The  above are  extended forms  of the  function <code>CoxeterGroup</code> allowing to
+specify  more general root data. In the first  form a set of roots is given
+explicitly  as the lines of  the matrix <var>simpleRoots</var>, representing vectors
+in  a vector space  <var>V</var>, as well  as a set  of coroots as  the lines of the
+matrix <var>simpleCoroots</var> expressed in the dual basis of <I>V<sup>&or;</sup></I>. The product
+<code><var>C</var>=<var>simpleCoroots</var>*TransposedMat(<var>simpleRoots</var>)</code>  must be a valid Cartan
+matrix.  The dimension of <var>V</var> can be greater than <code>Length(<var>C</var>)</code>. The length
+of  <var>C</var> is  called the  <strong>semisimple rank</strong>  of the  Coxeter datum, while the
+dimension of <var>V</var> is called its <strong>rank</strong>.
+<P>
+In the second form <var>C</var> is a Cartan matrix, and the call <code>CoxeterGroup(<var>C</var>)</code>
+is  equivalent  to  <code>CoxeterGroup(IdentityMat(Length(<var>C</var>)),<var>C</var>)</code>.  When the
+optional <code>"sc"</code> argument is given the situation is reversed: the simple
+coroots  are given  by the  identity matrix,  and the  simple roots  by the
+transposed  of <var>C</var> (this corresponds to the embedding of the root system in
+the  lattice  of  characters  of  a  maximal  torus in a <strong>simply connected</strong>
+algebraic group).
+<P>
+The argument <code>"sc"</code> can also be given in the third form with the same
+effect.
+<P>
+The  following fields in a Coxeter group record complete the description of
+the corresponding <strong>root datum</strong>:
+<P>
+<DL><DT><code>simpleRoots</code>:<DD><BR> the matrix of simple roots
+</DL><P>
+<DL><DT><code>simpleCoroots</code>:<DD><BR> the matrix of simple coroots
+</DL><P>
+<DL><DT><code>matgens</code>:<DD><BR>  the matrices  (in row  convention ---  that is,  the matrices
+operate <strong>from the right</strong>) of the simple reflections of the Coxeter group.
+</DL><P><A NAME="SECT002"><h2>86.2 RootDatum</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>RootDatum(<var>type</var>,<var>rank</var>)</code>
+<P>
+This  function returns the root datum  for the algebraic group described by
+<var>type</var> and <var>rank</var>. The types understood as of now are: <code>"gl"</code>, <code>"sl"</code>,
+<code>"pgl"</code>,   <code>"sp"</code>,  <code>"so"</code>,   <code>"psp"</code>,  <code>"pso"</code>,  <code>"halfspin"</code>,
+<code>"spin"</code>, <code>"F4"</code> and <code>"G2"</code>.
+<P>
+<pre>    gap> RootDatum("spin",8);# same as CoxeterGroup("D",4,"sc")
+    RootDatum("spin",8)</pre>
+<P><A NAME="SECT003"><h2>86.3 Torus</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>Torus(<var>rank</var>)</code>
+<P>
+This  function returns the <strong>CHEVIE</strong> object corresponding to the notion of a
+torus  of dimension <var>rank</var>, a Coxeter group  of semisimple rank 0 and given
+<var>rank</var>.  This corresponds to a split torus; the extension to Coxeter cosets
+is more useful (see <a href="chap096.htm#SECT010">Torus for Coxeter cosets</a>).
+<P>
+<pre>    gap> Torus(3);
+    CoxeterGroup()
+    gap> ReflectionName(last);
+    "(q-1)^3"</pre>
+<P><A NAME="SECT004"><h2>86.4 FundamentalGroup for algebraic groups</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>FundamentalGroup(<var>W</var>)</code>
+<P>
+This  function returns the fundamental group of the algebraic group defined
+by  the Coxeter  group record  <var>W</var>. This  group is  returned as  a group of
+diagram  automorphisms of the corresponding affine Weyl group, that is as a
+group  of permutations of  the set of  simple roots enriched  by the lowest
+root  of  each  irreducible  component.  The  definition  we  take  of  the
+fundamental  group  of  a  (not  necessarily semisimple) reductive group is
+<I>(P&cap;  Y(<strong>T</strong>))/Q</I> where <I>P</I> is the coweight lattice and <I>Q</I> is the coroot
+latice.  The bijection between elements  of <I>P/Q</I> and diagram automorphisms
+is  expained  in  the  context  of  non-irreducible  groups  for example in
+<A href="biblio.htm#Bon05"><cite>Bon05</cite></a>, \S 3.B.
+<P>
+<pre>    gap> W:=CoxeterGroup("A",3);
+    CoxeterGroup("A",3)
+    gap> FundamentalGroup(W);
+    Group( ( 1, 2, 3,12) )
+    gap> W:=CoxeterGroup("A",3,"sc");
+    CoxeterGroup("A",3,"sc")
+    gap> FundamentalGroup(W);
+    Group( () )</pre>
+<P><A NAME="SECT005"><h2>86.5 IntermediateGroup</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>IntermediateGroup(<var>W</var>, <var>indices</var>)</code>
+<P>
+This computes a Weyl group record representing a semisimple algebraic group
+intermediate  between  the  adjoint  group  ---  obtained  by  a  call like
+<code>CoxeterGroup("A",3)</code>---  and the simply  connected semi-simple group ---
+obtained  by  a  call  like  <code>CoxeterGroup("A",3,"sc")</code>.  The  group is
+specified  by specifying  a subset  of the  <strong>minuscule weights</strong>,  which are
+weights  whose  scalar  product  with  every  coroot  is  in  <I>-1,0,1</I>. The
+non-trivial  elements  of  the  (algebraic)  center of a semi-simple simply
+connected algebraic group are in bijection with the minuscule weights; this
+set  is also in bijection with <I>P/Q</I>  where <I>P</I> is the coweight lattice and
+<I>Q</I>  is the coroot lattice. The minuscule  weights are specified, if <var>W</var> is
+irreducible,  by the list <var>indices</var> of their position in the Dynkin diagram
+(see  <a href="chap084.htm#SECT017">PrintDiagram</a>). The constructed group has lattice <I>Y(<strong>T</strong>)</I> generated
+by the sum of the coroot lattice and the weights with the given indices. If
+<var>W</var>  is  not  irreducible,  one  needs  to specify an intermediate group by
+giving  a sum of  minuscule weights in  different components. An element of
+<var>indices</var> is thus itself a list, interpreted as representing the sum of the
+corresponding weights.
+<P>
+<pre>    gap> W:=CoxeterGroup("A",3);;
+    gap> IntermediateGroup(W,[]); # adjoint
+    CoxeterGroup("A",3)
+    gap> FundamentalGroup(last);
+    Group( ( 1, 2, 3,12) )
+    gap> IntermediateGroup(W,[2]);# intermediate
+    CoxeterGroup([[2,0,-1],[0,1,0],[0,0,1]],[[1,-1,0],[-1,2,-1],[1,-1,2]])
+    gap> FundamentalGroup(last);  
+    Group( ( 1, 3)( 2,12) )</pre>
+<P><A NAME="SECT006"><h2>86.6 SemisimpleElement</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>SemisimpleElement(<var>W</var>,<var>v</var>[,<var>additive</var>])</code>
+<P>
+<var>W</var>  should be  a root  datum, given  as a  Coxeter group record for a Weyl
+group,  and  <var>v</var>  a  list  of  length  <code>W.rank</code>. The result is a semisimple
+element record, which has the fields:
+<P>
+<DL><DT><code>.v</code>:<DD> the given list, taken <code>Mod1</code> if its elements are rationals.
+</DL><P>
+<DL><DT><code>.group</code>:<DD> the parent of the group <var>W</var>.
+</DL><P>
+<pre>    gap> G:=CoxeterGroup("A",3);;
+    gap> s:=SemisimpleElement(G,[0,1/2,0]);
+    &lt;0,1/2,0></pre>
+<P>
+If  all elements of <I>v</I> are rational  numbers, they are converted by <code>Mod1</code>
+to fractions between  <I>0</I> and  <I>1</I> representing  roots of  unity, and these
+roots  of unity are multiplied by adding  <code>Mod1</code> the fractions. In this way
+any semisimple element of finite order can be represented.
+<P>
+If  the entries  are not  rational numbers,  they are  assumed to represent
+elements  of a field which are  multiplied or added normally. To explicitly
+control  if  the  entries  are  to  be  treated  additively or not, a third
+argument  can be given:  if <code>true</code> the  entries are treated additively, or
+not if <code>false</code>. For entries to be treated additively, they must belong to a
+domain for which the method <code>Mod1</code> had been defined.
+<P><A NAME="SECT007"><h2>86.7 Operations for Semisimple elements</h2></a>
+<P><P><P>
+The  arithmetic operations <code>*</code>, <code>/</code> and <code>^</code> work for semisimple elements.
+They  also have <code>Print</code> and <code>String</code> methods. We first give an element with
+elements of <I>&#x211A;/&#x2124;</I> representing roots of unity.
+<P>
+<pre>    gap> G:=CoxeterGroup("A",3);
+    CoxeterGroup("A",3)
+    gap> s:=SemisimpleElement(G,[0,1/2,0]);
+    &lt;0,1/2,0>
+    gap> t:=SemisimpleElement(G,[1/2,1/3,1/7]);
+    &lt;1/2,1/3,1/7>
+    gap> s*t;
+    &lt;1/2,5/6,1/7>
+    gap> t^3;
+    &lt;1/2,0,3/7>
+    gap> t^-1;
+    &lt;1/2,2/3,6/7>
+    gap> t^0;
+    &lt;0,0,0>
+    gap> String(t);
+    "&lt;1/2,1/3,1/7>"</pre>
+<P>
+<DL><DT>then a similar example with elements of <code>GF(5)</code>:<DD>
+</DL><P>
+<pre>    gap> s:=SemisimpleElement(G,Z(5)*[1,2,1]);
+    &lt;Z(5),Z(5)^2,Z(5)>
+    gap> t:=SemisimpleElement(G,Z(5)*[2,3,4]);
+    &lt;Z(5)^2,Z(5)^0,Z(5)^3>
+    gap> s*t;
+    &lt;Z(5)^3,Z(5)^2,Z(5)^0>
+    gap> t^3;
+    &lt;Z(5)^2,Z(5)^0,Z(5)>
+    gap> t^-1;
+    &lt;Z(5)^2,Z(5)^0,Z(5)>
+    gap> t^0; 
+    &lt;Z(5)^0,Z(5)^0,Z(5)^0>
+    gap> String(t);
+    "&lt;Z(5)^2,Z(5)^0,Z(5)^3>"</pre>
+<P>
+The operation <code>^</code> also works for applying an element of its defining Weyl
+group to a semisimple element, which allows orbit computations:
+<P>
+<pre>    gap> s:=SemisimpleElement(G,[0,1/2,0]);
+    &lt;0,1/2,0>
+    gap> s^G.2;
+    &lt;1/2,1/2,1/2>
+    gap> Orbit(G,s);
+    [ &lt;0,1/2,0>, &lt;1/2,1/2,1/2>, &lt;1/2,0,1/2> ]</pre>
+<P>
+The operation <code>^</code> also works for applying a root to a semisimple element:
+<P>
+<pre>    gap> s:=SemisimpleElement(G,[0,1/2,0]);   
+    &lt;0,1/2,0>
+    gap> s^G.roots[4];                     
+    1/2
+    gap> s:=SemisimpleElement(G,Z(5)*[1,1,1]);
+    &lt;Z(5),Z(5),Z(5)>
+    gap> s^G.roots[4];
+    Z(5)^2</pre>
+<P>
+<A name = "I6"></a>
+
+<DL><DT><code>Frobenius(  <var>WF</var> )</code>:<DD><BR> If  <code>WF</code> is a  Coxeter coset associated to the
+Coxeter   group  <var>W</var>,  the  function  <code>Frobenius</code>  returns  the  associated
+automorphism which can be applied to semisimple elements, see <a href="chap096.htm#SECT007">Frobenius</a>.
+</DL><P>
+<pre>    gap> W:=CoxeterGroup("D",4);;WF:=CoxeterCoset(W,(1,2,4));;
+    gap> s:=SemisimpleElement(W,[1/2,0,0,0]);
+    &lt;1/2,0,0,0>
+    gap> F:=Frobenius(WF);
+    function ( arg ) ... end
+    gap> F(s);
+    &lt;0,1/2,0,0>
+    gap> F(s,-1);
+    &lt;0,0,0,1/2></pre>
+<P><A NAME="SECT008"><h2>86.8 Centralizer for semisimple elements</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>Centralizer( <var>W</var>, <var>s</var>)</code>
+<P>
+<var>W</var>  should be a Weyl group record or and extended reflection group and <var>s</var>
+a  semisimple element for <var>W</var>. This  function returns the stabilizer of the
+semisimple element <var>s</var> in <var>W</var>, which describes also <I>C<sub><strong>G</strong></sub>(s)</I>, if <I><strong>G</strong></I> is
+the  algebraic  group  described  by  <var>W</var>.  The  stabilizer  is an extended
+reflection group, with the reflection group part equal to the Weyl group of
+<I>C<sub><strong>G</strong></sub><sup>0</sup>(s)</I>,  and  the  diagram  automorphism  part being those induced by
+<I>C<sub><strong>G</strong></sub>(s)/C<sub><strong>G</strong></sub><sup>0</sup>(s)</I> on <I>C<sub><strong>G</strong></sub><sup>0</sup>(s)</I>.
+<P>
+<pre>    gap> G:=CoxeterGroup("A",3);
+    CoxeterGroup("A",3)
+    gap> s:=SemisimpleElement(G,[0,1/2,0]);
+    &lt;0,1/2,0>
+    gap> Centralizer(G,s);
+    Extended((A1xA1)&lt;1,3>.(q+1))</pre>
+<P><A NAME="SECT009"><h2>86.9 SubTorus</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>SubTorus(<var>W</var>,<var>Y</var>)</code>
+<P>
+The  function returns the subtorus <I><strong>S</strong></I> of  the maximal torus <I><strong>T</strong></I> of the
+reductive group represented by the Weyl group record <var>W</var> such that <I>Y(<strong>S</strong>)</I>
+is  the (pure) sublattice  of <I>Y(<strong>T</strong>)</I> generated  by the (integral) vectors
+<var>Y</var>.  A basis of <I>Y(<strong>S</strong>)</I> adapted to <I>Y(<strong>T</strong>)</I> is computed and stored in the
+field  <code>S.generators</code> of the returned  subtorus object. Here, adapted means
+that  there is  a set  of integral  vectors, stored in <code>S.complement</code>, such
+that  <code>M:=Concatenation(S.generators,S.complement)</code> is a basis of <I>Y(<strong>T</strong>)</I>
+(equivalently  <I>M&isin;</i>GL<i>(&#x2124;<sup></i>rank<i>(W)</sup>)</I>. An error  is raised if
+<var>Y</var> does not define a pure sublattice.
+<P>
+<pre>    gap> W:=CoxeterGroup("A",4);;
+    gap> SubTorus(W,[[1,2,3,4],[2,3,4,1],[3,4,1,2]]);
+    Error, not a pure sublattice in
+    SubTorus( W, [ [ 1, 2, 3, 4 ], [ 2, 3, 4, 1 ], [ 3, 4, 1, 2 ] ]
+    ) called from
+    main loop
+    brk> 
+    gap> SubTorus(W,[[1,2,3,4],[2,3,4,1],[3,4,1,1]]);
+    SubTorus(CoxeterGroup("A",4),[ [ 1, 0, 3, -13 ], [ 0, 1, 2, 7 ], [ 0,
+    0, 4, -3 ] ])</pre>
+<P><A NAME="SECT010"><h2>86.10 Operations for Subtori</h2></a>
+<P><P><P>
+The operation <code>in</code> can test if a semisimple elements belongs to a subtorus:
+<P>
+<pre>    gap> W:=RootDatum("gl",4);;
+    gap> r:=AlgebraicCentre(W);
+    rec(
+      Z0 := SubTorus(RootDatum("gl",4),[ [ 1, 1, 1, 1 ] ]),
+      AZ := Group( &lt;0,0,0,0> ),
+      descAZ := [ [ 1 ] ] )
+    gap> SemisimpleElement(W,[1/4,1/4,1/4,1/4]) in r.Z0;
+    true</pre>
+<P>
+The operation <code>Rank</code> gives the rank of the subtorus:
+<P>
+<pre>    gap> Rank(r.Z0);
+    1</pre>
+<P><A NAME="SECT011"><h2>86.11 AlgebraicCentre</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code>AlgebraicCentre( <var>W</var> )</code>
+<P>
+<var>W</var>  should be a Weyl group record,  or an extended Weyl group record. This
+function  returns a  description of  the centre  <I>Z</I> of the algebraic group
+defined by <var>W</var> as a record with the following fields:
+<P>
+<DL><DT><code>Z0</code>:<DD>  the neutral component <I>Z<sup>0</sup></I>  of <I>Z</I> as a subtorus of <I><strong>T</strong></I>.
+</DL><P>
+<DL><DT><code>AZ</code>:<DD>  representatives  of  <I>A(Z):=Z/Z<sup>0</sup></I>  given  as a group of semisimple
+elements.
+</DL><P>
+<DL><DT><code>descAZ</code>:<DD>  if <var>W</var> is not an extended Weyl group, describes the inclusion of
+<I>A(Z)</I>  in the center <code>pi</code> of  the corresponding simply connected group. It
+contains  a list elements  given as words  in the generators  of <code>pi</code> which
+generate <I>A(Z)</I>.
+</DL><P>
+<pre>    gap> G:=CoxeterGroup("A",3,"sc");;
+    gap> L:=ReflectionSubgroup(G,[1,3]);
+    ReflectionSubgroup(CoxeterGroup("A",3,"sc"), [ 1, 3 ])
+    gap> AlgebraicCentre(L);
+    rec(
+      Z0 := 
+       SubTorus(ReflectionSubgroup(CoxeterGroup("A",3,"sc"), [ 1, 3 ]),[ [\ 
+     1, 2, 1 ] ]),
+      AZ := Group( &lt;0,0,1/2> ),
+      descAZ := [ [ 1, 2 ] ] )
+    gap> G:=CoxeterGroup("A",3);;
+    gap> s:=SemisimpleElement(G,[0,1/2,0]);;
+    gap> Centralizer(G,s);
+    (A1xA1)&lt;1,3>.(q+1)
+    gap> AlgebraicCentre(last);
+    rec(
+      Z0 := SubTorus(ReflectionSubgroup(CoxeterGroup("A",3), [ 1, 3 ]),),
+      AZ := Group( &lt;0,1/2,0> ) )</pre>
+<P>
+Note  that in versions of <strong>CHEVIE</strong> prior  to april 2017, the field <code>Z0</code> was
+no  a  subtorus  but  what  is  now  <code>Z0.generators</code>, and there was a field
+<code>complement</code> which is now <code>Z0.complement</code>.
+<P><A NAME="SECT012"><h2>86.12 SemisimpleSubgroup</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+<code>SemisimpleSubgroup( <var>S</var>, <var>n</var> )</code>
+<P>
+This  function  returns  the  subgroup  of  semi-simple  elements  of order
+dividing  <var>n</var>  in  the  subtorus  <I>S</I>.
+<P>
+<pre>    gap> G:=CoxeterGroup("A",3,"sc");;
+    gap> L:=ReflectionSubgroup(G,[1,3]);;
+    gap> z:=AlgebraicCentre(L);;
+    gap> z.Z0;
+    SubTorus(ReflectionSubgroup(CoxeterGroup("A",3,"sc"), [ 1, 3 ]),[ [ 1,\ 
+     2, 1 ] ])
+    gap> SemisimpleSubgroup(z.Z0,3);
+    Group( &lt;1/3,2/3,1/3> )
+    gap> Elements(last);
+    [ &lt;0,0,0>, &lt;1/3,2/3,1/3>, &lt;2/3,1/3,2/3> ]</pre>
+<P><A NAME="SECT013"><h2>86.13 IsIsolated</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code>IsIsolated(<var>W</var>,<var>s</var>)</code>
+<P>
+<var>s</var> should be a semi-simple element for the algebraic group <I><strong>G</strong></I> specified
+by  the Weyl  group record  <var>W</var>. A  semisimple element  <var>s</var> of an algebraic
+group  <I><strong>G</strong></I> is isolated  if the connected  component <I>C<sub><strong>G</strong></sub><sup>0</sup>(s)</I> does not
+lie  in  a  proper  parabolic  subgroup  of <I><strong>G</strong></I>. This function tests this
+condition.
+<P>
+<pre>    gap> W:=CoxeterGroup("E",6);;
+    gap> QuasiIsolatedRepresentatives(W);
+    [ &lt;0,0,0,0,0,0>, &lt;0,0,0,1/3,0,0>, &lt;0,1/6,1/6,0,1/6,0>,
+      &lt;0,1/2,0,0,0,0>, &lt;1/3,0,0,0,0,1/3> ]
+    gap> Filtered(last,x->IsIsolated(W,x));
+    [ &lt;0,0,0,0,0,0>, &lt;0,0,0,1/3,0,0>, &lt;0,1/2,0,0,0,0> ]</pre>
+<P><A NAME="SECT014"><h2>86.14 IsQuasiIsolated</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+<code>IsQuasiIsolated(<var>W</var>,<var>s</var>)</code>
+<P>
+<var>s</var> should be a semi-simple element for the algebraic group <I><strong>G</strong></I> specified
+by  the Weyl  group record  <var>W</var>. A  semisimple element  <var>s</var> of an algebraic
+group  <I><strong>G</strong></I>  is  quasi-isolated  if  <I>C<sub><strong>G</strong></sub>(s)</I>  does  not lie in a proper
+parabolic subgroup of <I><strong>G</strong></I>. This function tests this condition.
+<P>
+<pre>    gap> W:=CoxeterGroup("E",6);;
+    gap> QuasiIsolatedRepresentatives(W);
+    [ &lt;0,0,0,0,0,0>, &lt;0,0,0,1/3,0,0>, &lt;0,1/6,1/6,0,1/6,0>, 
+      &lt;0,1/2,0,0,0,0>, &lt;1/3,0,0,0,0,1/3> ]
+    gap> Filtered(last,x->IsQuasiIsolated(ReflectionSubgroup(W,[1,3,5,6]),x));
+    [ &lt;0,0,0,0,0,0>, &lt;0,0,0,1/3,0,0>, &lt;0,1/2,0,0,0,0> ]</pre>
+<P><A NAME="SECT015"><h2>86.15 QuasiIsolatedRepresentatives</h2></a>
+<P><P>
+<A name = "I13"></a>
+
+<P>
+<code>QuasiIsolatedRepresentatives(<var>W</var>[,<var>p</var>])</code>
+<P>
+<var>W</var>  should  be  a  Weyl  group  record corresponding to an algebraic group
+<I><strong>G</strong></I>. This function returns a list of semisimple elements for <I><strong>G</strong></I>, which
+are  representatives  of  the  <I><strong>G</strong></I>-orbits  of  quasi-isolated  semisimple
+elements.  It  follows  the  algorithm  given  by C. Bonnaf&eacute; in
+<A href="biblio.htm#Bon05"><cite>Bon05</cite></a>.  If a second argument <var>p</var>  is given, it gives representatives
+of those quasi-isolated elements which exist in characteristic <var>p</var>.
+<P>
+<pre>    gap> W:=CoxeterGroup("E",6);;QuasiIsolatedRepresentatives(W);
+    [ &lt;0,0,0,0,0,0>, &lt;0,0,0,1/3,0,0>, &lt;0,1/6,1/6,0,1/6,0>, 
+      &lt;0,1/2,0,0,0,0>, &lt;1/3,0,0,0,0,1/3> ]
+    gap> List(last,x->IsIsolated(W,x));
+    [ true, true, false, true, false ]
+    gap> W:=CoxeterGroup("E",6,"sc");;QuasiIsolatedRepresentatives(W);
+    [ &lt;0,0,0,0,0,0>, &lt;1/3,0,2/3,0,1/3,2/3>, &lt;1/2,0,0,1/2,0,1/2>,
+      &lt;2/3,0,1/3,0,1/3,2/3>, &lt;2/3,0,1/3,0,2/3,1/3>, &lt;2/3,0,1/3,0,2/3,5/6>, 
+      &lt;5/6,0,2/3,0,1/3,2/3> ]
+    gap> List(last,x->IsIsolated(W,x));
+    [ true, true, true, true, true, true, true ]
+    gap> QuasiIsolatedRepresentatives(W,3);
+    [ &lt;0,0,0,0,0,0>, &lt;1/2,0,0,1/2,0,1/2> ]</pre>
+<P><A NAME="SECT016"><h2>86.16 SemisimpleCentralizerRepresentatives</h2></a>
+<P><P>
+<A name = "I14"></a>
+
+<P>
+<code>SemisimpleCentralizerRepresentatives(<var>W</var> [,<var>p</var>])</code>
+<P>
+<var>W</var>  should  be  a  Weyl  group  record corresponding to an algebraic group
+<I><strong>G</strong></I>.  This  function  returns  a  list  giving  representatives  <I><strong>H</strong></I> of
+<I><strong>G</strong></I>-orbits  of reductive  subgroups of  <I><strong>G</strong></I> which  can be  the identity
+component  of the centralizer of a  semisimple element. Each group <I><strong>H</strong></I> is
+specified  by  a  list  <var>h</var>  of  reflection  indices in <var>W</var> such that <I><strong>H</strong></I>
+corresponds  to  <code>ReflectionSubgroup(W,h)</code>.  If  a  second  argument <var>p</var> is
+given,  only the list of the centralizers which occur in characteristic <var>p</var>
+is returned.
+<P>
+<pre>    gap> W:=CoxeterGroup("G",2);                    
+    CoxeterGroup("G",2)
+    gap> l:=SemisimpleCentralizerRepresentatives(W);
+    [ [  ], [ 1 ], [ 1, 2 ], [ 1, 5 ], [ 2 ], [ 2, 6 ] ]
+    gap> List(last,h->ReflectionName(ReflectionSubgroup(W,h)));
+    [ "(q-1)^2", "A1.(q-1)", "G2", "A2&lt;1,5>", "~A1&lt;2>.(q-1)", 
+      "~A1&lt;2>xA1&lt;6>" ]
+    gap> SemisimpleCentralizerRepresentatives(W,2);            
+    [ [  ], [ 1 ], [ 1, 2 ], [ 1, 5 ], [ 2 ] ]</pre>
+<P><a href ="chap085.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap087.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

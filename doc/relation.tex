@@ -1,0 +1,601 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  GAP documentation                                   Goetz.Pfeiffer@UCG.IE
+%%
+%A  $Id: relation.tex,v 2.0 1997/05/05 16:35:47 goetz Exp $
+%%
+%Y  Copyright (C) 1997, Mathematics Dept, University College Galway, Ireland.
+%%
+%%  This file documents the functions for binary relations.
+%%
+\Chapter{Binary Relations}%
+\index{relation}
+
+A binary *relation* on  $n$ points is a subset  $R \subseteq  \{1, \dots,
+n\}  \times \{1, \dots, n\}$.  It  can also be seen  as a multivalued map
+from $\{1, \dots, n\}$  to itself, or as a  directed graph  with vertices
+$\{1, \dots,  n\}$.   The  number $n$  is   called  the  *degree*  of the
+relation.   Thus  a binary relation  $R$ of  degree  $n$ associates a set
+$i^R$ of  positive integers  less than or  equal to   $n$ to each  number
+between $1$ and $n$.  This set $i^R$ is called the set of *successors* of
+$i$ under the relation $R$.
+
+The degree of  a binary relation may  not be larger than $2^{28}-1$ which
+is (currently) the highest index that can be accessed in a list.
+
+Special  cases   of binary  relations  are  transformations  (see chapter
+"Transformations")  and  permutations   (see  chapter  \"Permutations\"). 
+However, an object of one of these types must be  converted into a binary
+relation before most of the functions of this chapter are applicable.
+
+The  product of binary relations is  defined via composition of mappings,
+or   equivalently,   via concatenation   of edges   of   directed graphs. 
+Precisely, if  $R$ and $S$  are two  relations on  $\{1, \dots, n\}$ then
+their product $R S$ is defined  by saying that  two points $x, y \in \{1,
+\dots, n\}$ are in relation $R S$ if and only if there is  a point $z \in
+\{1, \dots, n\}$ such that $x R z$ and $z  S y$.  As multivalued map, the
+product $RS$ is defined by
+\[
+  i\^(RS) = (i\^R)\^S \quad \mbox{for all } i = 1, \dots, n.
+\]
+With respect to  this multiplication the set  of all binary  relations of
+degree $n$ forms a monoid, the *full relation monoid* of degree $n$.%
+\index{full relation monoid}%
+\index{monoid!of all binary relations}
+
+Each relation of degree $n$ is considered an element of the full relation
+monoid of degree $n$  although it  is not necessary  to construct  a full
+relation monoid before working with relations.  But you can only multiply
+two relations if they have the same degree.  You can, however, multiply a
+relation of  degree $n$ by a transformation   or a permutation  of degree
+$n$.
+
+A  binary relation is   entered  and displayed by    giving its lists  of
+successors as an argument to the function  'Relation'.  The relation $\<$
+on the set $\{1, 2, 3\}$, for instance, is written as follows.
+
+|    gap> Relation( [ [ 2, 3 ], [ 3 ], [ ] ] );
+    Relation( [ [ 2, 3 ], [ 3 ], [  ] ] ) |
+
+This  chapter   describes finite binary    relations in  {\GAP}  and  the
+functions  that deal  with them.     The   first sections describe    the
+representation of a binary relation (see  "More about Relations") and how
+an  object  that  represents   a  binary relation   is constructed   (see
+"Relation").  There is a  function which constructs the identity relation
+of  degree $n$ (see  "IdentityRelation") and a  function which constructs
+the empty relation of degree $n$ (see "EmptyRelation").  Then there are a
+function   which tests whether  an  arbitrary object  is  a relation (see
+"IsRelation") and  a function which  determines the  degree of a relation
+(see "Degree of a Relation").
+
+The next  sections describe how relations  are compared (see "Comparisons
+of  Relations")  and which operations  are  available for  relations (see
+"Operations for Relations").   There  are  functions which  test  certain
+properties  of   relations   (see     "IsReflexive",       "IsSymmetric",
+"IsTransitiveRel",    "IsAntisymmetric",    "IsPartialOrder",         and
+"IsEquivalence")  and functions that  construct  different closures of  a
+relation     (see   "ReflexiveClosure",     "SymmetricClosure",       and
+"TransitiveClosure").  Moreover there are a  function which computes  the
+classes  of  an  equivalence  relation (see "EquivalenceClasses")   and a
+function which determines the Hasse diagram of a partial order.  Finally,
+two functions are  describe which convert a  transformation into a binary
+relation (see  "RelTrans") and, if   possible, a binary relation  into  a
+transformation (see "TransRel").
+
+The last  section of  the  chapter describes monoids generated  by binary
+relations (see "Monoids of Relations").
+
+The functions described in this chapter are in the file '\"relation.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Relations}
+
+A binary relation  seen as a  directed graph on  $n$ points is completely
+determined  by its degree  and  its list  of edges.   This information is
+represented in the  form  of a  *successors list* which,  for each single
+point $i \in \{1, \dots, n\}$ contains the set $i^R$ of succesors of $i$.
+Here each single set  of successors is represented  as a subset  of $\{1,
+\dots, n\}$ by boolean list (see chapter \"Boolean Lists\").
+
+A  relation  $R$ of degree   $n$  is represented  by  a  record with  the
+following category components.
+
+'isRelation': \\
+        is always set to 'true'.
+
+'domain': \\
+        is always set to 'Relations'.
+
+Moreover a relation record has the identification component
+
+'successors': \\
+        containing a list which  has as its $i$th entry the  boolean list
+        representing the successors of $i$.
+
+A relation record <rel> can aquire the following knowledge components.
+
+'isReflexive': \\
+        set to  'true' if  <rel>  represents a  reflexive  relation  (see 
+        "IsReflexive")
+
+'isSymmetric': \\
+        set to  'true' if  <rel>  represents a  symmetric  relation  (see 
+        "IsSymmetric")
+
+'isTransitive': \\
+        set to  'true' if  <rel>  represents a  transitive relation  (see 
+        "IsTransitiveRel")
+        
+'isPreOrder': \\
+        set to 'true' if <rel> represents a preorder (see "IsPreOrder")
+
+'isPartialOrder': \\
+        set   to   'true'  if  <rel>   represents a   partial  order (see
+        "IsPartialOrder")
+
+'isEquivalence': \\
+        set to 'true' if   <rel> represents an equivalence relation  (see
+        "IsEquivalence")
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Relation}
+
+'Relation( <list> )'
+
+'Relation' returns the binary  relation  defined by  the list <list>   of
+subsets of $\{1, \dots, n\}$ where $n$ is the length of <list>.
+
+|    gap> Relation( [ [ 1, 2 ], [ ], [ 3, 1 ] ] );
+    Relation( [ [ 1, 2 ], [  ], [ 1, 3 ] ] ) |
+
+Alternatively, <list> can be a list of boolean lists  of length $n$, each
+of which  is interpreted as  a subset  of $\{1, \dots,  n\}$ (see chapter
+\"Boolean Lists\").
+
+|    gap> Relation( [ 
+    > [ true, true, false ],
+    > [ false, false, false ],
+    > [ true, false, true ] ] ); 
+    Relation( [ [ 1, 2 ], [  ], [ 1, 3 ] ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRelation}%
+\index{test!for relation}
+
+'IsRelation( <obj> )'
+
+'IsRelation' returns 'true' if <obj>, which may be an object of arbitrary
+type, is a relation and  'false' otherwise.  It  will signal an error  if
+<obj> is an unbound variable.
+
+|    gap> IsRelation( 1 );
+    false
+    gap> IsRelation( Relation(  [ [ 1 ], [ 2 ], [ 3 ] ] ) );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdentityRelation}
+
+'IdentityRelation( <n> )'
+
+'IdentityRelation' returns the identity relation  of degree <n>.  This is
+the relation '=' on the set $\{1, \dots, n\}$.
+
+|    gap> IdentityRelation( 5 );
+    Relation( [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ] ] ) |
+
+The identity relation  of  degree <n> acts  as  the identity in  the full
+relation monoid of degree <n>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{EmptyRelation}
+
+'EmptyRelation( <n> )'
+
+'EmptyRelation'  returns  the  empty relation  of degree.     This is the
+relation $\{ \} \subseteq \{1, \dots, n\} \times \{1, \dots, n\}$.
+
+|    gap> EmptyRelation( 5 ) ;
+    Relation( [ [  ], [  ], [  ], [  ], [  ] ] ) |
+
+The empty relation of degree <n> acts as zero in the full relation monoid
+of degree <n>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Degree of a Relation}
+
+'Degree( <rel> )'
+
+'Degree' returns the degree of the binary relation <rel>.
+
+|    gap> Degree( Relation( [ [ 1 ], [ 2, 3 ], [ 2, 3 ] ] ) );               
+    3 |
+
+The *degree*  of  a relation $R  \subseteq  \{1, \dots,   n\} \times \{1,
+\dots, n\}$ is defined as $n$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Relations}%
+\index{equality!of relations}%
+\index{ordering!of relations}
+
+'<rel1> = <rel2>'\\
+'<rel1> \<> <rel2>'
+
+The equality operator  '='  applied to  two relations <rel1>  and  <rel2>
+evaluates to   'true' if the   two  relations are  equal  and  to 'false'
+otherwise.  The inequality operator '\<>' applied to two relations <rel1>
+and <rel2> evaluates to 'true' if the two  relations are not equal and to
+'false'  otherwise.  A relation can also  be compared to any other object
+that is not a relation, of course they are never equal.
+    
+Two relations are considered equal if and only if their  successors lists
+are equal as lists.  In particular, they must have the same degree.
+
+|    gap> Relation( [ [ 1 ], [ 2 ], [ 3 ], [ 4 ] ] ) =
+    > IdentityRelation( 4 );
+    true
+    gap> Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) =
+    > Relation( [ [ ], [ 1 ], [ 1, 2 ], [ ] ] );
+    false|
+
+\vspace{5mm}
+'<rel1> \<\ <rel2>' \\
+'<rel1> \<= <rel2>' \\
+'<rel1>  >  <rel2>' \\
+'<rel1>  >= <rel2>'
+
+The  operators '\<',  '\<=', '>',  and  '>='  evaluate  to 'true' if  the
+relation <rel1>  is less than, less  than or equal   to, greater than, or
+greater than or equal to the relation <rel2>, and to 'false' otherwise.
+
+Let <rel1> and <rel2> be two  relations that are  not equal.  Then <rel1>
+is considered smaller  than <rel2> if and only  if the successors list of 
+<rel1> is  smaller than the successors list of  <rel2>.
+
+You can  also compare relations  with objects  of other  types.  Here any
+object  that is   not a relation   will  be considered smaller than   any
+relation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Relations}
+ 
+'<rel1> \*\ <rel2>'%
+\index{product!of relations}
+
+The operator '\*'  evaluates to the product of  the  two relations <rel1>
+and <rel2> if both have the same degree.
+
+\vspace{5mm}
+'<rel> \*\ <trans>'\\
+'<trans> \*\ <rel>'%
+\index{product!of transformation and relation}
+
+The operator '\*' evaluates to the product of the  relation <rel> and the
+transformation  <trans> in  the given order  provided  both have the same
+degree (see chapter "Transformations").
+
+\vspace{5mm}
+'<rel> \*\ <perm>'\\
+'<perm> \*\ <rel>'%
+\index{product!of permutation and relation}
+
+The operator '\*' evaluates to the product of  the relation <rel> and the
+permutation <perm> in the given order provided  both have the same degree
+(see chapter \"Permutations\").
+
+\vspace{5mm}
+'<list> \*\ <rel>' \\
+'<rel> \*\ <list>'%
+\index{product!of list and relation}
+
+The operator  '\*' evaluates to  the list of  products of the elements in
+<list> with the relation <rel>.  That means that the value  is a new list
+<new> such that  '<new>[<i>] =  <list>[<i>] \*\  <rel>' or  '<new>[<i>] =
+<rel> \*\ <list>[<i>]', respectively.
+
+\vspace{5mm}
+'<i> \^\ <rel>'%
+\index{image!under relation}
+
+The operator '\^' evaluates to the  set of successors $<i>\^<rel>$ of the
+positive integer <i> under  the relation <rel>  if <i> is smaller than or
+equal to the degree of <rel>.
+
+\vspace{5mm}
+'<set> \^\ <rel>'%
+\index{image!of set under relation}
+
+The operator '\^'  evaluates  to the image   or the set <set>  under  the
+relation <rel> which is defined as the union of the sets of successors of
+the elements of <set>.
+
+\vspace{5mm}
+'<rel> \^\ 0'
+
+The operator '\^' evaluates to  the identity  relation  on $n$ points  if
+<rel> is a relation on $n$ points (see "IdentityRelation").
+
+\vspace{5mm}
+'<rel> \^\ <i>'%
+\index{power!of relation}
+
+For a  positive integer  <i> the operator   '\^' evaluates to the  <i>-th
+power of the  relation <rel> which  is defined  in the  usual  way as the
+$i$-fold product of <rel> by itself.
+
+\vspace{5mm}
+'<rel> \^\ -1'%
+\index{inverse!of relation}
+
+The operator '\^' evaluates to  the inverse of  the relation <rel>.   The
+inverse of a relation  $R \subseteq \{1, \dots,   n\} \times \{1,  \dots,
+n\}$ is given by $\{(y, x) \mid (x, y) \in  R\}$.  Note that, in general,
+the product of a   binary relation and its inverse   is not equal to  the
+identity relation.  Neither is it in general  equal to the product of the
+inverse and the binary relation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsReflexive}%
+\index{test!for reflexive}
+
+'IsReflexive( <rel> )'
+
+'IsReflexive' returns  'true' if the  binary  relation <rel> is reflexive
+and 'false' otherwise.
+
+|    gap> IsReflexive( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );
+    false
+    gap> IsReflexive( Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );
+    true |
+    
+A  relation  $R \subseteq  \{1, \dots,  n\}  \times  \{1, \dots,  n\}$ is
+*reflexive* if  $(i, i)  \in  R$ for all  $i =  1, \dots,  n$.  (See also
+"ReflexiveClosure".)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReflexiveClosure}
+
+'ReflexiveClosure( <rel> )'
+
+'ReflexiveClosure' returns the  reflexive closure of  the relation <rel>,
+i.e., the relation  $R \subseteq \{1,  \dots, n\} \times \{1, \dots, n\}$
+that consists of all pairs  in <rel> and the pairs  $(1, 1)$, \dots, $(n,
+n)$, where $n$ is the degree of <rel>.
+
+|    gap> ReflexiveClosure( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );   
+    Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) |
+
+By construction,  the reflexive closure of  a relation is  reflexive (see
+"IsReflexive").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSymmetric}%
+\index{test!for symmetric}
+
+'IsSymmetric( <rel> )'
+
+'IsSymmetric' returns  'true' if the binary  relation <rel> is symnmetric
+and 'false' otherwise.
+
+|    gap> IsSymmetric( Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );
+    false
+    gap> IsSymmetric( Relation( [ [ 2, 3 ], [ 1, 3 ], [ 1, 2 ] ] ) );
+    true |
+
+A relation $R  \subseteq  \{1, \dots,   n\}  \times \{1, \dots,  n\}$  is
+*symmetric* if  $(y,  x)  \in R$ for  all   $(x, y)  \in R$.   (See  also
+"SymmetricClosure".)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SymmetricClosure}
+
+'SymmetricClosure( <rel> )'
+
+'SymmetricClosure' returns the  symmetric closure of the binary  relation
+<rel>.
+
+|    gap> SymmetricClosure( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );        
+    Relation( [ [ 2, 3 ], [ 1, 3 ], [ 1, 2 ] ] ) |
+
+By construction,  the symmetric closure of a  relation is  symmetric (see
+"IsSymmetric").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsTransitiveRel}%
+\index{test!for transitive}
+
+'IsTransitiveRel( <rel> )'
+
+'IsTransitiveRel'  returns  'true' if    the   binary relation  <rel>  is
+transitive and 'false' otherwise.
+
+|    gap> IsTransitiveRel( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );    
+    true
+    gap> IsTransitiveRel( Relation( [ [ 2, 3 ], [ 1, 3 ], [ 1, 2 ] ] ) );
+    false |
+
+A  relation $R   \subseteq \{1, \dots,   n\}  \times \{1,  \dots, n\}$ is
+*transitive* if $(x, z) \in R$ whenever $(x, y) \in R$ and $(y, z) \in R$
+for some $y \in \{1, \dots, n\}$.  (See also "TransitiveClosure".)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TransitiveClosure}
+
+'TransitiveClosure( <rel> )'
+
+'TransitiveClosure' returns the transitive closure of the binary relation
+<rel>.
+
+|    gap> TransitiveClosure( Relation( [ [ ], [ 1 ], [ 2 ], [ 3 ] ] ) );
+    Relation( [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) |
+
+By construction, the transitive closure  of a relation is transitive (see
+"IsTransitiveRel").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAntisymmetric}%
+\index{test!for antisymmetric}
+
+'IsAntisymmetric( <rel> )'
+
+'IsAntisymmetric'  returns 'true'    if the  binary  relation <rel>    is
+antisymmetric and 'false' otherwise.
+
+|    gap> IsAntisymmetric( Relation( [ [  ], [ 1 ], [ 1, 2 ] ] ) );
+    true
+    gap> IsAntisymmetric( Relation( [ [ 2, 3 ], [ 1, 3 ], [ 1, 2 ] ] ) ) ;
+    false |
+
+A  relation $R   \subseteq \{1, \dots,   n\}  \times \{1,  \dots, n\}$ is
+*antisymmetric* if $(x, y) \in R$ and $(y, x) \in R$ implies $x = y$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPreOrder}%
+\index{test!for preorder}
+
+'IsPreOrder( <rel> )'
+
+'IsPreOrder' returns 'true' if the binary relation <rel> is a preoder and
+'false' otherwise.
+
+|    gap> IsPreOrder( Relation( [ [  ], [ 1 ], [ 1, 2 ] ] ) );      
+    false
+    gap> IsPreOrder( Relation( [ [ 1, 2 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) ); 
+    true |
+    
+A relation    <rel> is called  a   *preorder* if <rel>   is reflexive and
+transitive.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPartialOrder}%
+\index{test!for partial order}
+
+'IsPartialOrder( <rel> )'
+
+'IsPartialOrder' returns 'true' if the binary relation <rel> is a partial
+order and 'false' otherwise.
+
+|    gap> IsPartialOrder( Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );
+    true
+    gap> IsPartialOrder( Relation( [ [ 1, 2 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );
+    false |
+
+A relation   <rel> is called  a  *partial order*  if  <rel> is reflexive,
+transitive and antisymmetric, i.e., if <rel> is an antisymmetric preorder
+(see "IsPreOrder").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsEquivalence}%
+\index{test!for equivalence}
+
+'IsEquivalence( <rel> )'
+
+'IsEquivalence' returns  'true' if   the  binary  relation <rel>   is  an
+equivalence relation and 'false' otherwise.
+
+|    gap> IsEquivalence( Relation( [ [ ], [ 1 ], [ 1, 2 ] ] ) );
+    false
+    gap> IsEquivalence( Relation( [ [ 1 ], [ 2, 3 ], [ 2, 3 ] ] ) );
+    true |
+    
+A relation   <rel> is an *equivalence  relation*   if <rel> is reflexive,
+symmetric,  and transitive, i.e.,  if <rel> is  a symmetric preorder (see
+"IsPreOrder").  (See also "EquivalenceClasses".)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{EquivalenceClasses}
+
+'EquivalenceClasses( <rel> )'
+
+returns  the  list of equivalence  classes   of the equivalence  relation
+<rel>.  It  will signal an error if  <rel> is not an equivalence relation
+(see "IsEquivalence").
+
+|    gap> EquivalenceClasses( Relation( [ [ 1 ], [ 2, 3 ], [ 2, 3 ] ] ) );
+    [ [ 1 ], [ 2, 3 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{HasseDiagram}
+
+'HasseDiagram( <rel> )'
+
+'HasseDiagram' returns the Hasse diagram  of the binary relation <rel> if
+this  is a partial  order.  It will   signal an error  if <rel>  is not a
+partial order (see "IsPartialOrder").
+
+|    gap> HasseDiagram( Relation( [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] ) );      
+    Relation( [ [  ], [ 1 ], [ 2 ] ] ) |
+
+The *Hasse  diagram* of  a partial  order $R  \subseteq \{1,  \dots,  n\}
+\times \{1, \dots, n\}$ is the smallest relation $H \subseteq \{1, \dots,
+n\} \times \{1, \dots, n\}$ such that $R$ is the reflexive and transitive
+closure of $H$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RelTrans}%
+\index{convert!transformation to relation}
+
+'RelTrans( <trans> )'
+
+'RelTrans' returns the binary  relation   defined by the   transformation
+<trans> (see chapter "Transformations").
+
+|    gap> RelTrans( Transformation( [ 3, 3, 2, 1, 4 ] ) );
+    Relation( [ [ 3 ], [ 3 ], [ 2 ], [ 1 ], [ 4 ] ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TransRel}%
+\index{convert!relation to transformation}
+
+'TransRel( <rel> )'
+
+'TransRel'   returns the  transformation  defined by  the binary relation
+<rel> (see chapter "Transformations").  This can only be applied if every
+set of successors of <rel> has size 1.  Otherwise an error is signaled.
+
+|    gap> TransRel( Relation( [ [ 3 ], [ 3 ], [ 2 ], [ 1 ], [ 4 ] ] ) );
+    Transformation( [ 3, 3, 2, 1, 4 ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Monoids of Relations}
+
+There  are no special functions  provided for monoids generated by binary
+relations.  The action of such a monoid on sets,  however, provides a way
+to  convert a relation  monoid into a  transformation monoid (see chapter
+"Actions  of Monoids").  This monoid can  then be used to investigate the
+structure of the original relation monoid.
+
+|    gap> a:= Relation( [ [  ], [  ], [ 1, 3, 4 ], [  ], [ 2, 5 ] ] );;
+    gap> b:= Relation( [ [  ], [ 2 ], [ 4 ], [ 1, 2, 3 ], [ 1 ] ] );;
+    gap> M:= Monoid( a, b );
+    Monoid( [ Relation( [ [  ], [  ], [ 1, 3, 4 ], [  ], [ 2, 5 ] ] ), 
+      Relation( [ [  ], [ 2 ], [ 4 ], [ 1, 2, 3 ], [ 1 ] ] ) ] )
+    gap> # transform points into singleton sets.
+    gap> one:= List( [ 1 .. 5 ], x-> [ x ] );
+    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ] ]
+    gap> # determine all reachable sets.
+    gap> sets:= Union( Orbits( M, one ) ); 
+    [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 3 ], [ 1, 2, 3, 4 ], [ 1, 3, 4 ], 
+      [ 2 ], [ 2, 4 ], [ 2, 5 ], [ 3 ], [ 4 ], [ 5 ] ]
+    gap> # construct isomorphic transformation monoid.
+    gap> act:= Action( M, sets ); 
+    Monoid( [ Transformation( [ 1, 1, 1, 6, 6, 6, 1, 1, 9, 6, 1, 9 ] ), 
+      Transformation( [ 1, 1, 7, 8, 5, 5, 7, 4, 3, 11, 4, 2 ] ) ] )
+    gap> Size(act);
+    11|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               LaTeX
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  TeX-master:         "manual"
+%%  eval:               (outline-minor-mode)
+%%  End:
+%%
+

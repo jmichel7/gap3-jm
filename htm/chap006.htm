@@ -1,0 +1,670 @@
+<html><head><title>GAP3 Manual: 6 Fields</title></head>
+<body bgcolor="ffffff">
+<h1>6 Fields</h1>
+<P><P><P>
+Fields  are important algebraic  domains.  Mathematically a <strong>field</strong>  is a
+commutative  ring  <I>F</I>  (see  chapter  <a href="chap005.htm">Rings</a>), such that  every element
+except <I>0</I> has a multiplicative inverse.  Thus <I>F</I> has two operations <code>+</code>
+and <code>*</code> called addition  and multiplication.  <I>(F,+)</I> must be an abelian
+group,  whose identity  is called  <I>0<sub>F</sub></I>.   <I>(F-{0<sub>F</sub>},*)</I>  must  be an
+abelian group, whose identity element is called <I>1<sub>F</sub></I>.
+<P>
+<strong>GAP3</strong> supports  the field  of rationals (see <a href="chap012.htm">Rationals</a>),  subfields of
+cyclotomic  fields  (see  <a href="chap015.htm">Subfields of Cyclotomic Fields</a>),  and  finite
+fields (see <a href="chap018.htm">Finite Fields</a>).
+<P>
+This chapter begins with sections  that describe how  to  test whether  a
+domain is a field (see <a href="chap006.htm#SECT001">IsField</a>), how to find the smallest field and the
+default  field  in  which  a  list  of  elements lies  (see  <a href="chap006.htm#SECT002">Field</a>  and
+<a href="chap006.htm#SECT003">DefaultField</a>),  and how  to view a field  over  a subfield (see <a href="chap006.htm#SECT004">Fields
+over Subfields</a>).
+<P>
+The next sections describes  the operation applicable  to field  elements
+(see  <a href="chap006.htm#SECT005">Comparisons  of  Field  Elements</a>   and   <a href="chap006.htm#SECT006">Operations  for   Field
+Elements</a>).
+<P>
+The next sections  describe the  functions that are applicable  to fields
+(see   <a href="chap006.htm#SECT007">GaloisGroup</a>)  and their   elements  (see   <a href="chap006.htm#SECT012">Conjugates</a>, <a href="chap006.htm#SECT010">Norm</a>,
+<a href="chap006.htm#SECT011">Trace</a>, <a href="chap006.htm#SECT009">CharPol</a>,  and  <a href="chap006.htm#SECT008">MinPol</a>).
+<P>
+The  following  sections  describe  homomorphisms  of fields  (see <a href="chap006.htm#SECT013">Field
+Homomorphisms</a>,     <a href="chap006.htm#SECT014">IsFieldHomomorphism</a>,     <a href="chap006.htm#SECT015">KernelFieldHomomorphism</a>,
+<a href="chap006.htm#SECT016">Mapping Functions for Field Homomorphisms</a>).
+<P>
+The  last  section  describes how  fields are represented internally (see
+<a href="chap006.htm#SECT017">Field Records</a>).
+<P>
+Fields  are domains, so all functions  that are applicable to all domains
+are also applicable to fields (see chapter <a href="chap004.htm">Domains</a>).
+<P>
+All functions for fields are in <code>LIBNAME/"field.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap006.htm#SECT001">IsField</a>
+<LI> <A HREF="chap006.htm#SECT002">Field</a>
+<LI> <A HREF="chap006.htm#SECT003">DefaultField</a>
+<LI> <A HREF="chap006.htm#SECT004">Fields over Subfields</a>
+<LI> <A HREF="chap006.htm#SECT005">Comparisons of Field Elements</a>
+<LI> <A HREF="chap006.htm#SECT006">Operations for Field Elements</a>
+<LI> <A HREF="chap006.htm#SECT007">GaloisGroup</a>
+<LI> <A HREF="chap006.htm#SECT008">MinPol</a>
+<LI> <A HREF="chap006.htm#SECT009">CharPol</a>
+<LI> <A HREF="chap006.htm#SECT010">Norm</a>
+<LI> <A HREF="chap006.htm#SECT011">Trace</a>
+<LI> <A HREF="chap006.htm#SECT012">Conjugates</a>
+<LI> <A HREF="chap006.htm#SECT013">Field Homomorphisms</a>
+<LI> <A HREF="chap006.htm#SECT014">IsFieldHomomorphism</a>
+<LI> <A HREF="chap006.htm#SECT015">KernelFieldHomomorphism</a>
+<LI> <A HREF="chap006.htm#SECT016">Mapping Functions for Field Homomorphisms</a>
+<LI> <A HREF="chap006.htm#SECT017">Field Records</a>
+</ol>
+<A NAME="SECT001"><h2>6.1 IsField</h2></a>
+<P><P><P>
+<code>IsField( <var>D</var> )</code>
+<P>
+<code>IsField</code>   returns  <code>true</code> if the   object <var>D</var>  is  a field  and <code>false</code>
+otherwise.
+<P>
+More precisely <code>IsField</code> tests whether <var>D</var>  is a field record (see <a href="chap006.htm#SECT017">Field
+Records</a>).  So, for example, a matrix group  may in fact be a field,  yet
+<code>IsField</code> would return <code>false</code>.
+<P>
+<pre>    gap> IsField( GaloisField(16) );
+    true
+    gap> IsField( CyclotomicField(9) );
+    true
+    gap> IsField( rec( isDomain := true, isField := true ) );
+    true    # it is possible to fool <code>IsField</code>
+    gap> IsField( AsRing( Rationals ) );
+    false    # though this ring is, as a set, still <code>Rationals</code> </pre>
+<P><A NAME="SECT002"><h2>6.2 Field</h2></a>
+<P><P><P>
+<code>Field( <var>z</var>,.. )</code>
+<code>Field( <var>list</var> )</code>
+<P>
+In the first  form <code>Field</code> returns  the smallest field  that contains all
+the elements <var>z</var>,.. etc.  In the second form <code>Field</code> returns the smallest
+field that contains all the elements in  the list <var>list</var>.  If any element
+is not an element of a  field or the  elements lie in no common  field an
+error is raised.
+<P>
+<pre>    gap> Field( Z(4) );
+    GF(2^2)
+    gap> Field( E(9) );
+    CF(9)
+    gap> Field( [ Z(4), Z(9) ] );
+    Error, CharFFE: &lt;z> must be a finite field element, vector, or matrix
+    gap> Field( [ E(4), E(9) ] );
+    CF(36) </pre>
+<P>
+<code>Field</code> differs from  <code>DefaultField</code>   (see <a href="chap006.htm#SECT003">DefaultField</a>) in    that it
+returns the     smallest  field  in  which   the   elements    lie, while
+<code>DefaultField</code> may return a larger field if that makes sense.
+<P><A NAME="SECT003"><h2>6.3 DefaultField</h2></a>
+<P><P><P>
+<code>DefaultField( <var>z</var>,.. )</code>
+<code>DefaultField( <var>list</var> )</code>
+<P>
+In the first form <code>DefaultField</code> returns the  default field that contains
+all the elements <var>z</var>,.. etc.  In the  second form <code>DefaultField</code> returns
+the default field that contains all the elements in  the list <var>list</var>.  If
+any element is not an element of a field or the elements lie in no common
+field an error is raised.
+<P>
+The field returned by  <code>DefaultField</code>  need not be the  smallest field in
+which the elements lie.  For example for elements  from cyclotomic fields
+<code>DefaultField</code> may  return the  smallest  cyclotomic field  in  which the
+elements lie, which need not be the  smallest field overall,  because the
+elements may  in  fact lie  in  a  smaller number field which   is  not a
+cyclotomic field.
+<P>
+For the exact   definition of  the default field  of a   certain type  of
+elements read  the chapter describing  this type (see <a href="chap018.htm">Finite Fields</a> and
+<a href="chap015.htm">Subfields of Cyclotomic Fields</a>).
+<P>
+<code>DefaultField</code> is used  by <code>Conjugates</code>, <code>Norm</code>, <code>Trace</code>,  <code>CharPol</code>, and
+<code>MinPol</code> (see <a href="chap006.htm#SECT012">Conjugates</a>, <a href="chap006.htm#SECT010">Norm</a>,  <a href="chap006.htm#SECT011">Trace</a>, <a href="chap006.htm#SECT009">CharPol</a>, and <a href="chap006.htm#SECT008">MinPol</a>) if
+no explicit field is given.
+<P>
+<pre>    gap> DefaultField( Z(4) );
+    GF(2^2)
+    gap> DefaultField( E(9) );
+    CF(9)
+    gap> DefaultField( [ Z(4), Z(9) ] );
+    Error, CharFFE: &lt;z> must be a finite field element, vector, or matrix
+    gap> DefaultField( [ E(4), E(9) ] );
+    CF(36) </pre>
+<P>
+<code>Field</code> (see <a href="chap006.htm#SECT002">Field</a>) differs from  <code>DefaultField</code> in that it returns the
+smallest field in which the elements lie, while <code>DefaultField</code> may return
+a larger field if that makes sense.
+<P><A NAME="SECT004"><h2>6.4 Fields over Subfields</h2></a>
+<P><P><P>
+<code><var>F</var> / <var>G</var></code>
+<P>
+The quotient operator <code>/</code> evaluates to a new  field  <var>H</var>.  This field has
+the same elements as <var>F</var>, i.e., is a domain equal to <var>F</var>.  However <var>H</var> is
+viewed as a field over the field <var>G</var>, which must be a subfield of <var>F</var>.
+<P>
+What subfield a field  is viewed over  determines  its Galois  group.  As
+described in    <a href="chap006.htm#SECT007">GaloisGroup</a> the Galois group  is   the group   of field
+automorphisms  that  leave the subfield   fixed.  It also  influences the
+results of <a href="chap006.htm#SECT010">Norm</a>,  <a href="chap006.htm#SECT011">Trace</a>,  <a href="chap006.htm#SECT009">CharPol</a>, and  <a href="chap006.htm#SECT008">MinPol</a>, because they  are
+defined in terms of the Galois group.
+<P>
+<pre>    gap> F := GF(2^12);
+    GF(2^12)
+    gap> G := GF(2^2);
+    GF(2^2)
+    gap> Q := F / G;
+    GF(2^12)/GF(2^2)
+    gap> Norm( F, Z(2^6) );
+    Z(2)^0
+    gap> Norm( Q, Z(2^6) );
+    Z(2^2)^2 </pre>
+<P>
+The operator <code>/</code> calls <code><var>G</var>.operations./( <var>F</var>, <var>G</var> )</code>.
+<P>
+The default function called this  way is <code>FieldOps./</code>, which simply makes
+a copy  of <var>F</var> and enters <var>G</var>  into the record component <code><var>F</var>.field</code> (see
+<a href="chap006.htm#SECT017">Field Records</a>).
+<P><A NAME="SECT005"><h2>6.5 Comparisons of Field Elements</h2></a>
+<P><P><P>
+<code><var>f</var> =   <var>g</var></code> <BR> 
+<code><var>f</var> <> <var>g</var></code>
+<P>
+The equality operator  <code>=</code> evaluates to <code>true</code> if the  two field elements
+<var>f</var> and <var>g</var> are equal, and to <code>false</code> otherwise.  The inequality operator
+<code><></code> evaluates to <code>true</code> if the two field  elements <var>f</var> and <var>g</var>  are not
+equal, and to <code>false</code> otherwise.  Note that any two field elements can be
+compared, even  if they  do  not lie in compatible fields.   In this case
+they cn, of course, never be equal.  For each type of fields the equality
+of those field elements is given in the respective chapter.
+<P>
+Note that you can compare field elements with elements of other types; of
+course they are never equal.
+<P>
+<code><var>f</var> < <var>g</var></code> <BR> 
+<code><var>f</var> <= <var>g</var></code> <BR> 
+<code><var>f</var> >   <var>g</var></code> <BR> 
+<code><var>f</var> >=  <var>g</var></code>
+<P>
+The  operators <code><</code>, <code><=</code>, <code>></code>, and <code>>=</code> evaluate to <code>true</code> if the field
+element <var>f</var> is less than, less than or equal to, greater than, or greater
+than  or equal to the field  element  <var>g</var>.  For each  type of fields  the
+definition of  the ordering of  those  field  elements is  given  in  the
+respective  chapter.   The  ordering  of  field  elements is as  follows.
+Rationals are smallest, next  are  cyclotomics, followed by  finite field
+elements.
+<P>
+Note that  you can compare field elements with elements of  other  types;
+they are smaller than everything else.
+<P><A NAME="SECT006"><h2>6.6 Operations for Field Elements</h2></a>
+<P><P><P>
+The following operations  are always available for   field elements.   Of
+course the operands must lie in compatible fields,  i.e., the fields must
+be equal, or at least have a common superfield.
+<P>
+<code><var>f</var> + <var>g</var></code>
+<P>
+The operator <code>+</code> evaluates to  the sum of  the two field elements <var>f</var> and
+<var>g</var>, which must lie in compatible fields.
+<P>
+<code><var>f</var> - <var>g</var></code>
+<P>
+The operator  <code>-</code>  evaluates to the difference of  the two field elements
+<var>f</var> and <var>g</var>, which must lie in compatible fields.
+<P>
+<code><var>f</var> * <var>g</var></code>
+<P>
+The operator <code>*</code> evaluates to the product  of the two field elements <var>f</var>
+and <var>g</var>, which must lie in compatible fields.
+<P>
+<code><var>f</var> / <var>g</var></code>
+<P>
+The operator <code>/</code> evaluates to the quotient of the two field  elements <var>f</var>
+and <var>g</var>, which must  lie  in compatible fields.  If the  divisor is  0 an
+error is signalled.
+<P>
+<code><var>f</var> ^ <var>n</var></code>
+<P>
+The operator <code>^</code> evaluates to the <var>n</var>-th power of the field element <var>f</var>.
+If <var>n</var> is a  positive  integer  then  <code><var>f</var>^<var>n</var></code>  is  <code><var>f</var>*<var>f</var>*..*<var>f</var></code>
+(<var>n</var> factors).  If <var>n</var> is a negative integer  <code><var>f</var>^<var>n</var></code>  is  defined  as
+<I>1 / <var>f</var><sup>-<var>n</var></sup></I>.   If 0 is  raised  to  a negative power   an error is
+signalled.  Any field element, even 0, raised to the 0-th power yields 1.
+<P>
+For the precedence of the operators see <a href="chap002.htm#SECT010">Operations</a>.
+<P><A NAME="SECT007"><h2>6.7 GaloisGroup</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<A name = "I1"></a>
+
+<P>
+<code>GaloisGroup( <var>F</var> )</code>
+<P>
+<code>GaloisGroup</code> returns the Galois group of  the field <var>F</var>  as a group (see
+<a href="chap007.htm">Groups</a>) of field automorphisms (see <a href="chap006.htm#SECT013">Field Homomorphisms</a>).
+<P>
+The Galois group of a field <var>F</var> over a subfield <code><var>F</var>.field</code> is the  group
+of automorphisms of <var>F</var> that  leave the subfield <code><var>F</var>.field</code> fixed.  This
+group can be interpreted as a permutation group  permuting  the zeroes of
+the characteristic polynomial of a primitive  element of <var>F</var>.  The degree
+of this group is equal to the number of zeroes, i.e., to the dimension of
+<var>F</var>  as  a vector  space  over  the subfield  <code><var>F</var>.field</code>.   It  operates
+transitively on those  zeroes.   The normal divisors of the  Galois group
+correspond to the subfields between <code><var>F</var></code> and <code><var>F</var>.field</code>.
+<P>
+<pre>    gap> G := GaloisGroup( GF(4096)/GF(4) );;
+    gap> Size( G );
+    6
+    gap> IsCyclic( G );
+    true    # the Galois group of every finite field is
+            # generated by the Frobenius automorphism
+    gap> H := GaloisGroup( CF(60) );;
+    gap> Size( H );
+    16
+    gap> IsAbelian( H );
+    true </pre>
+<P>
+The default function <code>FieldOps.GaloisGroup</code>  just raises  an error, since
+there is no general method to compute the Galois  group of a field.  This
+default function is overlaid by more specific functions for special types
+of domains (see <a href="chap018.htm#SECT013">Field Functions  for Finite Fields</a> and <a href="chap015.htm#SECT008">GaloisGroup for
+Number Fields</a>).
+<P><A NAME="SECT008"><h2>6.8 MinPol</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>MinPol( <var>z</var> )</code> <BR> 
+<code>MinPol( <var>F</var>, <var>z</var> )</code>
+<P>
+In the first form <code>MinPol</code> returns the coefficients of the minimal
+polynomial  of the element
+<var>z</var> in its default field over its prime field  (see  <a href="chap006.htm#SECT003">DefaultField</a>).  In
+the  second form <code>MinPol</code> returns  the coefficients of the minimal
+polynomial of  the element
+<var>z</var>  in the field <var>F</var>  over   the  subfield  <code><var>F</var>.field</code>.
+<P>
+Let <I>F/S</I> be a field extension and <I>L</I> a minimal normal extension of <I>S</I>,
+containing <I>F</I>.
+The <strong>minimal polynomial</strong> of <I>z</I> in <I>F</I>  over <I>S</I>  is the squarefree
+polynomial
+whose roots  are precisely  the  conjugates of  <I>z</I> in <I>L</I> (see
+<a href="chap006.htm#SECT012">Conjugates</a>).  Because  the set of
+conjugates  is  fixed  under  the Galois  group  of  <I>L</I>  over  <I>S</I>  (see
+<a href="chap006.htm#SECT007">GaloisGroup</a>),  so is the polynomial.  Thus all  the coefficients of the
+minimal polynomial lie in <I>S</I>.
+<P>
+<pre>    gap> MinPol( Z(2^6) );
+    [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0 ]
+    gap> MinPol( GF(2^12), Z(2^6) );
+    [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0 ]
+    gap> MinPol( GF(2^12)/GF(2^2), Z(2^6) );
+    [ Z(2^2), Z(2)^0, Z(2)^0, Z(2)^0 ] </pre>
+<P>
+The default function <code>FieldOps.MinPol</code>, which works only for extensions with
+abelian Galois group, multiplies  the  linear factors <I>x - c</I>
+with  <var>c</var>  ranging  over  the  set  of  conjugates  of  <var>z</var> in  <var>F</var>  (see
+<a href="chap006.htm#SECT012">Conjugates</a>). For generic algebraic extensions, it is overlayed by solving
+a system of linear equations, given by the coefficients of powers of <var>z</var>
+in respect to a given base.
+<P><A NAME="SECT009"><h2>6.9 CharPol</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>CharPol( <var>z</var> )</code> <BR> 
+<code>CharPol( <var>F</var>, <var>z</var> )</code>
+<P>
+In the first form <code>CharPol</code>  returns the coefficients of the characteristic
+polynomial of the element  <var>z</var>   in   its  default  field   over  its
+prime   field  (see <a href="chap006.htm#SECT003">DefaultField</a>).  In the second form <code>CharPol</code> returns
+the coefficients of the characteristic
+polynomial of  the  element  <var>z</var>  in  the  field  <var>F</var>  over the  subfield
+<code><var>F</var>.field</code>.  The characteristic polynomial  is  returned  as  a  list of
+coefficients, the <var>i</var>-th entry is the coefficient of <I>x<sup>i-1</sup></I>.
+<P>
+The <strong>characteristic polynomial</strong>  of an element  <I>z</I> in a field <I>F</I> over a
+subfield <I>S</I>  is the <I>([F:S])/(<I> deg </I> &mu;)</I>-th power of <I>&mu;</I>, where
+<I>&mu;</I> denotes the minimal polynomial of <I>z</I> in <I>F</I> over <I>S</I>. It is fixed under
+the Galois group of the normal closure of <I>F</I>.
+Thus all  the coefficients  of the characteristic polynomial
+lie in  <I>S</I>.  The constant  term is
+<I>(-1)<sup>F.degree/S.degree</sup>=(-1)<sup>[F:S]</sup></I> times  the
+norm of  <I>z</I> (see  <a href="chap006.htm#SECT010">Norm</a>), and the  coefficient  of  the  second highest
+degree  term  is  the negative of the  trace of <I>z</I>  (see  <a href="chap006.htm#SECT011">Trace</a>).
+The roots (including their multiplicities) in <I>F</I> of the characteristic
+polynomial of <var>z</var> in <I>F</I> are the conjugates (see <a href="chap006.htm#SECT012">Conjugates</a>) of <I>z</I> in
+<I>F</I>.
+<P>
+<pre>    gap> CharPol( Z(2^6) );
+    [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0 ]
+    gap> CharPol( GF(2^12), Z(2^6) );
+    [ Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 
+      Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ]
+    gap> CharPol( GF(2^12)/GF(2^2), Z(2^6) );
+    [ Z(2^2)^2, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ] </pre>
+<P>
+The default  function <code>FieldOps.CharPol</code> multiplies the linear factors <I>x - c</I>
+with <var>c</var>  ranging over  the conjugates of <var>z</var> in <var>F</var>  (see <a href="chap006.htm#SECT012">Conjugates</a>).
+For nonabelian extensions, it is overlayed by a function, which computes the
+appropriate power of the minimal polynomial.
+<P><A NAME="SECT010"><h2>6.10 Norm</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>Norm( <var>z</var> )</code> <BR> 
+<code>Norm( <var>F</var>, <var>z</var> )</code>
+<P>
+In the first form <code>Norm</code> returns the norm of the field element <var>z</var> in its
+default field over  its prime field  (see <a href="chap006.htm#SECT003">DefaultField</a>).  In the second
+form <code>Norm</code> returns the norm  of  <var>z</var> in the field  <var>F</var> over the subfield
+<code><var>F</var>.field</code>.
+<P>
+The  <strong>norm</strong> of an element <I>z</I> in  a field <I>F</I> over a subfield  <I>S</I> is
+<I>(-1)<sup>F.degree/S.degree</sup>=(-1)<sup>[F:S]</sup></I>  times  the  constant  term  of  the
+characteristic polynomial of <I>z</I> (see <a href="chap006.htm#SECT009">CharPol</a>). Thus the norm lies in <I>S</I>.
+The norm is the product of all conjugates of <I>z</I> in the normal closure of
+<I>F</I> over <I>S</I> (see <a href="chap006.htm#SECT012">Conjugates</a>).
+<P>
+<pre>    gap> Norm( Z(2^6) );
+    Z(2)^0
+    gap> Norm( GF(2^12), Z(2^6) );
+    Z(2)^0
+    gap> Norm( GF(2^12)/GF(2^2), Z(2^6) );
+    Z(2^2)^2 </pre>
+<P>
+The default function <code>FieldOps.Norm</code>  multiplies the conjugates of <var>z</var> in
+<var>F</var>  (see  <a href="chap006.htm#SECT012">Conjugates</a>). For nonabelian extensions, it is overlayed by a
+function, which obtains the norm from the characteristic polynomial.
+<P><A NAME="SECT011"><h2>6.11 Trace</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>Trace( <var>z</var> )</code> <BR> 
+<code>Trace( <var>F</var>, <var>z</var> )</code>
+<P>
+In the first form <code>Trace</code> returns the trace  of the  field element <var>z</var> in
+its  default field over   its prime field (see  <a href="chap006.htm#SECT003">DefaultField</a>).   In the
+second form <code>Trace</code> returns the trace of the element <var>z</var> in the field <var>F</var>
+over the subfield <code><var>F</var>.field</code>.
+<P>
+The  <strong>trace</strong> of an element <I>z</I> in a field <I>F</I> over a  subfield <I>S</I> is the
+negative  of the coefficient of  the  second  highest degree
+term of the characteristic polynomial of <I>z</I> (see <a href="chap006.htm#SECT009">CharPol</a>).
+Thus the trace lies in <I>S</I>. The trace is the
+sum  over  all  conjugates  of <I>z</I>  in the normal closure of <I>F</I>  over <I>S</I>
+(see <a href="chap006.htm#SECT012">Conjugates</a>).
+<P>
+<pre>    gap> Trace( Z(2^6) );
+    0*Z(2)
+    gap> Trace( GF(2^12), Z(2^6) );
+    0*Z(2)
+    gap> Trace( GF(2^12)/GF(2^2), Z(2^6) );
+    0*Z(2) </pre>
+<P>
+The default function <code>FieldOps.Trace</code> adds the conjugates  of <var>z</var>  in <var>F</var>
+(see <a href="chap006.htm#SECT012">Conjugates</a>).  For nonabelian extensions, this is overlayed by a
+function, which obtains the trace from the characteristic polynomial.
+<P><A NAME="SECT012"><h2>6.12 Conjugates</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<A name = "I7"></a>
+
+<P>
+<code>Conjugates( <var>z</var> )</code> <BR> 
+<code>Conjugates( <var>F</var>, <var>z</var> )</code>
+<P>
+In the  first form <code>Conjugates</code>   returns the list   of conjugates of the
+field element  <var>z</var>  in  its  default  field   over its prime   field (see
+<a href="chap006.htm#SECT003">DefaultField</a>).  In the second  form  <code>Conjugates</code>  returns the list  of
+conjugates of  the field element <var>z</var>  in the field <var>F</var> over  the subfield
+<code><var>F</var>.field</code>.  In either case the list may contain  duplicates if <var>z</var> lies
+in a proper subfield of its default field, respectively of <var>F</var>.
+<P>
+The <strong>conjugates</strong> of an element <I>z</I> in a field  <I>F</I> over a subfield <I>S</I>
+are the roots in <I>F</I> of the characteristic polynomial of <I>z</I> in <I>F</I> (see
+<a href="chap006.htm#SECT009">CharPol</a>). If <I>F</I> is a normal extension of <I>S</I>, then the conjugates of <I>z</I>
+are the images of <I>z</I> under all elements of the Galois group of <I>F</I>
+over <I>S</I> (see <a href="chap006.htm#SECT007">GaloisGroup</a>), i.e., under those automorphisms of <I>F</I> that leave
+<I>S</I>  fixed.  The number of  different conjugates of  <I>z</I>  is given by the
+degree of the smallest extension of <I>S</I> in which <I>z</I> lies.<BR> 
+For a normal extension <I>F</I>,
+<code>Norm</code> (see <a href="chap006.htm#SECT010">Norm</a>) computes the product,  <code>Trace</code> (see <a href="chap006.htm#SECT011">Trace</a>) the  sum
+of  all  conjugates.  <code>CharPol</code> (see <a href="chap006.htm#SECT009">CharPol</a>)  computes the  polynomial
+that has precisely the conjugates with their corresponding multiplicities
+as roots,  <code>MinPol</code> (see  <a href="chap006.htm#SECT008">MinPol</a>) the  squarefree  polynomial  that has
+precisely the conjugates as roots.
+<P>
+<pre>    gap> Conjugates( Z(2^6) );
+    [ Z(2^6), Z(2^6)^2, Z(2^6)^4, Z(2^6)^8, Z(2^6)^16, Z(2^6)^32 ]
+    gap> Conjugates( GF(2^12), Z(2^6) );
+    [ Z(2^6), Z(2^6)^2, Z(2^6)^4, Z(2^6)^8, Z(2^6)^16, Z(2^6)^32, Z(2^6),
+      Z(2^6)^2, Z(2^6)^4, Z(2^6)^8, Z(2^6)^16, Z(2^6)^32 ]
+    gap> Conjugates( GF(2^12)/GF(2^2), Z(2^6) );
+    [ Z(2^6), Z(2^6)^4, Z(2^6)^16, Z(2^6), Z(2^6)^4, Z(2^6)^16 ] </pre>
+<P>
+The  default  function <code>FieldOps.Conjugates</code> applies the automorphisms of
+the Galois group of <var>F</var> (see <a href="chap006.htm#SECT007">GaloisGroup</a>)  to  <var>z</var> and returns the list
+of images. For nonabelian extensions, this is overlayed by a factorization
+of the characteristic polynomial.
+<P><A NAME="SECT013"><h2>6.13 Field Homomorphisms</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+Field homomorphisms  are an  important  class  of homomorphisms in <strong>GAP3</strong>
+(see chapter <a href="chap044.htm">Homomorphisms</a>).
+<P>
+A <strong>field  homomorphism</strong> <I>&phi;</I> is a mapping that maps  each element of  a
+field <I>F</I>,  called the  source of <I>&phi;</I>, to  an element of another field
+<I>G</I>, called the range of <I>&phi;</I>, such that for each pair  <I>x,y &isin; F</I>  we
+have <I>(x+y)<sup>&phi;</sup> =  x<sup>&phi;</sup> + y<sup>&phi;</sup></I> and <I>(xy)<sup>&phi;</sup> = x<sup>&phi;</sup> y<sup>&phi;</sup></I>.  We
+also  require  that  <I>&phi;</I> maps the one of <I>F</I> to  the  one of <I>G</I> (that
+<I>&phi;</I>  maps the zero of <I>F</I>  to the zero of <I>G</I>  is implied by the above
+relations).
+<P>
+An  Example of a field  homomorphism  is the Frobinius automorphism of  a
+finite   field   (see   <a href="chap018.htm#SECT011">FrobeniusAutomorphism</a>).    Look   under  <strong>field
+homomorphisms</strong>   in  the  index   for  a  list  of  all  available  field
+homomorphisms.
+<P>
+Since field homomorphisms are just a  special case of  homomorphisms, all
+functions described  in  chapter  <a href="chap044.htm">Homomorphisms</a>  are applicable  to all
+field homomorphisms, e.g., the function to test if a homomorphism is a an
+automorphism   (see   <a href="chap044.htm#SECT006">IsAutomorphism</a>).    More   general,  since  field
+homomorphisms are just a special case of mappings all functions described
+in chapter <a href="chap043.htm">Mappings</a> are also applicable,  e.g., the function to compute
+the image of an element under a homomorphism (see <a href="chap043.htm#SECT008">Image</a>).
+<P>
+The following sections describe the functions that test whether a mapping
+is a field homomorphism (see  <a href="chap006.htm#SECT014">IsFieldHomomorphism</a>), compute the  kernel
+of  a  field  homomorphism  (see  <a href="chap006.htm#SECT015">KernelFieldHomomorphism</a>), and how the
+general mapping functions are implemented for field homomorphisms.
+<P><A NAME="SECT014"><h2>6.14 IsFieldHomomorphism</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code>IsFieldHomomorphism( <var>map</var> )</code>
+<P>
+<code>IsFieldHomomorphism</code> returns  <code>true</code>  if  the  mapping <var>map</var> is a  field
+homomorphism and <code>false</code> otherwise.  Signals an error if <var>map</var> is a multi
+valued mapping.
+<P>
+A mapping <I>map</I> is a field homomorphism if  its source  <I>F</I> and range <I>G</I>
+are both fields and  if  for each  pair of elements <I>x, y  &isin; F</I> we have
+<I>(x+y)<sup>map</sup> = x<sup>map</sup> + y<sup>map</sup></I> and <I>(xy)<sup>map</sup> = x<sup>map</sup> y<sup>map</sup></I>.  We
+also require that <I>1<sub>F</sub><sup>map</sup> = 1<sub>G</sub></I>.
+<P>
+<pre>    gap> f := GF( 16 );
+    GF(2^4)
+    gap> fun := FrobeniusAutomorphism( f );
+    FrobeniusAutomorphism( GF(2^4) )
+    gap> IsFieldHomomorphism( fun );
+    true </pre>
+<P>
+<code>IsFieldHomomorphism</code> first tests if the flag <code><var>map</var>.isFieldHomomorphism</code>
+is bound.  If the flag is bound, <code>IsFieldHomomorphism</code> returns its value.
+Otherwise it calls <BR> 
+<code><var>map</var>.source.operations.IsFieldHomomorphism(  <var>map</var>  )</code>,  remembers  the
+returned value in <code><var>map</var>.isFieldHomomorphism</code>, and returns it.  Note that
+of course all  functions  that create  field  homomorphism  set  the flag
+<code><var>map</var>.isFieldHomomorphism</code>  to <code>true</code>, so that no function is called for
+those field homomorphisms.
+<P>
+The default function called this way is <code>MappingOps.IsFieldHomomorphism</code>.
+It computes all the elements of the source of <var>map</var> and  for each pair of
+elements  <I>x, y</I> tests whether <I>(x+y)<sup>map</sup>  =  x<sup>map</sup>  +  y<sup>map</sup></I>  and
+<I>(xy)<sup>map</sup> = x<sup>map</sup> y<sup>map</sup></I>.  Look under <strong>IsHomomorphism</strong> in the index
+to see for which mappings this function is overlaid.
+<P><A NAME="SECT015"><h2>6.15 KernelFieldHomomorphism</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+<code>KernelFieldHomomorphism( <var>hom</var> )</code>
+<P>
+<code>KernelFieldHomomorphism</code> returns  the  kernel  of the field homomorphism
+<var>hom</var>.
+<P>
+Because the kernel must be a  ideal in the source  and it can not  be the
+full source  (because we  require that the one of the source is mapped to
+the one of the range), it must be the trivial ideal.  Therefor the kernel
+of  every field homomorphism is the set  containing  only the zero of the
+source.
+<P><A NAME="SECT016"><h2>6.16 Mapping Functions for Field Homomorphisms</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<A name = "I12"></a>
+
+<A name = "I13"></a>
+
+<A name = "I14"></a>
+
+<A name = "I15"></a>
+
+<A name = "I16"></a>
+
+<A name = "I17"></a>
+
+<P>
+This  section describes how  the mapping  functions  defined  in  chapter
+<a href="chap043.htm">Mappings</a> are implemented for field homomorphisms.  Those  functions not
+mentioned here are implemented by the default functions described in  the
+respective sections.
+<P>
+<P>
+<code>IsInjective( <var>hom</var> )</code>
+<P>
+Always returns <code>true</code> (see <a href="chap006.htm#SECT015">KernelFieldHomomorphism</a>).
+<P>
+<P>
+<code>IsSurjective( <var>hom</var> )</code>
+<P>
+The  field  homomorphism  <var>hom</var> is surjective if  the  size  of the image
+<code>Size(  Image( <var>hom</var> ) )</code> is equal  to  the  size  of  the  range  <code>Size(
+<var>hom</var>.range )</code>.
+<P>
+<P>
+<code><var>hom1</var> = <var>hom2</var></code>
+<P>
+The  two field homomorphism <var>hom1</var> and <var>hom2</var> are are equal  if  the have
+the  same  source and range and  if the images of the generators  of  the
+source under <var>hom1</var> and <var>hom2</var> are equal.
+<P>
+<P>
+<code>Image( <var>hom</var> )</code> <BR> 
+<code>Image( <var>hom</var>, <var>H</var> )</code> <BR> 
+<code>Images( <var>hom</var>, <var>H</var> )</code>
+<P>
+The  image  of  a  subfield  under a  field homomorphism  is computed  by
+computing the images  of  a  set of  generators of the  subfield, and the
+result is the subfield generated by those images.
+<P>
+<P>
+<code>PreImage( <var>hom</var> )</code> <BR> 
+<code>PreImage( <var>hom</var>, <var>H</var> )</code> <BR> 
+<code>PreImages( <var>hom</var>, <var>H</var> )</code>
+<P>
+The preimages of a subfield  under a  field  homomorphism are computed by
+computing the  preimages of all the generators  of  the subfield, and the
+result is the subfield generated by those elements.
+<P>
+Look in the index under <strong>IsInjective</strong>, <strong>IsSurjective</strong>, <strong>Image</strong>, <strong>Images</strong>,
+<strong>PreImage</strong>,   <strong>PreImages</strong>, and   <strong>equality</strong>   to   see for  which   field
+homomorphisms these functions are overlaid.
+<P><A NAME="SECT017"><h2>6.17 Field Records</h2></a>
+<P><P><P>
+A field is represented by  a record  that contains important  information
+about this field.  The <strong>GAP3</strong> library predefines some  field records, for
+example  <code>Rationals</code>  (see  <a href="chap012.htm">Rationals</a>).  Field  constructors  construct
+others,  for  example  <code>Field</code>  (see  <a href="chap006.htm#SECT002">Field</a>),  and  <code>GaloisField</code>  (see
+<a href="chap018.htm#SECT010">GaloisField</a>).  Of course you may also create such a record by hand.
+<P>
+All field  records contain the  components <code>isDomain</code>, <code>isField</code>, <code>char</code>,
+<code>degree</code>, <code>generators</code>, <code>zero</code>,  <code>one</code>, <code>field</code>, <code>base</code>, and <code>dimension</code>.
+They  may  also   contain the  optional  components  <code>isFinite</code>,  <code>size</code>,
+<code>galoisGroup</code>.   The  contents  of  all  components of   a field <var>F</var>  are
+described below.
+<P>
+<DL><DT><code>isDomain</code>:<DD> <BR> 
+        is always <code>true</code>.  This indicates that <var>F</var> is a domain.
+</DL><P>
+<DL><DT><code>isField</code>:<DD> <BR> 
+        is always <code>true</code>.  This indicates that <var>F</var> is a field.
+</DL><P>
+<DL><DT><code>char</code>:<DD> <BR> 
+        is the characteristic of <var>F</var>.  For finite fields this is always a
+        prime, for infinite fields this is 0.
+</DL><P>
+<DL><DT><code>degree</code>:<DD> <BR> 
+        is the degree of  <var>F</var> <strong>as extension of the  prime field</strong>,  not as
+        extension of  the subfield <var>S</var>.   For finite fields the  order of
+        <var>F</var> is given by <code><var>F</var>.char^ <var>F</var>.degree</code>.
+</DL><P>
+<DL><DT><code>generators</code>:<DD> <BR> 
+        a list of elements  that together generate <var>F</var>.   That is  <var>F</var> is
+        the smallest field over the prime  field given by <code><var>F</var>.char</code> that
+        contains the elements of <code><var>F</var>.generators</code>.
+</DL><P>
+<DL><DT><code>zero</code>:<DD> <BR> 
+        is the additive neutral element of the finite field.
+</DL><P>
+<DL><DT><code>one</code>:<DD> <BR> 
+        is the multiplicative neutral element of the finite field.
+</DL><P>
+<DL><DT><code>field</code>:<DD> <BR> 
+        is  the subfield  <var>S</var> over which   <var>F</var> was constructed.  This  is
+        either a field  record for <var>S</var>, or the  same value as <code><var>F</var>.char</code>,
+        denoting the prime field (see <a href="chap006.htm#SECT004">Fields over Subfields</a>).
+</DL><P>
+<DL><DT><code>base</code>:<DD> <BR> 
+        is a list of elements  of <var>F</var> forming a  base  for <var>F</var> as  vector
+        space over the subfield <var>S</var>.
+</DL><P>
+<DL><DT><code>dimension</code>:<DD> <BR> 
+        is the dimension of <var>F</var> as vector space over the subfield <var>S</var>.
+</DL><P>
+<DL><DT><code>isFinite</code>:<DD> <BR> 
+        if present this is <code>true</code> if the field  <var>F</var> is finite and <code>false</code>
+        otherwise.
+</DL><P>
+<DL><DT><code>size</code>:<DD> <BR> 
+        if present this is the size of the field <var>F</var>.  If <var>F</var> is infinite
+        this holds the string "infinity".
+</DL><P>
+<DL><DT><code>galoisGroup</code>:<DD> <BR> 
+        if    present   this holds  the     Galois    group of  <var>F</var>  (see
+        <a href="chap006.htm#SECT007">GaloisGroup</a>).
+</DL><P><a href ="chap005.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap007.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

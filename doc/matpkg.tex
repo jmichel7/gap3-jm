@@ -1,0 +1,2909 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  matrix.tex                   GAP documentation               Frank Celler
+%W                                                              &  Derek Holt
+%W                                                    & Charles Leedham-Green
+%W                                                           & Alice Niemeyer
+%W                                                           & Eamonn O'Brien
+%W                                                              & Anthony Pye
+%W                                                               & Sarah Rees
+%W
+%%
+%A  @(#)$Id: matpkg.tex,v 1.2 1997/03/27 14:01:04 gap Exp $
+%%
+%Y  Copyright 1996,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
+%%
+\def\GL{{\rm GL}}
+\def\GU{{\rm GU}}
+\def\SU{{\rm SU}}
+\def\GO{{\rm GO}}
+\def\Sp{{\rm Sp}}
+\def\GSp{{\rm GSp}}
+\def\SL{{\rm SL}}
+\def\O{{\Omega}}
+\def\log{{\rm log}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{The Matrix Package}
+
+This chapter    describes functions which  may be   used to construct and
+investigate the structure of matrix groups defined over finite fields.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Aim of the matrix package}
+
+The aim of the matrix package is to provide  integrated and comprehensive
+access to a collection  of algorithms, developed  primarily over the past
+decade, for   investigating the structure of   matrix groups defined over
+finite fields.  We sought to design  a package which provides easy access
+to  existing  algorithms and implementations,   and which both allows new
+algorithms   to be  developed  easily using  existing  components, and to
+update existing ones readily.
+
+Some   of  the facilities    provided are necessarily   limited,  both on
+theoretical  and practical    grounds;  others   are *experimental*   and
+developmental in  nature;  we  welcome criticism  of  their performance.  
+One motivation  for its release  is to encourage input from others.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Contents of the matrix package}
+
+We summarise the contents of the package and provide references for
+the relevant algorithms.
+
+(a) Irreducibility  and   absolutely irreducibility   for $G$-modules;
+    isomorphism testing for irreducible $G$-modules; see Holt and Rees
+    [5].  The  corresponding functions are described in "IsIrreducible
+    for     GModules",      "IsAbsolutelyIrreducible",   "HomGModule",
+    "IsomorphismGModule",   "CompositionFactors",   "FieldGenCentMat",
+    "MinimalSubGModules".
+
+(b) Decide whether a matrix group  has certain decompositions with
+    respect  to a normal subgroup;  see Holt, Leedham-Green, O\'Brien and
+    Rees  [6].    The   corresponding   functions  are    described    in
+    "IsSemiLinear",       "SmashGModule",      "SemiLinearDecomposition",
+    "TensorProductDecomposition",   "SymTensorProductDecomposition",  and
+    "ExtraSpecialDecomposition".
+
+(c) Decide whether a matrix group  is primitive; see Holt, Leedham-Green,
+    O\'Brien and Rees [7].  The  corresponding functions are described in
+    "IsPrimitive for GModules", "MinBlocks".
+
+(d) Decide   whether a given  group  contains  a  classical  group in its
+    natural  representation. Here we  provide access to the algorithms of
+    Celler  and Leedham-Green [3] and those  of Niemeyer and Praeger [11,
+    12].       The corresponding      function     is   described      in
+    "RecogniseClassical", the   associated   lower-level  functions    in
+    "RecogniseClassicalCLG" and "RecogniseClassicalNP".
+
+(e) A  constructive recognition  process  for  the  special  linear group
+    developed by Celler    and   Leedham-Green  [4]  and described     in
+    "ConstructivelyRecogniseClassical".
+
+(e) Random element selection; see Celler, Leedham-Green, Murray, Niemeyer
+    and  O\'Brien [1].    The corresponding functions   are described  in
+    "PseudoRandom", "InitPseudoRandom".
+
+(f) Matrix   order calculation; see   Celler and  Leedham-Green [2].  The
+    corresponding functions are described in "OrderMat -- enhanced".
+
+(g) Base point  selection   for the  Random  Schreier-Sims algorithm  for
+    matrix  groups;  see  Murray and O\'Brien    [10].  The corresponding
+    function is described in "PermGroupRepresentation".
+
+(h) Decide  whether a matrix group preserves  a tensor decomposition; see
+    Leedham-Green and O\'Brien [8,  9].  The corresponding function  is
+    described in "IsTensor".
+
+(i) Recursive exploration of  reducible  groups;   see  Pye [13].     The
+    corresponding function is described in "RecogniseMatrixGroup".
+
+The algorithms make extensive use of  Aschbacher\'s classification of the
+maximal   subgroups  of the general linear    group.  Possible classes of
+subgroups mentioned below refer to  this classification; see [14, 15] for
+further details.
+
+In  order   to  access    the  functions,  you    must use   the  command
+'RequirePackage' to load them.
+
+|    gap> RequirePackage("matrix");|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Developers of the matrix package}
+
+The development and organisation of this package was carried out in Aachen
+by Frank Celler, Eamonn O\'Brien and Anthony Pye.
+
+In addition  to the new   material, this  package combines, updates,  and
+replaces material from various contributing sources.  These include\:\
+
+1. Classic package -- originally developed by Celler;
+
+2. Smash  package   --  originally  developed   by   Holt, Leedham-Green,
+   O\'Brien, and Rees;
+
+3. Niemeyer/Praeger  classical   recognition   algorithm   --  originally
+   developed by Niemeyer;
+
+4. Recursive code -- originally developed by Pye.
+
+As part of the preparation of this package,  much of the contributed code
+was revised (sometimes  significantly)  and  streamlined,  in cooperation
+with the original developers.
+
+Comments and criticisms are welcome and should be directed to\:\
+
+Eamonn O\'Brien\\
+obrien@math.auckland.ac.nz
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Basic conventions employed in matrix package}
+
+A $G$-module is defined by the action of a  group $G$, generated by a set
+of matrices, on a $d$-dimensional vector space over a field, $F = GF(q)$.
+
+The  function 'GModule' returns  a $G$-module record, where the component
+'.field' is set to $F$, '.dimension' to  $d$, '.generators' to the set of
+generating matrices for $G$,  and '.isGModule' to true.  These components
+are set for every $G$-module record constructed using 'GModule'.
+
+Many of the  functions  described  below  return or update   a $G$-module
+record.  Additional components which describe the nature of the action of
+the underlying group  $G$ on the $G$-module are  set  by these functions.
+Some of  these  carry information which may   be  of general  use.  These
+components are described briefly  in "Components of a $G$-module record".
+They need not  appear in  a $G$-module record,    or may have the   value
+'\"unknown\"'.
+
+A   component  '.component'  of  a  $G$-module   record is   accessed  by
+'ComponentFlag'  and its value   is set by  'SetComponentFlag', where the
+first letter  of the component is  capitalised in the function names. For
+example, the  component     '.tensorBasis'  of   <module>   is  set    by
+'SetTensorBasisFlag( <module>,  <boolean>  )' and its  value  accessed by
+'TensorBasisFlag( <module>  )'.  Such  access functions  and  conventions
+also apply to other records constructed by all of these functions.
+
+If a  function listed below takes as  input a matrix   group $G$, it also
+*usually* accepts a $G$-module.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Organisation of this manual}
+
+Sections "GModule" and "IsGModule" describe how to construct a $G$-module
+from a set of matrices or a group and how to test for a $G$-module.
+
+Sections    "IsIrreducible for GModules",   "IsAbsolutelyIrreducible",
+"IsSemiLinear",  "IsPrimitive for GModules", and   "IsTensor"  describe  high-level
+functions which provide access to some  of the algorithms mentioned in
+"Contents  of the matrix  package"; these  are tests for reducibility,
+semi-linearity, primitivity, and tensor decomposition, respectively.
+
+Section "SmashGModule"  describes  'SmashGModule' which  can be  used  to
+explore  whether  a matrix  group  preserves  certain decompositions with
+respect to a normal subgroup.
+
+Sections "HomGModule", "IsomorphismGModule",  and    "CompositionFactors"
+consider homomorphisms between and composition factors of $G$-modules.
+
+Sections        "ClassicalForms",        "RecogniseClassical",        and
+"ConstructivelyRecogniseClassical"   describe functions for     exploring
+classical groups.
+
+Section  "RecogniseMatrixGroup"  describes  the *experimental*   function
+'RecogniseMatrixGroup'.
+
+Sections  "RecogniseClassicalCLG" and "RecogniseClassicalNP" describe the
+low-level classical recognition functions.
+
+Sections   "InducedAction", "FieldGenCentMat", "MinimalSubGModules",  and
+"SpinBasis" describe the low-level Meataxe functions.
+
+Sections     "SemiLinearDecomposition",     "TensorProductDecomposition",
+"SymTensorProductDecomposition",             "ExtraSpecialDecomposition",
+"MinBlocks", "BlockSystemFlag", and  "Components of a  $G$-module record"
+describe the low-level 'SmashGModule' functions.
+
+Sections "ApproximateKernel", "RandomRelations",  "DisplayMatRecord", and
+"The  record  returned by   RecogniseMatrixGroup" describe  the low-level
+functions for the function 'Re\-co\-gnise\-Matrix\-Group'.
+
+Sections       "DualGModule",      "InducedGModule",       "PermGModule",
+"TensorProductGModule", "ImprimitiveWreathProduct",     and "WreathPower"
+describe functions to construct new $G$-modules from given ones.
+
+Sections "PermGroupRepresentation" to  "Other utility functions" describe
+functions which  are somewhat independent   of $G$-modules; these include
+functions  to compute  the order   of a  matrix, construct a  permutation
+representation for a matrix  group, and construct  pseudo-random elements
+of a group.
+
+Section "References" provides a bibliography.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GModule}
+
+'GModule( <matrices>, [<F>] )' \\
+'GModule( <G>, [<F>] )' 
+
+'GModule'  constructs a  $G$-module  record   from a list  <matrices>  of
+matrices or  from a  matrix group  <G>. The underlying  field <F>  may be
+specified as an optional argument; otherwise, it is taken to be the field
+generated by the entries of the given matrices.
+
+The   $G$-module    record   returned     contains  components  '.field',
+'.dimension', '.generators' and '.isGModule'.
+
+In using   many  of  the  functions described  in    this  chapter, other
+components of the $G$-module record may be set, which describe the nature
+of  the action  of   the group on  the  module.   A description of  these
+components is given in "Components of a $G$-module record".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsGModule}
+
+'IsGModule( <module> )'
+
+If <module> is  a   record with  component  '.isGModule' set   to 'true',
+'IsGModule' returns 'true', otherwise 'false' .
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{IsIrreducible for GModules}
+
+'IsIrreducible( <module> )'
+
+<module>    is   a   $G$-module.   'IsIrreducible'     tests <module> for
+irreducibility, and returns 'true' or 'false'.  If <module> is reducible,
+a sub- and quotient-module can be  constructed using 'InducedAction' (see
+"InducedAction").
+
+The algorithm is described in [5].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAbsolutelyIrreducible}
+
+'IsAbsolutelyIrreducible( <module> )'
+
+The $G$-module <module> is tested for absolute irreducibility, and 'true'
+or 'false' is returned. If the result is  'false', then the dimension $e$
+of     the  centralising  field   of  <module>    can    be   accessed by
+'DegreeFieldExtFlag(<module>)'.    A  matrix which  centralises  <module>
+(that       is,     it       centralises      the     generating matrices
+'GeneratorsFlag(<module>)')  and  which has minimal polynomial  of degree
+$e$ over the ground field can be accessed as 'CentMatFlag(<module>)'.  If
+such a matrix is required with multiplicative order $q^e-1$, where $q$ is
+the order     of   the  ground    field,  then    'FieldGenCentMat'  (see
+"FieldGenCentMat") can be called.
+
+The algorithm is described in [5].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSemiLinear}
+
+'IsSemiLinear( <G> )' 
+
+'IsSemiLinear' takes as input a matrix group $G$  over a finite field and
+seeks to decide whether or not $G$ acts semilinearly.
+
+The  function  returns a list containing  two  values\:\ a boolean  and a
+$G$-module record, <module>, for $G$.  If the boolean is 'true', then <G>
+is semilinear  and information  about  the decomposition can  be obtained
+using 'SemiLinearPartFlag (<module>)', 'LinearPartFlag (<module>)',   and
+'FrobeniusAutomorphismsFlag (<module>)'.   See "Components  of a
+$G$-module record" for an explanation of these.
+
+If 'IsSemiLinear' discovers that <G> acts imprimitively, it cannot decide
+whether or not <G> acts semilinearly and returns '\"unknown\"'.
+
+'SmashGModule' is called by 'IsSemiLinear'.
+
+The algorithm is described in [6].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPrimitive for GModules}
+
+'IsPrimitive( <G> [, <factorisations>] )' 
+
+'IsPrimitive' takes as input  a matrix group  <G> over a finite field and
+seeks  to   decide whether or not   <G>  acts primitively.   The function
+returns a  list containing   two  values\:\ a boolean and    a $G$-module
+record,  <module>,  for $G$.   If  the  boolean is  'false',  then <G> is
+imprimitive  and  'BlockSystemFlag  (<module>)'   returns a  block system
+(described in "MinBlocks").
+
+If 'IsPrimitive' discovers  that  <G> acts semilinearly,  then  it cannot
+decide whether or not <G> acts primitively and returns '\"unknown\"'.
+
+The second optional argument is a list of possible factorisations of $d$,
+the dimension of $G$.  For each $[r, s]$ in this list where $rs = d$, the
+function  seeks to decide whether  <G>  preserves a non-trivial system of
+imprimitivity having $r$ blocks of size $s$.
+
+'SmashGModule' is called by 'IsPrimitive'.
+
+The algorithm is described in [7].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsTensor}%
+\index{KroneckerFactors}
+
+'IsTensor( <G> [, <factorisations>] )' 
+
+'IsTensor' takes as input a matrix group <G> and  seeks to decide whether
+or not <G> preserves a non-trivial tensor decomposition of the underlying
+vector space.
+
+The implementation currently demands that  <G> acts irreducibly, although
+this is not an inherent requirement of the algorithm.
+
+The second optional argument is a list of possible factorisations of $d$,
+the dimension of $G$.  For each $[r, s]$ in this list where $rs = d$, the
+function seeks  to  decide  whether <G>  preserves a  non-trivial  tensor
+decomposition of the underlying space as the tensor product of two spaces
+of dimensions $r$ and $s$.
+
+The function  returns  a list  containing  three values\:\  a boolean,  a
+$G$-module record, <module>, for $G$, and  a change-of-basis matrix which
+exhibits the decomposition (if one is found).  If the boolean is 'false',
+then <G> is not a tensor product.  If the  boolean is 'true', then <G> is
+a tensor product  and the second argument in  the list are the two tensor
+factors.
+
+If  'IsTensor' cannot decide whether  <G>  or not preserves  a     tensor
+decomposition,  then it returns  '\"unknown\"'. The second entry returned
+is now the list of unresolved tensor factorisations.
+
+|    gap> ReadDataPkg ("matrix", "data", "a5xa5d25.gap");
+    gap> x:=IsTensor (G);;
+    gap> x[1];
+    true
+    gap> #Hence we have found a tensor decomposition.
+
+    gap> #Set up the two factors
+    gap> U := x[2][1];;
+    gap> W := x[2][2];;
+
+    gap> DisplayMat (GeneratorsFlag (U));
+     4 1 5 2 4
+     5 4 3 6 2
+     2 2 4 5 6
+     . 1 5 6 4
+     5 2 6 3 .
+
+     . 5 1 4 2
+     1 4 4 5 .
+     3 3 6 5 4
+     6 5 6 3 3
+     . 4 1 2 1
+
+     3 1 3 2 6
+     1 4 2 6 3
+     . . 4 . .
+     5 4 2 3 2
+     4 1 6 4 4
+
+     6 3 1 6 6
+     6 3 5 1 4
+     3 3 5 1 .
+     2 6 2 1 2
+     4 4 . 4 6
+
+    gap> ReadDataPkg ("matrix", "data", "a5d4.gap");
+
+    gap> x := IsTensor (G);
+    [ false, [  ], "undefined" ]
+    gap> #Hence not a tensor product |
+
+The algorithm is described in  [8,  9].  Since a complete  implementation
+requires basic  tools  which  are  not yet    available in  {\GAP},   the
+performance of this function is *currently seriously limited*.
+
+
+'KroneckerFactors( <g>, <d1>, <d2> [,<F>] )'
+
+'KroneckerFactors' decides whether or not a matrix  <g> can be written as
+the Kronecker product of  two matrices $A$ and $B$  of dimension <d1> and
+<d2>, respectively.  If the field $F$ is not supplied,  it is taken to be
+'Field (Flat (<g>))'.  The function returns either the pair [$A$, $B$] or
+'false'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SmashGModule}
+
+'SmashGModule( <module>, <S> [,<flag>] )'
+
+'SmashGModule' seeks to find a decomposition of a $G$-module with respect
+to a normal subgroup of $G$.
+
+<module>  is a module for a  finite group $G$  of  matrices over a finite
+field and <S> is a set of matrices, generating a subgroup of $G$.
+
+'SmashGModule'  attempts to find some way  of decomposing the module with
+respect to the normal subgroup $\langle S \rangle ^G$.  It returns 'true'
+if some decomposition is found, 'false' otherwise.
+
+It  first ensures that   $G$  acts absolutely  irreducibly  and that  <S>
+contain at least one non-scalar  matrix.  If  either of these  conditions
+fails,   then it  returns  'false'.   The function returns  'true'  if it
+succeeds   in     verifying that either   $G$     acts  imprimitively, or
+semilinearly, or preserves a   tensor product, or preserves  a  symmetric
+tensor product (that is, permutes the tensor factors) or $G$ normalises a
+group which is  extraspecial or a  2-group  of symplectic type.   Each of
+these decompositions,  if  found, involves  $\langle S  \rangle  ^G$ in a
+natural way.  Components are added to the  record <module> which indicate
+the nature of a decomposition.  Details of these  components can be found
+in  "Components of a $G$-module record".   If no  decomposition is found,
+the function returns 'false'.   In general, the answer  'false' indicates
+that there   is  no such  decomposition  with   respect   to  $\langle  S
+\rangle^G$.  However, 'SmashGModule' may  fail to find a symmetric tensor
+product decomposition, since the detection of such a decomposition relies
+on the choice of random elements.
+
+'SmashGModule' adds   conjugates  to <S>  until  a  decomposition  of the
+underlying   vector   space    as   a  sum    of    irreducible  $\langle
+S\rangle$-modules is   found.  The  functions  'SemiLinearDecomposition',
+'TensorProductDecomposition',     'SymTensorProductDecomposition',    and
+'ExtraSpecialDe\-composition' now search for decompositions.
+
+At the end of the  call to 'SmashGModule', <S> may  be larger than at the
+start (but its normal closure has not changed).
+
+The only permitted value for the  optional parameter <flag> is the string
+'\"PartialSmash\"'.   If  '\"PartialSmash\"' is supplied,  'SmashGModule'
+returns 'false' as soon as it is clear that  $G$ is not the normaliser of
+a $p$-group nor does it preserve a symmetric tensor product decomposition
+with respect to $\langle S \rangle^G$.
+
+The algorithm is described in [6].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{HomGModule}
+
+'HomGModule( <module1>, <module2> )'
+
+This function can only be run  if 'IsIrreducible(<module1>)' has returned
+'true'. <module1>  and  <module2> are assumed  to  be $G$-modules for the
+same  group  $G$, and a   basis of the   space  of $G$-homomorphisms from
+<module1> to <module2> is  calculated and returned. Each  homomorphism in
+this list  is given as  a $d_1 \times  d_2$ matrix, where $d_1$ and $d_2$
+are the dimensions of <module1> and <module2>; the rows of the matrix are
+the images of   the standard basis  of  <module1> in <module2>  under the
+homomorphism.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsomorphismGModule}
+
+'IsomorphismGModule( <module1>, <module2> )'
+
+This  function tests    the $G$-modules   <module1>  and <module2>    for
+isomorphism.  Both  $G$-modules must be  defined over the same field with
+the same  number of defining  matrices, and at least  one of them must be
+known to be irreducible  (that is, 'IsIrreducible(<module>)' has returned
+'true').  Otherwise  the function will exit with  an  error.  If they are
+not isomorphic, then 'false' is returned.  If they are isomorphic, then a
+$d  \times  d$ matrix is  returned  (where $d$ is  the   dimension of the
+modules)  whose rows  give the images   of the standard basis vectors  of
+<module1> in an isomorphism to <module2>.
+
+The algorithm is described in [5].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CompositionFactors}
+
+'CompositionFactors( <module> )'
+
+<module> is a $G$-module.  This function  returns a list, each element of
+which is  itself  a  2-element list  [<mod>, <int>],  where  <mod> is  an
+irreducible composition factor of <module>, and <int> is the multiplicity
+of  this   factor  in  <module>.    The   elements  <mod>  correspond  to
+non-isomorphic irreducible modules.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Examples}
+
+*Example 1*
+
+|    gap> # First set up the natural permutation module for the
+    gap> # alternating group $A_5$ over the field $GF(2)$.
+    gap> P := Group ((1,2,3), (3,4,5));;
+    gap> M := PermGModule (P, GF(2));
+    rec(
+      field := GF(2),
+      dimension := 5,
+      generators := [ [ [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ],
+          [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ],
+          [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ], 
+          [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ], 
+          [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ] ], 
+          [ [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ], 
+          [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ], 
+          [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ], 
+          [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ], 
+          [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ] ] ],
+      isGModule := true )
+    gap> # Now test for irreducibility, and calculate a proper submodule.
+    gap> IsIrreducible (M);
+    false
+    gap> SM := SubGModule (M, SubbasisFlag (M));;
+    gap> DimensionFlag (SM);
+    4
+    gap> DSM := DualGModule (SM);;
+    gap> # Test to see if SM is self-dual. We must prove irreducibility first.
+    gap> IsIrreducible (SM);
+    true
+    gap> IsAbsolutelyIrreducible (SM);
+    true
+    gap> IsomorphismGModule (SM, DSM);
+    [ [ 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2) ],
+      [ Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2) ], 
+      [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0 ],
+      [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ] ]
+    gap> # This is an explicit isomorphism.
+    gap> # Now form a tensor product and decompose it into composition factors.
+    gap> TM := TensorProductGModule (SM, SM);;
+    gap> cf := CompositionFactors (TM);;
+    gap> Length (cf);
+    3
+    gap> DimensionFlag(cf[1][1]); cf[1][2];
+    1
+    4
+    gap> DimensionFlag(cf[2][1]); cf[2][2];
+    4
+    2
+    gap> DimensionFlag(cf[3][1]); cf[3][2];
+    4
+    1
+    gap> # This tells us that TM has three composition factors, of dimensions
+    gap> # 1, 4 and 4, with multiplicities 4, 2 and 1, respectively.
+    gap> # Is one of the 4-dimensional factors isomorphic to TM?
+    gap> IsomorphismGModule (SM, cf[2][1]);
+    false
+    gap> IsomorphismGModule (SM, cf[3][1]);
+    [ [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ],
+      [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ], 
+      [ Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2) ],
+      [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ] ]
+    gap> IsAbsolutelyIrreducible (cf[2][1]);
+    false
+    gap> DegreeFieldExtFlag(cf[2][1]);
+    2
+    gap> # If we extend the field of  cf[2][1] to $GF(4)$, it should 
+    gap> # become reducible.  
+    gap> MM := GModule (GeneratorsFlag (cf[2][1]), GF(4));;
+    gap> CF2 := CompositionFactors (MM);;
+    gap> Length (CF2);
+    2
+    gap> DimensionFlag (CF2[1][1]); CF2[1][2];
+    2
+    1
+    gap> DimensionFlag (CF2[2][1]); CF2[2][2];
+    2
+    1
+    gap> # It reduces into two non-isomorphic 2-dimensional factors. |
+
+In the next example, we investigate the structure of a matrix group using
+'SmashGModule' and access  some    of the stored information   about  the
+computed decomposition.
+
+*Example 2*
+
+|   gap> a := [
+   > [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]] * Z(2)^0;;
+   gap> b := [
+   > [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+   > [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+   > [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+   > [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]] * Z(2)^0;;
+   gap> c := [
+   > [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+   > [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+   > [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]] * Z(2)^0;;
+   gap> gens := [a, b, c];;
+   gap> # Next we define the module.
+   gap> M := GModule (gens);;
+   gap> # So far only the basic components have been set.
+   gap> RecFields (M);
+   [ "field", "dimension", "generators"", "isGModule" ]
+   gap> 
+   gap> # First we check for irreducibility and absolute irreducibility.
+   gap> IsIrreducible (M);
+   true
+   gap> IsAbsolutelyIrreducible (M);
+   true
+   gap> # A few more components have been set during these two function calls.
+   gap> RecFields(M);
+   [ "field", "dimension", "generators"", "isGModule", "algEl", "algElMat", 
+     "algElCharPol", "algElCharPolFac", "algElNullspaceVec",
+     "algElNullspaceDim",
+     "reducible", "degreeFieldExt", "absolutelyReducible" ]
+   gap> # The function Commutators forms the list of commutators of generators.
+   gap> S := Commutators(gens);;
+   gap> InfoSmash := Print;; 
+   gap> # Setting InfoSmash to Print means that SmashGModule prints out  
+   gap> # intermediate output to tell us what it is doing. If we 
+   gap> # read this output it tells us what kind of decomposition SmashGModule
+   gap> # has found. Otherwise the output is only a true or false.
+   gap> # All the relevant information is contained in the components of M.
+   gap> SmashGModule (M, S);
+   Starting call to SmashGModule.
+   At top of main SmashGModule loop, S has 2 elements.
+   Translates of W are not modules.
+   At top of main SmashGModule loop, S has 3 elements.
+   Translates of W are not modules.
+   At top of main SmashGModule loop, S has 4 elements.
+   Translates of W are not modules.
+   At top of main SmashGModule loop, S has 5 elements.
+   Group embeds in GammaL(4, GF(2)^3).
+   SmashGModule returns true.
+   true
+   gap> # Additional components are set during the call to SmashGModule.
+   gap> RecFields(M);
+   [ "field", "dimension", "generators", "isGModule", "algEl", "algElMat", 
+     "algElCharPol", "algElCharPolFac", "algElNullspaceVec",
+     "algElNullspaceDim",
+     "reducible", "degreeFieldExt", "absolutelyReducible",
+     "semiLinear", "linearPart", 
+     "centMat", "frobeniusAutomorphisms" ]
+   gap> SemiLinearFlag (M);
+   true
+   gap> # This flag tells us G that acts semilinearly.
+   gap> DegreeFieldExtFlag (M);
+   3
+   gap> #This flag tells us the relevant extension field is GF(2\^3)
+   gap> Length (LinearPartFlag (M));
+   5
+   gap> # LinearPartFlag (M) is a set of normal subgroup generators for the
+   gap> # intersection of G with GL(4, GF(2\^3)). It is also the contents of S
+   gap> # at the end of the call to SmashGModule and is bigger than the set S
+   gap> # which was input since conjugates have been added.
+   gap> FrobeniusAutomorphismsFlag (M);
+   [ 0, 0, 1 ]
+   gap> # The first two generators of G act linearly, the last induces the field
+   gap> # automorphism which maps x to x\^2 (= x\^(2\^1)) on GF(2\^3) |
+
+In our final example,  we demonstrate how  to test whether a matrix group
+is primitive and also how to select pseudo-random elements.
+
+*Example 3*
+
+|    gap> # Read in 18-dimensional representation of L(2, 17) over GF(41).
+    gap> ReadDataPkg ("matrix", "data", "l217.gap");
+    gap> # Initialise a seed for random element generation.
+    gap> InitPseudoRandom (G, 10, 100);;
+    gap> # Now select a pseudo-random element.
+    gap> g := PseudoRandom (G);;
+    gap> OrderMat (g);
+    3
+    gap> h := ElementOfOrder (G, 8, 10);;
+    gap> OrderMat (h);
+    8
+    gap> #Is the group primitive?
+    gap> R := IsPrimitive(G);;
+    gap> #Examine the boolean returned.
+    gap> R[1];
+    false
+    gap> M := R[2];;
+    gap> #What is the block system found?
+    gap> BlockSystemFlag (M);
+    rec(
+      nmrBlocks := 18,
+      block := 
+       [ [ 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 
+	   0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 
+	   0*Z(41), Z(41)^0, 0*Z(41), 0*Z(41) ] ],
+      maps := [ 1, 2, 3 ],
+      permGroup := Group( ( 1, 2)( 3, 7)( 5,11)( 6,12)( 8,10)(13,14)(15,17)
+	(16,18), ( 1, 3, 8,11,15, 9,13, 7,12,16, 6, 2, 5, 4,10,14,17), 
+	( 1, 4, 2, 6, 3, 9, 7,12)( 5, 8,10,11,13,17,15,14) ),
+      isBlockSystem := true )
+    gap>  v :=
+    > [ 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41),
+    >   0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41),
+    >   0*Z(41), Z(41)^0, 0*Z(41), 0*Z(41) ];;
+    gap> #Illustrate use of MinBlocks 
+    gap> B := MinBlocks (M, [v]);;
+    gap> B;
+    rec(
+      nmrBlocks := 18,
+      block := 
+       [ [ 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41),
+	   0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 0*Z(41), 
+	   0*Z(41), Z(41)^0, 0*Z(41), 0*Z(41) ] ],
+      maps := [ 1, 2, 3 ],
+      permGroup := Group( ( 1, 2)( 3, 7)( 5,11)( 6,12)( 8,10)(13,14)(15,17)
+	(16,18), ( 1, 3, 8,11,15, 9,13, 7,12,16, 6, 2, 5, 4,10,14,17), 
+	( 1, 4, 2, 6, 3, 9, 7,12)( 5, 8,10,11,13,17,15,14) ),
+      isBlockSystem := true ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ClassicalForms}
+
+'ClassicalForms( <G> )'
+
+Given as input, a classical, irreducible group <G>, 'ClassicalForms' will
+try to find  an invariant classical form for  <G> (that is, an  invariant
+symplectic or  unitary bilinear form  or an  invariant symmetric bilinear
+form together with an invariant  quadratic form, invariant modulo scalars
+in each case) or try to prove that no such form exists.  The dimension of
+the underlying vector space must be at least 3.
+
+The  function may find   a form even if <G>   is a  proper subgroup  of a
+classical  group;   however, it  is  likely  to  fail   for subgroups  of
+${\Gamma}L$.  In these cases \"unknown\" (see below) is returned.
+
+The results  \"linear\", \"symplectic\",  \"unitary\",  \"orthogonal...\"
+and \"absolutely  reducible\"  are always  correct,  but \"unknown\"  can
+either imply that  the algorithm failed to find  a form and  it could not
+prove the linear case *or* that <G> is not a classical group.
+
+[ \"unknown\" ]:\\
+    it is not known if <G> fixes a form.
+
+[ \"unknown\", \"absolutely reducible\" ]:\\
+    <G> acts absolutely reducible  on  the underlying vector space.   The
+    function does not apply in this case.
+
+[ \"linear\" ]:\\
+    it is known that <G> does not fix a classical form modulo scalars.
+
+[ \"symplectic\", <form>, <scalars> ]:\\
+    <G> fixes  a symplectic  <form>  modulo <scalars>.  The form  is only
+    unique up to scalar multiplication.  In  characteristic two this also
+    implies that no quadratic form is fixed.
+
+[ \"unitary\", <form>, <scalars> ]:\\
+    <G> fixes a  unitary <form> modulo <scalars>.  The form is
+    only unique up to scalar multiplication.
+
+{}[ \"orthogonalcircle\", <form>, <scalars>, <quadratic>, ... ]\\
+{}[ \"orthogonalplus\", <form>, <scalars>, <quadratic>, ... ] \\
+{}[ \"orthogonalminus\", <form>, <scalars>, <quadratic>, ... ]:\\
+    <G>   fixes a orthogonal  <form>  with corresponding <quadratic> form
+    modulo <scalars>.    The forms  are    only  unique up   to    scalar
+    multiplication.
+
+The   function might    return  *more* than    one  list.   However,   in
+characteristic  2  it will  *not*  return  \"symplectic\" if  <G> fixes a
+quadratic form.
+
+A  bilinear form is returned as   matrix $F$ such that   $g * F * g^{tr}$
+equals $F$ modulo scalars for all elements $g$  of <G>.  A quadratic form
+is returned as  upper triangular matrix  $Q$ such  that $g *  Q * g^{tr}$
+equals $Q$ modulo scalars *after*  $g * Q  * g^{tr}$ has been  normalized
+into an upper triangular matrix.  See the following example.
+
+\vspace{3mm}
+\vbox{
+|    gap> G := O( 0, 9, 9 );
+    gap> f := ClassicalForms(G);;
+    gap> Q := f[1][4];;
+    gap> DisplayMat(Q);
+     . 1 . . . . . . .
+     . . . . . . . . .
+     . . 1 . . . . . .
+     . . . 1 . . . . .
+     . . . . 1 . . . .
+     . . . . . 1 . . .
+     . . . . . . 1 . .
+     . . . . . . . 1 .
+     . . . . . . . . 1 |
+}
+
+\vbox{
+|    gap> DisplayMat( G.1 * Q * TransposedMat(G.1) );
+     . 1 . . . . . . .
+     . . . . . . . . .
+     . . 1 . . . . . .
+     . . . 1 . . . . .
+     . . . . 1 . . . .
+     . . . . . 1 . . .
+     . . . . . . 1 . .
+     . . . . . . . 1 .
+     . . . . . . . . 1|
+}
+
+\vbox{
+|    gap> DisplayMat( G.2 * Q * TransposedMat(G.2) );
+     . . . . . . . . .
+     1 . . . . . . . 1
+     . . 1 . . . . . .
+     . . . 1 . . . . .
+     . . . . 1 . . . .
+     . . . . . 1 . . .
+     . . . . . . 1 . .
+     . . . . . . . 1 .
+     . 2 . . . . . . 1|
+}
+
+
+Note that in general | g *  Q * TransposedMat(g) | is  not equal to | Q |
+for an element of an  orthogonal group because  you have to normalise the
+quadratic form such that it is an upper triangular  matrix.  In the above
+example  for  <G.1> you have   to  move the  $1$  in  position $(9,2)$ to
+position $(2,9)$ adding it to the $2$ which gives  a $0$, and you have to
+move  the $2$ in position $(1,2)$  to position $(2,1)$ thus obtaining the
+original quadratic form.
+
+*Examples*
+
+|    gap> G := SP( 4, 2 );
+    SP(4,2)
+    gap> ClassicalForms( G );
+    [ [ "symplectic", 
+      [ [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ],
+        [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ],
+        [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ], 
+        [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ] ],
+      [ Z(2)^0, Z(2)^0 ] ] ] |
+
+In this  case <G> leaves a  symplectic (and symmetric) form invariant but
+does not fix a quadratic form.
+
+|    gap> G := O( -1, 4, 2 );
+    O(-1,4,2)
+    gap> ClassicalForms( G );
+    [ [ "orthogonalminus", 
+        [ [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ],
+          [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ],
+          [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ], 
+          [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ] ],
+        [ Z(2)^0, Z(2)^0 ], 
+        [ [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ],
+          [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ],
+          [ 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0 ], 
+          [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ] ] ] ] |
+
+In this case  <G> leaves a symplectic   and symmetric form invariant  and
+there exists also an invariant quadratic form.
+
+|    gap> m1 :=
+    > [ [ Z(2^2), Z(2)^0, 0*Z(2), Z(2^2) ],
+    >   [ Z(2^2)^2, Z(2^2), Z(2^2)^2, Z(2^2) ], 
+    >   [ 0*Z(2), Z(2^2)^2, Z(2^2)^2, Z(2)^0 ], 
+    >   [ Z(2^2), Z(2^2)^2, Z(2^2), Z(2^2)^2 ] ];;
+    gap> m2 := 
+    > [ [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2^2) ],
+    >   [ 0*Z(2), 0*Z(2), Z(2^2)^2, 0*Z(2) ],
+    >   [ 0*Z(2), Z(2^2)^2, 0*Z(2), Z(2^2) ],
+    >   [ Z(2^2), 0*Z(2), Z(2^2)^2, 0*Z(2) ] ];;
+    gap> G := Group( m1, m2 );;
+    gap> ClassicalForms( G );
+    [ [ "unknown" ], 
+      [ "symplectic",
+        [ [ 0*Z(2), Z(2)^0, Z(2)^0, Z(2^2)^2 ],
+          [ Z(2)^0, 0*Z(2), Z(2^2), Z(2)^0 ],
+          [ Z(2)^0, Z(2^2), 0*Z(2), Z(2)^0 ], 
+          [ Z(2^2)^2, Z(2)^0, Z(2)^0, 0*Z(2) ] ],
+        [ Z(2)^0, Z(2)^0 ] ] ] |
+
+The \"symplectic\" indicates   that an invariant symplectic  form exists,
+the \"unknown\" indicates that   an   invariant \"unitary\"  form   might
+exist.  Using the test once more, one gets\:
+
+|    gap> ClassicalForms( G );
+    [ [ "symplectic", 
+        [ [ 0*Z(2), Z(2^2)^2, Z(2^2)^2, Z(2^2) ],
+          [ Z(2^2)^2, 0*Z(2), Z(2)^0, Z(2^2)^2 ],
+          [ Z(2^2)^2, Z(2)^0, 0*Z(2), Z(2^2)^2 ], 
+          [ Z(2^2), Z(2^2)^2, Z(2^2)^2, 0*Z(2) ] ],
+        [ Z(2)^0, Z(2)^0 ] ], 
+      [ "unitary",
+        [ [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ],
+          [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ],
+          [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ], 
+          [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ] ],
+        [ Z(2)^0, Z(2)^0 ] ] ] |
+
+So <G> indeed fixes both a  symplectic and unitary  form but no quadratic
+form.
+
+|    gap> ReadDataPkg ("matrix", "data", "a5d4.gap");
+    gap> ClassicalForms( G );
+    [ [ "unknown", "absolutely reducible" ] ] |
+
+<G> acts irreducibly, however 'ClassicalForms' is not able to check if an
+invariant bilinear or quadratic form exists.
+
+|    gap> ReadDataPkg ("matrix", "data", "a5d5.gap" );  
+    gap> ClassicalForms( G );
+    [ [ "unknown" ] ]
+    gap> IsAbsolutelyIrreducible(GModule(G));
+    true |
+
+Although <G> fixes a symmetric form, 'ClassicalForms' is not able to find
+an invariant form because <G> is not a classical group.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RecogniseClassical}
+
+'RecogniseClassical( <G> [,<strategy>] [,<case>] [,<N>] )'
+
+'RecogniseClassical'  takes as input a group  <G>, which is a subgroup of
+$\GL(d,q)$ with $d > 1$, and seeks to decide  whether or not $G$ contains
+a classical group in its natural representation over a finite field.
+
+<strategy> is one of the following\:\
+
+\"clg\":\\
+    use the algorithm of Celler and Leedham-Green [3].
+
+\"np\":\\
+    use the algorithm of  Niemeyer and Praeger [11,  12].  
+
+The default strategy is \"clg\".
+
+The parameter <case>  is used  to  supply information about the  specific
+non-degenerate   bilinear,    quadratic or   sesquilinear  forms   on the
+underlying  vector space $V$ preserved  by $G$ modulo scalars.  The value
+of <case> must be one of the following\:\
+
+\"all\":\\
+    'RecogniseClassical' will try to determine  the case of <G>.  This is
+    the default.
+    
+\"linear\":\\
+    <G>  $\le \GL(d,q),$  and   preserves  no  non-degenerate   bilinear,
+   quadratic or sesquilinear form on $V.$ Set $\Omega \:= \SL(d,q).$
+    
+\"symplectic\":\\
+   <G> $\le \GSp(d,q),$ with $d$ even, and if $q$  is also even we assume
+   that   <G> preserves no  non-degenerate    quadratic form on  $V.$ Set
+   $\Omega \:= \Sp(d,q).$
+
+\"orthogonalplus\":\\
+    <G> $\le \GO^+(d,q)$ and $d$ is even. Set $\Omega \:= \Omega^+(d,q).$
+
+\"orthogonalminus\":\\
+    <G> $\le \GO^-(d,q)$ and $d$ is even. Set $\Omega \:= \Omega^-(d,q).$
+
+\"orthogonalcircle\":\\
+    <G>   $\le    \GO^\circ(d,q)$  and  $d$  is   odd.  Set   $\Omega \:=
+   \Omega^\circ(d,q).$
+    
+\"unitary\":\\
+    <G>   $\le \GU(d,q)$,   where  $q$  is  a   square.   Set $\Omega \:=
+    \SU(d,q)$.
+
+<N> is a positive integer which determines the  number of random elements
+selected. Its default   value depends  on  the  strategy  and  case;  see
+"RecogniseClassicalCLG"  and "RecogniseClassicalNP"   for      additional
+details.
+
+In summary,   the aim  of  'RecogniseClassical'  is to test   whether <G>
+contains the subgroup $\Omega$ corresponding to the value of <case>.
+
+The function returns   a record whose contents  depends  on  the strategy
+chosen.   Detailed information about   components of this  record  can be
+found in  "RecogniseClassicalCLG" and   "RecogniseClassicalNP".  However,
+the record has certain  *common* components *independent* of the strategy
+and these can be accessed using the following flag functions.
+
+'ClassicalTypeFlag':\\
+    returns       \"linear\",    \"symplectic\",      \"orthogonalplus\",
+    \"orthogonalminus\", \"orthogonalcircle\"  or  \"unitary\" if <G>  is
+    known to be a classical group  of this type modulo scalars, otherwise
+    \"unknown\".  Note   that $\Sp(2,q)$   is isomorphic   to $\SL(2,q)$;
+    \"linear\" not \"symplectic\" is returned in this case.
+
+'IsSLContainedFlag':\\
+    returns 'true' if <G> contains the special linear group $\SL(d,q)$.
+
+'IsSymplecticGroupFlag':\\
+    returns 'true' if <G> is  contained in $\GSp(d,q)$ modulo scalars and
+    contains $\Sp(d,q)$.
+    
+'IsOrthogonalGroupFlag':\\
+    returns 'true'  if  <G> is contained  in an  orthogonal group modulo
+    scalars and contains the corresponding $\Omega$.
+    
+'IsUnitaryGroupFlag':\\
+    returns 'true' if <G> is contained in an unitary group modulo scalars
+    and contains the corresponding $\Omega$.
+
+These last  four functions return 'true',  'false', or \"unknown\".  Both
+'true'  and 'false' are *conclusive*.    The answer \"unknown\" indicates
+either that the  algorithm *failed* to determine whether  or not <G> is a
+classical group or that  the algorithm is  not applicable to the supplied
+group;   see   "RecogniseClassicalCLG"  and    "RecogniseClassicalNP" for
+additional details.
+
+If 'RecogniseClassical' *failed* to prove  that <G> is a classical group,
+additional information  about the possible  Aschbacher categories  of <G>
+might have been obtained.  See "RecogniseClassicalCLG" for details.
+
+*Example 1* 
+
+|    gap> G := SL(7, 5);
+    SL(7,5)
+    gap> r := RecogniseClassical( G, "clg" );;
+    gap> ClassicalTypeFlag(r);
+    "linear"
+    gap> IsSLContainedFlag(r);
+    true
+    gap> r := RecogniseClassical( G, "np" );; 
+    gap> ClassicalTypeFlag(r);
+    "linear"
+    gap> IsSLContainedFlag(r);
+    true |
+    
+*Example 2*
+    
+|    gap> ReadDataPkg ("matrix", "data", "j1.gap" );           
+    gap> DisplayMat(GeneratorsFlag(G));   
+      9  1  1  3  1  3  3
+      1  1  3  1  3  3  9
+      1  3  1  3  3  9  1
+      3  1  3  3  9  1  1
+      1  3  3  9  1  1  3
+      3  3  9  1  1  3  1
+      3  9  1  1  3  1  3
+    
+      .  1  .  .  .  .  .
+      .  .  1  .  .  .  .
+      .  .  . 10  .  .  .
+      .  .  .  .  1  .  .
+      .  .  .  .  . 10  .
+      .  .  .  .  .  . 10
+     10  .  .  .  .  .  .
+    
+    gap> r := RecogniseClassical( G, "clg" );;
+    gap> ClassicalTypeFlag(r);
+    "unknown" |
+
+The algorithms are described in [3, 11, 12].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ConstructivelyRecogniseClassical}
+
+In   this  section, we   describe  functions  developed  by   Celler  and
+Leedham-Green (see [4] for details) to recognise constructively classical
+groups in their natural representation over finite fields. 
+
+'ConstructivelyRecogniseClassical( <G>, \"linear\" )'
+
+computes  both a standard  generating set  for  a matrix group  <G> which
+contains  the   *special linear  group*   and   expressions for   the new
+generators in terms of  '<G>.generators'.  This generating set will allow
+you to write an element of <G> as a word in the *given* generating set of
+<G>.
+
+The algorithm is   of polynomial complexity in  the  dimension  and field
+size.  However,  it is a *Las Vegas  algorithm*, i.e.   there is a chance
+that the algorithm fails to complete in the  expected time.  It will run 
+*indefinitely* if <G> does not contain the special linear group.
+
+The following functions can be applied to the record 'sl' returned. 
+
+'SizeFlag( <sl> )'
+
+returns the size of <G>.
+
+'Rewrite( <sl>, <elm> )'
+
+returns     an  expression such that  'Value(     Rewrite( <sl>, <elm> ),
+<G>.generators )' is equal to the element <elm>.
+
+*Example*
+
+|    gap> m1 := [ [ 0*Z(17), Z(17), Z(17)^10, Z(17)^12, Z(17)^2 ], 
+     >  [ Z(17)^13, Z(17)^10, Z(17)^15, Z(17)^8, Z(17)^0 ], 
+     >  [ Z(17)^10, Z(17)^6, Z(17)^9, Z(17)^8, Z(17)^10 ], 
+     >  [ Z(17)^13, Z(17)^5, Z(17)^0, Z(17)^12, Z(17)^5 ], 
+     >  [ Z(17)^14, Z(17)^13, Z(17)^5, Z(17)^10, Z(17)^0 ] ];;
+    gap> m2 := [ [ 0*Z(17), Z(17)^10, Z(17)^2, 0*Z(17), Z(17)^10 ], 
+     >  [ 0*Z(17), Z(17)^6, Z(17)^0, Z(17)^4, Z(17)^15 ], 
+     >  [ Z(17)^7, Z(17)^6, Z(17)^10, Z(17), Z(17)^2 ], 
+     >  [ Z(17)^3, Z(17)^10, Z(17)^5, Z(17)^4, Z(17)^6 ], 
+     >  [ Z(17)^0, Z(17)^8, Z(17)^0, Z(17)^5, Z(17) ] ];;
+    gap> G := Group( m1, m2 );;
+    gap> sl := ConstructivelyRecogniseClassical( G, "linear" );;
+    gap> SizeFlag(sl);
+    338200968038818404584356577280
+    gap> w := Rewrite( sl, m1^m2 );;
+    gap> Value( w, [m1,m2] ) = m1^m2;
+    true |
+
+The algorithm is described in [4].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RecogniseMatrixGroup}
+'RecogniseMatrixGroup( <G> )'
+
+'RecogniseMatrixGroup' attempts   to  recognise  at   least one   of  the
+Aschbacher categories  in  which  the  matrix group   <G> lies. It   then
+attempts to use features  of this category to  determine the order of <G>
+and provide a membership test for <G>.
+
+The algorithm is described in [13]. This implementation is *experimental*
+and *limited*  in its application; its inclusion  in the  package at this
+time is  designed  primarily to  illustrate  the  basic  features  of the
+approach.
+
+Currently the function attempts  to recognise groups that  are reducible,
+imprimitive,   tensor   products   or      classical in their     natural
+representation.
+
+The function returns a record whose components store detailed information
+about the decomposition of <G> that it finds.  The record contents can be
+viewed using 'DisplayMatRecord'.
+
+The record consists  of *layers* of records  which are the kernels at the
+various stages of the computation. Individual layers are accessed via the
+component  .kernel. We  number these layers  1 to $n$ where  layer 0  is 
+<G>. The n-th layer is  a $p$-group   generated by lower  uni-triangular
+matrices.  Information  about this $p$-group is   stored in the component
+.pGroup. At the i-th layer ($1 \leq i \leq n$) we  have a group generated
+by  matrices  with  at  most $i-1$ identity   blocks  down  the diagonal,
+followed  by  a non-singular block.   Below the blocks  we  have non-zero
+entries and  above them we  have zero entries. Call  this group $G_i$ and
+the group generated by the non-singular block on  the diagonal $T_i$.  In
+the i-th layer we have a component .quotient. If the  module for $T_i$ is
+irreducible,  then .quotient   is $T_i$.  If    the module for $T_i$   is
+reducible, then it   decomposes into  an   irreducible submodule and    a
+quotient  module. In this  case .quotient is  the restriction of $T_i$ to
+the submodule.
+
+The central  part  of  'RecogniseMatrixGroup' is  the  recursive function
+'GoDownChain' which takes  as arguments a  record and a list of matrices.
+'RecogniseMatrixGroup'   initialises this     record  and    then   calls
+'GoDownChain' with the record and a list of the generators of <G>.
+
+Assume we pass 'GoDownChain'  the i-th layer of our  record and a list of
+matrices (possibly empty) in the form described above.
+
+If the i-th   layer is the last, then   we  construct a  power-commutator
+presentation for the group generated by the list of matrices.
+
+Otherwise, we now check if we have already decomposed  $T_i$.  If not, we
+split the module for $T_i$ using 'IsIrreducible'.  We set .quotient to be
+the trivial group of dimension that of the  irreducible submodule, and we
+store the basis-change  matrix. We also  initialise the next layer of our
+record, which  will correspond  to the kernel   of the  homomorphism from
+$G_i$ to .quotient.  Then  we call 'GoDownChain'  with the  layer and the
+list of matrices we started with.
+
+If we  have a  decomposition for  $T_i$, then we  apply  the basis-change
+stored in our record  to the list of  matrices and decide whether the new
+matrices preserve the decomposition. If they  do not, then we discard the
+current  decomposition of  $T_i$ and all  the layers  below the i-th, and
+recall 'GoDownChain'.
+
+If the matrices preserve the decomposition, then we extract the blocks in
+the matrices  which correspond to '.quotient'. We  decide if these blocks
+lie in '.quotient'.
+
+If  the blocks lie  in  '.quotient', then the next   step is to construct
+relations on '.quotient' which we will then evaluate on the generators of
+$G_i$    to put into  the   next  layer. There   are   two approaches  to
+constructing relations on  '.quotient'. Let <F>  be the free group on the
+number of generators   of   '.quotient'.   We construct  a    permutation
+representation on '.quotient'. The first approach is to take the image of
+an element of '.quotient' in the permutation group and  then pull it back
+to the permutation group. The second approach is to take a random word in
+<F>, map it into the permutation group and then pull the permutation back
+into <F>. The relations from approach one are \"generator relations\" and
+those  from  approach two   are  \"random  relations\".   If  '.quotient'
+contains SL, then we use special techniques.
+
+If the list of matrices with which we called 'GoDownChain' is empty, then
+we construct random relations on '.quotient', evaluate  these in $G_i$ to
+get a new list of matrices and then call 'GoDownChain' with this list and
+the next layer of our  record. We use parameters similar  to those in the
+Random Schreier-Sims algorithm to control how hard we work.
+
+If the list of matrices is non-empty, then we take generator relations on
+the list of blocks and evaluate these in $G_i$.  This gives us a new list
+of matrices and we call 'GoDownChain' with the list and the next layer of
+our record.
+
+If, in evaluating the  relations in $G_i$, we   get a non-identity block,
+then we  deduce that our permutation  representation is not  faithful. In
+this case,  the next layer  corresponds to the kernel  of the action that
+provided the representation.
+
+If these blocks do not lie in '.quotient', then we have to enlarge it. We
+then try to find  out the Aschbacher  category in which '.quotient' lies,
+and its size.  After applying these tests  and computing the size we then
+construct generator relations on   the list of generators  of '.quotient'
+and put them into the kernel.  We then call 'GoDownChain' with our record
+and an empty list of matrices.
+
+We first test whether '.quotient'  is a  classical  group in its  natural
+representation using 'RecogniseClassicalNP'.  If '.quotient' contains SL,
+we use 'Constructively\-Recognise\-Classical' to obtain both its size and
+a membership test;  if '.quotient' contains one   of the other  classical
+groups,  we  simply report  this.   If '.quotient'   contains a classical
+group,  we terminate  the   testing.  If 'RecogniseClassicalNP'   returns
+'false', then  we call  'RecogniseClassicalCLG'.  If '.quotient' contains
+one of the classical groups, then we behave as before.  If '.quotient' is
+not  a   classical group, then  we  obtain  a list  of  possibilities for
+'.quotient'.    This  list may   help  to  rule   out  certain Aschbacher
+categories and will give pointers to the ones which we should investigate
+further.
+
+If   '.quotient'   might  be  imprimitive,  then   we  test  this   using
+'IsPrimitive'.  If '.quotient' is   imprimitive,  then  we  obtain a
+permutation representation for the action on the blocks and we store this
+in '.quotient'. We set the  size  of '.quotient' to  be  the size of  the
+permutation  group.  If the action  is not faithful, then  we compute the
+kernel of the action at the next layer and then  we have the correct size
+for '.quotient'. If  '.quotient'  is  imprimitive, then the  testing ends
+here. If 'IsPrimitive' returns 'unknown' or 'true', then we store this in
+'.quotient'. We then reprocess '.quotient' using 'RecogniseClassicalCLG'.
+
+If '.quotient' might   be  a tensor  product,  then  we test  this  using
+'IsTensor'. If '.quotient' is a tensor  product, then we store the tensor
+factors in '.quotient'. Currently, we do not exploit this conclusion . If
+'IsTensor'  returns  'unknown'   or    'false' then we     store this  in
+'.quotient'. We then reprocess '.quotient' using 'RecogniseClassicalCLG'.
+
+By  default,  we      obtain    the   size  of      '.quotient'     using
+'PermGroupRepresentation'.  We advise  the user if  the list  returned by
+'RecogniseClassicalCLG'  suggests  that  the  group contains   an almost
+simple   group  or   an  alternating  group.    'PermGroupRepresentation'
+constructs a faithful permutation representation  for '.quotient' and  we
+store this in '.quotient'.
+
+We   illustrate    some of these   features   in   the following example.
+Additional examples can be found in 'matrix/reduce/examples.tex'.
+
+|    gap> # Construct the group SL(2, 3) x SP(4, 3)
+    gap> G1 := SL(2, 3);;
+    gap> G2 := SP(4, 3);;
+    gap> m1 := DiagonalMat_mtx( GF(3), G1.1, G2.1 );;
+    gap> m2 := DiagonalMat_mtx( GF(3), G1.2, G2.2 );;
+    gap> # Put something in the bottom left hand corner to give us a p-group
+    gap> m1[3][1] := Z(3)^0;;
+    gap> m2[5][2] := Z(3);;
+    gap> G := Group( [m1, m2], m1^0 );;
+    gap> # Apply RecogniseMatrixGroup to G
+    gap> x := RecogniseMatrixGroup( G );;
+    &I  Input group has dimension 6 over GF(3)
+    &I  Layer number 1: Type = "Unknown"
+    &I  Size = 1, # of matrices = 2
+    &I  Computing the next quotient
+    &I  <new> acts non-trivially on the block of dim 6
+    
+    &I  Found a quotient of dim 2
+    &I  Restarting after finding a decomposition
+    &I  Layer number 1: Type = "Perm"
+    &I  Size = 1, # of matrices = 2
+    &I  Submodule is invariant under <new>
+    &I  Enlarging quotient, old size = 1
+    
+    &I  Is quotient classical?
+    &I  Dimension of group is <= 2, you must supply form
+    &I  The quotient contains SL
+    &I  New size = 24
+    &I  Adding generator relations to the kernel
+    &I  Layer number 2: Type = "Unknown"
+    &I  Size = 1, # of matrices = 2
+    &I  Computing the next quotient
+    &I  <new> acts non-trivially on the block of dim 4
+    
+    &I  Found a quotient of dim 4
+    &I  Restarting after finding a decomposition
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 1, # of matrices = 2
+    &I  Submodule is invariant under <new>
+    &I  Enlarging quotient, old size = 1
+    
+    &I  Is quotient classical?
+    &I  The case is symplectic
+    &I  This algorithm does not apply in this case.
+    &I  The quotient contains SP
+    &W  Applying Size to (matrix group) quotient
+    &I  New size = 51840
+    &I  Adding generator relations to the kernel
+    &I  Restarting after enlarging the quotient
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 51840, # of matrices = 0
+    &I  Using a permutation representation
+    &I  Adding random relations at layer number 2
+    &I  Adding a random relation at layer number 2
+    &I  Layer number 3: Type = "PGroup"
+    &I  Size = 1, # of matrices = 3
+    &I  Reached the p-group case
+    &I  New size = 27
+    &I  Adding a random relation at layer number 2
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 27
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 2
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Kernel is finished, size = 340122240
+    &I  Restarting after enlarging the quotient
+    &I  Layer number 1: Type = "SL"
+    &I  Size = 8162933760, # of matrices = 0
+    &I  Using the SL recognition
+    &I  Adding random relations at layer number 1
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Adding a random relation at layer number 1
+    &I  Layer number 2: Type = "Perm"
+    &I  Size = 340122240, # of matrices = 3
+    &I  Submodule is invariant under <new>
+    &I  Using a permutation representation
+    &I  Adding generator relations to the kernel
+    &I  Kernel p-group, old size = 6561
+    &I  Kernel p-group, new size = 6561
+    &I  Kernel is finished, size = 8162933760
+    gap> # Let us look at what we have found
+    gap> DisplayMatRecord( x );
+    &I  Matrix group over field GF(3) of dimension 6 has size 8162933760
+    &I  Number of layers is 3
+    gap> DisplayMatRecord( x, 1 );
+    &I  Layer Number = 1
+    &I  Type = SL
+    &I  Dimension = 2
+    &I  Size = 24
+    gap> # The module for G splits into an irreducible submodule of dimension
+    gap> # 2 and a quotient module of dimension 4. The restriction of G to
+    gap> # the submodule contains SL(2, 3). Call this group G1.
+    gap> DisplayMatRecord( x, 2 );
+    &I  Layer Number = 2
+    &I  Type = Perm
+    &I  Dimension = 4
+    &I  Size = 51840
+    gap> # We have now taken relations on G1 and evaluated them in G to get
+    gap> # a group H, which is the kernel of the homomorphism from G to G1.
+    gap> # The group generated by the last 4x4 block on the diagonal of the
+    gap> # matrices of H  has an irreducible module and we have computed
+    gap> # a permutation representation on it. Call this group H1.
+    gap> DisplayMatRecord( x, 3 );
+    &I  Layer Number = 3
+    &I  Type = PGroup
+    &I  Dimension = 6
+    &I  Size = 6561
+    gap> # We have now taken relations on H1 and evaluated them in H to get the
+    gap> # kernel of the homomorphism from H to H1. This kernel consists of 
+    gap> # lower uni-triangular matrices. It is a p-group of size 6561. |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{RecogniseClassicalCLG}
+
+In this  section,    we  describe functions developed   by    Celler and
+Leedham-Green (see [3]  for  details) to  recognise  classical groups  in
+their natural representation over finite fields.
+
+'RecogniseClassicalCLG( <G> [,<case>] [,<N>] )'
+
+This is the top-level function, taking  as input a  group <G>, which is a
+subgroup of $\GL(d,q)$  with $d > 1$.   The other optional arguments have
+the same meaning as  those supplied to 'RecogniseClassical'.  The default
+value of <N>, the  number of random  elements to consider, depends on the
+case; it is 40 for  small fields and dimensions,  but decreases to 10 for
+larger dimensions.
+
+*Constraints*
+
+In  the case  of  an orthogonal  group,  the dimension  of the underlying
+vector space must be at least 7, since there are exceptional isomorphisms
+between  the  orthogonal  groups  in dimensions  $6$   or less and  other
+classical  groups which are  not dealt with in 'RecogniseClassical\-CLG'.
+In  dimension $8$, 'RecognizeSO' will *not*  rule out  the possibility of
+$O_7(q)$ embedded as irreducible subgroup of  $O_8^+(q)$.  Since <G> must
+also act    irreducibly, 'RecogniseClassicalCLG'  does  *not*   recognise
+$O_{2n+1}^0(2^k)$.
+
+The record  returned by  this function  is similar to  that  described in
+"RecogniseClassical".  In particular,  the flag functions described there
+and below can  be applied to the record.   You should ignore undocumented
+record components.
+
+*Additional information*
+
+'DualFormFlag':\\
+    if  <G>  has been proved to be  a  symplectic  or  orthogonal group,
+    'DualFormFlag' returns the symplectic or orthogonal form.
+
+'QuadraticFormFlag':\\
+    if <G> has been proved to  be an orthogonal group, 'QuadraticFormFlag'
+    returns the quadratic form.
+
+'UnitaryFormFlag':\\
+    if <G> has been proved to be a unitary group, 'DualFormFlag' returns
+    the symplectic or orthogonal form.
+
+If 'RecogniseClassical' *failed* to prove  that <G> is a classical group,
+additional information about the   possible Aschbacher categories of  <G>
+might have been obtained.
+
+In particular, the following flag functions may be applied to the record.
+If one of these functions returns a list, it has the following meaning\:\
+*if* <G> belongs to the corresponding  Aschbacher category, *then* <G> is
+determined by one of the possibilities returned; it does *not* imply that
+<G> is a member  of this category. However, an  empty list indicates that
+<G> does not belong  to this category.   Each of these functions may also
+return \"unknown\".
+
+A group <G> is *almost simple* if <G> contains a non-abelian simple group
+$T$ and is contained in the automorphism group of $T$.   If <G> is almost
+simple,   then <G>   is  either  an almost  sporadic     group, an almost
+alternating group, or an almost Chevalley group.
+    
+'PossibleAlmostSimpleFlag':\\
+    if  <G>  is not a  classical group, this function returns   a list of
+    possible   almost sporadic groups modulo   scalars.   This
+    function deals only  with *sporadic*  groups  $T$.  The names  of the
+    corresponding non-abelian  simple groups are returned. Possible names
+    are\:\ \"M11\", \"M12\", \"M22\",   \"M23\", \"M24\", \"J2\", \"Suz\",
+    \"HS\",   \"McL\",\  \"Co3\",  \"Co2\",   \"Co1\",  \"He\", \"Fi22\",
+    \"Fi23\", \"F3+\",  \"HN\",  \"Th\",  \"B\", \"M\",  \"J1\",  \"ON\",
+    \"J3\", \"Ly\", \"Ru\", \"J4\".  
+
+'PossibleAlternatingGroupsFlag':\\
+    if   <G> is not  a classical  group, this function  returns a list of
+    possible   almost  alternating  groups  modulo   scalars.   This list
+    contains the possible degrees as integers.
+
+'PossibleChevalleyGroupsFlag':\\
+    if <G> is  not  a classical group,   this function returns a  list of
+    possible almost    Chevalley  groups modulo  scalars.   The   various
+    Chevalley groups  are described  by tuples  $[  type, rank, p, k  ]$,
+    where  $type$ is  a  string giving  the type (e.g.   \"2A\", see [15,
+    p. 170] for details), $rank$ is the  rank of the Chevalley group, and
+    $p^k$ is the size of the underlying field.
+
+'IsPossibleImprimitiveFlag':\\
+    returns 'true' if <G> might be imprimitive.
+    
+'PossibleImprimitiveDimensionsFlag':\\
+    returns the  possible block  dimensions  ('IsPossibleImprimitiveFlag'
+    must be 'true').
+
+'IsPossibleTensorProductFlag':\\
+    returns 'true' if <G> might be a tensor product.
+    
+'PossibleTensorDimensionsFlag':\\
+    returns the possible tensor product  dimensions; note that this entry
+    is only valid if 'Is\-Possible\-Tensor\-Product\-Flag' is 'true' *or*
+    'Is\-Possible\-Tensor\-Power\-Flag' is  true *and* the dimension is a
+    square.
+    
+'IsPossibleTensorPowerFlag':\\
+    returns 'true' if <G> might be a tensor power.
+
+'IsPossibleSmallerFieldFlag':\\
+    retuns 'true'   if  <G> could  be defined    (modulo scalars) over  a
+    *smaller* field.
+
+'PossibleSmallerFieldFlag':\\
+    returns  the the least  possible  field ('IsPossibleSmallerFieldFlag'
+    must be 'true').
+
+'IsPossibleSemiLinearFlag':\\
+  the natural module could be isomorphic to a module of smaller dimension
+  over a *larger* field on which this extension field acts semi-linearly.
+
+'IsPossibleNormalizerPGroupFlag':\\
+  the dimension of  the underlying vector space  must  be $r^m$  for some
+  prime $r$  and <G> could  be an extension  of a $r$-group of symplectic
+  type and exponent $r\cdot\gcd(2,r)$ by  a subgroup of $Sp(m,r)$, modulo
+  scalars.  A  $r$-group is of *symplectic  type* if every characteristic
+  abelian subgroup is cyclic.
+
+*Examples*
+
+|    gap> m1 :=
+    > [ [ 0*Z(17), Z(17), Z(17)^10, Z(17)^12, Z(17)^2 ], 
+    >   [ Z(17)^13, Z(17)^10, Z(17)^15, Z(17)^8, Z(17)^0 ], 
+    >   [ Z(17)^10, Z(17)^6, Z(17)^9, Z(17)^8, Z(17)^10 ], 
+    >   [ Z(17)^13, Z(17)^5, Z(17)^0, Z(17)^12, Z(17)^5 ], 
+    >   [ Z(17)^14, Z(17)^13, Z(17)^5, Z(17)^10, Z(17)^0 ] ];;
+    gap> m2 :=
+    > [ [ 0*Z(17), Z(17)^10, Z(17)^2, 0*Z(17), Z(17)^10 ], 
+    >   [ 0*Z(17), Z(17)^6, Z(17)^0, Z(17)^4, Z(17)^15 ], 
+    >   [ Z(17)^7, Z(17)^6, Z(17)^10, Z(17), Z(17)^2 ], 
+    >   [ Z(17)^3, Z(17)^10, Z(17)^5, Z(17)^4, Z(17)^6 ], 
+    >   [ Z(17)^0, Z(17)^8, Z(17)^0, Z(17)^5, Z(17) ] ];;
+    gap> G := Group( m1, m2 );;
+    gap> sl := RecogniseClassicalCLG( G, "all", 1 );;
+    gap> IsSLContainedFlag(sl);
+    "unknown" |
+
+Since the algorithm has a  random component, it may fail  to prove that a
+group contains the special  linear group even  if  the group does.   As a
+reminder,    'IsSLContainedFlag'     may  return    'true',  'false',  or
+'\"unknown\"'.
+
+Here we chose only one random  element.  If 'RecogniseClassicalCLG' fails
+but you suspect that the group contains the special linear group, you can
+restart it using more random elements.  You should, however, *not* change
+the   <case>.     If you don\'t   already    know  the  case,   then call
+'RecogniseClassicalCLG' either without a case parameter or \"all\".
+
+|    gap> sl := RecogniseClassicalCLG( G, 5 );;
+    gap> IsSLContainedFlag(sl);
+    true |
+
+The following is  an  example where <G>  is  not an classical group   but
+additional information has been obtained.
+
+|    gap> ReadDataPkg ("matrix", "data", "j1.gap" );           
+    gap> DisplayMat(GeneratorsFlag(G));   
+      9  1  1  3  1  3  3
+      1  1  3  1  3  3  9
+      1  3  1  3  3  9  1
+      3  1  3  3  9  1  1
+      1  3  3  9  1  1  3
+      3  3  9  1  1  3  1
+      3  9  1  1  3  1  3
+    
+      .  1  .  .  .  .  .
+      .  .  1  .  .  .  .
+      .  .  . 10  .  .  .
+      .  .  .  .  1  .  .
+      .  .  .  .  . 10  .
+      .  .  .  .  .  . 10
+     10  .  .  .  .  .  .
+    
+    gap> r := RecogniseClassical( G, "clg" );;
+    gap> ClassicalTypeFlag(r);
+    "unknown"
+    gap> IsPossibleImprimitiveFlag(r);
+    false
+    gap> IsPossibleTensorProductFlag(r);
+    false
+    gap> IsPossibleTensorPowerFlag(r);  
+    false
+    gap> PossibleAlmostSimpleFlag(r);
+    [ "J1" ]
+    gap> PossibleAlternatingGroupsFlag(r);     
+    [  ]
+    gap> PossibleChevalleyGroupsFlag(r);  
+    [ [ "A", 1, 11, 3 ], [ "A", 2, 11, 2 ], [ "A", 3, 11, 1 ],
+      [ "G", 2, 11, 1 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RecogniseClassicalNP}%
+\index{IsGeneric}%
+\index{IsGenericNearlySimple}%
+\index{GenericParameters}%
+\index{IsExtensionField}
+
+In this section, we describe functions developed  by Niemeyer and Praeger
+(see [11, 12] for details) to recognise classical groups in their natural
+representation over finite fields.
+
+'RecogniseClassicalNP( <G> [,<case>] [,<N>] )'
+
+This is the top-level function taking as input  a  group <G>, which  is a
+subgroup of $\GL(d,q)$ with $d >  2$.  The  other optional arguments have
+the same meaning as those supplied to 'RecogniseClassical'.
+
+The aim  of  'RecogniseClassicalNP' is  to test  whether <G> contains the
+subgroup  $\O$  corresponding to  the value  of  <case>.   The  algorithm
+employed is Monte-Carlo based on random selections of elements  from <G>.
+'RecogniseClassicalNP' returns either 'true'  or 'false' or  '\"does  not
+apply\"'.  If it returns 'true' and <G> satisfies  the constraints listed
+for <case> (see 'RecogniseClassical')  then we know  with certainty  that
+<G>  contains the corresponding classical subgroup  $\Omega$.  It is  not
+checked  whether  <G> satisfies all  these  conditions.   If  it  returns
+'\"does  not apply\"'  then  either  the theoretical  background of  this
+algorithm  does  not  allow  us  to  decide  whether or not <G>  contains
+$\Omega$  (because the parameter  values are  too small)  or <G> is not a
+group of type  <case>.  If  it  returns  'false'  then there  is still  a
+possibility that <G> contains $\Omega.$ The probability that <G> contains
+$\Omega$ and 'RecogniseClassicalNP' returns 'false' can be controlled  by
+the parameter $N,$ which is the number of elements selected from $G.$ The
+larger $N$  is,  the smaller  this  probability becomes.   If $N$ is  not
+passed  as  an argument, the default value for $N$  is  15  if  <case> is
+'\"linear\"'   and  25  otherwise.   These   values  were  experimentally
+determined  over  a  large  number of  trials.   But  if  $d$ has several
+distinct prime divisors, larger values of $N$ may be required (see [12]).
+
+The complexity of the function for small fields $(q \< 2^{16})$ and for a
+given value of <N> is $O( d^3\, \log\log d\, )$ bit operations.
+
+Assume 'InfoRecog1' is  set to 'Print'; if 'RecogniseClassicalNP' returns
+'true', it prints
+
+|    "Proved that the group contains  a classical group of type <case>
+    in  <n> selections\",|
+
+where     <n>  is   the    actual    number   of   elements      used; if
+'RecogniseClassicalNP' returns 'false', it  prints '\"The group  probably
+does not   contain a classical  group\"'  and  possibly  also a statement
+suggesting what the group might be.
+
+If <case> is not supplied, then 'ClassicalForms' seeks to determine which
+form is   preserved.  If 'ClassicalForms'  fails to  find  a  form,  then
+'RecogniseClassicalNP' returns 'false'.
+
+Details of the computation, including the identification of the classical
+group type, are stored in the component  'G.recognise'.  Its contents can
+be accessed using the following flag functions.
+
+'ClassicalTypeFlag':\\
+    returns   one of '\"linear\"', '\"symplectic\"', '\"orthogonalplus\"',
+    '\"orthogonalminus\"', '\"orthogonalcircle\"' or '\"unitary\"' if <G> is 
+    known to be a classical group of this type  modulo scalars, 
+    otherwise '\"unknown\"'.  
+
+'IsSLContainedFlag':\\
+    returns 'true' if <G> contains the special linear group $\SL(d,q)$.
+
+'IsSymplecticGroupFlag':\\
+    returns 'true' if <G> is  contained in $\GSp(d,q)$ modulo scalars and
+    contains $\Sp(d,q)$.
+    
+'IsOrthogonalGroupFlag':\\
+    returns 'true'  if  <G> is contained  in an  orthogonal group modulo
+    scalars and contains the corresponding $\Omega$.
+    
+'IsUnitaryGroupFlag':\\
+    returns 'true' if <G> is contained in an unitary group modulo scalars
+    and contains the corresponding $\Omega$.
+
+These  last four functions return 'true', 'false',  or \"unknown\".  Both
+'true'  and  'false'  are *conclusive*.  The answer \"unknown\" indicates
+either that the algorithm *failed* to  determine  whether or not <G> is a
+classical group or  that the algorithm is not applicable  to the supplied
+group.
+
+If 'RecogniseClassicalNP' returns 'true', then 'G.recognise' contains all
+the information that proves that $G$  contains the classical group having
+type  'G.recognise.type'.   The record  components 'd', 'p', 'a' and  'q'
+identify $G$ as a subgroup of $GL(d,q),$  where $q= p^a.$ For each $e$ in
+'G.recognise.E' the group  $G$  contains  a ppd$( d, q;  e)$-element (see
+'IsPpdElement')  and for each $e$ in 'G.recognise.LE' it contains a large
+ppd$(d,   q;   e)$-element.   Further,  it  contains   a  basic   ppd$(d,
+q;e)$-element if $e$  is in 'G.recognise.basic'.  Finally,  the component
+'G.recognise.isReducible' is 'false', indicating that $G$ is now known to
+act irreducibly.
+
+If  'RecogniseClassicalNP' returns '\"does not  apply\"', then $G$ has no
+record 'G.recognise'.
+
+If 'RecogniseClassicalNP' returns  'false', then 'G.recognise' gives some
+indication as to why  the algorithm  failed to  prove that $G$ contains a
+classical group.   Either  $G$ could  not  be  shown  to  be generic  and
+'G.recognise.isGeneric' is 'false' and  'G.recognise.E', 'G.recognise.LE'
+and 'G.recognise.basic' will indicate which  kinds  of ppd-elements could
+not  be found; or  'G.recognise.isGeneric' is  'true'  and  the algorithm
+failed to rule  out that $G$ preserves an  extension  field structure and
+'G.recognise.possibleOverLargerField'  is  'true';  or  'G.isGeneric'  is
+'true' and  'G.possibleOverLargerField' is  'false'  and the  possibility
+that    $G$   is   nearly   simple   could   not   be   ruled   out   and
+'G.recognise.possibleNearlySimple' contains a list  of names of  possible
+nearly  simple groups; or 'ClassicalForms'  failed  to find  a  form  and
+'G.recognise.noFormFound' is  'true'; or finally 'G.isGeneric' is  'true'
+and  'G.possibleOverLargerField' is  'false' and 'G.possibleNearlySimple'
+is empty and <G> was found to act reducibly and 'G.recognise.isReducible'
+is 'true'.
+
+If   'RecogniseClassicalNP'   returns   'false',   then   a   recall   to
+'RecogniseClassicalNP' for  the given  group uses the previously computed
+facts about the group stored in 'G.recognise'.
+
+
+|    gap> RecogniseClassicalNP( GL(10,5), "linear", 10 );
+    true
+    gap> RecogniseClassicalNP( SP(6,2), "symplectic", 10 );
+    #I This algorithm does not apply in this case
+    "does not apply" |
+
+|    gap> G := SL(20, 5);;
+    gap> RecogniseClassicalNP( G );
+     true
+    gap> G.recognise;
+     rec(
+     d := 20,
+     p := 5,
+     a := 1,
+     q := 5,
+     E := [ 11, 12, 16, 18 ],
+     LE := [ 11, 12, 16, 18 ],
+     basic := 12,
+     isReducible := false,
+     isGeneric := true,
+     type := "linear" ) |
+
+|    gap> InfoRecog1 := Print;; InfoRecog2 := Print;;
+    gap> G := GeneralUnitaryMatGroup(7,2);;
+    gap> RecogniseClassicalNP( G );    
+    #I  The case is unitary
+    #I  <G> acts irreducibly, block criteria failed
+    #I  The group is generic in 4 selections
+    #I  The group is not an extension field group
+    #I  The group does not preserve an extension field
+    #I  The group is not nearly simple
+    #I  The group acts irreducibly
+    #I  Proved that group contains classical group of type unitary
+    #I  in 6 random selections.
+    true
+    gap > G.recognise;
+    rec(
+    d := 7,
+    p := 2,
+    a := 2,
+    q := 4,
+    E := [ 5, 7 ],
+    LE := [ 5, 7 ],
+    basic := 7,
+    isReducible := false,
+    isGeneric := true,
+    type := "unitary" ) |
+
+|    gap> InfoRecog1 := Print;; InfoRecog2 := Print;;
+    gap> G := Group (
+    > [[0,1,0,0],
+    >  [1,1,0,0],
+    >  [0,0,0,1],
+    >  [0,0,1,1]] * GF(2).one,
+    > [[0,0,1,0],
+    >  [0,1,1,0],
+    >  [1,0,1,1],
+    >  [0,1,1,1]] * GF(2).one );
+    gap> RecogniseClassicalNP (G);
+    #I  The case is linear
+    #I  <G> acts irreducibly, block criteria failed
+    #I  The group is generic in 8 selections
+    #I  The group is not an extension field group
+    #I  The group does not preserve an extension field
+    #I  G\'\  might be A\_7;
+    #I  G\'\  is not a Mathieu group;
+    #I  G\'\  is not PSL(2,r)
+    #I  The group could be a nearly simple group.
+    false
+    gap> G.recognise;
+    rec(
+    d := 4,
+    p := 2,
+    a := 1,
+    q := 2,
+    E := [ 3, 4 ],
+    LE := [ 3 ],
+    basic := 4,
+    isReducible := false,
+    isGeneric := true,
+    possibleNearlySimple := [ "A7" ],
+    dimsReducible := [ 0, 4 ],
+    possibleOverLargerField := false ) |
+
+We now describe some of the lower-level functions used.
+
+'GenericParameters( <G>, <case> )'
+
+This function takes as  input a subgroup <G>  of $\GL(d,q)$  and a string
+<case>, one of the list given under 'RecogniseClassicalGroup'.  The group
+<G>  has generic  parameters  if  the  subgroup  $\Omega$  of  $\GL(d,q)$
+contains  two different ppd-elements  (see  'IsPpdElement'),  that  is  a
+ppd$(d, q; e_1)$-element  and a ppd$(d, q;  e_2)$-element for $d/2 \< e_1
+\< e_2 \le d$ such that at  least one of them  is a large ppd-element and
+one  is  a  basic ppd-element.  The  function 'GenericParameters' returns
+'true' if <G> has generic parameters. In this case 'RecogniseClassicalNP'
+can  be applied to  <G>  and  <case>.   If  <G>  does  not  have  generic
+parameters, the function returns 'false'.
+
+|    gap> GenericParameters( SP(6,2), "symplectic" );
+    false
+    gap> GenericParameters( SP(12,2), "symplectic" );
+    true |
+
+[Comment\:\ In the near  future  we  propose  to extend and modify our
+algorithm to deal with cases where the group $\Omega$ does not contain
+sufficient ppd-elements.]
+
+
+'IsGeneric( <G>, <N>  )'
+
+This function  takes as input a subgroup <G> of $\GL(d,q)$ and an integer
+<N>.   The  group <G> is  generic if  it is  irreducible and contains two
+different  ppd-elements  (see  'IsPpdElement'),  that  is  a  ppd$(d,  q;
+e_1)$-element  and a ppd$(d, q; e_2)$-element for  $d/2 \< e_1 \< e_2 \le
+d$ such that at least  one  of them is a large ppd-element and one  is  a
+basic  ppd-element.  It chooses  up to <N> elements  in <G> and increases
+'<G>.recognise.n' by the  number of  random selections it made.  If among
+these  it  finds  the  two  required  different  ppd-elements,  which  is
+established by examining  the sets '<G>.recognise.E', '<G>.recognise.LE',
+and  '<G>.recognise.basic',  then it  sets  '<G>.recognise.isGeneric'  to
+'true'  and returns 'true'.  If after <N>  random selections it fails  to
+find two different ppd-elements, the function returns 'false'.  It is not
+tested whether <G> actually is irreducible.
+ 
+|   gap> IsGeneric( SP(12,2), 20 );
+    true |
+
+
+'IsExtensionField( <G>, <case>, <N> )'
+
+This function  takes  as input  a subgroup <G>  of  $\GL(d,q)$,  a string
+<case>, one  of the list given under  'RecogniseClassicalGroup',  and  an
+integer  <N>.   It assumes,  but does not  test that <G> is  generic (see
+'IsGeneric').  We say that the group <G> can be defined over an extension
+field if there is a prime $b$ dividing $d$ such that  <G> is conjugate to
+a  subgroup of  $Z.\GL(d/b,q^b).b,$ where  $Z$  is the  group  of  scalar
+matrices in $\GL(d,q).$  Then  'IsExtensionField' returns $m$  if certain
+elements are found in $m$ random selections which together prove that <G>
+cannot  be  a  subgroup  of  an extension  field  group.   In  this  case
+'<G>.recognise.possibleOverLargerField' is set to 'false'. If,  after <N>
+random selections of elements  from <G>, this could not  be  established,
+then 'IsExtensionField'  returns 'true'.  Hence, if  it  returns  'true',
+then either <G>  is an extension field group or one needs to  select more
+elements of  <G> to establish  that this is  not the case. The  component
+'<G>.recognise.possibleOverLargerField' is set to 'true'.
+
+|   gap> IsExtensionField( GL(12,2), "linear", 30 );
+    8 |
+
+'IsGenericNearlySimple( <G>, <case>, <N> )'
+  
+The subgroup <G> of $\GL(d,q)$ is  said to be *nearly simple* if there is
+some nonabelian  simple group  $S$ such that $S \le G/(G\cap Z)  \le {\rm
+Aut}(S),$  where $Z$ denotes the subgroup of  nonsingular scalar matrices
+of $\GL(d,q).$ This function takes as input a subgroup <G> of $\GL(d,q)$,
+a string  <case>, one of the list given under  'RecogniseClassicalGroup',
+and an integer <N>.  It assumes but does not test that <G> is irreducible
+on the underlying vector space, is generic  (see 'IsGeneric'), and is not
+contained  in an extension field  group  (see  'IsExtensionField').  This
+means that  <G> is  known  to contain  two  different  ppd-elements  (see
+'IsPpdElement'),  that is a ppd$(d, q;  e_1)$-element and  a  ppd$(d,  q;
+e_2)$-element for  $d/2 \<  e_1 \<  e_2 \le d$ such that at  least one of
+them  is a large ppd-element and one  is  a  basic  ppd-element,  and the
+values $e_1$ and  $e_2$ for the elements are stored in '<G>.recognise.E'.
+At this stage, the theoretical analysis in [12] tells us that  either <G>
+contains $\Omega$, or the  string  <case>  is '\"linear\"'  and <G> is an
+absolutely irreducible generic nearly  simple  group.   All possibilities
+for the latter groups are  known explicitly,  and 'IsGenericNearlySimple'
+tries to  establish that <G> is not  one of these groups.  Thus  it first
+checks that <case> is '\"linear\"', and if so performs further tests.
+
+'IsGenericNearlySimple' returns  'false'  if certain elements  are  found
+which together  prove  that <G> cannot be a  generic nearly simple group.
+If, after  <N> random selections of elements from <G>, this could not  be
+shown,  then  'IsGenericNearlySimple' returns 'true' and  <G> might  be a
+generic  nearly simple group.   It  increases  '<G>.recognise.n'  by  the
+number of elements selected.  In this case either <G> is nearly simple or
+there is a small chance that the output 'true' is incorrect.  In fact the
+probability with  which the algorithm will return  the  statement  'true'
+when <G> is not nearly  simple can be made arbitrarily small depending on
+the number <N> of random selections  performed.  The list  of irreducible
+generic  nearly  simple groups  is very  short.  The name of each  nearly
+simple group  which might be isomorphic to <G> is  stored as a  string in
+<G>'.recognise.possibleNearlySimple'.  If 'InfoRecog2' is set to 'Print',
+then  in  the case  that <G> is such  a  group 'IsGeneric' will print the
+isomorphism type of the nearly simple group.
+
+|   gap> IsGenericNearlySimple( GL(12,2), "symplectic", 30 );
+    11 |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{InducedAction}%
+\index{SubGModule}%
+\index{QuotientGModule}%
+\index{RandomIrreducibleSubGModule}
+
+'InducedAction( <module>, <basis> )' \\
+'SubGModule( <module>, <basis> )'\\
+'QuotientGModule( <module>, <basis> )'
+
+These functions take   a $G$-module <module>  as  input, together with  a
+basis <basis> for a proper submodule,  which is assumed to be normalised,
+in the weak sense that the first non-zero component of each vector in the
+basis is 1,  and no  two vectors in  the  basis have their  first nonzero
+components in the same position.   The basis is given as  an $r \times n$
+matrix, where $r$ is the length of the basis.
+
+Normally, one  runs  'IsIrreducible(<module>)'  first, and  (assuming  it
+returns 'false') then runs these functions using 'SubbasisFlag(<module>)'
+as the second    argument.   'InducedAction' returns a  4-element    list
+containing the   submodule,  the quotient module, the   original matrices
+rewritten with  respect to  a  basis in which a   basis for the submodule
+comes  first, and  the  change-of-basis matrix; 'SubGModule' returns  the
+submodule having  <basis> as  basis; 'QuotientGModule'  the corresponding
+quotient module.
+
+'RandomIrreducibleSubGModule( <module> )'
+
+Find a basis for an *irreducible* submodule of <module>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FieldGenCentMat}
+
+'FieldGenCentMat( <module> )'
+
+This      function should  only       be    applied  if  the     function
+'IsIrreducible(<module>)'   has       returned      'true',    and     if
+'IsAbsolutelyIrreducible(<module>)' has returned 'false'.  A matrix which
+centralises  the $G$-module <module>  and  which has multiplicative order
+$q^e-1$, where  $q$  is the order   of the ground  field and  $e$  is the
+dimension   of the centralising  field  of  <module>,  is calculated  and
+stored. It can be accessed as 'CentMatFlag(<module>)'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MinimalSubGModules}
+
+'MinimalSubGModules( <module1>, <module2> [, <max>] )'
+
+This function should  only  be applied  if 'IsIrreducible(<module1>)' has 
+returned
+'true'.  <module1> and  <module2> are assumed  to be $G$-modules for  the
+same group $G$.  'MinimalSubGModules' computes and  returns a list of the
+normalised bases of all  of the minimal submodules  of <module2> that are
+isomorphic to <module1>.  (These can then  be constructed as $G$-modules,
+if required, by calling 'SubGModule(<module2>, <basis>)' where <basis> is
+one  of these bases.)  The optional  parameter <max> should be a positive
+integer. If the number of submodules exceeds <max>, then the procedure is
+aborted.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SpinBasis}
+
+'SpinBasis( <vector>, <matrices> )'
+
+The input  is a vector, <vector>, and  a list of   $n \times n$ matrices,
+<matrices>, where $n$ is the length of the vector.  A normalised basis of
+the   submodule generated by  the action  of  the matrices (acting on the
+right) on the vector is calculated and returned.  It is returned as an $r
+\times n$ matrix, where $r$ is the dimension of this submodule.
+
+'SpinBasis' is called by 'IsIrreducible'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SemiLinearDecomposition}
+
+'SemiLinearDecomposition( <module>, <S>, <C>, <e> )'
+
+<module> is a module for a matrix group $G$ over  a finite field $GF(q)$.
+The function returns 'true' if $G$ is found to act semilinearly.
+
+$G$ is assumed to act absolutely irreducibly. <S> is  a set of invertible
+matrices,  generating a subgroup of $G$, and  assumed to act  irreducibly
+but  not  absolutely  irreducibly  on  the  underlying  vector  space  of
+<module>.  The matrix <C> centralises the action of <S> on the underlying
+vector space and so acts as  multiplication  by  a field generator $x$ of
+$GF(q^e)$ for some embedding  of  a  $d/e$-dimensional  vector space over
+$GF(q^e)$ in the $d$-dimensional space.  If <C> centralises the action of
+the normal  subgroup  $\langle  S \rangle ^G$  of  $G$, then  $\langle  S
+\rangle  ^G$   embeds  in  $GL(d/e,q^e)$,  and  $G$  embeds  in   $\Gamma
+L(d/e,q^e)$,   the   group   of   semilinear    automorphisms    of   the
+$d/e$-dimensional space.  This is verified  by the  construction of a map
+from $G$ to  $Aut(GF(q^e))$.   If  the  construction  is  successful, the
+function returns 'true'.  Otherwise a  conjugate  of an element of <S> is
+found which does not  commute  with <C>.  This  conjugate is added to <S>
+and the function returns 'false'.
+
+'SemiLinearDecomposition' is called by 'SmashGModule'.
+
+The algorithm is described in [6].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TensorProductDecomposition}
+
+'TensorProductDecomposition( <module>, <basis>, <d1>, <d2> )'
+
+<module> is a module for a matrix group $G$  over a finite field, <basis>
+is a basis of the underlying vector space, <d1> and <d2> are two integers
+whose product is the dimension of that space.
+
+'TensorProductDecomposition' returns 'true' if <module> can be decomposed
+as a tensor product of spaces of dimensions <d1> and <d2> with respect to
+the given basis, and 'false' otherwise.  The matrices which represent the
+action of the generators of $G$ with respect to the appropriate basis are
+computed.
+
+'TensorProductDecomposition' is called by 'SmashGModule'.
+
+The algorithm is described in [6].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SymTensorProductDecomposition}
+
+'SymTensorProductDecomposition( <module>, <HM> )'
+
+<module> is a module for a matrix group $G$ over a finite field.  <HM> is
+the module corresponding to  the action of a  subgroup $H$ of $G$ on  the
+same vector  space.  Both  $G$ and   $H$  are assumed  to  act absolutely
+irreducibly.  The function returns 'true' if <HM>  can be decomposed as a
+tensor  product of two  or more $H$-modules,  all of  the same dimension,
+where these tensor factors are  permuted by the  action of $G$.  In  this
+case, components   of <module> record   the tensor decomposition  and the
+action of $G$  in permuting  the  factors.  If  no such decomposition  is
+found, 'SymTensorProductDecomposition' returns 'false'.
+
+A  negative answer is *not*  reliable, since we try to find a decomposition   
+of <HM> as a tensor product only by considering some pseudo-random elements.
+
+'SymTensorProductDecomposition' is called by 'SmashGModule'.
+
+The algorithm is described in [6].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ExtraSpecialDecomposition}
+
+'ExtraSpecialDecomposition( <module>, <S> )'
+
+<module> is a module for a matrix group $G$ over a finite field where $G$
+is assumed to act absolutely irreducibly.
+
+<S>   is a   set  of invertible    matrices, assumed  to   act absolutely
+irreducibly on the underlying vector space of <module>.
+
+'ExtraSpecialDecomposition' returns 'true' if (modulo scalars) $\langle S
+\rangle$ is an extraspecial $r$-group,  for some prime  $r$, or a 2-group
+of  symplectic  type (that  is, the central  product   of an extraspecial
+2-group with a cyclic group of order 4), normalised by $G$.  Otherwise it
+returns 'false'.
+
+'ExtraSpecialDecomposition' attempts to prove that $\langle S \rangle$ is
+ extraspecial  or of symplectic type by   construction.  It tries to find
+ generators $x_1, \ldots, x_k, y_1, \ldots, y_k, z$ for $\langle S
+\rangle$,  with $z$  central of order $r$, each $x_i$  commuting with all
+other  generators  except $y_i$,  each  $y_i$  commuting  with all  other
+generators except $x_i$, and $[x_i, y_i] = z$.  If it succeeds, it checks
+that conjugates of these generators are also in <S>.
+
+'ExtraSpecialDecomposition' is called by 'SmashGModule'.
+
+The algorithm is described in [6].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MinBlocks}
+
+'MinBlocks( <module>, <B> )'
+ 
+'MinBlocks' finds the smallest block containing the echelonised basis <B>
+under  the action of the   $G$-module <module>.  The block system  record
+returned has four components\:\ the number  of blocks, a block containing
+the supplied basis <B>,   a permutation group   $P$ which  describes  the
+action  of $G$ on the  blocks, and a list which  identifies the images of
+the generators of <G>  as generators of $P$.  For an explanation of  this
+last component, see 'ApproximateKernel'.
+
+'MinBlocks' is called by 'IsPrimitive'.
+
+The algorithm is described in [7].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BlockSystemFlag}
+
+'BlockSystemFlag( <module> )' 
+
+If  the record for the $G$-module  <module> has a block system component,
+then  'Block\-System\-Flag'   returns  this  component,  which   has  the
+structure described in 'Min\-Blocks', else it returns 'false'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Components of a $G$-module record}
+
+The component  '.reducible' is set to 'true'  if <module> is  known to be
+reducible, and to  'false' if it  is known not  to be.  This component is
+set  by 'IsIrreducible' which  may also  set the components  '.subbasis',
+'.algEl',   '.algElMat',       '.algElCharPol',       '.algElCharPolFac',
+'.algElNullspaceVec'  and  '.algElNullspaceDim'.   If   <module> has been
+proved reducible, '.subbasis' is a basis for a submodule.  Alternatively,
+if <module> has been proved  to be irreducible, '.algEl'   is set to  the
+random element $el$ of the group algebra which has been successfully used
+by  the    algorithm  to prove irreducibility,    represented abstractly,
+essentially as a sum of  words in the generators,  and '.algElMat' to the
+actual   matrix  $X$   that  represents   that    element.  The component
+'.algElCharPol'  is set to the characteristic  polynomial  $p$ of $X$ and
+'.algElCharPolFac'   to the factor $f$    of $X$ used  by the  algorithm.
+(Essentially  irreducibility    is   proved   by    applying    Norton\'s
+irreducibility criterion to   the matrix  $f(X)$;   see [5]  for  further
+details.)    The component '.algElNullspaceVec'  is   set to an arbitrary
+vector  of the nullspace $N$  of $f(X)$,  and '.algElNullspaceDim' to the
+dimension of $N$.
+
+The component  '.absolutelyReducible' is  set  to 'false' if  <module> is
+known to be  absolutely irreducible, and to 'true'  if it is known not to
+be.  It  is  set   by  'IsAbsolutelyIrreducible',  which  also  sets  the
+components '.degreeFieldExt',   '.centMat', '.centMatMinPoly' if <module>
+is not absolutely irreducible.  In that case, '.degreeFieldExt' is set to
+the dimension $e$ of the  centralising field of <module>.  The  component
+'.centMat' is set to  a matrix $C$,  which both  centralises each  of the
+matrices  in <module>.generators generating  the group action of <module>
+and   has   minimal   polynomial  $f$  of  degree  $e$.    The  component
+'.centMatMinPoly' is set equal to $f$.
+
+The component '.semiLinear' is set to 'true' in 'SemiLinearDecomposition'
+if $G$ acts  absolutely irreducibly on <module>  but embeds in a group of
+semilinear  automorphisms over an extension field  of degree $e$ over the
+field $F$.  Otherwise it is not set.  At the same time, '.degreeFieldExt'
+is set to $e$, '.linearPart'  is set to a list  of matrices $S$ which are
+normal subgroup  generators for the intersection  of $G$ with the general
+linear group in dimension $d/e$ over $GF(q^e)$, and  '.centMat' is set to
+a matrix $C$  which  commutes with  each  of those  matrices.  Here,  $C$
+corresponds to scalar multiplication in  the module by  an element of the
+extension   field $GF(q^e)$.  The  component '.frobeniusAutomorphisms' is
+set to a   list  of integers  $i$, one    corresponding to each  of   the
+generating matrices $g$ for $G$ in the  list '.generators', such that $Cg
+= gC^{q^{i(g)}}$. Thus  the generator $g$  acts on the field $GF(q^e)$ as
+the Frobenius automorphism $x \rightarrow x^{q^{i(g)}}$.
+
+The component     '.tensorProduct'       is   set   to     'true'      in
+'TensorProductDecomposition'  if <module>  can   be written as  a  tensor
+product  of  two  $G$-modules  with respect   to  an  appropriate  basis.
+Otherwise it is not set.  At the same time,  '.tensorBasis' is set to the
+appropriate basis of  that space,  and '.tensorFactors'  to the  pair  of
+$G$-modules  whose tensor product  is isomorphic to <module> written with
+respect to that basis.
+
+The    component     '.symTensorProduct'   is     set    to   'true'   in
+'SymTensorProductDecomposition' if <module> can be written as a symmetric
+tensor  product  whose  factors  are permuted  by  the   action  of  $G$.
+Otherwise it is not set.   At the same time,  '.symTensorBasis' is set to
+the   basis with  respect to   which  this decomposition  can be   found,
+'.symTensorFactors' to the list  of tensor factors, and  '.symTensorPerm'
+to  the list of  permutations corresponding to the action  of each of the
+generators of $G$ on those tensor factors.
+
+The  component  '.extraSpecial' is set     to  'true' in  the    function
+'ExtraSpecialDecomposition'  if  $G$ has  been shown   to  have a  normal
+subgroup $H$ which is an extraspecial $r$-group for an odd prime $r$ or a
+2-group of symplectic type, modulo scalars.  Otherwise it is not set.  At
+the same  time,  '.extraSpecialGroup' is  set  to the subgroup  $H$,  and
+'.extraSpecialPrime' is set to $r$.
+
+The component '.imprimitive'  is set to 'true' if  $G$ has  been shown to
+act imprimitively and  to 'false' if $G$ is  primitive.   Otherwise it is
+not set.  This component is set in 'IsPrimitive'.   If $G$ has been shown
+to act imprimitively, then <module> has  a component '.blockSystem' which
+has the structure described in 'BlockSystemFlag'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ApproximateKernel}
+
+'ApproximateKernel( <G>, <P>, <m>, <n> [,<maps>] )'
+
+<G> is an  irreducible matrix group. <P>  is a permutation representation
+of <G>.
+
+'ApproximateKernel'  returns a  generating set for  *a  subgroup* of  the
+kernel  of  a homomorphism from  <G>  to <P>.  The   parameter <m> is the
+maximum   number  of random relations  constructed    in order to  obtain
+elements of   the kernel.  If  <n> successive  relations provide no *new*
+elements of the kernel,  then we terminate  the construction.   These two
+parameters determine  the time taken to  construct the kernel; <n> can be
+used to  increase the   probability that the    whole  of the   kernel is
+constructed.  The suggested  values of   <m> and <n>   are  100 and   30,
+respectively.
+
+Assume  that  <G> has $r$  generators  and  <P> has  $s$ generators.  The
+optional argument <maps>  is  a list of   length $r$ containing  integers
+between $0$ and $s$. We use  <maps> to specify the correspondence between
+the generators of <G> and the generators of <P>. An entry $0$ in position
+$i$ indicates that <G>.i maps  to the identity of   <P>; an entry $j$  in
+position $i$ indicates that  <G>.i maps  to <P>.j. By default,  we assume
+that <G>.i maps to <P>.i.
+
+The  function is similar  to  'RecogniseMatrixGroup' but here we  already
+know '.quotient' is <G> and we  have a permutation representation <P> for
+<G>. The  function  returns a  record  containing information  about  the
+kernel.  The record contents can be viewed using 'DisplayMatRecord'.
+
+The    algorithm is described in  [13];   the implementation is currently
+*experimental*.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RandomRelations}%
+\index{EvaluateRelation}
+
+'RandomRelation( <G>, <P> [,<maps>] )'
+
+<G> is  a matrix group. <P> is  a permutation representation of  <G>. The
+optional argument <maps> has the same meaning as in 'ApproximateKernel'.
+
+'RandomRelation' returns  a relation for <G>. We  set up a free  group on
+the number of generators of <G> and we also set up  a mapping from <P> to
+this  free group. We  then   take a random word   in  the free group  and
+evaluate this  in <P>. Our relation is  the product of the  original word
+and the inverse of the image of the permutation under the mapping we have 
+constructed.
+
+'EvaluateRelation( <reln>, <G> )'
+
+<reln>   is the  word   returned by  an application  of 'RandomRelation'.
+'EvaluateRelation' evaluates <reln> on the generators of <G>.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DisplayMatRecord}%
+\index{SetPrintLevelFlag}%
+\index{PrintLevelFlag}
+
+'DisplayMatRecord( <rec> [, <layer>] )' \\
+'SetPrintLevelFlag( <rec>, <i> )' \\
+'PrintLevelFlag( <rec> )'
+
+<rec>   is the  record   returned either   by  'RecogniseMatrixGroup'  or
+'ApproximateKernel'. The optional argument <layer>  is an integer between
+1 and  the last layer  reached by the  computation and <i> is  an integer
+between 1 and 3.
+
+'DisplayMatRecord' prints the information contained in <rec> according to
+three different print level settings. The print level is initially set to
+1. This  can be  changed using  'SetPrintLevelFlag'. We can
+also examine the current print level using 'PrintLevelFlag'.
+
+At print level 1,  we get basic information   about the group; the  field
+over which it is written, its dimension and possibly its size. If <layer>
+is specified, then  we  get this  basic information about  '.quotient' at
+that <layer>.
+
+At print level 2, we get the same basic information about the group as we
+did at level 1 along with the basic information about '.quotient' at each
+level.  If <layer> is  specified, then we get  the same information as we
+did at level 1.
+
+At print level 3,  we print the entire contents  of <rec>. If  <layer> is
+specified, then we print the part of <rec> that corresponds to <layer>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The record returned by RecogniseMatrixGroup}
+
+Both 'RecogniseMatrixGroup' and 'ApproximateKernel' return a record whose
+components tell  us information about the  group  and the various kernels
+which we compute.
+
+Each   layer  of   the record   contains  basic    information about  its
+corresponding group; the field over   which it is written, its  identity,
+its dimension   and its  generators.   These  are stored  in   components
+'.field', '.identity', '.dimension' and '.generators' respectively.
+
+Each layer  also has components   '.layer\-Number', '.type', '.size'  and
+'.printLevel'.  '.layer\-Number' is an integer  telling us which layer of
+the record we are in.  The top layer is layer  1,  '.kernel' is layer  2,
+etc.
+
+The  component  '.type' is  one  of the following strings\:\ \"Unknown\",
+\"Perm\", \"SL\", \"Imprimitive\", \"Trivial\" and \"PGroup\". If '.type'
+is \"Unknown\" then we have not  yet computed '.quotient'.  If '.type' is
+\"Perm\"  then  we have   computed  '.quotient'; if '.quotient' does  not
+contain SL  then  we compute a   permutation representation  for it.   If
+'.quotient'  contains SL then  '.type'   is  \"SL\".  If '.quotient'   is
+imprimitive then  '.type' is \"Imprimitive\".   If '.quotient' is trivial
+then '.type' is \"Trivial\". If we are in  the last layer then '.type' is
+\"PGroup\".
+
+The  component    '.size' is  the   size  of   the   group  generated  by
+'.generators';   '.printLevel'   is   the   current   print   level  (see
+'DisplayMatRecord').
+
+All  layers   except   the   last  have  components      '.sizeQuotient',
+'.dimQuotient', '.basis\-Sub\-module' and '.basis'. Here  '.sizeQuotient'
+is the size of '.quotient'.  If we  have a permutation representation for
+'.quotient'  which is not faithful, then  '.sizeQuotient' is  the size of
+the permutation group.   We compute the kernel of  the action in the next
+layer and thus obtain the correct size of '.quotient'.  '.dimQuotient' is
+the   dimension of '.quotient'.   The   component '.basisSubmodule' is  a
+matrix consisting  of standard basis  vectors for the quotient module. We
+use  it  to  check  that the '.quotient'   block  structure is preserved.
+'.basis' is the basis-change matrix returned when we split the group.
+
+The '.quotient' record may have '.permDomain', '.permGroupP', '.fpGroup',
+'.abstract\-Gen\-erat\-ors',    '.fpHomomorphism'  and  '.isFaithful'  as
+components.   If   we have a  permutation   representation  on  the group
+'.quotient', then '.permDomain' is either a  list of vectors or subspaces
+on which the group acts to provide a permutation group.  '.permGroupP' is
+the  permutation  group.  '.fpGroup'  is a  free  group  on the number of
+generators  of  '.quotient'.  '.abstractGenerators'  is the generators of
+'.fpGroup'.   '.fpHomomorphism'   is   a mapping from   '.permGroupP'  to
+'.fpGroup'.   '.isFaithful' tells  us  whether we have  learned  that the
+representation is not faithful.
+
+The '.pGroup'  record     has components '.field',  '.size',    '.prime',
+'.dimension', '.identity', '.layers'  and '.layersVec'.  Here '.field' is
+the field over which  the group is written; '.size'   is the size  of the
+group;  '.prime' is the characteristic  of the field; '.dimension' is the
+dimension  of  the group;   '.identity' is the   identity  for the group;
+'.layers' and '.layersVec'   are lists of  lists of  matrices and vectors
+respectively which we  use to compute the  exponents of relations to  get
+the size of the $p$-group.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DualGModule}
+
+'DualGModule( <module> )'
+
+<module> is  a $G$-module.   The dual module  (obtained  by inverting and
+transposing the generating matrices) is calculated and returned.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InducedGModule}
+
+'InducedGModule( <G>, <module> )'
+
+<G> is a transitive permutation group , and <module> an $H$-module, where
+$H$  is the subgroup of  $G$  returned by 'Stabilizer(<group>, 1)'. (That
+is,  the  matrix   generators for   <module>  should correspond   to  the
+permutations generators  for  $H$ returned by this   function call.)  The
+induced $G$-module  is calculated and returned.   If the action of $H$ on
+<module> is trivial, then 'PermGModule' should be used instead.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGModule}
+
+'PermGModule( <G>, <field> [, <point>] )'
+
+<G> is  a permutation group, and <field>  a finite  field.  If <point> is
+supplied, it  should be an  integer in the  permutation domain of <G>; by
+default, it is 1. The  permutation module of <G> on  the orbit of <point>
+over the field <field> is calculated and returned.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TensorProductGModule}%
+\index{WedgeGModule}
+
+'TensorProductGModule( <module1>, <module2> )'
+
+The  tensor  product  of  the  $G$-modules   <module1> and   <module2> is
+calculated and returned.
+
+'WedgeGModule( <module> )'
+
+The wedge  product of the  $G$-module <module> -- that  is, the action on
+anti-symmetric tensors -- is calculated and returned.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ImprimitiveWreathProduct}
+
+'ImprimitiveWreathProduct( <G>, <perm-group> )'
+
+<G> is a matrix  group, a $G$-module, a  list of matrices,  a permutation
+group  or a list of permutations,  and <perm-group> can  be a permutation
+group  or a list of permutations.   Let $G$ be  the permutation or matrix
+group specified  or generated by  the first argument, $P$ the permutation
+group specified or generated by the  second argument.  The wreath product
+of $G$  and $P$ is  calculated and returned. This is  a matrix group or a
+permutation group of dimension or degree $dt$, where $d$ is the dimension
+or  degree of $G$  and $t$ the degree of  $P$.  If  $G$ is a permutation
+group, this function has the same effect as 'WreathProduct(G, P)'.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{WreathPower}
+
+'PowerWreathProduct( <G>, <perm-group> )'
+
+<G>  is a matrix group,  a $G$-module, a list  of matrices, a permutation
+group or a  list of permutations, and  <perm-group> can  be a permutation
+group or  a list of permutations.  Let  $G$ be  the permutation or matrix
+group specified or   generated   by the  first  argument,  and   $P$  the
+permutation  group specified  or generated  by  the second argument.  The
+wreath power of $G$ and $P$ is calculated and returned.  This is a matrix
+group or a permutation  group of dimension or degree  $d^t$, where $d$ is
+the dimension or degree of $G$ and $t$ the degree of $P$.
+
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{PermGroupRepresentation}%
+\index{OrbitMat}
+
+'PermGroupRepresentation( <G>, <limit> )'
+
+'PermGroupRepresentation' tries to find  a permutation representation  of
+<G> of degree at most <limit>.  The function either returns a permutation
+group or 'false' if no such representation was found.
+
+Note that   'false'   does    *not* imply  that    no  such   permutation
+representation  exists.    If a permutation   representation   for <G> is
+already known it will be returned *independent* of its degree.
+
+The function   tries to find  a set  of vectors  of size at  most <limit>
+closed under  the operation  of <G>  such that  the set spans   the whole
+vector space;  it implements parts  of the base-point selection algorithm
+described in [10].
+
+|    gap> m1 := [[0,1],[1,0]] * Z(9);;
+    gap> m2 := [[1,1],[1,0]] * Z(9);;
+    gap> G := Group( m1, m2 );;
+    gap> P := PermGroupRepresentation( G, 100 );
+    Group( ( 1,15, 4,21, 2,24, 7,30)( 3,18, 5,12, 6,27, 8, 9)
+     (10,16,19,22,14,26,29,32)(11,25,20,31,13,17,28,23),
+     ( 1,15,19,31)( 2,24,29,23)( 3,18,22,11)( 4,21,14,17)( 5,12,26,20)
+     ( 6,27,32,13)( 7,30,10,25)( 8, 9,16,28) )
+
+    # note that <limit> is ignored if a representation is known
+    gap> P := PermGroupRepresentation( G, 2 );  
+    Group( ( 1,15, 4,21, 2,24, 7,30)( 3,18, 5,12, 6,27, 8, 9)
+     (10,16,19,22,14,26,29,32)(11,25,20,31,13,17,28,23),
+     ( 1,15,19,31)( 2,24,29,23)( 3,18,22,11)( 4,21,14,17)( 5,12,26,20)
+     ( 6,27,32,13)( 7,30,10,25)( 8, 9,16,28) ) |
+
+'OrbitMat( <G>, <vec>, <base>, <limit> )'
+
+'OrbitMat' computes  the orbit of <vec> under  the operation of <G>.  The
+function  will  return 'false'  if  this orbit  is  larger then  <limit>.
+Otherwise the orbit is  return as list  of vectors and <base>, which must
+be supplied as an empty list, now contains  a list of  basis vectors 
+spanning the  vector space generated by the orbit.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GeneralOrthogonalGroup}
+
+'GeneralOrthogonalGroup(<s>, <d>, <q>)' \\
+'O( <s>, <d>, <q> )'
+
+This  function returns  the group  of  isometries fixing a non-degenerate
+quadratic  form as  matrix group.  <d>  specifies  the dimension, <q> the
+size of the finite field, and <s> the sign of the quadratic form $Q$.  If
+the dimension is odd, the  sign must be 0.   If the dimension is even the
+sign must  be $-1$ or  $+1$.  The quadratic  form $Q$ used is returned in
+the component 'quadraticForm', the  corresponding symmetric  form $\beta$
+is returned in the component 'symmetricForm'.
+
+Given the standard basis $B = \{e_1,  ..., e_d\}$ then 'symmetricForm' is
+the matrix $(f(e_i,e_j))$, 'quadraticForm'  is an upper triangular matrix
+$(q_{ij})$ such   that $q_{ij}  =  f(e_i,e_j)$ for   $i \< j$,  $q_{ii} =
+Q(e_i)$,  and $q_{ij}  =  0$ for $j \< i$,  and the  equations $2Q(e_i) =
+f(e_i,e_i)$ hold.
+
+There are precisely two isometry classes of  geometries in each dimension
+<d>.  If   <d> is  even then  the   geometries are distinguished  by  the
+dimension of the maximal totally singular  subspaces.  If the sign <s> is
+$+1$,  then the Witt  defect  of the  underlying vector space  is $0$, i.
+e. the maximal totally singular subspaces have  dimension $<d>/2$; if the
+sign is $-1$, the defect is $1$, i.e. the dimension is $<d>/2-1$.
+
+If <d> is odd then the geometries are distinguished by the *discriminant*
+of  the quadratic  form  $Q$  which   is defined  as  the determinant  of
+$(f(e_i,e_j))$  modulo  $(GF(q)^\star)^2$.  The  determinant of
+$(f(e_i,e_j))$  is not independent of $B$,  whereas modulo squares it is.
+However, the two geometries are similar and give rise to isomorphic
+groups of isometries.  'GeneralOrthogonalGroup' uses a quadratic form $Q$
+with discriminant $-2^{d-2}$ modulo  squares.
+
+In case of odd dimension, <q> must also be odd  because the group 'O(  0,
+2d+1, $2^k$ )' is  isomorphic to the symplectic  group 'Sp( 2d, $2^k$  )'
+and you can use 'SP' to construct it.
+
+|    gap> G := GeneralOrthogonalGroup(0,5,3);
+    O(0,5,3)
+    gap> Size( G );
+    103680
+    gap> Size( SP(4,3) ); 
+    51840
+    gap> DeterminantMat(G.1);
+    Z(3)^0
+    gap> DeterminantMat(G.2);
+    Z(3) |
+
+\vbox{
+|    gap> DisplayMat( G.symmetricForm );    
+     . 1 . . .
+     1 . . . .
+     . . 2 . .
+     . . . 2 .
+     . . . . 2|
+
+}\vbox{
+|     gap> DisplayMat( G.quadraticForm );
+     . 1 . . .
+     . . . . .
+     . . 1 . .
+     . . . 1 .
+     . . . . 1 |
+}
+
+You  can evaluate the quadratic form  on a vector  by multiplying it from
+both sides.
+
+|    gap> v1 := [1,2,0,1,2] * Z(3);     
+    [ Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0 ]
+    gap> v1 * G.quadraticForm * v1;
+    Z(3)^0
+    gap> v1 * G.symmetricForm * v1;
+    Z(3) |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrderMat -- enhanced}%
+\index{ProjectiveOrderMat}
+
+'OrderMat(<g>)'
+
+This function  works  as  described in  the {\GAP}  manual  but  uses the
+algorithm of  [2] for  matrices over finite  fields.   
+
+|    gap> OrderMat( [ [ Z(17)^4, Z(17)^12, Z(17)^4, Z(17)^7 ],
+    >   [ Z(17)^10, Z(17), Z(17)^11, 0*Z(17) ],
+    >   [ Z(17)^8, Z(17)^13, Z(17)^0, Z(17)^14 ],
+    >   [ Z(17)^14, Z(17)^10, Z(17), Z(17)^10 ] ] );
+    5220 |
+
+'ProjectiveOrderMat(<g>)'
+
+This function computes the least positive integer $n$  such that $g^n$ is 
+scalar; it returns, as a list, $n$ and $z$, where $g^n$ is scalar in $z$.
+
+|    gap> ProjectiveOrderMat( [ [ Z(17)^4, Z(17)^12, Z(17)^4, Z(17)^7 ], 
+    >   [ Z(17)^10, Z(17), Z(17)^11, 0*Z(17) ],
+    >   [ Z(17)^8, Z(17)^13, Z(17)^0, Z(17)^14 ],
+    >   [ Z(17)^14, Z(17)^10, Z(17), Z(17)^10 ] ] );
+    [ 1305, Z(17)^12 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PseudoRandom}
+
+'PseudoRandom( <G> )'\\
+'PseudoRandom( <module> )'
+
+It takes as input  either a matrix group <G>,  or a  $G$-module <module>
+and returns a pseudo-random element.  If the supplied record  has no seed 
+stored as a component, then it constructs one (as in 'InitPseudoRandom').
+
+The algorithm is described in [1].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InitPseudoRandom}
+
+'InitPseudoRandom( <G>, <length>, <n> )' \\
+'InitPseudoRandom( <module>, <length>, <n> )'
+
+'InitPseudoRandom'  takes as  input  either a  matrix   group <G>,   or a
+$G$-module <module>.  It  constructs a list (or  seed)  of elements which
+can be used to generate pseudo-random  elements  of the  matrix group  or
+$G$-module. This seed is stored as a component of the supplied record and
+can be accessed using 'RandomSeedFlag'.
+
+'InitPseudoRandom'  generates  a seed   of  <length>  elements containing
+copies of  the generators  of $G$   and  performs a total of   <n> matrix
+multiplications to initialise this list.
+
+The quality  of  the seed is  determined by  the value of  <n>.  For many
+applications, <length> = 10 and <n> = 100  seem to suffice; these are the
+defaults used by 'PseudoRandom'.
+
+The algorithm is described in [1].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPpdElement}
+
+'IsPpdElement( <F>, <m>, <d>, <s>, <c>)'
+
+For natural numbers   $b$ and $e$  greater  than  $1$ a   primitive prime
+divisor of $b^e - 1$ is a prime dividing $b^e-1$ but not dividing $b^i-1$
+for any $1 \le  i \< e.$ If $r$  is a primitive  prime divisor of $b^e-1$
+then $r = ce+1$ for  some positive integer $c$  and in particular $r  \ge
+e+1.$ If either $r \ge e+2,$ or $r = e+1$  and $r^2$ divides $b^e-1$ then
+$r$ is called a large primitive prime divisor of $b^e-1.$
+
+Let $e$ be a positive integer greater than  $1,$ such that  $d/2 \< e \le
+d.$ Let $p$ be a prime and $q = p^a.$ An element  $g$ of $\GL(d,q)$ whose
+order    is  divisible  a primitive  prime   divisor  of   $q^{e}-1$ is a
+ppd-element, or  ppd$(d,  q; e)$-element.   An element  $g$ of $\GL(d,q)$
+whose order is divisible by a primitive prime divisor  of $p^{ae}-1$ is a
+basic ppd-element,  or basic ppd$(d, q; e)$-element.    An element $g$ of
+$\GL(d,q)$ is   called  a  large  ppd-element if   there exists   a large
+primitive prime  divisor $r$  of $q^e-1$ such  that  the order of  $g$ is
+divisible by $r,$ if $r \ge e+2,$ or by $r^2,$ if $r = e+1.$
+
+The function 'IsPpdElement' takes  as input a  field <F>, and a parameter
+<m>, and integers <d>,  <s> and <c>, where $s^c$  is the size $q =p^a$ of
+the field  <F>.  For the recognition  algorithm, (<s>,<c>) is either $(q,
+1)$ or $(p,a)$.  The parameter <m> is either an  element of $\GL(d,F)$ or
+a characteristic  polynomial of  such an element.   If  <m> is  not  (the
+characteristic polynomial of)   a ppd( <d>*<c>, <s>;  e*<c>)-element  for
+some $e$ such that $d/2 \< e  \le d$ then 'IsPpdElement' returns 'false'.
+Otherwise it returns a list of length 2, whose first entry is the integer
+$e$ and whose   second entry is  'true' if   <m>  is (the  characteristic
+polynomial of) a large ppd( <d>*<c>, <s>; e*<c>)-element or 'false' if it
+is not large. When <c> is 1 and <s> is  $q$ this function decides whether
+<m> is (the  characteristic polynomial  of) a  ppd( <d>, <q>;  e)-element
+whereas when <s> is the  characteristic $p$ of <F>  and <c> is such  that
+$a$ then it  decides whether <m> is  (the characteristic polynomial of) a
+basic ppd( <d>, <q>; e)-element.
+
+|    gap> G := GL (6, 3);; 
+    gap> g := [ [ 2, 2, 2, 2, 0, 2 ],
+    >           [ 1, 0, 0, 0, 0, 1 ],
+    >           [ 2, 2, 1, 0, 0, 0 ], 
+    >           [ 2, 0, 2, 0, 2, 0 ],
+    >           [ 1, 2, 0, 1, 1, 0 ],
+    >           [ 1, 2, 2, 1, 2, 0 ] ] * Z(3)^0;;
+    gap> IsPpdElement( G.field, g, 6, 3, 1);
+    [ 5, true ]
+    gap> Collected( Factors( 3^5 - 1) );
+    [ [ 2, 1 ], [ 11, 2 ] ]
+    gap> Order (G, g) mod 11;
+    0 |
+
+The algorithm is described in [2] and [11].
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SpinorNorm}
+
+'SpinorNorm( <form>, <mat> )'
+
+computes the spinor norm  of <mat> with respect  to the symmetric bilinear
+<form>.
+
+The underlying field must have odd characteristic.
+
+|    gap> z  := GF(9).root;;
+    gap> m1 := [[0,1,0,0,0,0,0,0,0],[1,2,2,0,0,0,0,0,0],
+    >  [0,0,0,1,0,0,0,0,0],[0,0,0,0,1,0,0,0,0],[0,0,0,0,0,1,0,0,0],
+    >  [0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,0,1],
+    >  [0,2,1,0,0,0,0,0,0]]*z^0;;
+    gap> m2 := [[z,0,0,0,0,0,0,0,0],[0,z^7,0,0,0,0,0,0,0],
+    >  [0,0,1,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0],[0,0,0,0,1,0,0,0,0],
+    >  [0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,0],
+    >  [0,0,0,0,0,0,0,0,1]]*z^0;;
+    gap> form := IdentityMat( 9, GF(9) );;
+    gap> form{[1,2]}{[1,2]} := [[0,2],[2,0]] * z^0;;
+    gap> m1 * form * TransposedMat(m1) = form;
+    true
+    gap> m2 * form * TransposedMat(m2) = form; 
+    true
+    gap> SpinorNorm( form, m1 );
+    Z(3)^0
+    gap> SpinorNorm( form, m2 );
+    Z(3^2)^5 |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Other utility functions}%
+\index{Commutators}%
+\index{IsDiagonal}%
+\index{IsScalar}%
+\index{DisplayMat}%
+\index{ChooseRandomElements}%
+\index{ElementOfOrder}%
+\index{ElementWithCharPol}%
+\index{LargestPrimeOrderElement}%
+\index{LargestPrimePowerOrderElement}
+
+'Commutators( <matrix-list> )'
+
+It returns a set containing the *non-trivial* commutators of all pairs of
+matrices in <matrix list>.
+
+'IsDiagonal( <matrix> )'
+
+If a matrix, <matrix>, is diagonal, it returns 'true', else 'false'.
+
+'IsScalar( <matrix> )'
+
+If a matrix, <matrix>, is scalar, it returns 'true', else 'false'.
+
+'DisplayMat( <matrix-list> )'\\
+'DisplayMat( <matrix> )'
+
+It converts  the entries of  a  matrix  defined over  a finite field into
+integers and ``pretty-prints\"\ the result. All matrices in <matrix list>
+must be defined over the same finite field.
+
+'ChooseRandomElements(<G>, <NmrElts>)' \\
+'ChooseRandomElements(<module>, <NmrElts>)' 
+
+It takes  as input either a  matrix group <G>,  or a $G$-module <module>,
+and returns <NmrElts> pseudo-random elements.
+
+'ElementOfOrder(<G>, <RequiredOrder>, <NmrTries>)'\\
+'ElementOfOrder(<module>, <RequiredOrder>, <NmrTries>)'
+
+It  takes as input  either a matrix group  <G>, or a $G$-module <module>,
+and searches for an  element of order   <RequiredOrder>.  It examines  at
+most <NmrTries> elements before returning 'false'.
+
+'ElementWithCharPol(<G>, <order>, <pol>, <NmrTries>)'\\
+'ElementWithCharPol(<module>, <order>, <pol>, <NmrTries>)'
+
+It takes  as input either a matrix  group <G>, or  a $G$-module <module>.
+It searches for an element of order <order> and characteristic polynomial
+<pol>.  It examines  at  most  <NmrTries> pseudo-random elements   before
+returning 'false'.
+
+'LargestPrimeOrderElement(<G>, <NmrTries>)'\\
+'LargestPrimeOrderElement(<module>, <NmrTries>)'
+
+It takes as  input either a matrix group  <G>, or a  $G$-module <module>.
+It  generates   <NmrTries> pseudo-random elements   and  determines which
+elements of prime  order can be obtained from  powers of each; it returns
+the largest found and its order as a list.
+
+'LargestPrimePowerOrderElement(<G>, <NmrTries>)' \\
+'LargestPrimePowerOrderElement(<module>, <NmrTries>)' 
+
+It takes  as input either  a matrix group  <G>, or a $G$-module <module>.
+It generates  <NmrTries>  pseudo-random  elements  and  determines  which
+elements  of prime-power order  can be obtained  from  powers of each; it
+returns the largest found and its order as a list.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{References}
+
+[1]
+  Frank Celler,  Charles  R. Leedham-Green, Scott H. Murray,  Alice
+  C.  Niemeyer,  and E.A.  O\'Brien, ``Generating  random elements of a
+  finite group\'\', Comm. Algebra 23, 4931--4948, 1995.
+
+[2]
+  Frank Celler  and C.R.   Leedham-Green, ``Calculating the  Order of an
+  Invertible Matrix\'\', ``Groups and Computation II\'\', 
+  Amer. Math. Soc. DIMACS Series 28, 1997.
+
+[3]
+  Frank Celler and C.R. Leedham-Green, ``A Non-Constructive Recognition
+  Algorithm  for the  Special  Linear and  Other Classical Groups\'\', 
+  ``Groups and Computation II\'\', Amer. Math. Soc. DIMACS Series 28, 1997.
+
+[4]
+  Frank  Celler and C.R.  Leedham-Green,   ``A constructive recognition
+  algorithm for the special linear group\'\', preprint.
+
+[5]
+  Derek F. Holt and Sarah Rees,  ``Testing modules for irreducibility\'\', 
+  J. Austral. Math. Soc. Ser. A, 57, 1--16, 1994.
+
+[6] 
+  Derek F. Holt, C.R. Leedham-Green, E.A. O\'Brien, and Sarah Rees, 
+  ``Computing Matrix Group Decompositions with Respect to a Normal Subgroup\'\', 
+  J. Algebra 184, 818--838, 1996.
+
+[7]
+  Derek F. Holt, C.R. Leedham-Green, E.A. O\'Brien, and Sarah Rees, 
+  ``Testing Matrix Groups for Imprimitivity\'\', 
+  J. Algebra 184, 795--817, 1996.
+
+[8] C.R. Leedham-Green and E.A. O\'Brien,
+  ``Tensor Products are Projective Geometries\'\',
+   to appear J. Algebra.
+
+[9] C.R. Leedham-Green and E.A. O\'Brien,
+  ``Recognising tensor products of matrix groups\'\',
+  to appear Internat. J. Algebra Comput.
+
+[10] Scott H. Murray and E.A. O\'Brien,
+  ``Selecting Base Points for the Schreier-Sims Algorithm for Matrix Groups\'\',
+  J. Symbolic Comput. 19, 577--584, 1995.
+
+[11] Alice C. Niemeyer and  Cheryl E. Praeger 
+  ``A Recognition Algorithm for Classical Groups over Finite Fields\'\',
+  submitted to Proceedings of the London Mathematical Society.
+
+[12] Alice C. Niemeyer and  Cheryl E. Praeger 
+  ``Implementing a Recognition Algorithm for Classical Groups\'\',
+  ``Groups and Computation II\'\', Amer. Math. Soc. DIMACS Series 28, 1997.
+
+[13] Anthony Pye, ``Recognising reducible matrix groups\'\', 
+  in preparation.
+
+The following sources provide additional theoretical background
+to the algorithms.
+
+[14]
+  M. Aschbacher (1984),  ``On the maximal subgroups of the finite classical
+  groups\'\',  Invent. Math. 76, 469--514, 1984.
+
+[15]
+  Peter  Kleidman and  Martin Liebeck, ``The   Subgroup Structure of  the
+  Finite  Classical   Groups\'\',   Cambridge   University Press,  London
+  Math. Soc. Lecture Note Series 129, 1990.
+
+

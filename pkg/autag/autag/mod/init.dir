@@ -1,0 +1,65 @@
+#!/usr/bin/perl
+
+eval '$'.$1.'$2;' while $ARGV[0] =~ /^([A-Za-z_]+=)(.*)/ && shift;
+			# process any FOO=bar switches
+
+$NAME=shift;
+
+$[ = 1;			# set array base to 1
+$, = ' ';		# set output field separator
+$\ = "\n";		# set output record separator
+
+print 'if not IsBound( InfoRead1 )  then InfoRead1 := Ignore;  fi;';
+print '';
+print "ReadLocalDir := function ( dirname, name )";
+print '    local   readIndent;';
+print '    readIndent := ReadIndent;';
+print "    ReadIndent := ConcatenationString( ReadIndent, \"  \" );";
+print
+
+  "    InfoRead1( \"#I\",ReadIndent,\"ReadLib( \\\"\", name, \"\\\" )\\n\" );";
+print
+
+  "    if not READ( ConcatenationString( dirname, name, \".g\" ) )  then";
+print
+
+  "        Error(\"the library file '\",name,\"' must exist and be readable\");";
+print '    fi;';
+print '    ReadIndent := readIndent;';
+print "    if ReadIndent = \"\"  then";
+print "        InfoRead1( \"#I  ReadLib( \\\"\", name, \"\\\" ) done\\n\" );";
+print '    fi;';
+print 'end;';
+print '';
+$name = '';
+
+while (<>) {
+    ($Fld1) = split(' ', $_, 9999);
+    if (/^[A-Za-z0-9_]+ *:=/) {
+	if ($name ne $ARGV) {	#???
+	    if ($line ne '') {
+		print $line . " );\n";
+	    }
+	    $line = "AUTO( ReadLocalDir( LOCALNAME$NAME, \"";
+	    $name = substr($ARGV, 1, index($ARGV, '.') - 1);
+	    $line = $line . $name . "\" )";
+	    print $line . ',';
+	    $funcs{$Fld1} = $name;
+	    $line = '  ' . $Fld1;
+	    $name = $ARGV;
+	}
+	elsif (77 < length($line . ', ' . $Fld1)) {
+	    print $line . ',';
+	    $funcs{$Fld1} = $name;
+	    $line = '  ' . $Fld1;
+	    $frst = 0;
+	}
+	else {
+	    $funcs{$Fld1} = $name;
+	    $line = $line . ', ' . $Fld1;
+	}
+    }
+}
+
+print $line . " );\n";
+

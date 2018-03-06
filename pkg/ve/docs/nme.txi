@@ -1,0 +1,2542 @@
+\input texinfo @c -*-texinfo-*-
+@c This is a TeXinfo file. It can be formatted for printing  using TeX,
+@c or it prepared for on-line reading using GNU emacs. To do either of
+@c these things you will need to obtain version 2 or later of the
+@c TeXinfo package from GNU (and TeX or GNU emacs).
+
+@tex
+\global\chapheadingskip = 15pt plus 4pt minus 2pt
+\global\secheadingskip = 12pt plus 3pt minus 2pt
+\global\subsecheadingskip = 9pt plus 2pt minus 2pt
+@end tex
+
+@c %**start of header
+@setfilename me
+@settitle Vector Enumeration Programs, version 3.04
+@c %**end of header
+
+@ifinfo
+Vector Enumeration Programs, Version 3.04
+
+Copyright @copyright{} 1993 Steve Linton
+@end ifinfo
+
+@titlepage
+@title Vector Enumeration Programs, version 3.04
+@author Steve Linton
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1993,1994 Steve Linton
+@end titlepage
+
+@node Top, Introduction, (dir), (dir)
+@top Vector Enumeration
+@comment  node-name,  next,  previous,  up
+
+This is the manual for version 3.04 of my vector enumeration programs
+@code{me}, @code{qme} and @code{zme}. These programs are distributed
+free of charge for non-commercial use, and there is NO WARRANTY
+WHATSOEVER.
+
+This document does not describe the underlying mathematics, which are
+described in the papers referred to later, but describes the operation
+of the programs.
+
+@menu
+* Introduction::                Introduction 
+* Installation::                Installation
+* Input Formats::               Input Formats
+* Command Line Options::        Command Line Options
+* Output Formats::              Output Formats
+* Strategy::                    Strategy
+* The Source Code::             The Source Code
+* Examples::                    Examples
+* Concept Index::               Concept Index
+* Options Index::               Options Index
+
+ --- The Detailed Node Listing ---
+
+Introduction 
+
+* New Features::                What's New
+
+What's New
+
+* New in Version 3.04 ::        What's New in Version 3.04
+* New in Versions 3.02 and 3.03::  What's New in Versions 3.02 and 3.03
+* New in Version 3.01::         What's New in Version 3.01
+* New in Version 3::            What's New in Version 3
+
+Installation
+
+* Installation Procedure::      Installation Procedure
+* Pre-requisites::              Pre-requisites
+
+Installation Procedure
+
+* Simple Compilation::          
+* General Installation::        
+* Compile-time options::        
+
+Input Formats
+
+* A Presentation File::         
+* Input for Quotient Construction::  
+
+A Presentation File
+
+* Characteristic::              
+* Generators::                  
+* Relations::                   
+* Submodule Generators::        
+
+Relations
+
+* Group Type Relations::        
+* Algebra Relations::           
+* Weight Specifications::       
+
+Submodule Generators
+
+* Submodule Generators in Packed Form::  
+* Submodule Generators in Sparse Form::  
+* Universal Submodule Generators::  
+
+Command Line Options
+
+* Strategic Options::           
+* Output Options::              
+* Logging and Error Message Options::  
+* Input File Options::          
+* Debugging Options::           
+* Limit Options::               
+
+Output Options
+
+* Options to control what information is output::  
+* Options for Output Formats::  
+* Output File Names::           
+
+Output Formats
+
+* Cayley Format::               
+* GAP format::                  
+* Meataxe Format::              
+* AXIOM format::                
+* Plain ASCII format::          
+* Plain Binary Format::         
+
+Strategy
+
+* Weights::                     
+* Lookahead::                   
+
+The Source Code
+
+* Generalities::                
+* The Source Files::            
+
+Generalities
+
+* Important macros::            
+* Arithmetic::                  
+* Prototyping and Other Language Issues::  
+
+Examples
+
+* A permutation representation::  
+* A Quotient of this Representation::  
+* A Non-cyclic Module::         
+* A Monoid Representation::     
+* An Integer Module with Torsion::  
+* Quotient Construction Example::  
+* A Quotient of a Polynomial Ring::  
+@end menu
+
+@node Introduction, Installation, Top, Top
+@comment  node-name,  next,  previous,  up
+@chapter Introduction 
+
+@cindex References
+@cindex Papers
+The vector enumeration algorithm for fields is described in the papers
+@cite{Constructing Matrix Representations of Finitely Presented Groups}
+(J. Symbolic Computation (12) 1991) and @cite{On Vector Enumeration}
+(to appear in the Journal of Linear Algebra and Applications). The
+@code{me} and @code{qme} programs implement this algorithm, @code{me}
+for prime fields of order less than 256 and @code{qme} for the rational
+numbers. The @code{zme} program implements an extended algorithm which
+works over principle ideal rings, for the special case of the integers.
+The extended algorithm will be described in a future publication.
+
+This document describes the installation and use of these three
+programs, the formats of input and output files and the various options
+which control the execution. Some notes on the structure of the programs
+is also included.
+
+In @cite{On Vector Enumeration}, an application of the algorithm to
+constructing quotients of algebra representations is described. These
+programs include a special option @code{-Q} to read an input format
+suited to that application and proceed accordingly. 
+
+
+@menu
+* New Features::                What's New
+@end menu
+
+@node     New Features,  , Introduction, Introduction
+@comment  node-name,  next,  previous,  up
+@section What's New
+@cindex New features
+
+
+@menu
+* New in Version 3.04 ::        What's New in Version 3.04
+* New in Versions 3.02 and 3.03::  What's New in Versions 3.02 and 3.03
+* New in Version 3.01::         What's New in Version 3.01
+* New in Version 3::            What's New in Version 3
+@end menu
+
+@node New in Version 3.04 , New in Versions 3.02 and 3.03, New Features, New Features
+@subsection What's New in Version 3.04
+@cindex Version 3.04, new features
+
+There are a number of changes in version 3.04. Several bugs were fixed,
+in particular one relating to meat-axe format output. Thanks to Jurgen
+Mueller for spotting this one and to Thomas Breuer for reporting it.
+
+The @code{-L} command line option was added at this release, to allow
+logging information to be preceded by a comment designator. 
+
+@cindex runtime
+The runtime in milliseconds was added to the output in several of
+the formats. This change should not break any reasonable program using
+the output.
+
+@cindex Makefile
+Finally, a new @file{Makefile} is added, suitable for most @code{make}
+programs. This supllies standard options for building the system in a
+range of environments. The old @file{Makefile}, which retains some advantages for
+development (well I like it anyway), is renamed @file{GNUmakefile}. 
+
+@node New in Versions 3.02 and 3.03, New in Version 3.01, New in Version 3.04 , New Features
+@subsection What's New in Versions 3.02 and 3.03
+@cindex Version 3.02 and 3.02, new features
+
+These versions (3.02 was never released) contain bug fixes relating to 
+the integer vector enumeration program @code{zme} and changes to some
+undocumented features relating to the forthcoming GAP interface. 
+
+The @code{zme} bugs could cause a crash or improper non-termination.
+
+@node New in Version 3.01, New in Version 3, New in Versions 3.02 and 3.03, New Features
+@subsection What's New in Version 3.01
+@cindex Version 3.01, new features
+
+This version is a bug-fix version. The main bug fixed at this release is
+that under certain circumstances information could be lost during
+look-ahead, resulting in the output module being a proper pre-image of
+the correct module.
+
+The fix for this problem involves allowing some definitions to be made,
+even during look-ahead. When the @code{-t} option @pxref{Limit Options}
+is used to limit the total number of dimensions, a proportion of the
+limit is allocated for these critical definitions. This proportion can
+be changed by a new form of the @code{-t} option. 
+
+@node  New in Version 3,  , New in Version 3.01, New Features
+@comment  node-name,  next,  previous,  up
+@subsection What's New in Version 3
+@cindex Version 3, new features
+
+@itemize @bullet
+@item
+The @code{zme} program is completely new in this version. 
+
+@item 
+The @code{quot} quotient-constructing program has been merged with
+@code{me} and corresponding functionality added to @code{qme} and
+@code{zme}. @xref{Input File Options} and @ref{Input for Quotient Construction}.
+
+@item
+A number of internal changes have improved performance for most
+examples, sometimes dramatically.
+
+@item
+The input format has been enriched in a number of ways @pxref{Input
+Formats} and the error handling and reporting in the parser has been
+greatly enhanced @pxref{Logging and Error Message Options}.
+
+@item
+Three new output formats have been added: one for output to be read into
+AXIOM and two formats intended to be simply and quickly read by
+special-purpose programs. @xref{Output Formats} and @ref{Output Options}.
+
+@item
+A special option has been added to indicate that all the generators
+commute with one another, so that the module constructed will be a
+quotient of a polynomial ring. @xref{Input File Options}.
+
+@item
+All the programs have been combined into a single set of sources.
+@xref{The Source Code}.
+
+@item 
+A number of new options have been added to control execution and limit
+the module dimension and the run time. @xref{Limit Options}.
+
+@item
+A new option has been added to override the characteristic given in the
+presentation file. @xref{Input File Options}.
+
+@item
+A new options has been added to suppress the automatically generated
+relations for non-invertible generators.
+
+@item 
+Early-closing is now disabled by default, in the interests of
+mathematical accuracy. It can be re-enabled using the @code{-e} option.
+@xref{Strategic Options}.
+
+@end itemize
+@node Installation, Input Formats, Introduction, Top
+@comment  node-name,  next,  previous,  up
+@chapter Installation
+
+
+@menu
+* Installation Procedure::      Installation Procedure
+* Pre-requisites::              Pre-requisites
+@end menu
+
+@node  Installation Procedure, Pre-requisites, Installation, Installation
+@comment  node-name,  next,  previous,  up
+@section Installation Procedure
+
+@cindex Installation
+@cindex Compilation
+@cindex Distribution
+@cindex Getting hold of the programs
+@cindex Directories
+
+Since you're reading this manual you have probably already obtained the
+vector enumeration package and unpacked it from the compressed
+distribution.  Just for completeness, or for getting a later version,
+the software is available from me, Steve Linton
+(@code{sal@@cs.stand.ac.uk}), or by anonymous FTP from
+@code{galois.maths.qmw.ac.uk}. It consists of just one file
+@file{nme.tar.Z} (there may also be @file{nme.tar.z} and/or
+@file{nme.zoo}). The file @file{nme.README} is a copy of the
+@file{README} file contained in the distribution. 
+
+You should create a new directory @dfn{the nme home directory} into
+which to unpack the distribution which will then create subdirectories
+@file{./ve}, @file{./rat}, @file{./int}, @file{./docs} and
+@file{./examples}. The first three contain only @file{GNUmakefile}s,
+@file{./docs} contains this TeXInfo file and @file{./examples} contains
+some input files for testing. The current directory contains the C and
+Bison source files, the master @file{Makefile} and @file{GNUmakefile}
+and the shell script @file{build.sh}.
+
+There are three alternative ways of compiling the programs. Simple
+compilation should suffice for most users.
+
+@menu
+* Simple Compilation::          
+* General Installation::        
+* Compile-time options::        
+@end menu
+
+@node  Simple Compilation, General Installation, Installation Procedure, Installation Procedure
+@comment  node-name,  next,  previous,  up
+@subsection Simple Compilation
+
+@cindex Compilation, simple
+@cindex Build script
+
+Users not intending to modify the programs or to compile them for
+multiple architectures in the same directory hierarchy should use simple
+compilation. Simply change to the nme home directory and:
+
+@enumerate 1
+@item
+Edit the shell script @file{build.sh} to:
+@itemize @bullet
+@item
+Set the correct name for the C compiler (probably @code{cc} or
+@code{gcc}).
+
+@item
+Set the system flags to avoid problems with you compiler library and
+header files. See @file{Makefile} for details of this.
+
+@item
+Set the compiler, pre-processor and linker flags so that the compiler
+will find the GMP libraries and include files @pxref{Pre-requisites} and
+will suitably optimize the programs.
+
+@item
+Include the C version of @code{alloca} if it is not provided by your
+system (most BSD systems provide it, most System V systems do not).
+
+@item
+Comment out appropriate sections of the script if you do not need all of
+the programs @file{me}, @file{qme} and @file{zme}. If you need only
+@file{me}, then you needn't worry about GMP.
+
+@end itemize
+
+@item
+Type @samp{./build.sh}.
+
+@item
+Cross your fingers.
+
+@end enumerate
+
+Assuming everything works, you will end up with the three executable
+programs in the @file{bin} subdirectory of the nme home directory. They
+may be moved to any convenient location.
+
+@node  General Installation, Compile-time options, Simple Compilation, Installation Procedure
+@comment  node-name,  next,  previous,  up
+@subsection General Installation
+
+@cindex Compilation, general
+@cindex Make program
+
+If you plan to develop enhancements to the programs, or wish to compile
+them for multiple architectures then you will need to install the
+package completely. You can do this either using the @file{Makefile}, mainly
+prepared for when the package is installed as a GAP share library, or
+using the @file{GNUmakefile}. For the latter you will need version 3.63
+or later of GNU make. It will also be simpler if you have a C compiler
+with the @code{-M} option to prepare dependency lists automatically.
+
+General installation and simple installation should not be done in the
+same directory, as they use subdirectories differently.
+
+@cindex Architectures, hardware
+@cindex Hardware architectures
+@cindex Multiple architectures
+
+@subsubsection Using GNU Make
+For general installation with GNU make you will need to arrange to have
+an environment variable @code{ARCH} set to some convenient name for the
+current hardware architecture. I do this with a line
+@example
+setenv ARCH `arch`
+@end example
+in my @file{.cshrc} file, and a small shell script @file{arch} that uses
+the hostname to decide what type of computer I am using. On Sun systems
+@file{arch} is a system command.
+
+You should then create a subdirectory @file{bin} of the nme home directory.
+For each architecture @var{xxx} that is likely to be of interest you should also
+create subdirectories @var{xxx} of the @file{bin}, @file{ve}, @file{rat}
+and @file{int} subdirectories of the nme home directory. 
+
+You should then edit the file @file{Makefile.inc} in the nme home
+directory and set the C compiler, and compiler, linker and pre-processor
+flags suitably.
+
+Assuming that your command to call GNU make is @code{gmake}, running
+@code{gmake} in the nme home directory should make all three programs,
+while running it in @file{ve} will make @code{me}, in @file{rat} will
+make @code{qme} and running it in @file{int} will make @code{zme}.
+The binaries will be stored in @file{bin/$ARCH}, which can conveniently
+be included in your path, and separate
+directories will be used for the object files for each architecture, so
+that they can be kept independently up to date.
+
+@subsubsection Using the GAP Makefile
+To use Martin Schoenert's ingenious Makefile to build the package, edit
+@file{Makefile} in the nme home directory and set the variables
+@code{INCDIRGMP} and @code{LIBDIRGMP} appropriately for your system.
+Then type @code{make <option>}, where @var{option} is made up in the
+usual GAP way. For a list of options just type @code{make}.  By default
+this Makefile only makes @code{me} and @code{qme}, as @code{zme} is not
+used in the GAP share library. To make @code{zme} as well, edit the
+dependencies of the target @code{all}.
+
+This will make the executables as @file{bin/me.exe}, @file{bin/qme.exe}
+and (if you edited the makefile appropriately) @file{bin/zme.exe}. These
+will be invoked by the scripts which are supplied as @file{bin/me},
+@file{bin/qme} and @file{bin/zme}. If you wish to install the package
+for use on multiple hardware architectures, you should move the
+executables to (for example) @file{bin/me.sun} and replace the script
+with one that decides which executable to use.
+
+
+Note that apart from choosing a C compiler, the choice of @var{option}
+to make only affects compilation of one function: @code{RunTime}, in the
+file @file{me.c}. If you are compiling the software on some system not
+catered for in the @file{Makefile}, you should only need to tweak this
+function to make everything work.
+
+@node  Compile-time options,  , General Installation, Installation Procedure
+@comment  node-name,  next,  previous,  up
+@subsection Compile-time options
+
+@cindex Compilation, options
+
+There are three compile-time options which can be controlled by editing
+the file @file{me.h} in the distribution. They are
+
+@table @code
+
+@item DEBUG
+@cindex logging
+@cindex DEBUG
+@cindex DEBUG-mode
+When the symbol @code{DEBUG} is defined many additional consistency
+checks and validations are included in the code. Also, the memory
+allocation routines in @file{myalloc.c}, which check for freeing
+pointers not allocated, overwrite freed memory to prevent access to it
+and so on, are used. Setting @code{DEBUG} slows the program down
+substantially and increases the size of the compiled code. 
+
+@item SCRUT
+@cindex Scrutuinize
+This controls compilation of the scrutinize feature. If @code{SCRUT} is
+selected and enabled with the @code{-s} option on the command line then
+the calculation performed will be checked frequently against a correct
+answer read in. @xref{Debugging Options}. If @code{SCRUT} is specified
+at compile-time but not enabled from the command line there is a small
+loss of performance as the checks must be bypassed at run-time.
+
+@item LOGGING
+@cindex LOGGING
+@cindex logging
+This controls compilation of the code to produce logging and diagnostic
+messages. If @code{LOGGING} is defined at compile-time, then messages
+reporting progress will be output, under the control of the options
+described in @ref{Logging and Error Message Options}. If logging
+messages are not needed a small gain in speed, and a rather larger
+reduction in code size can be achieved by not defining @code{LOGGING} at
+compile-time. 
+@end table
+
+By default, @code{LOGGING} is defined, but @code{DEBUG} and @code{SCRUT}
+are not.
+
+@node Pre-requisites,  , Installation Procedure, Installation
+@comment  node-name,  next,  previous,  up
+@section Pre-requisites
+@cindex Arithmetic
+@cindex Multi-precision
+@cindex GMP
+The @code{me} program is self-contained, but @code{qme} and @code{zme}
+require the GMP multiple-precision arithmetic library. Specifically,
+they require version 1.2.99 or later of the library. This is available
+by anonymous FTP from @code{sics.se}.
+
+@cindex Make programs
+The makefiles supplied with the programs make use of non-standard
+features of GNU make version 3.63 and will not work with most other
+@code{make} programs or with earlier versions of GNU make. Scripts are
+supplied to build the programs from scratch @pxref{Simple Compilation},
+but anyone wishing to work on these programs will probably need GNU
+make @pxref{General Installation}.
+
+@cindex Parser
+@cindex Bison
+The input parser @file{input.tab.c} is prepared using the GNU parser
+generator @code{bison} from the grammar file @file{input.y}. If you wish
+to change the parser in any way you will need to obtain @code{bison}.
+The supplied parser was prepared with @code{bison} version 1.18.
+
+@cindex Texinfo
+@cindex Documentation
+In order to format and read this manual you will need version 2.16 of
+the TeXInfo package and either TeX or GNU emacs. Alternatively contact
+me and I will send you a DVI or PostScript file.
+
+@node Input Formats, Command Line Options, Installation, Top
+@comment  node-name,  next,  previous,  up
+@chapter Input Formats
+
+@menu
+* A Presentation File::         
+* Input for Quotient Construction::  
+@end menu
+
+@node A Presentation File, Input for Quotient Construction, Input Formats, Input Formats
+@comment  node-name,  next,  previous,  up
+@section A Presentation File
+
+@cindex Presentation
+@cindex Input files
+The basic format of the presentation file is 
+
+@quotation
+@var{characteristic} . @var{generators} . @var{generators not known to
+be invertible} . @var{generators not known to be involutions} .
+@var{submodule generators} . @var{relations} .
+@end quotation
+
+@cindex Comments
+Anything after the final @code{.} is not read in by the program.
+Accordingly comments may appear here.
+
+@menu
+* Characteristic::              
+* Generators::                  
+* Relations::                   
+* Submodule Generators::        
+@end menu
+
+@node Characteristic, Generators, A Presentation File, A Presentation File
+@comment  node-name,  next,  previous,  up
+@subsection Characteristic
+
+@cindex Field specification
+@cindex Characteristic
+@cindex Q - the rational field
+@cindex Z - the ring of integers
+The characteristic is a non-negative integer and must always be present.
+For @code{me} it must be a prime number less than 256, and indicates the
+characteristic of the prime field over which the calculation will be
+performed. For @code{qme} or @code{zme} the characteristic must be 0.
+
+The @samp{-C} option may be used to override the characteristic
+specified in the presentation file (which must still be given, but will
+not be checked). @xref{Input File Options}. 
+
+@node Generators, Relations, Characteristic, A Presentation File
+@comment  node-name,  next,  previous,  up
+@subsection Generators
+
+@cindex Generator names
+The @var{generators} part of the presentation defines the names which
+will be used for the generators of the algebra being constructed. These
+names must each be of one of two types:
+@itemize @bullet
+@item
+Single capital letters such as @samp{A}.
+@item
+Strings of one or more lower-case letters such as @samp{a} or @samp{xyz}.
+@end itemize
+@noindent 
+@cindex Separators
+Lower-case generator names must be separated by a comma, a semi-colon or
+whitespace. 
+
+The following specifications all define three generators @samp{A},
+@samp{B} and @samp{C}:
+@example
+ABC
+A,B,C
+A B;C,
+AB C
+@end example
+@noindent On the other hand, the specification @samp{abc} defines one
+generator called @samp{abc}. To define three generators @samp{a},
+@samp{b} and @samp{c} a specification such as @samp{a b c}, @samp{a,b,c}
+or @samp{a b;c} is needed.
+
+Once the generators are defined a longest-match scanner is constructed
+to read strings of generator names. This is then used to read the
+@var{generators not known to be invertible} and @var{generators not
+known to be involutions} sections of the presentation (and also used
+while reading the submodule generators and relations).
+
+Providing no generator is an initial substring of another (which is very
+bad practice) no separators should be needed in @var{generators not
+known to be invertible} or @var{generators not known to be involutions},
+although they might add readability.
+
+@cindex Generators not involutions
+@cindex Generators not invertible
+@cindex Involutary generators
+@cindex Invertible generators 
+By default every generator is assumed to be an involution, that is for a
+generator @var{x}, the relation @var{x}@var{x}@code{ = 1} is assumed.
+This assumption can be overridden by including the generator in one of
+the lists @var{generators not known to be invertible} or @var{generators
+not known to be involutions}. If a generator @var{x} is included in the first
+list then the program will make no assumptions about a multiplicative
+inverse of @var{x}. If a generator @var{x} is included in the second
+list then the program will add an extra generator @var{x}@code{^-1} and
+assume the relation @var{x}@var{x}@code{^-1 = 1}.
+
+It is an error for a generator to appear in both lists.
+
+Either of these lists may have the special form @samp{*}, which
+indicates that all generators are non-invertible or not involutions.
+
+Thus, for example a module for the free algebra on generators @samp{a},
+@samp{b} and @samp{c} would be specified by:
+@example
+@var{characteristic}. a,b,c.abc..@var{submodule generators}.@var{relations}.
+@end example 
+or
+@example
+@var{characteristic}. a,b,c.*..@var{submodule generators}.@var{relations}.
+@end example 
+@noindent while a module for the free group on the same
+generators would be given by: 
+@example
+@var{characteristic}. a,b,c..*.@var{submodule generators}.@var{relations}.
+@end example 
+@noindent and a module for the free product of three copies of the
+cyclic group of order two by:
+@example
+@var{characteristic}. a,b,c...@var{submodule generators}.@var{relations}.
+@end example 
+
+@node Relations, Submodule Generators, Generators, A Presentation File
+@comment  node-name,  next,  previous,  up
+@subsection Relations
+
+@cindex Relations
+@cindex Relators
+
+The @var{relations} section of the presentation contains the relations
+of the algebra to be constructed (apart from any relations implied by
+the generators being invertible of involutions). It may be empty; if not
+then it consists of two parts, separated by a colon. 
+
+@menu
+* Group Type Relations::        
+* Algebra Relations::           
+* Weight Specifications::       
+@end menu
+
+@node Group Type Relations, Algebra Relations, Relations, Relations
+@comment  node-name,  next,  previous,  up
+@subsubsection Group Type Relations
+@cindex Group words
+@cindex Group relators
+The first part contains ``group type'' relators. These are products of
+invertible generators which are equal to 1 in the algebra to be
+constructed. These can be handled more efficiently than general
+(algebra) relations, so relations that are of this kind should be given
+in this section. It is an error for non-invertible generators to appear
+in this section.
+
+The following constructions are available to write these products
+(called @var{group words})
+@itemize @bullet
+
+@item
+@var{w1} [@var{whitespace}] @var{w2} denotes
+the product of group word @var{w1} and group word @var{w2}. The
+@var{whitespace} is only needed if there is ambiguity in parsing
+the generator names. For example if @samp{a}, @samp{b} and @samp{ab}
+were all generators then @samp{ab} would represent the generator
+@samp{ab}, while @samp{a b} represented the product of @samp{a} and
+@samp{b}.
+
+@item
+@var{w1}@code{*}@var{w2} is equivalent to the product @var{w1}@var{w2}.
+
+@item
+@var{w}@code{~} denotes the inverse of group word @var{w}.
+
+@item
+@var{w}@var{n} denotes the @var{n}th power of group word @var{w}.
+@var{n} must be a positive integer.
+
+@item
+@cindex Conjugate
+@var{w1}@code{^}@var{w2} denotes the conjugate of group word @var{w1} by
+@var{w2}. 
+
+@item
+@cindex Commutator
+@code{[}@var{w1}@code{,}@var{w2}@code{]} denotes the commutator of group
+words @var{w1} and @var{w2}.
+
+@end itemize
+
+@cindex Precedence
+Conjugation, inversion and powering bind more tightly than
+multiplication, but parentheses may be used. Thus @samp{AB3} denotes the
+word @samp{ABBB}, while @samp{(AB)3} denotes @samp{ABABAB}.
+
+@node Algebra Relations, Weight Specifications, Group Type Relations, Relations
+@comment  node-name,  next,  previous,  up
+@subsubsection Algebra Relations
+@cindex Algebra relations
+@cindex Free algebra elements
+The second part of the relations section of the presentation contains
+more general relations.  These may be either elements of the free algebra
+generated by the generators, which are equal to 1 in the algebra being
+constructed, or equations between elements of the free algebra which are
+true in the algebra being constructed.
+
+Any group word (see above) may be given as an element of the free
+algebra, as can an element of the underlying field given as an integer
+(or quotient of integers for @code{qme}). Elements of the free algebra
+can be combined by addition with @samp{+}, subtraction (@samp{-}) or
+multiplication (@samp{*}). The usual rules of precedence apply and
+parentheses may be used to override them.
+
+@node Weight Specifications,  , Algebra Relations, Relations
+@comment  node-name,  next,  previous,  up
+@subsubsection Weight Specifications
+@cindex Weights
+Any relator or relation in either part of the relations section may be
+followed by a weight specification. This takes the form @samp{<w>} or
+@samp{<w1,w2>} and affects the order in which the relations are used by
+the program, higher weights meaning that the relation will be used less
+or later. See @xref{Strategy} for details of how the weights are applied.
+
+In the first form @samp{w} should be a positive integer and will be the
+weight used for that relation in both define and lookahead modes. In the
+second form @samp{w1} and @samp{w2} should both be positive integers.
+@samp{w1} will be the weight used in define mode and @samp{w2} in
+lookahead mode. For details of lookahead @xref{Strategy}.
+
+@node   Submodule Generators,  , Relations, A Presentation File
+@comment  node-name,  next,  previous,  up
+@subsection Submodule Generators
+@cindex Submodule generators
+@cindex Cyclic modules
+@cindex Modules, cyclic
+The submodule generator section may be of one of two forms. The simpler
+form may only be used when the module to be constructed is cyclic (more
+accurately when its presentation has just one generator). In
+this case the submodule generator section may take the same form as the
+relations section, consisting of group-type relators and algebra
+relations. Weight specifications may be present, but will be ignored.
+
+Note that in this case the submodule generators will actually be forced
+to fix a vector in the module constructed, rather then annihilate it.
+Mathematically, the ``real'' submodule generators are obtained from
+those input by subtracting 1.
+
+@cindex Non-cyclic modules
+@cindex Modules, non-cyclic
+If the module is not cyclic then the more general form must be used. 
+This begins with the number @var{s} of module generators enclosed in curly
+brackets @samp{@{@}} followed by zero or more submodule generator
+entries. Each such entry may be of one of three forms:
+
+@menu
+* Submodule Generators in Packed Form::  
+* Submodule Generators in Sparse Form::  
+* Universal Submodule Generators::  
+@end menu
+@node  Submodule Generators in Packed Form, Submodule Generators in Sparse Form, Submodule Generators, Submodule Generators
+@comment  node-name,  next,  previous,  up
+@subsubsection Submodule Generators in Packed Form
+@cindex Packed form of submodule generators
+
+A submodule generator in @dfn{packed form} consists of an @var{s}-tuple of  
+elements of the free algebra, each given in the format specified in
+@ref{Algebra Relations}, enclosed in parentheses and separated by
+commas.
+
+Thus for example, the following presentation specifies the
+representation of the symmetric group S_3 obtained by identifying the
+fixed vectors of two copies of the natural permutation representation.
+
+@example
+0.AB..B.@{2@}(A-1,0),(0,A-1),(1+B+B2,-1-B-B2).B3,(AB)2:.
+@end example
+
+@node  Submodule Generators in Sparse Form, Universal Submodule Generators, Submodule Generators in Packed Form, Submodule Generators
+@comment  node-name,  next,  previous,  up
+@subsubsection Submodule Generators in Sparse Form
+@cindex Sparse form of submodule generators
+For brevity, when there are many submodule generators, a generator may
+be given in @dfn{sparse form}. This consists of one or more pairs:
+
+@example
+@var{module generator number} , @var{free algebra element}
+@end example
+
+enclosed in square brackets. The @var{module generator number} must be
+between 1 and @var{s}, and the pairs within a sparse form submodule
+generator must be given in order of @var{module generator number}. Thus
+the first submodule generator in the above example could be rewritten
+@w{@samp{[1,A-1]}}.
+
+@node  Universal Submodule Generators,  , Submodule Generators in Sparse Form, Submodule Generators
+@comment  node-name,  next,  previous,  up
+@subsubsection Universal Submodule Generators
+@cindex Universal submodule generators
+Finally, a series of submodule generators such as the first two in the
+example above may be abbreviated as a @dfn{universal submodule
+generator}. This takes the form @samp{[@var{first}-@var{last},@var{x}]},
+where @var{x} is a free algebra element in the usual form, and
+represents the @var{last} - @var{first} + 1 separate submodule
+generators @samp{[@var{first},@var{x}]} through @samp{[@var{last},@var{x}]}
+inclusive. Equivalently, the universal submodule generator
+@samp{[@var{first}-@var{last},@var{x}]} can be read as indicating that
+the free algebra element @var{x} annihilates module generators @var{first}
+through @var{last}. The special case @samp{[1-@var{s},@var{x}]} can be
+further abbreviated to @samp{[*,@var{x}]}.
+
+Thus the example can be abbreviated to 
+
+@example
+0.AB..B.@{2@}[*,A-1],(1+B+B2,-1-B-B2).B3,(AB)2:.
+@end example
+
+@node  Input for Quotient Construction,  , A Presentation File, Input Formats
+@comment  node-name,  next,  previous,  up
+@section Input for Quotient Construction
+@cindex Quotient construction
+@cindex Input files
+@findex -Q
+When the @code{-Q} option is given to @code{me}, @code{qme} or 
+@code{zme}, the extension for input files changes from @samp{.pres} to
+@samp{.qin} and a completely different format of input is expected. 
+
+The input essentially specifies two things:
+
+@itemize @bullet
+@item
+A vector space @var{V} and a set of matrices, which together specify a
+representation of a free algebra.
+
+@item
+A set of vectors in @var{V} which generate a sub-module @var{W} under
+the action of the algebra. That is a set of vectors whose (iterated)
+images under the matrices span a subspace @var{W} of @var{V}.
+
+@end itemize
+
+This is achieved by an input file consisting six parts separated by
+whitespace:
+
+@enumerate 1
+@item
+a specification of the characteristic as described in @ref{Characteristic};
+
+@item
+the dimension of the vector space @var{V} as an unsigned decimal
+integer;
+
+@item
+a string giving the generator names (used for printing and in some of
+the output formats). The names must be single characters, unseparated
+and terminated by whitespace; 
+
+@item
+an unsigned integer giving the number of generators of @var{W};
+
+@item
+the vectors which generate @var{W};
+
+@item
+the matrices giving the action of the free algebra on @var{V}. For each
+basis vector @var{b} of @var{V} all the images of @var{b} under the
+matrices (ie the appropriate rows of all the matrices) are given,
+followed by all the images of the next basis vector.
+
+@end enumerate
+
+The last two sections involve giving vectors as part of the input. These
+are normally given is a sparse format, consisting of zero or more pairs
+@samp{@var{i}, @var{x(i)}} separated by commas and enclosed in square
+brackets. The indices @var{i} must be strictly increasing within a
+vector and the pair @samp{@var{i}, @var{x(i)}} denotes that the
+@var{i}th coefficient of the vector is @var{x(i)}. Unspecified
+coefficients are taken as zero. Thus in a 5 dimensional space @var{V}, 
+@samp{[1,1]} denotes the vector @samp{(1,0,0,0,0)}, @samp{[5,-1]}
+denotes @samp{(0,0,0,0,-1)} and @samp{[1,1,2,2,3,3,4,4,5,5]} denotes
+@samp{(1,2,3,4,5)}. 
+
+For @code{me} only, a packed format is also available for these vectors
+(this feature should be available in all three programs, and hopefully
+will be in some future release). This is given as a series of field
+elements separated by commas and enclosed in parentheses. There must be
+exactly as many field elements as the specified dimension of @var{V}.
+
+
+@node  Command Line Options, Output Formats, Input Formats, Top
+@comment  node-name,  next,  previous,  up
+@chapter Command Line Options
+@cindex Flags, command-line
+@cindex Command-line options
+@cindex Options, command-line
+@cindex Options, order
+The programs are controlled at run-time by options on the command line.
+There are no command line parameters except options. Options which do
+not take arguments may be combined, and, with a few exceptions, options
+may appear in any order. Thus @samp{me -g -i} is equivalent to @samp{me
+-gi} and to @samp{me -ig}.
+
+@menu
+* Strategic Options::           
+* Output Options::              
+* Logging and Error Message Options::  
+* Input File Options::          
+* Debugging Options::           
+* Limit Options::               
+@end menu
+
+@node  Strategic Options, Output Options, Command Line Options, Command Line Options
+@comment  node-name,  next,  previous,  up
+@section Strategic Options
+
+The vector enumeration algorithm has some intrinsic flexibility. The
+exact algorithm used is controlled by these options. These options
+have no effect when @code{-Q} is also present. @xref{Strategy}.
+
+@deffn Option -a +|-|amount 
+@cindex Lookahead
+The @code{-a} option controls the amount of lookahead which takes place.
+The arguments @code{+} and @code{-} enable and disable lookahead
+(respectively), while a numeric argument @var{amount} specifies the
+how far ahead to look (in weights). See @ref{Strategy} for the exact
+details of when lookahead takes place. The default is to look ahead 2
+weights.
+
+@end deffn
+
+@deffn Option -e + | - | dim | min:max
+@cindex Early-closing
+@cindex Closing, early
+The option @code{-e} controls Early Closing. Early closing is said to
+occur when there are no blank entries in the program's table, so that
+the table represents a representation of the free algebra. In this
+situation the table is usually, though not always, correct, and it can
+be beneficial to stop the program and check correctness by other means.
+
+If the table is incorrect, one of the relations will fail to hold on it,
+and the correct table will be of smaller dimension.
+
+The argument @code{+} enables early-closing at any dimension.  The
+argument @code{-} disables early-closing completely. A single numeric
+argument @var{dim} allows early-closing only at that dimension, while a
+pair of numeric arguments @var{min} and @var{max} separated by a colon,
+but not by any whitespace, allows early-closing between dimensions
+@var{min} and @var{max} inclusive.
+
+@end deffn
+
+@node  Output Options, Logging and Error Message Options, Strategic Options, Command Line Options
+@comment  node-name,  next,  previous,  up
+@section Output Options
+@cindex Output
+On successful completion the programs may output their results in
+various formats, and with various details included or not. This group of
+options deals with selecting what information will be output, in what
+formats and to what files.
+
+@menu
+* Options to control what information is output::  
+* Options for Output Formats::  
+* Output File Names::           
+@end menu
+
+@node  Options to control what information is output, Options for Output Formats, Output Options, Output Options
+@comment  node-name,  next,  previous,  up
+@subsection Options to control what information is output
+
+@deffn Option -P
+@deffnx Option -b
+@cindex Pre-images
+The @code{-P} options controls the recording of pre-images.If this flag
+is present the program will keep track of the basis elements in terms of
+the module generators and words in the group (or algebra) generators. This
+information is printed out when the table is printed (ie when @code{-vs2} is
+present) and in appropriately formatted output. This option has no
+effect when @code{-Q} is also present.
+
+The alternative name @code{-b} for this option is obsolete and is
+retained for compatibility.
+
+@end deffn
+
+@deffn Option -i
+@cindex Images of module generators
+The option enables output of Images. If this flag is present then the
+images of the module generators in the output module are included in the
+output.  This is only really relevant for non-cyclic modules as
+otherwise the generator is the first basis vector and can only be
+deleted if the output module is zero.
+
+@end deffn
+@node  Options for Output Formats, Output File Names, Options to control what information is output, Output Options
+@comment  node-name,  next,  previous,  up
+@subsection Options for Output Formats
+
+These options control
+For the exact specification of the various output formats see
+@ref{Output Formats}. The names of the files to which the variously
+formatted outputs are written are derived from a common @var{stem} set
+with the @code{-o} option. @ref{Output File Names}.
+
+@deffn Option -c
+@cindex Cayley
+Enables Cayley format output. If this option is present a Cayley library
+containing the information will be written to @var{stem}. At present the
+pre-image information will not be written even if @code{-P} is present.
+This may be fixed in a future release.
+   
+@end deffn
+
+@deffn Option -g
+@cindex GAP
+Enables GAP format output. If this option is present a file
+@file{@var{stem}.g} will be written, suitable for reading by GAP version
+3.1 or later.
+
+@end deffn
+
+@deffn Option -m 
+@cindex Meataxe
+Enables Meataxe format output.  This output is written into a series of
+files whose names are obtained by appending '.' and the generator names
+to @var{stem}. The images, if @code{-i} was present, are written to
+@file{@var{stem}.IM}. This option is only available for @code{me} as
+there is no Meataxe format for integers or rationals.
+
+@end deffn
+
+@deffn Option -q
+@cindex Plain ASCII
+Enables plain ASCII  output format. The output filename
+is @file{@var{stem}.pa}. This format is designed to be portable and
+simple to parse (for a computer).
+
+@end deffn
+
+@deffn Option -B
+@cindex Plain binary
+Enables plain binary  output format. This is written to
+@file{@var{stem}.pb} and is essentially just the binary version of the output
+generated when -q is selected. It is not likely to be portable between
+different hardware architectures or different versions of the software,
+but should be very fast to read and write.
+
+@end deffn
+
+@deffn Option -x
+@cindex AXIOM
+Enables AXIOM output format. The output file-name is
+@file{@var{stem}.input}.
+
+@end deffn
+
+@node  Output File Names,  , Options for Output Formats, Output Options
+@comment  node-name,  next,  previous,  up
+@subsection Output File Names
+
+@deffn Option -o
+@cindex Stem for output file names
+@cindex Output filenames
+@cindex meout
+@cindex qout
+Sets the output file stem @var{stem}. This is used to construct the
+names of the various differently formatted output files (see above). The
+default is @code{meout}, unless the @code{-Q} option is present, in
+which case the default is @code{qout}.
+
+@end deffn
+
+@node  Logging and Error Message Options, Input File Options, Output Options, Command Line Options
+@comment  node-name,  next,  previous,  up
+@section Logging and Error Message Options
+@cindex Logging
+@cindex Error messages
+@cindex Diagnostic messages
+As the program runs it prints various messages indicating progress
+and/or reporting errors. The level of detail reported, and the
+destination of these messages can be controlled by the options in this
+section. All of the progress messages can be suppressed by removing the
+compile-time option @code{LOGGING}, reducing the program size and
+speeding it up slightly. If this is done then the @code{-v},
+@code{-l} and @code{-L} options will be ignored with an error message.
+
+@deffn Option -l file
+@cindex Logfile
+@cindex File, log
+Sets the Logging file. This @var{file} argument is a compulsory path
+name and logging output is directed to that file. The default is to send
+logging output to standard output.
+
+@end deffn
+
+@deffn Option -v 0 | + | ( type level ) @dots{}
+@cindex Verbosity of messages
+This option controls the Verbosity of logging.
+
+The argument may take one of the special forms @code{0} or @code{+}.
+The option @code{-v0} turns off all logging. No output should then be
+sent to the log file (unless further @code{-v} options are given). The
+options @code{-v+} turns on all possible logging messages, producing
+extremely copious details of all stages of the calculation.
+
+Otherwise the argument is a series of @var{type} @var{level} pairs (no
+whitespace may appear within the argument).  Each @var{type} is a single
+letter, selecting a category of event to be logged, the @var{level} is
+an unsigned integer indicating how detailed a log is required. At
+@var{level} 0 no events are logged. The following types are defined:
+
+@table @code
+
+@item a
+Controls logging of group and algebra Actions as they are computed. The
+default level is 0. All higher levels are equivalent and produce a lot
+of output.
+
+@item c
+Controls logging of Coincidence processing. The default level is 0.  At
+levels greater than 0 all coincidences are logged as they are stacked
+and processed and all equations are logged as they are processed.  At
+level 2 or higher the @code{vroot} subroutine which replaces a vector by
+its undeleted image is also logged.
+
+@item i
+Controls logging of Initialisation of new basis vectors. The default
+level is 0.  At level 1 each new basis vector defined is logged.  At
+levels 2 and higher the full details of the definition are given.
+
+@item k
+Controls logging of pacKs of the coset table. The default level is 1.
+At levels greater than 0 each pack is logged. At levels greater than 1
+each basis vector relocated during a pack is logged.
+
+@item l
+Controls logging of Lattice operations (@code{zme} only). The default
+level is 1. At this level and higher packing of the lattice and pushes
+of the lattice are logged. At levels greater than 1 each vector added to
+the lattice and other substantial changes, and each vector pushed are
+logged. At level 3 or higher the Gauss-Jordan processing that happens as
+each vector is added and the effect of coincidences on the lattice are
+logged.
+
+@item m
+Controls logging of memory allocated by the routines in @file{allocs.c}
+This is only permitted when @code{DEBUG} was defined at compile time. At
+all levels greater than 0 the allocation is logged after submodule
+generators are pushed. At level 2 or higher it is also logged after
+every weight increase. Whenever the allocation is logged certain
+consistency checks are also performed and any anomalies are reported.
+
+@item p
+Controls logging of relators Pushed. The default level is 0.  At level 1
+or higher it logs each relator pushed from a basis element.  At level 2
+or higher it also logs the image of each algebra relator (which will
+then be forced to zero).
+
+@item s
+Controls logging of Stages in the progress of the program. The default
+level is 1. At level 1 or higher the program prints brief messages at
+major stages in the progress of the program: after the input file is
+read; after the submodule generators are processed and at the end of the
+run. At level 2 or higher the program also prints the relators as they
+are read in, and the whole table at completion. At level 3 or higher the
+table is also printed after the submodule generators have been
+processed.
+
+When the @code{-Q} option is also present @pxref{Input File Options}
+this suboption has a different effect. At level 1 a message is printed
+after the submodule generators have been read in and another on
+completion. A level 2 or higher messages are also printed after every
+hundred sets of images have been read in.
+
+@item w
+Controls logging of Weight changes. The default level is 1.  At any
+level greater than zero it logs every change of weight
+(@xref{Strategy}).
+
+@end table
+
+@end deffn
+
+@deffn Option -L Prefix
+@cindex Log prefix
+@cindex Prefix for log messages
+Use of this option causes the argument string to be printed at the start
+of every line of logging output. It can be used if the log information
+is later to be read into another program, to cause the messages to be
+treated as comments. 
+
+Note that no space is inserted after the prefix string. If one is needed
+it should be supplied as part of the string. For example @code{-L'#I '}.
+
+@end deffn
+@deffn Option -W  Warnlevel
+@cindex Warnings, control of
+@cindex Level, warning
+@cindex Warnlevel
+This option controls the level of detail in the warning messages
+produced by the input parser in response to incorrect input file syntax.
+
+Whatever the value, the parser will attempt to recover and read the rest
+of the file in order to report any further errors. Some errors (such as
+a repeated generator name) are ignorable, but most will prevent the
+actual calculation taking place. After reading the whole input file the
+program will continue with the calculation only if no non-ignorable
+errors occurred.
+
+
+At a @var{Warnlevel} of 0 no messages are produced. The program will
+either run or stop with a non-zero return code.
+
+At a @var{Warnlevel} of 1 a message describing each error is printed.
+
+At a @var{Warnlevel} of 2 the approximate line number and position of
+the error is also reported.
+
+At higher levels the offending line is printed, together with an
+indication of the location of the error.
+
+The default level is 2.
+   
+@end deffn
+
+@node  Input File Options, Debugging Options, Logging and Error Message Options, Command Line Options
+@comment  node-name,  next,  previous,  up
+@section Input File Options
+
+These options specify, or alter the meaning of, the main input file read
+by the program.
+
+@deffn Option -p Presentation
+@cindex Input files
+@cindex Presentation
+This option specifies the name of the main input file (the
+presentation). The @var{Presentation} is extended to a pathname by
+adjoining @code{.pres}, unless the @code{-Q} option appears
+@emph{before} the @code{-p}, in which case @code{.qin} will be adjoined
+instead (and the input file will be expected to be in a different
+format). By default input is read from standard input. See @ref{Input
+Formats} for details of the format of the input files.
+
+@end deffn
+
+@deffn Option -A
+@cindex Polynomial rings
+@cindex Abelian algebras
+This option indicates that the generators may be assumed to commute with
+one another (so that computations are taking place in a polynomial
+ring). Relations of the form @code{XY = YX} will be added for every pair
+of generators.
+
+@end deffn
+
+@deffn Option -C Characteristic
+@cindex Characteristic, over-riding
+This option overrides the characteristic specified in the input file.
+The argument @var{Characteristic} is the new characteristic, which must
+be 0 for zme or qme and a prime between 2 and 251 inclusive for me.
+
+@end deffn
+
+@deffn Option -Q
+@cindex Quotient constructing
+This option switches the program from the default behaviour of reading a
+@code{.pres} presentation file and constructing the module presented to
+reading a @code{.qin} quotient specification and constructing the
+quotient action. It should appear @emph{before} @code{-p} if both are
+present.
+
+@end deffn
+
+@deffn Option -n
+
+Normally the programs generate the extra relation @code{x=x}, for each
+non-invertible generator @code{x}. This is to ensure that all
+definitions will be made eventually, so that the table will close.
+Otherwise, inputting the natural presentation for the free algebra would
+cause no action.
+
+This option suppresses these relations. It is only safe to use when you
+are sure that every generator appears as the first letter of (a term of)
+a relation.
+
+@end deffn
+
+@node  Debugging Options, Limit Options, Input File Options, Command Line Options
+@comment  node-name,  next,  previous,  up
+@section Debugging Options
+@cindex Debugging options
+Most users should not need these options, and indeed will have compiled
+the programs so that they are not available. They have no effect if
+@code{-Q} was specified.
+
+@deffn Option -s + | - | Filename Stem
+@cindex Scrutinize
+This option controls the @dfn{Scrutinize} feature. This is only
+available if the compile-time option @code{SCRUT} was set and is never
+available for @code{zme}. The scrutinize system maintains a homomorphism
+from the module under construction to one read in at the beginning
+(which should be the correct module). This is used to check all
+deductions and coincidences. Any discrepancies found are reported.
+
+The @code{+} argument turns scrutinize on, the @code{-} argument turns
+it off (the default). A @var{Filename Stem} argument turns it on and
+selects the module to be read in. The @var{Stem} defaults to
+@code{meout}. The actual filename is obtained by adjoining @code{.pb} to
+the stem, and the module is read in in the plain binary format described
+in @ref{Options for Output Formats}.
+
+@end deffn
+
+@deffn Option -y
+@cindex Debugging, bison
+This option turns on Bison's own debugging for the input parser. It is
+only available when @code{DEBUG} was specified at compile-time. Rather
+copious information is output on the behaviour of the push-down
+automaton that parses the presentation.
+
+@end deffn
+
+@node  Limit Options,  , Debugging Options, Command Line Options
+@comment  node-name,  next,  previous,  up
+@section Limit Options
+
+This group of options imposes limits of time, space or weights on the
+program. If a limit is exceeded the program will exit with a non-zero
+return code and write no output.
+
+@deffn Option -w MaxWeight
+@cindex Weights
+This option imposes a limit on the maximum weight of basis element that
+can be defined. The default limit is 100. See @ref{Strategy} for details
+of the use of weights. This option has no effect when the @code{-Q}
+option is also given as weights are not used in that case.
+
+@end deffn
+
+@deffn Option -T Time Limit
+@cindex Time, CPU, limit
+@cindex CPU time limit
+This option imposes a limit on the CPU time used by the program. The
+program will stop soon after the @var{Time Limit} CPU seconds have been
+used (@var{Time Limit} is given in floating point). The CPU time is not
+checked as often as it might be. The default is to have no limit.
+
+@end deffn
+
+@deffn Option -t Max Dimension | Max Dimension:Reserved Percentage
+@cindex Dimension limit
+@cindex Table size limit
+@cindex Basis vectors defined, limit
+@cindex Reserved percentage
+@cindex Critical definitions, space reserved for
+The option limits the dimension of the module being constructed. The
+program will attempt to complete the calculation in a smaller space, but
+may not succeed. The default limit is very large indeed. This option has
+no effect when @code{-Q} is also given, as the table size never
+increases.
+
+By default 5% of the dimension limit is reserved for certain critical
+definitions (occuring during coincidence processing). If there is no
+space for a critical definition when one is needed the program exits
+with an error. The proportion of reserved space can be altered using the
+second form of this option.
+
+
+@end deffn
+
+@node  Output Formats, Strategy, Command Line Options, Top
+@comment  node-name,  next,  previous,  up
+@chapter Output Formats
+@cindex Output files
+@cindex Output formats
+On successful completion the programs may write out the results in
+various ways. Which format(s) are used, and what filenames the output is
+written to are controlled by various command line options. @ref{Output
+Options}.
+
+This chapter describes the format of the files which are written. There
+are four formats intended to be read into other systems and two formats
+intended to be easy for special purpose programs to read.
+
+@menu
+* Cayley Format::               
+* GAP format::                  
+* Meataxe Format::              
+* AXIOM format::                
+* Plain ASCII format::          
+* Plain Binary Format::         
+@end menu
+
+@node  Cayley Format, GAP format, Output Formats, Output Formats
+@comment  node-name,  next,  previous,  up
+@section Cayley Format
+@cindex Cayley
+This format is intended for reading by version 3 of the Cayley
+computational algebra system produced by John Cannon and associates at
+the Department of Pure Mathematics, Sydney University, Sydney, NSW,
+AUSTRALIA. Contact @code{john@@maths.su.oz.au} for details.
+
+The output file is a Cayley library and sets the following variables:
+
+@table @code
+@item fld
+This is set to be the field (or, in the case of @code{zme}, ring) over
+which calculations have been performed.
+
+@item vs
+This is set to be a vector space (or module) over @code{fld}, of the
+same dimension as the module constructed by the program.
+
+@item grp
+This is matrix group over @code{vs}. Its generators have the same names
+as the generators specified for the vector enumerator, and their actions
+on @code{vs} are those computed by the program.
+
+@item Images
+This is a matrix with as many rows as there were module generators input
+to the enumerator and as many columns as the dimension of the module
+constructed. It gives the images in the module constructed of the
+original module generators. It is only present if the @code{-i} option
+was selected at run-time.
+
+@item Lattice
+This is only present for @code{zme} and describes the torsion of the
+module constructed. It is a matrix with as many columns as the dimension
+of the module and a row for each lattice generator.
+
+@item VEruntime
+This is the CPU time used in vector enumeration, in milliseconds.
+
+@end table
+
+This output format has not been tested much except with group algebra
+presentations over finite fields. It may not work in other situations.
+The @code{-P} option to write out preimages has no effect on this output
+format.
+
+@node  GAP format, Meataxe Format, Cayley Format, Output Formats
+@comment  node-name,  next,  previous,  up
+@section GAP format
+@cindex GAP
+This format produces a file intended to be read by the GAP system,
+version 3.1 or later. This system is produced by Lehrstuhl D fur
+Mathematik, RWTH-Aachen, Aachen, GERMANY and is available for anonymous
+FTP from @code{samson.math.rwth-aachen.de}.
+
+The output file is a GAP source file which defines the following global
+variables:
+
+@table @code
+
+@item field
+The field (or ring) over which the enumeration was performed.
+
+@item VErunTime
+The CPU time in milliseconds used by the enumeration.
+
+@item images_mat
+This item is only present if the @code{-i} option was given.  It
+consists of a matrix of field entries with as many columns as the
+dimension of the module constructed and a row for each module generator
+specified in the input file, giving the image of that generator in the
+final module.
+
+@item g@var{gen}
+This item is only present if the @code{-P} (or @code{-b}) option was
+given at run-time.  For each generator @var{gen} specified in the
+presentation a global GAP variable g@var{gen} is given the value @code{
+AbstractGenerator("@var{gen}")}.
+
+@item preImages
+This item is only present if the @code{-P} (or @code{-b}) option was
+given at run-time. It consists of a list of records, one for each basis
+vector in (dimension of) the module constructed. Each such basis vector
+is the image of one of the free module generators by a product of
+generators, and each record has two fields @code{modGen}, which contains
+the number of the free module generator (starting at 1) and @code{word}
+which contains a word (given in terms of @code{IdWord}, the
+@code{g@var{gen}} and their inverses) giving the appropriate product of
+generators.
+
+@item gen_@var{gen}
+For each generator @var{gen} of the presentation, a global variable
+@code{gen_@var{gen}} is set to the matrix giving the action of @var{gen}
+on the module constructed.
+
+@item gens
+The list @code{gens} is a list of all the @code{gen_@var{gen}}.
+
+@item lattice_mat
+This is only produced by @code{zme} and contains the lattice that
+describes the torsion of the constructed module.
+@end table
+
+@node  Meataxe Format, AXIOM format, GAP format, Output Formats
+@comment  node-name,  next,  previous,  up
+@section Meataxe Format
+@cindex Meataxe
+This format is only available with @code{me}, as the Meataxe has no
+facilities for handling integers or rationals. It is intended to produce
+input suitable for reading into the Meataxe programs of R.A. Parker.
+
+In this output format the action of each generator, and the images if
+@code{-i} was given, is written to separate file. The generator name is
+appended to the file name stem. @xref{Output Options} for more details.
+
+Each matrix is ready to be read in by the meataxe program @code{cv}.
+
+The @code{-P} option to record pre-images has no effect on this output
+format.
+
+@node  AXIOM format, Plain ASCII format, Meataxe Format, Output Formats
+@comment  node-name,  next,  previous,  up
+@section AXIOM format
+@cindex AXIOM
+This format produces output suitable for reading into the AXIOM computer
+algebra system distributed by NAG, Ltd..
+
+The file produced assigns to the following variables:
+
+@table @code
+
+@item fld
+This is set to be the field or ring over which the enumeration was
+performed.
+
+@item VErunTime
+This is the CPU time in milliseconds used by the enumeration.
+
+@item images_mat
+This is set to be a matrix of field entries giving the images in the
+module constructed of the original free module generators.
+
+@item rec
+This is only set if the @code{-P} option is given, when it is set to be
+the type
+@example
+Record(modGen : PositiveInteger, word : Polynomial Integer).
+@end example
+
+@item gen_names
+This is only set when the @code{-P} option is given.  It is of type
+@code{LIST Symbol} and contains the names of the generators from the
+presentation file.
+
+@item preImagesL
+This is only set when the @code{-P} option is given. It is of type
+@code{LIST LIST Any} and is used only to set:
+
+@item preImages
+This is only set when the @code{-P} option is given and the
+@code{preImagesL} coerced to type @code{LIST rec}. It has a member for
+each basis vector (dimension) of the module constructed.  Each such
+basis vector is the image of one of the original free module generators
+under a product of algebra generators. The @code{modGen} field of the
+record specifies the free module generator (starting at 1), which the
+@code{word} field is the appropriate monomial in the symbols
+corresponding to the generators.
+
+@item gen_@var{gen}
+For each generator @var{gen} given in the presentation, an AXIOM
+variable @code{gen_@var{gen}} is set equal to the matrix (with entries
+in @code{fld}) giving the action of the generator on the module
+constructed.
+
+@item gens
+This list contains all the @code{gen_@var{gen}}.
+
+@item lattice_mat
+This is only produced by @code{zme}.  It is a matrix giving the torsion
+of the module constructed.
+
+@end table
+
+@node  Plain ASCII format, Plain Binary Format, AXIOM format, Output Formats
+@comment  node-name,  next,  previous,  up
+@section Plain ASCII format
+@cindex Plain ASCII
+This format is an unadorned ASCII format intended to be machine read.
+It consists of ASCII numbers separated by whitespace.
+
+The first line is a header, consisting of four or five numbers
+
+@itemize @bullet
+@item 
+The dimension of the constructed module
+@item
+The number of algebra generators (not included inverses). That is the
+number of generators whose actions appear in this file.
+@item
+The number of free module generator images in the file. This will be 0
+is the @code{-i} option was not given at run-time, and will otherwise be
+the number of free module generators in the presentation.
+@item
+A boolean (C style, so 1 for true and 0 for false) entry indicating
+whether pre-image information appears in the file (ie whether the
+@code{-P} option was given at run-time).
+@item
+For @code{zme} only, the number of generators if the torsion lattice.
+@end itemize
+
+The next part of the file gives the images of the free module
+generators, and is only present if the @code{-i} option was given at
+run-time. If it is present then there is a line for each module
+generator giving its image in the module constructed.
+
+These vectors, and others later in the file are given as field elements
+separated by spaces. There is no terminator, but the number of field
+elements expected can be deduced from the header information. Finite
+field elements are given as integers between 0 and
+@var{characteristic}-1.  Rational numbers are given as
+@samp{@var{numerator}/@var{denominator}}.  Integers and numerators and
+denominators of rationals may be too large to read into any fixed-size
+type.
+
+The next section, which will only be present if the @code{-P} option was
+given at run-time (which can be deduced from the header information),
+gives the pre-images of the basis of the module constructed in the free
+module. For each basis vector there is a line giving the free module
+generator and a word in the algebra generators. The free module
+generator is given as an integer (they start @w{at 1)}, the algebra
+generators as integers, in the order in which they are defined in the
+presentation, starting at 1, with a negative number denoting the
+multiplicative inverse of its absolute value. The words are terminated
+by a zero.
+
+The next section gives the matrices for the action of the generators.
+The rows are given as vectors in the format described above, and the
+matrices are not separated.
+
+For @code{zme} only, the lattice generators are given as a
+series of vectors.
+
+Finally, the CPU time used, in milliseconds appears on a line by itself.
+
+@node  Plain Binary Format,  , Plain ASCII format, Output Formats
+@comment  node-name,  next,  previous,  up
+@section Plain Binary Format
+@cindex Plain binary
+This format is essentially identical to the Plain ASCII format described
+in @ref{Plain ASCII format}, except that the individual entries, instead
+of being whitespace separated decimal numbers are fixed-length binary
+numbers. All numbers are written as @code{unsigned int} or @code{int}
+(for generator numbers in pre-images), except that for @code{qme} and
+@code{zme}, the rational numbers and integers are written using the
+@code{mpz_out_raw} function of GMP.
+
+@node  Strategy, The Source Code, Output Formats, Top
+@comment  node-name,  next,  previous,  up
+@chapter Strategy
+@cindex Strategy
+The vector enumeration algorithm, as described in @cite{On Vector
+Enumeration}, for instance, leaves unanswered a number of practically
+important questions about the order in which relations and submodule
+generators are used. A set of answers to these questions is known as
+@dfn{an enumeration strategy}.
+
+The strategy used by these programs is based on the coset enumeration
+strategy defined in @cite{Double Coset Enumeration, Journal of Symbolic
+Computation (12) 1991}. This is an HLT-based strategy (something about
+which we have no choice for vector enumeration) based on two key ideas,
+@dfn{lookahead}, originally due to M.J.T. Guy, and @dfn{weights} due to
+R.A. Parker.
+
+@menu
+* Weights::                     
+* Lookahead::                   
+@end menu
+
+@node  Weights, Lookahead, Strategy, Strategy
+@comment  node-name,  next,  previous,  up
+@section Weights
+@cindex Weights
+In this approach, every relation of the presentation, every basis vector
+in the module constructed and (for @code{zme}) every vector in the
+lattice and every generator, has a weight, which is a positive integer.
+
+The weights of the relations may be given in the presentation file
+@xref{Weight Specifications}. Otherwise they are given default values.
+For a group-type relator, @pxref{Group Type Relations} the default
+weight is half the length of the relator. For an algebra relation,
+@pxref{Algebra Relations} the default weight is 3.
+
+For @code{zme} the weights of the generators are currently fixed at 2.
+A mechanism for setting them will be added to a future release.
+
+The weight of a basis vector or lattice vector created during submodule
+processing is 1. After that, there is a current weight, which begins at
+2 and increases steadily. At current weight @var{w}, all (@var{basis
+vector},@var{relation}) pairs whose weights total @var{w} (or less, if
+somehow they have not been processed already) will be processed. New
+basis vectors and lattice vectors created during this processing will be
+assigned weight @var{w}.
+
+In @code{zme}, there is additional processing, because, as well as the
+(@var{basis vector}, @var{relation}) pairs, the image of every lattice
+vector under every generator must be computed and forced to lie in the
+lattice. At current weight @var{w}, every (@var{lattice vector},
+@var{generator}) pair whose weights sum to @var{w} (or less) is
+processed.
+
+There is a maximum weight, and if the current weight reaches the maximum
+weight without the calculation being complete then the program stops.
+The maximum weight is 99 by default, and can be set from the command
+line @ref{Strategic Options}.
+
+The art of setting weights to obtain optimum performance is,
+unfortunately, just that: @emph{an art}. All I can suggest is
+experimentation, possibly with related, but smaller presentations.  Very
+complex algebra relations should probably have their weight increased
+from the default.
+
+Certain relations are adjoined automatically to the presentation. These
+are given standard weights. The relations @samp{xx=1}, @code{xx~=1} or
+@code{x=x} adjoined for involutary, invertible or arbitrary generators
+@code{x} have weight 3. The relations @code{xy=yx} adjoined for each
+pair of generators @code{x} and @code{y} when the @code{-A} flag is
+present @pxref{Input File Options} have weight 2.
+
+@node  Lookahead,  , Weights, Strategy
+@comment  node-name,  next,  previous,  up
+@section Lookahead
+@cindex Lookahead
+The idea of lookahead is to detect in advance coincidences which can be
+proved without further definitions. From time to time, the program
+shifts into @dfn{lookahead mode}, and attempts to process some further
+relations without defining new basis vectors. It then shifts back to the
+normal state, called @dfn{define mode} and resumes processing from where
+it left off.
+
+The program will only change modes when the current weight is about the
+change. It goes into lookahead mode if the number of basis vectors has
+doubled since it last entered define mode (or since the end of submodule
+processing if this is the first lookahead). It looks ahead a number of
+weights controlled by the command line option @code{-a} @pxref{Strategic
+Options}, or 2 weights by default.
+
+A relation may have a different weight in lookahead mode from its weight
+in define mode. Indeed the relations @code{xx=1}, @code{xx~=1} or
+@code{x=x}, adjoined automatically to the presentation, have weight 6 in
+lookahead mode, (rather than 3) as their main function is to make sure
+that all entries in the table are filled eventually.
+
+@node  The Source Code, Examples, Strategy, Top
+@comment  node-name,  next,  previous,  up
+@chapter The Source Code
+@cindex Source code
+@cindex Internals
+@cindex Code, structure and conventions
+This chapter is provides a little information about the arrangement and
+operation of my source code. It is intended only for those trying to fix
+local compilation problems or to make small changes or additions. If you
+are interested in getting more deeply involved with the innards of the
+program please feel free to get in touch with me.
+
+@menu
+* Generalities::                
+* The Source Files::            
+@end menu
+
+@node  Generalities, The Source Files, The Source Code, The Source Code
+@comment  node-name,  next,  previous,  up
+@section Generalities
+
+@menu
+* Important macros::            
+* Arithmetic::                  
+* Prototyping and Other Language Issues::  
+@end menu
+
+@node  Important macros, Arithmetic, Generalities, Generalities
+@comment  node-name,  next,  previous,  up
+@subsection Important macros
+@cindex Macros
+
+The file @file{meint.h} contains both the external declarations for most
+of the functions in the programs and a large number of critical macros.
+The macros are crucial to the way in which the three programs are
+generated from one set of sources, and to the operation of the
+@code{DEBUG}, @code{SCRUT} and @code{LOGGING} compile-time flags.  Among
+the more significant ones are:
+
+@table @code
+
+@item DIE()
+@cindex DIE
+@cindex DEBUG
+In @code{DEBUG} mode (when the pre-processor symbol @code{DEBUG}) is
+defined) @code{DIE()} prints an error message indicating the file and
+line number and calls @code{abort()} generating a core dump. In
+non-@code{DEBUG} mode it simply exits with a non-zero return code.
+
+@item ASSERT(@var{condition})
+@cindex ASSERT
+@cindex DEBUG
+In @code{DEBUG} mode this macro checks whether @var{condition} is true
+and calls @code{DIE()} if it is not. In non-@code{DEBUG} mode it
+generates no code (in particular @var{condition} is not evaluated). This
+is the principle method of including consistency checks in the debugging
+version of the program.
+
+@item IFDEBUG(@var{code fragment})
+@cindex IFDEBUG
+@cindex DEBUG
+Simply executes @var{code fragment} only in @code{DEBUG} mode. For
+example after de-allocating the contents of a pointer it is good
+practice to put a @code{NULL} in it to avoid referencing the freed
+memory.
+
+@item LOG(@var{condition},@var{code fragment})
+@cindex LOG
+@cindex LOGGING
+This macro generates no code unless the @code{LOGGING} pre-processor
+symbol is defined, in which case it executes @var{code fragment} if
+@var{condition} is true. Typically @var{condition} checks one of the
+global variables such as @code{logcoin} that control the verbosity of
+logging @pxref{Logging and Error Message Options}.
+
+@item SC(@var{code fragment})
+@cindex SC
+@cindex Scrutinize
+Executes @var{code fragment} only if the @code{SCRUT} pre-processor
+symbol is defined and the global variable @code{scrut} (set by the
+@code{-s} command-line option @ref{Debugging Options}) is @code{true}.
+
+@item PS(@var{vector}, @var{code for packed}, @var{code for sparse})
+@cindex PS
+@cindex Packed and Sparse Vectors
+In @code{me}, but not in the other programs, a vector in the module
+under construction can be represented in one of two forms (packed and
+sparse, see @cite{Constructing Matrix Representations of Finitely
+Presented Groups}). It is often necessary to use separate pieces of code
+to deal with the two cases.
+
+When @code{me} is being compiled, this macro expands to an @code{if
+@dots{} else @dots{}} statement that executes the appropriate code in
+each case. When the other programs are being compiled it expands to
+@var{code for sparse}.
+
+@end table
+
+@node  Arithmetic, Prototyping and Other Language Issues, Important macros, Generalities
+@comment  node-name,  next,  previous,  up
+@subsection Arithmetic
+@cindex Arithmetic
+@cindex GMP
+Arithmetic in the underlying field (ring) is provided by macros such as
+@code{Fadd}, @code{Fmul}, @code{FOne} which enable much of the coding to
+be independent of the underlying arithmetic. In some places (mainly in
+@code{vector.c}) explicit @code{#if @dots{}#endif} structures are used
+where speed requires special code for the different programs.
+
+Pre-processor symbols @code{ME}, @code{QME} and @code{ZME}, indicate
+which programs are being compiled, but in the interest of flexibility, a
+separate set @code{GFP}, @code{RATIONAL} and @code{INTEGRAL} are used to
+indicate which arithmetic is being used.  For the @code{GFP} case many
+of the macros (those dealing with allocating space, for example) expand
+to no code, and they all expand to inline code fragments. For the other
+arithmetics almost all the macros expand to calls to GMP routines.
+
+@node  Prototyping and Other Language Issues,  , Arithmetic, Generalities
+@comment  node-name,  next,  previous,  up
+@subsection Prototyping and Other Language Issues
+@cindex PT
+@cindex Proto-typing
+The file @file{global.h} attempts to make the code compatible with both
+ANSI and traditional C compilers, based on whether the pre-processor
+symbol @code{__STDC__} is defined. In particular, the macro @code{PT} is
+defined to either return or ignore its argument, so as to provide
+proto-typing when it is allowed. The type @code{pointer} is also defined
+to be either @code{char *} or @code{void *} as appropriate.
+
+@node  The Source Files,  , Generalities, The Source Code
+@comment  node-name,  next,  previous,  up
+@section The Source Files
+
+@table @file
+@item alloca.c 
+This is taken from a GNU source, and emulates the BSD library function
+@code{alloca} on systems where it is not provided. @code{alloca} is used
+only by the parser, so speed is not critical. On BSD systems use the
+library function instead.
+
+@item allocs.c	
+This file contains subroutines to allocate certain types of objects
+quickly (by allocating space for them in large groups and then
+maintaining a free queue). It is used for vector headers and (except in
+@code{me}) for small blocks requested by GMP.
+
+@item coin.c
+This file contains the code that maintains the coincidence stacks and
+processes coincidences. Coincidence processing has changed a little from
+earlier releases and the published descriptions in that a coincidences is
+simply stored as a vector to set equal to 0, and the choice of which (if
+any) basis vector to delete is deferred until the coincidence is
+destacked. This is principally for the benefit of @code{zme}, but seems
+beneficial in general.
+
+The important @code{vroot} subroutine that replaces a vector by its
+undeleted image is also here.
+
+@item comline.c
+This file processes the options on the command line @pxref{Command Line
+Options} and sets global variables appropriately
+
+@item ilatt.h
+This file contains macros and declarations used only by
+@file{lattice.c}. Declarations for routines exported from
+@file{lattice.c} are in @file{latt.h}. This file is only part of
+@code{zme}.
+
+@item input.c
+This file contains functions called by the input parser (and a driving
+routine to call the parser and tidy the presentation afterwards).
+
+@item input.h
+A number of functions and macros are used only at the input end of the
+program, by @file{input.c}, @file{input.tab.c} and @file{scanner.c}.
+They are declared here to avoid further complicating @file{meint.h}.
+
+@item input.tab.c
+This file contains the parser produced by bison from @file{input.y}. It
+is called @file{inputtab.c} under MS-DOS.
+
+@item input.y
+This file is the bison grammar file which produces @file{input.tab.c}.
+It is called @file{inputtab.y} under MS-DOS.
+
+@item latt.h
+This file contains the declarations of functions and globals exported by
+@file{lattice.c} the routines that manage the torsion lattice in
+@code{zme}.
+
+@item lattice.c
+This file contains the code that manages the torsion lattice used in
+@code{zme}. The exact role of this lattice will be described in a future
+publication on the integer vector enumeration algorithm. In a future
+release this file may be replaced by one using R.A.Parker's p-adic
+methods to manipulate the lattice.
+
+@item me.c
+This file contains a lot of global variables and some miscellaneous
+subroutines. It is mostly a graveyard for functions with no other
+natural home. The routine @code{SetDefaults} which sets default values
+for many run-time options is here.
+
+@item me.h
+This header file contains features which users might which to change,
+such as the compile-time parameters @pxref{Compile-time options} and
+some type declarations and limits.
+
+@item meint.h
+This file is the main header file of the entire system. Everything
+starts from here.
+
+@item memain.c
+This file contains @code{main()} and other outer-level routines. The
+basic sequence of operations is controlled from here.
+
+@item myalloc.c
+This file provides a debugging version of @code{malloc}, @code{free} and
+@code{realloc}, and a routine @code{DumpHeap} to report the current
+state of heap allocation. It records the file and line from which each
+block was allocated, pre-loads each allocated block with a nonsense
+value (hex E6), and tests freed blocks for consistency. It greatly slows
+down the program and is used only is @code{DEBUG} mode.
+
+@item myalloc.h
+This is the header file associated with @file{myalloc.c}.
+
+@item out.c
+This file contains the output routines, both those used to output the
+results of a successful run and those used to output logging information
+during a run. The output routines have been extensively revised since
+the last release and each output format is now described by a large data
+structure and some associated static subroutines. Hopefully this will
+make it easier to add new output formats.
+
+@item pack.c
+This file simply contains the subroutine to pack the table and recover
+the space occupied by deleted rows.
+
+@item push.c
+This file contains the routines that compute the action of the algebra
+on the table, and so the routines used to process the relations.
+Definition of new basis vectors is also handled here.
+
+@item scanner.c
+This file contains the lexical analyser which tokenises the input.  This
+cannot be done with (f)lex, as the analyser has to be changed after
+reading the initial list of generators. This file also contains the code
+that keeps track of the lines of input so as to be able to report syntax
+errors properly.
+
+@item scrut.c
+This file contains the code implementing the @code{SCRUT} feature. No
+code from this file is compiled unless the @code{SCRUT} pre-processor
+symbol is defined (in @file{me.h}).
+
+@item vector.c
+This file contains the basic vector allocation, deallocation and
+arithmetic subroutines. It is speed critical.
+
+
+@end table 
+
+@node  Examples, Concept Index, The Source Code, Top
+@comment  node-name,  next,  previous,  up
+@chapter Examples
+
+Finally we consider a number of simple examples. The presentation files
+used for these examples are in the @file{./examples} subdirectory of the
+distribution, as are a number of others.
+
+@menu
+* A permutation representation::  
+* A Quotient of this Representation::  
+* A Non-cyclic Module::         
+* A Monoid Representation::     
+* An Integer Module with Torsion::  
+* Quotient Construction Example::  
+* A Quotient of a Polynomial Ring::  
+@end menu
+
+@node  A permutation representation, A Quotient of this Representation, Examples, Examples
+@comment  node-name,  next,  previous,  up
+@section The natural permutation representation of S_3
+
+The symmetric group S3 is also the dihedral group D6, and so is
+presented by two involutions with product of order 3. Taking the
+permutation action on the cosets of the cyclic group generated by one of
+the involutions we obtain the following presentation file
+(@file{s3.pres}).
+
+@example
+0.AB...A:.(AB)3:.
+@end example
+
+Here @code{0} is the characteristic; @code{AB} specifies two generators
+@code{A} and @code{B} (note that @code{ab} would specify one generator
+@code{ab}). The two empty sections @code{...} indicate that both
+generators are involutions. There is one ``submodule generator''
+@code{A} (actually @code{A-1} is the submodule generator) and one
+relation @code{(AB)3 = 1}.
+
+It is of course, much more sensible to use a normal Todd-Coxeter program
+to perform this calculation, as the representation being constructed is
+a permutation representation.
+
+Running @code{qme -vs2 -ps3} to process this file (the @code{-vs2}
+simply causes the presentation to be printed once it has been read) we
+get:
+
+@example
+%qme -vs2 -ps3
+Submodule gens
+Weight  1 group type    A
+Relator
+Weight  3 group type    BB
+Weight  3 group type    AA
+Weight  3 group type    ABABAB
+Done submodule generators
+Starting weight 2 in define mode, 1 alive out of 1
+Starting weight 3 in define mode, 1 alive out of 1
+Starting weight 4 in define mode, 1 alive out of 1
+Looking ahead ...
+Starting weight 5 in lookahead mode, 3 alive out of 4
+Starting weight 6 in lookahead mode, 3 alive out of 4
+  ...done
+Packing 4 to 3
+Starting weight 5 in define mode, 3 alive out of 3
+Starting weight 6 in define mode, 3 alive out of 3
+Starting weight 7 in define mode, 3 alive out of 3
+Closed, 3 rows defined
+3 live dimensions
+@end example
+
+If we also add the @code{-g} option to get GAP format output then the
+program writes a file @file{meout.g} containing:
+
+@example
+field := Rationals;
+VErunTime := 16;
+gen_A := field.one*[[1,0,0],
+[0,0,1],
+[0,1,0]];
+gen_B := field.one*[[0,1,0],
+[1,0,0],
+[0,0,1]];
+gens := [gen_A,gen_B];
+@end example
+
+@node  A Quotient of this Representation, A Non-cyclic Module, A permutation representation, Examples
+@comment  node-name,  next,  previous,  up
+@section A Quotient of a Permutation Representation
+
+The permutation representation constructed in @ref{A permutation
+representation} fixes the all-ones vector (as do all permutation
+representations). We see easily enough that this is @code{1+B+BA} times
+the module generator (the vector (0,0,0)). Accordingly we can write down
+the following presentation for the quotient module (@file{s3a.pres}):
+
+@example
+0.AB...A:0=1+B+BA.(AB)3:.
+@end example
+
+Knowing that we want a dimension 2 module we can turn on early-closing
+@pxref{Strategic Options} and run @code{qme -ps3a -e2 -c} (we will take
+Cayley output this time) with the following result:
+
+@example
+%qme -ps3a -e2 -c
+Read Input
+Done submodule generators
+Starting weight 2 in define mode, 2 alive out of 3
+Packing 3 to 2
+Early Closing
+Closed, 2 rows defined
+2 live dimensions
+@end example
+
+Here we see the advantage of early-closing when the final dimension is
+known. The output file in this case is @file{meout}:
+
+@example
+LIBRARY meout;
+fld : rationals;
+vs : vector space (2,fld);
+grp : matrix group (vs);
+grp.generators :
+        A = MAT(
+                1,0:
+                -1,-1),
+        B = MAT(
+                0,1:
+                1,0);
+VEruntime = 16;
+@end example
+
+@node  A Non-cyclic Module, A Monoid Representation, A Quotient of this Representation, Examples
+@comment  node-name,  next,  previous,  up
+@section A Non-cyclic Module
+
+If we take the direct product of two copies of the permutation
+representation constructed in @ref{A permutation representation}, we can
+identify the fixed vectors in the two copies in the following
+presentation:
+
+@example
+0.AB...@{2@}[*,A-1],[1,1+B+BA] = [2,1+B+BA].(AB)3:.
+@end example
+
+which we can run with @code{qme -ps3b} to get
+
+@example
+qme -ps3b
+Read Input
+Done submodule generators
+Starting weight 2 in define mode, 5 alive out of 7
+Starting weight 3 in define mode, 5 alive out of 7
+Starting weight 4 in define mode, 5 alive out of 7
+Starting weight 5 in define mode, 5 alive out of 7
+Closed, 7 rows defined
+Packing 7 to 5
+5 live dimensions
+@end example
+
+In this case it is interesting to look at the images of the module generators
+and pre-images of the basis vectors. We choose AXIOM format and rerun
+the program with @code{qme -v0 -Pix -e5 -ps3b}. This produces nothing on
+the standard output, but writes the file @file{meout.input} as follows
+(some indentation and spacing has been added for ease of reading):
+
+@example
+fld := FRAC INT
+VErunTime := 16
+images_mat := matrix([[1,0,0,0,0],_
+        [0,1,0,0,0]]) :: MATRIX fld
+
+rec := Record(modGen : PositiveInteger, word : Polynomial Integer)
+gen_names : LIST Symbol := [A,B]
+
+preImagesL : LIST LIST Any := [_
+        [ 1, 1],_
+        [ 2, 1],_
+        [ 1, B],_
+        [ 1, B*A],_
+        [ 2, B]]
+preImages := preImagesL :: LIST rec
+
+gen_A := matrix([[1,0,0,0,0],_
+        [0,1,0,0,0],_
+        [0,0,0,1,0],_
+        [0,0,1,0,0],_
+        [1,-1,1,1,-1]]) :: MATRIX fld
+gen_B := matrix([[0,0,1,0,0],_
+        [0,0,0,0,1],_
+        [1,0,0,0,0],_
+        [0,0,0,1,0],_
+        [0,1,0,0,0]]) :: MATRIX fld
+
+gens := [gen_A,gen_B]
+@end example
+
+From the @code{images_mat} section of this file we see that the two
+module generators are just the first and second basis vectors.
+
+From the preImages section we see that the five basis vectors are images
+of the following elements of the free two-generator module for the free
+two-generator algebra: (1,0), (0,1), (B,0), (BA,0) and (0,B).
+
+@node  A Monoid Representation, An Integer Module with Torsion, A Non-cyclic Module, Examples
+@comment  node-name,  next,  previous,  up
+@section A Monoid Representation
+The Coxeter monoid of type B_2 has a transformation representation on
+four points. This can be constructed as a matrix representation over
+GF(3), from the following presentation (@file{mond8.pres}):
+
+@example
+3.gena genb.*..:gena = 1 .
+: genagena = gena , genbgenb = genb, 
+(genagenb)2 = (genbgena)2.
+@end example
+
+This presentation uses lower-case generator names, so there are two
+generators @code{gena} and @code{genb}. The space separating them in the
+initial list of generators is needed to prevent them being read as one
+generator @code{genagenb}. The @code{*} on the first line indicates that
+both generators are not (known to be) invertible. Indeed, we go on to
+specify that they are idempotents.
+
+In the relations no space between generator names is needed as the
+longest-match scanner can always sort out what we mean. Some space might
+have improved readability however.
+
+We can process this with @file{me} (since we are in positive
+characteristic):
+
+@example
+%me -vs2 -pmond8 -g -e4
+Submodule gens
+Weight  3 algebra type  gena=1
+Relator
+Weight  3 algebra type  genb=genb
+Weight  3 algebra type  gena=gena
+Weight  3 algebra type  gena*genb*gena*genb=genb*gena*genb*gena
+Weight  3 algebra type  genb*genb=genb
+Weight  3 algebra type  gena*gena=gena
+Done submodule generators
+Starting weight 2 in define mode, 1 alive out of 2
+Starting weight 3 in define mode, 1 alive out of 2
+Starting weight 4 in define mode, 1 alive out of 2
+Looking ahead ...
+Starting weight 5 in lookahead mode, 4 alive out of 7
+Starting weight 6 in lookahead mode, 4 alive out of 7
+  ...done
+Packing 7 to 4
+Starting weight 5 in define mode, 4 alive out of 4
+Starting weight 6 in define mode, 4 alive out of 4
+Starting weight 7 in define mode, 4 alive out of 4
+Starting weight 8 in define mode, 4 alive out of 9
+Starting weight 9 in define mode, 4 alive out of 9
+Starting weight 10 in define mode, 4 alive out of 9
+Closed, 9 rows defined
+Packing 9 to 4
+4 live dimensions
+@end example
+
+It is clear that the relations @code{ genb=genb} and @code{gena=gena}
+have no effect, since other relations will force the table to be
+completed. We could therefore have used the @code{-n} option
+@pxref{Input File Options}, to save a small amount of effort.
+
+The output file from this calculation is:
+
+@example
+field := GF(3);
+VErunTime := 16;
+gen_gena := field.one*[[1,0,0,0],
+[0,0,1,0],
+[0,0,1,0],
+[0,0,0,1]];
+gen_genb := field.one*[[0,1,0,0],
+[0,1,0,0],
+[0,0,0,1],
+[0,0,0,1]];
+gens := [gen_gena,gen_genb];
+@end example
+
+and the matrices are clearly non-invertible.
+
+
+@node  An Integer Module with Torsion, Quotient Construction Example, A Monoid Representation, Examples
+@comment  node-name,  next,  previous,  up
+@section An Integer Module with Torsion
+
+The algorithm for integer module enumeration will be described fully in
+a forthcoming paper, however one problem which arises is dealing with
+the information that a generator takes a basis vector to a non-integer
+multiple of itself. This implies (if the result is to be finite
+dimensional) that the basis vector is a torsion vector, but does not
+exactly define the torsion. A further relation is needed to resolve the
+problem. As an example, consider the presentation (in @file{tors.pres}):
+
+@example
+0.X.*..:2*X = 1.:X7=1.
+@end example
+
+Here the submodule generator implies that @code{X} acts as 1/2 on the
+module generator (the first basis vector). This leads to an extending
+lattice which is finally terminated by the relation. The module then
+collapses and is seen to be one-dimensional with 127-torsion.
+
+The output from the run is:
+
+@example
+zme -ptors -g
+Read Input
+Done submodule generators
+Starting weight 2 in define mode, 2 alive out of 2
+Pushing lattice at weight 2
+Starting weight 3 in define mode, 2 alive out of 2
+Pushing lattice at weight 3
+Starting weight 4 in define mode, 2 alive out of 2
+Pushing lattice at weight 4
+Starting weight 5 in define mode, 1 alive out of 8
+Pushing lattice at weight 5
+Starting weight 6 in define mode, 1 alive out of 8
+Pushing lattice at weight 6
+Starting weight 7 in define mode, 1 alive out of 8
+Pushing lattice at weight 7
+Closed, 8 rows defined
+Packing 8 to 1
+Packed lattice from 8 to 1
+1 live dimensions
+@end example
+
+and the output file @file{meout.g} contains:
+
+@example
+field := Integers;
+VErunTime := 16;
+gen_X := field.one*[[64]];
+gens := [gen_X];
+lattice_mat := field.one*[[127]];
+@end example
+
+So that we our module has 127-torsion and @code{X} acts on it as 64
+(which is 1/2 mod 127).
+
+@node  Quotient Construction Example, A Quotient of a Polynomial Ring, An Integer Module with Torsion, Examples
+@comment  node-name,  next,  previous,  up
+@section Quotient Construction Example
+
+Finally, we look at an example of the use of the program with the
+@code{-Q} option to construct quotients of representations. As our input
+we take the deleted permutation representation of the alternating group
+A6, which has degree 5. The matrices giving the action are:
+
+@example
+A = (0,0,1,0,0)         B = (1,0,0,0,0)
+    (1,0,0,0,0)             (0,0,0,0,1)
+    (0,1,0,0,0)             (0,1,0,0,0)
+    (0,0,0,1,0)             (0,0,1,0,0)
+    (0,0,0,0,1)             (1,1,1,1,1)
+
+@end example
+
+The submodule is generated by such vectors as @code{(1,1,0,0,0)}.
+We can write this information into an input file @file{a6.qin} (it is
+envisaged that these files would normally be machine generated) as
+follows:
+
+@example
+2 5 AB
+3
+[1,1,2,1]
+[1,1,3,1]
+[2,1,4,1]
+[2,1]
+[0,1]
+[0,1]
+[4,1]
+[1,1]
+[1,1]
+[3,1]
+[2,1]
+[4,1]
+(1,1,1,1,1)
+@end example
+
+Here the first two lines are header information, the next three are
+submodule generators, and the remainder are the rows of the matrices
+(suitable formatted). This can be read by @code{me -Q -vs2} and produces
+the following output:
+
+@example
+%me -Q -pa6 -vs2
+Read submodule generators 2 live dimensions
+Read 0 sets of images
+            2 alive     2 blanks
+All read in 1 alive
+@end example
+
+With @code{-ig} as well the output file @file{qout.g} is:
+@example
+field := GF(2);
+VErunTime := 16;
+images_mat := field.one*[[1],
+[1],
+[1],
+[1],
+[1]];
+gen_A := field.one*[[1]];
+gen_B := field.one*[[1]];
+gens := [gen_A,gen_B];
+@end example
+
+Note that the @code{images_mat} section contains non-trivial information
+(that all the basis vectors in the original presentation have image 1 in
+the quotient.
+
+@node  A Quotient of a Polynomial Ring,  , Quotient Construction Example, Examples
+@comment  node-name,  next,  previous,  up
+@section A Quotient of a Polynomial Ring
+
+The quotient of a polynomial ring by the ideal generated by some
+polynomials will be finite-dimensional just when the polynomials have
+finitely many common roots in the algebraic closure of the ground ring. 
+For example, three polynomials in three variables give us the following
+presentation for the quotient of their ideal (@file{poly.pres}):
+
+@example
+0.ABC.*..:
+A+B+C=0,
+AB+BC+CA = 0,
+ABC=1..
+@end example
+
+We run this with the @code{-A} option to indicate that all the
+generators commute. We obtain:
+
+@example
+% qme -A -ppoly -vs2
+Submodule gens
+Weight  3 algebra type  ABC=1
+Weight  3 algebra type  AB+BC+CA=0
+Weight  3 algebra type  A+B+C=0
+Relator
+Weight  2 algebra type  BC=CB
+Weight  2 algebra type  AC=CA
+Weight  2 algebra type  AB=BA
+Done submodule generators
+Starting weight 2 in define mode, 6 alive out of 9
+Starting weight 3 in define mode, 6 alive out of 9
+Starting weight 4 in define mode, 5 alive out of 11
+Starting weight 5 in define mode, 6 alive out of 20
+Starting weight 6 in define mode, 6 alive out of 20
+Closed, 20 rows defined
+Packing 20 to 6
+6 live dimensions
+@end example
+
+Thus we see that these polynomials have six common roots. We could
+determine them by simultaneously diagonalising the matrices giving the
+action of the generators on the quotient.
+@node Concept Index, Options Index, Examples, Top
+@comment node-name, next, previous, up 
+@unnumbered Concept Index
+@printindex cp 
+
+@node  Options Index,  , Concept Index, Top
+@comment  node-name,  next,  previous,  up
+@unnumbered Options Index
+@printindex fn
+@contents
+
+@bye

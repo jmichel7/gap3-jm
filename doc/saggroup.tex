@@ -1,0 +1,436 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  saggroup.tex                GAP documentation                Bettina Eick
+%%
+%A  @(#)$Id: saggroup.tex,v 1.3 1997/01/21 15:40:19 gap Exp $
+%%
+%Y  Copyright (C)  1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file contains descriptions of special aggroups.
+%%
+%H  $Log: saggroup.tex,v $
+%H  Revision 1.3  1997/01/21 15:40:19  gap
+%H  vfelsch fixed file name
+%H
+%H  Revision 1.2  1997/01/21 09:00:54  gap
+%H  Changed everything about SystemNormalizer
+%H
+%H  Revision 1.1.1.1  1996/12/11 12:36:50  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.2  1994/06/10  04:03:08  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.1  1994/06/03  12:19:36  mschoene
+%H  initial revision under RCS
+%H
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Special Ag Groups}
+
+*Special ag groups* are a subcategory of ag groups (see "Finite
+Polycyclic Groups").
+
+Let $G$ be an ag group with PAG system $(g_1, \ldots, g_n)$.
+Then $(g_1, \ldots, g_n)$ is a *special ag system* if it is an ag system
+with some additional properties, which are described below.
+
+In general a finite polycyclic group has several different ag systems and
+at least one of this is a special ag system, but in {\GAP} an ag group is
+defined by a fixed ag system and according to this an ag group is called
+a special ag group if its ag system is a special ag system.
+
+Special ag systems give more information about their corresponding group
+than arbitrary ag systems do (see "More about Special Ag Groups") and
+furthermore there are many algorithms, which are much more efficient for
+a special ag group than for an arbitrary one. (See "Ag Group Functions
+for Special Ag Groups")
+
+The following sections describe the special ag system (see "More about
+Special Ag Groups"), their construction in {\GAP} (see "Construction of
+Special Ag Groups" and "Restricted Special Ag Groups") and their
+additional record entries (see "Special Ag Group Records"). Then follow
+two sections with functions which do only work for special ag groups (see
+"MatGroupSagGroup" and "DualMatGroupSagGroup").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Special Ag Groups}
+
+Now the properties of a special ag system are described.
+First of all the *Leedham-Green series* will be introduced.
+
+Let $G = G_1 > G_2 > \ldots > G_m > G_{m+1} = \{ 1 \}$ be the *lower
+nilpotent series* of $G$, i.e., $G_i$ is the smallest normal subgroup of
+$G_{i-1}$ such that $G_{i-1} / G_i$ is nilpotent.
+
+To refine this series the *lower elementary abelian series* of a
+nilpotent group $N$ will be constructed.
+Let $N = P_1 \cdot \ldots \cdot P_l$ be the direct product of its
+Sylow-subgroups such that $P_h$ is a $p_h$-group and
+$p_1 \< p_2 \< \ldots \< p_l$ holds.  Let $\lambda_{j}(P_h)$ be the
+$j$-th term of the $p_h$-central series of $P_h$ and let $k_h$ be the
+length of this series (see "PCentralSeries").
+Define $N_{j, p_h}$ as the subgroup of $N$ with
+$$
+  N_{j, p_h} = \lambda_{j+1}(P_1) \cdots \lambda_{j+1}(P_{h-1}) \cdot
+               \lambda_j(P_h) \cdots \lambda_j(P_l).
+$$
+With $k = $max$\{k_1, \ldots, k_l\}$ the series
+$$
+  N = N_{1, p_1} \geq N_{1, p_2} \geq \ldots \geq N_{1,p_l}
+      \geq N_{2, p_1} \geq \ldots \geq N_{k, p_l} = \{ 1 \}
+$$
+is obtained. Since the $p$-central series may have different lengths for
+different primes, some subgroups might be equal.  The lower elementary
+abelian series is obtained, if for all pairs of equal subgroups the one
+with the lexicographically greater index is removed.  This series is a
+characteristic central series with maximal elementary abelian factors.
+
+To get the Leedham-Green series of $G$, each factor of the lower
+nilpotent series of $G$ is refined by its lower elementary abelian
+series. The subgroups of the Leedham-Green series are denoted by
+$G_{i, j, p_{i, h}}$ such that $G_{i, j, p_{i, h}} / G_{i+1} =
+(G_i / G_{i+1})_{j, p_{i,h}}$ for each prime $p_{i,h}$ dividing the order
+of $G_i / G_{i+1}$.  The Leedham-Green series is a characteristic series
+with elementary abelian factors.
+
+A PAG system corresponds naturally to a composition series of its group.
+The first additional property of a special ag system is that the
+corresponding composition series refines the Leedham-Green series.
+
+Secondly, all the elements of a special ag system are of prime-power
+order, and furthermore, if a set of primes $\pi = \{q_1, \ldots, q_r\}$
+is given, all elements of a special ag system which are of $q_h$-power
+order for some $q_h$ in $\pi$ generate a Hall-$\pi$-subgroup of $G$. In
+fact they form a canonical generating sequence of the
+Hall-$\pi$-subgroup.  These Hall subgroups are called *public subgroups*,
+since a subset of the PAG system is an induced generating set for the
+subgroup. Note that the set of all public Sylow subgroups forms a Sylow
+system of $G$.
+
+The last property of the special ag systems is the existence of public
+*local head complements*.  For a nilpotent group $N$, the group
+$$
+    \lambda_2(N) = \lambda_2(P_1) \cdots \lambda_2(P_l)
+$$
+is the Frattini subgroup of $N$.  The *local heads* of the group $G$ are
+the factors
+$$
+  (G_i / G_{i+1}) / \lambda_2(G_i / G_{i+1}) = G_i / G_{i, 2,p_{i,1}}
+$$
+for each $i$.  A local head complement is a subgroup $K_i$ of $G$ such
+that
+$K_i / G_{i,2,p_{i,1}}$ is a complement  of  $G_i / G_{i,  2, p_{i  1}}$.
+Now a special ag system has a public local head complement for each local
+head. This complement is generated by the elements of the special ag
+system which do not lie in $G_i \backslash G_{i,2,p_{i,1}}$. Note that
+all complements of a local head are conjugate. The factors
+$$
+  \lambda_2(G_i / G_{i+1}) = G_{i, 2,p_{i,1}} / G_{i+1}
+$$
+are called  the *tails* of the group $G$. 
+
+To handle the special ag system the *weights* are introduced.
+Let $(g_1, \ldots, g_n)$ be a special ag system.
+The triple $(w_1, w_2, w_3)$ is called the weight of the generator $g_i$
+if $g_i$ lies in $G_{w_1, w_2, w_3}$ but not lower down in the
+Leedham-Green series. That means $w_1$ corresponds to the subgroup in the
+lower nilpotent series and $w_2$ to the subgroup in the
+elementary-abelian series of this factor, and $w_3$ is the prime dividing
+the order of $g_i$. Then $weight(g_i) = (w_1, w_2, w_3)$ and
+$weight_j(g_i) = w_j$ for $j = 1,2,3$ is set.
+With this definition $\{g_i \| weight_3(g_i) \in \pi\}$ is a
+Hall-$\pi$-subgroup of $G$ and
+$\{g_i \| weight(g_i) \neq (j, 1, p) \mbox{ for some } p \}$ is a local
+head complement.
+
+Now some advantages of a special ag system are summarized.
+
+\begin{itemize}
+\item[1.]
+You have a characteristic series with elementary abelian factors of $G$
+explicitly given in the ag system. This series is refined by the
+composition series corresponding to the ag system.
+
+\item[2.]
+You can see whether $G$ is nilpotent or even a p-group, and if it is, you
+have a central series explicitly given by the Leedham-Green
+series. Analogously you can see whether the group is even elementary
+abelian.
+
+\item[3.]
+You can easily calculate Hall-$\pi$-subgroups of $G$. Furthermore the set
+of public Sylow subgroups forms a Sylow system.
+
+\item[4.]
+You get a smaller generating set of the group by taking only the elements
+which correspond to local heads of the group.
+
+\item[5.]
+The collection with a special ag system may be faster than the collection
+with an arbitrary ag system, since in the calculation of the public
+subgroups of $G$ the commutators of the ag generators are shortened.
+
+\item[6.]
+Many algorithms are faster for special ag groups than for arbitrary ag
+groups.
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Construction of Special Ag Groups}
+
+'SpecialAgGroup( <G> )' 
+
+The function 'SpecialAgGroup' takes an ag group $G$ as input and
+calculates a special ag group $H$, which is isomorphic to $G$.
+
+To obtain the additional information of a special ag system see "Special
+Ag Group Records".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Restricted Special Ag Groups}
+
+If one is only interested in some of the information of special ag
+systems then it is possible to suppress the calculation of one or all
+types of the public subgroups by calling the function
+'SpecialAgGroup( <G>, <flag> )', where <flag> is \"noHall\", \"noHead\" or 
+\"noPublic\". 
+With this options the algorithm takes less time. It calculates an ag
+group $H$, which is isomorphic to $G$. But be careful, because the output
+$H$ is not handled as a special ag group by {\GAP} but as an arbitrary ag
+group.  Exspecially none of the functions listet in "Ag Group Functions
+for Special Ag Groups" use the algorithms for special ag groups.
+
+\vspace{.5cm}
+'SpecialAgGroup( <G>, \"noPublic\" )' 
+
+calculates an ag group $H$, which is isomorphic to $G$ and whose ag
+system is corresponding to the Leedham-Green series.
+
+\vspace{.5cm}
+'SpecialAgGroup( <G>, \"noHall\" )' 
+
+calculates an ag group $H$, which is isomorphic to $G$ and whose ag
+system is corresponding to the Leedham-Green series and has public local
+head complements.
+
+\vspace{.5cm}
+'SpecialAgGroup( <G>, \"noHead\" )' 
+
+calculates an ag group $H$, which is isomorphic to $G$ and whose ag
+system is corresponding to the Leedham-Green series and has public Hall
+subgroups.
+
+To obtain the additional information of a special ag system see "Special
+Ag Group Records".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Special Ag Group Records}
+
+In addition to the record components of ag groups (see "Finite Polycyclic
+Groups") the following components are present in the group record of a
+special ag group $H$.
+
+'weights':  \\
+    This is a list of weights such that the $i$-th entry gives the weight
+    of  the element $h_i$, i.e., the triple  $(w_1,  w_2, w_3)$ when
+    $h_i$  lies  in  $G_{w_1,  w_2,  w_3}$ but  not  lower  down  in  the
+    Leedham-Green series (see "More about Special Ag Groups").
+
+The entries 'layers', 'first', 'head' and 'tail' only depend on the
+'weights'.  These entries are useful in many of the programs using the
+special ag system.
+
+'layers':  \\
+    This  is  a list  of integers.  Assume that  the  subgroups of  the
+    Leedham-Green series  are numbered beginning at $G$ and ending at the
+    trivial group.  Then the $i$-th  entry gives the number of the
+    subgroup in  the Leedham-Green  series to which $h_i$ corresponds  as
+    described in 'weights'.
+
+'first':  \\
+    This is a list of integers, and 'first'[$j$] =  $i$ if $h_i$  is the
+    first element of the $j$-th  layer.  Additionally the  last  entry of
+    the list 'first' is always $n + 1$.
+
+'head':  \\
+    This is a list of integers, and 'head'[$j$] =  $i$ if $h_i$  is the
+    first element of the $j$-th  local head.  Additionally the  last  
+    entry of the list 'head' is always $n + 1$ (see "More about Special 
+    Ag Groups").
+
+'tail':  \\
+    This is a list of integers, and 'tail'[$j$] =  $i$ if $h_{i-1}$ is 
+    the last element of the $j$-th local head. In other words $h_i$ is either 
+    the first element of the tail of the $j$-th layer in the lower nilpotent
+    series, or in case this tail is trivial, then $h_i$ is the first 
+    element of the $j+1$-st layer in the lower nilpotent series. 
+    If the tail of the smallest nontrivial subgroup of the lower nilpotent
+    series is trivial, then the last entry of the list 'tail' is $n+1$
+    (see "More about Special Ag Groups").
+
+'bijection':  \\ 
+    This is the  isomorphism from $H$ to $G$ given through the  images of
+    the generators of $H$.
+
+The next four entries indicate if any <flag> and which one is used 
+in the calculation of the special ag system (see "Construction of 
+Special Ag Groups" and "Restricted Special Ag Groups").
+
+'isHallSystem': \\  
+    This entry is a Boolean. It is true if public Hall subgroups have
+    been calculated, and false otherwise.
+
+'isHeadSystem': \\ 
+    This entry is a Boolean. It is true if public local head complements
+    have been calculated, and false otherwise.
+
+'isSagGroup': \\ 
+    This entry is a Boolean. It is true if public Hall subgroups and
+    public local head complements have been calculated, and false otherwise.
+
+Note that in {\GAP} an ag group is called a special ag group if and only
+if the record entry 'isSagGroup' is true.
+
+\vspace{.5cm}
+|    # construct a wreath product of a4 with s3 where s3 operates on 3 points.
+    gap> s3 := SymmetricGroup( AgWords, 3 );;
+    gap> a4 := AlternatingGroup( AgWords, 4 );;
+    gap> a4wrs3 := WreathProduct(a4, s3, s3.bijection);
+    Group( h1, h2, n1_1, n1_2, n1_3, n2_1, n2_2, n2_3, n3_1, n3_2, n3_3 )
+
+    # now calculate the special ag group
+    gap> S := SpecialAgGroup( a4wrs3 );
+    Group( h1, n3_1, h2, n2_1, n1_1, n1_2, n1_3, n2_2, n2_3, n3_2, n3_3 )
+    gap> S.weights;
+    [ [ 1, 1, 2 ], [ 1, 1, 3 ], [ 2, 1, 3 ], [ 2, 1, 3 ], [ 2, 2, 3 ], 
+      [ 3, 1, 2 ], [ 3, 1, 2 ], [ 3, 1, 2 ], [ 3, 1, 2 ], [ 3, 1, 2 ], 
+      [ 3, 1, 2 ] ]
+    gap> S.layers;
+    [ 1, 2, 3, 3, 4, 5, 5, 5, 5, 5, 5 ]
+    gap> S.first;
+    [ 1, 2, 3, 5, 6, 12 ]
+    gap> S.head;
+    [ 1, 3, 6, 12 ]
+    gap> S.tail;
+    [ 3, 5, 12 ]
+    gap> S.bijection;
+    GroupHomomorphismByImages( Group( h1, n3_1, h2, n2_1, n1_1, n1_2,
+    n1_3, n2_2, n2_3, n3_2, n3_3 ), Group( h1, h2, n1_1, n1_2, n1_3,
+    n2_1, n2_2, n2_3, n3_1, n3_2, n3_3 ),
+    [ h1, n3_1, h2, n2_1, n1_1, n1_2, n1_3, n2_2, n2_3, n3_2, n3_3 ],
+    [ h1, n3_1, h2, n2_1*n3_1^2, n1_1*n2_1*n3_1, n1_2, n1_3, n2_2, n2_3,
+      n3_2, n3_3 ] )
+    gap> S.isHallSystem;
+    true
+    gap> S.isHeadSystem;
+    true
+    gap> S.isSagGroup;
+    true |
+
+In the next sections the functions which only apply to special ag groups
+are described.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MatGroupSagGroup}
+
+'MatGroupSagGroup( <H>, <i> )' 
+
+'MatGroupSagGroup' calculates the matrix representation of $H$ on the
+$i$-th layer of the Leed\-ham-Green series of $H$ (see "More about
+Special Ag Groups").
+
+See also 'MatGroupAgGroup'.
+
+|    gap> S := SpecialAgGroup( a4wrs3 );;
+    gap> S.weights;
+    [ [ 1, 1, 2 ], [ 1, 1, 3 ], [ 2, 1, 3 ], [ 2, 1, 3 ], [ 2, 2, 3 ], 
+      [ 3, 1, 2 ], [ 3, 1, 2 ], [ 3, 1, 2 ], [ 3, 1, 2 ], [ 3, 1, 2 ], 
+      [ 3, 1, 2 ] ]
+    gap> MatGroupSagGroup(S,3);
+    Group( [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
+    [ [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DualMatGroupSagGroup}
+
+'DualMatGroupSagGroup( <H>, <i> )' 
+
+'DualMatGroupSagGroup' calculates the dual matrix representation of $H$
+on the $i$-th layer of the Leedham-Green series of $H$ (see "More about
+Special Ag Groups").
+
+Let $V$ be an $F H$-module for a field $F$. Then the dual module to $V$
+is defined by
+$V^\* \:= \{f \: V \rightarrow F \| f \mbox{ is linear }\}$.
+This module is also an $F H$-module and the dual matrix representation is
+the representation on the dual module.
+
+|    gap> S := SpecialAgGroup( a4wrs3 );;
+    gap> DualMatGroupSagGroup(S,3);
+    Group( [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
+    [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ] ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ag Group Functions for Special Ag Groups}
+
+Since special ag groups are ag groups all functions for ag groups are
+applicable to special ag groups. However certain of these functions use
+special implementations to treat special ag groups, i.e. there exists
+functions like SagGroupOps.FunctionName, which are called by the
+corresponding general function in case a special ag group given.  If you
+call one of these general functions with an arbitrary ag group, the
+general function will not calculate the special ag group but use the
+function for ag groups.  For the special implementations to treat special
+ag groups note the following.
+
+\vspace{.5cm}
+'Centre( <H> )' \\
+'MinimalGeneratingSet( <H> )' \\
+'Intersection( <U>, <L>)' \\
+'EulerianFunction( <H> )'
+'MaximalSubgroups( <H> )' \\
+'ConjugacyClassesMaximalSubgroups( <H> )' \\
+'PrefrattiniSubgroup( <H> )' \\
+'FrattiniSubgroup( <H> )' \\
+'IsNilpotent( <H> )' \\
+These functions are often faster and often use less space for special ag
+groups.
+
+\vspace{.5cm}
+'ElementaryAbelianSeries( <H> )' \\
+This function returns the Leedham-Green series (see "More about Special
+Ag Groups").
+
+\vspace{.5cm}
+'IsElementaryAbelianSeries( <H> )' \\
+Returns true. 
+
+\vspace{.5cm}
+'HallSubgroup( <H>, <primes> )' \\
+'SylowSubgroup( <H>, <p> )' \\
+'SylowSystem( <H> )' \\
+These functions return the corresponding public subgroups (see "More
+about Special Ag Groups").
+
+\vspace{.5cm}
+'Subgroup( <H>, <gens> )' \\
+'AgSubgroup( <H>, <gens>, <bool> )' \\
+These functions return an ag group which is not special, except if the
+group itself is returned.
+
+\vspace{.5cm}
+All domain functions not mentioned here use no special treatments for
+special ag groups. \\
+
+Note also that there exists a package to compute formation theoretic
+subgroups of special ag groups. This may be used to compute the
+system normalizer of the public Sylow system, which is the $F$-normalizer
+for the formation of nilpotent groups $F$. It is also possible to 
+compute $F$-normalizers as well as $F$-covering subgroups and 
+$F$-residuals of special ag groups for a number of saturated formations
+$F$ which are given within the package or for self-defined saturated
+formations $F$. 

@@ -1,0 +1,295 @@
+<html><head><title>GAP3 Manual: 44 Homomorphisms</title></head>
+<body bgcolor="ffffff">
+<h1>44 Homomorphisms</h1>
+<P><P><P>
+An important special class of mappings are homomorphisms.
+<P>
+A mapping <I>map</I>  is  a  <strong>homomorphism</strong>  if  the  source and the range are
+domains of the same  category, and <I>map</I>  respects their structure.   For
+example, if both source and range  are groups and  for each <I>x,y</I>  in the
+source  <I>(xy)<sup>map</sup>   =  x<sup>map</sup>   y<sup>map</sup></I>,  then   <I>map</I>  is  a   group
+homomorphism.
+<P>
+<strong>GAP3</strong>  currently  supports  field and  group homomorphisms  (see  <a href="chap006.htm#SECT013">Field
+Homomorphisms</a>, <a href="chap007.htm#SECT106">Group Homomorphisms</a>).
+<P>
+Homomorphism  are  created  by  <strong>homomorphism  constructors</strong>,  which  are
+ordinary  <strong>GAP3</strong>   functions   that   return   homomorphisms,   such   as
+<code>FrobeniusAutomorphism</code>      (see       <a href="chap018.htm#SECT011">FrobeniusAutomorphism</a>)       or
+<code>NaturalHomomorphism</code> (see <a href="chap007.htm#SECT110">NaturalHomomorphism</a>).
+<P>
+The first section in  this  chapter  describes  the  function  that tests
+whether  a  mapping is a  homomorphism (see <a href="chap044.htm#SECT001">IsHomomorphism</a>).   The next
+sections  describe  the  functions that  test  whether a homomorphism has
+certain     properties     (see     <a href="chap044.htm#SECT002">IsMonomorphism</a>,    <a href="chap044.htm#SECT003">IsEpimorphism</a>,
+<a href="chap044.htm#SECT004">IsIsomorphism</a>,  <a href="chap044.htm#SECT005">IsEndomorphism</a>,  and  <a href="chap044.htm#SECT006">IsAutomorphism</a>).   The   last
+section describes the function that computes the kernel of a homomorphism
+(see <a href="chap044.htm#SECT007">Kernel</a>).
+<P>
+Because homomorphisms  are just a special case of mappings all operations
+and   functions  described  in  chapter  <a href="chap043.htm">Mappings</a>  are   applicable  to
+homomorphisms.   For  example, the image  of  an  element <var>elm</var>  under  a
+homomorphism  <var>hom</var> can be computed by <code><var>elm</var> ^ <var>hom</var></code> (see <a href="chap043.htm#SECT007">Operations
+for Mappings</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap044.htm#SECT001">IsHomomorphism</a>
+<LI> <A HREF="chap044.htm#SECT002">IsMonomorphism</a>
+<LI> <A HREF="chap044.htm#SECT003">IsEpimorphism</a>
+<LI> <A HREF="chap044.htm#SECT004">IsIsomorphism</a>
+<LI> <A HREF="chap044.htm#SECT005">IsEndomorphism</a>
+<LI> <A HREF="chap044.htm#SECT006">IsAutomorphism</a>
+<LI> <A HREF="chap044.htm#SECT007">Kernel</a>
+</ol>
+<A NAME="SECT001"><h2>44.1 IsHomomorphism</h2></a>
+<P><P><P>
+<code>IsHomomorphism( <var>map</var> )</code>
+<P>
+<code>IsHomomorphism</code>  returns <code>true</code>  if the mapping <var>map</var> is  a homomorphism
+and <code>false</code> otherwise.  Signals  an  error  if <var>map</var>  is  a  multi valued
+mapping.
+<P>
+A mapping  <I>map</I>  is a <strong>homomorphism</strong>  if the  source and  the  range are
+sources of  the  same category, and  <I>map</I> respects the  structure.   For
+example,  if both  source and range are groups  and for each <I>x,y</I> in the
+source <I>(xy)<sup>map</sup> = x<sup>map</sup> y<sup>map</sup></I>, then <I>map</I> is a homomorphism.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsHomomorphism( p4 );
+    true
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsHomomorphism( p5 );
+    true
+    gap> p6 := MappingByFunction( g, g, x -> x^6 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 6;
+    end )
+    gap> IsHomomorphism( p6 );
+    false </pre>
+<P>
+<code>IsHomomorphism</code> first tests if the flag <code><var>map</var>.isHomomorphism</code> is bound.
+If  the flag  is  bound,  it  returns  its  value.   Otherwise  it  calls
+<code><var>map</var>.source.operations.IsHomomorphism( <var>map</var> )</code>, remembers the returned
+value in <code><var>map</var>.isHomomorphism</code>, and returns it.
+<P>
+The functions  usually called this  way  are <code>IsGroupHomomorphism</code> if the
+source  of <var>map</var> is a group  and  <code>IsFieldHomomorphism</code>  if the source of
+<var>map</var> is a field (see <a href="chap007.htm#SECT107">IsGroupHomomorphism</a>, <a href="chap006.htm#SECT014">IsFieldHomomorphism</a>).
+<P><A NAME="SECT002"><h2>44.2 IsMonomorphism</h2></a>
+<P><P><P>
+<code>IsMonomorphism( <var>map</var> )</code>
+<P>
+<code>IsMonomorphism</code> returns <code>true</code> if the  mapping  <var>map</var> is a  monomorphism
+and <code>false</code>  otherwise.  Signals  an  error  if <var>map</var> is  a  multi valued
+mapping.
+<P>
+A mapping  is  a <strong>monomorphism</strong>  if it is an  injective homomorphism (see
+<a href="chap043.htm#SECT003">IsInjective</a>, <a href="chap044.htm#SECT001">IsHomomorphism</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsMonomorphism( p4 );
+    false
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsMonomorphism( p5 );
+    true </pre>
+<P>
+<code>IsMonomorphism</code> first test if the flag  <code><var>map</var>.isMonomorphism</code> is bound.
+If the  flag is  bound,  it  returns  this  value.   Otherwise  it  calls
+<code><var>map</var>.operations.IsMonomorphism(  <var>map</var> )</code>, remembers the returned value
+in <code><var>map</var>.isMonomorphism</code>, and returns it.
+<P>
+The  default function  called  this  way  is <code>MappingOps.IsMonomorphism</code>,
+which calls the functions <code>IsInjective</code> and <code>IsHomomorphism</code>, and returns
+the logical  <strong>and</strong>  of the  results.   This  function is seldom overlaid,
+because  all  the  interesting   work  is   done  in   <code>IsInjective</code>  and
+<code>IsHomomorphism</code>.
+<P><A NAME="SECT003"><h2>44.3 IsEpimorphism</h2></a>
+<P><P><P>
+<code>IsEpimorphism( <var>map</var> )</code>
+<P>
+<code>IsEpimorphism</code> returns <code>true</code> if the mapping <var>map</var> is an epimorphism and
+<code>false</code> otherwise.  Signals an error if <var>map</var> is a multi valued mapping.
+<P>
+A mapping is an <strong>epimorphism</strong>  if  it is an surjective  homomorphism (see
+<a href="chap043.htm#SECT004">IsSurjective</a>, <a href="chap044.htm#SECT001">IsHomomorphism</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsEpimorphism( p4 );
+    false
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsEpimorphism( p5 );
+    true </pre>
+<P>
+<code>IsEpimorphism</code> first test if the  flag <code><var>map</var>.isEpimorphism</code>  is  bound.
+If  the  flag  is  bound,  it  returns this  value.  Otherwise  it  calls
+<code><var>map</var>.operations.IsEpimorphism( <var>map</var> )</code>,  remembers the  returned value
+in <code><var>map</var>.isEpimorphism</code>, and returns it.
+<P>
+The default function called this way is <code>MappingOps.IsEpimorphism</code>, which
+calls the functions  <code>IsSurjective</code> and <code>IsHomomorphism</code>, and returns the
+logical <strong>and</strong> of the results.  This function is seldom  overlaid, because
+all the interesting work is done in <code>IsSurjective</code> and <code>IsHomomorphism</code>.
+<P><A NAME="SECT004"><h2>44.4 IsIsomorphism</h2></a>
+<P><P><P>
+<code>IsIsomorphism( <var>map</var> )</code>
+<P>
+<code>IsIsomorphism</code> returns <code>true</code> if the mapping <var>map</var> is an isomorphism and
+<code>false</code> otherwise.  Signals an error if <var>map</var> is a multi valued mapping.
+<P>
+A mapping is  an <strong>isomorphism</strong>  if  it  is a bijective homomorphism  (see
+<a href="chap043.htm#SECT005">IsBijection</a>, <a href="chap044.htm#SECT001">IsHomomorphism</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsIsomorphism( p4 );
+    false
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsIsomorphism( p5 );
+    true </pre>
+<P>
+<code>IsIsomorphism</code> first test  if the flag  <code><var>map</var>.isIsomorphism</code>  is bound.
+If  the  flag  is bound,  it  returns this  value.   Otherwise  it  calls
+<code><var>map</var>.operations.IsIsomorphism(  <var>map</var> )</code>, remembers  the returned value
+in <code><var>map</var>.isIsomorphism</code>, and returns it.
+<P>
+The default function called this way is <code>MappingOps.IsIsomorphism</code>, which
+calls the functions  <code>IsInjective</code>, <code>IsSurjective</code>, and <code>IsHomomorphism</code>,
+and  returns the logical <strong>and</strong>  of the results.  This  function is seldom
+overlaid,  because  all the interesting work  is  done  in <code>IsInjective</code>,
+<code>IsSurjective</code>, and <code>IsHomomorphism</code>.
+<P><A NAME="SECT005"><h2>44.5 IsEndomorphism</h2></a>
+<P><P><P>
+<code>IsEndomorphism( <var>map</var> )</code>
+<P>
+<code>IsEndomorphism</code>  returns  <code>true</code> if the mapping <var>map</var> is a  endomorphism
+and <code>false</code> otherwise.   Signals an  error if  <var>map</var>  is a  multi  valued
+mapping.
+<P>
+A   mapping   is  an  <strong>endomorphism</strong>  if  it   is   a  homomorphism  (see
+<a href="chap044.htm#SECT001">IsHomomorphism</a>) and the range is a subset of the source.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsEndomorphism( p4 );
+    true
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsEndomorphism( p5 );
+    true </pre>
+<P>
+<code>IsEndomorphism</code> first test if the flag  <code><var>map</var>.isEndomorphism</code> is bound.
+If  the  flag  is  bound,  it  returns this  value.   Otherwise  it calls
+<code><var>map</var>.operations.IsEndomorphism( <var>map</var> )</code>, remembers  the returned value
+in <code><var>map</var>.isEndomorphism</code>, and returns it.
+<P>
+The  default  function called  this  way is  <code>MappingOps.IsEndomorphism</code>,
+which  tests   if   the   range  is  a   subset  of  the  source,   calls
+<code>IsHomomorphism</code>, and  returns the  logical <strong>and</strong> of  the results.   This
+function is seldom overlaid,  because all the interesting work is done in
+<code>IsSubset</code> and <code>IsHomomorphism</code>.
+<P><A NAME="SECT006"><h2>44.6 IsAutomorphism</h2></a>
+<P><P><P>
+<code>IsAutomorphism( <var>map</var> )</code>
+<P>
+<code>IsAutomorphism</code>  returns <code>true</code> if the mapping  <var>map</var> is an automorphism
+and <code>false</code>  otherwise.  Signals  an  error  if <var>map</var> is  a multi  valued
+mapping.
+<P>
+A  mapping is an <strong>automorphism</strong> if it is an isomorphism where  the source
+and the range are equal (see <a href="chap044.htm#SECT004">IsIsomorphism</a>, <a href="chap044.htm#SECT005">IsEndomorphism</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsAutomorphism( p4 );
+    false
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsAutomorphism( p5 );
+    true </pre>
+<P>
+<code>IsAutomorphism</code> first test if  the flag <code><var>map</var>.isAutomorphism</code> is bound.
+If the  flag  is  bound,  it  returns  this  value.   Otherwise it  calls
+<code><var>map</var>.operations.IsAutomorphism( <var>map</var> )</code>, remembers  the returned value
+in <code><var>map</var>.isAutomorphism</code>, and returns it.
+<P>
+The  default function called  this  way  is  <code>MappingOps.IsAutomorphism</code>,
+which calls the functions <code>IsEndomorphism</code> and <code>IsBijection</code>, and returns
+the  logical <strong>and</strong>  of the  results.   This function  is seldom overlaid,
+because  all  the  interesting  work  is  done  in  <code>IsEndomorphism</code>  and
+<code>IsBijection</code>.
+<P><A NAME="SECT007"><h2>44.7 Kernel</h2></a>
+<P><P><P>
+<code>Kernel( <var>hom</var> )</code>
+<P>
+<code>Kernel</code>  returns the kernel  of the  homomorphism <var>hom</var>.   The kernel is
+usually returned as a source,  though in some cases it  might be returned
+as a proper set.
+<P>
+The kernel is the set of elements that  are mapped  <var>hom</var> to the identity
+element of <code><var>hom</var>.range</code>,  i.e., to <code><var>hom</var>.range.identity</code> if  <var>hom</var> is a
+group homomorphism, and to <code><var>hom</var>.range.zero</code> if <var>hom</var> is a ring or field
+homomorphism.  The kernel is a substructure of <code><var>hom</var>.source</code>.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> Kernel( p4 );
+    Subgroup( g, [ (1,2,3,4), (1,4)(2,3) ] )
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> Kernel( p5 );
+    Subgroup( g, [  ] ) </pre>
+<P>
+<code>Kernel</code> first tests if the field  <code><var>hom</var>.kernel</code> is bound.  If the field
+is    bound     it    returns   its  value.        Otherwise   it   calls
+<code><var>hom</var>.source.operations.Kernel(  <var>hom</var> )</code>,  remembers the returned value
+in <code><var>hom</var>.kernel</code>, and returns it.
+<P>
+The  functions  usually  called   this  way   from  the  dispatcher   are
+<code>KernelGroupHomomorphism</code>      and     <code>KernelFieldHomomorphism</code>     (see
+<a href="chap007.htm#SECT108">KernelGroupHomomorphism</a>, <a href="chap006.htm#SECT015">KernelFieldHomomorphism</a>).
+<P><a href ="chap043.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap045.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

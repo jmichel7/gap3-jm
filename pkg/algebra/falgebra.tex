@@ -1,0 +1,1001 @@
+\Chapter{Algebra package --- finite dimensional algebras}
+
+This  package has been developped by C{\accent19 e}dric Bonnaf{\accent19 e}
+to  work with  finite dimensional  algebras under  \GAP; it  depends on the
+package \"chevie\".
+
+Note  that  these  programs  have  been  mainly  developed for working with
+Solomon descent algebras.
+
+%\psection{Utility functions}
+
+We start with a list of utility functions which are used in various places.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Digits}
+\index{Digits}
+'Digits(n [, basis])'
+
+returns  the list of digits of the nonnegative integer $n$ in basis <basis>
+(in basis 10 if no second argument is given).
+
+|    gap> Digits(0); Digits(3); Digits(123); Digits(123,16);
+    [  ]
+    [ 3 ]
+    [ 1, 2, 3 ]
+    [ 7, 11 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ByDigits}
+\index{ByDigits}
+'ByDigits(l [, basis])'
+
+Does  the  converse  of  'Digits',  that  is,  computes an integer give the
+sequence  of its  digits (by  default in  basis 10;  in basis  <basis> if a
+second argument is given).
+
+|    gap> ByDigits([2,3,4,5]);
+    2345
+    gap> ByDigits([2,3,4,5],100);
+    2030405|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SignedCompositions}
+\index{SignedCompositions}
+'SignedCompositions(n)'
+
+computes  the set of signed compositions of  $n$ that is, the set of tuples
+of  non-zero integers $[i_1,...i_r]$  such that $\|i_1\|  + ... + \|i_r\| =
+n$. Note that 'Length(SignedCompositions(n)) = 2\*3\^(n-1)'.
+
+|    gap> SignedCompositions(3);
+    [ [ -3 ], [ -2, -1 ], [ -2, 1 ], [ -1, -2 ], [ -1, -1, -1 ],
+      [ -1, -1, 1 ], [ -1, 1, -1 ], [ -1, 1, 1 ], [ -1, 2 ], [ 1, -2 ],
+      [ 1, -1, -1 ], [ 1, -1, 1 ], [ 1, 1, -1 ], [ 1, 1, 1 ], [ 1, 2 ],
+      [ 2, -1 ], [ 2, 1 ], [ 3 ] ]|
+
+Note that the compositions of <n> are obtained by the function
+'OrderedPartitions' in \GAP.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SignedPartitions}
+\index{SignedPartitions}
+'SignedPartitions(<n>)'
+
+computes  the set of signed partitions of <n> that is, the set of tuples of
+integers  $[i_1,\ldots,i_r,j_1,\ldots,j_s]$ such  that $i_k  \> 0$, $j_k \<
+0$,  $\|i_1\| + \ldots + \|i_r\| + \|j_1\| + \ldots + \|j_s\|= n$, $i_1 \ge
+\ldots \ge i_r$ and $\|j_1\| \ge \ldots \ge \|j_s\|$.
+
+|    gap> SignedPartitions(3);
+    [ [ -3 ], [ -2, -1 ], [ -1, -1, -1 ], [ 1, -2 ], [ 1, -1, -1 ],
+      [ 1, 1, -1 ], [ 1, 1, 1 ], [ 2, -1 ], [ 2, 1 ], [ 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PiPart}
+\index{PiPart}
+'PiPart(<n>,<pi>)'
+
+Let  <n> be an integer  and $\pi$ a set  of prime numbers. Write $n=n_1n_2$
+where  no prime factor of $n_2$ is in  $\pi$ and all prime factors of $n_1$
+are  in $\pi$.  Then $n_1$  is called  the $\pi$-part  of $n$ and $n_2$ the
+$\pi^\prime$-part  of $n$. This function returns the $\pi$-part of $n$. The
+set  $\pi$ may be given as a list of primes, or as an integer in which case
+the set $\pi$ is taken to be the list of prime factors of that integer.
+
+|    gap> PiPart(720,2);
+    16
+    gap> PiPart(720,3);
+    9
+    gap> PiPart(720,6);
+    144
+    gap> PiPart(720,[2,3]);
+    144|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CyclotomicModP}
+\index{CyclotomicModP}
+'CyclotomicModP(<z>,<p>)'
+
+<p>  should be a  prime and <z>  a cyclotomic number  which is <p>-integral
+(that  is, <z> times some number prime to <p> is a cyclotomic integer). The
+function  returns  the  reduction  of  <z>  mod.  <p>,  an  element of some
+extension $\F_{p^r}$ of the prime field $\F_p$.
+
+|    gap> CyclotomicModP(E(7),3);
+    Z(3^6)^104|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PiComponent}
+\index{PiComponent}
+'PiComponent(<G>,<g>,<pi>)'
+
+Let  <g> be an  element of the  finite group <G>  and $\pi$ a  set of prime
+numbers.  Write $g=g_1g_2$ where $g_1$ and $g_2$ are both powers of <g>, no
+prime factor of the order of $g_2$ is in $\pi$ and all prime factors of the
+order  of $g_1$ are in  $\pi$. Then $g_1$ is  called the $\pi$-component of
+$g$  and $g_2$ the $\pi^\prime$-component of $n$. This function returns the
+$\pi$-component  of $g$. The set $\pi$ may be given as a list of primes, or
+as  an integer in which case the set $\pi$ is taken to be the list of prime
+factors of that integer.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PiSections}
+\index{PiSections}
+'PiSections(<G>,<pi>)'
+
+Let  $\pi$ be a set  of prime numbers. Two  conjugacy classes of the finite
+group   <G>  are  said   to  belong  to   the  same  $\pi$-section  if  the
+$\pi$-components  (see "PiComponent")  of elements  of the  two classes are
+conjugate.  This function  returns the  partition of  the set  of conjugacy
+classes  of <G>  in $\pi$-sections,  represented by  the list of indices of
+conjugacy classes of $G$ in each part. The set $\pi$ may be given as a list
+of  primes, or as an integer in which case the set $\pi$ is taken to be the
+list of prime factors of that integer.
+
+|    gap> W:=SymmetricGroup(5);
+    Group( (1,5), (2,5), (3,5), (4,5) )
+    gap> PiSections(W,2);
+    [ [ 1, 4, 7 ], [ 2, 5 ], [ 3 ], [ 6 ] ]
+    gap> PiSections(W,3);
+    [ [ 1, 2, 3, 6, 7 ], [ 4, 5 ] ]
+    gap> PiSections(W,6);
+    [ [ 1, 7 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PiPrimeSections}
+\index{PiPrimeSections}
+'PiPrimeSections(<G>,<pi>)'
+
+Let  $\pi$ be a set  of prime numbers. Two  conjugacy classes of the finite
+group  <G>  are  said  to  belong  to  the same $\pi^\prime$-section if the
+$\pi^\prime$-components  (see "PiComponent") of elements of the two classes
+are  conjugate. This function returns the partition of the set of conjugacy
+classes of <G> in $\pi^\prime$-sections, represented by the list of indices
+of  conjugacy classes of $G$ in each part.  The set $\pi$ may be given as a
+list of primes, or as an integer in which case the set $\pi$ is taken to be
+the list of prime factors of that integer.
+
+|    gap> W:=SymmetricGroup(5);
+    Group( (1,5), (2,5), (3,5), (4,5) )
+    gap> PiPrimeSections(W,2);
+    [ [ 1, 2, 3, 6 ], [ 4, 5 ], [ 7 ] ]
+    gap> PiPrimeSections(W,3);
+    [ [ 1, 4 ], [ 2, 5 ], [ 3 ], [ 6 ], [ 7 ] ]
+    gap> PiPrimeSections(W,6);
+    [ [ 1, 2, 3, 4, 5, 6 ], [ 7 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PRank}
+\index{PRank}
+'PRank(<G>,<p>)'
+
+Let  <p> be a prime. This function returns the <p>-rank of the finite group
+<G>,  defined as the maximal rank  of an elementary abelian <p>-subgroup of
+<G>.
+
+|    gap> W:=SymmetricGroup(5);
+    Group( (1,5), (2,5), (3,5), (4,5) )
+    gap> PRank(W,2);
+    2
+    gap> PRank(W,3);
+    1
+    gap> PRank(W,7);
+    0|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PBlocks}
+\index{PBlocks}
+'PBlocks(<G>,<p>)'
+
+Let  <p> be a prime. This function returns the partition of the irreducible
+characters of <G> in <p>-blocks, represented by the list of indices of
+irreducibles characters in each part.
+
+|    gap> W:=SymmetricGroup(5);
+    Group( (1,5), (2,5), (3,5), (4,5) )
+    gap> PBlocks(W,2);
+    [ [ 1, 2, 5, 6, 7 ], [ 3, 4 ] ]
+    gap> PBlocks(W,3);
+    [ [ 1, 3, 6 ], [ 2, 4, 5 ], [ 7 ] ]
+    gap> PBlocks(W,7);
+    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Finite-dimensional algebras over fields}
+
+Let $K$ be a field and let $A$ be a $K$-algebra of finite dimension $d$. In
+our implementation, $A$ must be endowed with a basis $X = (x_i)_{i \in I}$,
+where  $I=\{i_1,...,i_d\}$. Then $A$ is  represented by a record containing
+the following fields:
+
+'A.field': the field $K$.
+
+'A.dimension': the dimension of $A$.
+
+'A.multiplication':  this  is  a  function  which associates to $(k,l)$ the
+coefficients  of the product  $x_{i_k} x_{i_l}$ in  the basis $X$ (here, $1
+\le  k, l \le d$). If the structure  constants of $A$ are known, then it is
+possible   to   record   them   in   'A.structureconstants'\:   the   entry
+'A.structureconstants[k][l]'  is equal to 'A.multiplication(k,l)'. Once the
+function   'A.multiplication'  is   defined,  we   can  obtain   the  field
+'A.structureconstants' just by asking for
+'FDAlgebraOps.structureconstants(A)'.
+
+'A.zero': the zero element of $A$.
+
+'A.one': the unity of $A$.
+
+'A.basisname': a \"name\" for the basis $X$ (for instance,
+'A.basisname\:=\"X\"').
+
+'A.parameters': the parameter set $I$.
+
+'A.identification':  something characterizing $A$ (this  is used to test if
+two  algebras are equal). For instance, if $A=K[G]$ is the group algebra of
+$G$, we take 'A.identification:=[\"Group algebra\",G,K];'.
+
+For  convenience,  the  record  $A$  is  often  endowed  with the following
+fields\:
+
+'A.generators': a list of generators of $A$.
+
+'A.basis':  the list of elements of $X$.
+
+'A.vectorspace': the underlying vector space represented in \GAP\ as $K^d$.
+
+'A.EltToVector':  the function sending an element of $A$ to its image in
+'A.vectorspace' (i.e. a $d$-tuple of elements of $K$).
+
+'A.VectorToElt': inverse function of 'A.EltToVector'.
+
+'A.type': for instance '\"Group algebra\"', or '\"Grothendieck ring\"'...
+
+'A.operations': This is initialized to 'FDAlgebraOps' which contains
+  quite a few operations applicable to finite-dimensional algebras, like the
+  following\:
+
+'FDAlgebraOps.underlyingspace':  once 'A.dimension' is defined, this function
+constructs  the underlying space of $A$. It  endows the record $A$ with the
+fields 'A.basis', 'A.vectorspace', 'A.EltToVector', and 'A.VectorToElt'.
+
+'FDAlgebraOps.structureconstants':  computes the structure constants
+of $A$ and gathers them in 'A.structureconstants'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elements of finite dimensional algebras}
+
+An element $x$ of $A$ is implemented as a record containing three fields:
+
+'x.algebra': the algebra $A$
+
+'x.coefficients': the list of pairs $(a_k,k)$ such that $a_k$ is a non-zero
+element of $K$ and $x=\sum_{k=1}^d a_k x_{i_k}$.
+
+'x.operations':   the  operations   record  'AlgebraEltOps'   defining  the
+operations for finite dimensional algebra elements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for elements of finite dimensional algebras}
+
+The  following operations are  define for elements  of a finite dimensional
+algebra $A$.
+
+'Print':  this  function  gives  a  way  of  printing  elements  of $A$. If
+'A.print'  is defined, it is used.  Otherwise, the element $x_i$ is printed
+using 'A.basisname' and 'A.parameters'\: for instance, if
+'A.basisname\:=\"BASISNAME\"'  and  'A.parameters\:=[1..d]',  then $x_i$ is
+printed as |BASISNAME(i)|.
+
+|\+| : addition of elements of $A$.
+
+|\-| : subtraction of elements of $A$.
+
+|\*| : multiplication of elements of $A$.
+
+|\^| : powers of elements of $A$ (negative powers are allowed
+for invertible elements).
+
+|Coefficients(x)|: the list of coefficients of $x$ in |Basis(A)|.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAlgebraElement for finite dimensional algebras}
+\index{IsAlgebraElement}
+'IsAlgebraElement(x)'
+
+This function retuirns |true| if <x> is an element of a finite dimensional
+algebra, |false| if it is another kind of object.
+
+|    gap> q:=X(Rationals);; q.name:="q";;
+    gap> A:=PolynomialQuotientAlgebra(q^2-q-1);;
+    gap> IsAlgebraElement(Basis(A)[1]);
+    true
+    gap> IsAlgebraElement(1);
+    false|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAbelian for finite dimensional algebras}
+\index{IsAbelian for finite dimensional algebras}
+'IsAbelian(A)'
+
+returns 'true' if the algebra $A$ is commutative and 'false' otherwise.
+
+|    gap> q:=X(Rationals);; q.name:="q";;
+    gap> A:=PolynomialQuotientAlgebra(q^2-q-1);;
+    gap> IsAbelian(A);
+    true
+    gap> B:=SolomonAlgebra(CoxeterGroup("A",2));;
+    gap> IsAbelian(B);
+    false|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAssociative for finite dimensional algebras}
+\index{IsAssociative for finite dimensional algebras}
+'IsAssociative(A)'
+
+returns 'true' if the algebra $A$ is associative and 'false' otherwise.
+
+|    gap> q:=X(Rationals);; q.name:="q";;
+    gap> A:=PolynomialQuotientAlgebra(q^2-q-1);;
+    gap> IsAssociative(A);
+    true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AlgebraHomomorphismByLinearity}
+\index{AlgebraHomomorphismByLinearity}
+'AlgebraHomomorphismByLinearity(A,B[,l])'
+
+returns the linear map from $A$ to $B$ that sends 'A.basis' to the list $l$
+(if  omitted to 'B.basis'). If this is not an homomorphism of algebras, the
+function returns an error.
+
+|    gap> q:=X(Rationals);; q.name:="q";;
+    gap> A:=PolynomialQuotientAlgebra(q^4);;
+    gap> hom:=AlgebraHomomorphismByLinearity(A,Rationals,[1,0,0,0]);
+    function ( element ) ... end
+    gap> hom(A.class(q^4+q^3+1));
+    1
+    gap> hom2:=AlgebraHomomorphismByLinearity(A,Rationals,[1,1,1,1]);
+    Error, This is not a morphism of algebras in
+    AlgebraHomomorphismByLinearity( A, Rationals, [ 1, 1, 1, 1 ] ) called from
+    main loop|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SubAlgebra for finite-dimensional algebras}
+\index{SubAlgebra for finite-dimensional algebras}
+'SubAlgebra(A,l)'
+
+returns  the sub-algebra $B$ of $A$ generated by the list $l$. The elements
+of $B$ are written as elements of $A$.
+|    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
+    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
+    gap> B:=SubAlgebra(A,[A.xbasis(23),A.xbasis(34)]);
+    SubAlgebra(SolomonAlgebra(CoxeterGroup("B",4),Rationals),
+    [ X(23), X(34) ])
+    gap> Dimension(B);
+    6
+    gap> IsAbelian(B);
+    false
+    gap> B.basis;
+    [ X(1234), X(23), X(34), X(2)-X(4), X(3)+X(4), X(0) ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CentralizerAlgebra}
+\index{CentralizerAlgebra}
+'CentralizerAlgebra(A,l)'
+
+returns  the  sub-algebra  $B$  of  $A$  of elements commuting with all the
+elements  in the list $l$.  The elements of $B$  are written as elements of
+$A$.
+|    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
+    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
+    gap> B:=CentralizerAlgebra(A,[A.xbasis(23),A.xbasis(34)]);
+    Centralizer(SolomonAlgebra(CoxeterGroup("B",4),Rationals),
+    [ X(23), X(34) ])
+    gap> Dimension(B);
+    10
+    gap> IsAbelian(B);
+    false|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Center for algebras}
+\index{Center for algebras}
+'Centre(A)'
+
+returns  the center $B$ of the algebra $A$. The elements of $B$ are written
+as elements of $A$.
+
+|    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
+    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
+    gap> B:=Centre(A);
+    Centre(SolomonAlgebra(CoxeterGroup("B",4),Rationals))
+    gap> Dimension(B);
+    8
+    gap> IsAbelian(B);
+    true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ideals}
+\index{LeftIdeal}
+\index{RightIdeal}
+\index{TwoSidedIdeal}
+
+If  $l$ is  an element,  or a  list of  elements of  the algebra  $A$, then
+'LeftIdeal(A,l)'   (resp.  'RightIdeal(A,l)',  resp.  'TwoSidedIdeal(A,l)')
+returns  the left (resp. right, resp.  two-sided) ideal of $A$ generated by
+$l$. The result is a record containing the following fields\:
+
+'.parent': the algebra $A$
+
+'.generators': the list $l$
+
+'.basis': a $K$-basis of the ideal
+
+'.dimension': the dimension of the ideal
+
+\index{LeftTraces}
+\index{RightTraces}
+'LeftTraces(A,I)', 'RightTraces(A,I)':
+the  character afforded by the left (or right) ideal 'I' (written as a
+list of traces of elements of the 'A.basis').
+
+|    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
+    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
+    gap> I:=LeftIdeal(A,[A.xbasis(234)]);
+    LeftIdeal(SolomonAlgebra(CoxeterGroup("B",4),Rationals),[ X(234) ])
+    gap> I.basis;
+    [ X(234), X(23)+X(34), X(24), X(2)+X(4), X(3), X(0) ]
+    gap> Dimension(I);
+    6
+    gap> LeftTraces(A,I);
+    [ 6, 18, 40, 50, 42, 64, 112, 112, 100, 136, 100, 192, 224, 224, 224,
+    384 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{QuotientAlgebra}
+\index{QuotientAlgebra}
+'QuotientAlgebra(A,I)'
+
+$A$  is a finite dimensional algebra, and $I$ a two-sided ideal of $A$. The
+function  returns the  algebra $A/I$.  It is  also allowed  than $I$  be an
+element of $A$ or a list of elements of $A$, in which case it is understood
+as the two-sided ideal generated by $I$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Radical for algebras}
+\index{Radical}
+'Radical(A)'
+
+If  the record  $A$ is  endowed with  the field 'A.radical' (containing the
+radical of $A$) or with the field 'A.Radical' (a function for computing the
+radical  of  $A$),  then  'Radical(A)'  returns  the  radical  of $A$ (as a
+two-sided  ideal of $A$). At this time,  this function is available only in
+characteristic  zero\:  it  works  for  group  algebras,  Grothendiek rings,
+Solomon algebras and generalized Solomon algebras.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RadicalPower}
+\index{RadicalPower}
+'RadicalPower(A,n)'
+
+returns (when possible) the $n$-th power of the two-sided ideal 'Radical(A)'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LoewyLength}
+\index{LoewyLength}
+'LoewyLength(A)'
+
+returns  (when  possible)  the  Loewy  length  of $A$ that is, the smallest
+natural  number $n >= 1$ such that  the $n$-th power of the two-sided ideal
+'Radical(A)' vanishes.
+
+|    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
+    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
+    gap> R:=Radical(A);
+    TwoSidedIdeal(SolomonAlgebra(CoxeterGroup("B",4),Rationals),
+    [ X(13)-X(14), X(23)-X(34), X(2)-X(3), X(2)-X(4) ])
+    gap> Dimension(R);
+    4
+    gap> LoewyLength(A);
+    2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharTable for algebras}
+\index{CharTable for algebras}
+'CharTable(A)'
+
+For  certain algebras, the function 'CharTable'  may be applied. It returns
+the  character table of  the algebra $\overline{K}  \otimes_K A$\: different
+ways of printing are used according to the type of the algebra. If $A$ is a
+group  algebra  in  characteristic  zero,  then  'CharTable(A)' returns the
+character table of 'A.group'. This function is available whenever $K$ is of
+characteristic   zero  for  group  algebras,  Grothendieck  rings,  Solomon
+algebras and generalized Solomon algebras.
+
+|    gap> A:=GrothendieckRing(SymmetricGroup(4));
+    GrothendieckRing(Group( (1,4), (2,4), (3,4) ),Rationals)
+    gap> CharTable(A);
+
+         X.1 X.2 X.3 X.4 X.5
+
+    MU.1   1   1   2   3   3
+    MU.2   1  -1   .  -1   1
+    MU.3   1   1   2  -1  -1
+    MU.4   1   1  -1   .   .
+    MU.5   1  -1   .   1  -1
+
+    gap> B:=SolomonAlgebra(CoxeterGroup("B",2));
+    SolomonAlgebra(CoxeterGroup("B",2),Rationals)
+    gap> CharTable(B);
+
+         1
+         2  1  2  0
+
+    12   1  .  .  .
+     1   1  2  .  .
+     2   1  .  2  .
+     0   1  4  4  8|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharacterDecomposition}
+\index{CharacterDecomposition}
+'CharacterDecomposition(A,char)'
+
+Given  a  list  $char$  of  elements  of  $K$  (indexed by 'A.basis'), then
+'CharacterDecomposition(A,char)' returns the decomposition of $char$ into a
+sum of irreducible characters of $A$, if possible.
+
+|    gap> A:=SolomonAlgebra(CoxeterGroup("B",3));
+    SolomonAlgebra(CoxeterGroup("B",3),Rationals)
+    gap> I:=LeftIdeal(A,[A.xbasis(13)]);
+    LeftIdeal(SolomonAlgebra(CoxeterGroup("B",3),Rationals),[ X(13) ])
+    gap> I.basis;
+    [ X(13), X(1), X(3), X(0) ]
+    gap> LeftTraces(A,I);
+    [ 4, 12, 20, 12, 32, 28, 28, 48 ]
+    gap> CharTable(A);
+
+          1
+          2  1   1  2
+          3  2   3  3   1   2   0
+
+    123   1  .   .  .   .   .   .
+     12   1  2   .  .   .   .   .
+     13   1  .   2  .   .   .   .
+     23   1  .   .  2   .   .   .
+      1   1  4   4  .   8   .   .
+      2   1  2   2  4   .   4   .
+      0   1  6  12  8  24  24  48
+
+    gap> CharacterDecomposition(A,LeftTraces(A,I));
+    [ 0, 0, 1, 0, 1, 1, 1 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Idempotents for finite dimensional algebras}
+\index{Idempotents}
+'Idempotents(A)'
+
+returns  a complete set of orthogonal primitive idempotents of $A$. This is
+defined  currently for  Solomon algebras,  quotient by polynomial algebras,
+group algebras and Grothendieck rings.
+
+|    gap> A:=SolomonAlgebra(CoxeterGroup("B",2));
+    SolomonAlgebra(CoxeterGroup("B",2),Rationals)
+    gap> e:=Idempotents(A);
+    [ X(12)-1/2*X(1)-1/2*X(2)+3/8*X(0), 1/2*X(1)-1/4*X(0),
+      1/2*X(2)-1/4*X(0), 1/8*X(0) ]
+    gap> Sum(e)=A.one;
+    true
+    gap> List(e, i-> i^2-i);
+    [ 0*X(12), 0*X(12), 0*X(12), 0*X(12) ]
+    gap> l:=[[1,2],[1,3],[1,4],[2,1],[2,3],[2,4],[3,1],[3,2],[3,4]];;
+    gap> Set(List(l, i-> e[i[1]]*e[i[2]]));
+    [ 0*X(12) ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LeftIndecomposableProjectives}
+\index{LeftIndecomposableProjectives}
+'LeftIndecomposableProjectives'
+
+returns  the  list  of  left  ideals  $Ae$,  where  $e$  runs over the list
+'Idempotents(A)'.
+
+|    gap> A:=SolomonAlgebra(CoxeterGroup("B",3));
+    SolomonAlgebra(CoxeterGroup("B",3),Rationals)
+    gap> proj:=LeftIndecomposableProjectives(A);;
+    gap> List(proj,Dimension);
+    [ 2, 1, 1, 1, 1, 1, 1 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CartanMatrix}
+\index{CartanMatrix}
+'CartanMatrix(A)'
+
+returns  the Cartan matrix of $A$ that  is, the matrix $\dim Hom(P,Q)$, where
+$P$ and $Q$ run over the list 'LeftIndecomposableProjectives(A)'.
+
+|    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
+    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
+    gap> CartanMatrix(A);
+
+           1
+           2        1  2     1  1
+           3  1  2  2  3     2  3  1  2
+           4  3  3  3  4  2  4  4  2  4  1  0
+
+    1234   1  .  .  .  .  .  .  .  .  .  .  .
+      13   1  1  .  .  .  .  .  .  .  .  .  .
+      23   1  .  1  .  .  .  .  .  .  .  .  .
+     123   .  .  .  1  .  .  .  .  .  .  .  .
+     234   .  .  .  .  1  .  .  .  .  .  .  .
+       2   .  .  .  1  1  1  .  .  .  .  .  .
+     124   .  .  .  .  .  .  1  .  .  .  .  .
+     134   .  .  .  .  .  .  .  1  .  .  .  .
+      12   .  .  .  .  .  .  .  .  1  .  .  .
+      24   .  .  .  .  .  .  .  .  .  1  .  .
+       1   .  .  .  .  .  .  .  .  .  .  1  .
+       0   .  .  .  .  .  .  .  .  .  .  .  1|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PolynomialQuotientAlgebra}
+\index{PolynomialQuotientAlgebra}
+An example - quotient by polynomial algebras
+
+'PolynomialQuotientAlgebra(P)'
+
+Given a polynomial $P$ with coefficients in $K$,
+'A:=PolynomialQuotientAlgebra(P)' returns the algebra $A=K[X]/(P(X))$. Note
+that the class of a polynomial $Q$ is printed as |Class(Q)| and that $A$ is
+endowed  with the field 'A.class'\: this function sends a polynomial $Q$ to
+its image in $A$.
+
+|    gap> q:=X(Rationals);; q.name:="q";;
+    gap> P:=1+2*q+q^3;;
+    gap> A:=PolynomialQuotientAlgebra(P);
+    Rationals[q]/(q^3 + 2*q + 1)
+    gap> x:=A.basis[3];
+    Class(q^2)
+    gap> x^2;
+    Class(-2*q^2 - q)
+    gap> 3*x - A.one;
+    Class(3*q^2 - 1)
+    gap> A.class(q^6);
+    Class(4*q^2 + 4*q + 1)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\psection{Group algebras}
+
+\Section{GroupAlgebra}
+\index{GroupAlgebra}
+'GroupAlgebra(G,K)'
+
+returns  the group algebra $K[G]$ of the  finite group $G$ over $K$. If $K$
+is not given, then the program takes for $K$ the field of rational numbers.
+The  $i$-th element in the list of elements of $G$ is printed by default as
+|e(i)|. This function endows $G$ with $G.law$ containing the multiplication
+table of $G$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Augmentation}
+\index{Augmentation}
+'Augmentation(x)'
+
+returns  the  image  of  the  element  $x$ of $K[G]$ under the augmentation
+morphism.
+
+|    gap> G:=SL(3,2);;
+    gap> A:=GroupAlgebra(G);
+    GroupAlgebra(SL(3,2),Rationals)
+    gap> A.dimension;
+    168
+    gap> A.basis[5]*A.basis[123];
+    e(87)
+    gap> (A.basis[3]-A.basis[12])^2;
+    e(55) - e(59) - e(148) + e(158)
+    gap> Augmentation(last);
+    0|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\psection{Grothendieck Rings}
+
+\Section{GrothendieckRing}
+\index{GrothendieckRing}
+'GrothendieckRing(G,K)'
+
+returns  the Grothendieck ring $K \otimes  Z Irr G$. The $i$-th irreducible
+ordinary  character is  printed as  |X(i)|. This  function endows  $G$ with
+'G.tensorproducts'  containing the table of  tensor products of irreducible
+ordinary characters of $G$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Degree for elements of Grothendieck rings}
+\index{Degree for elements of Grothendieck rings}
+'Degree(x)'
+
+returns  the image of the element  $x$ of 'GrothendieckRing(G,K)' under the
+morphism  of  algebras  sending  a  character  to  its degree (viewed as an
+element of $K$).
+
+|    gap> G:=SymmetricGroup(4);
+    Group( (1,4), (2,4), (3,4) )
+    gap> Display(CharTable(G));
+
+         2  3  2  3  .  2
+         3  1  .  .  1  .
+
+           1a 2a 2b 3a 4a
+        2P 1a 1a 1a 3a 2b
+        3P 1a 2a 2b 1a 4a
+
+    X.1     1  1  1  1  1
+    X.2     1 -1  1  1 -1
+    X.3     2  .  2 -1  .
+    X.4     3 -1 -1  .  1
+    X.5     3  1 -1  . -1
+
+    gap> A:=GrothendieckRing(G);
+    GrothendieckRing(Group( (1,4), (2,4), (3,4) ),Rationals)
+    gap> A.basis[4]*A.basis[5];
+    X(2) + X(3) + X(4) + X(5)
+    gap> Degree(last);
+    9|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\psection{Solomon algebras}
+\Section{Solomon algebras}
+
+Let  $(W,S)$ be a  finite Coxeter group.  If $w$ is  an element of $W$, let
+$R(w)=\{s  \in S \mid l(ws) \>  l(w)\}$. If $I$ is a  subset of $S$, we set
+$Y_I=\{w \in W \mid R(w)=I\}$, $X_I=\{w \in W \mid R(w) \supset I\}$.
+
+Note  that $X_I$ is the set of minimal length left coset representatives of
+$W/W_I$. Now, let $y_I=\sum_{w \in Y_I} w$, $x_I=\sum_{w \in X_I} w$.
+
+They  are elements  of the  group algebra  $ZW$ of  $W$ over  $Z$. Now, let
+$$\Sigma(W)  =  \oplus_{I  \subset  S}  \Z  y_I = \oplus_{I \subset S} \Z
+x_I.$$ This is a sub-$Z$-module of $ZW$. In fact, Solomon proved that it is
+a  sub-algebra of $ZW$. Now, let $K(W)$ be the Grothendieck ring of $W$ and
+let  $\theta\:\Sigma(W)\to  K(W)$  be  the  map  defined  by $\theta(x_I) =
+Ind_{W_I}^W 1$. Solomon proved that this is an homomorphism of algebras. We
+call it the *Solomon homomorphism*.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SolomonAlgebra}
+\index{SolomonAlgebra}
+'SolomonAlgebra(W,K)'
+
+returns  the Solomon  descent algebra  of the  finite Coxeter group $(W,S)$
+over  $K$.  If  $S=[s_1,...,s_r]$,  the  element $x_I$ corresponding to the
+subset   $I=[s_1,s_2,s_4]$  of  $S$  is  printed  as  |X(124)|.  Note  that
+'A\:=SolomonAlgebra(W,K)' is endowed with the following fields\:
+
+'A.group': the group $W$
+
+'A.basis': the basis $(x_I)_{I \subset S}$.
+
+'A.xbasis':  the function sending the subset $I$ (written as a number\: for
+instance $124$ for $[s_1,s_2,s_4]$) to $x_I$.
+
+'A.ybasis': the function sending the subset $I$ to $y_I$.
+
+'A.injection':  the injection of $A$ in the group algebra of $W$, obtained
+by calling 'SolomonAlgebraOps.injection(A)'.
+
+Note that 'SolomonAlgebra(W,K)' endows $W$ with the field $W.solomon$ which
+is a record containing the following fields\:
+
+'W.solomon.subsets': the set of subsets of $S$
+
+'W.solomon.conjugacy':  conjugacy classes  of parabolic  subgroups of $W$ (a
+conjugacy   class  is  represented  by  the   list  of  the  positions,  in
+'W.solomon.subsets', of the subsets $I$ of $S$ such that $W_I$ lies in this
+conjugacy class).
+
+'W.solomon.mackey':  essentially  the  structure  constants  of  the Solomon
+algebra over the rationals.
+
+|    gap> W:=CoxeterGroup("B",4);
+    CoxeterGroup("B",4)
+    gap> A:=SolomonAlgebra(W);
+    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
+    gap> X:=A.xbasis;;
+    gap> X(123)*X(24);
+    2*X(2) + 2*X(4)
+    gap> SolomonAlgebraOps.injection(A)(X(123));
+    e(1) + e(2) + e(3) + e(8) + e(19) + e(45) + e(161) + e(361)
+    gap> W.solomon.subsets;
+    [ [ 1, 2, 3, 4 ], [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 4 ], [ 2, 3, 4 ],
+      [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ], [ 3, 4 ], [ 1 ], [ 2 ],
+      [ 3 ], [ 4 ], [  ] ]
+    gap> W.solomon.conjugacy;
+    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7, 8 ], [ 9, 11 ], [ 10 ],
+      [ 12 ], [ 13, 14, 15 ], [ 16 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Generalized Solomon algebras}
+
+In this subsection, we refer to the paper \cite{BH05}.
+
+If  $n$ is a non-zero natural number, we  denote by $W_n$ the Weyl group of
+type  $B_n$ and by $W_{-n}$ the Weyl group of type $A_{n-1}$ (isomorphic to
+the  symmetric  group  of  degree  $n$).  If $C=[i_1,...,i_r]$ is a *signed
+composition* of $n$, we denote by $W_C$ the subgroup of $W_n$ equal to $W_C
+= W_{i_1} x ... x W_{i_r}$. This is a subgroup generated by reflections (it
+is  not in general a  parabolic subgroup of $W_n$).  Let $X_C = \{x \in W_C
+\mid  l(xw) \ge l(x) \forall w \in  W_C\}$. Note that $X_C$ is the set of
+minimal   length  left   coset  representatives   of  $W_n/W_C$.  Now,  let
+$x_C=\sum_{w \in X_C} w$. We now define $\Sigma^\prime(W_n) = \oplus_C \Z
+x_C$,  where $C$ runs over the  signed compositions of $n$. By \cite{BH05},
+this  is a subalgebra of  $ZW_n$. Now, let $Y_C$  be the set of elements of
+$X_C$  which are not in  any other $X_D$ and  let $y_C=\sum_{w \in Y_C} w$.
+Then  $\Sigma^\prime(W_n) =  \oplus_C \Z  y_C$. Moreover,  the linear map
+$\theta^\prime \:   \Sigma^\prime(W_n)    \to   K(W_n)$    defined   by
+$\theta^\prime(x_C) = Ind_{W_C}^{W_n} 1$ is a *surjective homomorphism* of
+algebras (see \cite{BH05}). We still call it the *Solomon homomorphism*.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GeneralizedSolomonAlgebra}
+\index{GeneralizedSolomonAlgebra}
+'GeneralizedSolomonAlgebra(n,K)'
+
+returns  the  generalized  Solomon  algebra  $\Sigma^\prime(W_n)$  defined
+above.  If $C$ is a signed composition of $n$, the element $x_C$ is printed
+as  'X(C)' Note  that 'A\:=GeneralizedSolomonAlgebra(n,K)'  is endowed with
+the following fields\:
+
+'A.group': the group 'CoxeterGroup(\"B\",n)'
+
+'A.xbasis': the function sending the signed composition $C$ to $x_C$.
+
+'A.ybasis': the function sending the signed composition $C$ to $y_C$.
+
+'A.injection': the injection of $A$ in the group algebra of $W$.
+
+Note  that  'GeneralizedSolomonAlgebra(W,K)'  endows  $W$  with  the  field
+'W.generalizedsolomon' which is a record containing the following fields\:
+
+'W.generalizedsolomon.signedcompositions': the set of signed compositions of
+$n$
+
+'W.generalizedsolomon.conjugacy':  conjugacy classes of reflection subgroups
+$W_C$  of  $W$  (presented  as  sublists  of  '[1..2\*3\^(n-1)]'  as in the
+classical Solomon algebra case).
+
+'W.generalizedsolomon.mackey':  essentially the  structure constants  of the
+generalized Solomon algebra over the rationals.
+
+|    gap> A:=GeneralizedSolomonAlgebra(3);
+    GeneralizedSolomonAlgebra(CoxeterGroup("B",3),Rationals)
+    gap> W:=A.group;
+    CoxeterGroup("B",3)
+    gap> W.generalizedsolomon.signedcompositions;
+    [ [ 3 ], [ -3 ], [ 1, 2 ], [ 2, 1 ], [ 2, -1 ], [ -1, 2 ], [ 1, -2 ],
+      [ -2, 1 ], [ -1, -2 ], [ -2, -1 ], [ 1, 1, 1 ], [ 1, -1, 1 ], [ 1, 1, -1 ],
+      [ -1, 1, 1 ], [ 1, -1, -1 ], [ -1, 1, -1 ], [ -1, -1, 1 ], [ -1, -1, -1 ] ]
+    gap> W.generalizedsolomon.conjugacy;
+    [ [ 1 ], [ 2 ], [ 3, 4 ], [ 5, 6 ], [ 7, 8 ], [ 9, 10 ], [ 11 ],
+      [ 12, 13, 14 ], [ 15, 16, 17 ], [ 18 ] ]
+    gap> X:=A.xbasis;
+    function ( arg ) ... end
+    gap> X(2,1)*X(1,-2);
+    X(1,-2)+X(1,-1,1)+X(1,1,-1)+X(1,-1,-1)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SolomonHomomorphism}
+\index{SolomonHomomorphism}
+'SolomonHomomorphism(x)'
+
+returns  the  image  of  the  element  $x$  of  'A=SolomonAlgebra(W,K)'  or
+'A=GeneralizedSolomonAlgebra(n,K)' in 'GrothendieckRing(W,K)' under Solomon
+homomorphism.
+
+|    gap> A:=GeneralizedSolomonAlgebra(2);
+    GeneralizedSolomonAlgebra(CoxeterGroup("B",2),Rationals)
+    gap> Display(CharTable(A.group));
+    B2
+         2   3   2   3   2   2
+
+           11. 1.1 .11  2.  .2
+        2P 11. 11. 11. 11. .11
+
+    11.      1   1   1  -1  -1
+    1.1      2   .  -2   .   .
+    .11      1  -1   1  -1   1
+    2.       1   1   1   1   1
+    .2       1  -1   1   1  -1
+
+    gap> A.basis[3]*A.basis[2];
+    -X(1,-1)+X(-1,1)+X(-1,-1)
+    gap> SolomonHomomorphism(last);
+    X(1)+2*X(2)+X(3)+X(4)+X(5)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ZeroHeckeAlgebra}
+\index{ZeroHeckeAlgebra}
+'ZeroHeckeAlgebra(<W>)'
+
+This constructs the 0-Hecke algebra of the finite Coxeter group <W>.
+
+|    gap> W:=CoxeterGroup("B",2);
+    CoxeterGroup("B",2)
+    gap> A:=ZeroHeckeAlgebra(W);
+    ZeroHeckeAlgebra(CoxeterGroup("B",2))
+    gap> Radical(A);
+    TwoSidedIdeal(ZeroHeckeAlgebra(CoxeterGroup("B",2)),
+    [ T(21)-T(12), T(21)-T(212), T(21)-T(121), T(21)-T(1212) ])|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Performance}
+We  just present here some examples of computations with the above programs
+(on a usual PC\: 2 GHz, 256 Mo).
+
+Constructing  the  group  algebra  of  a  Weyl  group  of  type $F_4$ (1124
+elements)\: 4 seconds
+
+|    gap> W:=CoxeterGroup("F",4);
+    CoxeterGroup("F",4)
+    gap> A:=GroupAlgebra(W);
+    GroupAlgebra(CoxeterGroup("F",4),Rationals)
+    gap> time;
+    4080|
+
+Constructing the Grothendieck ring of the Weyl group of type $E_8$ (696 729
+600 elements, 112 irreducible characters)\: 5 seconds
+
+|    gap> W:=CoxeterGroup("E",8);
+    CoxeterGroup("E",8)
+    gap> A:=GrothendieckRing(W);
+    GrothendieckRing(CoxeterGroup("E",8),Rationals)
+    gap> time;
+    5950|
+
+Computing with the Solomon algebra of the Weyl group of type $E_6$
+(51 840 elements):
+
+\begin{itemize}
+\item Constructing the algebra: less than 5 seconds
+\item Computing the Loewy length: 1 second
+\item Computing the Cartan Matrix: around 12 seconds
+\end{itemize}
+
+|    gap> W:=CoxeterGroup("E",6);
+    CoxeterGroup("E",6)
+    gap> A:=SolomonAlgebra(W);
+    SolomonAlgebra(CoxeterGroup("E",6),Rationals)
+    gap> time;
+    4610
+    gap> LoewyLength(A);
+    5
+    gap> time;
+    1060
+    gap> CartanMatrix(A);
+
+             1
+             2  1  1  1  1
+             3  2  2  2  3  1  1  1  1                    2
+             4  3  3  3  4  2  2  2  3  1  1  1           3
+             5  4  4  5  5  3  3  4  5  2  2  3  1  1     4
+             6  5  6  6  6  4  5  5  6  3  5  4  2  3  1  5  0
+
+    123456   1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+     12345   1  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+     12346   1  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+     12356   .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .
+     13456   .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  .
+      1234   1  1  .  .  1  1  .  .  .  .  .  .  .  .  .  .  .
+      1235   2  .  1  1  .  .  1  .  .  .  .  .  .  .  .  .  .
+      1245   1  .  1  .  1  .  .  1  .  .  .  .  .  .  .  .  .
+      1356   .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+       123   2  1  1  .  2  1  .  1  1  1  .  .  .  .  .  .  .
+       125   1  1  1  1  .  .  .  .  .  .  1  .  .  .  .  .  .
+       134   1  1  .  .  1  1  .  .  .  .  .  1  .  .  .  .  .
+        12   2  1  1  .  1  1  .  1  1  1  .  .  1  .  .  .  .
+        13   1  1  .  .  1  1  .  .  .  .  .  .  .  1  .  .  .
+         1   1  1  .  .  1  1  .  .  .  .  .  1  .  .  1  .  .
+      2345   .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .
+         0   .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1
+
+    gap> time;
+    12640|

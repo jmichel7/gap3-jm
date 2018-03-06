@@ -1,0 +1,4371 @@
+This file contains the mails sent to the GAP forum in July-September 1996.
+
+Name                Email address                           Mails   Lines
+Alexander Hulpke    alexander.hulpke@math.rwth-aachen.de        8     508
+Martin Schoenert    Martin.Schoenert@Math.RWTH-Aachen.DE        6    1044
+Thomas Breuer       Thomas.Breuer@Math.RWTH-Aachen.DE           6     515
+Joachim Neubueser   Joachim.Neubueser@Math.RWTH-Aachen.DE       3     464
+Frank Celler        Frank.Celler@Math.RWTH-Aachen.DE            3     157
+Juergen Ecker       juergen@bruckner.stoch.uni-linz.ac.at       3      56
+Leonard Soicher     leonard@qmw.ac.uk                           2     108
+Richard Rossmanith  richard@maxp03.mathe.uni-jena.de            2      89
+Sebastian Egner     egner@ira.uka.de                            2      76
+Steve Linton        sal@dcs.st-andrews.ac.uk                    2      39
+Heiko Theissen      Heiko.Theissen@Math.RWTH-Aachen.DE          1     185
+Julian Gilbey       j.d.gilbey@qmw.ac.uk                        1      76
+Edmund Robertson    edmund@dcs.st-and.ac.uk                     1      63
+Thierry Dana-Picard dana@math.jct.ac.il                         1      58
+Willem A. de Graaf  wdg@win.tue.nl                              1      58
+Norai R. Rocco      norai@mat.unb.br                            1      56
+George Havas        havas@cs.uq.edu.au                          1      49
+Anatolii V. Rukolaine rukolaha@tower.hop.stu.neva.ru            1      38
+Chris Wensley       mas023@bangor.ac.uk                         1      32
+Volkmar Felsch      Volkmar.Felsch@Math.RWTH-Aachen.DE          1      30
+Mario Pineda Ruelas mpr@xanum.uam.mx                            1      27
+Burkhard Hofling    hofling@maths.anu.edu.au                    1      26
+Akihiro Munemasa    g78378a@kyu-cc.cc.kyushu-u.ac.jp            1      24
+Matthew Johnson     mejohnsn@netcom.com                         1      24
+Philip Osterlund    osterlu@s5.math.umn.edu                     1      23
+Jean-Luc Picard     jean-luc@bruckner.stoch.uni-linz.ac.at      1      18
+Michael Smith       michael.smith@maths.anu.edu.au              1      15
+Geoff Smith         gcs@maths.bath.ac.uk                        1      14
+Paul Robert Brown   pbrown@math.berkeley.edu                    1      13
+Chris Charnes       charnes@osiris.cs.uow.edu.au                1       7
+TOTAL                                                          57    3892
+
+This  file is in Berkeley mail drop format, which means you can read this
+file with 'mail -f <name-of-the-file>'  or 'mailx -f <name-of-the-file>'.
+It is also possible however to read this file with any text editor.
+
+
+
+From frank.celler@math.rwth-aachen.de Tue Jul  2 10:34:00 1996
+Date:           Tue, 02 Jul 96 10:34:00 +0100 (MET)
+From:           "Frank Celler" <Frank.Celler@Math.RWTH-Aachen.DE>
+Subject:        BUGFIX #19 (serious problem in 'GroupId')
+
+    This mail contains  a bugfix for a  serious problem in  GAP 3.4.3.  You
+    should apply this bugfix soon if you  are using 'GroupId'.  The problem
+    is in 'GroupId' and causes it to fail for one group of size 100.
+
+HOW TO APPLY
+
+    The problem is a serious problem, because it may cause a computation to
+    fail.  Thus the bugfix has  medium priority, and  we recommend that you
+    apply it soon if you are using 'GroupId'.
+
+    Go to the  GAP directory (the directory  with the 'grp/' subdirectory),
+    name this mail 'bugfix19.dif', and issue the command:
+
+        patch -p0 < bugfix19.dif
+
+    If 'patch' writes "I can't seem to find a patch in there" try 'patch -v'.
+    If 'patch -v' gives an error message or reports a version older than 2.1,
+    get 2.1 from 'ftp://FTP.Math.RWTH-Aachen.DE/pub/gap/utils/patch2_1.zoo'.
+
+    This bugfix changes only the group library.   Thus you need not recompile
+    the GAP kernel.
+
+VERSION
+
+    GAP 3.4.3.0
+
+DESCRIPTION
+
+    'GroupId' fails for the 16th solvable group of size 100 and signals
+
+        gap> GroupId( SolvableGroup( 100, 16 ) );
+        Error, List Element: <list>[16] must have a value at
+        return rec(
+            catalogue := [ 100, nr ],
+            names := GroupIdOps.GroupName100[nr],
+            size := 100 ) ... in
+        GroupIdOps.Group100( G ) called from
+        G.operations.GroupId( G ) called from
+        GroupId( SolvableGroup( 100, 16 ) ) called from
+        main loop
+
+CORRECT BEHAVIOUR
+
+gap> GroupId( SolvableGroup( 100, 16 ) );
+rec(
+  catalogue := [ 100, 16 ],
+  names := [ "25:4" ],
+  size := 100 )
+
+COMMENT
+
+    The list of names for the solvable groups of size 100 was not correct.
+
+PATCH
+
+--- grp/groupid.grp     Thu Dec 21 14:25:34 1995
++++ grp/groupid.grp     Thu Jun 27 09:48:33 1996
+@@ -3,7 +3,7 @@
+ #A  groupid.grp                 GAP group library                Frank Celler
+ #A                                                         & Hans-Georg Esser
+ ##
+-#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+@@ -13,6 +13,9 @@
+ ##  the R.Laue Catalogue of groups of order 96.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
++#H  Revision 3.6.1.3  1996/06/27 07:48:02  fceller
++#H  added missing name for 16th group of order 100
++#H
+ #H  Revision 3.6.1.2  1994/08/18  16:01:56  fceller
+ #H  added '3primes' for small groups
+ #H
+@@ -2699,7 +2702,7 @@
+ GroupIdOps.GroupName100 := [
+     ["10^2"], ["50x2"], ["5x20"], ["100"], ["10xD10"], ["5x10.2"],
+     ["5x5:4"], ["2x5^2:2"], ["(5^2x2).2"], ["D100"], ["50.2"],
+-    ["D10^2"], [], [], [] ];
++    ["D10^2"], [], [], [], ["25:4"] ];
+
+ GroupIdOps.GroupList100 := [
+     [ 1, 1, 2, 3, 5, 24, 10, 72 ],
+END OF  bugfix19.dif ________________________________________________________
+
+
+
+From heiko.theissen@math.rwth-aachen.de Fri Jul  5 16:52:00 1996
+Date:           Fri, 05 Jul 96 16:52:00 +0100 (MET)
+From:           "Heiko Theissen" <Heiko.Theissen@Math.RWTH-Aachen.DE>
+Subject:        Re: Finding transversal elements for an orbit
+
+Dear GAP forum,
+
+Simon Norton has sent us a message (not in the GAP  forum) in which he
+proposes
+
+ A. a simplified way of  calculating transversal elements for an orbit
+    of integers under a permutation group,
+ B. a way  of calculating the $i$th element  from a list of objects on
+    which a group operates.
+
+This mail contains:
+
+ A.              description of Simon's idea A
+ B.              description of Simon's idea B
+ C.              description of how GAP now does such a calculation
+ Function for A. a GAP function implementing Simon's idea A
+ Function for B. a GAP function implementing Simon's idea B
+
+                            * * * A. * * *
+
+Let $G$ be  a transitive permutation  group acting on `[1..n]'. Assume
+that, for every $p<>1$, there is an  element $g_1$ of `$G$.generators'
+such that $p / g_1 < p$ (i.e. the preimage of  $p$ is less than $p$ in
+the natural ordering). By finding such  a generator and repeating this
+method, one  gets a word  in `$G$.generators',  say $g_m *  ... * g_1$
+such that
+
+    p / g_1 / g_2 / ... / g_m = 1,
+
+i.e., this word is a transversal element mapping $1$ to $p$.
+
+For this procedure, we do *not* require an  orbit calculation, we only
+have to know  that our ``general assumption''  about  the existence of
+such generators is true. This is, for example,  always the case if the
+permutation group  $G$ was constructed from  another group $H$ (acting
+on  the  orbit of a  point $pnt$)  via  the GAP  functions `Orbit' and
+`Operation':
+
+    orbit := Orbit( H, pnt, opr );
+    G := Operation( H, orbit, opr );
+
+where `opr' is  something like `OnPoints'. Why is  this so? During the
+construction of `orbit', every  new point is found  as the image of an
+old point under  one of `$G$.generators', and  this new point is  then
+put at the  end of `orbit' so that  it corresponds to a higher integer
+than the old point.
+
+The same  thing  is true if $G$  was  constructed by coset enumeration
+using the function `OperationCosetsFpGroup'  (section 23.5 of the  GAP
+manual).
+
+                            * * * B. * * *
+
+The   possibility of determining a word   $w$ in `$G$.generators' such
+that $1 ^ w  = p$ also allows one  to calculate the point from `orbit'
+to which $p$ corresponds, if only the point $pnt$ corresponding to $1$
+is known. You simply calculate $opr( pnt, w' )$ where $w'$ is the same
+word as $w$, but this time evaluated in `$H$.generators', which are in
+bijection with `$G$.generators'. To  be more precise, `$H$.generators'
+is in bijection with `$G$.operation.genimages'.
+
+                            * * * C. * * *
+
+What does GAP currently do if you ask  it for a transversal element in
+$G$ mapping $1$ to $p$?
+
+First, GAP constructs the orbit  of $1$ under  $G$ and locates $p$  in
+it. Then it traces back the generators used to reach  $p$ in the orbit
+construction,   just like   described above.  This    method could  be
+interpreted as a re-construction of $G$:
+
+    orbit := Orbit( G, 1, OnPoints );
+    G := Operation( G, orbit, OnPoints );
+
+after  which  $G$ fulfills the  ``general  assumption''. The point is,
+however, that this additional  `orbit' calculation may be unnecessary,
+if   $G$  already fulfilled     the ``general assumption''    from the
+beginning.
+
+Second, and  much more serious: GAP  not only  constructs the orbit of
+$1$, but also  the stabiliser of $1$,  i.e., a whole stabiliser chain.
+This  would only be   necessary  if we were  looking  for  transversal
+element  mapping $1$ to $p$ and   $2$ to $q$ etc.  In  our case, it is
+simply superfluous and may take quite some time.
+
+                     * * * Function for A. * * *
+
+What can you do if you do not want to wait so long?
+
+1. If you want to avoid a stabiliser  chain construction and just need
+a  transversal element in  $G$  mapping $a$  to $b$, you  can use  the
+following function:
+
+TransversalElement := function( G, a, b )
+    local   S,  t;
+
+    S := rec( generators := [  ],
+                identity := G.identity );
+    S.stabilizer := Copy( S );
+    S.orbit := [ a ];
+    S.transversal := [  ];
+    S.transversal[ a ] := S.identity;
+    PermGroupOps.AddGensExtOrb( S, G.generators );
+    t := S.identity;
+    while b <> a  do
+        t := S.transversal[ b ] mod t;
+        b := b ^ S.transversal[ b ];
+    od;
+    return t;
+end;
+
+It returns a permutation $t$ for which $a ^ t = b$.
+
+2. If you  do  not want  a  permutation $t$,  but   rather a  word  in
+`$G$.generators', replace the line
+
+    t := S.identity;                by
+        t := [  ];   and
+    t := S.transversal[ b ] mod t;  by
+        Add( t, Position( G.generators, S.transversal[ b ] ) );
+
+This gives you a list [ t_1, ..., t_n ] such that
+
+    G.generators[t_1]  * ... * G.generators[t_n]
+
+maps $b$ *back* to $a$.
+
+3.  If you even  know  that the  ``general assumption'' is  fulfilled,
+e.g.,  if $G$ was constructed by  `Orbit' and `Operation', you can use
+the following code, which is due to Simon Norton:
+
+TransversalElement1 := function( G, p )
+    local   t,  i;
+
+    t := G.identity;     # or: t := [  ];
+    while p <> 1  do
+        i := First( [ 1 .. Length( G.generators ) ],
+                    i -> p / G.generators[ i ] < p );
+        t := G.generators[ i ] mod t;  # or: Add( t, i );
+        p := p / G.generators[ i ];
+    od;
+    return t;
+end;
+
+It returns a  permutation  $t$ such that $1   ^ t = p$.  The #-variant
+returns a word mapping $p$ *back* to $1$.
+
+                     * * * Function for B. * * *
+
+4. If $G$ was  constructed from $H$  via `Orbit' and `Operation',  you
+can use the ``integer word'' $t$  to calculate the point corresponding
+to $p$, namely as
+
+CorrespondingPoint := function( G, p )
+    local   H,  pnt,  opr,  t,  i;
+
+    # If   $G$ was constructed as `Operation(H,Orbit(H,pnt,opr),opr)',
+    # $H$, $pnt$ and $opr$  can be  found in the   record of $G$  (the
+    # manual does not tell this).
+    H   := G.operation.structure;
+    pnt := G.operation.domain[ 1 ];
+    opr := G.operation.operation;
+
+    t := TransversalElement1( G, p );
+    for i  in Reversed( [ 1 .. Length( t ) ] )  do
+        pnt := opr( pnt, H.generators[ t[ i ] ] ^ -1 );
+    od;
+    return pnt;
+end;
+
+If   you    use this  function,    you   must   use  the  variant   of
+`TransversalElement1'  where $t$  is a list,   and you have to replace
+`G.generators' by  `G.operation.genimages' everywhere  in the function
+`TransversalElement1'   to  ensure the bijective  correspondence  with
+`H.generators'.
+
+                                * * *
+
+We will  consider to incorporate some these  ideas in the next version
+of GAP (GAP-4).
+
+I hope this helps,
+
+Heiko Thei{\ss}en
+
+
+
+From martin.schoenert@math.rwth-aachen.de Mon Jul  8 16:21:00 1996
+Date:           Mon, 08 Jul 96 16:21:00 +0100 (MET)
+From:           "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:        Runtime function
+
+David Wood asked the following question on 'GAP-Trouble'
+
+    I recently executed the following GAP code on a Sun Sparcstation:
+        a := Runtime();
+        # do something else (which took a number of days)
+        b := Runtime() - a;
+    At this stage b = -417725315.
+    I expect this was as a result of some overflow error.
+    Is it possible to calculate what the actual value should be?
+
+Since this may be of interest to other GAP users as well,
+allow me to answer this question in the GAP forum.
+
+'Runtime' returns the time as a small integer.
+It does not check wether the time will actually fit into 28 bits.
+
+That means that for 2^28 milliseconds (~3 days/2 hours/34 minutes)
+everything works fine.
+
+For the next 2^28 milliseconds 'Runtime' returns positive integers
+in the range 2^28..2^29-1.  The problem is that 'Runtime' returns
+such integers as *small* positive integers, while the rest of GAP
+represents such integers as *large* positive integers.  When one
+does arithmetic with such integers, GAP can not reliably detect
+overflow any more.  The solution is to ``renomalize'' such integers
+by adding '0' to them first.
+
+For the next 2^28 milliseconds 'Runtime' returns negative integers
+in the range -2^29..-2^28-1.  Again 'Runtime' returns such integers
+as small negative integers, but they should be represented as large
+negative integers.  Again ``renomalizing'' helps.
+
+For the next 2^28 milliseconds 'Runtime' returns negative integers
+in the range -2^28..-1.
+
+After 2^30 milliseconds (~ 12 days/10 hours/16 minutes) the whole
+cycle starts all over again.
+
+Since the reported value 'b = -417725315' lies between -2^29..-2^28-1
+we renomalize it first,
+
+    gap> bb := b + 0;
+    -417725315
+
+It corresponds to
+
+    gap> StringTime( bb + 2^30 );
+    "182:13:36.509"
+    # 7 days/14 hours/13 minutes/36 seconds/509 milliseconds
+
+or, if the timer wrapped around once, to
+
+    gap> StringTime( bb + 2 * 2^30 );
+    "480:29:18.333"
+    # 20 days/0 hours/29 minutes/18 seconds/333 milliseconds
+
+and so on.
+
+So if you know the runtime roughly (i.e. with 2 weeks precision),
+you can recompute the true runtime.
+
+Hope this helps,
+
+Martin.
+
+-- .- .-. - .. -.  .-.. --- ...- . ...  .- -. -. .. -.- .-
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,   +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, 52056 Aachen, Germany
+
+
+
+From charnes@osiris.cs.uow.edu.au Fri Jul 12 13:13:56 1996
+Date:           Fri, 12 Jul 96 13:13:56 +1000
+From:           "Chris Charnes" <charnes@osiris.cs.uow.edu.au>
+Subject:        GRAPE algorithm
+
+Dear Forum,
+
+I would like to know (refrence?) what algorithms
+GRAPE uses to find complete subgraphs with side conditions of a given graph.
+
+Chris Charnes
+
+
+
+From frank.celler@math.rwth-aachen.de Fri Jul 12 14:17:00 1996
+Date:           Fri, 12 Jul 96 14:17:00 +0100 (MET)
+From:           "Frank Celler" <Frank.Celler@Math.RWTH-Aachen.DE>
+Subject:        [no subject]
+
+Dear Forum,
+
+I have put together a collection of programs to investigate and deal
+with classical groups over finite fields.  These programs will
+eventually become part of the new version of GAP (4.1 or 4.2).  The
+current programs work with GAP 3.4.3 but are still experimental.
+However, I hope that you find them useful when dealing with matrix
+groups over finite fields.  I have put together a tar archive of these
+functions which can be used like a share package.
+
+This archive includes functions to recognise SL, SP, SU, SO in a
+non-constructive way, to recognise SL, SP in a construtive way, to
+construct the full orthogonal group, a slightly changed 'OrderMat',
+which will handle matrices over finite fields efficiently, a new
+(pseudo) random function for matrix groups (actually for any group,
+see the manual entry), a function to compute the spinor norm, a
+function to check whether a given matrix is a primitive prime divisor
+element, and a function to compute an invariant quadratic form.  As
+the programs are written completely in GAP, they run under all
+operating systems. However, the functions to compute an invariant
+bilinear/quadratic form use the share package "meataxe", so you need
+UNIX for these functions (this will be changed).
+
+You can find the archive under:
+
+    ftp://ftp.math.rwth-aachen.de/pub/incoming/classic-1.1.tar.gz
+
+To install it, go into the directory "gap3r4p3/pkg" and untar the
+archive.  To print the manual, go into the directory
+"gap3r4p3/pkg/classic/doc" and latex the file "latexme.tex".  If you
+don't have the share package "meataxe" you have to comment out the
+last line in "gap3r4p3/pkg/classic/init.g".  As this is still a beta
+version, please to not contact the GAP forum in case of trouble but
+
+    Frank.Celler@Math.RWTH-Aachen.DE
+
+kind regards
+    Frank
+
+
+
+From leonard@qmw.ac.uk Mon Jul 15 10:54:19 1996
+Date:           Mon, 15 Jul 96 10:54:19 BST
+From:           "Leonard Soicher" <leonard@qmw.ac.uk>
+Subject:        Re:  GRAPE algorithm
+
+Dear Gap Forum,
+
+Chris Charnes recently asked:
+
+>
+>I would like to know (refrence?) what algorithms
+>GRAPE uses to find complete subgraphs with side conditions of a given graph.
+>
+
+At present the only reference for the GRAPE functions
+'CompleteSubgraphs'  and  'CompleteSubgraphsOfGivenSize' is the GAP
+manual and the GRAPE library source code.  Of the two functions,
+'CompleteSubgraphsOfGivenSize' is the more sophisticated, and should be
+used if at all possible.
+
+I'm not sure what you mean by 'side conditions of a given graph'.
+'CompleteSubgraphsOfGivenSize' finds complete subgraphs of a given size
+(surprise surprise), and is controlled in its search and output by the
+parameters as documented.  'CompleteSubgraphs'  can also be used to
+find complete subgraphs of a given size (but is not as good as
+'CompleteSubgraphsOfGivenSize') or to find maximal complete subgraphs.
+Again, you should read the documentation to see how to control this
+(less sophisticated) function.
+
+I am developing a new version of  'CompleteSubgraphsOfGivenSize'
+which has the following features:
+
+   (1) It allows you to assign integer weights to the vertices
+   of the input graph,  gamma  (the weight of a vertex must be
+   preserved by  gamma.group)  and then the *size* of a complete
+   subgraph (to be found) is the sum of the weights of its vertices.
+   Thus, the new version does the same as the old when each vertex
+   has weight 1 (the default).
+
+   (2) It has more thorough documentation than the old version.
+
+   (3) It is slightly easier to control.
+
+If you would like a copy of this new (experimental) version,
+then I would be happy to send it to you, but would like to
+be informed how things go with it.  Eventually, I plan
+to write a paper on the ideas and algorithms behind this
+new function.
+
+Best regards,   Leonard.
+
+
+
+From dana@math.jct.ac.il Mon Jul 15 15:47:30 1996
+Date:           Mon, 15 Jul 96 15:47:30 +0300
+From:           "Thierry Dana-Picard" <dana@math.jct.ac.il>
+Subject:        Decomposition
+
+Dear Forum,
+While trying to compute the decomposition matrix with  a modular
+character table, I got a "surprising" answer:
+Here is the gap session (the group is A7, the prime is 5; but I got the same
+kind of answer for other primes/other groups):
+
+gap> a7m5:=CharTable("A7mod5");
+CharTable( "A7mod5" )
+gap>  DisplayCharTable(a7m5);
+A7mod5
+
+     2  3  3  2  .  2  2  .  .
+     3  2  1  2  2  .  1  .  .
+     5  1  .  .  .  .  .  .  .
+     7  1  .  .  .  .  .  1  1
+
+       1a 2a 3a 3b 4a 6a 7a 7b
+    2P 1a 1a 3a 3b 2a 3a 7a 7b
+    3P 1a 2a 1a 1a 4a 2a 7b 7a
+    5P 1a 2a 3a 3b 4a 6a 7b 7a
+    7P 1a 2a 3a 3b 4a 6a 1a 1a
+
+X.1     1  1  1  1  1  1  1  1
+X.2     6  2  3  .  . -1 -1 -1
+X.3     8  . -1 -1  .  3  1  1
+X.4    10 -2  1  1  .  1  A /A
+X.5    10 -2  1  1  .  1 /A  A
+X.6    13  1 -2  1 -1 -2 -1 -1
+X.7    15 -1  3  . -1 -1  1  1
+X.8    35 -1 -1 -1  1 -1  .  .
+
+A = E(7)+E(7)^2+E(7)^4
+  = (-1+ER(-7))/2 = b7
+gap> a7m5.irreducibles;
+[ [ 1, 1, 1, 1, 1, 1, 1, 1 ], [ 6, 2, 3, 0, 0, -1, -1, -1 ],
+  [ 8, 0, -1, -1, 0, 3, 1, 1 ],
+  [ 10, -2, 1, 1, 0, 1, E(7)+E(7)^2+E(7)^4, E(7)^3+E(7)^5+E(7)^6 ],
+  [ 10, -2, 1, 1, 0, 1, E(7)^3+E(7)^5+E(7)^6, E(7)+E(7)^2+E(7)^4 ],
+  [ 13, 1, -2, 1, -1, -2, -1, -1 ], [ 15, -1, 3, 0, -1, -1, 1, 1 ],
+  [ 35, -1, -1, -1, 1, -1, 0, 0 ] ]
+gap>  reg5:=CharTableRegular(a7,5);
+CharTable( "Regular(A7,5)" )
+gap>  chars5:=Restricted(a7,reg5,a7.irreducibles);
+[ [ 1, 1, 1, 1, 1, 1, 1, 1 ], [ 6, 2, 3, -1, 0, 0, -1, -1 ],
+  [ 10, -2, 1, 1, 1, 0, E(7)^3+E(7)^5+E(7)^6, E(7)+E(7)^2+E(7)^4 ],
+  [ 10, -2, 1, 1, 1, 0, E(7)+E(7)^2+E(7)^4, E(7)^3+E(7)^5+E(7)^6 ],
+  [ 14, 2, -1, -1, 2, 0, 0, 0 ], [ 14, 2, 2, 2, -1, 0, 0, 0 ],
+  [ 15, -1, 3, -1, 0, -1, 1, 1 ], [ 21, 1, -3, 1, 0, -1, 0, 0 ],
+  [ 35, -1, -1, -1, -1, 1, 0, 0 ] ]
+gap> Decomposition(a7m5.irreducibles,chars5,"nonnegative");
+[ [ 1, 0, 0, 0, 0, 0, 0, 0 ], false, false, false, false, false, false,
+  false, false ]
+
+So what happens? And what can be done in order to get the decomposition matrix?
+
+Thanks a lot,
+Thierry.
+
+
+
+From thomas.breuer@math.rwth-aachen.de Tue Jul 16 10:24:00 1996
+Date:           Tue, 16 Jul 96 10:24:00 +0100 (MET)
+From:           "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:        Re: Decomposition
+
+Dear GAP-Forum,
+
+Thierry Dana-Picard asked a question about computing decomposition matrices.
+
+> While trying to compute the decomposition matrix with  a modular
+> character table, I got a "surprising" answer:
+> Here is the gap session (the group is A7, the prime is 5; but I got the same
+> kind of answer for other primes/other groups):
+>
+> gap> a7m5:=CharTable("A7mod5");
+> CharTable( "A7mod5" )
+>
+> (some input and output omitted)
+>
+> gap>  reg5:=CharTableRegular(a7,5);
+> CharTable( "Regular(A7,5)" )
+> gap>  chars5:=Restricted(a7,reg5,a7.irreducibles);
+>
+> (some output omitted)
+>
+> gap> Decomposition(a7m5.irreducibles,chars5,"nonnegative");
+> [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], false, false, false, false, false, false,
+>   false, false ]
+>
+> So what happens?
+> And what can be done in order to get the decomposition matrix?
+
+When dealing with Brauer tables of the GAP table library, one has to be
+careful to use also the corresponding ordinary library tables.
+So probably the reason for the strange behaviour is the table of A7.
+There are at least two possibilities to get a character table with name "A7".
+The first is to call 'CharTable( "A7" )', which yields the table as it is
+given in the ATLAS of Finite Groups.
+The second is to call 'CharTable( "Alternating", 7 )', which yields a table
+that is constructed from a generic character table, and for that the
+succession of rows and columns differs from that of the ATLAS table.
+
+In both cases, the fusion of conjugacy classes from the 5-regular table to
+the table of A7 is used to restrict the characters.
+In the example above, apparently the succession of classes in the 5-regular
+table does not agree with that in the Brauer table.
+
+With the correct table of A7, the example above looks like this.
+(Note that it is not necessary to construct a 5-regular table.)
+
+    gap> a7:= CharTable( "A7" );
+    CharTable( "A7" )
+    gap> a7mod5:= CharTable( "A7mod5" );
+    CharTable( "A7mod5" )
+    gap> chars5:= Restricted( a7, a7mod5, a7.irreducibles );;
+    gap> Decomposition( a7mod5.irreducibles, chars5, "nonnegative" );
+    [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ],
+      [ 0, 0, 0, 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1, 0, 0, 0 ],
+      [ 0, 1, 1, 0, 0, 0, 0, 0 ], [ 1, 0, 0, 0, 0, 1, 0, 0 ],
+      [ 0, 0, 0, 0, 0, 0, 1, 0 ], [ 0, 0, 1, 0, 0, 1, 0, 0 ],
+      [ 0, 0, 0, 0, 0, 0, 0, 1 ] ]
+
+Using the generic table leads to the reported behaviour also when we
+restrict directly to the 5-modular table, because both ordinary tables
+have the name "A7".
+
+    gap> a7generic:= CharTable( "Alternating", 7 );
+    CharTable( "A7" )
+    gap> chars5:= Restricted( a7generic, a7mod5, a7generic.irreducibles );;
+    gap> Decomposition( a7mod5.irreducibles, chars5, "nonnegative" );
+    [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], false, false, false, false, false, false,
+      false, false ]
+
+One more comment on the relation between ordinary and Brauer tables.
+GAP constructs a Brauer library table using the underlying ordinary table
+and the decomposition matrices, and the Brauer table stores this table
+in the component 'ordinary'.
+So if one has already the Brauer table, one does not need to call 'CharTable'
+to get the corresponding ordinary table.
+
+    gap> a7mod5:= CharTable( "A7mod5" );
+    CharTable( "A7mod5" );
+    gap> a7mod5.ordinary;
+    CharTable( "A7" )
+
+I hope this helps
+Thomas Breuer
+
+
+
+From juergen@bruckner.stoch.uni-linz.ac.at Tue Jul 16 11:12:57 1996
+Date:           Tue, 16 Jul 96 11:12:57 +0200
+From:           "Juergen Ecker" <juergen@bruckner.stoch.uni-linz.ac.at>
+Subject:        Representation of group elements
+
+Dear GAP forum,
+I want to have the elements of my groups expressed in terms of the generators
+of the group. Is there a GAP-function that does this (I believe, no) or an
+easy way to do it "by hand"?
+
+juergen ecker
+universitaet linz
+juergen@bruckner.stoch.uni-linz.ac.at
+
+
+
+From osterlu@s5.math.umn.edu Tue Jul 16 09:08:46 1996
+Date:           Tue, 16 Jul 96 09:08:46 -0500
+From:           "Philip Osterlund" <osterlu@s5.math.umn.edu>
+Subject:        Re: Representation of group elements
+
+Dear GAP forum
+On Tue, 16 Jul 1996, Juergen Ecker wrote:
+
+> I want to have the elements of my groups expressed in terms of the generators
+> of the group. Is there a GAP-function that does this (I believe, no) or an
+> easy way to do it "by hand"?
+
+   I believe that my package "AbStab.g" is what Juergen Ecker is looking
+for.  If G is a permutation group, and x is an element of G, then
+"FactorPermGroupElement(G,x)" will represent x as a product of the
+generators.  (The generators are represented by abstract generators.)
+Please note, the result should not be assumed to be the shortest product
+of the generators that gives x.
+   You may find AbStab.g on the gap incoming ftp site, or on my home page:
+
+ftp://ftp.math.rwth-aachen.de/pub/incoming/
+        or
+http://www.math.umn.edu/~osterlu/
+
+                                -Philip Osterlund
+                                University of Minnesota
+                                osterlu@math.umn.edu
+
+
+
+From alexander.hulpke@math.rwth-aachen.de Tue Jul 16 16:48:45 1996
+Date:           Tue, 16 Jul 96 16:48:45 +0200
+From:           "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:        Re: Representation of group elements
+
+Dear GAP forum,
+
+Juergen Ecker asked:
+
+> I want to have the elements of my groups expressed in terms of the generators
+> of the group. Is there a GAP-function that does this (I believe, no) or an
+> easy way to do it "by hand"?
+
+The generic function for this is 'Factorization'. However, this function
+keeps a list of all elements of the group and thus is applicable only to
+groups of moderate size.
+For larger groups, homomorphisms offer the possibility to decompose elements
+into generators, for example:
+
+gap> g:=Group((1,2),(1,2,3,4));
+Group( (1,2), (1,2,3,4) )
+gap> f:=FreeGroup(2);
+Group( f.1, f.2 )
+gap> hom:=GroupHomomorphismByImages(f,g,f.generators,g.generators);
+GroupHomomorphismByImages( Group( f.1, f.2 ), Group( (1,2), (1,2,3,4) ),
+[ f.1, f.2 ], [ (1,2), (1,2,3,4) ] )
+gap> hom.isMapping:=true; # tell GAP it is an homomorphism
+true
+gap> PreImagesRepresentative(hom,(1,2,3));
+f.1^-1*f.2^-1*f.1^-1*f.2^-3*f.1^-1*f.2^-1*f.1^-2*f.2^-1*f.1^-1*f.2^-1*f.1^-1
+
+Unfortunately the word returned by this method usually is very long, in fact it
+might be too long to be feasible. One can play a lot of heuristic tricks to
+get the word length down. For example see the Abstab package by Philip
+Osterlund, available in the 'incoming' directory of our ftp server.
+
+Best,
+
+Alexander Hulpke
+
+
+
+From g78378a@kyu-cc.cc.kyushu-u.ac.jp Tue Jul 23 00:54:13 1996
+Date:           Tue, 23 Jul 96 00:54:13 JST
+From:           "Akihiro Munemasa" <g78378a@kyu-cc.cc.kyushu-u.ac.jp>
+Subject:        Coefficients reverses base
+
+Dear Forum,
+I am not sure this is a designed feature or a bug....
+
+If 'Base' is executed before 'Coefficients', then the (linearly
+independent)  generator used to define V becomes the (ordered) basis of V:
+
+   gap> V:=VectorSpace([Z(2)^0,Z(4)],GF(2));Base(V);Coefficients(V,Z(4));
+   VectorSpace( [ Z(2)^0, Z(2^2) ], GF(2) )
+   [ Z(2)^0, Z(2^2) ]
+   [ 0*Z(2), Z(2)^0 ]
+
+However, if 'Coefficients' is executed before 'Base', then gap first
+reversed the order of the generators of V to construct the (ordered)
+basis of V:
+
+   gap> V:=VectorSpace([Z(2)^0,Z(4)],GF(2));Coefficients(V,Z(4));Base(V);
+   VectorSpace( [ Z(2)^0, Z(2^2) ], GF(2) )
+   [ Z(2)^0, 0*Z(2) ]
+   [ Z(2^2), Z(2)^0 ]
+
+This rearrangement in the latter case is caused by the call 'Information(V)'
+
+Akihiro Munemasa
+
+
+
+From thomas.breuer@math.rwth-aachen.de Tue Jul 23 13:21:00 1996
+Date:           Tue, 23 Jul 96 13:21:00 +0100 (MET)
+From:           "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:        Re: Coefficients reverses base
+
+Dear GAP-Forum,
+
+Akihiro Munemasa wrote
+
+>   I am not sure this is a designed feature or a bug....
+>
+>   If 'Base' is executed before 'Coefficients', then the (linearly
+>   independent)  generator used to define V becomes the (ordered) basis of V:
+>
+>      gap> V:=VectorSpace([Z(2)^0,Z(4)],GF(2));Base(V);Coefficients(V,Z(4));
+>      VectorSpace( [ Z(2)^0, Z(2^2) ], GF(2) )
+>      [ Z(2)^0, Z(2^2) ]
+>      [ 0*Z(2), Z(2)^0 ]
+>
+>   However, if 'Coefficients' is executed before 'Base', then gap first
+>   reversed the order of the generators of V to construct the (ordered)
+>   basis of V:
+>
+>      gap> V:=VectorSpace([Z(2)^0,Z(4)],GF(2));Coefficients(V,Z(4));Base(V);
+>      VectorSpace( [ Z(2)^0, Z(2^2) ], GF(2) )
+>      [ Z(2)^0, 0*Z(2) ]
+>      [ Z(2^2), Z(2)^0 ]
+
+I would call this a bug, although it is consistent with the design of
+vector spaces in GAP, and the GAP manual does not claim that linearly
+independent generators of a vector space are taken as basis.
+
+When 'Base' is called for a vector space, any convenient list of basis
+vectors may be returned.
+'Coefficients' uses then the basis stored in the component 'base' of
+the vector space.
+A user who wants to prescribe a specific basis can do this by calling
+'AddBase'.
+
+Of course this is not satisfactory, and in the next version of GAP it
+will be changed.
+(Note that this was announced already in the first line of the manual
+chapter about vector spaces.)
+The fundamental mistake is that the first argument of 'Coefficients' is
+the vector space and not the basis itself with respect to that the
+coefficients shall be computed.
+GAP-4 will allow a much more flexible handling of vector spaces and their
+bases.
+
+Sorry for the inconveniences
+Thomas Breuer
+
+
+
+From joachim.neubueser@math.rwth-aachen.de Wed Jul 24 10:47:27 1996
+Date:           Wed, 24 Jul 96 10:47:27 +0200
+From:           "Joachim Neubueser" <Joachim.Neubueser@Math.RWTH-Aachen.DE>
+Subject:        interim report - European Summer of CGT '97
+
+Dear Colleagues,
+
+In the 'Interim Report' of December 27,  1995 I informed you about the
+plan  to  organize   a number of    workshops on   various  topics  in
+Computational Group Theory  during the Summer of   1997.  Today I  can
+give you a  list  of planned workshops.    For each of them you   find
+contact addresses, as well as WWW pages, to which you should refer for
+more  details,  in particular  on   the  contents,  prerequisites  and
+organisational form of the respective workshops.
+
+The  announcements    have been brought    into  a common  format.  In
+particular please note that the dates given  always refer to the first
+and  the last day  of the respective workshop,  i.  e. the arrival day
+would normally be the day before the first day listed below.
+
+A  further workshop  which fits  into  the general  scheme takes place
+already this year 1996:
+
+
+     Groups in Action (Constructive Theory of Discrete Structures,
+     Applications, Algorithms etc.)
+
+     Thurnau (near Bayreuth, Germany)
+
+     October 21, 1996  -  October 23, 1996
+
+     Organizers:      Adalbert Kerber, Reinhard Laue
+
+     Contact address: Prof. A. Kerber, Prof. R. Laue
+                      Lehrstuhl II fuer Mathematik
+                      Universitaet Bayreuth
+                      D95440 Bayreuth
+                      Germany
+
+                      action96@btm2x2.mat.uni-bayreuth.de
+
+     Further information:
+             http://www.mathe2.uni-bayreuth.de/home/action96.html
+
+
+
+The workshops of next  year are listed  in chronological order, I have
+inserted into   that order some other conferences,   in particular the
+Oberwolfach Conference 'Computational Group Theory' and the conference
+'Groups St.  Andrews  '97 at Bath' which   form some cornerstones  for
+this
+
+
+         "European Summer of Computational Group Theory '97"
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+----------------------------------------------------------------------
+
+Instructional Workshop on the Use of GAP in Research.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+St. Andrews, UK.
+
+April 7, 1997  -  April 11, 1997.
+
+
+Organizers:     Mike Atkinson, Ed Robertson, Steve Linton (St. Andrews).
+
+Contact Person: Dr. Werner Nickel
+                Mathematical Institute,
+                University of St Andrews
+                North Haugh
+                St. Andrews, Fife
+                KY16 9S, UK
+
+                tel: +44 1334 463766
+                fax: +44 1334 463748
+
+                werner@dcs.st-and.ac.uk
+
+Deadline for Registration:   TBA
+
+Financial Statements:  To be  determined  in detail.  There will be at
+                       most a small fee (in the vicinity of 20 pounds,
+                       possibly less for students).
+
+                       Accommodation in university residences will cost
+                       20-30 pounds per night.
+
+                       Some  support  for  UK   postgraduates may   be
+                       available.
+
+Further information:
+
+        http://www-theory.dcs.st-and.ac.uk/~sal/Workshop97.html
+
+
+------------------------------------------------------------------------
+
+
+Computational Representation Theory.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+IBFI Schloss Dagstuhl (near Saarbruecken, Germany).
+
+May 20, 1997  -  May 23, 1997.
+
+
+Organizers:     Meinolf Geck (Paris), Gerhard Hiss (Heidelberg),
+                Wolfgang Kimmerle (Stuttgart), Klaus Lux (Aachen),
+                Gunter Malle (Heidelberg).
+
+Contact Person: Dr. G. Hiss
+                IWR der Universit"at Heidelberg
+                Im Neuenheimer Feld 368
+                69120 Heidelberg
+                Germany
+
+                hiss@euterpe.iwr.uni-heidelberg.de
+
+Registration:   Limited number  of participants.
+                Enquire by  January 31, 1997.
+
+Financial Statements: No fee; Full  Board at Dagstuhl about DM 85/day;
+                      Some support of participation will be available,
+                      contact Dr. G. Hiss.
+
+Further Information:  http://www.iwr.uni-heidelberg.de/~CRT
+
+-----------------------------------------------------------------------
+
+
+Computational Methods for Permutation and Matrix Groups.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Aachen, Germany.
+
+May 26, 1997  -  May 30, 1997.
+
+
+Organizer:      Akos Seress (Columbus, Ohio).
+
+Contact Person: Prof. A.  Seress
+                c.o. Prof. J. Neubueser
+                Lehrstuhl D fuer Mathematik
+                RWTH Aachen
+                Templergraben 64
+                52062 Aachen, Germany
+                Tel. 0049/241/804543
+
+                aseress@math.rwth.aachen.de
+
+Registration:   Limited number of participants.
+                Enquire by March 15, 1997.
+
+Financial  statements:   No fee;  Accommodation  in  Gaestehaus  RWTH,
+                         hotels, B&B..
+
+Further information:
+
+           http://www.math.rwth-aachen.de/~Akos.Seress/Workshop97.html
+
+
+=======================================================================
+
+       Computational Group Theory.
+
+       Mathematisches Forschungsinstitut Oberwolfach, Germany.
+
+       June 1, 1997  -  June 7, 1997.
+
+       Participation by invitation only.
+
+=======================================================================
+
+
+Nilpotent and Soluble Quotient Methods.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Trento, Italy.
+
+June 23, 1997  -  June 28, 1997.
+
+
+Organizers:     Andrea Caranti (Trento), M.F.Newman (ANU, Canberra)
+
+Contact person: Prof. A. Caranti
+                Dipartimento di Matematica
+                Universita' degli Studi di Trento
+                I-38050 Povo (Trento)
+                Italy
+
+                caranti@science.unitn.it
+
+Deadline for registration: not fixed yet.
+
+Financial statements: No admission fees.
+
+Further information:
+
+    http://www-math.science.unitn.it/~caranti/ESCGT_Workshop_June_97/
+
+
+=======================================================================
+
+       British Combinatorial Conference.
+
+       July 7, 1997  -  July 11, 1997.
+
+       QMW, London, UK.
+
+=======================================================================
+
+       Groups St. Andrews '97 at Bath.
+
+       July 26, 1997  - August 9, 1997.
+
+       Bath, UK.
+
+=======================================================================
+
+
+Lie Algebras and Applications,
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+an introduction from an effective point of view.
+
+Eindhoven, NL
+
+September 23, 1997  -  September 27, 1997
+
+
+Organisers:     A.M. Cohen, H. Cuypers, H. Sterk
+
+Contact person: H. Cuypers
+                Fac. Wisk. en Inf.
+                TUE
+                Postbox 513
+                5600 MB Eindhoven
+                The Netherlands
+
+                hansc@win.tue.nl
+
+Deadline for registration: September 1, 1997.
+
+Financial statements: No admission fee.
+                      Hotel prices range from 60 NLG per night for a
+                      cheap hotel to 200 NLG for a reasonably luxurious
+                      one.
+
+More details: http://www.win.tue.nl/~hansc/liealg.html
+
+                      Maximum of 30 participants.
+
+                      The first three days will consist of an introductory
+                      course by G. Heckman in the  mornings with interactive
+                      computer sessions and exercises in the afternoons.
+
+-------------------------------------------------------------------------
+
+Overseas visitors intending to  come to one  or more of the activities
+listed above may also be interested  to spend some  time in between in
+one of  the places  that organize these  events. They  are welcome  to
+inquire  about  possibilities for  such   a  visit with   the  contact
+addresses given.
+
+Joachim Neubueser
+
+
+
+From mas023@bangor.ac.uk Fri Jul 26 17:28:30 1996
+Date:           Fri, 26 Jul 96 17:28:30 +0100
+From:           "Chris Wensley" <mas023@bangor.ac.uk>
+Subject:        [no subject]
+
+Dear GAP Forum
+
+One of the delights of GAP is the ability to overlay functions
+using operations records.  I think I understand how to do this
+with functions which take a single parameter but I have queries
+in two more complicated cases.
+
+Assume I am constructing functions for  TestOps, and that X
+is an object and f a morphism in the correcponding category.
+
+1.  I define a function  TestOps.Image
+    and then call  >TestOps.Image( f, X );
+    This results in an error message which I believe comes from
+    GroupOps.Image  or  MappingOps.Image.
+    However  >TestOps.Image( f, X );  works ok.
+    The obvious difference is that Kernel takes a single parameter,
+    so it is clear which operations record should be used,
+    whereas Image takes two parameters. What am I missing?
+
+2.  I also wish to define  TestOps.DirectProduct
+    and call this function by  >DirectProduct( X, Y );
+    However, the dispatcher function  DirectProduct  in file  gprprods.g
+    appears to insist that all the arguments should be groups:
+    ( ... if nor ForAll( arg, IsGroup ) then Error ... )
+    Again, >TestOps.DirectProduct( X, Y );  is ok.
+    The objects  X,Y  are not groups, but contain groups,
+    so the term  DirectProduct  is an appropriate one.
+
+All suggestions welcomed.
+
+Chris Wensley
+
+
+
+From alexander.hulpke@math.rwth-aachen.de Mon Jul 29 16:50:30 1996
+Date:           Mon, 29 Jul 96 16:50:30 +0200
+From:           "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:        Re: Operations records (was: [no subject])
+
+Dear GAP Forum,
+
+Chris Wensley asked:
+
+> Assume I am constructing functions for  TestOps, and that X
+> is an object and f a morphism in the correcponding category.
+
+Does TestOps contain operations for X or for f?
+>
+> 1.  I define a function  TestOps.Image
+>     and then call  >TestOps.Image( f, X );
+>     This results in an error message which I believe comes from
+>     GroupOps.Image  or  MappingOps.Image.
+>     However  >TestOps.Image( f, X );  works ok.
+
+I'm a bit confused as I cannot spot any difference between the two commands.
+Did you probably call just 'Image' once?
+
+In this case, 'Image' checks whether X is contained in f.source (by 'in')
+and calls f.operations.ImageElm(f,X) otherwise it checks, whether X is
+a subset of f.souce, and calls f.opreration.ImagesSet.
+Thus TestOps ought to be operations for the morphism f.
+The standard operations 'MappingOps' (from which you'll likely inherit)
+define 'MappingOps.ImageElm' and 'MappingOps.ImagesSet' to call
+'Images(f,el)' with the element (respective the sets elements of X).
+'Images' in turn calls then f.operations.Images(f,el).
+Thus when inheriting from MappingOps, you'll only need to define your own
+'Images' to compute all images of an element. Of course, you can overlay
+also 'ImageElm' or 'ImagesSet' to become more efficient.
+
+Please note, that this dispatching process will change substantially in GAP 4.
+
+> 2.  I also wish to define  TestOps.DirectProduct
+>     and call this function by  >DirectProduct( X, Y );
+>     However, the dispatcher function  DirectProduct  in file  gprprods.g
+>     appears to insist that all the arguments should be groups:
+>     ( ... if nor ForAll( arg, IsGroup ) then Error ... )
+>     Again, >TestOps.DirectProduct( X, Y );  is ok.
+>     The objects  X,Y  are not groups, but contain groups,
+>     so the term  DirectProduct  is an appropriate one.
+
+So far, the dispatcher function 'DirectProduct' requires the arguments to be
+groups. I'm not sure what you mean by the phrase 'X and Y contain groups'.
+If they are indeed groups in GAPs sense, then you should set X.isGroup and
+Y.isGroup to true. If not, and you want 'DirectProduct' to work also for
+your type of objects, you will need to change the dispatcher function.
+
+Best,
+
+   Alexander Hulpke
+
+
+
+From jean-luc@bruckner.stoch.uni-linz.ac.at Thu Aug  1 10:55:47 1996
+Date:           Thu, 01 Aug 96 10:55:47 +0200
+From:           "Jean-Luc Picard" <jean-luc@bruckner.stoch.uni-linz.ac.at>
+Subject:        semigroups
+
+Dear GAP-forum,
+
+In my diploma thesis, I did some work on finitely presented semigroups.
+As I've implemented my functions in GAP, I would be highly interested in
+whether there's already some semigroup stuff floating around and if so,
+what stuff.
+
+My work in short: A semigroup given by a presentation or its operation
+table can be checked for subsemigroups, group kernel, endomorphisms, etc....
+(lotsa functions).
+
+The functions however do not yet comply 100% with the format used in the GAP
+libraries. I plan to remedy that situation within the next four weeks.
+
+greetings,
+
+Marcel-Oliver Widi
+
+
+
+From edmund@dcs.st-and.ac.uk Fri Aug  2 12:49:56 1996
+Date:           Fri, 02 Aug 96 12:49:56 BST
+From:           "Edmund Robertson" <edmund@dcs.st-and.ac.uk>
+Subject:        Re:  semigroups
+
+        The St Andrews GAP semigroup package
+------------------------------------------------------------
+
+
+At St Andrews we are developing a GAP semigroup package.
+Our code is not yet ready to distribute but it is intended
+that this will be available with a futurerelease of GAP V4.
+We have two semigroup enumerators based on Todd-Coxeter
+which enumerate semigroups given by a finite presentation.
+One of these is a C program which enumerates the semigroup
+and returns the "coset table" to GAP. The second is written
+in the GAP language.
+
+We have a number of functions written in GAP to investigate
+algebraic properties of a semigroup once it has been
+enumerated. These functions find idempotents, find left
+or right or two-sided ideals, R-classes, L-classes and D-
+classes.
+
+In addition we have implemented in GAP a program to
+compute the semigroup given by a finite set of
+transformations. Here is an abstract of a paper we are
+writing on this part of the software.
+
+Computing transformation monoids
+
+Authors:
+S.A. Linton, G. Pfeiffer, E.F. Robertson and N. Ruskuc
+
+Abstract: Efficient computational methods are available for
+computing with finite groups of permutations. In this paper we
+utilise such methods in developing an algorithm to compute
+the order and algebraic structure of finite transformation
+monoids. We start from an algorithm due to Lallement and
+McFadden and develop some theoretical improvements. The
+underlying strategy is to translate computations in the
+transformation monoid into computations in some
+permutation groups.
+
+Abstracts of some other relevant publications are
+available on the WWW at the URL
+
+http://www-groups.dcs.st-and.ac.uk/~nik/publ.html
+
+and
+
+http://www-groups.dcs.st-and.ac.uk/~edmund/publications.html
+
+
+Although we intend a Todd-Coxeter and the transformation
+monoid program to be the basic tools of the GAP semigroups
+package, we are going to develop many more functions to
+allow semigroups computed with these basic tools to be
+investigated.
+
+We have developed theoretically a number of other T-C
+type algorithms for semigroups which we have not
+yet implemented.
+
+
+
+Nik Ruskuc     Edmund Robertson             1 Aug 1996
+
+
+
+From sal@dcs.st-andrews.ac.uk Fri Aug  2 13:31:00 1996
+Date:           Fri, 02 Aug 96 13:31:00 +0100
+From:           "Steve Linton" <sal@dcs.st-andrews.ac.uk>
+Subject:        Semigroup software
+
+Marcel-Oliver Widi asked what work on semigroups in GAP (or perhaps in
+computational semigroup theory) is ongoing.
+
+We know about the work of Christof Noebauer, also at Linz, whose nrsg
+package for near-rings (in gap/incoming) also contains some elementary
+semigroup methods.
+
+The latest version of Derek Holt's Knuth-Bendix package is called
+KBMAG (Knuth-bendix for Monoids and Groups) and, as the name implies,
+offers access to a (very fast) Knuth-bendix for monoids, and which
+also offers some capabilities to compute with the resulting rewrite systems.
+
+Edmund Robertson has posted a description of our work in St. Andrews
+which will probably form the basis of semigroup support in GAP 4.
+Semigroups will definitely be an important part of future versions of
+GAP, and we welcome suggestions for or contributions to that.
+
+        Steve Linton
+
+
+
+From rukolaha@tower.hop.stu.neva.ru Mon Aug  5 09:28:46 1996
+Date:           Mon, 05 Aug 96 09:28:46 +0400
+From:           "Anatolii V. Rukolaine" <rukolaha@tower.hop.stu.neva.ru>
+Subject:        About Class Multiplication Coefficients
+
+                     4 August 1996
+Dear GAP-Forum,
+
+it's necessary for me to have "Class Multiplication Coefficients" in an algebra
+of classes of some finite permutation group G. Of course, I can use GAP-command
+"ClassMultCoeffCharTable", but in this GAP-command it's necessary to point out
+some "CharTable". For example in GAP-manual there is a sample:
+   t:=CharTable("L3(2)");;
+   ClassMultCoeffCharTable(t,2,2,4);
+
+How can I avoid an use of "CharTable"? For example, I have Conjugacy Classes
+which was computed with help of GAP-command "ConjugacyClasses(G)" or with help
+of any other, for example my own, GAP-function.
+
+Yesterday I wrote a GAP-function for a calculation of Class Multiplication
+Coefficients for the group Mathieu M12. I use a straightforward algorithm.
+Let a1 and a2 be elements from group G. Let CCl be the conjugacy class with
+element a2.  With help of GAP-command Elements(CCl) I look over all elements a3
+from conjugacy class CCl and calculate a product a1*a3. For all a1*a3 I find
+a conjugacy class with a1*a3 with help GAP-command "IsConjugate". After the
+calculation of multiplicity for all the conjugacy classes I can receive Class
+Multiplication Coefficients by means of simple arithmetic with orders of the
+conjugacy classes. My IBM-computer has a number GAPstones equal 3223. For two
+conjugacy classes with 396 and 495 elements from M12 my computer calculated the
+Class Multiplication Coefficients about a half of an hour. For two conjugacy
+classes with 9504 and 11880 elements from M12 my computer calculated the Class
+Multiplication Coefficients more than eight hours (the whole night) and nothing.
+At morning I stoped the calculations. Alas! And so my second question:
+how can I calculate Class Multiplication Coefficients more fast?
+
+These two questions are important for me, but soon (9 august) I shall go away
+to Ukraine. I shall back in St.-Petersburg at the end of August.
+
+Sincerely yours,
+Anatolii^ V. Rukolaine.
+
+My home E-mail: rukolaha@tower.hop.stu.neva.ru
+
+
+
+From thomas.breuer@math.rwth-aachen.de Mon Aug  5 14:11:00 1996
+Date:           Mon, 05 Aug 96 14:11:00 +0100 (MET)
+From:           "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:        Re: Class Multiplication Coefficients
+
+Dear GAP-Forum,
+
+Anatolii V. Rukolaine asked a question about class multiplication
+coefficients.
+
+> it's necessary for me to have "Class Multiplication Coefficients" in
+> an algebra of classes of some finite permutation group G.
+> Of course, I can use GAP-command "ClassMultCoeffCharTable", but in this
+> GAP-command it's necessary to point out some "CharTable".
+> How can I avoid an use of "CharTable"?
+> Yesterday I wrote a GAP-function for a calculation of Class Multiplication
+> Coefficients for the group Mathieu M12. I use a straightforward algorithm.
+> Let a1 and a2 be elements from group G. Let CCl be the conjugacy class with
+> element a2.  With help of GAP-command Elements(CCl) I look over all
+> elements a3 from conjugacy class CCl and calculate a product a1*a3.
+> For all a1*a3 I find a conjugacy class with a1*a3 with help GAP-command
+> "IsConjugate". After the calculation of multiplicity for all the conjugacy
+> classes I can receive Class Multiplication Coefficients by means of simple
+> arithmetic with orders of the conjugacy classes.
+> My IBM-computer has a number GAPstones equal 3223.
+> For two conjugacy classes with 396 and 495 elements from M12 my computer
+> calculated the Class Multiplication Coefficients about a half of an hour.
+> For two conjugacy classes with 9504 and 11880 elements from M12 my computer
+> calculated the Class Multiplication Coefficients more than eight hours
+> (the whole night) and nothing.
+> At morning I stoped the calculations. Alas! And so my second question:
+> how can I calculate Class Multiplication Coefficients more fast?
+
+I do not understand why one wants to avoid dealing with character tables.
+The table of M12 is contained in the character table library of GAP,
+and there is no problem to identify the columns of that table with the
+classes of the group.
+
+If one does not want to use the character table library,
+one can compute the character table of M12 easily;
+given M12 as a permutation group on 12 points, a machine with about
+80000 GAPstones needs less than half a minute for the whole computation,
+including the calculation of conjugacy classes (about 7 seconds)
+and finally all class multiplication coefficients (about 3 seconds).
+
+In fact GAP uses some class multiplication coefficients to compute the
+character table.  A description how to access the relevant routines
+to compute class multiplication coefficients will be given by
+Alexander Hulpke.
+
+My question is:
+Are there really good reasons to avoid computing the character table?
+
+Kind regards
+Thomas Breuer
+
+
+
+From alexander.hulpke@math.rwth-aachen.de Mon Aug  5 14:19:10 1996
+Date:           Mon, 05 Aug 96 14:19:10 +0200
+From:           "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:        Re: About Class Multiplication Coefficients
+
+Dear GAP-Forum,
+
+Anatolii^ Rukolaine asked about computing class multiplication coefficients.
+
+As Thomas Breuer already pointed out, ususally the easiest and by far
+fastest way to get those coefficients is via the character table (even
+though the character table for a group in general is computed by the
+Dixon-Schneider Algorithm, using class multiplication coefficients).
+The reason for this is that the algorithm for 'CharTable' tries to
+compute as few coefficients as possible, picking classes for which
+the coefficients are computed cheaply.
+However the situation might occur that one wants to compute only very few
+coefficients of a group for which the computation of the complete
+character table is not possible (take for example a group of size a few
+100000 with 2000 conjugacy classes or a group too big to compute the full
+character table in reasonable time). For this situation I want to describe
+shortly how to access functions, 'CharTable' uses. These functions are
+somehow internal, therefore one should not use them in any other way than
+described here. The function 'ClassMatrixColumn' uses not just a simple
+evaluation of all class products, but also orbits of the centralizer of one
+element (if c\in C_G(y) then xy and x^c*y are in the same class) and orbits
+of the Galois group. (For groups like M12 this usually reduces the number
+of tests neccessary by a factor of 10 or more.) They also try to identify
+classes quickly. If you are interested in the details: they are described
+in my diploma thesis which can be found on my WWW homepage:
+      http://www.math.rwth-aachen.de/~ahulpke
+
+As an example, lets compute part of the coefficients corresponding to class
+6B and 5A in M12.
+
+# get M12
+gap> g:=OnePrimitiveGroup(DegreeOperation,12,i->Size(i)>95000,true);
+M(12)
+# prepare for usage of the Dixon functions:
+# note: This function enforces computation of the conjugacy classes.
+gap> d:=DixonInit(g);
+DixonRecord(M(12))
+# we have to use the classes in the ordering used by the dixon functions.
+# * this ordering might be different than the one stored in group or
+# character table ! *
+gap> d.conjugacyClasses;
+[ ConjugacyClass( M(12), () ), ConjugacyClass( M(12), ( 1,10)( 2, 7)( 3,12)
+    ( 4, 5)( 6, 9)( 8,11) ), ConjugacyClass( M(12), ( 1,10)( 2,11)( 3,12)
+    ( 5, 6) ), ConjugacyClass( M(12), ( 2, 6, 3)( 4, 7, 8)( 5,12,11) ),
+  ConjugacyClass( M(12), ( 1, 8, 2)( 3,11,12)( 4, 6, 7)( 5, 9,10) ),
+  ConjugacyClass( M(12), ( 2, 4, 5,12)( 3, 7,10, 6) ),
+  ConjugacyClass( M(12), ( 1,11, 3, 8)( 2, 6)( 4, 5, 7,12)( 9,10) ),
+  ConjugacyClass( M(12), ( 1, 8, 4, 2, 5,11)( 3,12, 9, 6,10, 7) ),
+  ConjugacyClass( M(12), ( 1, 4, 9,12,10, 6, 3, 8,11, 2, 5) ),
+  ConjugacyClass( M(12), ( 1, 3, 4, 8, 9,11,12, 2,10, 5, 6) ),
+  ConjugacyClass( M(12), ( 1, 8, 6, 7,12)( 2, 3,10,11, 9) ),
+  ConjugacyClass( M(12), ( 1, 2, 8, 3, 6,10, 7,11,12, 9)( 4, 5) ),
+  ConjugacyClass( M(12), ( 1, 5, 7, 6, 4, 8, 2,11)( 3,12,10, 9) ),
+  ConjugacyClass( M(12), ( 1,11)( 2, 7, 4,10, 5, 6,12, 3) ),
+  ConjugacyClass( M(12), ( 1,10)( 2,12, 6,11, 3, 5)( 4, 8, 7) ) ]
+# class 6B is at position 15 (use permutation character), 5A at position 11.
+
+# get an empty matrix
+gap> m:=0*IdentityMat(15,1);;
+# compute the 11-th column of matrix 15
+gap> d.ClassMatrixColumn(d,m,15,11);
+
+# look at it
+gap> m;
+[ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 280, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 440, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 510, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 510, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1320, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1440, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1440, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1560, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1560, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1980, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1980, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2680, 0, 0, 0, 0 ] ]
+
+# just to check, compare with the value from the character table. Here 6B is
+# class number 10 and 5A class number 8
+gap> c:=CharTable("m12");
+CharTable( "M12" )
+
+# as we see, the values agree
+gap> MatClassMultCoeffsCharTable(c,10);
+[ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 54, 72, 96, 96, 60, 72, 54, 72, 72, 60, 66, 66 ],
+  [ 0, 0, 192, 72, 96, 80, 80, 80, 96, 87, 72, 72, 80, 88, 88 ],
+  [ 0, 240, 256, 270, 288, 304, 304, 280, 288, 330, 288, 288, 280, 286, 286
+],
+  [ 0, 480, 512, 432, 432, 416, 416, 440, 432, 464, 432, 432, 440, 440, 440
+],
+  [ 0, 720, 480, 513, 468, 384, 528, 510, 468, 489, 540, 468, 510, 495, 495
+],
+  [ 0, 720, 480, 513, 468, 528, 384, 510, 468, 489, 468, 540, 510, 495, 495
+],
+  [ 0, 1440, 1536, 1512, 1584, 1632, 1632, 1560, 1584, 1608, 1584, 1584,
+      1560, 1584, 1584 ],
+  [ 0, 1440, 1536, 1296, 1296, 1248, 1248, 1320, 1296, 1392, 1296, 1296,
+      1320, 1320, 1320 ],
+  [ 15840, 2160, 2784, 2970, 2784, 2608, 2608, 2680, 2784, 2574, 2592, 2592,
+      2680, 2618, 2618 ],
+  [ 0, 2160, 1728, 1944, 1944, 2160, 1872, 1980, 1944, 1944, 1944, 2088,
+      1980, 1980, 1980 ],
+  [ 0, 2160, 1728, 1944, 1944, 1872, 2160, 1980, 1944, 1944, 2088, 1944,
+      1980, 1980, 1980 ],
+  [ 0, 1440, 1536, 1512, 1584, 1632, 1632, 1560, 1584, 1608, 1584, 1584,
+      1560, 1584, 1584 ],
+  [ 0, 1440, 1536, 1404, 1440, 1440, 1440, 1440, 1440, 1428, 1440, 1440,
+      1440, 1452, 1452 ],
+  [ 0, 1440, 1536, 1404, 1440, 1440, 1440, 1440, 1440, 1428, 1440, 1440,
+      1440, 1452, 1452 ] ]
+gap> List(MatClassMultCoeffsCharTable(c,10),i->i[8]);
+[ 0, 60, 80, 280, 440, 510, 510, 1560, 1320, 2680, 1980, 1980, 1560, 1440,
+  1440 ]
+
+Hope this helps,
+
+   Alexander Hulpke
+
+
+
+From juergen@bruckner.stoch.uni-linz.ac.at Tue Aug  6 13:34:01 1996
+Date:           Tue, 06 Aug 96 13:34:01 +0200
+From:           "Juergen Ecker" <juergen@bruckner.stoch.uni-linz.ac.at>
+Subject:        troubles with PositionWord
+
+Dear GAP-Forum,
+
+it seems to me that the function PositionWord does not always
+work correctly. The following looks quite strange to me, but maybe I
+do not expect the right thing.
+
+a := AbstractGenerator("a");;
+b := AbstractGenerator("b");;
+
+PositionWord(a*b*a,b,1);
+
+yields the correct result
+
+2
+
+but
+
+ag := AbstractGenerators("a",2);; a1 := ag[1];; a2 := ag[2];;
+
+PositionWord(a1*a2*a1,a2,1);
+
+signals an error:
+
+Error, usage: PositionWord( <word>, <sub>[, <from>] )
+
+
+
+greetings
+
+Juergen Ecker
+Universitaet Linz
+Inst. f. Math.
+Austria
+
+
+
+From frank.celler@math.rwth-aachen.de Wed Aug  7 14:54:00 1996
+Date:           Wed, 07 Aug 96 14:54:00 +0100 (MET)
+From:           "Frank Celler" <Frank.Celler@Math.RWTH-Aachen.DE>
+Subject:        RE: troubles with PositionWord
+
+Dear Forum,
+
+Juergen Ecker wrote:
+
+    it seems to me that the function PositionWord does not always
+    work correctly. The following looks quite strange to me, but maybe I
+    do not expect the right thing.
+
+the problem is 'AbstractGenerators' which was only introduced to
+support the prime quotient algorithm 'PrimeQuotient'.  This algorithm
+requires a different data structure of words than the one supplied by
+'AbstractGenerator'.  The problem can be fixed by patching and
+recompiling the kernel but a much better solution is to use
+'FreeGroup' instead.  Because of the problems caused by generators
+which are not bound to a group we want to get rid of
+'AbstractGenerator' and 'AbstractGenerators' eventually.
+
+There is a slight problem if you need to create generators on the fly
+(e.g. in a quotient algorithm of some sort).  In this case you can
+simply use something like
+
+  gap> List( [1..n], x -> AbstractGenerator(Concatenation("a",String(x))) );
+
+While it is possible to patch the kernel we want to avoid this because
+it would require everyone to recompile.  You could also put in the
+above line as new definition for 'AbstractGenerators' but unless it is
+absolutely necessary you should use 'FreeGroup'.
+
+best wishes
+  Frank
+
+
+
+From michael.smith@maths.anu.edu.au Tue Aug 20 21:11:35 1996
+Date:           Tue, 20 Aug 96 21:11:35 +1000
+From:           "Michael Smith" <michael.smith@maths.anu.edu.au>
+Subject:        BeOs port?
+
+Dear GAP forum,
+
+I would like to know whether anyone is currently working on getting GAP
+compiled and running under BeOS? If not, is there anyone on the list who
+has familiarity with BeOS and can comment on how difficult it may be.
+
+Please mail replies to me rather than the list, and I will post a summary
+if there are others interested in the answer.
+
+Thanks,
+Michael.
+
+-----------------------------------------------------------------------------
+Michael.Smith@maths.anu.edu.au          DSTO & Australian National University
+
+
+
+From mpr@xanum.uam.mx Tue Aug 20 11:48:09 1996
+Date:           Tue, 20 Aug 96 11:48:09 -0500
+From:           "Mario Pineda Ruelas" <mpr@xanum.uam.mx>
+Subject:        [no subject]
+
+Dear Forum
+
+Few days a go I have obtained GAP from internet and I have printed the
+manual GAP. I find in the references of the manual GAP the next paper:
+
+Gordon F. Royle. The transitive groups of degree twelve,
+J. Symbolic Computation, pages 255-268,1987.
+
+wich I suppose that is incrporated to GAP.
+In this paper we can find that Mr. Royle gives a imprimitive group of order
+252900 wich contain the prime divisor 281(page 265). As you can see this
+is imposible because this group is contained in S_12.
+I think that the order of this group must be 259200.
+?are there another involuntary mistakes in the paper of Mr. Royle
+
+I like know if the information contained in the paper of Mr.Royle are the
+same that GAP.
+
+?is there anyone in the Forum that can tell me how to obtain from GAP a
+list of imprimitive groups of degree twelve.
+
+
+Please mail replies to me rather than list GAP.
+
+thank in advance for you attention
+Mario Pineda
+
+
+
+From alexander.hulpke@math.rwth-aachen.de Wed Aug 21 11:50:40 1996
+Date:           Wed, 21 Aug 96 11:50:40 +0200
+From:           "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:        Re: [no subject] (transitive groups of degree 12)
+
+Dear GAP-Forum,
+
+Mario Pineda Ruelas asked,
+
+> Few days ago I have obtained GAP from internet and I have printed the
+> manual GAP. I find in the references of the manual GAP the next paper:
+>
+> Gordon F. Royle. The transitive groups of degree twelve,
+> J. Symbolic Computation, pages 255-268,1987.
+>
+> wich I suppose that is incrporated to GAP.
+> In this paper we can find that Mr. Royle gives a imprimitive group of order
+> 252900 which contain the prime divisor 281(page 265). As you can see this
+> is imposible because this group is contained in S_12.
+> I think that the order of this group must be 259200.
+
+You're right. Its A6\wr 2. I think when creating the table this typo crept in.
+You could use a 'for' loop in GAP and the command 'AllBlocks' to recreate a
+similar list without human interference if you suspect further errors.
+
+> ?are there another involuntary mistakes in the paper of Mr. Royle
+
+I must admit that I never checked the exact numbers given in the paper, but
+used a list derived from Mr. Royles original results instead. To my
+knowledge this list is correct (see also below).
+I have read Royle's paper and I can assure you that the paper's argumentation
+is correct. I have not double checked, however, whether the numbers given in
+the tables contain any other typographical mistakes.
+
+> I like know if the information contained in the paper of Mr.Royle are the
+> same that GAP.
+
+Essentially yes. But they were derived from the original data lists without
+retyping.
+
+Additionally, for my PhD I constructed the transitive groups of degree up
+to 31 from scratch, also constructing the groups of degree up to 15 anew.
+There were no discrepancies with GAP's lists. Thus I am *VERY* certain that
+these lists as given in GAP are correct.
+
+If you are interested you can find further information on my WWW page
+        http://www.math.rwth-aachen.de/~ahulpke
+Incidentally, this page also contains a link to a joint preprint that lists
+all transitive groups of degree up to 15 with some of their properties.
+These lists were created without retyping, thus I'm quite confident
+about their correctness.
+
+> ?is there anyone in the Forum that can tell me how to obtain from GAP a
+> list of imprimitive groups of degree twelve.
+Yes.
+
+Starting with version 3.4, patchlevel 3 (released in last december) GAP
+contains the transitive groups of degree up to 15. The command
+'AllTransitiveGroups(DegreeOperation,12,IsPrimitive,false)' yields a list of
+these groups. The manual section 'The Transitive Groups Library' gives
+further information in case you want to get subsets with other properties.
+
+Hope this is of help,
+
+Alexander Hulpke
+
+
+
+From thomas.breuer@math.rwth-aachen.de Wed Aug 21 17:12:00 1996
+Date:           Wed, 21 Aug 96 17:12:00 +0100 (MET)
+From:           "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:        FIX   20 for DANGEROUS bug in GAP/lib 3.4.3.0  'PermChars'
+
+    This mail contains a fix for a dangerous problem in GAP/lib 3.4.3.
+    *You should apply this fix as soon as possible if you are using
+    'PermChars' or 'PermComb'*.  The problem is in 'PermChars' when called
+    with a character degree as second argument and in 'PermComb', and may
+    cause the character table to become inconsistent without a warning.
+
+
+VERSION
+
+    GAP/lib 3.4.3.0
+
+
+PRIORITY
+
+    The problem is a dangerous problem, because it may cause a computation to
+    produce incorrect results without a warning.  Thus the fix has high
+    priority, and we recommend that you apply it as soon as possible.
+
+
+HOW TO APPLY
+
+    Go to the GAP directory (the directory with the 'lib/' subdirectory),
+    name this mail 'fix20lib.dif', and issue the command:
+
+        patch -p0 < fix20lib.dif
+
+    If 'patch' writes "I can't seem to find a patch in there" try 'patch -v'.
+    If 'patch -v' gives an error message or reports a version older than 2.1,
+    get 2.1 from 'ftp://FTP.Math.RWTH-Aachen.DE/pub/gap/utils/patch2_1.zoo'.
+
+    This fix changes only the library.
+    Thus you need not recompile the GAP kernel.
+
+
+DESCRIPTION
+
+    When 'PermChars' is called with a character degree as second argument, it
+    calls the function 'PermComb'.  'PermComb' sorts the characters in the
+    'irreducibles' component of the character table given as first argument
+    w.r.t. to their degrees, but does not update the 'irredinfo' component.
+
+
+
+CORRECT BEHAVIOUR
+
+gap> t:= CharTable( "Symmetric", 4 );;
+gap> t.irreducibles;
+[ [ 1, -1, 1, 1, -1 ], [ 3, -1, -1, 0, 1 ], [ 2, 0, 2, -1, 0 ],
+  [ 3, 1, -1, 0, -1 ], [ 1, 1, 1, 1, 1 ] ]
+gap> t.irredinfo;
+[ rec(
+      charparam := [ 1, [ 1, 1, 1, 1 ] ] ), rec(
+      charparam := [ 1, [ 2, 1, 1 ] ] ), rec(
+      charparam := [ 1, [ 2, 2 ] ] ), rec(
+      charparam := [ 1, [ 3, 1 ] ] ), rec(
+      charparam := [ 1, [ 4 ] ] ) ]
+gap> PermChars( t, 3 );
+[ [ 3, 1, 3, 0, 1 ] ]
+gap> t.irreducibles;
+[ [ 1, -1, 1, 1, -1 ], [ 3, -1, -1, 0, 1 ], [ 2, 0, 2, -1, 0 ],
+  [ 3, 1, -1, 0, -1 ], [ 1, 1, 1, 1, 1 ] ]
+gap> t.irredinfo;
+[ rec(
+      charparam := [ 1, [ 1, 1, 1, 1 ] ] ), rec(
+      charparam := [ 1, [ 2, 1, 1 ] ] ), rec(
+      charparam := [ 1, [ 2, 2 ] ] ), rec(
+      charparam := [ 1, [ 3, 1 ] ] ), rec(
+      charparam := [ 1, [ 4 ] ] ) ]
+
+
+COMMENT
+
+    Making a shallow copy of the first argument, as is done in 'PermComb',
+    is not sufficient to avoid the sideeffect, since the 'irreducibles'
+    component is sorted in place.  Moreover, since the 'irredinfo' component
+    is not sorted in place, but replaced by a sorted copy, it may cause the
+    original character table to be incorrect afterwards.
+
+
+DIFFS
+
+Prereq: 3.24.1.2
+--- lib/ctpermch.g      Mon Aug 19 08:49:49 1996
++++ lib/ctpermch.g      Mon Aug 19 09:34:18 1996
+@@ -3,7 +3,7 @@
+ #A  ctpermch.g                  GAP library                     Thomas Breuer
+ #A                                                           & Goetz Pfeiffer
+ ##
+-#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+@@ -15,7 +15,10 @@
+ #N  - 'Constituent' und 'Maxdeg' - Optionen in 'PermComb'
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.24.1.2  1994/11/14  16:29:39  sam
++#H  Revision 3.24.1.3  1996/08/19 07:33:28  sam
++#H  fixed sideeffect of 'PermComb' because of sorting characters
++#H
++#H  Revision 3.24.1.2  1994/11/14 16:29:39  sam
+ #H  fixed a bug in error message,
+ #H  changed ATLAS component in case of high multiplicities
+ #H
+@@ -855,6 +858,7 @@
+    if not ForAll( tbl.irreducibles[1], x -> x = 1 ) then
+
+      tbl:= ShallowCopy( tbl );
++     tbl.irreducibles:= ShallowCopy( tbl.irreducibles );
+      SortCharactersCharTable( tbl, "degree" );
+      # (will be wrong if 'arec' contains component 'bounds' ...)
+
+END OF  fix20lib.dif ________________________________________________________
+
+
+
+From egner@ira.uka.de Thu Aug 22 11:33:07 1996
+Date:           Thu, 22 Aug 96 11:33:07 +0200
+From:           "Sebastian Egner" <egner@ira.uka.de>
+Subject:        A little observation (may be important)
+
+Dear GAP-forum,
+
+we just needed a function to test whether a given cyclotomic
+field element is a root of unity. Since GAP v3.4 does not
+contain such a function our first guess was
+
+IsRootOfUnityCyc := function ( x )
+  return IsCyc(x) and x^NofCyc(x) = 1;  # Do not use this!
+end;
+
+Trying it on Random(CF(43)) convinced us that there must be
+a better way. This is our solution:
+
+IsRootOfUnityCyc := function ( x )
+  return IsCyc(x) and x*GaloisCyc(x, -1) = 1; # Use this.
+end;
+
+It is obvious why the second function outperforms the first
+one by orders of magnitude. However, you need to think of it.
+Does anybody know a faster solution?
+  Sebastian Egner, Markus P"uschel.
+
+
+
+From gcs@maths.bath.ac.uk Thu Aug 22 12:27:50 1996
+Date:           Thu, 22 Aug 96 12:27:50 BST
+From:           "Geoff Smith" <gcs@maths.bath.ac.uk>
+Subject:        Re: A little observation (may be important)
+
+Dear GAP-forum,
+
+Sebastian Egner asked about a function to test whether a given cyclotomic
+field element is a root of unity.
+
+The following article by my colleagues at Bath
+is highly relevant:
+
+"Effective Tests for Cyclotomic Polynomials," in Proceedings of
+ISSAC 1988, Springer LNCS no.~368, P.~Gianni (Ed).
+(R..J.~Bradford and J.H.~Davenport) MR 90m:11201 (11Y16; 11Y40). (1989)
+
+Geoff Smith
+
+
+
+From leonard@qmw.ac.uk Fri Aug 23 16:32:52 1996
+Date:           Fri, 23 Aug 96 16:32:52 +0100
+From:           "Leonard Soicher" <leonard@qmw.ac.uk>
+Subject:        New: GRAPE 2.3
+
+Dear Gap-forum,
+
+I have placed the file  grape-23.g  into the directory  pub/incoming of
+ftp.math.rwth-aachen.de.  It contains the  GRAPE 2.3  upgrade for the
+GRAPE 2.2 share library package.  The first lines of the file explain
+this upgrade and how to install it, and I reproduce these lines at the
+end of this message.  As usual, please tell me if you install this
+upgrade, and let me know of any problems you solve with it or bugs you
+find in it. If you use GRAPE to solve a problem you should still refer
+to the paper:
+
+L.H.~Soicher, {\sf GRAPE}: a system for computing with graphs and
+groups, in {\it Groups and Computation}, L.~Finkelstein and
+W.M.~Kantor, eds., DIMACS Series in Discrete Mathematics and
+Theoretical Computer Science {\bf 11}, A.M.S., 1993, pp.~287--291.
+
+I am also planning to write papers on some of the new algorithms in
+GRAPE 2.3 (such as PartialLinearSpaces), and the problems I have
+solved with them.
+
+This upgrade contains no new on-line documentation, but I have
+tried to include very full documentation of the new functions
+with their GAP code.
+
+All the best,
+                  Leonard Soicher.
+
+First lines of GRAPE 2.3 upgrade:
+
+###############################################################################
+##
+##  grape.g  (Version 2.3)       GRAPE Library               Leonard Soicher
+##
+##
+##  Copyright 1992-1996 Leonard Soicher, School of Mathematical Sciences,
+##                      QMW, London, U.K.
+##
+#
+# This file contains the GRAPE 2.3 upgrade to GRAPE 2.2, and contains
+# both improvements and new functions.  See especially:
+# the new  CompleteSubgraphsOfGivenSize,  which allows for searching in
+# a vertex-weighted graph for cliques with a given vertex-weight sum,
+# the new function  PartialLinearSpaces,  which classifies partial linear
+# spaces with given point graph and parameters  s,t,  and the new function
+# VertexTransitiveDRGs  which determines the distance-regular generalized
+# orbital graphs for a given transitive permutation group.
+# See also the new functions  CayleyGraph  and  SwitchedGraph.
+#
+# To install this upgrade to GRAPE 2.2 (on a UNIX system):
+#    (1) first make sure that GRAPE 2.2 is installed,
+#    (2) go to the main directory where GAP is installed,
+#    (3) copy this file to  pkg/grape/init.g  and also to
+#        pkg/grape/lib/grape.g
+#
+# *Notes* As a slight change from GRAPE 2.2, we now consider a one vertex
+# graph to be bipartite, with bicomponents = [[],[1]] (to be consistent
+# with considering a zero vertex graph to be bipartite, with
+# bicomponents = [[],[]]). This upgrade also fixes a bug in UnderlyingGraph
+# which had the effect that if the returned graph had loops, then it
+# might have had its isSimple component erroneously set to true.
+#
+
+
+
+From j.d.gilbey@qmw.ac.uk Tue Aug 27 20:22:36 1996
+Date:           Tue, 27 Aug 96 20:22:36 +0100
+From:           "Julian Gilbey" <j.d.gilbey@qmw.ac.uk>
+Subject:        Compiler; Collected
+
+Two thoughts for the Forum.  The first is about the compiler-to-be,
+and the second is a suggested improvement to the code for Collected.
+
+Consider the following very simple code, designed to take an integer
+as input:
+
+  f := function (x)
+    return x+1;
+  end;
+
+  g := function (y)
+    return f(y);
+  end;
+
+  f := function (x)
+    return 2*x;
+  end;
+
+  g(2);
+
+At present, g(2) will return 4, as the current definition of f(x) is
+to return 2*x.
+
+However, if we want to have an optimising compiler, then compilation
+of g should take into account the definition of f and not simply call
+f.  This gets even hairier if a function has a recursive definition,
+but somewhere in the recursion (perhaps at a lower level?) the
+function definition might be changed.
+
+Any thoughts?
+
+-----------------------------------------------
+
+Having looked at the code for Collected (in list.g), may I suggest the
+following as a possible alternative, which might well be faster in
+many cases?
+
+Collected := function(L)
+  local i,      # counter for current position in mset
+        mset,   # the resulting multiset
+        l,      # the current element of the list L
+        last_l; # the last element read from L
+
+  if Length(L) = 0 then
+    return [];
+  fi;
+
+  # We take a shallow copy of L before we sort it so that the input list
+  # remains unchanged
+  L := ShallowCopy(L);
+  Sort(L);
+
+  mset := [ [L[1],0] ];  # initialise the variables
+  last_l := L[1];
+  i := 1;
+  for l in L do
+    if l = last_l then
+      mset[i][2] := mset[i][2] + 1;
+    else
+      i := i + 1;
+      mset[i] := [l,1];
+      last_l := l;
+    fi;
+  od;
+  return mset;
+end;
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+       Julian Gilbey                       Email: J.D.Gilbey@qmw.ac.uk
+       Dept of Mathematical Sciences
+       Queen Mary & Westfield College      Finger me or talk to me at:
+       Mile End Road                         jdg@euclid.maths.qmw.ac.uk
+       London E1 4NS, ENGLAND              ( Logon info attached )
+
+
+
+From volkmar.felsch@math.rwth-aachen.de Wed Aug 28 16:40:34 1996
+Date:           Wed, 28 Aug 96 16:40:34 +0200
+From:           "Volkmar Felsch" <Volkmar.Felsch@Math.RWTH-Aachen.DE>
+Subject:        AbelianInvariants
+
+Dear gap-forum,
+
+In a letter to gap-trouble, Leonard Soicher writes:
+
+> There appears to be an inconsistency with the AbelianInvariants function:
+>
+> gap> AbelianInvariants(CyclicGroup(6));
+> [ 2, 3 ]
+> gap> F:=FreeGroup(1);;
+> gap> AbelianInvariants(F/[(F.1)^6]);
+> [ 6 ]
+> gap> quit;
+>
+> (The result of the second application of the function contradicts the
+> GAP manual.)  Please explain.
+
+We are grateful to Leonard for alerting us to this problem. There is, in
+fact, an inconsistency. The abelian invariants should always be provided
+in form of prime powers as stated in the manual, but for certain groups
+the function simply calls the function ElementaryDivisorsMat and hence
+returns them in form of elementary divisors. We will of course fix this
+in the next patch or release.
+
+However, as it is a simple task to transform the elementary divisors into
+the corresponding prime powers and vice versa, we hope that we can live
+with the current state until then.
+
+Volkmar Felsch
+(volkmar.felsch@math.rwth-aachen.de)
+
+
+
+From martin.schoenert@math.rwth-aachen.de Fri Aug 30 13:02:00 1996
+Date:           Fri, 30 Aug 96 13:02:00 +0100 (MET)
+From:           "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:        Re: Compiler; Collected
+
+Julian Gilbey wrote in his mail message of 1996/08/27
+
+    However, if we want to have an optimising compiler, then compilation
+    of g should take into account the definition of f and not simply call
+    f.  This gets even hairier if a function has a recursive definition,
+    but somewhere in the recursion (perhaps at a lower level?) the
+    function definition might be changed.
+
+This process of replacing the function call with the body of the called
+function is usually called inlining.  One advantage is that the function call
+overhead is avoided.  The other advantage is that the other parts of the
+compiler have large code blocks to work with and thus more opportunities for
+optimizations.
+
+As you note, this would be difficult for a GAP compiler, because the compiler
+cannot know which function should be called.  The compiler could do the
+optimistic optimization, and assume that the function that would be called at
+the time of the compilation will also be the one that should be called later
+and inline that.  But it would be necessary to have a fallback in case this
+assumption is no longer true (as in your example).
+
+Rather than develop such a mechanism, we have invested effort to make the
+function call faster for GAP 4.
+
+Julian Gilbey continued
+
+    Having looked at the code for Collected (in list.g), may I suggest the
+    following as a possible alternative, which might well be faster in
+    many cases?
+
+Indeed, it should be faster for almost all cases.  With your permission
+we shall be using this function in the next version of GAP.
+
+Martin.
+
+-- .- .-. - .. -.  .-.. --- ...- . ...  .- -. -. .. -.- .-
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,   +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, 52056 Aachen, Germany
+
+
+
+From juergen@bruckner.stoch.uni-linz.ac.at Mon Sep  2 13:31:57 1996
+Date:           Mon, 02 Sep 96 13:31:57 +0200
+From:           "Juergen Ecker" <juergen@bruckner.stoch.uni-linz.ac.at>
+Subject:        a simple question on finitely presented groups
+
+Dear GAP-forum,
+
+does anybody have an idea, what a presentation for the symmetric group
+of order n
+could look like?
+--
++-----------------------------------------------------------------------+
+|Juergen Ecker - Institut fuer Mathematik - Universitaet Linz - Austria
+|
+|              - e-mail juergen@bruckner.stoch.uni-linz.ac.at
+|
++-----------------------------------------------------------------------+
+
+
+
+From joachim.neubueser@math.rwth-aachen.de Mon Sep  2 13:57:04 1996
+Date:           Mon, 02 Sep 96 13:57:04 +0200
+From:           "Joachim Neubueser" <Joachim.Neubueser@Math.RWTH-Aachen.DE>
+Subject:        presentations for symmetric group
+
+Juergen Ecker asked:
+
+does anybody have an idea, what a presentation for the symmetric group
+of order n could look like?
+
+There are several presentations for the symmetric groups given in
+
+H.S.M. Coxeter, W.O.J. Moser
+Generators and relations for discrete groups.
+Ergebnisse der Mathematik und ihrer Grenzgebiete,
+Springer Verlag.
+
+Select the one you like best.
+
+Joachim Neubueser
+
+
+
+From sal@dcs.st-andrews.ac.uk Mon Sep  2 14:33:32 1996
+Date:           Mon, 02 Sep 96 14:33:32 +0200
+From:           "Steve Linton" <sal@dcs.st-andrews.ac.uk>
+Subject:        Re: a simple question on finitely presented groups
+
+Dear GAP-forum,
+
+Juergen Ecker asked :
+
+> Dear GAP-forum,
+>
+> does anybody have an idea, what a presentation for the symmetric group
+> of order n
+> could look like?
+
+One possibility is
+
+< a_1, a_2, ..., a_{n-1} | (a_ia_{i+1})^3 = 1  1 <= i <= n-2
+                           (a_ia_j)^2     = 1  1 <= i < n-2, i+1 < j <= n-1
+                           (a_i)^2        = 1  1 <= i <= n-1 >
+
+Here the generator a_i corresponds to the permutation (i i+1)
+
+                Steve Linton
+
+
+
+From norai@mat.unb.br Tue Sep  3 16:45:49 1996
+Date:           Tue, 03 Sep 96 16:45:49 -0300
+From:           "Norai R. Rocco" <norai@mat.unb.br>
+Subject:        small problem in coset enumeration
+
+  Dear GAP Forum,
+
+  I haven't been able to understand the following situation in the coset
+ enumeration:
+
+  Given, for instance, the finitely presented (finite) group g,
+
+gap> F:=FreeGroup("a", "b");;
+gap>
+gap> g:=F/[F.1^4, F.2^4, Comm(F.1, F.2)^F.1/Comm(F.1, F.2^(-1)),
+Comm(F.1, F.2)^F.2/Comm(F.1^(-1), F.2),
+Comm(F.1^2, F.2)/Comm(F.1, F.2^(-1))*Comm(F.1, F.2)];
+Group( a, b )
+gap>
+
+ then GAP computes its Size quickly:
+
+gap> Index(g, TrivialSubgroup(g));
+128
+
+ Now observe that the last relator comes from the commutator identity
+
+                   [x^2, y] = [x, y]^x*[x, y]
+
+ which should give the last relator as a consequence of the third one
+
+             [F.1^2, F.2] = [F.1, F.2^(-1)]*[F.1, F.2]
+
+  However, removing the last relator one gets the presentation
+
+gap> h:=F/[F.1^4, F.2^4, Comm(F.1, F.2)^F.1/Comm(F.1, F.2^(-1)),
+Comm(F.1, F.2)^F.2/Comm(F.1^(-1), F.2)];
+Group( a, b )
+gap>
+
+  and now,
+
+gap> Index(h, TrivialSubgroup(h));
+Error, the coset enumeration has defined more than 64000 cosets:
+type 'return;' if you want to continue with a new limit of 128000 cosets,
+type 'quit;' if you want to quit the coset enumeration,
+type 'maxlimit := 0; return;' in order to continue without a limit,
+ in
+CosetTableFpGroup( G, H ) called from
+G.operations.Index( G, U ) called from
+Index( h, TrivialSubgroup( h ) ) called from
+main loop
+brk> quit;
+gap> quit;
+
+  Could anyone tell me what's wrong? Seems to be a small bug in coset
+  enumaration (?).
+
+  Thanks in advance for any help.
+  Norai Rocco.
+
+
+
+From havas@cs.uq.edu.au Wed Sep  4 17:37:53 1996
+Date:           Wed, 04 Sep 96 17:37:53 +1000
+From:           "George Havas" <havas@cs.uq.edu.au>
+Subject:        Re: small problem in coset enumeration
+
+On Tue, 3 Sep 1996, Norai Romeu Rocco wrote:
+
+>   I haven't been able to understand the following situation in the coset
+>  enumeration:
+>
+>   Given, for instance, the finitely presented (finite) group g,
+>
+> gap> F:=FreeGroup("a", "b");;
+> gap>
+> gap> g:=F/[F.1^4, F.2^4, Comm(F.1, F.2)^F.1/Comm(F.1, F.2^(-1)),
+> Comm(F.1, F.2)^F.2/Comm(F.1^(-1), F.2),
+> Comm(F.1^2, F.2)/Comm(F.1, F.2^(-1))*Comm(F.1, F.2)];
+> Group( a, b )
+> gap>
+>
+>  then GAP computes its Size quickly:
+>
+> gap> Index(g, TrivialSubgroup(g));
+> 128
+>
+>  Now observe that the last relator comes from the commutator identity
+>
+>                    [x^2, y] = [x, y]^x*[x, y]
+>
+>  which should give the last relator as a consequence of the third one
+>
+>              [F.1^2, F.2] = [F.1, F.2^(-1)]*[F.1, F.2]
+>
+...............
+>   Could anyone tell me what's wrong? Seems to be a small bug in coset
+>   enumaration (?).
+>
+NO --- User error: missing parentheses in
+
+> Comm(F.1^2, F.2)/Comm(F.1, F.2^(-1))*Comm(F.1, F.2)];
+
+should be:
+
+> Comm(F.1^2, F.2)/ ( Comm(F.1, F.2^(-1))*Comm(F.1, F.2)] );
+
+/ and = are not equivalent operators in presentations.
+
+I think this explains it all.
+
+George Havas (havas@cs.uq.edu.au) Phone: +61 7 3365 2904; Fax: +61 7 3365 1999
+Department of Computer Science    AUS    http://www.cs.uq.oz.au/personal/havas
+The University of Queensland      UK http://www-groups.dcs.st-and.ac.uk/~havas
+Queensland 4072 AUSTRALIA         US          http://dimacs.rutgers.edu/~havas
+
+
+
+From egner@ira.uka.de Thu Sep  5 19:08:14 1996
+Date:           Thu, 05 Sep 96 19:08:14 +0200
+From:           "Sebastian Egner" <egner@ira.uka.de>
+Subject:        Releasing "pub/incoming/approx.g"
+
+Dear GAP-Forum!
+
+In ftp.math.rwth-aachen.de:/pub/incoming/ there is now a
+file called 'approx.g' which implements GAP v3.4 functions
+to compute rational approximations of cyclotomic field
+elements.
+
+The module is not meant to introduce numerical computation
+into GAP --- rather it allows to find accurate rational
+approximations cyclotomic field elements, embedded into
+the complex numbers. Let E(n) mean exp(2 pi i/n) and
+consider a cyclotomic field element z then
+
+ApproxReCycSimple(z, absError)
+
+computes a pair [a, b] of rationals such that
+
+a <= Re(z) <= b    and   b - a < absError
+
+for some positive rational absError. In fact, there
+are three alternative methods of approximation:
+
+Simple
+  finds *some* a, b (not necessarily with small numerator
+  or denominator)
+
+Binary
+  finds a, b such that the denominators are powers of 2
+  (and are minimal under this condition)
+
+SternBrocot
+  finds a, b such that the denominators are small (and
+  in case they represent principal terms of the associated
+  continued fraction series, are minimal)
+
+For details refer to 'approx.g' and print out all lines
+which contain the string #F (under UNIX: grep \#F approx.g).
+
+In addition there is a simple function
+
+StringDecimalRat(<rat>, <mantissaDigits>)
+
+which returns a string for the 'scientific notation'
+of the rational <rat> expressed with <mantissaDigits>
+many digits after the decimal dot (e.g. "1.96883e5").
+Again, the function is not meant to be numerical, but
+it proved useful to me in that it often gives me an
+impression of a number. (StringDecimalRat(6283/2000, 3)
+yields "3.141e0".)
+
+Have fun with it -- and don't forget to send me
+the bug reports...
+  Sebastian.
+
+
+
+From joachim.neubueser@math.rwth-aachen.de Wed Sep 11 15:20:39 1996
+Date:           Wed, 11 Sep 96 15:20:39 +0200
+From:           "Joachim Neubueser" <Joachim.Neubueser@Math.RWTH-Aachen.DE>
+Subject:        Interim Report: WWW pages and refereeing
+
+Dear colleagues,
+
+Take the  fact that this  Interim Report comes jointly  from two of us
+from Aachen and  St Andrews as an indication  that cooperating  in the
+preparation of the move of GAP headquarters  from Aachen to St Andrews
+is working well.
+
+In fact a formal agreement about that move has  been set up and signed
+by Joachim Neubueser as Chairman  of Lehrstuhl D fuer Mathematik, RWTH
+Aachen and Michael Atkinson as Head of the  School of Mathematical and
+Computational Sciences of the University of St Andrews.  In this it is
+specified that   the responsibility  and copyright   for  GAP  will be
+tranfereed to St.   Andrews early next  Summer and in  particular that
+GAP will further on  be available free of  charge and with full source
+as detailed in the present copyright.
+
+1. The GAP WWW pages.
+=====================
+
+The first message  of this Interim Report is  that the GAP  WWW pages,
+parts of which have been created in either of the two places, will now
+be administered from St  Andrews. They will be  automatically mirrored
+to four different sites:
+
+     http://www.math.rwth-aachen.de/LDFM/GAP
+     http://www-gap.dcs.st-and.ac.uk/~gap       (for UK)
+     http://www.ccs.neu.edu/Cobwebs/GAP         (for US)
+
+as well  as  a  further mirror at  ANU, Canberra  of which the details
+remain to be confirmed
+
+As you will see,  the first WWW page  now points to various pieces  of
+information about GAP, in particular to:
+
+'an introduction to GAP'
+            allows you to read the GAP Announcement
+
+'the GAP manual'
+            can be read. Note however that this is not the most recent
+            version at present. As told in the GAP forum some time ago
+            Martin Schoenert's  program for the  conversion of the TeX
+            file  for the  manual to html  format  got lost in  a disc
+            crash. It will soon be re-created in St Andrews.
+
+'the GAP distribution'
+            gives pointers  to   the    files   containing   the   GAP
+            distribution.
+
+'recent bug fixes'
+            is a very  important new page since  it summarizes all the
+            bug fixes after the last update that have been sent to the
+            GAP forum.
+
+'about GAP programming conventions'
+            is  still a place holder  and should be read as indicating
+            the intention of Steve Linton to provide such advice.
+
+'the  GAP forum'
+            gives access  to all letters sent to  the GAP forum, which
+            can be read    in chronological order,  or  selecting  the
+            author, or making selections by the subject line.
+
+'Gap related events' and 'other related things'
+            will change frequently.  At  present you find for instance
+            the announcement of  the workshops of the  European Summer
+            of Computational   Group  theory 1997 there,  as   well as
+            pointers to previous Interim Reports.
+
+
+'GAP contributions',
+'GAP   authors',
+'GAP   share  packages',
+'GAP deposited  contributions', and
+'GAP bibliography and   how to cite GAP'
+
+point to  pages emphazising that working  at the development of GAP as
+well as using it are activities within the mathematical community that
+should be  acknowledged as such.  This intention  is also the topic of
+the second part of this Interim Report.
+
+2. Contributions to GAP.
+========================
+
+>From the start of GAP it has been the intention to keep some record of
+who contributed what to  GAP, even  though with  an ever  changing and
+developing program  system  any such attempt  is bound  to be far from
+perfect.
+
+- The names of the main contributors  to the program library appear in
+the GAP banner, some  more information is found in  the heads and  the
+'history' of the files with the GAP code.
+
+- The manual has a list of authors.
+
+- For  the share packages   author names are  given  in the respective
+section of the manual.
+
+- The origins of the  data libraries are  described in the manual; for
+the large library  of character  tables,  which has been put  together
+from many   sources, the record  entry   'text' gives  information for
+individual tables.
+
+- From  time  to time we have   listed in the  Forum the contributions
+deposited by various colleagues in the directory
+             ftp://ftp.math.rwth-aachen.de/pub/incoming
+
+
+As announced in an Interim Report of December  27, 1995 (which you can
+now also read  from the WWW pages),  beginning with this  year we have
+started   a  refereeing system   for  major  contributions  to GAP, an
+enterprise  for which   we could not   fall  back to  experience  made
+elsewhere.  We have now  decided to  use  the new  WWW pages mentioned
+above to provide  something like an  index to a periodical.
+
+-  The WWW  page    'GAP  contributions' explains  the  various   ways
+contributions  can be  made.
+
+-  The  page 'GAP  share packages' gives   the name and   a very short
+indication of the functionality of the package  as well as the name of
+the author.  Number 15, the 'Specht' package of  Andrew Mathas, is the
+first that  has undergone the new refereeing  process, and with it and
+the ones to follow,  also the responsible  editor is named in the form
+'communicated by ...'  which follows frequent usage in periodicals.
+
+- The page 'GAP authors' lists the main contributors to the kernel and
+main library    of  functions.  Eventually     also here    individual
+contributions may be distinguished and editors for these named.
+
+- 'GAP deposited contributions' contains a selection of functions from
+the 'incoming'  directory, that have been  made available  by some GAP
+users to  the whole GAP  community.  These  are  not and will  not  be
+refereed, however authorship  is given in   the same form as with  the
+share packages. This collection may   thus be considered as  something
+like a preprint server for programs.
+
+- 'GAP bibliography'  lists papers that mention use  of  GAP. They are
+sorted   into  two   sections, one    with   papers   in  final  form,
+i.e. publications in journals   and procedings, theses etc,  the other
+papers in preliminary form.
+
+We suggest that you make such papers also available electronically and
+send Steve Linton the   address from which   they can be  read.  These
+addresses can then also be put into the bibliography.
+
+- 'How to cite  GAP'  gives various formats  for  citing GAP  in  papers
+reporting on use of GAP in research or teaching.
+
+*** We want to encourage and ask all users of GAP  to send us relevant
+*** material  for distribution with GAP and/or   inclusion into one of
+*** these pages and the corresponding files. If needed, please contact
+*** us   or  a   member    of    the GAP     Council  or  write     to
+*** gap@math.rwth-aachen.de for closer  advice how  to proceed in  the
+*** different cases.
+
+We also like to say a  few words about  our very first experience with
+the refereeing  process, which is presently  under way with a few more
+submissions.
+
+We have  realized that  the necessity  of cooperation  of the GAP team
+with  the  authors  of contributions is   much   higher than typically
+between the editor of a  periodical and an  author of a paper.  Unlike
+writing papers, in which subject plenty  of advice is available in any
+department, advice on programming, let alone GAP programming, may very
+well  not be available locally. This  may  concern package design, GAP
+conventions,  tips  and tricks to  obtain  efficient  GAP programs, or
+simply the  knowledge of what is already  available in GAP -  we often
+enough  are able to point to  a rather hidden  GAP function which does
+just what a user or prospective author needs.
+
+On the   other hand, such  advice  need  not be  provided by  the same
+people,  or    as part of   the same   formal    process as  the final
+refereeing/validation process.   We therefore encourage people  to get
+in touch with  us early in  the design  of GAP  packages,  and we will
+attempt  to line up "mentors"  to  help them.   Since these would  not
+(necessarily) be referees, there would be no issue of anonymity, which
+would simplify matters.
+
+This is essentially the system that has operated  at Aachen for years,
+where visitors, (or, more rarely, correspondents) would be assigned to
+the care  of  one of the students  or  staff at Lehrstuhl  D,  but now
+operating in a  distributed  fashion. We  also intend  to provide more
+written advice on such matters.  Of course writing  such will take its
+time, but  e.g. the above-mentioned WWW  entry 'About  GAP programming
+conventions' is to provide part of such advice.
+
+Hoping that you  find  some of this  useful  and wishing you  fun and
+success using GAP,
+
+Steve Linton and Joachim Neubueser
+
+
+
+From pbrown@math.berkeley.edu Wed Sep 11 09:34:29 1996
+Date:           Wed, 11 Sep 96 09:34:29 -0700
+From:           "Paul Robert Brown" <pbrown@math.berkeley.edu>
+Subject:        Laplacian for graphs?
+
+Dear Forum,
+
+Does anyone out there have a program to compute the eigenvalues of the
+Laplacian on a graph? I find an "eigenvalues" function, but it is for
+character tables. I'm after a way to get reasonable rational
+approximations to the eigenvalues of a matrix related to the incidence
+matrix. (Newton's method would be fine.)
+
+
+Many thanks.
+
+Paul Brown
+
+
+
+From martin.schoenert@math.rwth-aachen.de Fri Sep 13 16:59:00 1996
+Date:           Fri, 13 Sep 96 16:59:00 +0100 (MET)
+From:           "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:        FIX   21 for minor     bug in GAP/lib 3.4.3.13 'AbelianInvariants'
+
+    This mail contains a fix for a minor problem in GAP/lib 3.4.3.13.
+    The problem is in 'AbelianInvariants' and causes it to return elementary
+    divisors instead of abelian invariants, e.g. [6] instead of [2,3].
+
+
+VERSION
+
+    GAP/lib 3.4.3.13
+    Before applying this fix you *must* already have applied fix08lib and
+    fix013lib.
+
+
+PRIORITY
+
+    The problem is a minor problem, because the result is ``almost correct''.
+    Thus the fix has low priority.
+
+
+HOW TO APPLY
+
+    Go to the GAP directory (the directory with the 'lib/' subdirectory),
+    name this mail 'fix21lib.dif', and issue the command:
+
+        patch -p0 < fix21lib.dif
+
+    If 'patch' writes "I can't seem to find a patch in there" try 'patch -v'.
+    If 'patch -v' gives an error message or reports a version older than 2.1,
+    get 2.1 from 'ftp://FTP.Math.RWTH-Aachen.DE/pub/gap/utils/patch2_1.zoo'.
+
+    This fix changes only the library.
+    Thus you need not recompile the GAP kernel.
+
+
+DESCRIPTION
+
+    'AbelianInvariants' may return elementary divisors instead of abelian
+    invariants, i.e., a list where each element divides the next instead of
+    a list of prime powers.
+
+
+
+CORRECT BEHAVIOUR
+
+gap> F1 := FreeGroup( 1 );;
+gap> AbelianInvariants( F1 / [ F1.1^6 ] );
+[ 2, 3 ]
+
+
+COMMENT
+
+    The manual entry for 'AbelianInvariants' does not define the order of the
+    result list.  This change makes 'AbelianInvariants' return a sorted list,
+    especially the 0 (for the infinite subgroups) are at the beginning.
+
+
+DIFFS
+
+Prereq: 3.42.1.3
+--- lib/init.g  Thu Dec 21 15:30:18 1995
++++ lib/init.g  Thu Sep 12 16:14:30 1996
+@@ -2,7 +2,7 @@
+ ##
+ #A  init.g                      GAP library                  Martin Schoenert
+ ##
+-#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+@@ -12,7 +12,10 @@
+ ##  edit it.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.42.1.3  1995/12/20  18:05:28  mschoene
++#H  Revision 3.42.1.4  1996/09/12 14:14:14  mschoene
++#H  added 'AbelianInvariantsOfList'
++#H
++#H  Revision 3.42.1.3  1995/12/20 18:05:28  mschoene
+ #H  changed for third update
+ #H
+ #H  Revision 3.42.1.2  1995/05/18  07:55:06  mschoene
+@@ -733,13 +736,15 @@
+ AUTO( ReadLib( "matrix" ),
+   IsMatrix, MatricesOps, Matrices, DimensionsMat, IdentityMat, NullMat,
+   RandomMat, RandomInvertableMat, RandomUnimodularMat, TransposedMat,
+-  PermutationMat, InvariantForm, OrderMatLimit, OrderMat, TraceMat, RankMat,
+-  DeterminantMat, TriangulizeMat, BaseMat, SemiEchelonMat,
++  PermutationMat, InvariantForm, OrderMatLimit, OrderMat, DiagonalOfMat,
++  TraceMat, RankMat, DeterminantMat, TriangulizeMat, BaseMat, SemiEchelonMat,
+   InducedActionSpaceMats, SumIntersectionMat, BaseFixedSpace, NullspaceMat,
+-  NullspaceModQ, SimultaneousEigenvalues, BaseNullspace, DiagonalizeMat,
+-  ElementaryDivisorsMat, SolutionMat, FieldMatricesOps, FieldMatrices,
+-  MinimalPolynomial, CharacteristicPolynomial, FiniteFieldMatricesOps,
+-  FiniteFieldMatrices );
++  NullspaceModQ, SimultaneousEigenvalues, BaseNullspace, BestQuoInt,
++  DiagonalizeIntMatNormDriven, DiagonalizeIntMat, DiagonalizeMat,
++  DiagonalFormMat, SmithNormalizeMat, SmithNormalFormMat,
++  ElementaryDivisorsMat, ElementaryDivisorsOfList, AbelianInvariantsOfList,
++  SolutionMat, FieldMatricesOps, FieldMatrices, MinimalPolynomial,
++  CharacteristicPolynomial, FiniteFieldMatricesOps, FiniteFieldMatrices );
+
+ AUTO( ReadLib( "module" ),
+   IsModule, IsFactorModule, ModuleOps, Module, NaturalModule, IsNaturalModule,
+--- lib/matrix.g        Thu Sep 12 16:17:04 1996
++++ lib/matrix.g        Thu Sep 12 16:01:13 1996
+@@ -2,14 +2,17 @@
+ ##
+ #A  matrix.g                    GAP library                  Martin Schoenert
+ ##
+-#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+ ##  This file contains  those  functions  that  mainly  deal  with  matrices.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.33.1.2  1996/05/06  12:20:27  mschoene
++#H  Revision 3.33.1.3  1996/09/12 13:52:04  mschoene
++#H  fixed handling of abelian invariants
++#H
++#H  Revision 3.33.1.2  1996/05/06 12:20:27  mschoene
+ #H  changed 'DiagonalizeMat' to use norms to select the pivot
+ #H
+ #H  Revision 3.33.1.1  1994/08/24  15:22:00  sam
+@@ -712,6 +715,30 @@
+
+ #############################################################################
+ ##
++#F  DiagonalOfMat(<mat>)  . . . . . . . . . . . . . . . .  diagonal of matrix
++##
++##  'DiagonalOfMat' returns  the diagonal of  the matrix <mat>.  The diagonal
++##  has the same length  as the rows  of <mat>, it  is padded with  zeroes if
++##  <mat> has fewer rows than columns.
++##
++DiagonalOfMat := function ( mat )
++    local   diag, i;
++    diag := [];
++    i := 1;
++    while i <= Length(mat) and i <= Length(mat[1]) do
++        diag[i] := mat[i][i];
++        i := i + 1;
++    od;
++    while 1 <= Length(mat) and i <= Length(mat[1]) do
++        diag[i] := mat[1][1] - mat[1][1];
++        i := i + 1;
++    od;
++    return diag;
++end;
++
++
++#############################################################################
++##
+ #F  TraceMat( <mat> ) . . . . . . . . . . . . . . . . . . . trace of a matrix
+ ##
+ TraceMat := function ( mat )
+@@ -1695,41 +1722,107 @@
+
+ #############################################################################
+ ##
+-#F  DiagonalizeMat(<mat>) . . . . . . . . . . . . . . .  diagonalize a matrix
++#F  DiagonalizeMat(<mat>) . . . . . . . . . . convert matrix to diagonal form
++##
++##  'DiagonalizeMat'  converts   the   matrix  <mat>   to diagonal  form  via
++##  elementary  row and  column operations.   Note that  the diagonal form is
++##  generally not unique (see "SmithNormalizeMat").
+ ##
+-#N  1996/05/06 mschoene should be extended for other rings
++#N  1996/05/06 M.Schoenert should be extended for other rings
+ ##
+ DiagonalizeMat := DiagonalizeIntMat;
+
+
+ #############################################################################
+ ##
+-#F  ElementaryDivisorsMat(<mat>)  . . . . . . elementary divisors of a matrix
++#F  DiagonalFormMat(<mat>)  . . . . . . . . . . .  equivalent diagonal matrix
+ ##
+-##  'ElementaryDivisors' returns a list of the elementary divisors, i.e., the
+-##  unique <d> with '<d>[<i>]' divides '<d>[<i>+1]' and <mat>  is  equivalent
+-##  to a diagonal matrix with the elements '<d>[<i>]' on the diagonal.
++##  'DiagonalFormMat' returns a diagonal  matrix <diag> that is equivalent to
++##  the matrix  <mat>.  Note that the  diagonal form  is generally not unique
++##  (see "SmithNormalFormMat").
+ ##
+-ElementaryDivisorsMat := function ( mat )
+-    local  divs, gcd, zero, m, n, i, k;
++DiagonalFormMat := function ( mat )
++    local   copy;
++    copy := List( mat, ShallowCopy );
++    DiagonalizeMat( copy );
++    return copy;
++end;
+
+-    # make a copy to avoid changing the original argument
+-    mat := Copy( mat );
+-    m := Length(mat);  n := Length(mat[1]);
+
+-    # diagonalize the matrix
++#############################################################################
++##
++#F  SmithNormalizeMat(<mat>)  . . . . . . convert matrix to Smith normal form
++##
++##  'SmithNormalizeMat' converts the  matrix <mat> to  Smith normal form  via
++##  elementary row   and column  operations.   The Smith  normal form  is the
++##  unique diagonal matrix where each diagonal entry divides the next one.
++##
++SmithNormalizeMat := function ( mat )
++    local   zero, gcd, i, k, l;
+     DiagonalizeMat( mat );
++    l := Length(mat);
++    if 0 < l and Length(mat[1]) < l then l := Length(mat[1]); fi;
++    if 0 < l then zero := mat[1][1] - mat[1][1]; fi;
++    for i  in [1..l-1]  do
++        for k  in [i+1..l] do
++            if mat[i][i] = zero and mat[k][k] <> zero  then
++                mat[i][i] := mat[k][k];
++                mat[k][k] := zero;
++            elif mat[i][i] <> zero
++              and EuclideanRemainder( mat[k][k], mat[i][i] ) <> zero  then
++                gcd     := Gcd( mat[i][i], mat[k][k] );
++                mat[k][k] := mat[k][k] / gcd * mat[i][i];
++                mat[i][i] := gcd;
++            fi;
++        od;
++        mat[i][i] := StandardAssociate( mat[i][i] );
++    od;
++end;
++
+
+-    # get the diagonal elements
+-    divs := [];
+-    for i  in [1..Minimum(m,n)]  do
+-        divs[i] := mat[i][i];
+-    od;
+-    if divs <> []  then zero := divs[1] - divs[1];  fi;
+-
+-    # transform the divisors so that every divisor divides the next
+-    for i  in [1..Length(divs)-1]  do
+-        for k  in [i+1..Length(divs)]  do
++#############################################################################
++##
++#F  SmithNormalFormMat(<mat>) . . . . . . equivalent Smith normal form matrix
++##
++##  'SmithNormalFormMat'  returns the Smith norm  form  matrix <new> that  is
++##  equivalent to the  matrix  <mat>.  The   Smith  norm form is   the unique
++##  diagonal matrix where each diagonal entry divides the next one.
++##
++SmithNormalFormMat := function ( mat )
++    local   copy;
++    copy := List( mat, ShallowCopy );
++    SmithNormalizeMat( copy );
++    return copy;
++end;
++
++
++#############################################################################
++##
++#F  ElementaryDivisorsMat(<mat>)  . . . . . . elementary divisors of a matrix
++##
++##  'ElementaryDivisors' returns  a  list of  the elementary  divisors of the
++##  matrix <mat>.   The elementary  divisors    are the unique   <divs>  with
++##  '<divs>[<i>]' divides  '<divs>[<i>+1]'  and   <mat> is equivalent   to  a
++##  diagonal matrix with the elements '<divs>[<i>]'  on the diagonal.  <divs>
++##  has the  same length as  the rows of <mat>,  it is padded  with zeroes if
++##  <mat> has fewer rows than columns.
++##
++ElementaryDivisorsMat := function ( mat )
++    return DiagonalOfMat( SmithNormalFormMat( mat ) );
++end;
++
++
++#############################################################################
++##
++#F  ElementaryDivisorsOfList(<list>)  . . . . . elementary divisors of a list
++##
++ElementaryDivisorsOfList := function ( list )
++    local   divs, zero, gcd, i, k, l;
++    divs := ShallowCopy( list );
++    l := Length(divs);
++    if 0 < l then zero := divs[1] - divs[1]; fi;
++    for i  in [1..l-1]  do
++        for k  in [i+1..l]  do
+             if divs[i] = zero and divs[k] <> zero  then
+                 divs[i] := divs[k];
+                 divs[k] := zero;
+@@ -1742,8 +1835,28 @@
+         od;
+         divs[i] := StandardAssociate( divs[i] );
+     od;
+-
+     return divs;
++end;
++
++
++#############################################################################
++##
++#F  AbelianInvariantsOfList(<list>) . . . . . .  abelian invariants of a list
++##
++AbelianInvariantsOfList := function ( list )
++    local   invs, elm;
++    invs := [];
++    for elm in list do
++        if elm = 0 then
++            Add( invs, 0 );
++        elif 1 < elm then
++            Append( invs, List( Collected(Factors( elm)), x->x[1]^x[2] ) );
++        elif elm < -1 then
++            Append( invs, List( Collected(Factors(-elm)), x->x[1]^x[2] ) );
++        fi;
++    od;
++    Sort( invs );
++    return invs;
+ end;
+
+
+--- lib/fpgrp.g Thu Sep 12 16:17:09 1996
++++ lib/fpgrp.g Thu Sep 12 16:03:57 1996
+@@ -2,14 +2,17 @@
+ ##
+ #A  fpgrp.g                     GAP library                  Martin Schoenert
+ ##
+-#H  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#H  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+ ##  This file contains the  functions dealing with finitely presented groups.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.23.1.11  1996/06/11  14:48:40  mschoene
++#H  Revision 3.23.1.12  1996/09/12 13:52:04  mschoene
++#H  fixed handling of abelian invariants
++#H
++#H  Revision 3.23.1.11  1996/06/11 14:48:40  mschoene
+ #H  fixed '.preimage' to '.preImage'
+ #H
+ #H  Revision 3.23.1.10  1995/11/25  22:42:44  mschoene
+@@ -1659,17 +1662,12 @@
+ #F                                                           fin. pres. group
+ ##
+ FpGroupOps.AbelianInvariants := function ( G )
+-
+-    local   abl,        # abelian invariants of <G>, result
+-            mat,        # relation matrix of <G>
++    local   mat,        # relation matrix of <G>
+             row,        # one row of <mat>
+             rel,        # one relation of <G>
+             g,          # one letter of <rel>
+             p,          # position of <g> or its inverse in '<G>.generators'
+-            i,          # loop variable
+-            divs,      # elementary divisors
+-           gcd,        # extended gcd
+-           m, n, k;
++            i;          # loop variable
+
+     # If G is a subgroup of a finitely presented group, find a
+     # presentation for G first.
+@@ -1705,36 +1703,8 @@
+     # diagonalize the matrix
+     DiagonalizeMat( mat );
+
+-    # get the diagonal elements
+-    m := Length(mat);
+-    n := Length(mat[1]);
+-    divs := [];
+-    for i  in [1..Minimum(m,n)]  do
+-        divs[i] := mat[i][i];
+-    od;
+-    for i  in [Minimum(m,n)+1..n]  do
+-        divs[i] := 0;
+-    od;
+-
+-    # transform the divisors so that every divisor divides the next
+-    for i  in [1..Length(divs)-1]  do
+-        for k  in [i+1..Length(divs)]  do
+-            if divs[i] <> 0  and divs[k] mod divs[i] <> 0  then
+-                gcd     := GcdInt( divs[i], divs[k] );
+-                divs[k] := divs[k] / gcd * divs[i];
+-                divs[i] := gcd;
+-            fi;
+-        od;
+-    od;
+-
+-    # and return the ablian invariants
+-    abl := [];
+-    for i  in divs  do
+-        if i <> 1  then
+-            Add( abl, i );
+-        fi;
+-    od;
+-    return abl;
++    # return the abelian invariants
++    return AbelianInvariantsOfList( DiagonalOfMat( mat ) );
+ end;
+
+
+--- lib/fpsgpres.g      Thu Dec 21 15:30:12 1995
++++ lib/fpsgpres.g      Thu Sep 12 16:06:01 1996
+@@ -2,7 +2,7 @@
+ ##
+ #A  fpsgpres.g                GAP library                      Volkmar Felsch
+ ##
+-#H  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#H  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+@@ -10,7 +10,10 @@
+ ##  finitely presented groups.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.9.1.2  1995/11/25  15:51:34  mschoene
++#H  Revision 3.9.1.3  1996/09/12 13:52:04  mschoene
++#H  fixed handling of abelian invariants
++#H
++#H  Revision 3.9.1.2  1995/11/25 15:51:34  mschoene
+ #H  cleaned up the handling of involutory generators
+ #H
+ #H  Revision 3.9.1.1  1994/08/22  09:46:33  vfelsch
+@@ -1606,28 +1609,9 @@
+ ##  presented group G.
+ ##
+ AbelianInvariantsSubgroupFpGroupMtc := function ( G, H )
+-
+-    local invar, i, j, leng, m;
+-
+-    m := RelatorMatrixAbelianizedSubgroupMtc( G, H );
+-    if m = [ ] then
+-        invar := [ ];
+-    else
+-        invar := ElementaryDivisorsMat( m );
+-    fi;
+-
+-    # remove trivial entries (i.e. ones) from invar.
+-    leng := Length( invar );
+-    i := 0;
+-    for j in [ 1 .. leng ] do
+-        if invar[j] <> 1 then
+-            i := i + 1;
+-            invar[i] := invar[j];
+-        fi;
+-    od;
+-    if i < leng then  invar := Sublist( invar, [ 1 .. i ] );  fi;
+-
+-    return invar;
++    return AbelianInvariantsOfList(
++                ElementaryDivisorsMat(
++                    RelatorMatrixAbelianizedSubgroupMtc( G, H ) ) );
+ end;
+
+
+@@ -1696,28 +1680,9 @@
+ ##  by its coset table.
+ ##
+ AbelianInvariantsSubgroupFpGroupRrs := function ( G, H )
+-
+-    local invar, i, j, leng, m;
+-
+-    m := RelatorMatrixAbelianizedSubgroupRrs( G, H );
+-    if m = [ ] then
+-        invar := [ ];
+-    else
+-        invar := ElementaryDivisorsMat( m );
+-    fi;
+-
+-    # remove trivial entries (i.e. ones) from invar.
+-    leng := Length( invar );
+-    i := 0;
+-    for j in [ 1 .. leng ] do
+-        if invar[j] <> 1 then
+-            i := i + 1;
+-            invar[i] := invar[j];
+-        fi;
+-    od;
+-    if i < leng then  invar := Sublist( invar, [ 1 .. i ] );  fi;
+-
+-    return invar;
++    return AbelianInvariantsOfList(
++                ElementaryDivisorsMat(
++                    RelatorMatrixAbelianizedSubgroupRrs( G, H ) ) );
+ end;
+
+ AbelianInvariantsSubgroupFpGroup := AbelianInvariantsSubgroupFpGroupRrs;
+@@ -1807,28 +1772,9 @@
+ ##  of a subgroup H of a finitely presented group G.
+ ##
+ AbelianInvariantsNormalClosureFpGroupRrs := function ( G, H )
+-
+-    local invar, i, j, leng, m;
+-
+-    m := RelatorMatrixAbelianizedNormalClosureRrs( G, H );
+-    if m = [ ] then
+-        invar := [ ];
+-    else
+-        invar := ElementaryDivisorsMat( m );
+-    fi;
+-
+-    # remove trivial entries (i.e. ones) from invar.
+-    leng := Length( invar );
+-    i := 0;
+-    for j in [ 1 .. leng ] do
+-        if invar[j] <> 1 then
+-            i := i + 1;
+-            invar[i] := invar[j];
+-        fi;
+-    od;
+-    if i < leng then  invar := Sublist( invar, [ 1 .. i ] );  fi;
+-
+-    return invar;
++    return AbelianInvariantsOfList(
++                ElementaryDivisorsMat(
++                    RelatorMatrixAbelianizedNormalClosureRrs( G, H ) ) );
+ end;
+
+ AbelianInvariantsNormalClosureFpGroup :=
+--- lib/chartabl.g      Thu Dec 21 15:29:58 1995
++++ lib/chartabl.g      Thu Sep 12 16:07:30 1996
+@@ -3,14 +3,17 @@
+ #A  chartabl.g                  GAP library                     Thomas Breuer
+ #A                                                           & Goetz Pfeiffer
+ ##
+-#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1993-1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+ ##  This file contains functions and operations for character tables in GAP.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.4  1994/06/10  04:45:27  sam
++#H  Revision 3.4.1.1  1996/09/12 13:52:04  mschoene
++#H  fixed handling of abelian invariants
++#H
++#H  Revision 3.4  1994/06/10 04:45:27  sam
+ #H  improved 'PrintCharTable'
+ #H
+ #H  Revision 3.3  1994/05/25  10:38:43  sam
+@@ -596,7 +599,7 @@
+
+     od;
+
+-    return Set( inv );
++    return AbelianInvariantsOfList( inv );
+
+     end;
+
+END OF  fix21lib.dif ________________________________________________________
+
+
+
+From thomas.breuer@math.rwth-aachen.de Fri Sep 13 17:15:00 1996
+Date:           Fri, 13 Sep 96 17:15:00 +0100 (MET)
+From:           "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:        FIX   22 for serious bug in GAP/lib 3.4.3.0 'MTXOps.EquivalenceTest'
+
+    This mail contains a bugfix for a serious problem in GAP 3.4.3.
+    You should apply this bugfix soon.
+    The problem is in 'MTXOps.EquivalenceTest', and causes it to fail.
+
+
+VERSION
+
+    GAP/lib 3.4.3.0
+
+
+PRIORITY
+
+    The problem is a serious problem, because it may cause a computation to
+    fail.  Thus the bugfix has medium priority, and we recommend that you
+    apply it soon.
+
+
+HOW TO APPLY
+
+    Go to the GAP directory (the directory with the 'lib/' subdirectory),
+    name this mail 'fix22lib.dif', and issue the command:
+
+        patch -p0 < fix22lib.dif
+
+    If 'patch' writes "I can't seem to find a patch in there" try 'patch -v'.
+    If 'patch -v' gives an error message or reports a version older than 2.1,
+    get 2.1 from 'ftp://FTP.Math.RWTH-Aachen.DE/pub/gap/utils/patch2_1.zoo'.
+
+    This fix changes only the library.
+    Thus you need not recompile the GAP kernel.
+
+
+DESCRIPTION
+
+    'MTXOps.EquivalenceTest' fails and signals
+
+        Error, Length: <list> must be a list at
+        until Length( base ) = module_descr1[3]
+           or line > enum.numberLines ... in
+        MTXOps.EquivalenceTest( d1, d2 ) called from
+        main loop
+
+
+CORRECT BEHAVIOUR
+
+gap> d1:= [ [ [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ],
+>           [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] ], GF(2), 2 ];;
+gap> d2:= [ [ [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ],
+>           [ [ Z(2)^0, 0*Z(2) ], [ Z(2)^0, Z(2)^0 ] ] ], GF(2), 2 ];;
+gap> MTXOps.EquivalenceTest( d1, d2 );
+rec(
+  areequivalent := true,
+  transformationMatrix := [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+
+
+COMMENT
+
+    'MTXOps.EquivalenceTest' calls 'SpinUpStandard', which returns a record.
+    This record was used in the following computations, instead of its
+    'vectors' component.
+
+
+DIFFS
+
+Prereq: 3.20.1.5
+--- lib/matgrp.g        Thu Sep  5 13:50:11 1996
++++ lib/matgrp.g        Fri Sep 13 13:57:48 1996
+@@ -2,7 +2,7 @@
+ ##
+ #A  matgrp.g                    GAP library                  Martin Schoenert
+ ##
+-#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+@@ -22,6 +22,10 @@
+ ##  matrices, which means the algebra generated by the identity matrix.)
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
++#H  Revision 3.20.1.6  1996/09/13 11:56:50  sam
++#H  'MTXOps.EquivalenceTest' needs only the 'vectors' component of the
++#H  record returned by 'SpinUpStandard'
++#H
+ #H  Revision 3.20.1.5  1995/11/22  12:12:47  sam
+ #H  made MeatAxe functions independent of MatGroupOps
+ #H
+@@ -1701,7 +1705,8 @@
+     enum := LineEnumeration( ns1 );
+     line := 1;
+     repeat
+-        base := SpinUpStandard( [ enum.line( line ) ], module_descr1[1] );
++        base := SpinUpStandard( [ enum.line( line ) ],
++                                module_descr1[1] ).vectors;
+         line := line + 1;
+     until Length( base ) = module_descr1[3] or line > enum.numberLines;
+
+@@ -1712,7 +1717,8 @@
+
+         repeat
+
+-            base := SpinUpStandard( [ enum.line( line ) ], module_descr2[1] );
++            base := SpinUpStandard( [ enum.line( line ) ],
++                                    module_descr2[1] ).vectors;
+             line := line + 1;
+
+             if Length( base ) = module_descr2[3] then
+END OF  fix22lib.dif ________________________________________________________
+
+
+
+From wdg@win.tue.nl Wed Sep 18 10:48:07 1996
+Date:           Wed, 18 Sep 96 10:48:07 +0200
+From:           "Willem A. de Graaf" <wdg@win.tue.nl>
+Subject:        Factors
+
+Dear forum,
+
+Probably the following problem is well known, but maybe it is
+worthwhile to state it again.
+When given an "ugly" polynomial, the function Factors behaves in a strange way.
+It does not seem to recognize that some factors are reducible.
+Consider the following example:
+
+gap> y:=Indeterminate(Rationals);; y.name:="y";;
+
+gap> f:=
+y^33 - 398550*y^31 + 66186201873*y^29 - 5971817014857100*y^27 +
+319879423075055974416*y^25 - 10453569133068665704152000*y^23 +
+207491014558959631527689015040*y^21 -
+2448295340120142096293200047744000*y^19 +
+16690739160259700445725003902608322560*y^17 -
+62701173265160849595209547823580350464000*y^15 +
+118869582948995926691687807245961904820322304*y^13 -
+95752347343101572852967993673317241915126579200*y^11 +
+22338679946180069821565185491251863734781426532352*y^9 -
+611471306080989784227382973634662004989868009062400*y^7 +
+5410092199316503850833490994152109788519901066952704*y^5 -
+16075861728797055597248567344887907079321523585024000*y^3 +
+11254997789155806098371908864638669722435410984960000*y;
+
+gap> fac:=Factors(f);
+[ y - 2, y - 1, y + 1, y + 2, y + 3, y + 4, y + 18, y + 36, y + 54, y + 72,
+  y + 90, y + 108, y + 162, y + 216, y + 234, y + 252, y + 270, y + 324,
+  y^14 - 1843*y^13 + 1499052*y^12 - 709215588*y^11 + 216597983904*y^10 -
+    44820883529424*y^9 + 6420879462453696*y^8 - 639652453551705024*y^7 +
+    43898005996819409664*y^6 - 2025953383611993090048*y^5 +
+    60198152116012529098752*y^4 - 1069493914496483223257088*y^3 +
+    10001847348623751012089856*y^2 - 39533155087560633624821760*y +
+    53044787182992369175756800, y ]
+
+#A factor of 'f' factorizes:
+
+gap> g:=fac[19];
+y^14 - 1843*y^13 + 1499052*y^12 - 709215588*y^11 + 216597983904*y^10 -
+44820883529424*y^9 + 6420879462453696*y^8 - 639652453551705024*y^7 +
+43898005996819409664*y^6 - 2025953383611993090048*y^5 +
+60198152116012529098752*y^4 - 1069493914496483223257088*y^3 +
+10001847348623751012089856*y^2 - 39533155087560633624821760*y +
+53044787182992369175756800
+
+gap> Factors(g);
+[ y - 324, y - 270, y - 252, y - 234, y - 216, y - 162, y - 108, y - 90,
+  y - 72, y - 54, y - 36, y - 18, y - 4, y - 3 ]
+
+
+Is this behaviour due to a bug, or to the ugly input? Can anybody tell me
+a good way to obtain a list of irreducible factors?
+
+Many thanks,
+
+Willem de Graaf
+wdg@win.tue.nl
+
+
+
+From thomas.breuer@math.rwth-aachen.de Wed Sep 18 11:39:00 1996
+Date:           Wed, 18 Sep 96 11:39:00 +0100 (MET)
+From:           "Thomas Breuer" <Thomas.Breuer@Math.RWTH-Aachen.DE>
+Subject:        FIX   23 for DANGEROUS BUG in GAP 3.4.3.0  'IsSubset'
+
+    This mail contains a bugfix for a dangerous problem in GAP 3.4.3.
+    *You should apply this bugfix as soon as possible*.
+    The problem is in 'FieldOps.IsSubset', and causes it to produce
+    wrong results in some cases.
+
+
+ACKNOWLEDGEMENT
+
+    We thank Richard Rossmanith (University of Jena) for bringing this
+    problem to our attention in a message to 'GAP-Trouble' of 1996/09/13.
+
+
+VERSION
+
+    GAP/lib 3.4.3.0
+
+
+PRIORITY
+
+    The problem is a *dangerous* problem, because it may cause
+    a computation to produce incorrect results without a warning.
+    Thus the bugfix has *high priority*, and we recommend that
+    you apply it as soon as possible.
+
+
+HOW TO APPLY
+
+    Go to the GAP directory (the directory with the 'lib/' subdirectory),
+    name this mail 'fix23lib.dif', and issue the command:
+
+        patch -p0 < fix23lib.dif
+
+    If 'patch' writes "I can't seem to find a patch in there" try 'patch -v'.
+    If 'patch -v' gives an error message or reports a version older than 2.1,
+    get 2.1 from 'ftp://FTP.Math.RWTH-Aachen.DE/pub/gap/utils/patch2_1.zoo'.
+
+    This fix changes only the library.
+    Thus you need not recompile the GAP kernel.
+
+
+DESCRIPTION
+
+    When 'IsSubset' is called with two arguments, one of them a field
+    and the other not a field, the result is correct only if the two
+    arguments are equal.
+
+    gap> IsSubset( GF(2), [ One(GF(2)) ] );
+    false
+
+
+CORRECT BEHAVIOUR
+
+gap> IsSubset( GF(2), [ Z(2) ] );
+true
+
+
+COMMENT
+
+    When 'IsSubset' is called with two arguments, one of them a field
+    and the other not a field, it delegated to 'DomainOps.\=' instead of
+    'DomainOps.IsSubset'.
+
+
+DIFFS
+
+Prereq: 3.16.1.1
+--- lib/field.g Mon Sep 16 11:11:10 1996
++++ lib/field.g Mon Sep 16 11:34:02 1996
+@@ -2,14 +2,17 @@
+ ##
+ #A  field.g                     GAP library                  Martin Schoenert
+ ##
+-#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+ ##  This file contains  those  functions  that  are  dispatcher  for  fields.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.16.1.1  1995/08/03  09:37:06  ahulpke
++#H  Revision 3.16.1.2  1996/09/16 09:33:35  sam
++#H  fixed bug in 'FieldOps.IsSubset' (delegated to 'DomainOps.\=')
++#H
++#H  Revision 3.16.1.1  1995/08/03 09:37:06  ahulpke
+ #H  changed 'Copy(coeffs)' to 'ShallowCopy(coeffs)'
+ #H
+ #H  Revision 3.16  1994/05/06  12:42:09  sam
+@@ -135,16 +138,16 @@
+         elif IsField( G )  then
+             isSub := false;
+        else
+-            isSub := DomainOps.\=( F, G );
++            isSub := DomainOps.IsSubset( F, G );
+         fi;
+     elif IsField( F )  then
+         if IsField( G )  then
+             isSub := ForAll( G.generators, g -> g in F );
+        else
+-            isSub := DomainOps.\=( F, G );
++            isSub := DomainOps.IsSubset( F, G );
+         fi;
+     else
+-        isSub := DomainOps.\=( F, G );
++        isSub := DomainOps.IsSubset( F, G );
+     fi;
+     return isSub;
+ end;
+END OF  fix23lib.dif ________________________________________________________
+
+
+
+From richard@maxp03.mathe.uni-jena.de Wed Sep 18 18:42:13 1996
+Date:           Wed, 18 Sep 96 18:42:13 +0200
+From:           "Richard Rossmanith" <richard@maxp03.mathe.uni-jena.de>
+Subject:        Gaps in GAP's functions for polynomials
+
+Dear Gap-Forum,
+
+I have encountered two small gaps in GAP's functions that deal (or rather,
+refuse to deal) with polynomials:
+
+1. The HTML-GAP-Manual, Release 3.4 (10. Jul. 1994), states that
+> there is no generic way to test whether a [Ring] element is irreducible.
+Yes, there is:
+
+RingOps.IsIrreducible:=function(arg)
+  if Length(arg)=1 then
+    return Length(Factors(arg[1]))=1;
+  elif Length(arg)=2 then
+    return Length(Factors(arg[1],arg[2]))=1;
+  else
+    Error("Wrong number of arguments");
+  fi;
+end;
+
+
+2. Usually, you use a list to define a polynomial. But maybe later on, you want
+the list back, and you want that simply by using the command List(p). (E.g. I
+wanted to construct the companion matrix of a polynomial.) The following patch
+for List allows this:
+
+List:=function ( arg )
+    local  lst, i, fun;
+    if Length( arg ) = 1  then
+        if IsString( arg[1] )  then
+            lst := [  ];
+            for i  in [ 1 .. LengthString( arg[1] ) ]  do
+                lst[i] := SubString( arg[1], i, i );
+            od;
+        elif IsList( arg[1] )  then
+            lst := arg[1];
+        elif IsPerm( arg[1] )  then
+            lst := [  ];
+            for i  in [ 1 .. LargestMovedPointPerm( arg[1] ) ]  do
+                lst[i] := i ^ arg[1];
+            od;
+        elif IsWord( arg[1] )  then
+            lst := [  ];
+            for i  in [ 1 .. LengthWord( arg[1] ) ]  do
+                lst[i] := Subword( arg[1], i, i );
+            od;
+        elif IsPolynomial( arg[1] )  then   #  *** THIS IS ***
+            lst := arg[1].coefficients;     #  *** NEW !!! ***
+        else
+            Error( "can't convert ", arg[1], " into a list" );
+        fi;
+    elif Length( arg ) = 2 and IsList( arg[1] ) and IsFunc( arg[2] )  then
+        lst := [  ];
+        fun := arg[2];
+        for i  in [ 1 .. Length( arg[1] ) ]  do
+            lst[i] := fun( arg[1][i] );
+        od;
+    else
+        Error( "usage: List( <obj> ) or List( <list>, <func> )" );
+    fi;
+    return lst;
+end;
+
+
+         Regards,  Richard
+
+
+_______________________________________________________________________________
+ richard rossmanith
+ http://www.minet.uni-jena.de/~richard/
+
+
+
+From richard@maxp03.mathe.uni-jena.de Wed Sep 18 19:05:37 1996
+Date:           Wed, 18 Sep 96 19:05:37 +0200
+From:           "Richard Rossmanith" <richard@maxp03.mathe.uni-jena.de>
+Subject:        Re: Gaps in GAP's functions for polynomials
+
+Dear Gap-Forum,
+
+the second suggestion in the letter I just sent, changing the List function to
+get the coefficients list of a polynomial, doesn't seem to work as nicely as I
+intended, since when defining a polynomial, there seems to be a degree shift to
+make the list smaller. There is certainly a workaround for that problem, but
+that would be too non-canonical then (since also negative powers are allowed),
+so maybe you don't want to change the List function at all.
+
+So maybe just forget my second suggestion, but check out the first...
+
+Bye,
+
+Richard
+
+_______________________________________________________________________________
+ richard rossmanith
+ http://www.minet.uni-jena.de/~richard/
+
+
+
+From alexander.hulpke@math.rwth-aachen.de Wed Sep 18 19:21:30 1996
+Date:           Wed, 18 Sep 96 19:21:30 +0200
+From:           "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:        Re: Factors
+
+Dear GAP-Forum,
+
+Willem de Graaf wrote:
+> Probably the following problem is well known, but maybe it is
+> worthwhile to state it again.
+
+It is in fact an error that I was not yet aware of. Actually a routine to
+weed out unusable trial factors is too clever and even weeds out usable
+factors.
+I'm currently at a conference but will look closer at this bug as soon as
+I'm back to Aachen.
+
+> Is this behaviour due to a bug, or to the ugly input? Can anybody tell me
+> a good way to obtain a list of irreducible factors?
+'Factors' should return a list of the irreducible factors. I will send a
+bugfix as soon as it is ready.
+
+Best regards,
+
+Alexander Hulpke
+
+
+
+From martin.schoenert@math.rwth-aachen.de Thu Sep 19 17:10:00 1996
+Date:           Thu, 19 Sep 96 17:10:00 +0100 (MET)
+From:           "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:        FIX   24 for DANGEROUS bug in GAP/lib 3.4.3.0  permutation groups
+
+    This mail contains a bugfix for a dangerous problem in GAP 3.4.3.
+    *You should apply this bugfix as soon as possible*.
+    The problem is in permutation group normalizer, centralizer, stabilizer,
+    and intersection.  They produce correct results, but if one does further
+    computations with the results, one may get incorrect results.
+
+
+ACKNOWLEDGEMENT
+
+    We thank Erzsebet Horvath (Budapest Technical University) for bringing
+    the problem to our attention via private communication in September 1996.
+
+
+VERSION
+
+    GAP/lib 3.4.3.0
+
+
+PRIORITY
+
+    The problem is a dangerous problem, because it may cause a computation
+    to produce incorrect results without a warning.  Thus the bugfix has
+    high priority, and we recommend that you apply it as soon as possible.
+
+
+HOW TO APPLY
+
+    Go to the GAP directory (the directory with the 'lib/' subdirectory),
+    name this mail 'fix24lib.dif', and issue the command:
+
+        patch -p0 < fix24lib.dif
+
+    If 'patch' writes "I can't seem to find a patch in there" try 'patch -v'.
+    If 'patch -v' gives an error message or reports a version older than 2.1,
+    get 2.1 from 'ftp://FTP.Math.RWTH-Aachen.DE/pub/gap/utils/patch2_1.zoo'.
+
+    This fix changes only the library.
+    Thus you need not recompile the GAP kernel.
+
+
+DESCRIPTION
+
+    The results of permutation group normalizer, centralizer, stabilizer,
+    and intersection computations may have incorrectly small known base
+    components in their stab chain options records, which may lead to
+    problems in following computations.
+
+    gap> g := Group( (1,2,3,4,5), (1,2) );;
+    gap> s := Subgroup( g, [ (1,2,3,4,5) ] );;
+    gap> s.stabChainOptions := rec( knownBase:= [1] );;
+    gap> n := Normalizer( g, s );
+    Subgroup( Group( (1,2,3,4,5), (1,2) ), [ (1,2,3,4,5), (2,3,5,4) ] )
+
+    gap> if IsBound( n.stabChainOptions )
+    >      and IsBound( n.stabChainOptions.knownBase )
+    >    then
+    >        Print( "known base = ", n.stabChainOptions.knownBase, "\n" );
+    >    else
+    >        Print( "no known base\n" );
+    >    fi;
+    known base = [ 1 ]
+
+
+CORRECT BEHAVIOUR
+
+gap> g := Group( (1,2,3,4,5), (1,2) );;
+gap> s := Subgroup( g, [ (1,2,3,4,5) ] );;
+gap> s.stabChainOptions := rec( knownBase := [ 1 ] );;
+gap> n := Normalizer( g, s );
+Subgroup( Group( (1,2,3,4,5), (1,2) ), [ (1,2,3,4,5), (2,3,5,4) ] )
+
+gap> if IsBound( n.stabChainOptions )
+>      and IsBound( n.stabChainOptions.knownBase )
+>    then
+>        Print( "known base = ", n.stabChainOptions.knownBase, "\n" );
+>    else
+>        Print( "no known base\n" );
+>    fi;
+no known base
+
+
+COMMENT
+
+    This fix changes 'StabChain' so that it does not enter a known base
+    component into the stab chain options record of a group.  Of course
+    the problem really lies in the backtrack functions, which modify
+
+
+DIFFS
+
+Prereq: 3.13.1.3
+--- lib/permstbc.g      Thu Dec 21 15:30:34 1995
++++ lib/permstbc.g      Tue Sep 17 14:43:14 1996
+@@ -3,14 +3,17 @@
+ #A  permstbc.g                  GAP library                         Udo Polis
+ #A                                                              & Akos Seress
+ ##
+-#H  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#H  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright (C)  1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+ ##  This file contains the functions to compute and change stabilizer chains.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.13.1.3  1995/04/01  13:39:46  aseress
++#H  Revision 3.13.1.4  1996/09/17 12:28:56  mschoene
++#H  changed 'StabChain', it should not enter 'G.stabChainOptions.knownBase'
++#H
++#H  Revision 3.13.1.3  1995/04/01 13:39:46  aseress
+ #H  improved 'StabChain' to avoid recomputing the top level
+ #H
+ #H  Revision 3.13.1.2  1994/10/11  12:52:22  ahulpke
+@@ -309,6 +312,7 @@
+
+     # call this part only if grp was a permutation group, not a stabChain
+     if IsBound( grp.operations ) then
++
+        # for compatibility copy into the group record
+        if IsBound( chain.orbit )  then
+            if IsEqualSet(grp.generators,chain.generators) then
+@@ -337,20 +341,13 @@
+              options.random:=Minimum( Parent(grp).stabChainOptions.random,
+                                       options.random );
+           fi;
+-
+           if IsBound(grp.stabChainOptions) then
+               grp.stabChainOptions.random := options.random;
+           else
+               grp.stabChainOptions := rec(random := options.random);
+           fi;
+        fi;
+-       if IsBound(grp.stabChainOptions) then
+-          if not IsBound( grp.stabChainOptions.knownBase ) then
+-             grp.stabChainOptions.knownBase := Base( grp );
+-          fi;
+-       else
+-          grp.stabChainOptions := rec( knownBase := Base( grp ) );
+-       fi;
++
+        # enter the chain in the group record and return it
+        grp.stabChain := chain;
+     fi;
+END OF  fix24lib.dif ________________________________________________________
+
+
+
+From alexander.hulpke@math.rwth-aachen.de Tue Sep 24 15:13:30 1996
+Date:           Tue, 24 Sep 96 15:13:30 +0200
+From:           "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:        FIX   25 for DANGEROUS bug in GAP/lib 3.4.3.0  'Factors' for rat. pols.
+
+    This mail contains a bugfix for a dangerous problem in GAP 3.4.3.
+    *You should apply this bugfix as soon as possible.*
+    The problem is in 'RationalsPolynomialsOps.Factors', and might cause it
+    to return reducible factors.
+
+
+ACKNOWLEDGEMENT
+
+    We thank Willem A. de Graaf (Technische Universiteit Eindhoven) for
+    bringing this problem to our attention in a GAP forum mail of 1996/09/18.
+
+
+VERSION
+
+    GAP/lib 3.4.3.0
+
+
+PRIORITY
+
+    The problem is a dangerous problem, because it may cause a computation
+    to produce incorrect results without a warning.  This the bugfix has
+    high priority, and we recommend that you apply it as soon as possible.
+
+
+HOW TO APPLY
+
+    Go to the GAP directory (the directory with the 'lib/' subdirectory),
+    name this mail 'fix25lib.dif', and issue the command:
+
+        patch -p0 < fix25lib.dif
+
+    If 'patch' writes "I can't seem to find a patch in there" try 'patch -v'.
+    If 'patch -v' gives an error message or reports a version older than 2.1,
+    get 2.1 from 'ftp://FTP.Math.RWTH-Aachen.DE/pub/gap/utils/patch2_1.zoo'.
+
+    This fix changes only the library.
+    Thus you need not recompile the GAP kernel.
+
+
+DESCRIPTION
+
+    Polynomials with integer roots might get factored erraneously,
+    that is 'Factors' might return reducible factors.
+
+
+CORRECT BEHAVIOUR
+
+gap> y := Indeterminate( Rationals );;  y.name := "y";;
+gap> f := y^33
+>       - 398550 * y^31
+>       + 66186201873 * y^29
+>       - 5971817014857100 * y^27
+>       + 319879423075055974416 * y^25
+>       - 10453569133068665704152000 * y^23
+>       + 207491014558959631527689015040 * y^21
+>       - 2448295340120142096293200047744000 * y^19
+>       + 16690739160259700445725003902608322560 * y^17
+>       - 62701173265160849595209547823580350464000 * y^15
+>       + 118869582948995926691687807245961904820322304 * y^13
+>       - 95752347343101572852967993673317241915126579200 * y^11
+>       + 22338679946180069821565185491251863734781426532352 * y^9
+>       - 611471306080989784227382973634662004989868009062400 * y^7
+>       + 5410092199316503850833490994152109788519901066952704 * y^5
+>       - 16075861728797055597248567344887907079321523585024000 * y^3
+>       + 11254997789155806098371908864638669722435410984960000 * y;;
+gap> Factors( f );
+[ y - 324, y - 270, y - 252, y - 234, y - 216, y - 162, y - 108, y - 90,
+  y - 72, y - 54, y - 36, y - 18, y - 4, y - 3, y - 2, y - 1, y + 1, y + 2,
+  y + 3, y + 4, y + 18, y + 36, y + 54, y + 72, y + 90, y + 108, y + 162,
+  y + 216, y + 234, y + 252, y + 270, y + 324, y ]
+
+
+COMMENT
+
+    The implemented Hensel lifting process does not work correctly if 0 is a
+    root of the polynomial that is to be factored. As the factoring routine
+    applies an initial Tschirnhaus transform to get the norm small, this
+    might also affect polynomials with small absolute value integer roots.
+    The remedy is to treat the case of root 0 before starting the Hensel
+    lift. This had been introduced already in the algebraic factoring code,
+    thus a similar fix there is not needed.
+
+
+DIFFS
+
+Prereq: 3.31.1.2
+--- lib/polyrat.g       Thu Dec 21 15:30:36 1995
++++ lib/polyrat.g       Mon Sep 23 12:28:24 1996
+@@ -3,14 +3,17 @@
+ #A  polyrat.g                   GAP library                      Frank Celler
+ #A                                                         & Alexander Hulpke
+ ##
+-#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+ ##  This file contains functions for polynomials over the Rationals.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.31.1.2  1994/09/19  08:28:11  ahulpke
++#H  Revision 3.31.1.3  1996/09/23 10:28:01  ahulpke
++#H  Fixed factoring polynomials with linear factors
++#H
++#H  Revision 3.31.1.2  1994/09/19 08:28:11  ahulpke
+ #H  fixed factorization of square part
+ #H
+ #H  Revision 3.31.1.1  1994/08/02  10:11:48  ahulpke
+@@ -1621,7 +1624,16 @@
+         InfoPoly2( "#I  <f> is a linear power\n" );
+         s := [ q ];
+     else
+-        s := R.operations.FactorsSquarefree( R, q );
++
++       # treat zeroes
++       if q.valuation>0 then
++         s:=[X(q.baseRing)];
++         q:=q/(X(q.baseRing));
++        else
++         s:=[];
++        fi;
++        s:=Concatenation(s,R.operations.FactorsSquarefree( R, q ));
++
+     fi;
+
+     # find factors of <g>
+Prereq: 3.1
+--- lib/polystff.g      Thu Dec 21 15:30:36 1995
++++ lib/polystff.g      Mon Sep 23 12:28:38 1996
+@@ -2,7 +2,7 @@
+ ##
+ #A  polystff.g                  GAP library                  Alexander Hulpke
+ ##
+-#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#A  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright (C)  1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+@@ -11,7 +11,10 @@
+ ##  fit better, however, in other files.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
+-#H  Revision 3.1  1994/06/03  10:49:44  ahulpke
++#H  Revision 3.1.1.1  1996/09/23 10:28:35  ahulpke
++#H  Fixed factoring polynomials with linear factors
++#H
++#H  Revision 3.1  1994/06/03 10:49:44  ahulpke
+ #H  initial revision under RCS
+ #H
+ ##
+@@ -756,7 +759,7 @@
+   q:=[];
+   n:=Length(g.coefficients);
+   m:=Length(f.coefficients)-n;
+-  f:=ShallowCopy(f.coefficients);
++  f:=ShallowCopy(ShiftedCoeffs(f.coefficients,f.valuation));
+   if IsField(R) then
+     for i in [0..m] do
+       c:=f[(m-i+n)]/g.coefficients[n];
+END OF  fix25lib.dif ________________________________________________________
+
+
+
+From alexander.hulpke@math.rwth-aachen.de Tue Sep 24 15:18:08 1996
+Date:           Tue, 24 Sep 96 15:18:08 +0200
+From:           "Alexander Hulpke" <Alexander.Hulpke@Math.RWTH-Aachen.DE>
+Subject:        Re: Polynomials
+
+Dear Gap-Forum,
+
+Richard Rossmanith wrote:
+
+> 1. The HTML-GAP-Manual, Release 3.4 (10. Jul. 1994), states that
+> > there is no generic way to test whether a [Ring] element is irreducible.
+> Yes, there is:
+>
+> RingOps.IsIrreducible:=function(arg)
+[...]
+
+Yes, one could add this function. But in the general case then there would
+be the problem to factor a ring element. In general this is even harder than
+an irreducibility test (that gets called implicitely from 'Factors').
+Therefore we did not add a function of this type. It would be possible,
+however, to add, say, 'RationalsPolynomialsOps.IsIrreducible' or other
+specific functions.
+
+> 2. Usually, you use a list to define a polynomial. But maybe later on, you
+> want the list back, and you want that simply by using the command List(p).
+
+You already mentioned problems with this function. The best way is to call
+'ShiftedCoeffs(f.coefficients,f.valuation)' that will return the desired
+coefficient list.
+
+Best regards,
+
+     Alexander Hulpke
+
+
+
+From alexander.hulpke@math.rwth-aachen.de Fri Sep 27 11:56:10 1996
+Date:           Fri, 27 Sep 96 11:56:10 +0200
+From:           "Alexander Hulpke" <alexander.hulpke@math.rwth-aachen.de>
+Subject:        Collection of patches #1-25
+
+Dear Gap-Forum,
+
+at a recent conference some people told me that they had problems with
+applying all the current fixes to GAP 3.4. Therefore I have prepared a 'zoo'
+archive that contains complete copies of all the patched files. Just copying
+all these files over the old versions will get you up-to-date with all
+patches released so far (up to patch 25).
+As the archive contains complete files it is unimportant whether any
+patches have been applied already.
+
+The archive can be found as /pub/incoming/gapfix25.zoo on our ftp server
+ftp.math.rwth-aachen.de
+To unpack the archive just go to the gap directory (the directory containing
+the subdirectories 'lib' and 'grp' and extract the archive using 'zoo' or
+'unzoo'.
+
+(If you are using the 'Guava' coding theory package, you should
+go to the 'pkg/guava/' subdirectory afterwards and issue the command:
+'make' to recompile the external guava program.)
+
+I will make a similar archive available about every two or three months (or
+earlier if sufficiently many patches occured in the meantime). Release of
+these patch collections will be announced in the gap-forum.
+
+Hope this is of use,
+
+   Alexander Hulpke
+
+
+
+From mejohnsn@netcom.com Sat Sep 28 02:36:23 1996
+Date:           Sat, 28 Sep 96 02:36:23 -0700
+From:           "Matthew Johnson" <mejohnsn@netcom.com>
+Subject:        RequirePackage fails under System 7.5 on Performa Macintosh
+
+Dear Forum:
+RequirePackage fails under System 7.5 on Performa Macintosh in gap3r4p3.
+
+I have tried both RequirePackage("guava"); and RequirePackage("weyl");
+
+I get results that look something like:
+LoadPackage(name) package not installed
+from RequirePackage("guava")
+
+The help for ?RequirePackage suggests checking permissions, but this is
+not meaningful under MacOS 7.5.
+
+I also tried (just guessing) RequirePackage(":guava"); and
+RequirePackage("HardDisk:gap3r4p3:pkg:guava")
+
+BTW: the help file spells it "GUAVA", but unzoo creates the folder
+(directory) "guava".
+
+Finally, the title of the GAP window is GAP 3.4.2.  Shouldn't it be 3.4.3??
+
+Matthew Johnson
+Sabaki Engineering
+mejohnsn@netcom.com
+
+
+
+From hofling@maths.anu.edu.au Mon Sep 30 15:30:45 1996
+Date:           Mon, 30 Sep 96 15:30:45 +1000
+From:           "Burkhard Hofling" <hofling@maths.anu.edu.au>
+Subject:        Re: RequirePackage fails under System 7.5 on Performa Macintosh
+
+Dear Forum,
+
+On Sat, 28 Sep 1996, Matthew Johnson wrote:
+
+> RequirePackage fails under System 7.5 on Performa Macintosh in gap3r4p3.
+
+I suppose that you are using one of my Macintosh ports of GAP
+(distributed as bin3r4p2-mac-syc-101.sea.bin (68k code) or
+bin3r4p2-mac-pt1.02-ppc.sea.bin (PowerMac)). In this case, the problem
+can be solved (principally) by adding "-l lib/" to the gap.options file
+in the GAP directory. This should work with the Weyl package. However,
+the Guava package contains a standalone application, which has not been
+ported to the Mac yet. If you *really absolutely* need Guava, I might try
+to compile it for you (now that I have the means to do so), but this might
+take some time.
+
+> BTW: the help file spells it "GUAVA", but unzoo creates the folder
+> (directory) "guava".
+
+This does not matter, since file names are not case sensitive on the Mac.
+
+> Finally, the title of the GAP window is GAP 3.4.2.  Shouldn't it be 3.4.3??
+
+Actually yes, but the GAP application has not changed since GAP 3.4.2, so
+I didn't ship a new application.
+
+
+
+From martin.schoenert@math.rwth-aachen.de Mon Sep 30 10:57:00 1996
+Date:           Mon, 30 Sep 96 10:57:00 +0100 (MET)
+From:           "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:        FIX   26 for DANGEROUS bug in GAP/lib 3.4.3.24 permutation groups
+
+    This mail contains a bugfix for a dangerous problem in GAP 3.4.3.
+    *You should apply this bugfix as soon as possible*.
+    The problem is in permutation group normalizer, centralizer, stabilizer,
+    and intersection.  They produce correct results, but if one does further
+    computations with the results, one may get incorrect results.
+
+
+ACKNOWLEDGEMENT
+
+    We thank Erzsebet Horvath (Budapest Technical University) for bringing
+    the problem to our attention via private communication in September 1996.
+
+
+VERSION
+
+    GAP/lib 3.4.3.24
+    Before applying this fix you *must* already have applied fix24lib.
+
+
+PRIORITY
+
+    The problem is a dangerous problem, because it may cause a computation
+    to produce incorrect results without a warning.  Thus the bugfix has
+    high priority, and we recommend that you apply it as soon as possible.
+
+
+HOW TO APPLY
+
+    Go to the GAP directory (the directory with the 'lib/' subdirectory),
+    name this mail 'fix26lib.dif', and issue the command:
+
+        patch -p0 < fix26lib.dif
+
+    If 'patch' writes "I can't seem to find a patch in there" try 'patch -v'.
+    If 'patch -v' gives an error message or reports a version older than 2.1,
+    get 2.1 from 'ftp://FTP.Math.RWTH-Aachen.DE/pub/gap/utils/patch2_1.zoo'.
+
+    This fix changes only the library.
+    Thus you need not recompile the GAP kernel.
+
+
+DESCRIPTION
+
+    The results of permutation group normalizer, centralizer, stabilizer,
+    and intersection computations may have a 'stabChain' component which
+    is identical to the group record.  This may lead to problems in
+    following computations.
+
+
+CORRECT BEHAVIOUR
+
+gap> HS := Group(
+>      (  2,  8, 13, 17, 20, 22,  7)(  3,  9, 14, 18, 21,  6, 12)
+>      (  4, 10, 15, 19,  5, 11, 16)( 24, 77, 99, 72, 64, 82, 40)
+>      ( 25, 92, 49, 88, 28, 65, 90)( 26, 41, 70, 98, 91, 38, 75)
+>      ( 27, 55, 43, 78, 86, 87, 45)( 29, 69, 59, 79, 76, 35, 67)
+>      ( 30, 39, 42, 81, 36, 57, 89)( 31, 93, 62, 44, 73, 71, 50)
+>      ( 32, 53, 85, 60, 51, 96, 83)( 33, 37, 58, 46, 84,100, 56)
+>      ( 34, 94, 80, 61, 97, 48, 68)( 47, 95, 66, 74, 52, 54, 63),
+>      (  1, 35)(  3, 81)(  4, 92)(  6, 60)(  7, 59)(  8, 46)(  9, 70)
+>      ( 10, 91)( 11, 18)( 12, 66)( 13, 55)( 14, 85)( 15, 90)( 17, 53)
+>      ( 19, 45)( 20, 68)( 21, 69)( 23, 84)( 24, 34)( 25, 31)( 26, 32)
+>      ( 37, 39)( 38, 42)( 40, 41)( 43, 44)( 49, 64)( 50, 63)( 51, 52)
+>      ( 54, 95)( 56, 96)( 57,100)( 58, 97)( 61, 62)( 65, 82)( 67, 83)
+>      ( 71, 98)( 72, 99)( 74, 77)( 76, 78)( 87, 89) );;  HS.name := "HS";;
+gap> s5 := SylowSubgroup( HS, 5 );;
+gap> cc := ConjugacyClassesSubgroups( s5 );;
+gap> n5 := Normalizer( HS, cc[8].representative );;  n5.name := "n5";;
+gap> CharTable( n5 );
+CharTable( n5 )
+
+
+COMMENT
+
+    The problem was that 'StabChain' mistook a group as a stabilizer chain
+    record.  This fix changes 'StabChain' so that it correctly recognizes
+    whether a group or a stabilizer chain record is passed as argument.
+
+
+DIFFS
+
+Prereq: 3.13.1.4
+--- lib/permstbc.g      Fri Sep 27 15:22:02 1996
++++ lib/permstbc.g      Fri Sep 27 14:42:13 1996
+@@ -3,13 +3,16 @@
+ #A  permstbc.g                  GAP library                         Udo Polis
+ #A                                                              & Akos Seress
+ ##
+-#H  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
++#H  @(#)$Id: forum96c.txt,v 1.1 1997/04/06 10:39:13 gap Exp $
+ ##
+ #Y  Copyright (C)  1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+ ##
+ ##  This file contains the functions to compute and change stabilizer chains.
+ ##
+ #H  $Log: forum96c.txt,v $
+ #H  Revision 1.1  1997/04/06 10:39:13  gap
+ #H  Added forum archives (ahulpke)
+ #H
++#H  Revision 3.13.1.5  1996/09/27 12:41:47  mschoene
++#H  fixed 'StabChain' from treating groups as stabchains
++#H
+ #H  Revision 3.13.1.4  1996/09/17 12:28:56  mschoene
+ #H  changed 'StabChain', it should not enter 'G.stabChainOptions.knownBase'
+ #H
+@@ -125,6 +128,12 @@
+                          options.strongGenerators,
+                          options.base );
+
++    # if it is a base change for a stabchain record (instead of a group)
++    elif not IsBound( grp.operations ) then
++        chain := PermGroupOps.StabChainChange(
++                         grp,
++                         options.base );
++
+     # if it is base change
+     elif IsBound( grp.stabChain )  then
+         if IsBound( options.base )  then
+@@ -135,18 +144,20 @@
+             chain := grp.stabChain;
+         fi;
+
+-    # if grp itself is a stabChain record
+-    elif IsBound( grp.stabilizer ) then
+-
++    # if it is a base change but the group has no stabChain component
++    elif IsBound( grp.stabilizer )  then
++        #N  1996/09/30 M.Schoenert maybe we should signal an error
++        grp.stabChain := rec();
++        grp.stabChain.identity := ();
++        grp.stabChain.generators  := grp.generators;
++        grp.stabChain.orbit       := grp.orbit;
++        grp.stabChain.transversal := grp.transversal;
++        grp.stabChain.stabilizer  := grp.stabilizer;
+         if IsBound( options.base )  then
+-            #N akos 6/24/94 should be grp.operations when stabChain records
+-            #N will have operations record
+-            chain := PermGroupOps.StabChainChange(
+-                             grp,
++            chain := grp.operations.StabChainChange(
++                             grp.stabChain,
+                              options.base );
+         else
+-        # will give error for a perm group with stabilizer but not with
+-        # stabChain (on purpose)
+             chain := grp.stabChain;
+         fi;
+
+END OF  fix26lib.dif ________________________________________________________
+
+
+
+From martin.schoenert@math.rwth-aachen.de Mon Sp 30 16:15:00 1996
+Date:           Mon, 30 Sep 96 16:15:00 +0100 (MET)
+From:           "Martin Schoenert" <Martin.Schoenert@Math.RWTH-Aachen.DE>
+Subject:        Leaving Lehrstuhl D
+
+Dear GAP users,
+
+today is my last day as employee at Lehrstuhl D f"ur Mathematik.  Allow
+me a few words first about GAP's and my common past and then about our
+separate futures.
+
+
+I have been working on GAP since 1985, literally since day 1.  I am to a
+fair extent responsible for GAP's current state, and most of my work in
+those 11 years has been for GAP.  I enjoyed this time a lot.
+
+I enjoyed meeting and working with many great persons.  Please forgive me
+that I do not list them here, to keep this message acceptably short.
+
+I also enjoyed developing, distributing, and maintaing a program system.
+I enjoyed discussing with the other developers about where GAP should be
+headed and how it should get there.  I enjoyed designing the system and
+implementing the designs.  I enjoyed learning mathematical algorithms and
+implementing them.  I enjoyed turning the program into a distributable
+system and getting it out of the door.  I enjoyed your feedback (but I
+did not enjoy fixing the bugs ;-).  I enjoyed the discussions, the
+private ones and the ones in the GAP forum.
+
+All those years I could do this work and earn a living.  For this I have
+to thank foremost Prof. Joachim Neub"user, who offered me a position at
+Lehrstuhl D and convinced the Deutsche Forschungsgemeinschaft to support
+me.
+
+Unfortunately continuing this work is not compatible with a usual
+academic career.  Put differently, the older I get the more difficult
+it becomes to find money for me.
+
+
+I will now take the things I learned in those years and use them to
+start my own software business.
+
+I wish it was possible for me to continue to develop mathematical
+software.  But there are reasons why this would not be a good idea.
+
+First.  I believe that mathematical software is best developed by
+mathematicians for mathematicians.  Such software should be treated
+like other mathematical works, i.e., it should be distributed freely
+and mathematicians should not have to pay to use it.
+
+Second.  It is difficult to earn money with mathematical software such as
+GAP, because the number of potential users is relatively small and they
+cannot spend large amounts of money on software.
+
+Third.  Those areas where there is a sufficiently large market are
+already claimed by large companies such as Macsyma Inc., Waterloo Maple
+Software, Wolfram Research, and NAG Inc. and I do not believe that I can
+compete with them.
+
+Instead I will develop networking software.  This is a market whose users
+have commercial interests, so they should and can pay for their software.
+It is a large market, much much larger than the market for mathematical
+software.  It is a rapidly changing market, so there are enough niches
+that are not already claimed by large software companies.
+
+
+It is difficult for me to leave now, because I believe that GAP is in
+a very exciting phase right now and that it has a very bright future
+(I wish I was so certain about my own ;-).
+
+All those years I was on a quest for a type system that would allow to
+model algebra well.  Time and again I have argued that object oriented
+languages such as C++ are not powerful enough to model the complex
+relationships in algebra.  Scratchpad/Axiom is much better, but is has
+its own share of problems.  I believe the new type system in GAP 4 comes
+closer than anything else (but of course I am biased ;-).
+
+The move of GAP to St. Andrews means (among other things) that GAP will
+become a system that will be developed and supported to a larger extent
+by its users.  This model of development has worked very well for other
+systems (foremost for Linux), and I think it will work well for GAP.
+
+
+Since I am still interested in GAP's future, I will not leave completely.
+I will continue to read the GAP forum and (if my work leaves me a few
+free minutes) participate.  If the developers have problems with code
+that I have written, I will certainly try to help them.
+
+But I cannot guarantee how often I will come around to read my e-mail.
+So, in your own interest, you should report all GAP related problems to
+'GAP-Trouble@Math.RWTH-Aachen.DE' and not to me.
+
+
+I hope you enjoyed the time with me as much as I enjoyed it,
+
+Martin.
+
+-- .- .-. - .. -.  .-.. --- ...- . ...  .- -. -. .. -.- .-
+Martin Sch"onert,   Martin.Schoenert@Math.RWTH-Aachen.DE,   +49 241 804551
+Lehrstuhl D f"ur Mathematik, Templergraben 64, RWTH, 52056 Aachen, Germany
+
+
+

@@ -1,0 +1,359 @@
+<html><head><title>GAP3 Manual: 28 Sets</title></head>
+<body bgcolor="ffffff">
+<h1>28 Sets</h1>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+A  very important mathematical concept,  maybe the most important of all,
+are sets.  Mathematically  a <strong>set</strong> is  an abstract object such that  each
+object  is either an element  of the  set or it  is not.   So  a set is a
+collection like  a list, and in fact <strong>GAP3</strong> uses lists to represent sets.
+Note that this of course implies that <strong>GAP3</strong> only deals with finite sets.
+<P>
+Unlike a list a set must not contain an element several times.  It simply
+makes no sense to say   that an object is   twice  an element of a   set,
+because an object is either an element of a set, or it is not.  Therefore
+the list that is used  to represent a set has  no duplicates, that is, no
+two elements of such a list are equal.
+<P>
+Also unlike a  list a set does not  impose any ordering  on the elements.
+Again it  simply makes no  sense to say  that an object  is  the first or
+second etc.  element of  a set, because,  again, an  object is  either an
+element of a set, or it is not.  Since ordering is  not defined for a set
+we can put the elements in any order into the  list used to represent the
+set.  We put the elements sorted into the  list, because this ordering is
+very practical.  For example if we convert a  list into a  set we have to
+remove  duplicates, which is  very  easy to do  after  we have sorted the
+list, since then equal elements will be next to each other.
+<P>
+In   short   sets are represented  by   sorted  lists without  holes  and
+duplicates in <strong>GAP3</strong>.  Such  a list is  in this document called a  proper
+set.  Note that we guarantee this representation, so  you may make use of
+the fact that a set is represented by a sorted list in your functions.
+<P>
+In some contexts (for example see <a href="chap047.htm">Combinatorics</a>),  we also want to talk
+about multisets.  A <strong>multiset</strong> is like a set,  except that an element may
+appear several  times  in a multiset.   Such multisets are represented by
+sorted lists with holes that may have duplicates.
+<P>
+The first section in this chapter  describes the  functions to test if an
+object is a set and to convert objects to sets (see <a href="chap028.htm#SECT001">IsSet</a> and <a href="chap028.htm#SECT002">Set</a>).
+<P>
+The next section describes the function that tests if two sets  are equal
+(see <a href="chap028.htm#SECT003">IsEqualSet</a>).
+<P>
+The next sections  describe  the destructive  functions that  compute the
+standard   set   operations   for   sets    (see   <a href="chap028.htm#SECT004">AddSet</a>, <a href="chap028.htm#SECT005">RemoveSet</a>,
+<a href="chap028.htm#SECT006">UniteSet</a>, <a href="chap028.htm#SECT007">IntersectSet</a>, and <a href="chap028.htm#SECT008">SubtractSet</a>).
+<P>
+The last   section  tells  you more   about   sets  and   their  internal
+representation (see <a href="chap028.htm#SECT010">More about Sets</a>).
+<P>
+All set theoretic functions, especially  <code>Intersection</code> and <code>Union</code>, also
+accept  sets  as  arguments.  Thus  all  functions  described in  chapter
+<a href="chap004.htm">Domains</a> are applicable to sets (see <a href="chap028.htm#SECT009">Set Functions for Sets</a>).
+<P>
+Since sets are just  a  special case of lists,   all the  operations  and
+functions for lists, especially  the membership test  (see <a href="chap027.htm#SECT014">In</a>),  can be
+used for sets just as well (see <a href="chap027.htm">Lists</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap028.htm#SECT001">IsSet</a>
+<LI> <A HREF="chap028.htm#SECT002">Set</a>
+<LI> <A HREF="chap028.htm#SECT003">IsEqualSet</a>
+<LI> <A HREF="chap028.htm#SECT004">AddSet</a>
+<LI> <A HREF="chap028.htm#SECT005">RemoveSet</a>
+<LI> <A HREF="chap028.htm#SECT006">UniteSet</a>
+<LI> <A HREF="chap028.htm#SECT007">IntersectSet</a>
+<LI> <A HREF="chap028.htm#SECT008">SubtractSet</a>
+<LI> <A HREF="chap028.htm#SECT009">Set Functions for Sets</a>
+<LI> <A HREF="chap028.htm#SECT010">More about Sets</a>
+</ol>
+<A NAME="SECT001"><h2>28.1 IsSet</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>IsSet( <var>obj</var> )</code>
+<P>
+<code>IsSet</code>  returns   <code>true</code> if the   object   <var>obj</var> is  a set  and  <code>false</code>
+otherwise.  An object is a  set if it is a  sorted lists without holes or
+duplicates.  Will cause an  error if evaluation of   <var>obj</var> is an  unbound
+variable.
+<P>
+<pre>    gap> IsSet( [] );
+    true
+    gap> IsSet( [ 2, 3, 5, 7, 11 ] );
+    true
+    gap> IsSet( [, 2, 3,, 5,, 7,,,, 11 ] );
+    false        # this list contains holes
+    gap> IsSet( [ 11, 7, 5, 3, 2 ] );
+    false        # this list is not sorted
+    gap> IsSet( [ 2, 2, 3, 5, 5, 7, 11, 11 ] );
+    false        # this list contains duplicates
+    gap> IsSet( 235711 );
+    false        # this argument is not even a list </pre>
+<P><A NAME="SECT002"><h2>28.2 Set</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>Set( <var>list</var> )</code>
+<P>
+<code>Set</code> returns a  new proper  set, which  is represented as  a sorted list
+without holes or duplicates, containing the elements of the list <var>list</var>.
+<P>
+<code>Set</code> returns a new list even if the list <var>list</var> is already a proper set,
+in this  case  it is   equivalent to  <code>ShallowCopy</code> (see  <a href="chap046.htm#SECT012">ShallowCopy</a>).
+Thus the result is  a new list  that is not  identical to any other list.
+The elements of  the result are however identical  to elements of <var>list</var>.
+If <var>list</var> contains equal elements, it is  not specified to which of those
+the element of the result is identical (see <a href="chap027.htm#SECT009">Identical Lists</a>).
+<P>
+<pre>    gap> Set( [3,2,11,7,2,,5] );
+    [ 2, 3, 5, 7, 11 ]
+    gap> Set( [] );
+    [  ] </pre>
+<P><A NAME="SECT003"><h2>28.3 IsEqualSet</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>IsEqualSet( <var>list1</var>, <var>list2</var> )</code>
+<P>
+<code>IsEqualSet</code> returns  <code>true</code> if the   two lists <var>list1</var>  and <var>list2</var>  are
+equal <strong>when viewed as sets</strong>, and  <code>false</code> otherwise.  <var>list1</var> and <var>list2</var>
+are equal if  every element of <var>list1</var> is  also an element of <var>list2</var> and
+if every element of <var>list2</var> is also an element of <var>list1</var>.
+<P>
+If both lists are proper sets then they are of course  equal if  and only
+if they are also equal as  lists.  Thus  <code>IsEqualSet( <var>list1</var>, <var>list2</var> )</code>
+is equivalent to <code>Set( <var>list1</var>  ) = Set( <var>list2</var> )</code>  (see <a href="chap028.htm#SECT002">Set</a>), but the
+former is more efficient.
+<P>
+<pre>    gap> IsEqualSet( [2,3,5,7,11], [11,7,5,3,2] );
+    true
+    gap> IsEqualSet( [2,3,5,7,11], [2,3,5,7,11,13] );
+    false </pre>
+<P><A NAME="SECT004"><h2>28.4 AddSet</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>AddSet( <var>set</var>, <var>elm</var> )</code>
+<P>
+<code>AddSet</code> adds <var>elm</var>, which may be an elment of an  arbitrary type, to the
+set   <var>set</var>, which must  be  a proper  set,  otherwise an  error  will be
+signalled.  If <var>elm</var> is already an element of the  set <var>set</var>, the  set is
+not  changed.  Otherwise <var>elm</var> is inserted  at the  correct position such
+that <var>set</var> is again a set afterwards.
+<P>
+<pre>    gap> s := [2,3,7,11];;
+    gap> AddSet( s, 5 );  s;
+    [ 2, 3, 5, 7, 11 ]
+    gap> AddSet( s, 13 );  s;
+    [ 2, 3, 5, 7, 11, 13 ]
+    gap> AddSet( s, 3 );  s;
+    [ 2, 3, 5, 7, 11, 13 ] </pre>
+<P>
+<code>RemoveSet</code> (see <a href="chap028.htm#SECT005">RemoveSet</a>) is the counterpart of <code>AddSet</code>.
+<P><A NAME="SECT005"><h2>28.5 RemoveSet</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>RemoveSet( <var>set</var>, <var>elm</var> )</code>
+<P>
+<code>RemoveSet</code> removes   the  element  <var>elm</var>,  which  may be   an  object of
+arbitrary  type, from the set <var>set</var>,  which must be  a  set, otherwise an
+error will be signalled.  If  <var>elm</var>  is  not an  element of <var>set</var> nothing
+happens.  If <var>elm</var>  is  an element it is removed   and  all the following
+elements in the list are moved one position forward.
+<P>
+<pre>    gap> s := [ 2, 3, 4, 5, 6, 7 ];;
+    gap> RemoveSet( s, 6 );
+    gap> s;
+    [ 2, 3, 4, 5, 7 ]
+    gap> RemoveSet( s, 10 );
+    gap> s;
+    [ 2, 3, 4, 5, 7 ] </pre>
+<P>
+<code>AddSet</code> (see <a href="chap028.htm#SECT004">AddSet</a>) is the counterpart of <code>RemoveSet</code>.
+<P><A NAME="SECT006"><h2>28.6 UniteSet</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>UniteSet( <var>set1</var>, <var>set2</var> )</code>
+<P>
+<code>UniteSet</code> unites the set <var>set1</var> with the set <var>set2</var>.  This is equivalent
+to adding all the elements  in <var>set2</var>  to <var>set1</var> (see <a href="chap028.htm#SECT004">AddSet</a>).   <var>set1</var>
+must be a proper set, otherwise an  error is  signalled.  <var>set2</var> may also
+be  list that  is  not a  proper set,  in  which case <code>UniteSet</code> silently
+applies <code>Set</code> to it first (see <a href="chap028.htm#SECT002">Set</a>).  <code>UniteSet</code> returns nothing, it is
+only called to change <var>set1</var>.
+<P>
+<pre>    gap> set := [ 2, 3, 5, 7, 11 ];;
+    gap> UniteSet( set, [ 4, 8, 9 ] );  set;
+    [ 2, 3, 4, 5, 7, 8, 9, 11 ]
+    gap> UniteSet( set, [ 16, 9, 25, 13, 16 ] );  set;
+    [ 2, 3, 4, 5, 7, 8, 9, 11, 13, 16, 25 ] </pre>
+<P>
+The  function  <code>UnionSet</code>   (see  <a href="chap028.htm#SECT009">Set  Functions   for  Sets</a>)  is   the
+nondestructive counterpart to the destructive procedure <code>UniteSet</code>.
+<P><A NAME="SECT007"><h2>28.7 IntersectSet</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>IntersectSet( <var>set1</var>, <var>set2</var> )</code>
+<P>
+<code>IntersectSet</code> intersects  the set <var>set1</var> with the  set <var>set2</var>.  This  is
+equivalent  to removing all  the elements  that are not  in  <var>set2</var>  from
+<var>set1</var> (see  <a href="chap028.htm#SECT005">RemoveSet</a>).  <var>set1</var> must be a  set, otherwise  an error is
+signalled.  <var>set2</var> may be a list that is not a proper  set, in which case
+<code>IntersectSet</code>   silently  applies  <code>Set</code> to      it first  (see  <a href="chap028.htm#SECT002">Set</a>).
+<code>IntersectSet</code> returns nothing, it is only called to change <var>set1</var>.
+<P>
+<pre>    gap> set := [ 2, 3, 4, 5, 7, 8, 9, 11, 13, 16 ];;
+    gap> IntersectSet( set, [ 3, 5, 7, 9, 11, 13, 15, 17 ] );  set;
+    [ 3, 5, 7, 9, 11, 13 ]
+    gap> IntersectSet( set, [ 9, 4, 6, 8 ] );  set;
+    [ 9 ] </pre>
+<P>
+The function <code>IntersectionSet</code>  (see  <a href="chap028.htm#SECT009">Set Functions  for Sets</a>)  is  the
+nondestructive counterpart to the destructive procedure <code>IntersectSet</code>.
+<P><A NAME="SECT008"><h2>28.8 SubtractSet</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>SubtractSet( <var>set1</var>, <var>set2</var> )</code>
+<P>
+<code>SubtractSet</code>  subtracts  the set  <var>set2</var>  from the set  <var>set1</var>.  This is
+equivalent to  removing  all the elements in   <var>set2</var>  from  <var>set1</var>  (see
+<a href="chap028.htm#SECT005">RemoveSet</a>).   <var>set1</var> must  be  a  proper  set, otherwise   an  error is
+signalled.  <var>set2</var> may be a list that is not a proper  set, in which case
+<code>SubtractSet</code> applies  <code>Set</code>   to it   first  (see <a href="chap028.htm#SECT002">Set</a>).  <code>SubtractSet</code>
+returns nothing, it is only called to change <var>set1</var>.
+<P>
+<pre>    gap> set := [ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ];;
+    gap> SubtractSet( set, [ 6, 10 ] );  set;
+    [ 2, 3, 4, 5, 7, 8, 9, 11 ]
+    gap> SubtractSet( set, [ 9, 4, 6, 8 ] );  set;
+    [ 2, 3, 5, 7, 11 ] </pre>
+<P>
+The function <code>Difference</code>   (see  <a href="chap004.htm#SECT014">Difference</a>)  is   the  nondestructive
+counterpart to destructive the procedure <code>SubtractSet</code>.
+<P><A NAME="SECT009"><h2>28.9 Set Functions for Sets</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+As was already mentioned  in  the introduction to this chapter all domain
+functions also accept sets as arguments.  Thus all functions described in
+the chapter <a href="chap004.htm">Domains</a>  are applicable to sets.   This  section  describes
+those functions where  it might be helpful to know  the implementation of
+those functions for sets.
+<P>
+<code>IsSubset( <var>set1</var>, <var>set2</var> )</code>
+<A name = "I10"></a>
+
+<P>
+This is implemented by <code>IsSubsetSet</code>, which you can call directly to save
+a little  bit of  time.  Either argument to  <code>IsSubsetSet</code> may also  be a
+list that is not a proper set, in which  case <code>IsSubset</code> silently applies
+<code>Set</code> (see <a href="chap028.htm#SECT002">Set</a>) to it first.
+<P>
+<code>Union( <var>set1</var>, <var>set2</var> )</code>
+<A name = "I11"></a>
+
+<P>
+This is implemented by <code>UnionSet</code>, which you can call  directly to save a
+little bit of time.  Note that  <code>UnionSet</code> only accepts two  sets, unlike
+<code>Union</code>,  which accepts several sets or  a list of  sets.  The  result of
+<code>UnionSet</code> is a new set,  represented as  a sorted list  without holes or
+duplicates.  Each argument to <code>UnionSet</code> may also be a list that is not a
+proper set, in which case <code>UnionSet</code>  silently  applies <code>Set</code> (see <a href="chap028.htm#SECT002">Set</a>)
+to this argument.  <code>UnionSet</code> is implemented in terms of its  destructive
+counterpart <code>UniteSet</code> (see <a href="chap028.htm#SECT006">UniteSet</a>).
+<P>
+<code>Intersection( <var>set1</var>, <var>set2</var> )</code>
+<A name = "I12"></a>
+
+<P>
+This is implemented by <code>IntersectionSet</code>, which you can call  directly to
+save a little bit of time.  Note that <code>IntersectionSet</code>  only accepts two
+sets, unlike <code>Intersection</code>,  which  accepts several sets  or  a list  of
+sets.  The  result of <code>IntersectionSet</code> is  a new  set,  represented as a
+sorted  list     without  holes   or  duplicates.   Each   argument    to
+<code>IntersectionSet</code> may also be a list  that is not  a proper set, in which
+case  <code>IntersectionSet</code>  silently  applies  <code>Set</code> (see  <a href="chap028.htm#SECT002">Set</a>)    to this
+argument.  <code>IntersectionSet</code> is implemented in  terms of its  destructive
+counterpart <code>IntersectSet</code> (see <a href="chap028.htm#SECT007">IntersectSet</a>).
+<P>
+The result of <code>IntersectionSet</code> and <code>UnionSet</code> is always a new list, that
+is not  identical to any other list.   The elements of that  list however
+are identical to the corresponding elements of <var>set1</var>.   If <var>set1</var> is not
+a proper list it is not specified to which of a number  of equal elements
+in <var>set1</var> the element in the result is identical (see <a href="chap027.htm#SECT009">Identical Lists</a>).
+<P><A NAME="SECT010"><h2>28.10 More about Sets</h2></a>
+<P><P><P>
+In the previous section we defined a proper  set as a sorted list without
+holes or duplicates.  This representation is not  only nice to use, it is
+also a good internal representation supporting efficient algorithms.  For
+example the <code>in</code> operator can use binary instead of a linear search since
+a set is sorted.  For another example <code>Union</code> only has to merge the sets.
+<P>
+However, all  those set functions  also allow lists that are  not  proper
+sets,  silently making  a copy  of it and  converting this copy to a set.
+Suppose all the functions would have to test  their arguments every time,
+comparing  each element  with its  successor, to see if  they  are proper
+sets.  This would chew up most  of  the performance advantage again.  For
+example suppose <code>in</code> would have to run  over the whole list, to see if it
+is  a  proper set, so  it could  use the  binary search.   That  would be
+ridiculous.
+<P>
+To avoid this a  list that is  a proper set  may, but need  not, have  an
+internal flag set that tells  those functions that  this list is indeed a
+proper set.  Those functions do not have to check this argument then, and
+can use the more  efficient algorithms.  This  section tells  you  when a
+proper set obtains this flag,  so you can write your  functions in such a
+way that you make best use of the algorithms.
+<P>
+The results of <code>Set</code>, <code>Difference</code>, <code>Intersection</code>  and <code>Union</code> are known
+to be sets by construction, and thus have the flag set upon creation.
+<P>
+If an argument to <code>IsSet</code>, <code>IsEqualSet</code>, <code>IsSubset</code>, <code>Set</code>, <code>Difference</code>,
+<code>Intersection</code> or  <code>Union</code> is a proper  set, that does  not  yet have the
+flag set, those functions will notice that and set the flag for this set.
+Note that <code>in</code> will use linear search if the  right operand does not have
+the flag set, will therefore not detect  if it is  a proper set and will,
+unlike the functions above, never set the flag.
+<P>
+If you change a proper set, that does have this  flag set, by assignment,
+<code>Add</code>   or <code>Append</code> the  set  will generally lose  it  flag,  even if the
+change is such that the resulting list is still a proper set.  However if
+the set has more than 100 elements and the value assigned or added is not
+a list and not a record and the resulting list is still a proper set than
+it will keep  the flag.  Note that  changing a list  that is not a proper
+set will never set the flag, even if the resulting list  is a proper set.
+Such a set will obtain the flag only if it is passed to a set function.
+<P>
+Suppose you have built a proper set  in such a way that  it does not have
+the flag set, and that you now want  to perform lots of membership tests.
+Then you  should call <code>IsSet</code>  with that set   as an argument.   If it is
+indeed  a proper set  <code>IsSet</code> will set the flag,  and the subsequent <code>in</code>
+operations will use  the more efficient binary  search.  You can think of
+the call to <code>IsSet</code> as a hint to <strong>GAP3</strong> that this list is a proper set.
+<P>
+There is no way you can set the flag for an ordinary  list  without going
+through the checking in <code>IsSet</code>.  The  internal  functions depend so much
+on the fact that a list with  this flag set  is indeed sorted and without
+holes and duplicates that the risk would be too high to allow setting the
+flag without such a check.
+<P><a href ="chap027.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap029.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

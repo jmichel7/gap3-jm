@@ -1,0 +1,546 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvrcos.tex       CHEVIE documentation                      Jean Michel
+%%
+%Y  Copyright (C) 2005-2010   University  Paris VII.
+%%
+%%  This  file  contains  the  description  of  the  GAP functions of CHEVIE
+%%  dealing with Spetses.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\GL{{\text GL}}
+
+\Chapter{Reflection cosets}
+Let $W\subset\GL(V)$ be a complex reflection group on the vector space $V$.
+Let  $\phi$ be an element of $\GL(V)$  which normalizes $W$. Then the coset
+$W\phi$ is called a reflection coset.
+
+A  reference for these cosets is  \cite{BMM99}; the main motivation is that
+in  the case where $W$  is a rational reflection  group (a Weyl group) such
+cosets,  that  we  will  call  *Weyl  cosets*, model rational structures on
+finite reductive groups. Finally, when $W$ is a so-called *Spetsial* group,
+they  are the basic object for the construction of a *Spetses*, which is an
+object  attached to  a complex  reflection group  from which one can derive
+combinatorially  some attributes shared with  finite reductive groups, like
+unipotent degrees, etc$\ldots$.
+
+We  say that  a reflection  coset is  irreducible if  $W$ is irreducible. A
+general  coset is a direct  product of *descents of  scalars*, which is the
+case  where $\phi$ is transitive on  the irreducible components of $W$. The
+irreducible   cosets  have   been  classified   in  \cite{BMM99}\:\  up  to
+multiplication  of $\phi$  by a  scalar, there  is usually  only one or two
+possible cosets for a given irreducible group.
+
+In  \CHEVIE\ we deal  only with *finite  order* cosets, that  is, we assume
+there  is a  (minimal) integer  $\delta$ such  that $(W\phi)^\delta=W\phi$.
+Then   the  group  generated  by  $W$   and  $\phi$  is  finite,  of  order
+$\delta\|W\|$.
+
+A  subset $C$  of a  $W\phi$ is  called a  *conjugacy class*  if one of the
+following equivalent conditions is fulfilled\:
+
+$\bullet$  $C$ is the orbit of an  element in $W\phi$ under the conjugation
+action of $W$.
+
+$\bullet$ $C$ is a conjugacy class of $\langle W,\phi \rangle$ contained in
+$W\phi$.
+
+$\bullet$  The set $\{w\in W\mid\;w\phi\in C\}$ is a $\phi$-conjugacy class
+of $W$ (two elements $v,w\in W$ are called $\phi$-conjugate, if and only if
+there exists $x\in W$ with $v = xw\phi(x^{-1})$).
+
+An  irreducible  character  of  $\langle  W,\phi \rangle$ has some non-zero
+values  on $W\phi$ if  and only if  its restriction to  $W$ is irreducible.
+Further,  two characters $\chi_1$ and  $\chi_2$ which have same irreducible
+restriction   to  $W$   differ  by   a  character   of  the   cyclic  group
+$\langle\phi\rangle$  (which  identifies  to  the  quotient $\langle W,\phi
+\rangle/W$).  A set containing one extension to $\langle W,\phi \rangle$ of
+each  $\phi$-invariant character  of $W$  is called  a *set  of irreducible
+characters  of $W\phi$*. Two such characters  are orthogonal for the scalar
+product  on the  class functions  on $W\phi$  given by  $$\langle \chi,\psi
+\rangle \:= \frac{1}{\mid W\mid}\sum_{w\in W}
+\chi(w\phi)\overline{\psi(w\phi)}.$$  For  rational  groups  (Weyl groups),
+Lusztig  has defined a canonical choice  of a set of irreducible characters
+for  $W\phi$  (called  the  *preferred  extensions*),  but for more general
+reflection cosets we have made some rather arbitrary choices, which however
+have the property that their values lie in the smallest possible field.
+
+The  *character  table*  of  $W\phi$  is  the  table  of values of a set of
+irreducible characters on the conjugacy classes.
+
+A  *subcoset* $Lw\phi$ of $W\phi$ is given  by a reflection subgroup $L$ of
+$W$ and an element $w$ of $W$ such that $w\phi$ normalizes $L$.
+
+We  then  have  a  natural  notion  of  *restriction* of class functions on
+$W\phi$  to class functions  on $Lw\phi$ as  well as of  *induction* in the
+other  direction. These maps are adjoint with respect to the scalar product
+defined above (see \cite{BMM99}).
+
+In  \CHEVIE\  the  most  general  construction  of a reflection coset is by
+starting  from  a  reflection  datum,  and  giving  in  addition the matrix
+'phiMat' of the map $\phi\:V\rightarrow V$ (see the command
+'ReflectionCoset').   However,   at   present,   general  cosets  are  only
+implemented for groups represented as permutation groups on a set of roots,
+and  it is required that the automorphism  given preserves this set up to a
+scalar  (it  is  allowed  that  these  scalars  depend  on  the  pair of an
+irreducible  component and its image). If it also allowed to specify $\phi$
+by the permutation it induces on the roots; in this case it is assumed that
+$\phi$  acts trivially on the orthogonal of  the roots, but the roots could
+be  those of a parent group, generating a larger space. Thus in any case we
+have  a  permutation  representation  of  $\langle  W,\phi  \rangle$ and we
+consider the coset to be a set of permutations.
+
+Reflection cosets are implemented in \CHEVIE\ by a record which points to a
+reflection  group record and has additional fields holding 'phiMat' and the
+corresponding  permutation 'phi'. In the general case, on each component of
+$W$ which is a descent of scalars, 'phiMat' will permute the components and
+differ  by a scalar on each  component from an automorphism which preserves
+the  roots. In this case, we have  a permutation 'phi' and a 'scalar' which
+is stored for that component.
+
+The  most common situation where cosets  with non-trivial 'phi' arise is as
+sub-cosets  of reflection groups. Here is  an ``exotic\'\' example, see the
+next chapter for more classical examples involving Coxeter groups.
+
+|    gap> W:=ComplexReflectionGroup(14);
+    ComplexReflectionGroup(14)
+    gap> PrintDiagram(W);
+    G14 1--8--2(3)
+    gap> R:=ReflectionSubgroup(W,[2,4]);
+    ReflectionSubgroup(ComplexReflectionGroup(14), [ 2, 4 ])
+    gap> PrintDiagram(R);
+    G5(ER(6)) 2(3)==4(3)
+    gap> Rphi:=ReflectionCoset(R,W.1);
+    2G5(ER(6))<2,4>
+    gap> PrintDiagram(Rphi);
+    phi acts as (2,4) on the component below
+    G5(ER(6)) 2(3)==4(3)
+    gap> ReflectionDegrees(Rphi);
+    [ [ 6, 1 ], [ 12, -1 ] ]|
+
+The  last line shows for each  reflection degree the corresponding *factor*
+of the coset, which is the scalar by which $\phi$ acts on the corresponding
+fundamental reflection invariant. The factors characterize the coset.
+
+The  variable 'CHEVIE.PrintSpets'  determines if  a coset  is printed in an
+abbreviated  form which  describes its  type, as  above ('G5' twisted by 2,
+with  a Cartan matrix  which differs from  the standard one  by a factor of
+$\sqrt  6$), or in  a form which  could be input  back in {\GAP}. The above
+example  was for the default value 'CHEVIE.PrintSpets=rec()'. With the same
+data we have\:
+
+|    gap> CHEVIE.PrintSpets:=rec(GAP:=true);;
+    gap> Rphi;
+    Spets(ReflectionSubgroup(ComplexReflectionGroup(14), [ 2, 4 ]), (1,3)(\
+    2,4)(5,9)(6,10)(7,11)(8,12)(13,21)(14,22)(15,23)(16,24)(17,25)(18,26)(\
+    19,27)(20,28)(29,41)(30,42)(31,43)(32,44)(33,45)(34,46)(35,47)(36,48)(\
+    37,49)(38,50)(39,51)(40,52)(53,71)(54,72)(55,73)(56,74)(57,75)(58,76)(\
+    59,77)(60,78)(62,79)(64,80)(65,81)(66,82)(67,69)(68,70)(83,100)(84,101\
+    )(85,102)(87,103)(89,99)(90,97)(91,98)(92,96)(93,104)(94,95)(105,113)(\
+    106,114)(109,111)(110,112)(115,118)(116,117)(119,120))
+    gap> CHEVIE.PrintSpets:=rec();;|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReflectionCoset}
+\index{ReflectionCoset}
+
+'ReflectionCoset( <W>[, <phiMat> ] )'
+
+'ReflectionCoset( <W>[, <phiPerm>] )'
+
+This  function returns a  reflection coset as  a \GAP\ object. The argument
+<W>  must  be  a  reflection  group  (created  by 'ComplexReflectionGroup',
+'CoxeterGroup', 'PermRootGroup' or 'ReflectionSubgroup'). In the first form
+the  argument <phiMat> must be an  invertible matrix with 'Rank(<W>)' rows,
+which  normalizes the parent of <W> (if any)  as well as <W>. In the second
+form  <phiPerm> is  a permutation  which describes  the images of the roots
+under  $phi$ (only the  image of the  roots corresponding to the generating
+reflections need be given, since they already determine a unique <phiMat>).
+This  second form is only allowed if  the semisimple rank of <W> equals the
+rank  (i.e., the roots are a basis of  $V$). If there is no second argument
+the  default for  <phiMat> is  the identity  matrix, so  the result  is the
+trivial coset equal to $W$ itself.
+
+'ReflectionCoset'  returns a  record from  which we  document the following
+components\:
+
+'isDomain', 'isFinite':\\
+        true
+
+'group':\\
+        the group <W>
+
+'phiMat':\\
+        the matrix acting on $V$ which represents $\phi$.
+
+'phi':\\
+        the permutation on the roots of <W> induced by 'phiMat'.
+
+|    gap> W := CoxeterGroup("A",3);;
+    gap> Wphi := ReflectionCoset( W, (1,3));
+    2A3
+    gap> m:=MatXPerm(W,(1,3));
+    [ [ 0, 0, 1 ], [ 0, 1, 0 ], [ 1, 0, 0 ] ]
+    gap> ReflectionCoset( W,m);
+    2A3|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Spets}
+\index{Spets}
+
+'Spets' is a synonym for 'ReflectionCoset'. See "ReflectionCoset".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReflectionSubCoset}
+\index{ReflectionSubCoset}
+
+'ReflectionSubCoset( <WF>, <r>, [<w>] )'
+
+Returns  the reflection subcoset of the  reflection coset <WF> generated by
+the  reflections specified by  <r>. <r> is  a list of  indices specifying a
+subset of the roots of <W> where <W> is the reflection group 'Group(<WF>)'.
+If  specified,  <w>  must  be  an  element  of  $W$  such  that 'w\*WF.phi'
+normalizes  up to scalars  the subroot system  generated by <r>. If absent,
+the  default value for <w> is '()'. It is an error, if 'w\*WF.phi' does not
+normalize the subsystem.
+
+|    gap> W:=ComplexReflectionGroup(14);
+    ComplexReflectionGroup(14)
+    gap> Wphi:=ReflectionCoset(W);
+    G14
+    gap> ReflectionSubCoset(Wphi,[2,4],W.1);
+    2G5(ER(6))<2,4>
+    gap> WF:=ReflectionCoset(CoxeterGroup("A",4),(1,4)(2,3));
+    2A4
+    gap> ReflectionSubCoset(WF,[2,3]);
+    2A2<2,3>.(q-1)(q+1)
+    gap> ReflectionSubCoset(WF,[1,2]);
+    Error, #I permutation for F0 must normalize set of roots.
+     in
+    function ( arg ) ... end( 
+     ReflectionSubgroup(CoxeterGroup("A",4), [ 1, 2 ]),
+     ( 1, 4)( 2, 3)( 5, 7)( 8, 9)(11,14)(12,13)(15,17)(18,19)
+     ) called from
+    Spets( res, w * WF.phi ) called from
+    ReflectionSubCoset( WF, [ 1, 2 ] ) called from
+    main loop
+    brk>|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SubSpets}
+\index{SubSpets}
+
+'SubSpets' is a synonym for 'ReflectionSubCoset'. See "ReflectionSubCoset".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for Reflection cosets}
+
+'Group( <WF> )':\\
+     returns the reflection group of which <WF> is a coset.
+
+Quite a few functions defined for domains, permutation groups or reflection
+groups have been implemented to work with reflection Cosets.
+
+'Size', 'Rank', 'SemisimpleRank':\\ these functions use the corresponding 
+     functions for 'Group( <WF> )'.
+'Elements', 'Random', 'Representative',  'in':\\  these functions 
+     use the corresponding functions for 'Group( <WF> )' and multiply the
+     result by |WF.phi|.
+
+\index{ConjugacyClasses}
+'ConjugacyClasses(  <WF>  )':\\ returns  the   conjugacy classes  of  the
+  coset   <WF>  (see  the  introduction  of   this  Chapter).  Let  <W>  be
+  'Group(<WF>)'.  Then the classes  are defined to  be the $W$-orbits on $W
+  \phi$,  where  $W$  acts  by  conjugation  (they  coincide  with  the  $W
+  \phi$-orbits,  $W \phi$ acting by the conjugation); by the translation $w
+  \mapsto w\phi^{-1}$ they are sent to the $\phi$-conjugacy classes of $W$.
+
+\index{PositionClass}
+'PositionClass( <WF> , <x> )':\\ for any element <x> in <WF> this returns
+     the  number   'i'   such      that  <x>    is  an     element     of
+     'ConjugacyClasses(<WF>)[i]'  (to  work  fast,  the classification of
+     reflection groups is used).
+
+\index{FusionConjugacyClasses}
+'FusionConjugacyClasses( <WF1>, <WF>  )':\\ works in the  same way as for
+     groups. See the section 'ReflectionSubCoset'.
+
+'Print( <WF> )':\\ if  '<WF>.name' is bound  then  this is printed,  else
+     this function prints  the coset  in a form  which can  be input back
+     into \GAP.
+
+\index{InductionTable}
+'InductionTable( <HF>, <WF> )':\\
+     works in the same way as for groups. It gives the induction table from
+     the  Reflection  subcoset  <HF>  to  the  Reflection coset <WF>. If $H
+     w\phi$ is a Reflection subcoset of $W \phi$, restriction of characters
+     is defined as restriction of functions from $W \phi$ to $H w\phi$, and
+     induction  as the adjoint map for  the natural scalar product $\langle
+     f,  g\rangle =\frac1{\mid  W\mid}\sum_{v\in W}  f(v \phi)\overline g(v
+     \phi)$.
+
+|    gap> W := CoxeterGroup( "A", 4 );;
+    gap> Wphi := ReflectionCoset( W, (1,4)(2,3) );
+    2A4
+    gap> Display(InductionTable(ReflectionSubCoset(Wphi,[2,3 ]),Wphi));
+    Induction from 2A2<2,3>.(q-1)(q+1) to 2A4
+          |'\|'|111 21 3
+    ________________
+    11111 |'\|'|  1  . .
+    2111  |'\|'|  .  1 .
+    221   |'\|'|  1  . .
+    311   |'\|'|  1  . 1
+    32    |'\|'|  .  . 1
+    41    |'\|'|  .  1 .
+    5     |'\|'|  .  . 1|
+
+    'InductionTable' and 'FusionConjugacyClasses' work only between cosets.
+    If the parent coset is the trivial coset it should still be given as
+    a coset and not as a group\:
+
+|    gap> Wphi:=ReflectionCoset(W);
+    A4
+    gap> L:=ReflectionSubCoset(Wphi,[2,3],LongestCoxeterElement(W));
+    A2<2,3>.(q-1)(q+1)
+    gap> InductionTable(L,W);
+    Error, A2<2,3>.(q-1)(q+1) is a coset but CoxeterGroup("A",4) is not in
+    S.operations.FusionConjugacyClasses( S, R ) called from
+    FusionConjugacyClasses( u, g ) called from
+    InductionTable( L, W ) called from
+    main loop
+    brk>
+    gap> InductionTable(L,Wphi);
+    InductionTable(A2<2,3>.(q-1)(q+1), A4)|
+
+\index{ReflectionName}
+'ReflectionName( <WF> )':\\ returns a string which describes the isomorphism
+   type  of the  group $W\rtimes\langle  F\rangle$, associated  to <WF>, as
+   described   in   the   introduction   of   this  Chapter.  An  orbit  of
+   $\phi=$<WF>.'phi'  on the components is put in brackets if of length $k$
+   greater than $1$, and is preceded by the order of $phi^k$ on it, if this
+   is  not $1$.  For example  '\"2(A2xA2)\"' denotes  2 components  of type
+   $A_2$  permuted by $\phi$, and such that $phi^2$ induces the non-trivial
+   diagram  automorphism on  any of  them, while  '3D4' denotes an orbit of
+   length 1 on which $phi$ is of order 3.
+
+|    gap> W:=ReflectionCoset(CoxeterGroup("A",2,"G",2,"A",2),(1,5,2,6));
+    2(A2xA2)<1,2,5,6>xG2<3,4>
+    gap> ReflectionName( W );
+    "2(A2xA2)<1,2,5,6>xG2<3,4>"|
+
+\index{PrintDiagram}
+'PrintDiagram( <WF> )':\\ this is  a purely  descriptive routine  (as was
+     already  the case for finite  Reflection groups themselves). It prints
+     the  Dynkin  diagram  of  'ReflectionGroup(<WF>)'  together  with  the
+     information how '<WF>.phi' acts on it. Going from the above example\:
+
+|    gap> PrintDiagram( W );
+    phi permutes the next 2 components
+    phi^2 acts as (1,2) on the component below
+    A2 1 - 2
+    A2 5 - 6
+    G2 3 >6> 4|
+
+'ChevieClassInfo(   <WF>   )',   see   the   explicit   description   in
+"ChevieClassInfo for Reflection cosets".
+
+\index{CharParams}
+'CharParams(  <WF> )':\\ This returns appropriate labels for the characters
+of the ReflectionCoset. 'CharName' has also a special version for cosets.
+
+\index{GenericOrder}
+'GenericOrder(  <WF>, <q> )':\\ Returns the generic order of the associated
+     algebraic  group (for a Weyl coset)  or Spetses, using the generalized
+     reflection  degrees. We  also have  'TorusOrder(WF,i,q)' which  is the
+     same as
+     'GenericOrder(SubSpets(WF,[],Representative(ConjugacyClasses(WF)[i])))'.
+
+Note  that  some  functions  for   elements  of  a  Reflection  group  work
+naturally   for   elements   of  a   Reflection   coset\:\
+'EltWord',    'ReflectionLength', 'ReducedInRightCoset', etc$\ldots$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ChevieCharInfo for reflection cosets}
+\index{ChevieCharInfo}
+
+'ChevieCharInfo( <WF> )'
+
+'ChevieCharInfo' gives for a reflection coset <WF> a record similar to what
+it  gives for the corresponding group  <W>, excepted that some fields which
+do  not  make  sense  are  omitted,  and that two fields record information
+allowing to relate characters of the coset to that of the group\:
+
+'charRestriction':\\ records for each character of <WF> the index of the
+   character of <W> of which it is an extension.
+
+'nrGroupClasses':\\ records 'NrConjugacyClasses(Group(WF))'.
+
+|    gap> ChevieCharInfo(RootDatum("3D4"));
+    rec(
+      extRefl := [ 1, 5, 4, 6, 2 ],
+      charparams := [ [ [ [  ], [ 4 ] ] ], [ [ [  ], [ 1, 1, 1, 1 ] ] ], 
+          [ [ [  ], [ 2, 2 ] ] ], [ [ [ 1, 1 ], [ 2 ] ] ], 
+          [ [ [ 1 ], [ 3 ] ] ], [ [ [ 1 ], [ 1, 1, 1 ] ] ], 
+          [ [ [ 1 ], [ 2, 1 ] ] ] ],
+      charRestrictions := [ 13, 4, 10, 5, 11, 3, 6 ],
+      nrGroupClasses := 13,
+      b := [ 0, 12, 4, 4, 1, 7, 3 ],
+      B := [ 0, 12, 8, 8, 5, 11, 9 ],
+      charnames := [ ".4", ".1111", ".22", "11.2", "1.3", "1.111", "1.21" 
+         ],
+      positionId := 1,
+      positionDet := 2,
+      a := [ 0, 12, 7, 1, 3, 3 ],
+      A := [ 0, 12, 11, 5, 9, 9 ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReflectionType for reflection cosets}
+\index{ReflectionType}
+
+'ReflectionType( <WF> )'
+
+returns  the type of the Reflection coset  <WF>. This consists of a list of
+records,  one for each orbit of '<WF>.phi' on the irreducible components of
+the Dynkin diagram of 'Group(<WF>)', which have two fields\:\\
+
+'orbit':\\ is a list of types of the irreducible components in the orbit.
+   These  types are the  same as returned  by the function 'ReflectionType'
+   for  an  irreducible  untwisted  reflection  group.  The  components are
+   ordered  according to the  action of '<WF>.phi',  so '<WF>.phi' maps the
+   generating permutations with indices in the first type to indices in the
+   second type in the same order as stored in the type, etc $\ldots$\\
+
+'phi':\\ if $k$ is the number  of  irreducible  components  in  the  orbit,
+   this  is the permutation which describes the action of '<WF>.phi'$^k$ on
+   the simple roots of the first irreducible component in the orbit.
+
+|    gap> W:=ReflectionCoset(CoxeterGroup("A",2,"A",2), (1,3,2,4));
+    2(A2xA2)
+    gap> ReflectionType( W );
+    [ rec(orbit := [ rec(rank    := 2,
+          series  := "A",
+          indices := [ 1, 2 ]), rec(rank    := 2,
+          series  := "A",
+          indices := [ 3, 4 ]) ],
+          twist := (1,2)) ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReflectionDegrees for reflection cosets}
+\index{ReflectionDegrees}
+
+'ReflectionDegrees( <WF> )'
+
+Let <W> be the Reflection group corresponding to the Reflection coset <WF>,
+and  let $V$ be the vector space of dimension 'W.rank' on which <W> acts as
+a  reflection group. Let $f_1,\ldots,f_n$ be the basic invariants of <W> on
+the  symmetric  algebra  $SV$  of  $V$;  they  can  be  chosen  so they are
+eigenvectors  of the matrix 'WF.phiMat'.  The corresponding eigenvalues are
+called  the *factors* of $\phi$ acting  on $V$; they characterize the coset
+--- they are equal to 1 for the trivial coset. The *generalized degrees* of
+<WF>  are the pairs formed of  the reflection degrees and the corresponding
+factor.
+
+|    gap> W := CoxeterGroup( "E", 6 );; WF := ReflectionCoset( W );
+    E6
+    gap> phi := EltWord( W,[6,5,4,2,3,1,4,3,5,4,2,6,5,4,3,1]);;
+    gap> HF := ReflectionSubCoset( WF, [ 2..5 ], phi );;
+    gap> PrintDiagram( HF );
+    phi acts as (2,3,5) on the component below
+    D4   2
+          \
+           4 - 5
+          /
+         3
+    gap> ReflectionDegrees( HF );
+    [ [ 1, E(3) ], [ 1, E(3)^2 ], [ 2, 1 ], [ 4, E(3) ], [ 6, 1 ],
+      [ 4, E(3)^2 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Twistings}
+\index{Twistings}
+
+'Twistings( <W>, <L> )'
+
+<W>  should be a Reflection group record  or a Reflection coset record, and
+<L> should be a reflection subgroup of <W> (or of 'Group(<W>)' for a coset),
+or  a sublist of  the generating reflections  of <W> (resp. 'Group(W)'), in
+which case the call is the same as
+'Twistings(<W>,ReflectionSubgroup(<W>,<L>))' (resp.
+'Twistings(<W>,ReflectionSubgroup(Group(<W>),<L>))').
+
+The  function returns  a list  of representatives,  up to <W>-conjugacy, of
+reflection sub-cosets of <W> whose reflection group is <L>.
+
+|    gap> W:=ComplexReflectionGroup(3,3,4);
+    ComplexReflectionGroup(3,3,4)
+    gap> Twistings(W,[1..3]);
+    [ G333.(q-1), 3'G333<1,2,3,76>.(q-E3^2), 3G333<1,2,3,76>.(q-E3) ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ChevieClassInfo for Reflection cosets}
+\index{ChevieClassInfo}
+
+'ChevieClassInfo( <WF> )'
+
+returns  information about  the conjugacy  classes of  the Reflection coset
+<WF>.  The result is a record with three components\:\ 'classtext' contains
+a list of reduced words for the representatives in
+'ConjugacyClasses(<WF>)', 'classnames' contains corresponding names for the
+classes, and 'classparams' gives corresponding parameters for the classes.
+
+|    gap> W:=ReflectionCoset(ComplexReflectionGroup(14));
+    G14
+    gap> Rphi:=ReflectionSubCoset(W,[2,4],Group(W).1);
+    2G5(ER(6))<2,4>
+    gap> ChevieClassInfo(Rphi);
+    rec(
+      classtext := 
+       [ [  ], [ 2, 4, 4, 2, 4, 4, 2 ], [ 2, 4, 4, 2, 4, 4, 2, 2 ],
+          [ 2 ], [ 2, 2, 4, 2, 2 ], [ 2, 2, 4, 4, 2, 2 ], [ 2, 4 ], 
+          [ 2, 4, 2 ], [ 4, 2, 4, 2 ] ],
+      classes := [ 12, 6, 6, 6, 12, 6, 6, 6, 12 ],
+      orders := [ 2, 24, 24, 24, 6, 8, 24, 8, 6 ],
+      classnames := 
+       [ [  ], "1221221", "12212211", "1", "11211", "112211", "12",
+          "121", "2121" ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharTable for Reflection cosets}
+\index{CharTable}
+
+'CharTable(  <WF> )'
+
+This function returns the character table of the Reflection coset <WF> (see
+also  the introduction  of this  Chapter). We  call ``characters\'\' of the
+Reflection   coset  $WF$  with  corresponding   Reflection  group  $W$  the
+restriction  to  $W  \phi$  of  a  set  containing  one  extension  of each
+$\phi$-invariant character of $W$ to the semidirect product of $W$ with the
+cyclic  group generated  by $\phi$.  The choice  of extension is always the
+same for a given coset, but rather arbitrary in general; for Weyl cosets it
+is the \"preferred extension\" of Lusztig.
+
+The returned record contains almost all components present in the character
+table of a Reflection group. But if $\phi$ is not trivial then there are no
+components 'powermap' (since powers of elements in the coset need not be in
+the  coset)  and  'orders'  (if  you  really  need  them, use 'MatXPerm' to
+determine the order of elements in the coset).
+
+|    gap> W := ReflectionCoset( CoxeterGroup( "D", 4 ), (1,2,4) );
+    3D4
+    gap> Display( CharTable( W ) );
+    3D4
+    
+           2  2   2     2      2  2      3      3
+           3  1   1     1      .  .      1      1
+    
+             C3 ~A2 C3+A1 ~A2+A1 F4 ~A2+A2 F4(a1)
+    
+    .4        1   1     1      1  1      1      1
+    .1111    -1   1     1     -1  1      1      1
+    .22       .   2     2      . -1     -1     -1
+    11.2      .   .     .      . -1      3      3
+    1.3       1   1    -1     -1  .     -2      2
+    1.111    -1   1    -1      1  .     -2      2
+    1.21      .   2    -2      .  .      2     -2
+    |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

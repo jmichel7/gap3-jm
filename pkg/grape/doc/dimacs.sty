@@ -1,0 +1,337 @@
+%-----------------------------------------------------------------------------
+% Beginning of dimacs.sty
+%-----------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This file is designed to work with AMS-TeX version 2.0.
+%
+% The TeX code defined here will modify the AMS-TeX 2.0 preprint style to
+% the DIMACS style.  It sets up the correct page size,
+% puts a logo and a copyrightline on the first page, and formats the
+% top matter, headings and references appropriately.
+%
+%
+% Instructions:
+%
+%  1. Create a file named  dimacs.sty containing the data in the lines
+%     from  %%% dimacs.sty %%%  through  \endinput .  Install the file
+%     in the same directory as amsppt.sty .
+%
+%  2. In a data file, include the line,  \documentstyle{dimacs}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%  First input the preprint style
+
+\def\next{AMSPPT}\ifx\styname\next \endinput
+  \else\input amsppt.sty\fi
+
+
+\catcode`\@=11
+
+%  Set the page size and first-page sink appropriately
+
+\pageheight{47pc}
+\pagewidth{29pc}
+\parindent=12\p@
+\def\pretitle{\vskip7pc}
+
+%  Page numbers and running heads are provided by default, as defined
+%  in AMSPPT.STY.  Headline text is centered, and page numbers are
+%  positioned at the outside corners.  To suppress page numbers and/or
+%  running heads, include \NoPageNumbers and/or \NoRunningHeads in the
+%  input file, as appropriate.
+
+%  In DIMACS, we do want running heads.  We must provide suitable
+%  fonts definitions.  DIMACS specs call for 7-point headlines,
+%  but \sevenpoint is not defined in AMSPPT.STY; substitute \eightpoint,
+%  which is defined.
+
+\def\foliofont@{\eightrm}
+\def\headlinefont@{\eightpoint}
+
+%       define  a logo for the upper left-hand corner
+
+\def\jourlogo{\vbox to0pt{%
+        \sixrm \baselineskip6pt
+        \parindent0pt \frenchspacing
+	DIMACS Series in Discrete Mathematics\newline
+        and Theoretical Computer Science\newline
+        Volume {\sixbf\cvol@}, \cvolyear@\par\vss}}
+
+%       macros to be put into the \topmatter for the logo
+
+\def\cvol#1{\gdef\cvol@{\ignorespaces#1\unskip}}
+\def\cvolyear#1{\gdef\cvolyear@{\ignorespaces#1\unskip}}
+\def\cyear#1{\gdef\cyear@{\ignorespaces#1\unskip}\cyear@@#100000\end@}
+
+\def\cyear@@#1#2#3#4#5\end@{\gdef\cyearmodc@{#3#4}%
+        \gdef\cyearmodcHold@{#3#4}}
+
+\cvol{00}
+\cyear{0000}
+\cvolyear{0000}
+
+\font\sixsy=cmsy6
+
+\def\subjclass{\nofrills@{{\rm1991 {\it Mathematics Subject
+   Classification\/}.\enspace}}\subjclass@
+ \DNii@##1\endsubjclass{\def\thesubjclass@{\def\usualspace
+  {{\rm\enspace}}\eightpoint\subjclass@\ignorespaces##1\unskip.}}%
+ \FN@\next@}
+
+\def\copyrightline@{\baselineskip1.75pc
+    \rightline{%
+        \vbox{\sixrm \textfont2=\sixsy \baselineskip 7pt
+            \halign{\hfil##\cr
+                \copyright\cyear@\ American Mathematical Society\cr
+                 0000-0000/\cyearmodc@\ \$1.00 + \$.25 per page\cr }}}}
+
+\def\cyearmodc#1{\gdef\cyearmodc@{\ignorespaces#1\unskip}}
+
+%  The copyright block takes the place of the AMS-TeX logo; otherwise the
+%  AMSPPT.STY output routine does what we want.
+
+\let\logo@=\copyrightline@
+
+%  text font is 10-on-13; AMSPPT.STY is 10-on-12
+
+\addto\tenpoint{\normalbaselineskip13\p@
+ \abovedisplayskip6\p@ plus6\p@ minus0\p@
+ \belowdisplayskip6\p@ plus6\p@ minus0\p@
+ \abovedisplayshortskip0\p@ plus3\p@ minus0\p@
+ \belowdisplayshortskip2\p@ plus3\p@ minus0\p@
+ \ifsyntax@
+ \else
+  \setbox\strutbox\hbox{\vrule height9\p@ depth4\p@ width\z@}%
+  \setbox\strutbox@\hbox{\vrule height8\p@ depth3\p@ width\z@}%
+ \fi
+ \normalbaselines\rm}
+
+%  modify \title to use a larger font
+
+\font@\titlebf=cmbx10 scaled \magstep2
+\font@\titlei=cmmi10 scaled \magstep2
+\font@\titlesy=cmsy10 scaled \magstep2
+\def\titlefont{\normalbaselineskip18\p@
+ \textonlyfont@\bf\titlebf
+ \ifsyntax@\else
+  \textfont\z@\titlebf  \scriptfont\z@\tenrm  \scriptscriptfont\z@\sevenrm
+  \textfont\@ne\titlei  \scriptfont\@ne\teni  \scriptscriptfont\@ne\seveni
+  \textfont\tw@\titlesy \scriptfont\tw@\tensy \scriptscriptfont\tw@\sevensy
+  \textfont\thr@@\tenex \scriptfont\thr@@\tenex \scriptscriptfont\thr@@\tenex
+ \fi
+ \normalbaselines\titlebf}
+
+\def\title{\nofrills@{}\title@
+ \DNii@##1\endtitle{{\let\\=\cr
+  \global\setbox\titlebox@\vtop{\titlefont\bf
+   \raggedcenter@\title@{##1}\endgraf}%
+  \ifmonograph@ \edef\next{\the\leftheadtoks}\ifx\next\empty
+    \leftheadtext{##1}\fi
+  \fi
+  \edef\next{\the\rightheadtoks}\ifx\next\empty \rightheadtext{##1}\fi
+  }}\FN@\next@}
+
+%  authors are set in all caps
+
+\def\author#1\endauthor{\global\setbox\authorbox@
+ \vbox{\tenpoint\raggedcenter@
+  \expandafter\uppercase{\ignorespaces#1\endgraf}}\relaxnext@
+ \edef\next{\the\leftheadtoks}%
+ \ifx\next\empty\expandafter\uppercase{\leftheadtext{#1}}\fi}
+
+\def\address#1\endaddress{\global\advance\addresscount@\@ne
+  \expandafter\gdef\csname address\number\addresscount@\endcsname
+  {\vskip12\p@ minus6\p@\indent\eightpoint{\smc\ignorespaces#1}\par}}
+
+%  Current addresses as well as permanent ones must be accommodated.
+%  Check on the skip before the address; it may be a fixed 6pt.
+%  \smallskip has been assumed before the current address, as that
+%  is what has been used for \email.
+
+\def\email{\nofrills@{\eightpoint{\it E-mail\/}:\enspace}\email@
+  \DNii@##1\endemail{%
+  \expandafter\gdef\csname email\number\addresscount@\endcsname
+  {\def\usualspace{{\it\enspace}}\smallskip\indent\eightpoint\email@
+  \ignorespaces##1\par}}%
+ \FN@\next@}
+
+\def\curraddr{\nofrills@{\eightpoint{\it Current address\/}:\enspace}\curraddr@
+  \DNii@##1\endcurraddr{%
+  \expandafter\gdef\csname curraddr\number\addresscount@\endcsname
+  {\def\usualspace{{\it\enspace}}\smallskip\indent\eightpoint\curraddr@
+  \ignorespaces##1\par}}%
+ \FN@\next@}
+
+%  \abstract differs from the one in AMSPPT.STY by the use of a slightly 
+%  larger indentation.
+
+\def\abstract{\nofrills@{{\smc Abstract.\enspace}}\abstract@
+ \DNii@{\setbox\abstractbox@\vbox\bgroup\indenti=3pc\noindent$$\vbox\bgroup
+  \def\envir@{abstract}\advance\hsize-2\indenti
+  \usualspace@{{\enspace}}\eightpoint \noindent\abstract@\ignorespaces}%
+ \FN@\next@}
+
+%  \keywords, \subjclass and \thanks appear as first-page footnotes.
+%  Reformat the top matter for DIMACS style.
+
+\outer\def\endtopmatter{\runaway@{abstract}%
+ \edef\next{\the\leftheadtoks}\ifx\next\empty
+  \expandafter\leftheadtext\expandafter{\the\rightheadtoks}\fi
+ \ifmonograph@\else
+   \ifx\thesubjclass@\empty\else \makefootnote@{}{\thesubjclass@}\fi
+   \ifx\thekeywords@\empty\else \makefootnote@{}{\thekeywords@}\fi
+   \ifx\thethanks@\empty\else \makefootnote@{}{\thethanks@}\fi
+ \fi
+  \jourlogo
+  \pretitle
+  \vskip24\p@ plus12\p@ minus12\p@
+  \unvbox\titlebox@
+  \topskip10pt% reset to normal value
+  \preauthor
+  \ifvoid\authorbox@\else \vskip14\p@ plus6\p@ minus0\p@\unvbox\authorbox@\fi
+% \preaffil
+% \ifvoid\affilbox@\else \vskip10\p@ plus5\p@ minus0\p@\unvbox\affilbox@\fi
+  \predate
+  \ifx\thedate@\empty\else \vskip6\p@ plus2\p@ minus0\p@
+    \line{\hfil\thedate@\hfil}\fi
+  \preabstract
+  \ifvoid\abstractbox@\else \vskip24\p@ plus12\p@ minus0\p@
+    \unvbox\abstractbox@ \fi
+  \ifvoid\tocbox@\else\vskip1.5pc plus.5pc \unvbox\tocbox@\fi
+  \prepaper
+  \vskip24\p@ plus12\p@ minus0\p@}
+
+%  Heading styles are different from AMSPPT.STY:
+%  \heading is bold, otherwise the same.
+%  \subheading and \subsubheading are indented, otherwise the same.
+
+\def\headfont@{\bf}
+\def\refheadfont@{\smc}
+\let\varindent@\indent
+
+%  Indentation for \proclaim, \demo, etc., are the same as for \subhead,
+%  and are taken care of by \varindent.
+%  \proclaim head font is small caps, and the text font is italic (not \sl).
+%  \demo is preceded by a \smallskip and followed by none (not \medskip).
+
+\def\proclaimheadfont@{\smc}
+\outer\def\proclaim{\runaway@{proclaim}\def\envir@{proclaim}%
+  \nofrills@{.\enspace}\proclaim@
+ \DNii@##1{\penaltyandskip@{-100}\medskipamount\varindent@
+   \usualspace@{{\proclaimheadfont@\enspace}}\proclaimheadfont@
+   \ignorespaces##1\unskip\proclaim@
+  \it\ignorespaces}% 
+ \FN@\next@}
+
+\def\demoheadfont@{\smc}
+\def\demo{\runaway@{proclaim}\nofrills@{.\enspace}\demo@
+     \DNii@##1{\par\penaltyandskip@\z@\smallskipamount
+  {\usualspace@{{\demoheadfont@\enspace}}%
+  \varindent@\demoheadfont@\ignorespaces##1\unskip\demo@}\rm
+  \ignorespaces}\FN@\next@}
+\def\enddemo{\par\vskip\z@ plus 1\p@ minus 0\p@}
+
+%  Roman type is needed within the statement of theorems for numerals,
+%  fences, labels, etc.  This definition should ultimately be in amsppt.sty.
+
+\def\rom#1{{\rm #1}}
+
+%  \Refs differs only in the skip below, which is 8pt (default=6pt)
+%  Before reiterating definition only for that, check to see if it matters.
+
+\def\citefont@{\bf}
+
+
+\outer\def\Refs{\runaway@{proclaim}%
+ \relaxnext@ \DN@{\ifx\next\nofrills\DN@\nofrills{\nextii@}\else
+  \DN@{\nextii@{References}}\fi\next@}%
+ \DNii@##1{\penaltyandskip@{-200}\aboveheadskip
+  \line{\hfil\refheadfont@\ignorespaces##1\unskip\hfil}\nobreak
+  \vskip\belowheadskip
+  \begingroup\refsfont@\sfcode`.=\@m}%
+ \FN@\next@}
+
+%  Some patches are needed, to make \yr appear in translation information,
+%  and to avoid the spurious unboxing of some empty boxes.
+\def\transl{\endrefitem@\endref@\firstref@false
+  \prepunct@
+  \setboxz@h\bgroup \aftergroup\unhbox\aftergroup\z@
+    \def\endrefitem@{\unskip\refkern@\egroup}\ignorespaces}%
+\def\endref@{%
+\iffirstref@
+  \ifvoid\nobox@\ifvoid\keybox@\indent\fi
+  \else\hbox to\refindentwd{\hss\unhbox\nobox@}\fi
+  \ifvoid\keybox@
+  \else\ifdim\wd\keybox@>\refindentwd
+         \box\keybox@
+       \else\hbox to\refindentwd{\unhbox\keybox@\hfil}\fi\fi
+  \kern4sp\ppunbox@\bybox@
+\fi 
+  \ifvoid\paperbox@
+  \else\prepunct@\unhbox\paperbox@
+    \ifpaperquotes@\quotes@true\fi\fi
+  \ppunbox@\paperinfobox@
+  \ifvoid\jourbox@
+    \ifprevjour@ \nocomma@\volbox@
+      \nocomma@\issuebox@
+      \ifvoid\yrbox@\else\changepunct@3\prepunct@(\unhbox\yrbox@
+        \transferpenalty@)\fi
+      \ppunbox@\pagesbox@
+    \fi 
+  \else \prepunct@\unhbox\jourbox@
+    \nocomma@\volbox@
+    \nocomma@\issuebox@
+    \ifvoid\yrbox@\else\changepunct@3\prepunct@(\unhbox\yrbox@
+      \transferpenalty@)\fi
+    \ppunbox@\pagesbox@
+  \fi 
+  \ifbook@\ifvoid\bookbox@\else \prepunct@\unhbox\bookbox@
+        \ifbookquotes@\quotes@true\fi \fi\fi
+  \nocomma@\edsbox@
+  \ppunbox@\bookinfobox@
+  \ifbook@\ifvoid\volbox@\else\prepunct@ vol.~\unhbox\volbox@
+  \fi\fi
+  \ppunbox@\publbox@ \ppunbox@\publaddrbox@
+  \ifbook@ \ppunbox@\yrbox@
+    \ifvoid\pagesbox@
+    \else\prepunct@\pp@\unhbox\pagesbox@\fi
+  \else
+    \ifprevinbook@ \ppunbox@\yrbox@
+      \ifvoid\pagesbox@\else\prepunct@\pp@\unhbox\pagesbox@\fi
+    \fi \fi
+  \ppunbox@\finalinfobox@
+  \iflastref@
+    \ifvoid\langbox@.\ifquotes@''\fi
+    \else\changepunct@2\prepunct@\unhbox\langbox@\fi
+  \else
+    \ifvoid\langbox@\changepunct@1%
+    \else\changepunct@3\prepunct@\unhbox\langbox@
+      \changepunct@1\fi
+  \fi
+}
+
+%  Add current address to \enddocument
+\outer\def\enddocument{%
+ \runaway@{proclaim}%
+ \ifmonograph@ % do nothing
+ \else
+  \nobreak
+  \thetranslator@
+  \count@\z@ \loop\ifnum\count@<\addresscount@\advance\count@\@ne
+  \csname address\number\count@\endcsname
+  \csname curraddr\number\count@\endcsname
+  \csname email\number\count@\endcsname
+  \repeat
+ \fi
+ \vfill\supereject\end}
+
+\catcode`\@=13
+
+\def\amsversion{2.0}
+\endinput                                 
+
+%-----------------------------------------------------------------------------
+% End of dimacs.sty
+%-----------------------------------------------------------------------------

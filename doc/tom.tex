@@ -1,0 +1,711 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  tom.tex                  GAP documentation                Goetz Pfeiffer.
+%%
+%A  @(#)$Id: tom.tex,v 1.1.1.1 1996/12/11 12:36:51 werner Exp $
+%%
+%Y  Copyright 1991-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the functions dealing with Tables Of Marks.
+%%
+%H  $Log: tom.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:51  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.12  1994/06/10  02:49:01  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.11  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.10  1993/02/12  17:02:59  felsch
+%H  examples adjusted to line length 72
+%H
+%H  Revision 3.9  1993/02/11  17:46:09  martin
+%H  changed '@' to '&'
+%H
+%H  Revision 3.8  1993/02/02  12:46:54  felsch
+%H  long lines fixed
+%H
+%H  Revision 3.7  1993/01/22  19:35:52  martin
+%H  changed |"<order>"| to '\"<order>\"' etc.
+%H
+%H  Revision 3.6  1993/01/22  17:23:17  goetz
+%H  deleted some lines.
+%H
+%H  Revision 3.5  1993/01/21  17:04:47  goetz
+%H  added references, formatted examples.
+%H
+%H  Revision 3.4  1993/01/20  15:41:23  goetz
+%H  corrections and additions.
+%H
+%H  Revision 3.3  1993/01/19  13:40:17  goetz
+%H  extensions and corrections.
+%H
+%H  Revision 3.2  1992/12/01  14:29:10  goetz
+%H  added formula.
+%H
+%H  Revision 3.1  1992/12/01  14:23:51  goetz
+%H  formatted displayed material.
+%H
+%H  Revision 3.0  1992/11/15  15:47:46  goetz
+%H  Initial Revision.
+%H
+%%
+\Chapter{Tables of Marks}
+
+The concept of a table of marks was introduced by W.~Burnside in his book
+<Theory of Groups of Finite  Order> \cite{Bur55}.   Therefore a table  of
+marks is sometimes called a Burnside matrix.
+
+The table  of marks of  a finite group $G$  is  a  matrix whose rows  and
+columns are labelled by  the conjugacy classes of subgroups  of  $G$  and
+where for  two subgroups $A$ and $B$ the $(A, B)$--entry is the number of
+fixed points of $B$ in the transitive action of  $G$ on the cosets of $A$
+in   $G$.   So   the  table   of  marks  characterizes   all  permutation
+representations of $G$.
+
+Moreover,  the table of marks gives a compact description of the subgroup
+lattice of $G$,  since from the numbers  of  fixed points the numbers  of
+conjugates of a subgroup $B$ contained in a subgroup $A$ can be derived.
+
+This chapter describes a  function (see  "TableOfMarks") which restores a
+table  of  marks from the  {\GAP}  library  of tables  of marks (see "The
+Library of Tables of Marks") or which computes the table  of marks  for a
+given  group from  the  subgroup lattice  of  that group.   Moreover this
+package   contains   a   function  to  display  a  table  of  marks  (see
+"DisplayTom"), a function to  check the consistency of  a table  of marks
+(see  "TestTom"),  functions   which  switch  between  several  forms  of
+representation (see "Marks", "NrSubs", "MatTom", and "TomMat"), functions
+which derive  information about the  group  from  the table of marks (see
+"DecomposedFixedPointVector",     "NormalizerTom",    "IntersectionsTom",
+"IsCyclicTom",   "FusionCharTableTom",    "PermCharsTom",   "MoebiusTom",
+"CyclicExtensionsTom",     "IdempotentsTom",     "ClassTypesTom",     and
+"ClassNamesTom"),  and  some  functions for the generic construction of a
+table of marks (see "TomCyclic", "TomDihedral", and "TomFrobenius").
+
+The  functions described  in this  chapter are  implemented  in the  file
+'LIBNAME/\"tom.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Tables of Marks}
+
+Let  $G$ be a finite  group with $n$ conjugacy classes of subgroups $C_1,
+\ldots, C_n$ and representatives $H_i \in  C_i$, $i = 1, \ldots, n$.  The
+*table of  marks*  of $G$  is defined  to  be the  $n  \times  n$  matrix
+$M  = (m_{ij})$  where $m_{ij}$  is the  number  of fixed points  of  the
+subgroup $H_j$ in the action of $G$ on the cosets of $H_i$ in $G$.
+
+Since $H_j$ can only have fixed points if it is contained in a one  point
+stablizer the  matrix $M$ is  lower  triangular  if the classes $C_i$ are
+sorted according to the following condition; if $H_i$ is  contained in  a
+conjugate of $H_j$ then $i \leq j$.
+
+Moreover, the diagonal entries $m_{ii}$ are nonzero since $m_{ii}$ equals
+the index of  $H_i$  in its normalizer in $G$.  Hence  $M$ is invertible.
+Since  any transitive action of  $G$ is  equivalent  to an action on  the
+cosets of a subgroup of $G$, one sees that the table of  marks completely
+characterizes permutation representations of $G$.
+
+The entries $m_{ij}$  have further  meanings.  If  $H_1$  is the  trivial
+subgroup of  $G$ then  each mark $m_{i1}$  in the first column  of $M$ is
+equal to the index of $H_i$ in  $G$ since the trivial  subgroup fixes all
+cosets of $H_i$.  If $H_n = G$ then each $m_{nj}$  in the last row of $M$
+is equal  to 1 since there is only  one coset of $G$ in $G$.  In general,
+$m_{ij}$  equals the  number of conjugates of $H_i$ which  contain $H_j$,
+multiplied by the index of $H_i$ in its normalizer in $G$.  Moreover, the
+number $c_{ij}$ of  conjugates of $H_j$ which are contained in $H_i$  can
+be derived from the marks $m_{ij}$ via the formula
+
+\[ c_{ij} = \frac{m_{ij} m_{j1}}{m_{i1} m_{jj}}. \]
+
+Both the marks $m_{ij}$  and the numbers of subgroups $c_{ij}$ are needed
+for the functions described in this chapter.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Table of Marks Records}
+
+A table of marks is represented by a record.   This record has at least a
+component  'subs' which is  a  list  where for each  conjugacy  class  of
+subgroups the class  numbers  of its  subgroups  are  stored.  These  are
+exactly  the positions in the  corresponding row of  the  table of  marks
+which have nonzero entries.
+
+The marks  themselves  can be stored in the component 'marks' which is  a
+list   that  contains   for  each  entry  in  the  component  'subs'  the
+corresponding nonzero value of the table of marks.
+
+The same information is, however, given by the three components 'nrSubs',
+'length', and  'order', where 'nrSubs' is a  list which contains for each
+entry  in  the  component 'subs'  the  corresponding number of conjugates
+which are contained in a subgroup,  'length' is a list which contains for
+each class of subgroups its  length, and 'order' is a list which contains
+for each class of subgroups their order.
+
+So a table of marks consists either of the components 'subs' and  'marks'
+or of  the  components  'subs',  'nrSubs',  'length', and  'order'.   The
+functions 'Marks' (see  "Marks") and 'NrSubs' (see "NrSubs")  will derive
+one representation from the other when needed.
+
+Additional  information  about  a  table  of  marks  is  needed  by  some
+functions.  The class  numbers of normalizers are stored in the component
+'normalizer'.   The number of  the derived subgroup of the whole group is
+stored in the component 'derivedSubgroup'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Library of Tables of Marks}
+
+This  package  of  functions comes together  with a library of tables  of
+marks.   The library files are stored in a directory 'TOMNAME'.  The file
+'TOMNAME/\"tmprimar.tom\"' is the  primary file of the library  of tables
+of  marks.   It contains the  information where  to find  a table and the
+function 'TomLibrary' which restores a table from the library.
+
+The secondary files are
+
+|    tmaltern.tom  tmmath24.tom  tmsuzuki.tom  tmunitar.tom
+    tmlinear.tom  tmmisc.tom    tmsporad.tom  tmsymple.tom |
+
+The list 'TOMLIST' contains for each table an entry with its name and the
+name of the file where it is stored.
+
+A table  of marks which is restored from  the library will be stored as a
+component of the record 'TOM'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TableOfMarks}
+
+'TableOfMarks( <str> )'
+
+If  the  argument  <str>  given   to  'TableOfMarks'  is  a  string  then
+'TableOfMarks'  will  search  the  library of tables  of marks  (see "The
+Library of  Tables of  Marks") for  a table with  name  <str>.  If such a
+table is found then  'TableOfMarks' will  return  a  copy of  that table.
+Otherwise 'TableOfMarks' will return 'false'.
+
+|    gap> a5 := TableOfMarks( "A5" );
+    rec(
+      derivedSubgroup := 9,
+      normalizer := [ 9, 4, 6, 8, 7, 6, 7, 8, 9 ],
+      nrSubs := [ [ 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 3, 1 ], [ 1, 1 ],
+          [ 1, 3, 1, 1 ], [ 1, 5, 1, 1 ], [ 1, 3, 4, 1, 1 ],
+          [ 1, 15, 10, 5, 6, 10, 6, 5, 1 ] ],
+      order := [ 1, 2, 3, 4, 5, 6, 10, 12, 60 ],
+      subs := [ [ 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 2, 4 ], [ 1, 5 ],
+          [ 1, 2, 3, 6 ], [ 1, 2, 5, 7 ], [ 1, 2, 3, 4, 8 ],
+          [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ] ],
+      length := [ 1, 15, 10, 5, 6, 10, 6, 5, 1 ] )
+    gap> TableOfMarks( "A10" );
+    &W  TableOfMarks: no table of marks A10 found.
+    false |
+
+'TableOfMarks( <grp> )'
+\index{TableOfMarks}
+
+If  'TableOfMarks' is called with a  group <grp> as its argument then the
+table of marks  of  that  group  will  be  computed and  returned in  the
+compressed format.  The computation of the  table of  marks  requires the
+knowledge of the  complete subgroup  lattice  of the group <grp>.  If the
+lattice is not yet known  then  it will be  constructed (see  "Lattice").
+This  may  take a  while  if the group  <grp>  is  large.
+
+Moreover,  as  the 'Lattice'  command  is  involved  the applicability of
+'TableOfMarks' underlies  the  same  restrictions  with  respect  to  the
+soluble residuum of <grp> as  described in section "Lattice".  The result
+of  'TableOfMarks' is  assigned to the  component  'tableOfMarks' of  the
+group record <grp>, so that the next call to 'TableOfMarks' with the same
+argument can just return this component 'tableOfMarks'.
+
+*Warning*\:\  Note  that  'TableOfMarks'  has  changed with  the  release
+{\GAP}  3.2.  It  now returns  the table  of  marks  in compressed  form.
+However, you  can apply the 'MatTom' command (see "MatTom") to convert it
+into  the square  matrix  which was  returned by 'TableOfMarks' in {\GAP}
+version 3.1.
+
+|    gap> alt5 := AlternatingPermGroup( 5 );;
+    gap> TableOfMarks( alt5 );
+    rec(
+      subs := [ [ 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 2, 4 ], [ 1, 5 ],
+          [ 1, 2, 3, 6 ], [ 1, 2, 5, 7 ], [ 1, 2, 3, 4, 8 ],
+          [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ] ],
+      marks := [ [ 60 ], [ 30, 2 ], [ 20, 2 ], [ 15, 3, 3 ], [ 12, 2 ],
+          [ 10, 2, 1, 1 ], [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ],
+          [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ] )
+    gap> last = alt5.tableOfMarks;
+    true |
+
+For a pretty print display of a table of marks see "DisplayTom".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Marks}
+
+'Marks( <tom> )'
+
+'Marks' returns the list of lists of marks  of the table of  marks <tom>.
+If  these are not yet stored in the  component 'marks' of <tom> then they
+will be computed and assigned to the component 'marks'.
+
+|    gap> Marks( a5 );
+    [ [ 60 ], [ 30, 2 ], [ 20, 2 ], [ 15, 3, 3 ], [ 12, 2 ], 
+      [ 10, 2, 1, 1 ], [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ], 
+      [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NrSubs}
+
+'NrSubs( <tom> )'
+
+'NrSubs' returns the list of lists of numbers  of subgroups of the  table
+of marks <tom>.  If these are not yet stored in the component 'nrSubs' of
+<tom> then they will be computed and assigned to the component 'nrSubs'.
+
+'NrSubs' also has to compute the orders and lengths from the marks.
+
+|    gap> NrSubs( a5 );
+    [ [ 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 3, 1 ], [ 1, 1 ], [ 1, 3, 1, 1 ], 
+      [ 1, 5, 1, 1 ], [ 1, 3, 4, 1, 1 ], [ 1, 15, 10, 5, 6, 10, 6, 5, 1 ] 
+     ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{WeightsTom}
+
+'WeightsTom( <tom> )'
+
+'WeightsTom' extracts the weights from a table of  marks <tom>, i.e., the
+diagonal entries, indicating the index of a subgroup in its normalizer.
+
+|    gap> wt := WeightsTom( a5 ); 
+    [ 60, 2, 2, 3, 2, 1, 1, 1, 1 ] |
+
+This  information  may  be  used  to  obtain  the  numbers  of  conjugate
+supergroups from the marks.
+
+|    gap> marks := Marks( a5 );; 
+    gap> List( [ 1 .. 9 ], x -> marks[x] / wt[x] );
+    [ [ 1 ], [ 15, 1 ], [ 10, 1 ], [ 5, 1, 1 ], [ 6, 1 ], [ 10, 2, 1, 1 ],
+      [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ], [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MatTom}
+
+'MatTom( <tom> )'
+
+'MatTom'  produces a square matrix corresponding  to the  table  of marks
+<tom> in compressed form.  For large tables this may need a lot of space.
+
+|    gap> MatTom( a5 );
+    [ [ 60, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 30, 2, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 20, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 15, 3, 0, 3, 0, 0, 0, 0, 0 ], 
+      [ 12, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 10, 2, 1, 0, 0, 1, 0, 0, 0 ], 
+      [ 6, 2, 0, 0, 1, 0, 1, 0, 0 ], [ 5, 1, 2, 1, 0, 0, 0, 1, 0 ], 
+      [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TomMat}
+
+'TomMat( <mat> )'
+
+Given a matrix <mat> which contains the marks of a group as  its entries,
+'TomMat' will produce the corresponding table of marks record.
+
+|    gap> mat:= 
+    > [ [ 60, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 30, 2, 0, 0, 0, 0, 0, 0, 0 ], 
+    >   [ 20, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 15, 3, 0, 3, 0, 0, 0, 0, 0 ], 
+    >   [ 12, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 10, 2, 1, 0, 0, 1, 0, 0, 0 ], 
+    >   [ 6, 2, 0, 0, 1, 0, 1, 0, 0 ], [ 5, 1, 2, 1, 0, 0, 0, 1, 0 ], 
+    >   [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ];;
+    gap> TomMat( mat );
+    rec(
+      subs := [ [ 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 2, 4 ], [ 1, 5 ], 
+          [ 1, 2, 3, 6 ], [ 1, 2, 5, 7 ], [ 1, 2, 3, 4, 8 ], 
+          [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ] ],
+      marks := [ [ 60 ], [ 30, 2 ], [ 20, 2 ], [ 15, 3, 3 ], [ 12, 2 ], 
+          [ 10, 2, 1, 1 ], [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ], 
+          [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ] )
+    gap> TomMat( IdentityMat( 7 ) );
+    rec(
+      subs := [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ] ],
+      marks := [ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ] ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DecomposedFixedPointVector}
+
+'DecomposedFixedPointVector( <tom>, <fix> )'
+
+Let the group with table of marks <tom> act as a permutation group on its
+conjugacy  classes of subgroups, then  <fix> is assumed to be a vector of
+fixed  point numbers, i.e., a vector which contains  for  each  class  of
+subgroups   the   number   of   fixed   points    under    that   action.
+'DecomposedFixedPointVector' returns the decomposition of <fix> into rows
+of the table of marks. This decomposition  corresponds to a decomposition
+of  the action into transitive constituents. Trailing  zeros in <fix> may
+be omitted.
+
+|    gap> DecomposedFixedPointVector( a5, [ 16, 4, 1, 0, 1, 1, 1 ] );
+    [ ,,,,, 1, 1 ] |
+
+The  vector  <fix>  may  be  any  vector  of  integers.    The  resulting
+decomposition, however, will not be integral, in general.
+
+|    gap> DecomposedFixedPointVector( a5, [ 0, 0, 0, 0, 1, 1 ] );
+    [ 2/5, -1, -1/2,, 1/2, 1 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TestTom}
+
+'TestTom( <tom> )'
+
+'TestTom' decomposes  all  tensor products of rows of  the table of marks
+<tom>.  It returns 'true' if all  decomposition  numbers are  nonnegative
+integers and 'false' otherwise.  This provides a strong consistency check
+for a table of marks.
+
+|    gap> TestTom( a5 );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DisplayTom}
+
+'DisplayTom( <tom> )'
+
+'DisplayTom' produces a formatted  output for the  table of  marks <tom>.
+Each line of output begins with the number of the corresponding  class of
+subgroups.  This number is repeated if  the  output spreads  over several
+pages.
+
+|    gap> DisplayTom( a5 );
+    1:  60
+    2:  30 2
+    3:  20 . 2
+    4:  15 3 . 3
+    5:  12 . . . 2
+    6:  10 2 1 . . 1
+    7:   6 2 . . 1 . 1
+    8:   5 1 2 1 . . . 1
+    9:   1 1 1 1 1 1 1 1 1 |
+
+'DisplayTom( <tom>, <arec> )'
+
+In  this  form  'DisplayTom'  takes  a  record  <arec> as  an  additional
+parameter.   If this record  has a component  'classes' which contains  a
+list of  class  numbers then only  the  rows  and  columns of  the matrix
+corresponding to this list are printed.
+
+|    gap> DisplayTom( a5, rec( classes := [ 1, 2, 3, 4, 8 ] ) );
+    1:  60
+    2:  30 2
+    3:  20 . 2
+    4:  15 3 . 3
+    8:   5 1 2 1 1 |
+
+The record <arec> may also  have a  component  'form' which  enables  the
+printing of  tables of  numbers of subgroups.  If <arec>.'form'  has  the
+value '\"subgroups\"' then  at position $(i,j)$  the number of conjugates
+of $H_j$  contained  in  $H_i$  will  be  printed.  If it  has  the value
+'\"supergroups\"' then at position $(i,j)$  the  number  of conjugates of
+$H_i$ which contain $H_j$ will be printed.
+
+|    gap> DisplayTom( a5, rec( form := "subgroups" ) );
+    1:  1
+    2:  1  1
+    3:  1  .  1
+    4:  1  3  . 1
+    5:  1  .  . . 1
+    6:  1  3  1 . .  1
+    7:  1  5  . . 1  . 1
+    8:  1  3  4 1 .  . . 1
+    9:  1 15 10 5 6 10 6 5 1
+    
+    gap> DisplayTom( a5, rec( form := "supergroups" ) );
+    1:   1
+    2:  15 1
+    3:  10 . 1
+    4:   5 1 . 1
+    5:   6 . . . 1
+    6:  10 2 1 . . 1
+    7:   6 2 . . 1 . 1
+    8:   5 1 2 1 . . . 1
+    9:   1 1 1 1 1 1 1 1 1 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NormalizerTom}
+
+'NormalizerTom( <tom>, <u> )'
+
+'NormalizerTom' tries  to  find conjugacy  class  of the normalizer  of a
+subgroup with class number <u>.  It will return the list of class numbers
+of those subgroups which have the right size and contain the subgroup and
+all  subgroups  which  clearly contain it as  a normal subgroup.   If the
+normalizer is uniquely determined by these conditions then only its class
+number  will be returned.   'NormalizerTom' should  never return an empty
+list.
+
+|    gap> NormalizerTom( a5, 4 );
+    8 |
+
+The example shows that a subgroup with class number 4 in $A_5$ (which  is
+a Kleinan four group) is normalized by a subgroup in class 8.  This class
+contains the subgroups of $A_5$ which are isomorphic to $A_4$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IntersectionsTom}
+
+'IntersectionsTom( <tom>, <a>, <b> )'
+
+The intersections of  the two  conjugacy classes of subgroups  with class
+numbers <a> and <b>, respectively, are determined by the decomposition of
+the tensor product of their rows  of  marks.   'IntersectionsTom' returns
+this decomposition.
+
+|    gap> IntersectionsTom( a5, 8, 8 );
+    [ ,, 1,,,,, 1 ] |
+
+Any two subgroups of class number 8 ($A_4$) of $A_5$ are either equal and
+their intersection has again  class number  8, or their intersection  has
+class number $3$, and is a cyclic subgroup of order 3.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCyclicTom}
+
+'IsCyclicTom( <tom>, <n> )'
+
+A subgroup is cyclic if and only if the sum over the corresponding row of
+the inverse table of marks is nonzero (see \cite{Ker91}, page 125).  Thus
+we only have to decompose the corresponding idempotent.
+
+|    gap> for i in [ 1 .. 6 ] do                       
+    > Print( i, ": ", IsCyclicTom(a5, i), "  " );
+    > od;  Print( "\n" );
+    1: true  2: true  3: true  4: false  5: true  6: false   |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FusionCharTableTom}
+
+'FusionCharTableTom( <tbl>, <tom> )'
+
+'FusionCharTableTom' determines  the fusion of the  classes  of  elements
+from  the  character table <tbl> into classes of cyclic subgroups  on the
+table of marks <tom>.
+
+|    gap> a5c := CharTable( "A5" );;
+    gap> fus := FusionCharTableTom( a5c, a5 );
+    [ 1, 2, 3, 5, 5 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermCharsTom}
+
+'PermCharsTom( <tom>, <fus> )'
+
+'PermCharsTom' reads the list of permutation characters from the table of
+marks <tom>.  It therefore has to  know  the fusion map <fus> which sends
+each conjugacy  class of elements  of the group to the conjugacy class of
+subgroups  they generate.
+
+|    gap> PermCharsTom( a5, fus );
+    [ [ 60, 0, 0, 0, 0 ], [ 30, 2, 0, 0, 0 ], [ 20, 0, 2, 0, 0 ], 
+      [ 15, 3, 0, 0, 0 ], [ 12, 0, 0, 2, 2 ], [ 10, 2, 1, 0, 0 ], 
+      [ 6, 2, 0, 1, 1 ], [ 5, 1, 2, 0, 0 ], [ 1, 1, 1, 1, 1 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MoebiusTom}
+
+'MoebiusTom( <tom> )'
+
+'MoebiusTom' computes the M{\accent127 o}bius values both of the subgroup
+lattice of  the  group with table of  marks  <tom>  and of  the  poset of
+conjugacy classes of  subgroups.  It returns a record where the component
+'mu' contains the M{\accent127 o}bius values of the subgroup lattice, and
+the component 'nu' contains the M{\accent127  o}bius values of the poset.
+Moreover, according to  a conjecture  of Isaacs et al. (see \cite{HIO89},
+\cite{Pah93}), the  values  on the poset of conjugacy classes are derived
+from  those  of  the subgroup  lattice.   These  theoretical  values  are
+returned  in  the  component 'ex'.  For  that  computation,  the  derived
+subgroup  must be known in the component 'derivedSubgroup' of <tom>.  The
+numbers  of those subgroups where the theoretical value does not coincide
+with the actual value are returned in the component 'hyp'.
+
+|    gap> MoebiusTom( a5 );
+    rec(
+      mu := [ -60, 4, 2,,, -1, -1, -1, 1 ],
+      nu := [ -1, 2, 1,,, -1, -1, -1, 1 ],
+      ex := [ -60, 4, 2,,, -1, -1, -1, 1 ],
+      hyp := [  ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CyclicExtensionsTom}
+
+'CyclicExtensionsTom( <tom>, <p> )'
+
+According  to  A.~Dress  \cite{Dre69}, two columns of the table  of marks
+<tom>  are equal modulo the prime <p> if  and only  if  the corresponding
+subgroups are connected  by a chain  of normal extensions  of order  <p>.
+'CyclicExtensionsTom' returns the classes of this equivalence relation.
+
+This  information is  not used by  'NormalizerTom' although it might give
+additional restrictions in the search of normalizers.
+
+|    gap> CyclicExtensionsTom( a5, 2 );
+    [ [ 1, 2, 4 ], [ 3, 6 ], [ 5, 7 ], [ 8 ], [ 9 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdempotentsTom}
+
+'IdempotentsTom( <tom> )'
+
+'IdempotentsTom' returns the list of idempotents of the integral Burnside
+ring  described  by  the  table  of marks <tom>.   According  to A.~Dress
+\cite{Dre69},  these  idempotents  correspond to the  classes of  perfect
+subgroups, and each such idempotent is the characteristic function of all
+those  subgroups which arise by cyclic  extension from  the corresponding
+perfect subgroup.
+
+|    gap> IdempotentsTom( a5 );
+    [ 1, 1, 1, 1, 1, 1, 1, 1, 9 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ClassTypesTom}
+
+'ClassTypesTom( <tom> )'
+
+'ClassTypesTom'   distinguishes  isomorphism  types  of  the  classes  of
+subgroups of the  table of marks <tom> as  far  as this is possible.  Two
+subgroups  are  clearly  not  isomorphic  if  they have different orders.
+Moreover, isomorphic subgroups must contain the  same number of subgroups
+of each type.
+
+The types are represented by  numbers.   'ClassTypesTom' returns  a  list
+which contains for each class of subgroups its corresponding number.
+
+|    gap> a6 := TableOfMarks( "A6" );;
+    gap> ClassTypesTom( a6 );
+    [ 1, 2, 3, 3, 4, 5, 6, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 13, 14, 15,
+      15, 16 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ClassNamesTom}
+
+'ClassNamesTom( <tom> )'
+
+'ClassNamesTom' constructs generic  names  for  the conjugacy classes  of
+subgroups of the table of marks <tom>.
+
+In general, the generic name of a class of non--cyclic subgroups consists
+of three  parts, '\"(<order>)\"', '\"\_\{<type>\}\"', and '\"<letter>\"',
+and hence has the form '\"(<order>)\_\{<type>\}<letter>\"', where <order>
+indicates  the  order   of  the  subgroups,   <type>  is  a  number  that
+distinguishes  different  types  of  subgroups  of  the  same order,  and
+<letter> is a letter which distinguishes classes of subgroups of the same
+type  and order.  The type  of a subgroup is determined by the numbers of
+its  subgroups of other  types  (see "ClassTypesTom").  This  is slightly
+weaker than isomorphism.
+
+The  letter is omitted  if there is only  one class of subgroups  of that
+order and  type, and the  type is  omitted if there is only one  class of
+that order.  Moreover, the braces round the type are  omitted if the type
+number has only one digit.
+
+For classes of cyclic subgoups, the parentheses  round  the order and the
+type are omitted.  Hence  the most general form of their generic names is
+'\"<order>\,<letter>\"'.  Again, the  letter is omitted if there  is only
+one class of cyclic subgroups of that order.
+
+|    gap> ClassNamesTom( a6 );
+    [ "1", "2", "3a", "3b", "5", "4", "(4)_2a", "(4)_2b", "(6)a", "(6)b",
+      "(9)", "(10)", "(8)", "(12)a", "(12)b", "(18)", "(24)a", "(24)b", 
+      "(36)", "(60)a", "(60)b", "(360)" ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TomCyclic}
+
+'TomCyclic( <n> )'
+
+'TomCyclic' constructs the table  of marks  of the cyclic group  of order
+<n>.  A cyclic  group of order <n>  has as its subgroups for each divisor
+$d$ of <n> a cyclic subgroup  of order $d$.  The record which is returned
+has an additional  component 'name'  where for each subgroup its order is
+given as a string.
+
+|    gap> c6 := TomCyclic( 6 );
+    rec(
+      name := [ "1", "2", "3", "6" ],
+      subs := [ [ 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 2, 3, 4 ] ],
+      marks := [ [ 6 ], [ 3, 3 ], [ 2, 2 ], [ 1, 1, 1, 1 ] ] )
+    gap> DisplayTom( c6 );
+    1:  6
+    2:  3 3
+    3:  2 . 2
+    4:  1 1 1 1 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TomDihedral}
+
+'TomDihedral( <m> )'
+
+'TomDihedral' constructs  the table  of  marks  of  the dihedral group of
+order  <m>.  For  each divisor $d$ of <m>, a dihedral group of order $m =
+2n$ contains  subgroups of order $d$ according to the following rule.  If
+$d$ is odd  and divides $n$ then there is  only  one cyclic  subgroup  of
+order  $d$.  If  $d$ is even and  divides  $n$ then  there  are  a cyclic
+subgroup of order $d$ and two classes of dihedral subgroups of  order $d$
+which  are  cyclic,  too,  in the  case  $d  =  2$, see  example  below).
+Otherwise, (i.e. if  $d$  does not divide $n$, there is just one class of
+dihedral subgroups of order $d$.
+
+|    gap> d12 := TomDihedral( 12 );
+    rec(
+      name := [ "1", "2", "D_{2}a", "D_{2}b", "3", "D_{4}", "6", 
+          "D_{6}a", "D_{6}b", "D_{12}" ],
+      subs := [ [ 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], 
+          [ 1, 2, 3, 4, 6 ], [ 1, 2, 5, 7 ], [ 1, 3, 5, 8 ], 
+          [ 1, 4, 5, 9 ], [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] ],
+      marks := [ [ 12 ], [ 6, 6 ], [ 6, 2 ], [ 6, 2 ], [ 4, 4 ], 
+          [ 3, 3, 1, 1, 1 ], [ 2, 2, 2, 2 ], [ 2, 2, 2, 2 ], 
+          [ 2, 2, 2, 2 ], [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ] )
+    gap> DisplayTom( d12 );
+     1:  12
+     2:   6 6
+     3:   6 . 2
+     4:   6 . . 2
+     5:   4 . . . 4
+     6:   3 3 1 1 . 1
+     7:   2 2 . . 2 . 2
+     8:   2 . 2 . 2 . . 2
+     9:   2 . . 2 2 . . . 2
+    10:   1 1 1 1 1 1 1 1 1 1 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TomFrobenius}
+
+'TomFrobenius( <p>, <q> )'
+
+'TomFrobenius' computes the table of marks of a Frobenius  group of order
+$p q$, where $p$ is a prime and $q$ divides $p-1$.
+
+|    gap> f20 := TomFrobenius( 5, 4 );
+    rec(
+      name := [ "1", "2", "4", "5:1", "5:2", "5:4" ],
+      subs := [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ], [ 1, 4 ], [ 1, 2, 4, 5 ], 
+          [ 1, 2, 3, 4, 5, 6 ] ],
+      marks :=
+       [ [ 20 ], [ 10, 2 ], [ 5, 1, 1 ], [ 4, 4 ], [ 2, 2, 2, 2 ],
+          [ 1, 1, 1, 1, 1, 1 ] ] )
+    gap> DisplayTom( f20 );
+    1:  20
+    2:  10 2
+    3:   5 1 1
+    4:   4 . . 4
+    5:   2 2 . 2 2
+    6:   1 1 1 1 1 1 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+

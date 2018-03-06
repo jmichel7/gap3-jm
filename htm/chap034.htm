@@ -1,0 +1,585 @@
+<html><head><title>GAP3 Manual: 34 Matrices</title></head>
+<body bgcolor="ffffff">
+<h1>34 Matrices</h1>
+<P><P>
+<A name = "I0"></a>
+<A name = "I1"></a>
+
+<P>
+Matrices are an  important tool in algebra.  A matrix nicely represents a
+homomorphism  between two vector spaces with respect to a choice of bases
+for  the  vector  spaces.   Also  matrices  represent systems  of  linear
+equations.
+<P>
+In <strong>GAP3</strong>  matrices are represented by list of vectors  (see  <a href="chap032.htm">Vectors</a>).
+The vectors must all have the same length, and their elements must lie in
+a  common  field.   The  field  may  be  the  field  of   rationals  (see
+<a href="chap012.htm">Rationals</a>), a cyclotomic field (see <a href="chap013.htm">Cyclotomics</a>), a finite field (see
+<a href="chap018.htm">Finite Fields</a>),  or a library and/or user  defined field (or ring) such
+as a polynomial ring (see <a href="chap019.htm">Polynomials</a>).
+<P>
+The first  section in this chapter describes the operations applicable to
+matrices (see <a href="chap034.htm#SECT001">Operations for Matrices</a>).   The next  sections  describes
+the function that tests whether an object is a matrix (see <a href="chap034.htm#SECT002">IsMat</a>).  The
+next  sections describe the functions that create  certain  matrices (see
+<a href="chap034.htm#SECT003">IdentityMat</a>, <a href="chap034.htm#SECT004">NullMat</a>, <a href="chap034.htm#SECT005">TransposedMat</a>,  and <a href="chap034.htm#SECT006">KroneckerProduct</a>).  The
+next  sections  describe functions that  compute  certain  characteristic
+values of matrices  (see  <a href="chap034.htm#SECT007">DimensionsMat</a>, <a href="chap034.htm#SECT014">TraceMat</a>,  <a href="chap034.htm#SECT015">DeterminantMat</a>,
+<a href="chap034.htm#SECT016">RankMat</a>, and  <a href="chap034.htm#SECT017">OrderMat</a>).   The  next  sections describe the functions
+that are related to the interpretation of a matrix  as a system of linear
+equations   (see   <a href="chap034.htm#SECT018">TriangulizeMat</a>,   <a href="chap034.htm#SECT019">BaseMat</a>,   <a href="chap034.htm#SECT020">NullspaceMat</a>,   and
+<a href="chap034.htm#SECT021">SolutionMat</a>).   The last  two  sections  describe  the  functions  that
+diagonalize    an    integer    matrix    (see    <a href="chap034.htm#SECT022">DiagonalizeMat</a>    and
+<a href="chap034.htm#SECT023">ElementaryDivisorsMat</a>).
+<P>
+Because  matrices are  just a special  case of lists, all operations  and
+functions  for  lists  are  applicable  to  matrices  also  (see  chapter
+<a href="chap027.htm">Lists</a>).   This especially includes  accessing elements of a matrix (see
+<a href="chap027.htm#SECT004">List Elements</a>), changing elements of  a matrix (see <a href="chap027.htm#SECT006">List Assignment</a>),
+and comparing matrices (see <a href="chap027.htm#SECT012">Comparisons of Lists</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap034.htm#SECT001">Operations for Matrices</a>
+<LI> <A HREF="chap034.htm#SECT002">IsMat</a>
+<LI> <A HREF="chap034.htm#SECT003">IdentityMat</a>
+<LI> <A HREF="chap034.htm#SECT004">NullMat</a>
+<LI> <A HREF="chap034.htm#SECT005">TransposedMat</a>
+<LI> <A HREF="chap034.htm#SECT006">KroneckerProduct</a>
+<LI> <A HREF="chap034.htm#SECT007">DimensionsMat</a>
+<LI> <A HREF="chap034.htm#SECT008">IsDiagonalMat</a>
+<LI> <A HREF="chap034.htm#SECT009">IsLowerTriangularMat</a>
+<LI> <A HREF="chap034.htm#SECT010">IsUpperTriangularMat</a>
+<LI> <A HREF="chap034.htm#SECT011">DiagonalOfMat</a>
+<LI> <A HREF="chap034.htm#SECT012">DiagonalMat</a>
+<LI> <A HREF="chap034.htm#SECT013">PermutationMat</a>
+<LI> <A HREF="chap034.htm#SECT014">TraceMat</a>
+<LI> <A HREF="chap034.htm#SECT015">DeterminantMat</a>
+<LI> <A HREF="chap034.htm#SECT016">RankMat</a>
+<LI> <A HREF="chap034.htm#SECT017">OrderMat</a>
+<LI> <A HREF="chap034.htm#SECT018">TriangulizeMat</a>
+<LI> <A HREF="chap034.htm#SECT019">BaseMat</a>
+<LI> <A HREF="chap034.htm#SECT020">NullspaceMat</a>
+<LI> <A HREF="chap034.htm#SECT021">SolutionMat</a>
+<LI> <A HREF="chap034.htm#SECT022">DiagonalizeMat</a>
+<LI> <A HREF="chap034.htm#SECT023">ElementaryDivisorsMat</a>
+<LI> <A HREF="chap034.htm#SECT024">PrintArray</a>
+</ol>
+<A NAME="SECT001"><h2>34.1 Operations for Matrices</h2></a>
+<P><P><P>
+<code><var>mat</var> + <var>scalar</var></code> <BR> 
+<code><var>scalar</var> + <var>mat</var></code>
+<P>
+This  forms evaluates  to  the  sum of  the matrix  <var>mat</var> and the  scalar
+<var>scalar</var>.  The elements of <var>mat</var> and <var>scalar</var> must lie in a common field.
+The sum is a new matrix where each entry is the sum of the  corresponding
+entry of <var>mat</var> and <var>scalar</var>.
+<P>
+<code><var>mat1</var> + <var>mat2</var></code>
+<P>
+This  form evaluates to the  sum  of the two matrices <var>mat1</var> and  <var>mat2</var>,
+which  must have  the  same dimensions and whose  elements must lie in  a
+common field.  The sum is a new matrix where each entry is the sum of the
+corresponding entries of <var>mat1</var> and <var>mat2</var>.
+<P>
+<code><var>mat</var> - <var>scalar</var></code> <BR> 
+<code><var>scalar</var> - <var>mat</var></code> <BR> 
+<code><var>mat1</var> - <var>mat2</var></code>
+<P>
+The definition  for the <code>-</code> operator are similar to the above definitions
+for the <code>+</code> operator, except that <code>-</code> subtracts of course.
+<P>
+<code><var>mat</var> * <var>scalar</var></code> <BR> 
+<code><var>scalar</var> * <var>mat</var></code>
+<P>
+This forms evaluate  to the product of the matrix  <var>mat</var> and  the  scalar
+<var>scalar</var>.  The elements of <var>mat</var> and <var>scalar</var> must lie in a common field.
+The product  is  a  new matrix  where each entry  is the  product of  the
+corresponding entries of <var>mat</var> and <var>scalar</var>.
+<P>
+<code><var>vec</var> * <var>mat</var></code>
+<P>
+This form evaluates to  the product  of  the vector <var>vec</var> and  the matrix
+<var>mat</var>.   The length of <var>vec</var>  and  the  number  of rows of <var>mat</var> must  be
+equal.  The  elements of <var>vec</var> and <var>mat</var> must lie  in a common field.  If
+<var>vec</var> is a vector of length <var>n</var> and <var>mat</var> is  a matrix with <var>n</var>  rows and
+<var>m</var> columns, the product is a new  vector of length <var>m</var>.   The element at
+position  <var>i</var> is  the sum  of  <code><var>vec</var>[<var>l</var>] *  <var>mat</var>[<var>l</var>][<var>i</var>]</code> with <var>l</var>
+running from 1 to <var>n</var>.
+<P>
+<code><var>mat</var> * <var>vec</var></code>
+<P>
+This form evaluates to the product of  the  matrix  <var>mat</var> and the  vector
+<var>vec</var>.  The number of columns  of <var>mat</var> and  the length  of <var>vec</var> must be
+equal.  The elements of <var>mat</var>  and <var>vec</var> must lie in a common  field.  If
+<var>mat</var> is a  matrix with <var>m</var> rows and <var>n</var> columns and <var>vec</var> is a vector of
+length <var>n</var>, the  product  is a new vector of length <var>m</var>.  The element  at
+position  <var>i</var>  is the sum  of  <code><var>mat</var>[<var>i</var>][<var>l</var>]  * <var>vec</var>[<var>l</var>]</code> with <var>l</var>
+running from 1 to <var>n</var>.
+<P>
+<code><var>mat1</var> * <var>mat2</var></code>
+<P>
+This form evaluates to the product of the two matrices <var>mat1</var> and <var>mat2</var>.
+The number of columns of <var>mat1</var> and the number of rows of  <var>mat2</var> must be
+equal.  The elements of <var>mat1</var> and <var>mat2</var> must lie in a common field.  If
+<var>mat1</var> is a matrix with <var>m</var>  rows and <var>n</var> columns and  <var>mat2</var> is a matrix
+with  <var>n</var> rows and <var>o</var> columns, the result is a new  matrix with <var>m</var> rows
+and  <var>o</var> columns.  The element in row <var>i</var> at position <var>k</var> of the  product
+is the sum of <code><var>mat1</var>[<var>i</var>][<var>l</var>] *  <var>mat2</var>[<var>l</var>][<var>k</var>]</code>  with  <var>l</var> running
+from 1 to <var>n</var>.
+<P>
+<code><var>mat1</var> / <var>mat2</var></code> <BR> 
+<code><var>scalar</var> / <var>mat</var></code> <BR> 
+<code><var>mat</var> / <var>scalar</var></code> <BR> 
+<code><var>vec</var> / <var>mat</var></code>
+<P>
+In general  <code><var>left</var>  / <var>right</var></code>  is defined  as <code><var>left</var> * <var>right</var>^-1</code>.
+Thus in the above forms the right operand must always be invertable.
+<P>
+<code><var>mat</var> ^ <var>int</var></code>
+<P>
+This form evaluates  to  the <var>int</var>-th  power of the matrix  <var>mat</var>.  <var>mat</var>
+must be a square matrix, <var>int</var> must be an integer.  If <var>int</var> is negative,
+<var>mat</var> must be invertible.   If  <var>int</var>  is 0,  the result is the  identity
+matrix, even if <var>mat</var> is not invertible.
+<P>
+<code><var>mat1</var> ^ <var>mat2</var></code>
+<P>
+This form evaluates to the conjugation of the matrix <var>mat1</var> by the matrix
+<var>mat2</var>,  i.e., to <code><var>mat2</var>^-1  *  <var>mat1</var>  *  <var>mat2</var></code>.  <var>mat2</var> must be
+invertible and <var>mat1</var> must be such that these product can be computed.
+<P>
+<code><var>vec</var> ^ <var>mat</var></code>
+<P>
+This  is  in  every  respect  equivalent  to  <code><var>vec</var>  *  <var>mat</var></code>.   This
+operations reflects the fact that matrices operate on the vector space by
+multiplication from the right.
+<P>
+<code><var>scalar</var> + <var>matlist</var></code> <BR> 
+<code><var>matlist</var> + <var>scalar</var></code> <BR> 
+<code><var>scalar</var> - <var>matlist</var></code> <BR> 
+<code><var>matlist</var> - <var>scalar</var></code> <BR> 
+<code><var>scalar</var> * <var>matlist</var></code> <BR> 
+<code><var>matlist</var> * <var>scalar</var></code> <BR> 
+<code><var>matlist</var> / <var>scalar</var></code>
+<P>
+A scalar <var>scalar</var>  may also  be added,  subtracted,  multiplied with,  or
+divide into a whole list of matrices <var>matlist</var>.  The result is a new list
+of matrices where each  matrix is the result  of performing the operation
+with the corresponding matrix in <var>matlist</var>.
+<P>
+<code><var>mat</var> * <var>matlist</var></code> <BR> 
+<code><var>matlist</var> * <var>mat</var></code>
+<P>
+A  matrix  <var>mat</var>  may  also be multiplied  with a whole list  of matrices
+<var>matlist</var>.  The  result  is a new list of matrices, where each matrix  is
+the product of <var>mat</var> and the corresponding matrix in <var>matlist</var>.
+<P>
+<code><var>matlist</var> / <var>mat</var></code>
+<P>
+This form evaluates to  <code><var>matlist</var> * <var>mat</var>^-1</code>.  <var>mat</var>  must of course
+be invertable.
+<P>
+<code><var>vec</var> * <var>matlist</var></code>
+<P>
+This form evaluates to  the product  of the vector <var>vec</var> and the  list of
+matrices  <var>mat</var>.  The length  <var>l</var> of  <var>vec</var> and <var>matlist</var> must be  equal.
+All matrices in <var>matlist</var> must have the same dimensions.  The elements of
+<var>vec</var> and the elements of the matrices in <var>matlist</var> must lie in a  common
+field.   The product  is the sum of <code><var>vec</var>[<var>i</var>] *  <var>matlist</var>[<var>i</var>]</code> with
+<var>i</var> running from 1 to <var>l</var>.
+<P>
+<code>Comm( <var>mat1</var>, <var>mat2</var> )</code>
+<P>
+<code>Comm</code> returns the  commutator of  the matrices <var>mat1</var> and  <var>mat2</var>, i.e.,
+<code><var>mat1</var>^-1  * <var>mat2</var>^-1  * <var>mat1</var>  *  <var>mat2</var></code>.  <var>mat1</var> and <var>mat2</var>
+must be invertable and such that these product can be computed.
+<P>
+There is  one exception to  the rule that  the operands or their elements
+must  lie in common field.  It is allowed  that  one operand is  a finite
+field element, a finite field vector, a finite field matrix, or a list of
+finite  field  matrices, and the other operand  is an integer, an integer
+vector, an integer matrix,  or  a list of integer matrices.  In this case
+the integers are interpreted  as  <code><var>int</var> * <var>GF</var>.one</code>, where <var>GF</var> is the
+finite field (see <a href="chap018.htm#SECT003">Operations for Finite Field Elements</a>).
+<P>
+For  all  the above operations the result  is new, i.e., not identical to
+any other list  (see  <a href="chap027.htm#SECT009">Identical Lists</a>).  This is the  case  even if the
+result is equal  to  one of  the  operands, e.g., if  you add zero  to  a
+matrix.
+<P><A NAME="SECT002"><h2>34.2 IsMat</h2></a>
+<P><P><P>
+<code>IsMat( <var>obj</var> )</code>
+<P>
+<code>IsMat</code> return <code>true</code> if <var>obj</var>, which can be an object of arbitrary type,
+is  a matrix and <code>false</code>  otherwise.  Will cause an error  if <var>obj</var> is an
+unbound variable.
+<P>
+<pre>    gap> IsMat( [ [ 1, 0 ], [ 0, 1 ] ] );
+    true    # a matrix is a list of vectors
+    gap> IsMat( [ [ 1, 2, 3, 4, 5 ] ] );
+    true
+    gap> IsMat( [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] );
+    true
+    gap> IsMat( [ [ Z(2)^0, 0 ], [ 0, Z(2)^0 ] ] );
+    false    # <code>Z(2)^0</code> and <code>0</code> do not lie in a common field
+    gap> IsMat( [ 1, 0 ] );
+    false    # a vector is not a matrix
+    gap> IsMat( 1 );
+    false    # neither is a scalar </pre>
+<P><A NAME="SECT003"><h2>34.3 IdentityMat</h2></a>
+<P><P><P>
+<code>IdentityMat( <var>n</var> )</code> <BR> 
+<code>IdentityMat( <var>n</var>, <var>F</var> )</code>
+<P>
+<code>IdentityMat</code> returns the identity matrix  with <var>n</var> rows  and <var>n</var> columns
+over  the  field  <var>F</var>.  If  no field is given, <code>IdentityMat</code>  returns the
+identity matrix over the field of rationals.  Each call to <code>IdentityMat</code>
+returns a new matrix, so it is safe to modify the result.
+<P>
+<pre>    gap> IdentityMat( 3 );
+    [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
+    gap> PrintArray( last );
+    [ [  1,  0,  0 ],
+      [  0,  1,  0 ],
+      [  0,  0,  1 ] ]
+    gap> PrintArray( IdentityMat( 3, GF(2) ) );
+    [ [  Z(2)^0,  0*Z(2),  0*Z(2) ],
+      [  0*Z(2),  Z(2)^0,  0*Z(2) ],
+      [  0*Z(2),  0*Z(2),  Z(2)^0 ] ] </pre>
+<P><A NAME="SECT004"><h2>34.4 NullMat</h2></a>
+<P><P><P>
+<code>NullMat( <var>m</var> )</code> <BR> 
+<code>NullMat( <var>m</var>, <var>n</var> )</code> <BR> 
+<code>NullMat( <var>m</var>, <var>n</var>, <var>F</var> )</code>
+<P>
+<code>NullMat</code>  returns the null matrix  with <var>m</var> rows and  <var>n</var> columns over the
+field  <var>F</var>; if <var>n</var> is omitted,  it is assumed equal to  <var>m</var>. If no field is
+given,  <code>NullMat</code> returns the null matrix over the field of rationals. Each
+call to <code>NullMat</code> returns a new matrix, so it is safe to modify the result.
+<P>
+<pre>    gap> PrintArray( NullMat( 2, 3 ) );
+    [ [  0,  0,  0 ],
+      [  0,  0,  0 ] ]
+    gap> PrintArray( NullMat( 2, 2, GF(2) ) );
+    [ [  0*Z(2),  0*Z(2) ],
+      [  0*Z(2),  0*Z(2) ] ] </pre>
+<P><A NAME="SECT005"><h2>34.5 TransposedMat</h2></a>
+<P><P><P>
+<code>TransposedMat( <var>mat</var> )</code>
+<P>
+<code>TransposedMat</code>  returns  the  transposed  of   the  matrix  <var>mat</var>.   The
+transposed matrix is a new  matrix  <var>trn</var>, such that <code><var>trn</var>[<var>i</var>][<var>k</var>]</code> is
+<code><var>mat</var>[<var>k</var>][<var>i</var>]</code>.
+<P>
+<pre>    gap> TransposedMat( [ [ 1, 2 ], [ 3, 4 ] ] );
+    [ [ 1, 3 ], [ 2, 4 ] ]
+    gap> TransposedMat( [ [ 1..5 ] ] );
+    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ] ] </pre>
+<P><A NAME="SECT006"><h2>34.6 KroneckerProduct</h2></a>
+<P><P><P>
+<code>KroneckerProduct( <var>mat1</var>, ..., <var>matn</var> )</code>
+<P>
+<code>KroneckerProduct</code>  returns the  Kronecker product  of the matrices <var>mat1</var>,
+...,  <var>matn</var>. If <var>mat1</var> is a  <var>m</var> by <var>n</var> matrix and  <var>mat2</var> is a <var>o</var> by <var>p</var>
+matrix,  the  Kronecker  product  of  <var>mat1</var>  by  <var>mat2</var> is a <code><var>m</var>*<var>o</var></code> by
+<code><var>n</var>*<var>p</var></code>  matrix,  such  that  the  entry  in row <code>(<var>i1</var>-1)*<var>o</var>+<var>i2</var></code> at
+position <code>(<var>k1</var>-1)*<var>p</var>+<var>k2</var></code> is <code><var>mat1</var>[<var>i1</var>][<var>k1</var>] * 
+<var>mat2</var>[<var>i2</var>][<var>k2</var>]</code>.
+<P>
+<pre>    gap> mat1 := [ [ 0, -1, 1 ], [ -2, 0, -2 ] ];;
+    gap> mat2 := [ [ 1, 1 ], [ 0, 1 ] ];;
+    gap> PrintArray( KroneckerProduct( mat1, mat2 ) );
+    [ [   0,   0,  -1,  -1,   1,   1 ],
+      [   0,   0,   0,  -1,   0,   1 ],
+      [  -2,  -2,   0,   0,  -2,  -2 ],
+      [   0,  -2,   0,   0,   0,  -2 ] ] </pre>
+<P><A NAME="SECT007"><h2>34.7 DimensionsMat</h2></a>
+<P><P><P>
+<code>DimensionsMat( <var>mat</var> )</code>
+<P>
+<code>DimensionsMat</code> returns the dimensions of the matrix <var>mat</var>  as  a list of
+two integers.  The first entry is the number of rows of <var>mat</var>, the second
+entry is the number of columns.
+<P>
+<pre>    gap> DimensionsMat( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );
+    [ 2, 3 ]
+    gap> DimensionsMat( [ [ 1 .. 5 ] ] );
+    [ 1, 5 ] </pre>
+<P><A NAME="SECT008"><h2>34.8 IsDiagonalMat</h2></a>
+<P><P><P>
+<code>IsDiagonalMat( <var>mat</var> )</code>
+<P>
+<var>mat</var> must be a matrix. This function returns <code>true</code> if <var>mat</var> is square and
+all  entries  <code>mat[i][j]</code>  with  <code>i<>j</code>  are  equal  to <code>0*mat[i][j]</code> and
+<code>false</code> otherwise.
+<P>
+<pre>    gap> mat := [ [ 1, 2 ], [ 3, 1 ] ];;
+    gap> IsDiagonalMat( mat );
+    false </pre>
+<P><A NAME="SECT009"><h2>34.9 IsLowerTriangularMat</h2></a>
+<P><P><P>
+<code>IsLowerTriangularMat( <var>mat</var> )</code>
+<P>
+<var>mat</var>  must be  a matrix.  This  function  returns <code>true</code> if all  entries
+ <code>mat[i][j]</code> with <code>j>i</code>   are   equal  to <code>0*mat[i][j]</code>   and    <code>false</code>
+ otherwise.
+<P>
+<pre>    gap> a := [ [ 1, 2 ], [ 3, 1 ] ];;
+    gap> IsLowerTriangularMat( a );
+    false
+    gap> a[1][2] := 0;;
+    gap> IsLowerTriangularMat( a );
+    true </pre>
+<P><A NAME="SECT010"><h2>34.10 IsUpperTriangularMat</h2></a>
+<P><P><P>
+<code>IsUpperTriangularMat( <var>mat</var> )</code>
+<P>
+<var>mat</var>  must  be  a  matrix.  This  function  returns  <code>true</code> if all entries
+<code>mat[i][j]</code>  with  <code>j  <  i</code>  are  equal  to  <code>0*mat[i][j]</code>  and  <code>false</code>
+otherwise.
+<P>
+<pre>    gap> a := [ [ 1, 2 ], [ 3, 1 ] ];;
+    gap> IsUpperTriangularMat( a );
+    false
+    gap> a[2][1] := 0;;
+    gap> IsUpperTriangularMat( a );
+    true </pre>
+<P><A NAME="SECT011"><h2>34.11 DiagonalOfMat</h2></a>
+<P><P><P>
+<code>DiagonalOfMat( <var>mat</var> )</code>
+<P>
+This function returns the list of diagonal entries of the matrix <var>mat</var>,
+that is the list of <code><var>mat</var>[i][i]</code>.
+<P>
+<pre>    gap> mat := [ [ 1, 2 ], [ 3, 1 ] ];;
+    gap> DiagonalOfMat( mat );
+    [ 1, 1 ] </pre>
+<P><A NAME="SECT012"><h2>34.12 DiagonalMat</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>DiagonalMat( <var>mat1</var>, ... , <var>matn</var> )</code>
+<P>
+returns the block diagonal direct sum of the matrices <var>mat1</var>, <I>...</I>,
+<var>matn</var>. Blocks of size <I>1&times; 1</I> may be given as scalars.
+<P>
+<pre>    gap> C1 := [ [   2,  -1,   0,   0 ],
+    >            [  -1,   2,  -1,   0 ],
+    >            [   0,  -1,   2,  -1 ],
+    >            [   0,   0,  -1,   2 ] ];;
+    gap> C2 := [ [   2,   0,  -1 ],
+    >            [   0,   2,  -1 ],
+    >            [  -1,  -1,   2 ] ];;
+    gap> PrintArray( DiagonalMat( C1, 3, C2 ) );
+    [ [   2,  -1,   0,   0,   0,   0,   0,   0 ],
+      [  -1,   2,  -1,   0,   0,   0,   0,   0 ],
+      [   0,  -1,   2,  -1,   0,   0,   0,   0 ],
+      [   0,   0,  -1,   2,   0,   0,   0,   0 ],
+      [   0,   0,   0,   0,   3,   0,   0,   0 ],
+      [   0,   0,   0,   0,   0,   2,   0,  -1 ],
+      [   0,   0,   0,   0,   0,   0,   2,  -1 ],
+      [   0,   0,   0,   0,   0,  -1,  -1,   2 ] ]</pre>
+<P>
+To make a diagonal matrix with a specified diagonal <var>d</var> use
+<code>ApplyFunc(DiagonalMat, d )</code>.
+<P>
+‣ PermutationMat( perm, dim[, F] )	( function )
+returns a matrix in dimension dim over the field given by F (i.e. the smallest field containing the element F or F itself if it is a field) that represents the permutation perm acting by permuting the basis vectors as it permutes points.
+<P><A NAME="SECT013"><h2>34.13 PermutationMat</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>PermutationMat( <var>perm</var>, <var>dim</var> [,<var>F</var>])</code>
+<P>
+returns  a matrix  in dimension  <var>dim</var> over  the field  <var>F</var> (by default the
+rationals)  that represents the permutation  <var>perm</var> acting by permuting the
+basis vectors as it permutes points.
+<P>
+<pre>    gap> PermutationMat((1,2,3),4);
+    [ [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 1 ] ]</pre>
+<P><A NAME="SECT014"><h2>34.14 TraceMat</h2></a>
+<P><P><P>
+<code>TraceMat( <var>mat</var> )</code>
+<P>
+<code>TraceMat</code> returns  the trace  of the square matrix <var>mat</var>.   The trace is
+the sum of all entries on the diagonal of <var>mat</var>.
+<P>
+<pre>    gap> TraceMat( [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ] );
+    15
+    gap> TraceMat( IdentityMat( 4, GF(2) ) );
+    0*Z(2) </pre>
+<P><A NAME="SECT015"><h2>34.15 DeterminantMat</h2></a>
+<P><P><P>
+<code>DeterminantMat( <var>mat</var> )</code>
+<P>
+<code>DeterminantMat</code> returns the determinant of the square matrix <var>mat</var>.  The
+determinant is defined by<BR> 
+<I>&sum;<sub>p &isin; Symm(n)</sub>{sign(p)&prod;<sub>i=1</sub><sup>n</sup>mat[i][i<sup>p</sup>]}</I>.
+<P>
+<pre>    gap> DeterminantMat( [ [ 1, 2 ], [ 3, 4 ] ] );
+    -2
+    gap> DeterminantMat( [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, Z(3) ] ] );
+    Z(3) </pre>
+<P>
+Note that <code>DeterminantMat</code> does not use  the above  definition to compute
+the  result.   Instead  it  performs a Gaussian  elimination.   For large
+rational matrices this may take very long, because the entries may become
+very large, even if the final result is a small integer.
+<P><A NAME="SECT016"><h2>34.16 RankMat</h2></a>
+<P><P><P>
+<code>RankMat( <var>mat</var> )</code>
+<P>
+<code>RankMat</code>  returns the  rank of the matrix <var>mat</var>.  The rank is defined as
+the  dimension  of the vector  space spanned by the rows  of  <var>mat</var>.   It
+follows  that  a <var>n</var> by  <var>n</var>  matrix is invertible exactly if its rank is
+<var>n</var>.
+<P>
+<pre>    gap> RankMat( [ [ 4, 1, 2 ], [ 3, -1, 4 ], [ -1, -2, 2 ] ] );
+    2 </pre>
+<P>
+Note that <code>RankMat</code> performs a  Gaussian elimination.  For large rational
+matrices  this  may take  very long, because the  entries may become very
+large.
+<P><A NAME="SECT017"><h2>34.17 OrderMat</h2></a>
+<P><P><P>
+<code>OrderMat( <var>mat</var> )</code>
+<P>
+<code>OrderMat</code> returns  the order of the invertible square matrix <var>mat</var>.  The
+order <var>ord</var> is the smallest positive integer such  that <code><var>mat</var>^<var>ord</var></code> is
+the identity.
+<P>
+<pre>    gap> OrderMat( [ [ 0*Z(2), 0*Z(2), Z(2)^0 ],
+    >                 [ Z(2)^0, Z(2)^0, 0*Z(2) ],
+    >                 [ Z(2)^0, 0*Z(2), 0*Z(2) ] ] );
+    4 </pre>
+<P>
+<code>OrderMat</code>  first  computes <var>ord1</var>  such that  the first  standard  basis
+vector  is  mapped  by  <code><var>mat</var>^<var>ord1</var></code> onto  itself.   It  does this  by
+applying <var>mat</var> repeatedly to the  first standard basis  vector.   Then it
+computes <var>mat1</var> as <code><var>mat1</var>^<var>ord1</var></code>.   Then it  computes <var>ord2</var> such that
+the second  standard  basis vector is  mapped  by  <code><var>mat1</var>^<var>ord2</var></code>  onto
+itself.  This process is repeated until all basis vectors are mapped onto
+themselves.  <code>OrderMat</code> warns you that the order may be infinite, when it
+finds that the order must be larger than 1000.
+<P><A NAME="SECT018"><h2>34.18 TriangulizeMat</h2></a>
+<P><P><P>
+<code>TriangulizeMat( <var>mat</var> )</code>
+<P>
+<code>TriangulizeMat</code>  brings the matrix <var>mat</var>  into upper triangular form. Note
+that  <var>mat</var> is changed. A matrix is in upper triangular form when the first
+nonzero  entry in each  row is one  and lies further  to the right than the
+first  nonzero  entry  in  the  previous  row. Furthermore, above the first
+nonzero  entry in each row all entries  are zero. Note that the matrix will
+have  trailing zero rows if  the rank of <var>mat</var>  is not maximal. The rows of
+the  resulting  matrix  span  the  same  vectorspace  than  the rows of the
+original matrix <var>mat</var>. The function returns the indices of the lines of the
+orginal  matrix  corresponding  to  the  non-zero lines of the triangulized
+matrix.
+<P>
+<pre>    gap> m := [ [ 0, -3, -1 ], [ -3, 0, -1 ], [ 2, -2, 0 ] ];;
+    gap> TriangulizeMat( m ); m;
+    [ 2, 1 ]
+    [ [ 1, 0, 1/3 ], [ 0, 1, 1/3 ], [ 0, 0, 0 ] ] </pre>
+<P>
+Note  that for large rational matrices <code>TriangulizeMat</code> may take very long,
+because  the entries may become very large during the Gaussian elimination,
+even if the final result contains only small integers.
+<P><A NAME="SECT019"><h2>34.19 BaseMat</h2></a>
+<P><P><P>
+<code>BaseMat( <var>mat</var> )</code>
+<P>
+<code>BaseMat</code>  returns a  standard  base for the vector space  spanned by the
+rows of the matrix <var>mat</var>.  The standard base is in upper triangular form.
+That means that  the  first nonzero vector in each  row  is  one and lies
+further to the right than  the first nonzero  entry in the previous  row.
+Furthermore, above  the  first  nonzero entry in each row all entries are
+zero.
+<P>
+<pre>    gap> BaseMat( [ [ 0, -3, -1 ], [ -3, 0, -1 ], [ 2, -2, 0 ] ] );
+    [ [ 1, 0, 1/3 ], [ 0, 1, 1/3 ] ] </pre>
+<P>
+Note that  for  large  rational  matrices <code>BaseMat</code>  may take very  long,
+because  the  entries   may  become   very  large   during  the  Gaussian
+elimination, even if the final result contains only small integers.
+<P><A NAME="SECT020"><h2>34.20 NullspaceMat</h2></a>
+<P><P><P>
+<code>NullspaceMat( <var>mat</var> )</code>
+<P>
+<code>NullspaceMat</code> returns a base for the nullspace of the matrix <var>mat</var>.  The
+nullspace is the set of vectors <var>vec</var> such that <code><var>vec</var> * <var>mat</var></code>  is the
+zero vector.   The returned  base is the standard  base for the nullspace
+(see <a href="chap034.htm#SECT019">BaseMat</a>).
+<P>
+<pre>    gap> NullspaceMat( [ [ 2, -4, 1 ], [ 0, 0, -4 ], [ 1, -2, -1 ] ] );
+    [ [ 1, 3/4, -2 ] ] </pre>
+<P>
+Note that for large rational matrices <code>NullspaceMat</code> may take very  long,
+because   the   entries   may  become  very  large  during  the  Gaussian
+elimination, even if the final result only contains small integers.
+<P><A NAME="SECT021"><h2>34.21 SolutionMat</h2></a>
+<P><P><P>
+<code>SolutionMat( <var>mat</var>, <var>vec</var> )</code>
+<P>
+<code>SolutionMat</code>  returns  one solution  of the equation <code><var>x</var>  *  <var>mat</var>  =
+<var>vec</var></code> or <code>false</code> if no such solution exists.
+<P>
+<pre>    gap> SolutionMat( [ [ 2, -4, 1 ], [ 0, 0, -4 ], [ 1, -2, -1 ] ],
+    >                  [ 10, -20, -10 ] );
+    [ 5, 15/4, 0 ]
+    gap> SolutionMat( [ [ 2, -4, 1 ], [ 0, 0, -4 ], [ 1, -2, -1 ] ],
+    >                  [ 10, 20, -10 ] );
+    false </pre>
+<P>
+Note  that for large rational  matrices <code>SolutionMat</code> may take very long,
+because   the  entries  may   become  very  large   during  the  Gaussian
+elimination, even if the final result only contains small integers.
+<P><A NAME="SECT022"><h2>34.22 DiagonalizeMat</h2></a>
+<P><P><P>
+<code>DiagonalizeMat( <var>mat</var> )</code>
+<P>
+<code>DiagonalizeMat</code>  transforms the  integer matrix <var>mat</var> by  multiplication
+with unimodular  (i.e., determinant +1  or -1) integer matrices  from the
+left  and from the right into diagonal form (i.e., only diagonal  entries
+are  nonzero).  Note  that  <code>DiagonalizeMat</code>  changes <var>mat</var>  and  returns
+nothing.  If  there  are  several  diagonal matrices  to  which  <var>mat</var> is
+equivalent,  it is not  specified  which one is computed, except that all
+zero entries  on  the diagonal are collected at the lower right  end (see
+<a href="chap034.htm#SECT023">ElementaryDivisorsMat</a>).
+<P>
+<pre>    gap> m := [ [ 0, -1, 1 ], [ -2, 0, -2 ], [ 2, -2, 4 ] ];;
+    gap> DiagonalizeMat( m );  m;
+    [ [ 1, 0, 0 ], [ 0, 2, 0 ], [ 0, 0, 0 ] ] </pre>
+<P>
+Note that for large integer matrices <code>DiagonalizeMat</code> may take very long,
+because the entries may become very large during the computation, even if
+the final result only contains small integers.
+<P><A NAME="SECT023"><h2>34.23 ElementaryDivisorsMat</h2></a>
+<P><P><P>
+<code>ElementaryDivisorsMat( <var>mat</var> )</code>
+<P>
+<code>ElementaryDivisors</code> returns a list of the elementary divisors, i.e., the
+unique <var>d</var> with <code><var>d</var>[<var>i</var>]</code>  divides <code><var>d</var>[<var>i</var>+1]</code>  and <var>mat</var> is equivalent
+to a diagonal matrix  with the elements  <code><var>d</var>[<var>i</var>]</code> on the  diagonal (see
+<a href="chap034.htm#SECT022">DiagonalizeMat</a>).
+<P>
+<pre>    gap> m := [ [ 0, -1, 1 ], [ -2, 0, -2 ], [ 2, -2, 4 ] ];;
+    gap> ElementaryDivisorsMat( m );
+    [ 1, 2, 0 ] </pre>
+<P><A NAME="SECT024"><h2>34.24 PrintArray</h2></a>
+<P><P><P>
+<code>PrintArray( <var>mat </var> )</code>
+<P>
+<code>PrintArray</code> displays the matrix <var>mat</var> in a pretty way.
+<P>
+<pre>    gap> m := [[1,2,3,4],[5,6,7,8],[9,10,11,12]];
+    [ [ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ] ]
+    gap> PrintArray( m );
+    [ [   1,   2,   3,   4 ],
+      [   5,   6,   7,   8 ],
+      [   9,  10,  11,  12 ] ]</pre>
+<P><a href ="chap033.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap035.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

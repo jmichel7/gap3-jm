@@ -1,0 +1,249 @@
+<html><head><title>GAP3 Manual: 106 Cyclotomic polynomials</title></head>
+<body bgcolor="ffffff">
+<h1>106 Cyclotomic polynomials</h1>
+<P><P><P>
+Cyclotomic  numbers, and cyclotomic polynomials  over the rationals or some
+cyclotomic  field, play an important role in the study of reductive groups,
+so  they do in <strong>CHEVIE</strong>. Special facilities  are provided to deal with them.
+The  most prominent is the type <code>CycPol</code>  which represents the product of a
+polynomial  with  a  rational  fraction  in  one variable with all poles or
+zeroes equal to 0 or roots of unity.
+<P>
+The  advantages  of  representing  as  <code>CycPol</code>  objects  which  can  be so
+represented   are:  nice  display   (factorized),  less  storage,  faster
+multiplication,  division and evaluation. The big drawback is that addition
+and subtraction are not implemented!
+<P>
+<pre>    gap> q:=X(Cyclotomics);;q.name:="q";;
+    gap> p:=CycPol(q^18 + q^16 + 2*q^12 + q^8 + q^6);
+    (1+q^2-q^4+q^6+q^8)q^6P8
+    gap> p/CycPol(q^2+q+1);
+    (1+q^2-q^4+q^6+q^8)q^6P3^-1P8</pre>
+<P>
+The variable in a <code>CycPol</code> will be denoted by <code>q</code>. It is usually printed as
+<code>q</code>  but it is possible to change  its name, see <code>Format</code> in 
+<a href="chap106.htm#SECT004">Functions for CycPols</a>.
+<P>
+<code>CycPol</code>s are represented internally by a record with fields:
+<P>
+<DL><DT><code>.coeff</code>:<DD>  a coefficient, usually a cyclotomic number, but it can also be a
+polynomial  and actually can be any <strong>GAP3</strong> object which can be multiplied by
+cyclotomic polynomials.
+</DL><P>
+<DL><DT><code>.valuation</code>:<DD> the valuation, positive  or negative.
+</DL><P>
+<DL><DT><code>.vcyc</code>:<DD>  a list of  pairs <I>[e<sub>i</sub>,m<sub>i</sub>]</I> representing  a root of  unity and a
+multiplicity  <I>m<sub>i</sub></I>. Actually <I>e<sub>i</sub></I> should be a fraction <I>p/d</I> with <I>p&lt; d</I>
+representing <I>E(d)<sup>p</sup></I>. The pair represents <I>(q-E(d)<sup>p</sup>)<sup>m<sub>i</sub></sup></I>.
+</DL><P>
+So  if  we  let  <code>mu(e):=e->E(Denominator(e))^Numerator(e)</code>,  a  record <code>r</code>
+represents 
+<P>
+<code>r.coeff*q^r.valuation*Product(r.vcyc,p->(q-mu(p[1]))^p[2])</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap106.htm#SECT001">AsRootOfUnity</a>
+<LI> <A HREF="chap106.htm#SECT002">CycPol</a>
+<LI> <A HREF="chap106.htm#SECT003">IsCycPol</a>
+<LI> <A HREF="chap106.htm#SECT004">Functions for CycPols</a>
+</ol>
+<A NAME="SECT001"><h2>106.1 AsRootOfUnity</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>AsRootOfUnity( <var>c</var> )</code>
+<P>
+<var>c</var>  should be  a cyclotomic  number. <code>AsRootOfUnity</code>  returns the rational
+<code>e/n</code>  with <I>0 &le; e&lt;n</I> (that is,  <I>e/n&isin;&#x211A;/&#x2124;</I>) if <code>c=E(n)^e</code>, and false
+if <var>c</var> is not a root of unity. The code for this function has been provided
+by Thomas Breuer; we thank him for his help.
+<P>
+<pre>    gap> AsRootOfUnity(-E(9)^2-E(9)^5);
+    8/9
+    gap> AsRootOfUnity(-E(9)^4-E(9)^5);
+    false
+    gap> AsRootOfUnity(1);
+    0</pre>
+<P><A NAME="SECT002"><h2>106.2 CycPol</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>CycPol( <var>p</var> )</code>
+<P>
+In the first form <code>CycPol( <var>p</var> )</code> the argument is a polynomial:
+<P>
+<pre>    gap> CycPol(3*q^3-3);
+    3P1P3</pre>
+<P>
+Special code  makes the conversion fast  if <code><var>p</var></code> has not  more than two
+nonzero coefficients.
+<P>
+The  second form is  a fast and  efficient way of  specifying a CycPol with
+only positive multiplicities: <var>p</var> should be a vector. The first element is
+taken  as a  the <code>.coeff</code>  of the  CycPol, the  second as the <code>.valuation</code>.
+Subsequent  elements  are  rationals  <code>i/d</code>  (with  <I>i&lt;  d</I>)  representing
+<code>(q-E(d)^i)</code> or are integers <I>d</I> representing <I>&Phi;<sub>d</sub>(q)</I>.
+<P>
+<pre>    gap> CycPol([3,-5,6,3/7]);
+    3q^-5P6(q-E7^3) </pre>
+<P><A NAME="SECT003"><h2>106.3 IsCycPol</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>IsCycPol( <var>p</var> )</code>
+<P>
+This function returns <code>true</code> if <var>p</var> is a <code>CycPol</code> and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsCycPol(CycPol(1));
+    true
+    gap> IsCycPol(1);        
+    false</pre>
+<P><A NAME="SECT004"><h2>106.4 Functions for CycPols</h2></a>
+<P><P><P>
+Multiplication <code>*</code> division <code>/</code> and exponentiation <code>^</code> work as usual, and
+the functions <code>Degree</code>, <code>Valuation</code> and <code>Value</code> work as for polynomials:
+<P>
+<pre>    gap> p:=CycPol(q^18 + q^16 + 2*q^12 + q^8 + q^6);
+    (1+q^2-q^4+q^6+q^8)q^6P8
+    gap> Value(p,q);
+    q^18 + q^16 + 2*q^12 + q^8 + q^6
+    gap> p:=p/CycPol(q^2+q+1);
+    (1+q^2-q^4+q^6+q^8)q^6P3^-1P8
+    gap> Value(p,q);
+    Error, Cannot evaluate the non-Laurent polynomial CycPol (1+q^2-q^4+q^\ 
+    6+q^8)q^6P3^-1P8 in
+    f.operations.Value( f, x ) called from
+    Value( p, q ) called from
+    main loop
+    brk>
+    gap> Degree(p);
+    16
+    gap> Value(p,3);
+    431537382/13</pre>
+<P>
+<A name = "I3"></a>
+
+The  function  <code>ComplexConjugate</code>  conjugates  <code>.coeff</code>  as well as all the
+roots of unity making up the <code>CycPol</code>.
+<P>
+Functions  <code>String</code> and  <code>Print</code> display  the <I>d</I>-th  cyclotomic polynomial
+<I>&Phi;<sub>d</sub></I>  over the rationals as <code>Pd</code>.  They also display as <code>P'd</code>, <code>P"d</code>,
+<code>P"'d</code>, <code>P""d</code> factors of cyclotomic polynomials over extensions of the
+rationals:
+<P>
+<pre>    gap> List(SchurElements(Hecke(ComplexReflectionGroup(4),q)),CycPol);
+    [ P2^2P3P4P6, 2ER(-3)q^-4P2^2P'3P'6, -2ER(-3)q^-4P2^2P"3P"6,
+      2q^-4P3P4, (3-ER(-3))/2q^-1P2^2P'3P"6, (3+ER(-3))/2q^-1P2^2P"3P'6, 
+      q^-2P2^2P4 ]</pre>
+<P>
+If  <I>&Phi;<sub>d</sub></I> factors in only  two pieces, the one  which has root <code>E(d)</code> is
+denoted  <code>P'd</code> and the  other one <code>P"d</code>  . The list  of commonly occuring
+factors  is as  follows (note  that the  conventions in <A href="biblio.htm#Car85"><cite>Car85</cite></a>, pages
+489--490 are different):
+<P><P>
+<pre>    P'3=q-E(3)
+    P"3=q-E(3)^2
+    P'4=q-E(4)
+    P"4=q+E(4)
+    P'5=q^2+(1-ER(5))/2*q+1
+    P"5=q^2+(1+ER(5))/2*q+1
+    P'6=q+E(3)^2
+    P"6=q+E(3)
+    P'7=q^3+(1-ER(-7))/2*q^2+(-1-ER(-7))/2*q-1
+    P"7=q^3+(1+ER(-7))/2*q^2+(-1+ER(-7))/2*q-1
+    P'8=q^2-E(4)
+    P"8=q^2+E(4)
+    P"'8=q^2-ER(2)*q+1
+    P""8=q^2+ER(2)*q+1
+    P""'8=q^2-ER(-2)*q-1
+    P"""8=q^2+ER(-2)*q-1
+    P'9=q^3-E(3)
+    P"9=q^3-E(3)^2
+    P'10=q^2+(-1-ER(5))/2*q+1
+    P"10=q^2+(-1+ER(5))/2*q+1
+    P'11=q^5+(1-ER(-11))/2*q^4-q^3+q^2+(-1-ER(-11))/2*q-1
+    P"11=q^5+(1+ER(-11))/2*q^4-q^3+q^2+(-1+ER(-11))/2*q-1
+    P'12=q^2-E(4)*q-1
+    P"12=q^2+E(4)*q-1
+    P"'12=q^2+E(3)^2
+    P""12=q^2+E(3)
+    P""'12=q^2-ER(3)*q+1
+    P"""12=q^2+ER(3)*q+1
+    P(7)12=q+E(12)^7
+    P(8)12=q+E(12)^11
+    P(9)12=q+E(12)
+    P(10)12=q+E(12)^5
+    P'13=q^6+(1-ER(13))/2*q^5+2*q^4+(-1-ER(13))/2*q^3+2*q^2+(1-ER(13))/2*q+1
+    P"13=q^6+(1+ER(13))/2*q^5+2*q^4+(-1+ER(13))/2*q^3+2*q^2+(1+ER(13))/2*q+1
+    P'14=q^3+(-1+ER(-7))/2*q^2+(-1-ER(-7))/2*q+1
+    P"14=q^3+(-1-ER(-7))/2*q^2+(-1+ER(-7))/2*q+1
+    P'15=q^4+(-1-ER(5))/2*q^3+(1+ER(5))/2*q^2+(-1-ER(5))/2*q+1
+    P"15=q^4+(-1+ER(5))/2*q^3+(1-ER(5))/2*q^2+(-1+ER(5))/2*q+1
+    P"'15=q^4+E(3)^2*q^3+E(3)*q^2+q+E(3)^2
+    P""15=q^4+E(3)*q^3+E(3)^2*q^2+q+E(3)
+    P""'15=q^2+((1+ER(5))*E(3)^2)/2*q+E(3)
+    P"""15=q^2+((1-ER(5))*E(3)^2)/2*q+E(3)
+    P(7)15=q^2+((1+ER(5))*E(3))/2*q+E(3)^2
+    P(8)15=q^2+((1-ER(5))*E(3))/2*q+E(3)^2
+    P'16=q^4-ER(2)*q^2+1
+    P"16=q^4+ER(2)*q^2+1
+    P'18=q^3+E(3)^2
+    P"18=q^3+E(3)
+    P'20=q^4+(-1-ER(5))/2*q^2+1
+    P"20=q^4+(-1+ER(5))/2*q^2+1
+    P"'20=q^4+E(4)*q^3-q^2-E(4)*q+1
+    P""20=q^4-E(4)*q^3-q^2+E(4)*q+1
+    P'21=q^6+E(3)*q^5+E(3)^2*q^4+q^3+E(3)*q^2+E(3)^2*q+1
+    P"21=q^6+E(3)^2*q^5+E(3)*q^4+q^3+E(3)^2*q^2+E(3)*q+1
+    P'22=q^5+(-1-ER(-11))/2*q^4-q^3-q^2+(-1+ER(-11))/2*q+1
+    P"22=q^5+(-1+ER(-11))/2*q^4-q^3-q^2+(-1-ER(-11))/2*q+1
+    P'24=q^4+E(3)^2
+    P"24=q^4+E(3)
+    P"'24=q^4-ER(2)*q^3+q^2-ER(2)*q+1
+    P""24=q^4+ER(2)*q^3+q^2+ER(2)*q+1
+    P""'24=q^4-ER(6)*q^3+3*q^2-ER(6)*q+1
+    P"""24=q^4+ER(6)*q^3+3*q^2+ER(6)*q+1
+    P(7)24=q^4+ER(-2)*q^3-q^2-ER(-2)*q+1
+    P(8)24=q^4-ER(-2)*q^3-q^2+ER(-2)*q+1
+    P(9)24=q^2+ER(-2)*E(3)^2*q-E(3)
+    P(10)24=q^2-ER(-2)*E(3)^2*q-E(3)
+    P(11)24=q^2+ER(-2)*E(3)*q-E(3)^2
+    P(12)24=q^2-ER(-2)*E(3)*q-E(3)^2
+    P'25=q^10+(1-ER(5))/2*q^5+1
+    P"25=q^10+(1+ER(5))/2*q^5+1
+    P'26=q^6+(-1-ER(13))/2*q^5+2*q^4+(1-ER(13))/2*q^3+2*q^2+(-1-ER(13))/2*q+1
+    P"26=q^6+(-1+ER(13))/2*q^5+2*q^4+(1+ER(13))/2*q^3+2*q^2+(-1+ER(13))/2*q+1
+    P'27=q^9-E(3)
+    P"27=q^9-E(3)^2
+    P'30=q^4+(1-ER(5))/2*q^3+(1-ER(5))/2*q^2+(1-ER(5))/2*q+1
+    P"30=q^4+(1+ER(5))/2*q^3+(1+ER(5))/2*q^2+(1+ER(5))/2*q+1
+    P"'30=q^4-E(3)*q^3+E(3)^2*q^2-q+E(3)
+    P""30=q^4-E(3)^2*q^3+E(3)*q^2-q+E(3)^2
+    P""'30=q^2+((-1+ER(5))*E(3)^2)/2*q+E(3)
+    P"""30=q^2+((-1-ER(5))*E(3)^2)/2*q+E(3)
+    P(7)30=q^2+((-1+ER(5))*E(3))/2*q+E(3)^2
+    P(8)30=q^2+((-1-ER(5))*E(3))/2*q+E(3)^2
+    P'42=q^6-E(3)^2*q^5+E(3)*q^4-q^3+E(3)^2*q^2-E(3)*q+1
+    P"42=q^6-E(3)*q^5+E(3)^2*q^4-q^3+E(3)*q^2-E(3)^2*q+1</pre>
+<P>
+Finally the function <code>Format(c,options)</code> takes the options:
+<P>
+<DL><DT><code>.vname</code>:<DD>  a  string,  the  name  to  use  for printing the variable of the
+<code>CycPol</code> instead of <code>q</code>.
+</DL><P>
+<DL><DT><code>.expand</code>:<DD>  if set to <code>true</code>, each cyclotomic polynomial is replaced by its
+value before being printed.
+</DL><P>
+<pre>    gap> p:=CycPol(q^6-1);
+    P1P2P3P6
+    gap> Format(p,rec(expand:=true));
+    "(q-1)(q+1)(q^2+q+1)(q^2-q+1)"
+    gap> Format(p,rec(expand:=true,vname:="x"));
+    "(x-1)(x+1)(x^2+x+1)(x^2-x+1)"</pre>
+<P><a href ="chap105.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap107.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

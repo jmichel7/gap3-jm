@@ -1,0 +1,209 @@
+\Chapter{Installing XGAP}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\XGAP{{\sf XGAP}}
+\Section{The XGAP Package}
+
+{\XGAP} is a graphical  user interface for  {\GAP}, it extends the {\GAP}
+library with functions  dealing with graphic sheets   and objects.  Using
+these functions it also  supplies a graphical interface for investigating
+the subgroup lattice of a group, giving you  easy access to the low index
+subgroups, prime quotient  and Reidemeister-Schreier algorithms  and many
+other {\GAP} functions for groups and  subgroups.  At the moment the only
+supported  window system is X-Windows X11R5,  however, programs using the
+{\XGAP} library functions will run on  other platforms as soon as {\XGAP}
+is  available on these.  We plan  to release a  Windows  3.11 in the near
+future.
+
+The section "Installing the XGAP Package under X-Windows" is intented for
+the system administrator who wants  to install {\XGAP}.  Chapter "XGAP  -
+Graphic Lattices" explains how  to use {\XGAP} for investigating subgroup
+lattices, and finally chapter "XGAP - Graphic Extensions" explains how to
+use the  {\XGAP}   functions dealing  with  graphic  sheets  in  your own
+programs.
+
+The file  selector used under   X11R5 is copyrighted  by Erik  M. van der
+Poel, see the file 'src.x11/selfile.c' for the copyright notice.
+
+Please send comments, bug reports, etc. to
+
+\centerline{|F.Celler@Math.RWTH-Aachen.DE| or 
+            |Gap-Trouble@Math.RWTH-Aachen.DE|.}
+
+There  are also two  TODO  lists in  the  archive which contain  features
+which are missing or do not work correctly.
+
+If {\XGAP}  fails to compile   please include the  type  of machine,  the
+version number of compiler and the version of  window system used in your
+bug  report.   If  possible also include  a   log  of the  compilation or
+configuration attempt.
+
+We  would  like to thank   Sarah Rees for   her  help in implementing the
+interactive lattice functions and beta testing.
+
+\centerline{Frank Celler \& Susanne Keitemeier}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing the XGAP Package under X-Windows}
+
+{\XGAP} is written in C and the package can only  be installed under UNIX
+running X-Windows X11R5 (or higher).  It  has been tested on a DECstation
+running Ultrix 4.2/X11R5, a SUN running SunOS/X11R5, a PC running FreeBSD
+1.1/X11R5, FreeBSD 2.0/X11R6, and Linux SLS 1.05/X11R5, and a NeXTstation
+running NeXTSTEP 3.0/MouseX11R5.
+
+{\XGAP} *might  not* compile properly  on Suns running OpenWindows and it
+*will not* run on PCs running OS/2 or Windows 3.1, 3.11 or 95.
+
+If you got a complete binary and source distribution for your machine, no
+compilation   is  necessary,  you  must  however  edit   the shell script
+'gap3r4p?/pkg/xgap/bin.x11/xgap' where '?'    is to  be  replaced by  the
+current patch level of {\GAP}.  See *Customizing {\XGAP}* below.
+
+If  you got a  complete source distribution, skip  the extraction part of
+this section  and proceed with  the  compilation part *Compiling {\XGAP}*
+below.
+
+{\bigskip\large *Unpacking {\XGAP}*}
+
+In the example we will assume that you, as user 'gap', are installing the
+{\XGAP} package for use by several users on a network of two DECstations,
+called 'bert' and 'tiffy', and a X-Terminal called 'ncd0'. We also assume
+that {\GAP}   is  already installed  on    the DECstations following  the
+instructions given in "Installation of GAP for UNIX".
+
+Note that certain parts  of  the  output  in the examples should  only be
+taken as rough outline, especially file sizes and file dates are *not* to
+be taken literally.
+
+First of  all you have to  get the file  'xgap.zoo' (see  "Getting GAP").
+Then you must locate  the {\GAP} directory  containing 'lib/' and 'doc/',
+this is usually 'gap3r4p?/'.
+
+|    gap@tiffy:~> ls -l
+    drwxr-xr-x  11 gap     1024 May 18 20:31 gap3r4p2
+    -rw-r--r--   1 gap   nnnnnn Jul 29 15:16 xgap.zoo
+    gap@tiffy:~> ls -l gap3r4p2
+    dr-xr-xr-x   2 gap      512 Jul  6 12:08 bin
+    dr-xr-xr-x   3 gap     3584 Jun 14 12:05 doc
+    dr-xr-xr-x   3 gap     1024 Jul 14 23:40 etc
+    dr-xr-xr-x   3 gap      512 May 18 11:34 grp
+    drwxrwxr-x   3 gap     2048 Jul 19 12:14 lib
+    dr-xr-xr-x  14 gap      512 Jun 14 14:47 pkg
+    dr-xr-xr-x   8 gap     2048 May 18 15:29 src
+    drwxr-xr-x   3 gap     2048 Jul  3 13:22 tbl
+    dr-xr-xr-x   3 gap      512 Jun 14 14:43 thr
+    dr-xr-xr-x   3 gap      512 Jun 14 14:43 tom
+    dr-xr-xr-x   3 gap      512 Jun 14 14:43 tst
+    dr-xr-xr-x   3 gap     1024 Jun 14 14:43 two
+    dr-xr-xr-x   3 gap      512 Jun 14 14:43 utl |
+
+Unpack  the share package  using 'unzoo'  (see "Installation  of GAP  for
+UNIX").  Note that you must be in the directory containing 'gap3r4p?/' to
+unpack the files.  After you have unpacked the source  you may remove the
+archive-file 'xgap.zoo'.
+
+If you are  installing  a newer version  of  {\XGAP}  move the  directory
+'gap3r4p?/pkg/xgap/' to 'gap3r4p?/pkg/xgap.old/' before unpacking the new
+version,     if   you    want    to    keep     the   resource   database
+'gap3r4p?/pkg/xgap/rdb.x11/' for your servers.   In  this case  move  the
+files              'gap3r4p?/pkg/xgap.old/rdb.x11/serv.\*'             to
+'gap3r4?/pkg/xgap/rdb.x11/' after unpacking the new version.
+
+|    gap@tiffy:~> mv gap3r4p2/pkg/xgap gap3r4p2/pkg/xgap.old
+    gap@tiffy:~> unzoo x xgap
+    gap@tiffy:~> ls -l gap3r4p2/pkg/xgap
+    -rw-r--r--   1 gap     5796 Jul 24 15:25 INSTALL.x11
+    -rw-r--r--   1 gap     2255 Jul 24 14:40 Makefile
+    drwxr-xr-x   3 gap      512 Jul 24 14:58 bin.x11
+    drwxr-xr-x   3 gap     1024 Jul 24 15:06 doc
+    drwxr-xr-x   3 gap      512 Jul 24 15:56 doc.x11
+    drwxr-xr-x   3 gap      512 Jul 24 12:02 lib
+    drwxr-xr-x   3 gap      512 Jul 24 15:34 rdb.x11
+    drwxr-xr-x   3 gap     1024 Jul 24 14:41 src.x11
+    drwxr-xr-x   3 gap      512 Jul 24 11:52 tst |
+
+{\bigskip\large *Compiling {\XGAP}*}
+
+Switch into the directory 'gap3r4p?/pkg/xgap/' and  type 'make x11'. Note
+that  {\XGAP} does  not supply an  'Imakefile'.  If  you are using  share
+libraries  and not every machines  has all X11  library files, you should
+link   {\XGAP}  statically.  For   the GNU    C  Compiler  use 'make  x11
+LOPTS=-static'.
+
+|    gap@tiffy:~ > cd gap3r4p2/pkg/xgap
+    gap@tiffy:../xgap > make x11
+    # you will see a lot of message ending in 'cc -o xgap ...' |
+
+If the configuration  script fails and you  have GNU bash installed,  try
+'make x11 SHELL=bash'.  If 'make  x11' does not  work at all, switch into
+the  directory 'src.x11/'  and type  'make  machines' to  get a  list  of
+supported targets.  Select  the target you  need.  For example, we  could
+use  the target 'dec-mips-ultrix-gcc' in order  to compile the DECstation
+version using the GNU C Compiler.
+
+If everything worked  then there should be  an  executable 'xgap'  in the
+directory 'src.x11/'.
+
+|    gap@tiffy:../xgap > ls -l src.x11/xgap
+    -rwxr-xr-x   1 gap  1629416 Jul 24 14:42 src.x11/xgap |
+
+
+If {\GAP} lives in the directory 'gap3r4p?/src/' try the following:
+
+|    gap@tiffy:../xgap > ./xgap -G ../../src/gap |
+
+This command should create a new window in which  {\GAP} is awaiting your
+input, type 'quit;' inside this window.  Strip the executable and move it
+into the directory 'bin.x11/', but *do not* call it 'xgap'.
+
+|    gap@tiffy:../xgap > strip xgap
+    gap@tiffy:../xgap > mv xgap ../bin/xgap-dec-mips-ultrix |
+
+Type 'make clean' in order to clean up, this will remove all '\*.o' files
+created during the installation.
+
+{\bigskip\large *Customizing {\XGAP}*}
+
+Switch into the  directory 'bin.x11/' and  edit the  shell script 'xgap',
+you   must  at least set    the  variable 'GAPPATH'  and possibly  'TYPE'
+(depending on what name  scheme you use).  'GAPPATH'  should point to the
+directory 'gap3r4p?/'.
+
+For each  X11 server  you  use, you can  customize  the fonts and colors.
+Switch into the directory 'rdb.x11/'  and copy  the file 'expl.color'  to
+'serv.<servername>' for a color server and 'expl.mono' for a mono server.
+In our  example, we   copy  'expl.mono' to  'serv.bert' and   'serv.ncd0'
+because these machines  have  a monochrome  display  and 'expl.color'  to
+'serv.tiffy'  because  this is  a color machine.   Edit   these files and
+choose the colors and fonts you want.
+
+Switch back into the 'xgap/' directory and type
+
+|    gap@tiffy:../xgap > bin.x11/xgap --verbose |
+
+in order to start {\XGAP}.  After {\XGAP} has started, use the pointer to
+select the menu entry 'Read  file ...' from the  menu 'Gap'.  In the file
+selector which will appear select the file 'tst/color.g'.  This will open
+a  new window and  show  the selected  colors.   Repeat this procedure at
+least with 'tst/fonts.g' to see what fonts are used.
+
+If 'xgap' executes correctly, copy the script 'xgap'  to a location where
+other users can find it, e.g., '/usr/local/bin'.
+
+{\bigskip\large *Printing the {\XGAP} Manual*}
+
+It  is possible to print   this manual as  standalone  manual (instead of
+printing  it   as  part    of     the  {\GAP}  manual).     Switch     to
+'gap3r4p?/pkg/xgap/doc/' and type  'latex latexme'.  This  will latex the
+manual.  You must latex it twice in order to get the references right.
+
+However, if you don\'t  install the manual  as part of the {\GAP} manual,
+the online help in {\GAP} will not  be able to  find the new chapters and
+sections.  In order to  install the manual as  part of the {\GAP} manual,
+copy  the file  'xgap.tex'     and 'xgaplatt.tex'  into the     directory
+'gap3r4p?/doc'  and modify  'manual.tex'  to include  these two chapters.
+Latex 'manual.tex' as described in "Installation of GAP for UNIX".
+

@@ -1,0 +1,550 @@
+<html><head><title>GAP3 Manual: 75 Monoids and Semigroups</title></head>
+<body bgcolor="ffffff">
+<h1>75 Monoids and Semigroups</h1>
+<P><P><P>
+Semigroups and, even  more,  monoids are not  far  away  from being  like
+groups.  But, surprisingly, they have not  received much attention yet in
+the form  of <strong>GAP3</strong> programs.  This  small collection of files and manual
+chapters is an attempt to start closing this gap.
+<P>
+The only difference  between a semigroup  and a monoid is one  element: 
+the  identity.  Although this   may  lead to   subtle differences in  the
+behavior of these structures the underlying  assumption of these programs
+is that you can always, by means of adding an element with the properties
+of an identity, turn a semigroup into a monoid.  So most of the functions
+will only be available  for monoids and not  for semigroups.   The actual
+process of adding an identity is also not supported at the moment.
+<P>
+The emphasis of  this package is on  transformation monoids (see  chapter
+<a href="chap078.htm">Transformation  Monoids</a>).   However, it seemed  to  be a  good idea to
+provide  some of the framework for  general monoids (this chapter) before
+concentrating on   the   special  case.    Separate   chapters  introduce
+transformations (see chapter <a href="chap077.htm">Transformations</a>) and binary relations (see
+chapter <a href="chap076.htm">Binary Relations</a>) as special types of monoid elements.  Another
+chapter treats  several ways of how a  monoid can  act on certain domains
+(see chapter <a href="chap079.htm">Actions of Monoids</a>).
+<P>
+For  a general treatment  of  the theory  of  monoids and  transformation
+monoids   see <A href="biblio.htm#Lallement79"><cite>Lallement79</cite></a>  and   <A href="biblio.htm#Howie95"><cite>Howie95</cite></a>.      A   detailed
+description  of  this implementation and   the theory behind  it is given
+in <A href="biblio.htm#LPRR1"><cite>LPRR1</cite></a> and  <A href="biblio.htm#LPRR2"><cite>LPRR2</cite></a>.
+<P>
+A semigroup is constructed by the  function <code>SemiGroup</code> (see <a href="chap075.htm#SECT004">SemiGroup</a>)
+and a monoid is constructed by the function <code>Monoid</code> (see <a href="chap075.htm#SECT006">Monoid</a>).
+<P>
+Note that monoid elements usually  exist independently of a monoid, e.g.,
+you can write down two transformations  and compute their product without
+ever defining a monoid that contains them.
+<P>
+The chapter starts with a description  of monoid elements, i.e. all those
+objects that  can be  element   of  a semigroup  or    of a monoid   (see
+<a href="chap075.htm#SECT001">Comparisons of Monoid  Elements</a>, <a href="chap075.htm#SECT002">Operations for Monoid  Elements</a>, and
+<a href="chap075.htm#SECT003">IsMonoidElement</a>).  Then the    functions which  construct   monoids and
+semigroups  and the  functions which  test  whether  a given  object is a
+monoid or a    semigroup are described   (see <a href="chap075.htm#SECT004">SemiGroup</a>, <a href="chap075.htm#SECT005">IsSemiGroup</a>,
+<a href="chap075.htm#SECT006">Monoid</a> and <a href="chap075.htm#SECT007">IsMonoid</a>).
+<P>
+Monoids  and semigroups are domains, so  every set theoretic function for
+domains is applicable  to them (see  <a href="chap075.htm#SECT008">Set Functions for Monoids</a>).  There
+are functions which  construct Green Classes of  various types as subsets
+of   a  monoid (see <a href="chap075.htm#SECT009">Green  Classes</a>,    <a href="chap075.htm#SECT010">RClass</a>, <a href="chap075.htm#SECT013">LClass</a>, <a href="chap075.htm#SECT016">DClass</a> and
+<a href="chap075.htm#SECT019">HClass</a>), functions  which test whether a given  object is a Green class
+of   a certain    type (see   <a href="chap075.htm#SECT011">IsRClass</a>,    <a href="chap075.htm#SECT014">IsLClass</a>, <a href="chap075.htm#SECT017">IsDClass</a>   and
+<a href="chap075.htm#SECT020">IsHClass</a>), and functions which determine the  list of all Green Classes
+of some  given type of  a monoid (see  <a href="chap075.htm#SECT012">RClasses</a>, <a href="chap075.htm#SECT015">LClasses</a>, <a href="chap075.htm#SECT018">DClasses</a>
+and <a href="chap075.htm#SECT021">HClasses</a>).
+<P>
+The next sections describe how set functions are applied to Green classes
+(see <a href="chap075.htm#SECT022">Set Functions for Green Classes</a>)  and how to compute various kinds
+of Sch&uuml;tzenberger groups (see <a href="chap075.htm#SECT024">SchutzenbergerGroup</a>).
+<P>
+The final sections describe how to determine the  idempotents of a monoid
+(see   <a href="chap075.htm#SECT025">Idempotents</a>), the lack  of  support for homomorphisms of monoids
+(see <a href="chap075.htm#SECT026">Monoid Homomorphisms</a>) and how  monoids are represented by  records
+in <strong>GAP3</strong> (see <a href="chap075.htm#SECT027">Monoid Records and Semigroup Records</a>).
+<P>
+The functions described here are in the file <code>"monoid.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap075.htm#SECT001">Comparisons of Monoid Elements</a>
+<LI> <A HREF="chap075.htm#SECT002">Operations for Monoid Elements</a>
+<LI> <A HREF="chap075.htm#SECT003">IsMonoidElement</a>
+<LI> <A HREF="chap075.htm#SECT004">SemiGroup</a>
+<LI> <A HREF="chap075.htm#SECT005">IsSemiGroup</a>
+<LI> <A HREF="chap075.htm#SECT006">Monoid</a>
+<LI> <A HREF="chap075.htm#SECT007">IsMonoid</a>
+<LI> <A HREF="chap075.htm#SECT008">Set Functions for Monoids</a>
+<LI> <A HREF="chap075.htm#SECT009">Green Classes</a>
+<LI> <A HREF="chap075.htm#SECT010">RClass</a>
+<LI> <A HREF="chap075.htm#SECT011">IsRClass</a>
+<LI> <A HREF="chap075.htm#SECT012">RClasses</a>
+<LI> <A HREF="chap075.htm#SECT013">LClass</a>
+<LI> <A HREF="chap075.htm#SECT014">IsLClass</a>
+<LI> <A HREF="chap075.htm#SECT015">LClasses</a>
+<LI> <A HREF="chap075.htm#SECT016">DClass</a>
+<LI> <A HREF="chap075.htm#SECT017">IsDClass</a>
+<LI> <A HREF="chap075.htm#SECT018">DClasses</a>
+<LI> <A HREF="chap075.htm#SECT019">HClass</a>
+<LI> <A HREF="chap075.htm#SECT020">IsHClass</a>
+<LI> <A HREF="chap075.htm#SECT021">HClasses</a>
+<LI> <A HREF="chap075.htm#SECT022">Set Functions for Green Classes</a>
+<LI> <A HREF="chap075.htm#SECT023">Green Class Records</a>
+<LI> <A HREF="chap075.htm#SECT024">SchutzenbergerGroup</a>
+<LI> <A HREF="chap075.htm#SECT025">Idempotents</a>
+<LI> <A HREF="chap075.htm#SECT026">Monoid Homomorphisms</a>
+<LI> <A HREF="chap075.htm#SECT027">Monoid Records and Semigroup Records</a>
+</ol>
+<A NAME="SECT001"><h2>75.1 Comparisons of Monoid Elements</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<A name = "I1"></a>
+
+<P>
+<code><var>s</var> = <var>t</var></code> <BR> 
+<code><var>s</var> <> <var>t</var></code>
+<P>
+The equality operator <code>=</code> evaluates to <code>true</code>  if the monoid elements <var>s</var>
+and <var>t</var> are   equal and to <code>false</code>  otherwise.    The inequality operator
+<code><></code> evaluates to  <code>true</code>  if the monoid elements   <var>s</var> and <var>t</var>  are not
+equal and to <code>false</code> otherwise.
+<P>
+You can compare monoid  elements with objects of  other types.  Of course
+they are never equal.  Standard monoid  elements are transformations (see
+chapter <a href="chap077.htm">Transformations</a>)   and binary relations   (see chapter  <a href="chap076.htm">Binary
+Relations</a>).
+<P>
+<P>
+<code><var>s</var> < <var>t</var></code> <BR> 
+<code><var>s</var> <= <var>t</var></code> <BR> 
+<code><var>s</var> >= <var>t</var></code> <BR> 
+<code><var>s</var> > <var>t</var></code>
+<P>
+The operators <code><</code>, <code><=</code>, <code>>=</code> and <code>></code>  evaluate to <code>true</code> if the monoid
+element <var>s</var> is strictly less than, less than or equal to, greater than or
+equal to and strictly  greater than the monoid  element <var>t</var>.  There is no
+general ordering on monoid elements.
+<P>
+Standard monoid   elements may be  compared  with objects of  other types
+while generic monoid elements may disallow such a comparison.
+<P><A NAME="SECT002"><h2>75.2 Operations for Monoid Elements</h2></a>
+<P><P><P>
+<code><var>s</var> * <var>t</var></code>
+<A name = "I2"></a>
+
+<P>
+The operator <code>*</code> evaluates to the product of the two monoid elements <var>s</var>
+and <var>t</var>.   The  operands must of  course lie  in a  common parent monoid,
+otherwise an error is signaled.
+<P>
+<P>
+<code><var>s</var> ^ <var>i</var></code>
+<A name = "I3"></a>
+
+<P>
+The powering  operator <code>^</code> returns the  <var>i</var>-th power of a monoid element
+<var>s</var> and a positive integer <var>i</var>.  If <var>i</var> is zero  the identity of a parent
+monoid of <var>s</var> is returned.
+<P>
+<P>
+<code><var>list</var> * <var>s</var></code>
+<A name = "I4"></a>
+<BR> 
+<code><var>s</var> * <var>list</var></code>
+<P>
+In this form the operator <code>*</code> returns a new list where each entry is the
+product of <var>s</var>  and the   corresponding  entry  of <var>list</var>.    Of   course
+multiplication must be defined between <var>s</var> and each entry of <var>list</var>.
+<P><A NAME="SECT003"><h2>75.3 IsMonoidElement</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>IsMonoidElement( <var>obj</var> )</code>
+<P>
+<code>IsMonoidElement</code> returns  <code>true</code> if the  object  <var>obj</var>, which may  be an
+object of arbitrary type, is a monoid element, and <code>false</code> otherwise.  It
+will signal an error if <var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsMonoidElement( 10 );
+    false
+    gap> IsMonoidElement( Transformation( [ 1, 2, 1 ] ) );
+    true </pre>
+<P><A NAME="SECT004"><h2>75.4 SemiGroup</h2></a>
+<P><P><P>
+<code>SemiGroup( <var>list</var> )</code>
+<P>
+<code>SemiGroup</code> returns  the semigroup   generated   by the list  <var>list</var>   of
+semigroup elements.
+<P>
+<pre>    gap> SemiGroup( [ Transformation( [ 1, 2, 1 ] ) ] );
+    SemiGroup( [ Transformation( [ 1, 2, 1 ] ) ] ) </pre>
+<P>
+<P>
+<code>SemiGroup( <var>gen1</var>, <var>gen2</var>, ... )</code>
+<P>
+In this form <code>SemiGroup</code> returns the   semigroup generated by the  semigroup  elements
+<var>gen1</var>, <var>gen2</var>, ...
+<P>
+<pre>    gap> SemiGroup( Transformation( [ 1, 2, 1 ] ) );                     
+    SemiGroup( [ Transformation( [ 1, 2, 1 ] ) ] ) </pre>
+<P><A NAME="SECT005"><h2>75.5 IsSemiGroup</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>IsSemiGroup( <var>obj</var> )</code>
+<P>
+<code>IsSemiGroup</code> returns <code>true</code> if the object <var>obj</var>,  which may be an object
+of an  arbitrary  type, is a semigroup,  and  <code>false</code> otherwise.  It will
+signal an error if <var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsSemiGroup( SemiGroup( Transformation( [ 1, 2, 1 ] ) ) );
+    true
+    gap> IsSemiGroup( Group( (2,3) ) ); 
+    false </pre>
+<P><A NAME="SECT006"><h2>75.6 Monoid</h2></a>
+<P><P><P>
+<code>Monoid( <var>list</var> )</code><BR> 
+<code>Monoid( <var>list</var> , <var>id</var> )</code>
+<P>
+<code>Monoid</code>  returns  the monoid generated  by  the  list <var>list</var>  of  monoid
+elements.  If present, <var>id</var> must be the identity of this monoid.
+<P>
+<pre>    gap> Monoid( [ Transformation( [ 1, 2, 1 ] ) ], 
+    > IdentityTransformation( 3 ) );
+    Monoid( [ Transformation( [ 1, 2, 1 ] ) ] ) </pre>
+<P>
+<P>
+<code>Monoid( <var>gen1</var>, <var>gen2</var>, ... )</code>
+<P>
+In this form <code>Monoid</code> returns the monoid generated by the monoid elements
+<var>gen1</var>, <var>gen2</var>, ...
+<P>
+<pre>    gap> Monoid( Transformation( [ 1, 2, 1 ] ) );                     
+    Monoid( [ Transformation( [ 1, 2, 1 ] ) ] ) </pre>
+<P><A NAME="SECT007"><h2>75.7 IsMonoid</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>IsMonoid( <var>obj</var> )</code>
+<P>
+<code>IsMonoid</code> returns <code>true</code> if the object <var>obj</var>,  which may be an object of
+an arbitrary type, is a monoid, and <code>false</code> otherwise.  It will signal an
+error if <var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsMonoid( Monoid( Transformation( [ 1, 2, 1 ] ) ) );
+    true
+    gap> IsMonoid( Group( (2,3) ) ); 
+    false </pre>
+<P><A NAME="SECT008"><h2>75.8 Set Functions for Monoids</h2></a>
+<P><P><P>
+Monoids and semigroups  are domains.   Thus  all set theoretic  functions
+described  in chapter "Domains"   should be  applicable  to   monoids. 
+However, no generic method is  installed yet.  Of particular interest are
+the functions <code>Size</code>   and  <code>Elements</code> which will  have   special methods
+depending on the kind of monoid being dealt with.
+<P><A NAME="SECT009"><h2>75.9 Green Classes</h2></a>
+<P><P><P>
+Green classes  are special subsets of a  monoid.  In particular, they are
+domains    so all  set  theoretic   functions  for   domains (see chapter
+"Domains")  can be   applied to Green  classes.   This  is described in
+section  <a href="chap075.htm#SECT022">Set  Functions for   Green  Classes</a>.  The  following  sections
+describe how Green classes can be constructed.
+<P><A NAME="SECT010"><h2>75.10 RClass</h2></a>
+<P><P><P>
+<code>RClass( <var>M</var>, <var>s</var> )</code>
+<P>
+<code>RClass</code> returns the R class of the element <var>s</var> in the monoid <var>M</var>.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ), 
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> RClass( M, Transformation( [ 1, 2, 2 ] ) );
+    RClass( M, Transformation( [ 1, 2, 2 ] ) ) </pre>
+<P>
+The  R class of  <var>s</var>  in <var>M</var> is  the  set of  all  elements of <var>M</var>  which
+generate the same  right ideal in <var>M</var>, i.e.,  the set of  all <I>m</I>  in <var>M</var>
+with <I>&lt;s&gt; <var>M</var> = m <var>M</var></I>.
+<P><A NAME="SECT011"><h2>75.11 IsRClass</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>IsRClass( <var>obj</var> )</code>
+<P>
+<code>IsRClass</code> returns <code>true</code> if the object <var>obj</var>, which  may be an object of
+arbitrary type, is an R class, and <code>false</code> otherwise  (see <a href="chap075.htm#SECT010">RClass</a>).  It
+will signal an error if <var>obj</var> is an unbound variable.
+<P><A NAME="SECT012"><h2>75.12 RClasses</h2></a>
+<P><P><P>
+<code>RClasses( <var>M</var> )</code><BR> 
+<code>RClasses( <var>dClass</var> )</code>
+<P>
+<code>RClasses</code> returns the list  of R classes the monoid  <var>M</var>.  In the second
+form <code>RClasses</code> returns the list of R classes in the D class <var>dClass</var>.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> RClasses( M );
+    [ RClass( M, Transformation( [ 1, 2, 3 ] ) ), 
+      RClass( M, Transformation( [ 2, 1, 2 ] ) ), 
+      RClass( M, Transformation( [ 1, 2, 2 ] ) ) ] </pre>
+<P><A NAME="SECT013"><h2>75.13 LClass</h2></a>
+<P><P><P>
+<code>LClass( <var>M</var>, <var>s</var> )</code>
+<P>
+<code>LClass</code> returns the L class of the element <var>s</var> in the monoid <var>M</var>.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> LClass( M, Transformation( [ 1, 2, 2 ] ) );
+    LClass( M, Transformation( [ 1, 2, 2 ] ) ) </pre>
+<P>
+The  L class of  <var>s</var>  in <var>M</var> is  the  set of  all  elements of <var>M</var>  which
+generate the same  left  ideal in <var>M</var>, i.e.,  the set of  all <I>m</I>  in <var>M</var>
+with <I>&lt;M&gt; <var>s</var> = <var>M</var> m</I>.
+<P><A NAME="SECT014"><h2>75.14 IsLClass</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code>IsLClass( <var>obj</var> )</code>
+<P>
+<code>IsLClass</code> returns <code>true</code> if the object <var>obj</var>, which  may be an object of
+arbitrary type, is an L class, and  <code>false</code> otherwise (see <a href="chap075.htm#SECT013">LClass</a>).  It
+will signal an error if <var>obj</var> is an unbound variable.
+<P><A NAME="SECT015"><h2>75.15 LClasses</h2></a>
+<P><P><P>
+<code>LClasses( <var>M</var> )</code><BR> 
+<code>LClasses( <var>dClass</var> )</code>
+<P>
+<code>LClasses</code> returns the list  of L classes  the monoid <var>M</var>.  In the second
+form <code>LClasses</code> returns the list of L classes in the D class <var>dClass</var>.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> LClasses( M );
+    [ LClass( M, Transformation( [ 1, 2, 3 ] ) ), 
+      LClass( M, Transformation( [ 2, 1, 2 ] ) ) ] </pre>
+<P><A NAME="SECT016"><h2>75.16 DClass</h2></a>
+<P><P><P>
+<code>DClass( <var>M</var>, <var>s</var> )</code>
+<P>
+<code>DClass</code> returns the D class of the element <var>s</var> in the monoid <var>M</var>.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> DClass( M, Transformation( [ 1, 2, 2 ] ) );
+    DClass( M, Transformation( [ 1, 2, 2 ] ) ) </pre>
+<P>
+The D  class  of <var>s</var> in  <var>M</var>  is the set   of all elements  of  <var>M</var> which
+generate the same ideal in <var>M</var>, i.e., the set of all <I>m</I> in <var>M</var> with <I>&lt;M&gt;
+<var>s</var> <var>M</var> = <var>M</var> m <var>M</var></I>.
+<P><A NAME="SECT017"><h2>75.17 IsDClass</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+<code>IsDClass( <var>obj</var> )</code>
+<P>
+<code>IsDClass</code> returns <code>true</code> if the object <var>obj</var>, which  may be an object of
+arbitrary type, is  a D class, and <code>false</code>  otherwise (see <a href="chap075.htm#SECT016">DClass</a>).  It
+will signal an error if <var>obj</var> is an unbound variable.
+<P><A NAME="SECT018"><h2>75.18 DClasses</h2></a>
+<P><P><P>
+<code>DClasses( <var>M</var> )</code>
+<P>
+<code>DClasses</code> returns the list of D classes the monoid <var>M</var>.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> DClasses( M );
+    [ DClass( M, Transformation( [ 1, 2, 3 ] ) ), 
+      DClass( M, Transformation( [ 2, 1, 2 ] ) ) ] </pre>
+<P><A NAME="SECT019"><h2>75.19 HClass</h2></a>
+<P><P><P>
+<code>HClass( <var>M</var>, <var>s</var> )</code>
+<P>
+<code>HClass</code> returns the H class of the element <var>s</var> in the monoid <var>M</var>.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> HClass( M, Transformation( [ 1, 2, 2 ] ) );
+    HClass( M, Transformation( [ 1, 2, 2 ] ) ) </pre>
+<P>
+The H class of <var>s</var>  in <var>M</var> is the intersection  of the R  class of <var>s</var> in
+<var>M</var> and the L class of <var>s</var> in <var>M</var> (see <a href="chap075.htm#SECT010">RClass</a> and <a href="chap075.htm#SECT013">LClass</a>).
+<P><A NAME="SECT020"><h2>75.20 IsHClass</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code>IsHClass( <var>obj</var> )</code>
+<P>
+<code>IsHClass</code> returns <code>true</code> if the object <var>obj</var>,  which may be an object of
+arbitrary type, is an H class, and <code>false</code> otherwise  (see <a href="chap075.htm#SECT019">HClass</a>).  It
+will signal an error if <var>obj</var> is an unbound variable.
+<P><A NAME="SECT021"><h2>75.21 HClasses</h2></a>
+<P><P><P>
+<code>HClasses( <var>M</var> )</code><BR> 
+<code>HClasses( <var>class</var> )</code>
+<P>
+<code>HClasses</code> returns the list of  H classes the  monoid <var>M</var>.  In the second
+form <code>HClasses</code>  returns  the list of  all   H classes in  <var>class</var>  where
+<var>class</var> is an R class, an L class or a D class.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> M.name:= "M";;
+    gap> HClasses( M );
+    [ HClass( M, Transformation( [ 1, 2, 3 ] ) ), 
+      HClass( M, Transformation( [ 2, 1, 2 ] ) ), 
+      HClass( M, Transformation( [ 2, 1, 1 ] ) ) ] </pre>
+<P><A NAME="SECT022"><h2>75.22 Set Functions for Green Classes</h2></a>
+<P><P><P>
+Green classes are domains so all set theoretic  functions for domains can
+be  applied to them.  Most  of the  set functions  will  work via default
+methods once the following methods have been implemented.
+<P>
+<code>Size( <var>class</var> )</code>
+<A name = "I12"></a>
+
+<P>
+determines the size of Green class <var>class</var>.
+<P>
+<code>Elements( <var>class</var> )</code>
+<A name = "I13"></a>
+
+<P>
+returns the set of all elements of the Green class <var>class</var>
+<P>
+<code><var>obj</var> in <var>class</var></code>
+<A name = "I14"></a>
+
+<A name = "I15"></a>
+
+<P>
+returns <code>true</code> if  <var>obj</var>  is a member  of   the Green class <var>class</var>   and
+<code>false</code> otherwise.
+<P>
+However, no generic methods are provided.
+<P><A NAME="SECT023"><h2>75.23 Green Class Records</h2></a>
+<P><P><P>
+A Green class is represented  by a domain  record with the following  tag
+components.
+<P>
+<DL><DT><code>isDomain</code>:<DD> <BR> 
+        is always <code>true</code>.
+</DL><P>
+<DL><DT><code>isRClass</code>, <code>isLClass</code>, <code>isDClass</code>, or <code>isHClass</code>:<DD> <BR> 
+        present and <code>true</code> depending on what kind of Green class is being
+        dealt with.
+</DL><P>
+The Green class is determined by the following identity components, which
+every Green class record must have.
+<P>
+<DL><DT><code>monoid</code>:<DD> <BR> 
+        the monoid.
+</DL><P>
+<DL><DT><code>representative</code>:<DD> <BR> 
+        an element of the class.  Which one is unspecified.
+</DL><P>
+In addition to these a Green class record may have the following optional
+information components.
+<P>
+<DL><DT><code>elements</code>:<DD> <BR> 
+        if present the proper set of elements of the class.
+</DL><P>
+<DL><DT><code>size</code>:<DD> <BR> 
+        if present the size of the class.
+</DL><P><A NAME="SECT024"><h2>75.24 SchutzenbergerGroup</h2></a>
+<P><P><P>
+<code>SchutzenbergerGroup( <var>M</var>, <var>s</var> )</code><BR> 
+<code>SchutzenbergerGroup( <var>class</var> )</code>
+<P>
+<code>SchutzenbergerGroup</code>  returns  the Sch&uuml;tzenberger group of the
+element <var>s</var> in the monoid <var>M</var> as a group.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> SchutzenbergerGroup( M, Transformation( [ 2, 1, 2 ] ) );
+    Group( (1,2) ) </pre>
+<P>
+In   the     second      form      <code>SchutzenbergerGroup</code>   returns    the
+Sch&uuml;tzenberger group of the Green class <var>class</var> of a monoid.
+<P><A NAME="SECT025"><h2>75.25 Idempotents</h2></a>
+<P><P><P>
+<code>Idempotents( <var>M</var> )</code><BR> 
+<code>Idempotents( <var>class</var> )</code>
+<P>
+returns  the set of  idempotents  in the monoid <var>M</var>  or  in a Green class
+<var>class</var>.
+<P>
+<pre>    gap> M:= Monoid( Transformation( [ 2, 1, 2 ] ),
+    > Transformation( [ 1, 2, 2 ] ) );;
+    gap> Idempotents( M );
+    [ Transformation( [ 1, 2, 1 ] ), Transformation( [ 1, 2, 2 ] ), 
+      Transformation( [ 1, 2, 3 ] ) ] 
+    gap> Idempotents( DClass( M, Transformation( [ 2, 1, 2 ] ) ) );
+    [ Transformation( [ 1, 2, 1 ] ), Transformation( [ 1, 2, 2 ] ) ] </pre>
+<P><A NAME="SECT026"><h2>75.26 Monoid Homomorphisms</h2></a>
+<P><P>
+<A name = "I16"></a>
+
+<P>
+The homomorphisms between monoids  are of interest  as soon as  there are
+monoids.  However, no effort  has been  made to  provide any map  between
+monoids.  Here certainly some work needs to be done.
+<P><A NAME="SECT027"><h2>75.27 Monoid Records and Semigroup Records</h2></a>
+<P><P><P>
+Like  other domains  semigroups and monoids  are  represented by records. 
+While it is possible to construct such a  record by hand it is preferable
+to have  the  functions <code>SemiGroup</code>  (see <a href="chap075.htm#SECT004">SemiGroup</a>)  or  <code>Monoid</code> (see
+<a href="chap075.htm#SECT006">Monoid</a>) do this for you.
+<P>
+After such  a record is  created one can add  record components.  But you
+may not alter the values of components which are already present.
+<P>
+A semigroup or monoid record has the following category components.
+<P>
+<DL><DT><code>isDomain</code>:<DD> <BR> 
+        is always <code>true</code> since a monoid or a semigroup is a domain.
+</DL><P>
+<DL><DT><code>isSemiGroup</code>:<DD><BR> 
+        is always <code>true</code> for semigroups.
+</DL><P>
+<DL><DT><code>isMonoid</code>:<DD> <BR> 
+        is always <code>true</code> for monoids.
+</DL><P>
+The following components are the identification components of a semigroup
+or monoid record.
+<P>
+<DL><DT><code>generators</code>:<DD> <BR> 
+        is   a  list of  generators  of   the monoid  or   the semigroup. 
+        Duplicates are allowed in this list, but in  the case of a monoid
+        none of the generators may be the identity.
+</DL><P>
+<DL><DT><code>identity</code>:<DD> <BR> 
+        is the indentity in the case of a monoid.
+</DL><P>
+Other components which contain information about  the semigroup or monoid
+may be present.
+<P>
+<DL><DT><code>size</code>:<DD> <BR> 
+        is the size of the monoid or the semigroup (see "Size"). 
+</DL><P>
+<DL><DT><code>elements</code>:<DD> <BR> 
+        is the  set  of elements  of the  monoid  or the  semigroup  (see 
+        "Elements").
+</DL><P><a href ="chap074.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap076.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

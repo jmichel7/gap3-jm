@@ -1,0 +1,1201 @@
+<html><head><title>GAP3 Manual: 8 Operations of Groups</title></head>
+<body bgcolor="ffffff">
+<h1>8 Operations of Groups</h1>
+<P><P><P>
+One of the most  important tools in  group  theory is the <strong>operation</strong>  or
+<strong>action</strong> of a group on a certain set.
+<P>
+We say that a group <I>G</I> operates on a set <I>D</I> if we  have a function that
+takes each <I>d &isin; D</I> and  each <I>g &isin; G</I> to  another element <I>d<sup>g</sup> &isin; D</I>,
+which we  call the image of <I>d</I>  under <I>g</I>, such  that <I>d<sup>identity</sup> = d</I>
+and <I>(d<sup>g</sup>)<sup>h</sup> = d<sup>gh</sup></I> for each <I>d &isin; D</I> and <I>g,h &isin; G</I>.
+<P>
+This is equivalent to saying that  an operation is  a homomorphism of the
+group <I>G</I> into the full symmetric group on <I>D</I>.  We  usually call <I>D</I> the
+<strong>domain</strong> of the operation and its elements <strong>points</strong>.
+<P>
+An example of the usage of the functions in this  package can be found in
+the introduction to <strong>GAP3</strong> (see <a href="chap001.htm#SECT019">About Operations of Groups</a>).
+<P>
+In  <strong>GAP3</strong>  group elements usually operate through  the  power  operator,
+which is denoted by  the caret <code>^</code>.  It is  possible  however to specify
+other operations (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+First this chapter describes the functions that take  a single element of
+the group   and compute   cycles    of this  group  element and   related
+information  (see <a href="chap008.htm#SECT002">Cycle</a>,  <a href="chap008.htm#SECT003">CycleLength</a>, <a href="chap008.htm#SECT004">Cycles</a>, and <a href="chap008.htm#SECT005">CycleLengths</a>),
+and the function   that  describes how  a group  element  operates  by  a
+permutation that operates the same way on <code>[1..<var>n</var>]</code> (see <a href="chap008.htm#SECT008">Permutation</a>).
+<P>
+Next come the functions that test whether an orbit has minimal or maximal
+length   and related    functions  (see <a href="chap008.htm#SECT009">IsFixpoint</a>,   <a href="chap008.htm#SECT010">IsFixpointFree</a>,
+<a href="chap008.htm#SECT011">DegreeOperation</a>, <a href="chap008.htm#SECT012">IsTransitive</a>, and <a href="chap008.htm#SECT013">Transitivity</a>).
+<P>
+Next this chapter  describes the functions that  take a group and compute
+orbits of this group and related information (see <a href="chap008.htm#SECT016">Orbit</a>, <a href="chap008.htm#SECT017">OrbitLength</a>,
+<a href="chap008.htm#SECT018">Orbits</a>, and <a href="chap008.htm#SECT019">OrbitLengths</a>).
+<P>
+Next are the   functions that  compute  the permutation  group  <var>P</var>  that
+operates on <code>[ 1 .. Length(<var>D</var>) ]</code> in  the same way  that <var>G</var> operates on
+<var>D</var>, and the corresponding homomorphism from <var>G</var> to <var>P</var> (see <a href="chap008.htm#SECT020">Operation</a>,
+<a href="chap008.htm#SECT021">OperationHomomorphism</a>).
+<P>
+Next is the functions that compute block systems, i.e., partitions of <var>D</var>
+such that <var>G</var> operates on the  sets of the  partition (see <a href="chap008.htm#SECT022">Blocks</a>), and
+the function that tests whether  <var>D</var>  has such a nontrivial  partitioning
+under the operation of <var>G</var> (see <a href="chap008.htm#SECT023">IsPrimitive</a>).
+<P>
+Finally come the  functions that relate an orbit  of <var>G</var> on <var>D</var> with  the
+subgroup of  <var>G</var>   that  fixes  the   first  point  in  the  orbit   (see
+<a href="chap008.htm#SECT024">Stabilizer</a>), and    the   cosets  of   this   subgroup in      <var>G</var> (see
+<a href="chap008.htm#SECT025">RepresentativeOperation</a> and <a href="chap008.htm#SECT026">RepresentativesOperation</a>).
+<P>
+All functions described in this chapter are in <code>LIBNAME/"operatio.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap008.htm#SECT001">Other Operations</a>
+<LI> <A HREF="chap008.htm#SECT002">Cycle</a>
+<LI> <A HREF="chap008.htm#SECT003">CycleLength</a>
+<LI> <A HREF="chap008.htm#SECT004">Cycles</a>
+<LI> <A HREF="chap008.htm#SECT005">CycleLengths</a>
+<LI> <A HREF="chap008.htm#SECT006">MovedPoints</a>
+<LI> <A HREF="chap008.htm#SECT007">NrMovedPoints</a>
+<LI> <A HREF="chap008.htm#SECT008">Permutation</a>
+<LI> <A HREF="chap008.htm#SECT009">IsFixpoint</a>
+<LI> <A HREF="chap008.htm#SECT010">IsFixpointFree</a>
+<LI> <A HREF="chap008.htm#SECT011">DegreeOperation</a>
+<LI> <A HREF="chap008.htm#SECT012">IsTransitive</a>
+<LI> <A HREF="chap008.htm#SECT013">Transitivity</a>
+<LI> <A HREF="chap008.htm#SECT014">IsRegular</a>
+<LI> <A HREF="chap008.htm#SECT015">IsSemiRegular</a>
+<LI> <A HREF="chap008.htm#SECT016">Orbit</a>
+<LI> <A HREF="chap008.htm#SECT017">OrbitLength</a>
+<LI> <A HREF="chap008.htm#SECT018">Orbits</a>
+<LI> <A HREF="chap008.htm#SECT019">OrbitLengths</a>
+<LI> <A HREF="chap008.htm#SECT020">Operation</a>
+<LI> <A HREF="chap008.htm#SECT021">OperationHomomorphism</a>
+<LI> <A HREF="chap008.htm#SECT022">Blocks</a>
+<LI> <A HREF="chap008.htm#SECT023">IsPrimitive</a>
+<LI> <A HREF="chap008.htm#SECT024">Stabilizer</a>
+<LI> <A HREF="chap008.htm#SECT025">RepresentativeOperation</a>
+<LI> <A HREF="chap008.htm#SECT026">RepresentativesOperation</a>
+<LI> <A HREF="chap008.htm#SECT027">IsEquivalentOperation</a>
+</ol>
+<A NAME="SECT001"><h2>8.1 Other Operations</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<A name = "I1"></a>
+
+<A name = "I2"></a>
+
+<A name = "I3"></a>
+
+<A name = "I4"></a>
+
+<A name = "I5"></a>
+
+<A name = "I6"></a>
+
+<A name = "I7"></a>
+
+<A name = "I8"></a>
+
+<A name = "I9"></a>
+
+<A name = "I10"></a>
+
+<P>
+The functions in   the operation  package   generally  compute  with  the
+operation of group elements defined  by the canonical  operation that  is
+denoted with the caret (<code>^</code>) in <strong>GAP3</strong>.   However they also allow you to
+specify other operations.   Such  operations are specified  by functions,
+which are  accepted as optional  argument  by all  the operations package
+functions.
+<P>
+This function must accept two arguments.   The first argument will be the
+point and the second will be the group element.  The function must return
+the image of the point under the group element.
+<P>
+As an example, the function  <code>OnPairs</code> that  specifies  the operation  on
+pairs could be defined as follows<BR> 
+<pre>    OnPairs := function ( pair, g )
+        return [ pair[1] ^ g, pair[2] ^ g ];
+    end; </pre>
+<P>
+The following operations are predefined.
+<P>
+<DL><DT><code>OnPoints</code>:<DD><BR> 
+        specifies the canonical default operation.  Passing this function
+        is equivalent to specifying no operation.  This  function  exists
+        because there are places where the operation in not an option.
+</DL><P>
+<DL><DT><code>OnPairs</code>:<DD><BR> 
+        specifies the componentwise operation of  group elements on pairs
+        of points, which are represented by lists of length 2.
+</DL><P>
+<DL><DT><code>OnTuples</code>:<DD><BR> 
+        specifies the componentwise operation of group elements on tuples
+        of points, which are represented  by  lists.   <code>OnPairs</code>  is  the
+        special case of <code>OnTuples</code> for tuples with two elements.
+</DL><P>
+<DL><DT><code>OnSets</code>:<DD><BR> 
+        specifies  the  operation of group   elements on sets  of points,
+        which  are   represented   by  sorted   lists of  points  without
+        duplicates (see <a href="chap028.htm">Sets</a>).
+</DL><P>
+<DL><DT><code>OnRight</code>:<DD><BR> 
+        specifies that group elements operate by multiplication from  the
+        right.
+</DL><P>
+<DL><DT><code>OnLeftInverse</code>:<DD><BR>  
+	specifies that group elements operate  by multiplication by their
+	inverses   from the    left.   This  is    an operation,   unlike
+	<code>OnLeftAntiOperation</code> (see below).
+</DL><P>
+<DL><DT><code>OnRightCosets</code>:<DD><BR> 
+        specifies that group elements operate by multiplication from  the
+        right on sets of points, which are represented by sorted lists of
+        points without duplicates (see <a href="chap028.htm">Sets</a>).
+</DL><P>
+<DL><DT><code>OnLeftCosets</code>:<DD><BR> 
+        specifies that group elements operate by multiplication from  the
+        left  on sets of points, which are represented by sorted lists of
+        points without duplicates (see <a href="chap028.htm">Sets</a>).
+</DL><P>
+<DL><DT><code>OnLines</code>:<DD><BR> 
+        specifies that group elements, which must be matrices, operate on
+        lines,  which are  represented  by  vectors  with  first  nonzero
+        coefficient one.  That is, <code>OnLines</code> multiplies the vector by the
+        group  element and  then divides  the vector by the first nonzero
+        coefficient.
+</DL><P>
+Note that it is your responsibility to make sure that the elements of the
+domain <var>D</var> on which you  are  operating  are already in normal form.  The
+reason is that all functions will compare points using the <code>=</code> operation.
+For example, if you are operating on sets  with <code>OnSets</code>, you will get an
+error message it not all elements of the domain are sets.
+<P>
+<pre>    gap> Cycle( (1,2), [2,1], OnSets );
+    Error, OnSets: &lt;tuple> must be a set </pre>
+<P>
+The former  function <code>OnLeft</code> which  operated  by mulitplication from the
+left has been renamed  <code>OnLeftAntiOperation</code>, to emphasise the point that
+it does not satisify the axioms of an operation, and  may cause errors if
+supplied where an operation is expected.
+<P><A NAME="SECT002"><h2>8.2 Cycle</h2></a>
+<P><P><P>
+<code>Cycle( <var>g</var>, <var>d</var> )</code> <BR> 
+<code>Cycle( <var>g</var>, <var>d</var>, <var>operation</var> )</code>
+<P>
+<code>Cycle</code> returns the orbit  of the point <var>d</var>,  which may be  an  object of
+arbitrary type, under the group element <var>g</var> as a list of points.
+<P>
+The points <var>e</var> in the cycle of <var>d</var> under  the group element <var>g</var> are those
+for which a power <I>g<sup>i</sup></I> exists such that <I>d<sup>g<sup>i</sup></sup> = e</I>.
+<P>
+The first point in the list returned by <code>Cycle</code> is  the point <var>d</var> itself,
+the ordering of the other points is such that each point  is the image of
+the previous point.
+<P>
+<code>Cycle</code> accepts a  function <var>operation</var> of two arguments  <var>d</var> and  <var>g</var> as
+optional third argument, which  specifies how  the element   <var>g</var> operates
+(see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> Cycle( (1,5,3,8)(4,6,7), 3 );
+    [ 3, 8, 1, 5 ]
+    gap> Cycle( (1,5,3,8)(4,6,7), [3,4], OnPairs );
+    [ [ 3, 4 ], [ 8, 6 ], [ 1, 7 ], [ 5, 4 ], [ 3, 6 ], [ 8, 7 ],
+      [ 1, 4 ], [ 5, 6 ], [ 3, 7 ], [ 8, 4 ], [ 1, 6 ], [ 5, 7 ] ] </pre>
+<P>
+<code>Cycle</code> calls <BR> 
+<code>Domain([<var>g</var>]).operations.Cycle( <var>g</var>, <var>d</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third argument  is not optional for
+the functions called this way.
+<P>
+The default function  called this  way is <code>GroupElementsOps.Cycle</code>, which
+starts with <var>d</var> and applies <var>g</var> to the last point repeatedly until <var>d</var> is
+reached again.  Special categories of group elements overlay this default
+function with more efficient functions.
+<P><A NAME="SECT003"><h2>8.3 CycleLength</h2></a>
+<P><P><P>
+<code>CycleLength( <var>g</var>, <var>d</var> )</code> <BR> 
+<code>CycleLength( <var>g</var>, <var>d</var>, <var>operation</var> )</code>
+<P>
+<code>CycleLength</code> returns the length of the orbit of the point <var>d</var>, which may
+be an object of  arbitrary  type,  under  the  group  elements  <var>g</var>.  See
+<a href="chap008.htm#SECT002">Cycle</a> for the definition of cycles.
+<P>
+<code>CycleLength</code> accepts a function <var>operation</var> of two arguments <var>d</var> and <var>g</var>
+as optional third  argument, which specifies  how the  group element  <var>g</var>
+operates (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> CycleLength( (1,5,3,8)(4,6,7), 3 );
+    4
+    gap> CycleLength( (1,5,3,8)(4,6,7), [3,4], OnPairs );
+    12 </pre>
+<P>
+<code>CycleLength</code> calls <BR> 
+<code>Domain([<var>g</var>]).operations.CycleLength( <var>g</var>, <var>d</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third argument  is not optional for
+the functions called this way.
+<P>
+The default function called  this way  is <code>GroupElementsOps.CycleLength</code>,
+which starts with <var>d</var> and applies <var>g</var> to the  last point repeatedly until
+<var>d</var> is reached again.  Special categories of group  elements overlay this
+default function with more efficient functions.
+<P><A NAME="SECT004"><h2>8.4 Cycles</h2></a>
+<P><P><P>
+<code>Cycles( <var>g</var>, <var>D</var> )</code> <BR> 
+<code>Cycles( <var>g</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>Cycles</code> returns the set of cycles of the group element <var>g</var> on the domain
+<var>D</var>, which must be a list of points of arbitrary type,  as a set of lists
+of points.  See <a href="chap008.htm#SECT002">Cycle</a> for the definition of cycles.
+<P>
+It is allowed that <var>D</var> is a proper subset of a domain, i.e., that  <var>D</var> is
+not invariant under the  operation of <var>g</var>.   In this case <var>D</var> is silently
+replaced by the smallest superset of <var>D</var> which is invariant.
+<P>
+The first point in each cycle is the smallest point of <var>D</var> in this cycle.
+The ordering of the other points is such that each  point is the image of
+the previous point.  If <var>D</var> is invariant under <var>g</var>, then because <code>Cycles</code>
+returns a set  of cycles,  i.e.,  a sorted list, and  because cycles  are
+compared lexicographically, and because the first point in each  cycle is
+the smallest  point in that  cycle, the list returned  by  <code>Cycles</code> is in
+fact sorted with respect to the smallest point in the cycles.
+<P>
+<code>Cycles</code> accepts a  function <var>operation</var> of two arguments  <var>d</var> and <var>g</var> as
+optional third  argument, which specifies  how  the element  <var>g</var> operates
+(see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> Cycles( (1,5,3,8)(4,6,7), [3,5,7] );
+    [ [ 3, 8, 1, 5 ], [ 7, 4, 6 ] ]
+    gap> Cycles( (1,5,3,8)(4,6,7), [[1,3],[4,6]], OnPairs );
+    [ [ [ 1, 3 ], [ 5, 8 ], [ 3, 1 ], [ 8, 5 ] ],
+      [ [ 4, 6 ], [ 6, 7 ], [ 7, 4 ] ] ] </pre>
+<P>
+<code>Cycles</code> calls <BR> 
+<code>Domain([<var>g</var>]).operations.Cycles( <var>g</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third  argument is not optional for
+the functions called this way.
+<P>
+The default function called this  way is <code>GroupElementsOps.Cycles</code>, which
+takes elements from <var>D</var>, computes their  orbit, removes all points in the
+orbit from <var>D</var>, and  repeats  this until <var>D</var>  has been emptied.   Special
+categories  of  group elements  overlay this default  function  with more
+efficient functions.
+<P><A NAME="SECT005"><h2>8.5 CycleLengths</h2></a>
+<P><P><P>
+<code>CycleLengths( <var>g</var>, <var>D</var> )</code> <BR> 
+<code>CycleLengths( <var>g</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>CycleLengths</code> returns a list of the  lengths of the  cycles of the group
+element   <var>g</var> on  the domain  <var>D</var>,   which must be   a  list of points of
+arbitrary type.  See <a href="chap008.htm#SECT002">Cycle</a> for the definition of cycles.
+<P>
+It is allowed that <var>D</var> is a proper subset of a domain, i.e., that  <var>D</var> is
+not invariant under the  operation of <var>g</var>.   In this case <var>D</var> is silently
+replaced by the smallest superset of <var>D</var> which is invariant.
+<P>
+The  ordering  of   the lengths  of   cycles   in  the  list  returned by
+<code>CycleLengths</code> corresponds  to the list  of cycles returned  by <code>Cycles</code>,
+which is ordered with respect to the smallest point in each cycle.
+<P>
+<code>CycleLengths</code> accepts  a function <var>operation</var>  of two arguments  <var>d</var> and
+<var>g</var>  as   optional third argument, which  specifies   how the element <var>g</var>
+operates (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> CycleLengths( (1,5,3,8)(4,6,7), [3,5,7] );
+    [ 4, 3 ]
+    gap> CycleLengths( (1,5,3,8)(4,6,7), [[1,3],[4,6]], OnPairs );
+    [ 4, 3 ] </pre>
+<P>
+<code>CycleLengths</code> calls <BR> 
+<code>Domain([<var>g</var>]).operations.CycleLengths( <var>g</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the  third argument is not optional for
+the functions called this way.
+<P>
+The default function called  this way is <code>GroupElementsOps.CycleLengths</code>,
+which takes elements  from <var>D</var>, computes  their orbit, removes all points
+in the orbit from <var>D</var>,  and repeats  this   until  <var>D</var> has been  emptied.
+Special categories of group elements  overlay  this default function with
+more efficient functions.
+<P><A NAME="SECT006"><h2>8.6 MovedPoints</h2></a>
+<P><P><P>
+<code>MovedPoints( <var>g</var> )</code>
+<P><P>
+<pre>    gap> MovedPoints( (1,7)(2,3,8) );
+    [ 1, 2, 3, 7, 8 ] </pre>
+<P><A NAME="SECT007"><h2>8.7 NrMovedPoints</h2></a>
+<P><P><P>
+<code>NrMovedPoints( <var>p</var> )</code>
+<P>
+<code>NrMovedPoints</code>  returns the number of points moved by the permutation <var>g</var>,
+the group element <var>g</var>, or the group <var>g</var>.
+<P>
+<pre>    gap> NrMovedPoints( (1,7)(2,3,8) );
+     5  </pre>
+<P><A NAME="SECT008"><h2>8.8 Permutation</h2></a>
+<P><P><P>
+<code>Permutation( <var>g</var>, <var>D</var> )</code> <BR> 
+<code>Permutation( <var>g</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>Permutation</code>   returns  a  permutation that   operates   on the   points
+<code>[1..Length(D)]</code> in the same way  that the group  element <var>g</var> operates on
+the domain <var>D</var>, which may be a list of arbitrary type.
+<P>
+It is not allowed that <var>D</var> is a proper subset of a domain, i.e., <var>D</var> must
+be invariant under the element <var>g</var>.
+<P>
+<code>Permutation</code> accepts a function <var>operation</var> of two arguments <var>d</var> and <var>g</var>
+as optional third argument, which  specifies how the element <var>g</var> operates
+(see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> Permutation( (1,5,3,8)(4,6,7), [4,7,6] );
+    (1,3,2)
+    gap> D := [ [1,4], [1,6], [1,7], [3,4], [3,6], [3,7],
+    >           [4,5], [5,6], [5,7], [4,8], [6,8], [7,8] ];;
+    gap> Permutation( (1,5,3,8)(4,6,7), D, OnSets );
+    ( 1, 8, 6,10, 2, 9, 4,11, 3, 7, 5,12) </pre>
+<P>
+<code>Permutation</code> calls <BR> 
+<code>Domain([<var>g</var>]).operations.Permutation( <var>g</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the  third argument is not optional for
+the functions called this way.
+<P>
+The default  function called this  way is <code>GroupElementsOps.Permutation</code>,
+which simply applies <var>g</var> to all the points of  <var>D</var>, finds the position of
+the image in <var>D</var>, and finally applies <code>PermList</code>  (see <a href="chap020.htm#SECT009">PermList</a>) to the
+list of those positions.   Actually this  is  not  quite  true.   Because
+finding the position of an image in a sorted list is so  much faster than
+finding it in <var>D</var>,  <code>GroupElementsOps.Permutation</code> first sorts  a copy of
+<var>D</var> and remembers how it had to rearrange the elements  of <var>D</var> to achieve
+this.  Special categories of group elements overlay this default function
+with more efficient functions.
+<P><A NAME="SECT009"><h2>8.9 IsFixpoint</h2></a>
+<P><P><P>
+<code>IsFixpoint( <var>G</var>, <var>d</var> )</code> <BR> 
+<code>IsFixpoint( <var>G</var>, <var>d</var>, <var>operation</var> )</code>
+<P>
+<code>IsFixpoint</code>  returns  <code>true</code> if the point  <var>d</var>  is a  fixpoint under the
+operation of the group <var>G</var>.
+<P>
+We say that  <var>d</var> is  a <strong>fixpoint</strong>  under the  operation of <var>G</var>  if  every
+element <var>g</var> of <var>G</var> maps <var>d</var> to itself.  This is equivalent to saying that
+each generator of <var>G</var> maps <var>d</var> to itself.
+<P>
+As a special case it is allowed that the first argument is a single group
+element,  though this  does not make a  lot of sense, since in  this case
+<code>IsFixpoint</code> simply has to test <code><var>d</var>^<var>g</var> = <var>d</var></code>.
+<P>
+<code>IsFixpoint</code> accepts a function <var>operation</var> of two arguments <var>d</var>  and <var>g</var>
+as optional  third  argument,  which specifies how  the  elements  of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsFixpoint( g, 1 );
+    false
+    gap> IsFixpoint( g, [6,7,8], OnSets );
+    true </pre>
+<P>
+<code>IsFixpoint</code> is so simple that  it  does  all  the  work  by itself, and,
+unlike the  other functions described in this chapter, does not  dispatch
+to another function.
+<P><A NAME="SECT010"><h2>8.10 IsFixpointFree</h2></a>
+<P><P><P>
+<code>IsFixpointFree( <var>G</var>, <var>D</var> )</code> <BR> 
+<code>IsFixpointFree( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>IsFixpointFree</code>  returns  <code>true</code>  if  the group  <var>G</var>  operates without a
+fixpoint (see <a href="chap008.htm#SECT009">IsFixpoint</a>)  on the domain  <var>D</var>, which must be  a list of
+points of arbitrary type.
+<P>
+We say that  <var>G</var> operates <strong>fixpoint free</strong> on the domain <var>D</var> if each point
+of <var>D</var> is moved  by at least  one element of  <var>G</var>.  This is equivalent to
+saying that each point of <var>D</var> is moved by at least one generator of  <var>G</var>.
+This definition also applies in the case that <var>D</var> is a proper subset of a
+domain, i.e., that <var>D</var> is not invariant under the operation of <var>G</var>.
+<P>
+As a special case it is allowed that the first argument is a single group
+element.
+<P>
+<code>IsFixpointFree</code> accepts a function <var>operation</var> of two arguments <var>d</var>  and
+<var>g</var> as optional third argument, which specifies how the  elements  of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsFixpointFree( g, [1..8] );
+    true
+    gap> sets := Combinations( [1..8], 3 );;  Length( sets );
+    56    # a list of all three element subsets of <code>[1..8]</code>
+    gap> IsFixpointFree( g, sets, OnSets );
+    false </pre>
+<P>
+<code>IsFixpointFree</code> calls <BR> 
+<code><var>G</var>.operations.IsFixpointFree( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third  argument is not optional for
+functions called this way.
+<P>
+The default function called this  way is <code>GroupOps.IsFixpointFree</code>, which
+simply loops over the elements of <var>D</var> and applies to each  all generators
+of <var>G</var>, and tests whether each is moved by at  least one generator.  This
+function is seldom overlaid, because it is very difficult to improve it.
+<P><A NAME="SECT011"><h2>8.11 DegreeOperation</h2></a>
+<P><P><P>
+<code>DegreeOperation( <var>G</var>, <var>D</var> )</code> <BR> 
+<code>DegreeOperation( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>DegreeOperation</code> returns the degree of the operation of the group <var>G</var> on
+the domain <var>D</var>, which must be a list of points of arbitrary type.
+<P>
+The <strong>degree</strong> of the operation of <var>G</var>  on <var>D</var> is defined  as the number of
+points  of <var>D</var> that  are properly moved by at   least one element of <var>G</var>.
+This definition also applies in the case that <var>D</var> is a proper subset of a
+domain, i.e., that <var>D</var> is not invariant under the operation of <var>G</var>.
+<P>
+<code>DegreeOperation</code> accepts a function <var>operation</var> of two arguments <var>d</var> and
+<var>g</var> as optional third  argument, which specifies  how the elements of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> DegreeOperation( g, [1..10] );
+    8
+    gap> sets := Combinations( [1..8], 3 );;  Length( sets );
+    56   # a list of all three element subsets of <code>[1..8]</code>
+    gap> DegreeOperation( g, sets, OnSets );
+    55 </pre>
+<P>
+<code>DegreeOperation</code> calls <BR> 
+<code><var>G</var>.operations.DegreeOperation( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third argument is  not optional for
+functions called this way.
+<P>
+The default function called this way is <code>GroupOps.DegreeOperation</code>, which
+simply loops over the elements of <var>D</var> and  applies to each all generators
+of <var>G</var>, and counts those that are  moved by at least one generator.  This
+function is seldom overlaid, because it is very difficult to improve it.
+<P><A NAME="SECT012"><h2>8.12 IsTransitive</h2></a>
+<P><P><P>
+<code>IsTransitive( <var>G</var>, <var>D</var> )</code> <BR> 
+<code>IsTransitive( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>IsTransitive</code> returns <code>true</code> if  the group  <var>G</var> operates transitively on
+the domain <var>D</var>, which must be a list of points of arbitrary type.
+<P>
+We say that a  group <var>G</var> acts <strong>transitively</strong> on  a domain <var>D</var> if and only
+if for every pair  of points <var>d</var>  and <var>e</var> there is  an element <var>g</var> of <var>G</var>
+such that <I>d<sup>g</sup> = e</I>.  An alternative characterization of this property is
+to say that <var>D</var> as a set is equal to the orbit of every single point.
+<P>
+It is allowed that <var>D</var> is a proper subset of  a domain, i.e., that <var>D</var> is
+not invariant under the  operation of  <var>G</var>.  In this  case <code>IsTransitive</code>
+checks  whether  for every pair  of  points  <var>d</var>, <var>e</var>  of <var>D</var> there is an
+element <var>g</var> of  <var>G</var>, such that <I>d<sup>g</sup> = e</I>.  This can also be characterized
+by saying that <var>D</var> is a subset of the orbit of every single point.
+<P>
+<code>IsTransitive</code> accepts a  function <var>operation</var> of  two  arguments <var>d</var> and
+<var>g</var> as  optional third argument, which specifies  how the elements of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsTransitive( g, [1..8] );
+    false
+    gap> IsTransitive( g, [1,6] );
+    false    # note that the domain need not be invariant
+    gap> sets := Combinations( [1..5], 3 );;  Length( sets );
+    10    # a list of all three element subsets of <code>[1..5]</code>
+    gap> IsTransitive( g, sets, OnSets );
+    true </pre>
+<P>
+<code>IsTransitive</code> calls <BR> 
+<code><var>G</var>.operations.IsTransitive( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third argument is not  optional for
+functions called this way.
+<P>
+The default function  called  this way is  <code>GroupOps.IsTransitive</code>, which
+tests  whether <var>D</var> is a subset  of the orbit  of  the first point in <var>D</var>.
+This function is seldom overlaid, because it is difficult to improve it.
+<P><A NAME="SECT013"><h2>8.13 Transitivity</h2></a>
+<P><P><P>
+<code>Transitivity( <var>G</var>, <var>D</var> )</code> <BR> 
+<code>Transitivity( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>Transitivity</code> returns the degree of transitivity of the group <var>G</var> on the
+domain  <var>D</var>, which must be a  list of points  of  arbitrary type.  If <var>G</var>
+does not operate transitively on <var>D</var> then <code>Transitivity</code> returns 0.
+<P>
+The  <strong>degree of  transitivity</strong>  of the operation of    <var>G</var> on <var>D</var> is  the
+largest <var>k</var> such that <var>G</var> operates <var>k</var>-fold  transitively on <var>D</var>.  We say
+that  <var>G</var>   operates  <var>k</var>-<strong>fold   transitively</strong>  on <var>D</var>   if it  operates
+transitively on <var>D</var> (see <a href="chap008.htm#SECT012">IsTransitive</a>) and  the stabilizer of one point
+<var>d</var> of <var>D</var> operates <code><var>k</var>-1</code>-fold transitively on <code>Difference(<var>D</var>,[<var>d</var>])</code>.
+Because the stabilizers   of the  points  of  <var>D</var> are conjugate  this  is
+equivalent to  saying  that the stabilizer  of  <strong>each</strong> point  <var>d</var>  of <var>D</var>
+operates <code><var>k</var>-1</code>-fold transitively on <code>Difference(<var>D</var>,[<var>d</var>])</code>.
+<P>
+It is not allowed that <var>D</var> is a proper subset of a domain, i.e., <var>D</var> must
+be invariant under the operation of <var>G</var>.
+<P>
+<code>Transitivity</code>  accepts a function <var>operation</var>  of two  arguments <var>d</var> and
+<var>g</var>  as optional third argument, which  specifies how the elements of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Transitivity( g, [1..8] );
+    0
+    gap> Transitivity( g, [1..5] );
+    3
+    gap> sets := Combinations( [1..5], 3 );;  Length( sets );
+    10    # a list of all three element subsets of <code>[1..5]</code>
+    gap> Transitivity( g, sets, OnSets );
+    1 </pre>
+<P>
+<code>Transitivity</code> calls <BR> 
+<code><var>G</var>.operations.Transitivity( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third argument is not  optional for
+functions called this way.
+<P>
+The  default function called  this way is  <code>GroupOps.Transitivity</code>, which
+first tests whether <var>G</var> operates transitively on <var>D</var>.  If so, it returns <BR> 
+<code>Transitivity(Stabilizer(<var>G</var>,Difference(<var>D</var>,[<var>D</var>[1]]),<var>operation</var>)+1</code>; <BR> 
+if not, it simply returns 0.  Special  categories of groups  overlay this
+default function with more efficient functions.
+<P><A NAME="SECT014"><h2>8.14 IsRegular</h2></a>
+<P><P><P>
+<code>IsRegular( <var>G</var>, <var>D</var> )</code>
+<code>IsRegular( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>IsRegular</code>  returns <code>true</code>  if  the group <var>G</var>  operates regularly on the
+domain <var>D</var>, which must be a list of points of arbitrary type, and <code>false</code>
+otherwise.
+<P>
+A  group  <var>G</var>  operates <strong>regularly</strong>  on  a  domain  <var>D</var>  if  it  operates
+transitively and no element of <var>G</var>  other than the idenity leaves a point
+of   <var>D</var>   fixed.   An  equal   characterisation  is  that  <var>G</var>  operates
+transitively on <var>D</var> and the stabilizer  of any  point  of <var>D</var> is trivial.
+Yet  another  characterisation  is  that the operation of <var>G</var>  on <var>D</var>  is
+equivalent to the operation of <var>G</var> on its elements by multiplication from
+the right.
+<P>
+It is not allowed that <var>D</var> is a proper subset of a domain, i.e., <var>D</var> must
+be invariant under the operation of <var>G</var>.
+<P>
+<code>IsRegular</code>  accepts a function <var>operation</var> of two  arguments <var>d</var> and <var>g</var>
+as  optional  third  argument, which specifies  how  the elements  of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsRegular( g, [1..5] );
+    false
+    gap> IsRegular( g, Elements(g), OnRight );
+    true
+    gap> g := Group( (1,2,3), (3,4,5) );;
+    gap> IsRegular( g, Orbit( g, [1,2,3], OnTuples ), OnTuples );
+    true </pre>
+<P>
+<code>IsRegular</code> calls <BR> 
+<code><var>G</var>.operations.IsRegular( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the  value.  Note that the third argument is not optional for
+functions called this way.
+<P>
+The default function called this way is <code>GroupOps.IsRegular</code>, which tests
+if <var>G</var> operates transitively and semiregularly on <var>D</var> (see <a href="chap008.htm#SECT012">IsTransitive</a>
+and <a href="chap008.htm#SECT015">IsSemiRegular</a>).
+<P><A NAME="SECT015"><h2>8.15 IsSemiRegular</h2></a>
+<P><P><P>
+<code>IsSemiRegular( <var>G</var>, <var>D</var> )</code><BR> 
+<code>IsSemiRegular( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>IsSemiRegular</code> returns <code>true</code> if the group <var>G</var> operates semiregularly on
+the domain  <var>D</var>, which must  be  a list of  points of arbitrary type, and
+<code>false</code> otherwise.
+<P>
+A group <var>G</var> operates <strong>semiregularly</strong> on a domain <var>D</var> if no element of <var>G</var>
+other  than  the   idenity  leaves  a  point  of  <var>D</var>  fixed.   An  equal
+characterisation is  that the stabilizer of any point of <var>D</var> is  trivial.
+Yet  another characterisation  is that  the operation  of <var>G</var>  on <var>D</var>  is
+equivalent to multiple copies of the operation  of <var>G</var> on its elements by
+multiplication from the right.
+<P>
+It is not allowed that <var>D</var> is a proper subset of a domain, i.e., <var>D</var> must
+be invariant under the operation of <var>G</var>.
+<P>
+<code>IsSemiRegular</code> accepts a function <var>operation</var> of two arguments  <var>d</var>  and
+<var>g</var> as  optional third argument,  which specifies how the elements of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2)(3,4)(5,7)(6,8), (1,3)(2,4)(5,6)(7,8) );;
+    gap> IsSemiRegular( g, [1..8] );
+    true
+    gap> g := Group( (1,2)(3,4)(5,7)(6,8), (1,3)(2,4)(5,6,7,8) );;
+    gap> IsSemiRegular( g, [1..8] );
+    false
+    gap> IsSemiRegular( g, Orbit( g, [1,5], OnSets ), OnSets );
+    true </pre>
+<P>
+<code>IsSemiRegular</code> calls <BR> 
+<code><var>G</var>.operations.IsSemiRegular( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the  value.  Note that the third argument is not optional for
+functions called this way.
+<P>
+The  default  function called this way is <code>GroupOps.IsSemiRegular</code>, which
+computes  a permutation group <var>P</var> that operates on  <code>[1..Length(<var>D</var>)]</code> in
+the  same way  that <var>G</var> operates on <var>D</var> (see <a href="chap008.htm#SECT020">Operation</a>) and then checks
+if this permutation group operations semiregularly.  This of course  only
+works because this  default  function is overlaid  for permutation groups
+(see <a href="chap021.htm#SECT022">Operations of Permutation Groups</a>).
+<P><A NAME="SECT016"><h2>8.16 Orbit</h2></a>
+<P><P><P>
+<code>Orbit( <var>G</var>, <var>d</var> )</code> <BR> 
+<code>Orbit( <var>G</var>, <var>d</var>, <var>operation</var> )</code>
+<P>
+<code>Orbit</code> returns the orbit  of the point <var>d</var>,  which  may be an  object of
+arbitrary type, under the group <var>G</var> as a list of points.
+<P>
+The points <var>e</var> in the orbit of <var>d</var>  under the group  <var>G</var> are those points
+for which a group element <var>g</var> of <var>G</var> exists such that <I>d<sup>g</sup> = e</I>.
+<P>
+Suppose <var>G</var> has <var>n</var>  generators.  First we   order the words of the  free
+monoid  with <var>n</var> abstract  generators according  to  length and for words
+with equal length lexicographically.  So if <var>G</var> has two generators called
+<var>a</var> and <var>b</var> the ordering is <I>identity, a, b, a<sup>2</sup>, ab, ba, b<sup>2</sup>, a<sup>3</sup>, ...</I>.
+Next we order the elements of <var>G</var> that can be written as a product of the
+generators, i.e.,  without inverses of  the  generators, according to the
+first occurrence  of  a word    representing the  element   in the  above
+ordering.   Then the ordering of points  in the orbit returned by <code>Orbit</code>
+is according to the order of the first  representative of each point <var>e</var>,
+i.e., the smallest <var>g</var> such that <I>d<sup>g</sup> =  e</I>.  Note that because the orbit
+is   finite  there is   for every   point in   the   orbit at   least one
+representative that can be written as a product in the generators of <var>G</var>.
+<P>
+<code>Orbit</code> accepts a  function <var>operation</var> of two  arguments <var>d</var>  and <var>g</var> as
+optional third argument, which specifies how the elements of <var>G</var>  operate
+(see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Orbit( g, 1 );
+    [ 1, 2, 3, 4, 5 ]
+    gap> Orbit( g, 2 );
+    [ 2, 3, 1, 4, 5 ]
+    gap> Orbit( g, [1,6], OnPairs );
+    [ [ 1, 6 ], [ 2, 7 ], [ 3, 6 ], [ 2, 8 ], [ 1, 7 ], [ 4, 6 ],
+      [ 3, 8 ], [ 2, 6 ], [ 1, 8 ], [ 4, 7 ], [ 5, 6 ], [ 3, 7 ],
+      [ 5, 8 ], [ 5, 7 ], [ 4, 8 ] ] </pre>
+<P>
+<code>Orbit</code> calls <BR> 
+<code><var>G</var>.operations.Orbit( <var>G</var>, <var>d</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third argument  is not optional for
+functions called this way.
+<P>
+The default function called this  way is <code>GroupOps.Orbit</code>, which performs
+an ordinary orbit algorithm.  Special  categories of groups  overlay this
+default function with more efficient functions.
+<P><A NAME="SECT017"><h2>8.17 OrbitLength</h2></a>
+<P><P><P>
+<code>OrbitLength( <var>G</var>, <var>d</var> )</code> <BR> 
+<code>OrbitLength( <var>G</var>, <var>d</var>, <var>operation</var> )</code>
+<P>
+<code>OrbitLength</code> returns the length of the orbit of the point <var>d</var>, which may
+be an object of arbitrary type, under the group <var>G</var>.  See <a href="chap008.htm#SECT016">Orbit</a> for the
+definition of orbits.
+<P>
+<code>OrbitLength</code> accepts a function <var>operation</var> of two arguments <var>d</var> and <var>g</var>
+as  optional third  argument,  which specifies how  the  elements  of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> OrbitLength( g, 1 );
+    5
+    gap> OrbitLength( g, 10 );
+    1
+    gap> OrbitLength( g, [1,6], OnPairs );
+    15 </pre>
+<P>
+<code>OrbitLength</code> calls <BR> 
+<code><var>G</var>.operations.OrbitLength( <var>G</var>, <var>d</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third argument is  not optional for
+functions called this way.
+<P>
+The  default  function called this way   is <code>GroupOps.OrbitLength</code>, which
+performs an  ordinary   orbit  algorithm.  Special categories  of  groups
+overlay this default function with more efficient functions.
+<P><A NAME="SECT018"><h2>8.18 Orbits</h2></a>
+<P><P><P>
+<code>Orbits( <var>G</var>, <var>D</var> )</code> <BR> 
+<code>Orbits( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>Orbits</code> returns  the orbits of the group  <var>G</var>  on the domain  <var>D</var>, which
+must be a list of points of arbitrary type, as a set of lists of  points.
+See <a href="chap008.htm#SECT016">Orbit</a> for the definition of orbits.
+<P>
+It is allowed that <var>D</var> is a proper subset of a domain,  i.e., that <var>D</var> is
+not invariant under the  operation of <var>G</var>.  In  this case <var>D</var> is silently
+replaced by the smallest superset of <var>D</var> which is invariant.
+<P>
+The first point in each orbit is the smallest point, the  other points of
+each orbit  are  ordered in the standard  order defined  for  orbits (see
+<a href="chap008.htm#SECT016">Orbit</a>).  Because <code>Orbits</code> returns a set of orbits, i.e., a sorted list,
+and because those orbits  are compared lexicographically, and because the
+first point in each orbit is the smallest point  in that orbit,  the list
+returned  by <code>Orbits</code> is in  fact  sorted  with respect  to  the smallest
+points the orbits.
+<P>
+<code>Orbits</code> accepts a  function <var>operation</var> of two arguments <var>d</var>  and <var>g</var> as
+optional third argument, which specifies how the elements of <var>G</var>  operate
+(see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Orbits( g, [1..8] );
+    [ [ 1, 2, 3, 4, 5 ], [ 6, 7, 8 ] ]
+    gap> Orbits( g, [1,6] );
+    [ [ 1, 2, 3, 4, 5 ], [ 6, 7, 8 ] ]    # the domain is not invariant
+    gap> sets := Combinations( [1..8], 3 );; Length( sets );
+    56    # a list of all three element subsets of <code>[1..8]</code>
+    gap> Orbits( g, sets, OnSets );
+    [ [ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 2, 3, 4 ], [ 1, 2, 5 ], [ 1, 3, 4 ],
+          [ 2, 4, 5 ], [ 2, 3, 5 ], [ 1, 4, 5 ], [ 3, 4, 5 ], [ 1, 3, 5 ]
+         ],
+      [ [ 1, 2, 6 ], [ 2, 3, 7 ], [ 1, 3, 6 ], [ 2, 4, 8 ], [ 1, 2, 7 ],
+          [ 1, 4, 6 ], [ 3, 4, 8 ], [ 2, 5, 7 ], [ 2, 3, 6 ],
+          [ 1, 2, 8 ], [ 2, 4, 7 ], [ 1, 5, 6 ], [ 1, 4, 8 ],
+          [ 4, 5, 7 ], [ 3, 5, 6 ], [ 2, 3, 8 ], [ 1, 3, 7 ],
+          [ 2, 4, 6 ], [ 3, 4, 6 ], [ 2, 5, 8 ], [ 1, 5, 7 ],
+          [ 4, 5, 6 ], [ 3, 5, 8 ], [ 1, 3, 8 ], [ 3, 4, 7 ],
+          [ 2, 5, 6 ], [ 1, 4, 7 ], [ 1, 5, 8 ], [ 4, 5, 8 ], [ 3, 5, 7 ]
+         ],
+      [ [ 1, 6, 7 ], [ 2, 6, 7 ], [ 1, 6, 8 ], [ 3, 6, 7 ], [ 2, 6, 8 ],
+          [ 2, 7, 8 ], [ 4, 6, 8 ], [ 3, 7, 8 ], [ 3, 6, 8 ],
+          [ 4, 7, 8 ], [ 5, 6, 7 ], [ 1, 7, 8 ], [ 4, 6, 7 ],
+          [ 5, 7, 8 ], [ 5, 6, 8 ] ], [ [ 6, 7, 8 ] ] ] </pre>
+<P>
+<code>Orbits</code> calls <BR> 
+<code><var>G</var>.operations.Orbits( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third argument is  not optional for
+functions called this way.
+<P>
+The default function called this way is <code>GroupOps.Orbits</code>, which takes an
+element from  <var>D</var>, computes its  orbit, removes all  points in the  orbit
+from  <var>D</var>,  and  repeats  this  until  <var>D</var>  has  been  emptied.   Special
+categories of  groups  overlay this default  function with more efficient
+functions.
+<P><A NAME="SECT019"><h2>8.19 OrbitLengths</h2></a>
+<P><P><P>
+<code>OrbitLengths( <var>G</var>, <var>D</var> )</code> <BR> 
+<code>OrbitLengths( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>OrbitLengths</code> returns a list of the lengths  of  the orbits of the group
+<var>G</var> on the domain <var>D</var>, which may be a list of  points of arbitrary  type.
+See <a href="chap008.htm#SECT016">Orbit</a> for the definition of orbits.
+<P>
+It is allowed that <var>D</var>  is  proper subset of a domain,  i.e., that <var>D</var> is
+not invariant under the operation of <var>G</var>.   In this case  <var>D</var> is silently
+replaced by the smallest superset of <var>D</var> which is invariant.
+<P>
+The  ordering   of  the  lengths  of  orbits  in  the  list  returned  by
+<code>OrbitLengths</code>  corresponds to the list of cycles returned  by  <code>Orbits</code>,
+which is ordered with respect to the smallest point in each orbit.
+<P>
+<code>OrbitLengths</code> accepts  a  function <var>operation</var> of two arguments  <var>d</var> and
+<var>g</var> as optional third argument, which specifies how  the elements  of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> OrbitLengths( g, [1..8] );
+    [ 5, 3 ]
+    gap> sets := Combinations( [1..8], 3 );; Length( sets );
+    56    # a list of all three element subsets of <code>[1..8]</code>
+    gap> OrbitLengths( g, sets, OnSets );
+    [ 10, 30, 15, 1 ] </pre>
+<P>
+<code>OrbitLengths</code> calls <BR> 
+<code><var>G</var>.operations.OrbitLenghts( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the  third argument is not optional for
+functions called this way.
+<P>
+The default  function called this way is  <code>GroupOps.OrbitLengths</code>,  which
+takes an element from <var>D</var>, computes its orbit, removes all points  in the
+orbit from <var>D</var>,  and repeats this until <var>D</var>  has been  emptied.   Special
+categories  of groups  overlay  this default function with more efficient
+functions.
+<P><A NAME="SECT020"><h2>8.20 Operation</h2></a>
+<P><P><P>
+<code>Operation( <var>G</var>, <var>D</var> )</code> <BR> 
+<code>Operation( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>Operation</code>  returns  a  permutation  group  with  the  same   number  of
+generators  as  <var>G</var>, such that each generator  of  the permutation  group
+operates  on  the  set  <code>[1..Length(D)]</code>  in   the   same  way  that  the
+corresponding  generator of the  group <var>G</var> operates on  the  domain  <var>D</var>,
+which may be a list of arbitrary type.
+<P>
+It is not allowed that <var>D</var> is a proper subset of a domain, i.e., <var>D</var> must
+be invariant under the element <var>g</var>.
+<P>
+<code>Operation</code> accepts  a  function <var>operation</var> of two arguments <var>d</var> and <var>g</var>
+as  optional  third  argument, which  specifies how  the elements  of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+The function <code>OperationHomomorphism</code> (see <a href="chap008.htm#SECT021">OperationHomomorphism</a>) can be
+used to  compute the homomorphism that  maps <var>G</var> onto the new permutation
+group.  Of course  if you are  only interested in mapping single elements
+of <var>G</var> into the new permutation group you may also use <code>Permutation</code> (see
+<a href="chap008.htm#SECT008">Permutation</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Operation( g, [1..5] );
+    Group( (1,2,3), (3,4,5) )
+    gap> Operation( g, Orbit( g, [1,6], OnPairs ), OnPairs );
+    Group( ( 1, 2, 3, 5, 8,12)( 4, 7, 9)( 6,10)(11,14), ( 2, 4)( 3, 6,11)
+    ( 5, 9)( 7,10,13,12,15,14) ) </pre>
+<P>
+<code>Operation</code> calls <BR> 
+<code><var>G</var>.operations.Operation( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the  third argument is not optional for
+functions called this way.
+<P>
+The default function  called   this  way is  <code>GroupOps.Operation</code>,  which
+simply applies each generator of <var>G</var> to all the points of <var>D</var>,  finds the
+position of  the  image in  <var>D</var>,  and   finally applies <code>PermList</code>   (see
+<a href="chap020.htm#SECT009">PermList</a>) to  the list of those positions.   Actually this is not quite
+true.  Because  finding the  position on an image in  a sorted list is so
+much  faster than  finding it in  <var>D</var>, <code>GroupElementsOps.Operation</code> first
+sorts a copy of <var>D</var> and remembers how it had to rearrange the elements of
+<var>D</var> to achieve this.  Special  categories of groups overlay this  default
+function with more efficient functions.
+<P><A NAME="SECT021"><h2>8.21 OperationHomomorphism</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<A name = "I12"></a>
+
+<A name = "I13"></a>
+
+<A name = "I14"></a>
+
+<A name = "I15"></a>
+
+<P>
+<code>OperationHomomorphism( <var>G</var>, <var>P</var> )</code>
+<P>
+<code>OperationHomomorphism</code>  returns  the  group  homomorphism  (see   <a href="chap007.htm#SECT106">Group
+Homomorphisms</a>) from  the group <var>G</var> to the  permutation group <var>P</var>,  which
+must be the result of a prior call to <code>Operation</code> (see  <a href="chap008.htm#SECT020">Operation</a>) with
+<var>G</var>  or a group of which <var>G</var>  is a  subgroup (see <a href="chap007.htm#SECT062">IsSubgroup</a>) as  first
+argument.
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> h := Operation( g, [1..5] );
+    Group( (1,2,3), (3,4,5) )
+    gap> p := OperationHomomorphism( g, h );
+    OperationHomomorphism( Group( (1,2,3)(6,7), (3,4,5)(7,8) ), Group(
+    (1,2,3), (3,4,5) ) )
+    gap> (1,4,2,5,3)(6,7,8) ^ p;
+    (1,4,2,5,3)
+    gap> h := Operation( g, Orbit( g, [1,6], OnPairs ), OnPairs );
+    Group( ( 1, 2, 3, 5, 8,12)( 4, 7, 9)( 6,10)(11,14), ( 2, 4)( 3, 6,11)
+    ( 5, 9)( 7,10,13,12,15,14) )
+    gap> p := OperationHomomorphism( g, h );;
+    gap> s := SylowSubgroup( g, 2 );
+    Subgroup( Group( (1,2,3)(6,7), (3,4,5)(7,8) ),
+    [ (7,8), (7,8), (2,5)(3,4), (2,3)(4,5) ] )
+    gap> Images( p, s );
+    Subgroup( Group( ( 1, 2, 3, 5, 8,12)( 4, 7, 9)( 6,10)(11,14), ( 2, 4)
+    ( 3, 6,11)( 5, 9)( 7,10,13,12,15,14) ),
+    [ ( 2, 4)( 5, 9)( 7,12)(10,15)(13,14),
+      ( 2, 4)( 5, 9)( 7,12)(10,15)(13,14),
+      ( 2,14)( 3, 6)( 4,13)( 7,15)( 8,11)(10,12),
+      ( 2,12)( 3, 8)( 4, 7)( 6,11)(10,14)(13,15) ] )
+    gap> OperationHomomorphism( g, Group( (1,2,3), (3,4,5) ) );
+    Error, Record: element 'operation' must have an assigned value </pre>
+<P>
+<code>OperationHomomorphism</code> calls <BR> 
+<code><var>P</var>.operations.OperationHomomorphism( <var>G</var>, <var>P</var> )</code> <BR> 
+and returns the value.
+<P>
+The default function called this way is <code>GroupOps.OperationHomomorphism</code>,
+which uses  the  fields  <code><var>P</var>.operationGroup</code>, <code><var>P</var>.operationDomain</code>, and
+<code><var>P</var>.operationOperation</code>  (the arguments  to  the  <code>Operation</code> call  that
+created    <var>P</var>)   to  construct     a  generic   homomorphism  <var>h</var>.  This
+homomorphism uses <BR> 
+<code>Permutation(<var>g</var>,<var>h</var>.range.operationDomain,<var>h</var>.range.operationOperation)</code>
+<BR> 
+to  compute  the image  of an element  <var>g</var>  of  <var>G</var>  under  <var>h</var>.  It uses
+<code>Representative</code> to compute the preimages  of an element <var>p</var> of <var>P</var> under
+<var>h</var>.  And it computes  the kernel by intersecting  the cores (see <a href="chap007.htm#SECT021">Core</a>)
+of the stabilizers (see <a href="chap008.htm#SECT024">Stabilizer</a>) of representatives of the orbits of
+<var>G</var>.  Look  under  <strong>OperationHomomorphism</strong> in the index  to see for which
+groups and operations this function is overlaid.
+<P><A NAME="SECT022"><h2>8.22 Blocks</h2></a>
+<P><P><P>
+<code>Blocks( <var>G</var>, <var>D</var>, <var>seed</var> )</code> <BR> 
+<code>Blocks( <var>G</var>, <var>D</var>, <var>seed</var>, <var>operation</var> )</code>
+<P>
+In this form <code>Blocks</code> returns a block system of the domain <var>D</var>, which may
+be a list of points of arbitrary type, under the group <var>G</var>, such that the
+points  in  the  list <var>seed</var>  all  lie in  the  same block.  If  no  such
+nontrivial  block  system exists,  <code>Blocks</code> returns <code>[ <var>D</var>  ]</code>.  <var>G</var> must
+operate transitively on <var>D</var>, otherwise an error is signalled.
+<P>
+<code>Blocks( <var>G</var>, <var>D</var> )</code> <BR> 
+<code>Blocks( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+In this form <code>Blocks</code> returns a minimal  block system of the domain  <var>D</var>,
+which may be a list of points of arbitrary type, under the group <var>G</var>.  If
+no nontrivial  block system exists, <code>Blocks</code> returns <code>[ <var>D</var> ]</code>.  <var>G</var> must
+operate transitively on <var>D</var>, otherwise an error is signalled.
+<P>
+A <strong>block system</strong> <var>B</var> is  a list of blocks  with the following properties.
+Each block <var>b</var> of  <var>B</var>  is a subset of   <var>D</var>.   The blocks are   pairwise
+disjoint.   The union of blocks  is <var>D</var>.  The  image  of each block under
+each element  <var>g</var> of <var>G</var> is as  a set  equal to  some block of  the block
+system.  Note that  this implies that all  blocks contain the same number
+of elements as <var>G</var>  operates transitive on <var>D</var>.   Put differently a block
+system  <var>B</var> of  <var>D</var>  is a partition  of <var>D</var>  such that  <var>G</var> operates with
+<code>OnSets</code> (see <a href="chap008.htm#SECT001">Other Operations</a>) on <var>B</var>.  The block system that consists
+of  only singleton sets  and the block system consisting  only of <var>D</var> are
+called <strong>trivial</strong>.  A block system <var>B</var> is called <strong>minimal</strong>  if there is no
+nontrivial block system whose blocks are all subsets of the blocks of <var>B</var>
+and whose number of blocks is larger than the number of blocks of <var>B</var>.
+<P>
+<code>Blocks</code> accepts a function <var>operation</var>  of two  arguments <var>d</var> and <var>g</var> as
+optional third, resp. fourth, argument, which  specifies how the elements
+of <var>G</var> operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> Blocks( g, [1..5] );
+    [ [ 1 .. 5 ] ]
+    gap> Blocks( g, Orbit( g, [1,2], OnPairs ), OnPairs );
+    [ [ [ 1, 2 ], [ 3, 2 ], [ 4, 2 ], [ 5, 2 ] ],
+      [ [ 1, 3 ], [ 2, 3 ], [ 4, 3 ], [ 5, 3 ] ],
+      [ [ 1, 4 ], [ 2, 4 ], [ 3, 4 ], [ 5, 4 ] ],
+      [ [ 1, 5 ], [ 2, 5 ], [ 3, 5 ], [ 4, 5 ] ],
+      [ [ 2, 1 ], [ 3, 1 ], [ 4, 1 ], [ 5, 1 ] ] ] </pre>
+<P>
+<code>Blocks</code> calls <BR> 
+<code><var>G</var>.operations.Blocks( <var>G</var>, <var>D</var>, <var>seed</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  If  no seed was given as  argument to <code>Blocks</code> it
+passes the empty list.  Note that the fourth argument is not optional for
+functions called this way.
+<P>
+The default function called this way is <code>GroupOps.Blocks</code>, which computes
+a permutation  group  <var>P</var> that operates on <code>[1..Length(<var>D</var>)]</code> in the same
+way  that  <var>G</var>  operates on <var>D</var>  (see <a href="chap008.htm#SECT020">Operation</a>) and leaves  it to this
+permutation group to find the blocks.  This of  course works only because
+this default function is overlaid for permutation groups (see <a href="chap021.htm#SECT022">Operations
+of Permutation Groups</a>).
+<P><A NAME="SECT023"><h2>8.23 IsPrimitive</h2></a>
+<P><P><P>
+<code>IsPrimitive( <var>G</var>, <var>D</var> )</code> <BR> 
+<code>IsPrimitive( <var>G</var>, <var>D</var>, <var>operation</var> )</code>
+<P>
+<code>IsPrimitive</code> returns <code>true</code> if the group <var>G</var> operates primitively on the
+domain <var>D</var>, which may  be a list of points of arbitrary type, and <code>false</code>
+otherwise.
+<P>
+A group <var>G</var>  operates <strong>primitively</strong>  on a  domain <var>D</var> if and only  if <var>D</var>
+operates transitively (see <a href="chap008.htm#SECT012">IsTransitive</a>) and has only the trivial block
+systems (see <a href="chap008.htm#SECT022">Blocks</a>).
+<P>
+<code>IsPrimitive</code> accepts a function <var>operation</var> of two arguments <var>d</var> and <var>g</var>
+as  optional third argument,   which specifies  how  the elements  of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> IsPrimitive( g, [1..5] );
+    true
+    gap> IsPrimitive( g, Orbit( g, [1,2], OnPairs ), OnPairs );
+    false </pre>
+<P>
+<code>IsPrimitive</code> calls <BR> 
+<code><var>G</var>.operations.IsPrimitive( <var>G</var>, <var>D</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the  third argument is not optional for
+functions called this way.
+<P>
+The  default  function called this way is  <code>GroupOps.IsPrimitive</code>,  which
+simply calls  <code>Blocks( <var>G</var>, <var>D</var>,  <var>operation</var>  )</code>  and tests whether  the
+returned block  system is <code>[ <var>D</var> ]</code>.  This function  is  seldom overlaid,
+because all the important work is done in <code>Blocks</code>.
+<P><A NAME="SECT024"><h2>8.24 Stabilizer</h2></a>
+<P><P><P>
+<code>Stabilizer( <var>G</var>, <var>d</var> )</code> <BR> 
+<code>Stabilizer( <var>G</var>, <var>d</var>, <var>operation</var> )</code>
+<P>
+<code>Stabilizer</code> returns the stabilizer of  the point <var>d</var> under the operation
+of the group <var>G</var>.
+<P>
+The <strong>stabilizer</strong> <I>S</I> of <I>d</I> in <I>G</I> is  the subgroup of those elements <I>g</I>
+of <I>G</I> that fix <I>d</I>, i.e., for which <I>d<sup>g</sup> = d</I>.   The right cosets of <I>S</I>
+correspond in a canonical way to  the points <I>p</I> in  the orbit <I>O</I> of <I>d</I>
+under  <I>G</I>; namely all elements  from a right coset  <I>S g</I> map <I>d</I> to the
+same  point <I>d<sup>g</sup> &isin;  O</I>, and elements from different  right cosets <I>S g</I>
+and <I>S h</I> map <I>d</I> to different points <I>d<sup>g</sup></I> and <I>d<sup>h</sup></I>.  Thus the index of
+the stabilizer <I>S</I>   in <I>G</I> is equal to    the length of  the orbit  <I>O</I>.
+<code>RepresentativesOperation</code>  (see <a href="chap008.htm#SECT026">RepresentativesOperation</a>)  computes  a
+system of representatives of the right cosets of <I>S</I> in <I>G</I>.
+<P>
+<code>Stabilizer</code> accepts a function <var>operation</var> of  two arguments <var>d</var> and <var>g</var>
+as  optional  third argument, which  specifies  how the  elements  of <var>G</var>
+operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> g.name := "G";;
+    gap> Stabilizer( g, 1 );
+    Subgroup( G, [ (3,4,5)(7,8), (2,5,3)(6,7) ] )
+    gap> Stabilizer( g, [1,2,3], OnSets );
+    Subgroup( G, [ (7,8), (6,8), (2,3)(4,5)(6,7,8), (1,2)(4,5)(6,7,8) ] )</pre>
+<P>
+<code>Stabilizer</code> calls <BR> 
+<code><var>G</var>.operations.Stabilizer( <var>G</var>, <var>d</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third argument is  not optional for
+functions called this way.
+<P>
+The  default  function called  this  way  is <code>GroupOps.Stabilizer</code>, which
+computes the orbit of <I>d</I> under <I>G</I>, remembers a representative <I>r<sub>e</sub></I> for
+each  point <I>e</I> in the  orbit,  and uses Schreier's theorem, which  says
+that the stabilizer  is generated by  the elements <I>r<sub>e</sub>  g r<sub>e<sup>g</sup></sub><sup>-1</sup></I>.
+Special categories of  groups overlay  this  default  function with  more
+efficient functions.
+<P><A NAME="SECT025"><h2>8.25 RepresentativeOperation</h2></a>
+<P><P><P>
+<code>RepresentativeOperation( <var>G</var>, <var>d</var>, <var>e</var> )</code> <BR> 
+<code>RepresentativeOperation( <var>G</var>, <var>d</var>, <var>e</var>, <var>operation</var> )</code>
+<P>
+<code>RepresentativeOperation</code> returns a  representative of the  point <var>e</var>  in
+the  orbit of the point  <var>d</var> under the group   <var>G</var>.   If <var>d</var> =  <var>e</var>  then
+<code>RepresentativeOperation</code> returns   <code><var>G</var>.identity</code>,  otherwise it  is not
+specified which group element   <code>RepresentativeOperation</code> will return  if
+there are several that map <var>d</var> to <var>e</var>.  If <var>e</var> is not in the orbit of <var>d</var>
+under <var>G</var>, <code>RepresentativeOperation</code> returns <code>false</code>.
+<P>
+An element <I>g</I> of <I>G</I> is called a <strong>representative</strong>  for  the point <I>e</I> in
+the orbit of <I>d</I> under <I>G</I> if <I>g</I> maps <I>d</I> to <I>e</I>, i.e., <I>d<sup>g</sup> = e</I>.  Note
+that the set  of such  representatives that map  <I>d</I> to <I>e</I> forms a right
+coset of the stabilizer of <I>d</I> in <I>G</I> (see <a href="chap008.htm#SECT024">Stabilizer</a>).
+<P>
+<code>RepresentativeOperation</code> accepts a function <var>operation</var> of two arguments
+<var>d</var> and <var>g</var> as optional third  argument, which specifies how the elements
+of <var>G</var> operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> RepresentativeOperation( g, 1, 5 );
+    (1,5,4,3,2)(6,8,7)
+    gap> RepresentativeOperation( g, 1, 6 );
+    false
+    gap> RepresentativeOperation( g, [1,2,3], [3,4,5], OnSets );
+    (1,3,5,2,4)
+    gap> RepresentativeOperation( g, [1,2,3,4], [3,4,5,2], OnTuples );
+    false </pre>
+<P>
+<code>RepresentativeOperation</code> calls <BR> 
+<code><var>G</var>.operations.RepresentativeOperation( <var>G</var>, <var>d</var>, <var>e</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the fourth argument is not optional for
+functions called this way.
+<P>
+The      default     function      called     this          way        is
+<code>GroupOper.RepresentativeOperation</code>,   which    starts   a  normal  orbit
+calculation to compute the orbit of <var>d</var> under <var>G</var>, and remembers for each
+point how it was obtained, i.e., which generator of  <var>G</var> took which orbit
+point to this new point.  When the point <var>e</var> appears this information can
+be traced back to write down the representative of <var>e</var>  as a  word in the
+generators.  Special  categories of groups  overlay this default function
+with more efficient functions.
+<P><A NAME="SECT026"><h2>8.26 RepresentativesOperation</h2></a>
+<P><P><P>
+<code>RepresentativesOperation( <var>G</var>, <var>d</var> )</code> <BR> 
+<code>RepresentativesOperation( <var>G</var>, <var>d</var>, <var>operation</var> )</code>
+<P>
+<code>RepresentativesOperation</code> returns  a  list  of  representatives of   the
+points in the orbit of the point <var>d</var> under the group <var>G</var>.
+<P>
+The ordering  of the representatives corresponds  to  the ordering of the
+points in  the orbit  as  returned by <code>Orbit</code>  (see  <a href="chap008.htm#SECT016">Orbit</a>).  Therefore
+<code>List( RepresentativesOperation(<var>G</var>,<var>d</var>), r-><var>d</var>^r ) = Orbit(<var>G</var>,<var>d</var>)</code>.
+<P>
+An element <I>g</I> of <I>G</I> is called a  <strong>representative</strong>  for the point <I>e</I> in
+the orbit of <I>d</I> under <I>G</I> if <I>g</I> maps <I>d</I> to <I>e</I>, i.e., <I>d<sup>g</sup> = e</I>.  Note
+that the set  of such representatives  that map <I>d</I> to <I>e</I>  forms a right
+coset of the stabilizer of <I>d</I> in <I>G</I> (see <a href="chap008.htm#SECT024">Stabilizer</a>).  The set of all
+representatives of the orbit  of  <I>d</I> under <I>G</I>  thus  forms a system  of
+representatives of the right cosets of the stabilizer of <I>d</I> in <I>G</I>.
+<P>
+<code>RepresentativesOperation</code> accepts    a  function   <var>operation</var>  of   two
+arguments <var>d</var> and <var>g</var> as optional third argument, which specifies how the
+elements of <var>G</var> operate (see <a href="chap008.htm#SECT001">Other Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3)(6,7), (3,4,5)(7,8) );;
+    gap> RepresentativesOperation( g, 1 );
+    [ (), (1,2,3)(6,7), (1,3,2), (1,4,5,3,2)(7,8), (1,5,4,3,2) ]
+    gap> Orbit( g, [1,2], OnSets );
+    [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 2, 4 ], [ 1, 4 ], [ 3, 4 ],
+      [ 2, 5 ], [ 1, 5 ], [ 4, 5 ], [ 3, 5 ] ]
+    gap> RepresentativesOperation( g, [1,2], OnSets );
+    [ (), (1,2,3)(6,7), (1,3,2), (1,2,4,5,3)(6,8,7), (1,4,5,3,2)(7,8),
+      (1,3,2,4,5)(6,8), (1,2,5,4,3)(6,7), (1,5,4,3,2), (1,4,3,2,5)(6,7,8),
+      (1,3,2,5,4) ] </pre>
+<P>
+<code>RepresentativesOperation</code> calls <BR> 
+<code><var>G</var>.operations.RepresentativesOperation( <var>G</var>, <var>d</var>, <var>operation</var> )</code> <BR> 
+and returns the value.  Note that the third  argument is not optional for
+functions called this way.
+<P>
+The       default       function      called       this       way      is
+<code>GroupOps.RepresentativesOperation</code>, which computes the orbit of <var>d</var> with
+the  normal  algorithm,  but remembers  for each point <I>e</I> in the orbit a
+representative <I>r<sub>e</sub></I>.  When a generator <I>g</I> of <I>G</I> takes an old point <I>e</I>
+to a point <I>f</I> not yet in the orbit, the representative <I>r<sub>f</sub></I> for  <I>f</I> is
+computed as <I>r<sub>e</sub>  g</I>.  Special categories of  groups overlay this default
+function with more efficient functions.
+<P><A NAME="SECT027"><h2>8.27 IsEquivalentOperation</h2></a>
+<P><P><P>
+<code>IsEquivalentOperation( <var>G</var>, <var>D</var>, <var>H</var>, <var>E</var> )</code> <BR> 
+<code>IsEquivalentOperation( <var>G</var>, <var>D</var>, <var>H</var>, <var>E</var>, <var>operationH</var> )</code> <BR> 
+<code>IsEquivalentOperation( <var>G</var>, <var>D</var>, <var>operationG</var>, <var>H</var>, <var>E</var> )</code> <BR> 
+<code>IsEquivalentOperation( <var>G</var>, <var>D</var>, <var>operationG</var>, <var>H</var>, <var>E</var>, <var>operationH</var> )</code>
+<P>
+<code>IsEquivalentOperation</code> returns <code>true</code> if <var>G</var> operates on <var>D</var> in like <var>H</var>
+operates on <var>E</var>, and <code>false</code> otherwise.
+<P>
+The operations of <I>G</I> on <I>D</I> and <I>H</I>  on <I>E</I> are  equivalent if they have
+the same  number of  generators  and there  is a   permutation <I>F</I> of the
+elements of   <I>E</I>  such that  for every   generator <I>g</I> of   <I>G</I>  and the
+corresponding generator  <I>h</I> of  <I>H</I> we  have   <I>Position(  D, D<sub>i</sub><sup>g</sup>  ) =
+Position( F, F<sub>i</sub><sup>h</sup> )</I>.  Note that this  assumes that the  mapping defined
+by mapping <I>G.generators</I>  to <I>H.generators</I> is a  homomorphism (actually
+an isomorphism  of  factor  groups of <I>G</I>   and  <I>H</I> represented   by the
+respective operation).
+<P>
+<code>IsEquivalentOperation</code> accepts functions   <var>operationG</var> and <var>operationH</var>
+of two arguments <var>d</var> and <var>g</var> as optional third and sixth arguments, which
+specify  how  the  elements  of   <var>G</var>  and  <var>H</var>  operate   (see    <a href="chap008.htm#SECT001">Other
+Operations</a>).
+<P>
+<pre>    gap> g := Group( (1,2)(4,5), (1,2,3)(4,5,6) );;
+    gap> h := Group( (2,3)(4,5), (1,2,3)(4,5,6) );;
+    gap> IsEquivalentOperation( g, [1..6], h, [1..6] );
+    true
+    gap> h := Group( (1,2), (1,2,3) );;
+    gap> IsEquivalentOperation(g,[[1,4],[2,5],[3,6]],OnPairs,h,[1..3]);
+    true
+    gap> h := Group( (1,2), (1,2,3)(4,5,6) );;
+    gap> IsEquivalentOperation( g, [1..6], h, [1..6] );
+    false
+    gap> h := Group( (1,2,3)(4,5,6), (1,2)(4,5) );;
+    gap> IsEquivalentOperation( g, [1..6], h, [1..6] );
+    false    # the generators must correspond </pre>
+<P>
+<code>IsEquivalentOperation</code> calls <BR> 
+<code><var>G</var>.operations.IsEquivalentOperation(<var>G</var>,<var>D</var>,<var>oprG</var>,<var>H</var>,<var>E</var>,<var>oprH</var>)</code> and
+returns  the value.   Note that  the  third   and sixth argument are  not
+optional for functions called this way.
+<P>
+The default function called this way is <code>GroupOps.IsEquivalentOperation</code>,
+which tries to rearrange <var>E</var>  so that the above  condition  is satisfied.
+This is done one orbit of <var>G</var> at a time, and for each such  orbit all the
+orbits of <var>H</var> of the same length are tried to see  if there is  one which
+can be rearranged  as necessary.  Special   categories of groups  overlay
+this function with more efficient ones.
+<P><a href ="chap007.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap009.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

@@ -1,0 +1,2234 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  gliss.tex              GLISSANDO documentation          Christof Noebauer
+%%
+%H  @(#)$Id: gliss.tex,v 1.1 1997/03/27 10:51:03 gap Exp $
+%%
+%Y  Copyright (C)  1996,       Inst. f. Math, Abt. Algebra; JKU Linz, Austria
+%%
+%H  $Log: gliss.tex,v $
+%H  Revision 1.1  1997/02/03 14:42:33  gap
+%H  Added gliss package.
+%H
+%H      Still need to integrate documentation
+%H
+%H  	SL
+%H
+%%
+
+\newcommand{\GLISSANDO}{{\sf GLISSANDO}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{GLISSANDO}
+
+{\GLISSANDO} (version 1.0) is a share library package that implements a 
+\GAP\ library of small semi\-groups and near-rings. 
+The library files can be systematically searched for near-rings
+and semigroups with certain properties.
+
+The {\GLISSANDO} package (version 1.0) was written by
+
+Christof N{\accent127 o}bauer\\
+Institut f{\accent127 u}r Mathematik\\
+Johannes Kepler Universit{\accent127 a}t Linz\\
+4040 Linz, Austria
+
+e-mail noebsi@bruckner.stoch.uni-linz.ac.at
+
+and supported by the
+ 
+Austrian {\it Fonds zur F{\accent127 o}rderung der wissenschaftlichen 
+Forschung}, Project P11486-TEC.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing the Glissando Package}
+
+The \GLISSANDO\ package is completely written in the {\GAP} language, 
+it does not require any additional programs and/or compilations. It will 
+run on any computer that runs {\GAP}. To access \GLISSANDO, use 
+'RequirePackage( \"gliss\"\ );' (see "RequirePackage").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Transformations} 
+   
+A *transformation* is a mapping with equal source and range, say <X>.
+For example, <X> may be a set or a group. A transformation on <X> then acts
+on <X> by transforming each element of <X> into (precisely one) 
+element of <X>.
+
+Note that a transformation is just a special case of a mapping. So all \GAP\  
+functions that work for 
+mappings will also work for transformations. 
+
+For the following, it is important to keep 
+in mind that in \GAP\ sets are represented by *sorted* lists without 
+holes and duplicates. Throughout this section, let <X> be a set or a group 
+with <n> elements. 
+A transformation on <X> is uniquely determined by a list of length <n> 
+without holes and with entries which are integers between 1 and <n>. 
+
+For example, 
+for the set 'X \:= [1,2,3]', the list '[1,1,2]' determines the 
+transformation on <X> which transforms 1 into 1, 2 
+into 1, and 3 into 2. 
+
+Analogously, for the cyclic group of order 3\:\ 'C3', with 
+(the uniquely ordered) set of elements 
+'[(),(1,2,3),(1,3,2)]', the list '[2,3,3]' determines the 
+transformation on 'C3' 
+which transforms '()' into '(1,2,3)', '(1,2,3)' into 
+'(1,3,2)', and '(1,3,2)' into '(1,3,2)'. 
+
+Such a list which 
+on a given set or group uniquely determines a transformation
+will be called *transformation list* (short *tfl*).
+
+Transformations are created by the constructor functions 
+'Trans\-for\-ma\-tion' 
+or 'As\-Trans\-for\-ma\-tion' and they are represented by records that 
+contain all the information about the transformations.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Transformation}
+   
+'Transformation( <obj>, <tfl> )'
+
+The constructor function 'Transformation' returns the transformation 
+determined by the transformation list <tfl> on <obj> where 
+<obj> must be a group or a set.
+|   
+  gap> t1:=Transformation([1..3],[1,1,2]);
+  Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] )
+  gap> g:=Group((1,2),(3,4));
+  Group( (1,2), (3,4) )
+  gap> gt := Transformation(g,[1,1,2,5]);
+  Error, Usage: Transformation( <obj>, <tfl> ) where <obj> must be a set
+  or a group and <tfl> must be a valid transformation list for <obj> in
+  Transformation( g, [ 1, 1, 2, 5 ] ) called from
+  main loop
+  brk>
+  gap> gt := Transformation( g, [4,2,2,1] );
+  Transformation( Group( (1,2), (3,4) ), [ 4, 2, 2, 1 ] )
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AsTransformation}
+   
+'AsTransformation( <map> )'
+
+The constructor function 'AsTransformation' returns the mapping <map> 
+as transformation. Of course, this function can only be applied to mappings 
+with equal source and range, otherwise an error will be signaled.
+
+|  gap> s3:=Group((1,2),(1,2,3));             
+  Group( (1,2), (1,2,3) )
+  gap> i:=InnerAutomorphism(s3,(2,3));
+  InnerAutomorphism( Group( (1,2), (1,2,3) ), (2,3) )
+  gap> AsTransformation(i);
+  Transformation( Group( (1,2), (1,2,3) ), [ 1, 2, 6, 5, 4, 3 ] )  
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsTransformation}
+   
+'IsTransformation( <obj> )'
+
+'IsTransformation' returns 'true' if the object <obj> is a 
+transformation and 'false' otherwise.
+
+|  gap> IsTransformation( [1,1,2] );
+  false                             # a list is not a transformation
+  gap> IsTransformation( (1,2,3) );
+  false                             # a permutation is not a transformation
+  gap> IsTransformation( t1 );
+  true
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSetTransformation}
+   
+'IsSetTransformation( <obj> )'
+
+'IsSetTransformation' returns 'true' if the object <obj> is a 
+set transformation and 'false' otherwise.
+
+|  gap> IsSetTransformation( t1 );
+  true
+  gap> g:= Group((1,2),(3,4));
+  Group( (1,2), (3,4) )
+  gap> gt:=Transformation(g,[4,2,2,1]);
+  [ 4, 2, 2, 1 ] 
+  gap> IsSetTransformation( gt );
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsGroupTransformation}
+   
+'IsGroupTransformation( <obj> )'
+
+'IsGroupTransformation' returns 'true' if the object <obj> is a 
+group transformation and 'false' otherwise.
+
+|  gap> IsGroupTransformation( t1 );
+  false
+  gap> IsGroupTransformation( gt );
+  true
+|
+
+Note that transformations are defined to be either a set transformation or a 
+group transformation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdentityTransformation}
+   
+'IdentityTransformation( <obj> )'
+
+'Identity\-Trans\-for\-ma\-tion' is the counterpart to the \GAP\ standard
+ library function 
+'Iden\-ti\-ty\-Mapping'. It returns the identity transformation on 
+<obj> 
+where <obj> must be a group or a set.
+
+|  gap> IdentityTransformation( [1..3] );
+  Transformation( [ 1, 2, 3 ], [ 1, 2, 3 ] )
+  gap> IdentityTransformation( s3 );
+  Transformation( Group( (1,2), (1,2,3) ), [ 1, 2, 3, 4, 5, 6 ] )
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Kernel for transformations}
+   
+'Kernel( <t> )'
+
+For a transformation <t> on <X>, the *kernel* of <t> is defined as an 
+equivalence relation $Kernel(t)$ as\:\ $\forall x,y \in X\:\ (x,y) \in 
+Kernel(t)\ {\rm if\/f}\ t(x) = t(y)$.
+
+'Kernel' returns the kernel of the transformation <t> as a list 'l' 
+of lists where each sublist of 'l' represents an equivalence class of the 
+equivalence relation <Kernel(t)>. 
+| 
+  gap> t:=Transformation( [1..5], [2,3,2,4,4] );
+  Transformation( [ 1, 2, 3, 4, 5 ], [ 2, 3, 2, 4, 4 ] )
+  gap> Kernel( t );
+  [ [ 1, 3 ], [ 2 ], [ 4, 5 ] ] 
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rank for transformations}
+   
+'Rank( <t> )'
+
+For a transformation <t> on <X>, the *rank* of <t> is defined as  
+the size of the image of <t>, i.e. 
+$\mid \{t(x)\ \mid \ x \in X\} \mid$,
+or, in \GAP\ 
+language\:\ 'Length( Image( t ) )'.
+
+'Rank' returns the rank of the transformation <t>. 
+
+|  gap> t1;
+  Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] )
+  gap> Rank( t1 );
+  2
+  gap>
+  gap> gt;
+  Transformation( Group( (1,2), (3,4) ), [ 4, 2, 2, 1 ] )
+  gap> Rank(gt);
+  3
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for transformations}
+   
+'<t1>\ \*\ <t2>'
+
+The product operator \*\ returns the transformation which is obtained 
+from the transformations <t1> and <t2>, by composition of <t1> 
+and <t2> (i.e. performing <t2> *after* <t1>). This function 
+works for both set transformations as well as group transformations.
+| 
+  gap> t1:=Transformation( [1..3], [1,1,2] );
+  Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] )
+  gap> t2:=Transformation( [1..3], [2,3,3] );
+  Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] )
+  gap> t1*t2;
+  Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] )
+  gap> t2*t1;
+  Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] )
+|
+
+'<t1> + <t2>'
+
+The add operator '+' returns the group transformation which is obtained 
+from the group transformations <t1> and <t2> by pointwise addition 
+of <t1> and <t2>. (Note that in this context addition means 
+performing the \GAP\ operation 'p \*\ q' for the corresponding 
+permutations 'p' and 'q').
+
+'<t1> - <t2>'
+
+The subtract operator '-' returns the group transformation which is 
+obtained from the group transformations <t1> and <t2> by pointwise 
+subtraction of <t1> and <t2>. (Note that in this context subtraction 
+means performing the \GAP\ operation 'p \*\ q\^{}-1' for the corresponding 
+permutations 'p' and 'q').
+
+Of course, those two functions '+' and '-' work only for group 
+transformations.
+
+|  gap> g:=Group( (1,2,3) );
+  Group( (1,2,3) )
+  gap> gt1:=Transformation( g, [2,3,3] );
+  Transformation( Group( (1,2,3) ), [ 2, 3, 3 ] )
+  gap> gt2:=Transformation( g, [1,3,2] );
+  Transformation( Group( (1,2,3) ), [ 1, 3, 2 ] )
+  gap> gt1+gt2;
+  Transformation( Group( (1,2,3) ), [ 2, 2, 1 ] )
+  gap> gt1-gt2;
+  Transformation( Group( (1,2,3) ), [ 2, 1, 2 ] )
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DisplayTransformation}
+   
+'DisplayTransformation( <t> )'
+
+'DisplayTransformation' nicely displays a transformation <t>.
+
+|  gap> t:=Transformation( [1..5], [3,3,2,1,4] );
+  Transformation( [ 1, 2, 3, 4, 5 ], [ 3, 3, 2, 1, 4 ] )
+  gap> DisplayTransformation( t );
+  Transformation on [ 1, 2, 3, 4, 5 ]:
+    1 -> 3
+    2 -> 3
+    3 -> 2
+    4 -> 1
+    5 -> 4
+  gap>
+|  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Transformation records}
+   
+As almost all objects in \GAP{}, transformations, too, are representend by 
+records. Such a transformation record has the following components\:
+
+'isGeneralMapping': \\ 
+  this is always 'true', since in particular, any transformation is a 
+  general mapping. 
+
+'domain': \\               
+  the entry of this record field is 'Mappings'.
+
+'isMapping': \\ 
+  this is always 'true' since a transformation is in particular a single
+  valued mapping.
+
+'isTransformation': \\    
+  always 'true' for a transformation.
+
+'isSetTransformation': \\  
+  this exists and is set to 'true' for set transformations exclusively.
+
+'isGroupTransformation', 'isGroupElement': \\
+  these two exist and are set to 'true' for group transformations 
+  exclusively.
+
+'elements': \\
+  this record field holds a list of the elements of the source.
+
+'source', 'range': \\
+  both entries contain the same set in case of a set transformation, resp.
+  the same group in case of a group transformation.
+
+'tfl': \\                   
+  this contains the transformation list which uniquely determines the 
+  transformation.
+
+'operations': \\
+  the operations record of the transformation. E.g. \*\ or '=', etc.
+  can be found here.
+
+'image', 'rank', 'ker': \\
+  these are bound and contain image, rank, kernel in case they have 
+  already been computed for the transformation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{Transformation Semigroups}  
+
+Having established transformations and being able to perform the associative 
+operation *composition* (which in \GAP\ is denoted as '\*'\ with 
+them, the next step is to consider *transformation semigroups*.
+
+All functions described in this section are intended for *finite*
+transformation semigroups, in particular transformation semigroups
+on a finite set or group $X$.
+A transformation semigroup is created by the constructor function 
+'Trans\-for\-ma\-tion\-Semi\-group' and it is represented by a record 
+that contains all the information about the transformation semigroup. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TransformationSemigroup}
+
+'TransformationSemigroup( <$t_1$>, ..., <$t_n$> )' \\
+'TransformationSemigroup( [ <$t_1$>, ..., <$t_n$> ] )' 
+
+When called in this form, the constructor function 
+'Trans\-for\-mation\-Semi\-group' returns the 
+transformation semigroup generated by the transformations 
+<$t_1$>,~...,~<$t_n$>. There is another way to call this function\:\
+
+'TransformationSemigroup( <n> )' 
+
+If the argument is a positive integer $n$, 
+'Trans\-for\-mation\-Semi\-group' returns the semigroup of all 
+transformations on the set $\{1,2, \dots , n\}$.
+
+|  gap> t1 := Transformation( [1..3], [1,1,2] );
+  Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] )
+  gap> t2 := Transformation( [1..3], [2,3,3] );
+  Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] )
+  gap> s:=TransformationSemigroup( t1, t2 );
+  TransformationSemigroup( Transformation( [ 1, 2, 3 ],
+  [ 1, 1, 2 ], Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ) )
+  gap> s27 := TransformationSemigroup( 3 );
+  TransformationSemigroup( Transformation( [ 1, 2, 3 ], 
+  [ 1, 1, 1 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 1, 1, 2 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 1, 1, 3 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 1, 2, 1 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 1, 2, 2 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 1, 2, 3 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 1, 3, 1 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 1, 3, 2 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 1, 3, 3 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 2, 1, 1 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 2, 1, 2 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 2, 1, 3 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 2, 2, 1 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 2, 2, 2 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 2, 2, 3 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 2, 3, 1 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 2, 3, 2 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 2, 3, 3 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 3, 1, 1 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 3, 1, 2 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 3, 1, 3 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 3, 2, 1 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 3, 2, 2 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 3, 2, 3 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 3, 3, 1 ] ), Transformation( [ 1, 2, 3 ], 
+  [ 3, 3, 2 ] ), Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ) 
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSemigroup}
+
+'IsSemigroup( < obj> )' 
+
+'IsSemigroup' returns 'true' if the object <obj> is a semigroup
+and 'false' otherwise. This function simply checks whether the record 
+component '<obj>.isSemigroup' is bound and is 'true'.
+
+|  gap> IsSemigroup( t1 );      
+  false                         # a transformation is not a semigroup  
+  gap> IsSemigroup( Group( (1,2,3) ) );
+  false                         # a group is not a semigroup
+  gap> IsSemigroup( s27 );
+  true
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsTransformationSemigroup}
+
+'IsTransformationSemigroup( <obj> )' 
+
+'IsTransformationSemigroup' returns 'true' if the object <obj> 
+is a transformation semigroup and 'false' otherwise. 
+
+|  gap> IsTransformationSemigroup( s27 );
+  true
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elements for semigroups}
+
+'Elements( <sg> )' 
+
+'Elements' computes the elements of the semigroup <sg>. Note\:\ the 
+\GAP\ standard library dispatcher function 'Elements' calls the function 
+'<sg>.operations.Elements' which performs a simple closure 
+algorithm.
+
+|  gap> t1 := Transformation( [1..3], [1,1,2] );
+  Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] )
+  gap> t2 := Transformation( [1..3], [2,3,3] );
+  Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] )
+  gap> s := TransformationSemigroup( t1, t2 );
+  TransformationSemigroup( Transformation( [ 1, 2, 3 ], 
+  [ 1, 1, 2 ] ), Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ) ) 
+  gap> Elements( s );
+  [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ]
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Size for semigroups}
+
+'Size( <sg> )' 
+
+'Size' returns the number of elements in <sg>.
+
+|  gap> Size( s );
+  7
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DisplayCayleyTable for semigroups}
+
+'DisplayCayleyTable( <sg> )'  
+
+'DisplayCayleyTable' prints the Cayley table of the semigroup <sg>. Note\:\ 
+The dispatcher function 'DisplayCayleyTable' calls the function 
+'<sg>.operations.DisplayTable' which performs the actual printing. 
+'Display\-Cayley\-Table' has no return value.
+
+|  gap> DisplayCayleyTable( s );
+  Let:
+  s0 := Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] )
+  s1 := Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] )
+  s2 := Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] )
+  s3 := Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] )
+  s4 := Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] )
+  s5 := Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] )
+  s6 := Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] )
+
+
+    *  |'\|'| s0 s1 s2 s3 s4 s5 s6 
+   ---------------------------
+    s0 |'\|'| s0 s0 s0 s3 s3 s3 s6 
+    s1 |'\|'| s0 s0 s1 s3 s3 s4 s6 
+    s2 |'\|'| s0 s0 s2 s3 s3 s5 s6 
+    s3 |'\|'| s0 s0 s3 s3 s3 s6 s6 
+    s4 |'\|'| s0 s1 s3 s3 s4 s6 s6 
+    s5 |'\|'| s0 s2 s3 s3 s5 s6 s6 
+    s6 |'\|'| s0 s3 s3 s3 s6 s6 s6 
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdempotentElements for semigroups}
+
+'IdempotentElements( <sg> )'  
+
+An element $i$ of a semigroup $(S,\cdot)$ is called an *idempotent* 
+(element) if\/f $i \cdot i = i$.  
+
+The function 'IdempotentElements' returns a list of those elements of 
+the semigroup <sg> that are idempotent. (Note that for a finite
+semigroup this can never be the empty list).
+
+|  gap> IdempotentElements( s );
+  [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ]
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCommutative for semigroups}
+
+'IsCommutative( <sg> )'  
+
+A semigroup $(S,\cdot)$ is called *commutative* if 
+$\forall a, b \in S\:\ a \cdot b = b \cdot a$.  
+
+The function 'IsCommutative' returns 
+the according value 'true' or 'false' for a semigroup <sg>.
+
+|  gap> IsCommutative( s );
+  false
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Identity for semigroups}
+
+'Identity( <sg> )'  
+
+An element $i$ of a semigroup $(S,\cdot)$ is called an *identity* if\/f
+$\forall s \in S\:\ s \cdot i = i \cdot s = s$. Since for two identities, 
+$i,j$\:\ $i = i \cdot j = j$, an identity is unique if it exists.  
+
+The function 'Identity' returns a list containing as single entry the 
+identity of the semigroup <sg> 
+if it exists or the empty list '[\ \ ]' otherwise.
+
+|  gap> Identity( s );
+  [  ]
+  gap> tr1 := Transformation( [1..3], [1,1,1] );
+  Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] )
+  gap> tr2 := Transformation( [1..3], [1,2,2] );
+  Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] )
+  gap> sg := TransformationSemigroup( tr1, tr2 );
+  TransformationSemigroup( Transformation( [ 1, 2, 3 ], 
+  [ 1, 1, 1 ] ), Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ) ) 
+  gap> Elements( sg );
+  [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ) ]
+  gap> Identity( sg );
+  [ Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ) ]
+|
+
+The last example shows that the identity element of a transformation 
+semigroup on a set $X$ needs not necessarily be the identity transformation
+on $X$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SmallestIdeal}
+
+'SmallestIdeal( <sg> )'  
+
+A subset $I$ of a semigroup $(S,\cdot)$ is defined as an *ideal* of $S$ 
+if $\forall i \in I, s \in S\:\ i \cdot s \in I\ \&\ s \cdot i \in I$. An  
+ideal $I$ is called *minimal*, if for any ideal $J$, $J \subseteq I$
+implies $J = I$. If a minimal ideal exists, then it is unique and therefore
+the *smallest* ideal of $S$.
+
+The function 'SmallestIdeal' returns the smallest ideal of the 
+transformation semigroup <sg>. Note that for a finite semigroup the 
+smallest ideal always exists. (Which is not necessarily true for an 
+arbitrary semigroup).
+
+|  gap> SmallestIdeal( s );
+  [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ]
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSimple for semigroups}
+
+'IsSimple( <sg> )'  
+
+A semigroup $S$ is called *simple* if it has no honest ideals, i.e.
+in case that $S$ is finite the smallest ideal of $S$ equals $S$ itself. 
+
+The \GAP\ standard library dispatcher function 'IsSimple' calls the 
+function 
+'sg.\-op\-er\-a\-tions.\-Is\-Simple' which checks if the semigroup 
+<sg> equals its smallest ideal and if so, returns 'true' and 
+otherwise 'false'.
+
+|  gap> IsSimple( s );                                                    
+  false
+  gap> c3 := TransformationSemigroup( Transformation( [1..3],            
+  >                                   [2,3,1] ) );
+  TransformationSemigroup( Transformation( [ 1, 2, 3 ], [ 2, 3, 1 ] ) ) 
+  gap> IsSimple( c3 );
+  true
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Green}
+
+'Green( <sg>, <string> )'  
+
+Let $(S,\cdot)$ be a semigroup and $a \in S$. The set $a \cdot S^1 \:= 
+a \cdot S \cup \{a\}$ is called the principal right ideal generated by $a$.
+Analogously, $S^1 \cdot a \:= 
+S \cdot a \cup \{a\}$ is called the principal left ideal generated by $a$
+and  $S^1 \cdot a \cdot S^1 \:= 
+S \cdot a \cdot S \cup S \cdot a \cup a \cdot S \cup \{a\}$ is called 
+the principal ideal generated by $a$.
+
+Now, Green\'s equivalence relation ${\cal L}$ on $S$ is defined as\:\
+$(a,b) \in {\cal L}\:\ \Leftrightarrow\ S^1 \cdot a = S^1 \cdot b$ i.e. 
+$a$ and $b$ generate the same principal left ideal. Similarly\:\
+$(a,b) \in {\cal R}\:\ \Leftrightarrow\ a \cdot S^1 = b \cdot S^1$ i.e. 
+$a$ and $b$ generate the same principal right ideal and
+$(a,b) \in {\cal J}\:\ \Leftrightarrow\ S^1 \cdot a \cdot S^1 = 
+S^1 \cdot b \cdot S^1$ i.e. 
+$a$ and $b$ generate the same principal ideal. 
+${\cal H}$ is defined as the intersection of ${\cal L}$ and ${\cal R}$
+and ${\cal D}$ is defined as the join of ${\cal L}$ and ${\cal R}$.
+
+In a finite semigroup, ${\cal D} = {\cal J}$.
+
+The arguments of the function 'Green' are a finite transformation
+semigroup <sg> and a one character string <string> where  
+<string> must be one of the following\:\ '\"L\"', '\"R\"', 
+'\"D\"', '\"J\"', '\"H\"'. The return value of 'Green' is
+a list of lists of elements of <sg> representing the equivalence
+classes of the according Green\'s relation. 
+
+|  gap> s;
+  TransformationSemigroup( Transformation( [ 1, 2, 3 ], 
+  [ 1, 1, 2 ] ), Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ) ) 
+  gap> Elements( s );
+  [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ]
+  gap> Green( s, "L" );
+  [ [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ) ] ]
+  gap> Green( s, "R" );
+  [ [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ] ]
+  gap> Green( s, "H" );
+  [ [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ] ]
+  gap> Green( s, "D" );
+  [ [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ], 
+    [ Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] ), 
+        Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ) ] ]
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rank for semigroups}
+
+'Rank( <sg> )'  
+
+The *rank* of a transformation semigroup $S$ is defined as the minimal
+rank of the elements of $S$, i.e. $\min\{ rank(s)\ \mid\ s \in S \}$.
+
+The function 'Rank' returns the rank of the semigroup <sg>.
+
+|  gap> Rank( s );
+  1
+  gap> c3;
+  TransformationSemigroup( Transformation( [ 1, 2, 3 ], [ 2, 3, 1 ] ) ) 
+  gap> Rank( c3 );
+  3
+|
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LibrarySemigroup}
+
+'LibrarySemigroup( <size>, <num> )'  
+
+The semigroup library contains all semigroups of sizes $1$ up to $5$,
+classified into classes of isomorphic semigroups.
+'LibrarySemigroup' retrieves a representative of an isomorphism class 
+from the semigroup library and returns it as a transformation semigroup.
+The parameters of 'LibrarySemigroup' are two positive integers\:\ 
+<size> must be in $\{1,2,3,4,5\}$ and indicates the size of the semigroup 
+to be retrieved, <num> indicates the number of an isomorphism class.
+
+|  gap> ls := LibrarySemigroup( 4, 123 );
+  TransformationSemigroup( Transformation( [ 1, 2, 3, 4 ], 
+  [ 1, 1, 3, 3 ] ), Transformation( [ 1, 2, 3, 4 ], 
+  [ 1, 2, 3, 4 ] ), Transformation( [ 1, 2, 3, 4 ], 
+  [ 1, 3, 3, 1 ] ), Transformation( [ 1, 2, 3, 4 ], [ 1, 4, 3, 2 ] ) ) 
+  gap> DisplayCayleyTable( ls );
+  Let:
+  s0 := Transformation( [ 1, 2, 3, 4 ], [ 1, 1, 3, 3 ] )
+  s1 := Transformation( [ 1, 2, 3, 4 ], [ 1, 2, 3, 4 ] )
+  s2 := Transformation( [ 1, 2, 3, 4 ], [ 1, 3, 3, 1 ] )
+  s3 := Transformation( [ 1, 2, 3, 4 ], [ 1, 4, 3, 2 ] )
+
+
+    *  |'\|'|  s0 s1 s2 s3 
+   ------------------
+    s0 |'\|'| s0 s0 s0 s0 
+    s1 |'\|'| s0 s1 s2 s3 
+    s2 |'\|'| s2 s2 s2 s2 
+    s3 |'\|'| s2 s3 s0 s1 
+
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In dependence of <size>, <num> must be one of the following\:\ 
+\begin{center}
+\catcode`\|=12  \begin{tabular}{|c|c|} \hline \catcode`\|=13  
+{\it size} & {\it num}  \\
+\hline
+$1$ & $1 \le {\it num} \le 1$ \\
+$2$ & $1 \le {\it num} \le 5$ \\
+$3$ & $1 \le {\it num} \le 24$ \\
+$4$ & $1 \le {\it num} \le 188$ \\
+$5$ & $1 \le {\it num} \le 1915$ \\
+\hline
+\end{tabular} 
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Transformation semigroup records}
+
+Transformation Semigroups are implemented as records.  
+Such a transformation semigroup record has the following components\:
+  
+'isDomain', 'isSemigroup': \\ 
+  these two are always 'true' for a transformation semigroup.  
+
+'isTransformationSemigroup': \\ 
+  this is bound and 'true' only for transformation semigroups. 
+
+'generators': \\ 
+  this holds the set of generators of a transformation semigroup.
+
+'multiplication': \\ 
+  this record field contains a function that represents the binary operation 
+  of the semigroup that can be performed on the elements of the semigroup. 
+  For transformation semigroups this equals of course, composition.
+  Example\:\
+
+|  gap> elms := Elements( s );
+  [ Transformation( [ 1, 2, 3 ], [ 1, 1, 1 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 1, 2, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 2, 2 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 2, 3 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 2, 3, 3 ] ), 
+    Transformation( [ 1, 2, 3 ], [ 3, 3, 3 ] ) ]
+  gap> s.multiplication( elms[5], elms[2] );
+  Transformation( [ 1, 2, 3 ], [ 1, 1, 2 ] )
+|
+
+'operations': \\ 
+  this is the operations record of the semigroup.
+
+'size', 'elements', 'rank', 'smallestIdeal', 
+      'IsFinite', 'identity': \\ 
+  these entries become bound if the according functions have been performed
+  on the semigroup.
+
+'GreenL', 'GreenR', 'GreenD', 
+      'GreenJ', 'GreenH': \\ 
+  these are entries according to calls of the function {\tt Green} with
+  the corresponding parameters.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Near-rings} 
+   
+In section "Transformations" we introduced transformations on sets and groups. 
+We used set transformations together with composition '\*' to construct
+transformation semigroups in section "Transformation Semigroups".
+In section "Transformations"
+we also introduced the operation of pointwise addition '+' for group
+transformations. Now we are able to use these group transformations
+together with pointwise addition '+' and composition '\*' to
+construct (right) near-rings.
+
+A *(right) near-ring* is a nonempty set $N$ together with two binary 
+operations on $N$, $+$ and $\cdot$ s.t. $(N,+)$ is a group, $(N,\cdot)$ is 
+a semigroup, and $\cdot$ is right distributive over $+$, i.e. 
+$\forall n_1,n_2,n_3 \in N\:\ (n_1+n_2)\cdot n_3 = n_1\cdot n_3+n_2\cdot n_3$.
+
+Here we have to make a *remark*\:\ we let transformations act from the
+right; yet in order to get a right transformation near-ring transformations
+must act from the left, hence we define a near-ring multiplication
+$\cdot$ of two transformations, $t_1$, $t_2$ as $t_1 \cdot t_2 \:=
+t_2 \* t_1$.
+
+There are three possibilities to get a near-ring in \GAP\:\ the
+constructor function 'Nearring' can be used in two different ways or a 
+near-ring can be extracted from the near-rings library by using the function 
+'LibraryNearring'. All functions described here were programmed for
+permutation groups and they also work fine with them; other types of groups
+(such as AG groups) are not supported.
+
+Near-rings are represented by records that contain the necessary information
+to identify them and to do computations with them. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsNrMultiplication} 
+   
+'IsNrMultiplication( <G>, <mul> )'  
+
+The arguments of the function 'Is\-Nr\-Mul\-ti\-pli\-ca\-tion' are a 
+permutation group <G> and a \GAP\ function <mul> which has two 
+arguments 'x' and 'y' which must both be elements of the group 
+<G> and returns an element 'z' of <G> s.t. <mul> defines a 
+binary operation on <G>.
+
+'IsNrMultiplication' returns 'true' ('false') if <mul> is 
+(is not) a near-ring multiplication on <G> i.e. it checks whether it is 
+well-defined, associative and right distributive over the group operation of 
+<G>.
+
+|  gap> g := Group( (1,2), (1,2,3) );        
+  Group( (1,2), (1,2,3) )
+  gap> mul_r := function(x,y) return x; end;
+  function ( x, y ) ... end
+  gap> IsNrMultiplication( g, mul_r );
+  true
+  gap> mul_l := function(x,y) return y; end;
+  function ( x, y ) ... end
+  gap> IsNrMultiplication( g, mul_l );      
+  specified multiplication is not right distributive.
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Nearring}
+   
+'Nearring( <G>, <mul> )' 
+
+In this form the constructor function 'Nearring' returns the near-ring 
+defined by the permutation 
+group <G> and the near-ring multiplication <mul>. (For a detailed
+explanation of <mul> see "IsNrMultiplication"). 'Near\-ring' calls 
+'Is\-Nr\-Mul\-ti\-pli\-ca\-tion' 
+in order to make sure that <mul> is really a near-ring multiplication.
+
+|  gap> g := Group( (1,2,3) );
+  Group( (1,2,3) )
+  gap> mul_r := function(x,y) return x; end;
+  function ( x, y ) ... end
+  gap> n := Nearring( g, mul_r );
+  Nearring( Group( (1,2,3) ), function ( x, y )
+      return x;
+  end )
+  gap> DisplayCayleyTable( n );
+  Let:
+  n0 := ()
+  n1 := (1,2,3)
+  n2 := (1,3,2)
+
+    +  |'\|'| n0 n1 n2 
+   ---------------
+    n0 |'\|'| n0 n1 n2 
+    n1 |'\|'| n1 n2 n0 
+    n2 |'\|'| n2 n0 n1 
+
+    *  |'\|'| n0 n1 n2 
+   ---------------
+    n0 |'\|'| n0 n0 n0 
+    n1 |'\|'| n1 n1 n1 
+    n2 |'\|'| n2 n2 n2 
+
+|
+
+
+'Nearring( <$t_1$>, ..., <$t_n$> )' \\
+'Nearring( [<$t_1$>, ..., <$t_n$>] )' 
+
+In this form the constructor function 'Near\-ring' returns the near-ring 
+generated by the group 
+transformations <$t_1,\dots,t_n$>. All of them must be transformations
+on the same permutation group.
+
+Note that 'Near\-ring' allows also a list of group transformations as 
+argument, which makes it possible to call
+'Nearring' e.g. with a list of endomorphisms generated by the function
+'Endo\-mor\-phisms' (see "Endomorphisms for groups"), which for a group 
+$G$
+allows to compute $E(G)$; 'Near\-ring' called with the list of all
+inner automorphisms of a group $G$ would return $I(G)$.
+
+|  gap> t := Transformation( Group( (1,2) ), [2,1] );
+  Transformation( Group( (1,2) ), [ 2, 1 ] )
+  gap> n := Nearring( t );
+  Nearring( Transformation( Group( (1,2) ), [ 2, 1 ] ) ) 
+  gap> DisplayCayleyTable( n );
+  Let:
+  n0 := Transformation( Group( (1,2) ), [ 1, 1 ] )
+  n1 := Transformation( Group( (1,2) ), [ 1, 2 ] )
+  n2 := Transformation( Group( (1,2) ), [ 2, 1 ] )
+  n3 := Transformation( Group( (1,2) ), [ 2, 2 ] )
+
+    +  |'\|'| n0 n1 n2 n3 
+   ------------------
+    n0 |'\|'| n0 n1 n2 n3 
+    n1 |'\|'| n1 n0 n3 n2 
+    n2 |'\|'| n2 n3 n0 n1 
+    n3 |'\|'| n3 n2 n1 n0 
+
+    *  |'\|'| n0 n1 n2 n3 
+   ------------------
+    n0 |'\|'| n0 n0 n0 n0 
+    n1 |'\|'| n0 n1 n2 n3 
+    n2 |'\|'| n3 n2 n1 n0 
+    n3 |'\|'| n3 n3 n3 n3 
+
+  gap> g := Group( (1,2), (1,2,3) );
+  Group( (1,2), (1,2,3) )
+  gap> e := Endomorphisms( g );
+  [ Transformation( Group( (1,2), (1,2,3) ), [ 1, 1, 1, 1, 1, 1 ] ), 
+    Transformation( Group( (1,2), (1,2,3) ), [ 1, 2, 2, 1, 1, 2 ] ), 
+    Transformation( Group( (1,2), (1,2,3) ), [ 1, 2, 6, 5, 4, 3 ] ), 
+    Transformation( Group( (1,2), (1,2,3) ), [ 1, 3, 2, 5, 4, 6 ] ), 
+    Transformation( Group( (1,2), (1,2,3) ), [ 1, 3, 3, 1, 1, 3 ] ), 
+    Transformation( Group( (1,2), (1,2,3) ), [ 1, 3, 6, 4, 5, 2 ] ), 
+    Transformation( Group( (1,2), (1,2,3) ), [ 1, 6, 2, 4, 5, 3 ] ), 
+    Transformation( Group( (1,2), (1,2,3) ), [ 1, 6, 3, 5, 4, 2 ] ), 
+    Transformation( Group( (1,2), (1,2,3) ), [ 1, 6, 6, 1, 1, 6 ] ), 
+    Transformation( Group( (1,2), (1,2,3) ), [ 1, 2, 3, 4, 5, 6 ] ) ]
+  gap> nr := Nearring( e );     # the endomorphisms near-ring on S3
+  Nearring( Transformation( Group( (1,2), (1,2,3) ), [ 1, 1, 1, 1, 1, 1 
+   ] ), Transformation( Group( (1,2), (1,2,3) ), [ 1, 2, 2, 1, 1, 2 
+   ] ), Transformation( Group( (1,2), (1,2,3) ), [ 1, 2, 3, 4, 5, 6 
+   ] ), Transformation( Group( (1,2), (1,2,3) ), [ 1, 2, 6, 5, 4, 3 
+   ] ), Transformation( Group( (1,2), (1,2,3) ), [ 1, 3, 2, 5, 4, 6 
+   ] ), Transformation( Group( (1,2), (1,2,3) ), [ 1, 3, 3, 1, 1, 3 
+   ] ), Transformation( Group( (1,2), (1,2,3) ), [ 1, 3, 6, 4, 5, 2 
+   ] ), Transformation( Group( (1,2), (1,2,3) ), [ 1, 6, 2, 4, 5, 3 
+   ] ), Transformation( Group( (1,2), (1,2,3) ), [ 1, 6, 3, 5, 4, 2 
+   ] ), Transformation( Group( (1,2), (1,2,3) ), [ 1, 6, 6, 1, 1, 6 ] ) ) 
+  gap> Size( nr );
+  54
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsNearring}
+   
+'IsNearring( <obj> )'  
+
+'IsNearring' returns 'true' if the object <obj> is a near-ring 
+and 'false' otherwise. This function simply checks if the record 
+component '<obj>.isNear-ring' is bound to the value 'true'.
+
+|  gap> n := LibraryNearring( "C3", 4 );
+  LibraryNearring( "C3", 4 )
+  gap> IsNearring( n );
+  true
+  gap> IsNearring( nr );
+  true
+  gap> IsNearring( Integers );
+  false           # Integers is a ring record, not a near-ring record
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsTransformationNearring}
+   
+'IsTransformationNearring( <obj> )'  
+
+'IsTransformationNearring' returns 'true' if the object <obj> is 
+a transformation near-ring and 'false' otherwise. 
+'Is\-Trans\-for\-ma\-tion\-Near\-ring' 
+simply checks if the record component 
+'<obj>.is\-Trans\-for\-ma\-tion\-Near\-ring' is 
+bound to 'true'. 
+
+|  gap> IsTransformationNearring( nr );
+  true
+  gap> IsTransformationNearring( n );
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LibraryNearring}  
+   
+'LibraryNearring( <grp\_name>, <num> )'  
+
+'LibraryNearring' retrieves a near-ring from the near-rings library files. 
+<grp\_name> must be one of the following strings  
+indicating the name of the according group\:\ '\"C2\"', '\"C3\"', 
+'\"C4\"', '\"V4\"', '\"C5\"', '\"C6\"', '\"S3\"', '\"C7\"',
+'\"C8\"', '\"C2xC4\"', '\"C2xC2xC2\"', '\"D8\"', '\"Q8\"', 
+'\"C9\"', '\"C3xC3\"', '\"C10\"', '\"D10\"', '\"C11\"', 
+'\"C12\"', '\"C2xC6\"', '\"D12\"', '\"A4\"', '\"T\"', 
+'\"C13\"', '\"C14\"', '\"D14\"', '\"C15\"', 
+<num> must be an integer which indicates the number of the class of 
+near-rings on the specified group. 
+
+|  gap> n := LibraryNearring( "V4", 13 );
+  LibraryNearring( "V4", 13 )
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In dependence of <grp\_name>, <num> must be one of the following\: 
+\begin{center}
+\catcode`\|=12 \begin{tabular}{|c|c||c|c|} \hline  \catcode`\|=13  
+<grp\_name> & <num> & <grp\_name> & <num>  \\
+\hline        %% !d12!
+'\"C2\"' & $1 \le <num> \le 3$  & '\"C3xC3\"' & $1 \le <num> \le 264$   \\
+'\"C3\"' & $1 \le <num> \le 5$  & '\"C10\"' & $1 \le <num> \le 329$  \\
+'\"C4\"' & $1 \le <num> \le 12$ & '\"D10\"' & $1 \le <num> \le 206$   \\
+'\"V4\"' & $1 \le <num> \le 23$ & '\"C11\"' & $1 \le <num> \le 139$  \\
+'\"C5\"' & $1 \le <num> \le 10$ & '\"C12\"' & $1 \le <num> \le 1749$   \\
+'\"C6\"' & $1 \le <num> \le 60$ & '\"C2xC6\"' & $1 \le <num> \le 3501$   \\
+'\"S3\"' & $1 \le <num> \le 39$ & '\"D12\"' & $1 \le <num> \le 48137$ \\
+'\"C7\"' & $1 \le <num> \le 24$ &  '\"A4\"' & $1 \le <num> \le 483$ \\
+'\"C8\"' & $1 \le <num> \le 135$&  '\"T\"' & $1 \le <num> \le 824$  \\
+'\"C2xC4\"' & $1 \le <num> \le 1159$ &  '\"C13\"' & $1 \le <num> \le 454$ \\
+'\"C2xC2xC2\"' & $1 \le <num> \le 834$ & '\"C14\"' & $1 \le <num> \le 2716$ \\
+'\"D8\"' & $1 \le <num> \le 1447$ & '\"D14\"' & $1 \le <num> \le 1821$   \\
+'\"Q8\"' & $1 \le <num> \le 281$  & '\"C15\"' & $1 \le <num> \le 3817$   \\
+'\"C9\"' & $1 \le <num> \le 222$  &             &                               \\
+\hline
+\end{tabular}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DisplayCayleyTable for near-rings}
+   
+'DisplayCayleyTable( <nr> )'  
+
+'DisplayCayleyTable' prints the additive and multiplicative Cayley tables 
+of the near-ring <nr>. This function  
+works the same way as for semi\-groups; the dis\-patch\-er function 
+'Display\-Cayley\-Table' calls
+'<nr>.op\-e\-ra\-tions.Display\-Ta\-ble' which performs the actual printing.
+
+|  gap> DisplayCayleyTable( LibraryNearring( "V4", 22 ) );
+  Let:
+  n0 := ()
+  n1 := (3,4)
+  n2 := (1,2)
+  n3 := (1,2)(3,4)
+
+    +  |'\|'| n0 n1 n2 n3 
+   ------------------
+    n0 |'\|'| n0 n1 n2 n3 
+    n1 |'\|'| n1 n0 n3 n2 
+    n2 |'\|'| n2 n3 n0 n1 
+    n3 |'\|'| n3 n2 n1 n0 
+
+    *  |'\|'| n0 n1 n2 n3 
+   ------------------
+    n0 |'\|'| n0 n0 n0 n0 
+    n1 |'\|'| n0 n1 n2 n3 
+    n2 |'\|'| n2 n2 n2 n2 
+    n3 |'\|'| n2 n3 n0 n1 
+
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elements for near-rings}
+   
+'Elements( <nr> )'  
+
+The function 'Elements' computes the elements of the near-ring <nr>. 
+As for semigroups the 
+\GAP\ standard library dispatcher function 'Elements' calls 
+'<nr>.op\-er\-a\-tions.El\-e\-ments' which
+simply returns the elements of '<nr>.\-group' if <nr> is not a 
+transformation near-ring or -- if <nr> is a transformation near-ring -- 
+performs a simple closure algorithm and returns a set of transformations
+which are the elements of <nr>.
+
+|  gap> t := Transformation( Group( (1,2) ), [2,1] );
+  Transformation( Group( (1,2) ), [ 2, 1 ] )
+  gap> Elements( Nearring( t ) );
+  [ Transformation( Group( (1,2) ), [ 1, 1 ] ), 
+    Transformation( Group( (1,2) ), [ 1, 2 ] ), 
+    Transformation( Group( (1,2) ), [ 2, 1 ] ), 
+    Transformation( Group( (1,2) ), [ 2, 2 ] ) ]
+  gap> Elements( LibraryNearring( "C3", 4 ) );
+  [ (), (1,2,3), (1,3,2) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Size for near-rings}
+   
+'Size( <nr> )'  
+
+'Size' returns the number of elements in the near-ring <nr>.
+
+|  gap> Size( LibraryNearring( "C3", 4 ) );
+  3
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Endomorphisms for near-rings} 
+   
+'Endomorphisms( <nr> )'  
+
+'Endomorphisms' computes all the endomorphisms of the near-ring <nr>. 
+The endomorphisms are returned as a list of transformations. In fact, the
+returned list contains those endomorphisms of '<nr>.group' which are 
+also endomorphisms of the near-ring <nr>.
+
+|  gap> t := Transformation( Group( (1,2) ), [2,1] );
+  Transformation( Group( (1,2) ), [ 2, 1 ] )
+  gap> nr := Nearring( t );
+  Nearring( Transformation( Group( (1,2) ), [ 2, 1 ] ) ) 
+  gap> Endomorphisms( nr );
+  [ Transformation( Group( (1,2)(3,4), (1,3)(2,4) ), [ 1, 1, 1, 1 ] ), 
+    Transformation( Group( (1,2)(3,4), (1,3)(2,4) ), [ 1, 2, 2, 1 ] ), 
+    Transformation( Group( (1,2)(3,4), (1,3)(2,4) ), [ 1, 2, 3, 4 ] ) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Automorphisms for near-rings} 
+   
+'Automorphisms( <nr> )'  
+
+'Automorphisms' computes all the automorphisms of the near-ring <nr>. 
+The automorphisms are returned as a list of transformations. In fact, the
+returned list contains those automorphisms of '<nr>.group' which are 
+also automorphisms of the near-ring <nr>.
+
+|  gap> t := Transformation( Group( (1,2) ), [2,1] );
+  Transformation( Group( (1,2) ), [ 2, 1 ] )
+  gap> nr := Nearring( t );                         
+  Nearring( Transformation( Group( (1,2) ), [ 2, 1 ] ) ) 
+  gap> Automorphisms( nr );
+  [ Transformation( Group( (1,2)(3,4), (1,3)(2,4) ), [ 1, 2, 3, 4 ] ) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FindGroup}
+   
+'FindGroup( <nr> )'  
+
+For a transformation near-ring <nr>, this function computes the additive
+group of <nr> as a  \GAP\ permutation group and stores it in the record
+component '<nr>.group'. 
+%% This function is implemented in such a way that there 
+%% is always a 1-1 correspondence between the two lists 'Elements( <nr> )' and 
+%% 'Elements( <nr>.group )'.
+
+|  gap> t := Transformation( Group( (1,2) ), [2,1] );
+  Transformation( Group( (1,2) ), [ 2, 1 ] )
+  gap> n := Nearring( t );                          
+  Nearring( Transformation( Group( (1,2) ), [ 2, 1 ] ) ) 
+  gap> g := FindGroup( n );                         
+  Group( (1,2)(3,4), (1,3)(2,4) )
+  gap> Elements( g );
+  [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3) ]
+  gap> Elements( n );
+  [ Transformation( Group( (1,2) ), [ 1, 1 ] ), 
+    Transformation( Group( (1,2) ), [ 1, 2 ] ), 
+    Transformation( Group( (1,2) ), [ 2, 1 ] ), 
+    Transformation( Group( (1,2) ), [ 2, 2 ] ) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NearringIdeals}
+   
+'NearringIdeals( <nr> )' \\
+'NearringIdeals( <nr>, '\"l\"' )' \\
+'NearringIdeals( <nr>, '\"r\"' )' 
+
+'NearringIdeals'  computes all (left) (right) ideals of the near-ring 
+<nr>. The return value is a list of subgroups 
+of the additive group of <nr> representing the according ideals.
+In case that <nr> is a transformation near-ring, 'FindGroup' is used 
+to determine the additive group of <nr> as a permutation group.
+If the optional parameters '\"l\"' or '\"r\"' are passed, all left
+resp. right ideals are computed.
+
+|  gap> n := LibraryNearring( "V4", 11 );
+  LibraryNearring( "V4", 11 )
+  gap> NearringIdeals( n );
+  [ Subgroup( V4, [  ] ), Subgroup( V4, [ (3,4) ] ), V4 ]
+  gap> NearringIdeals( n, "r" );
+  [ Subgroup( V4, [  ] ), Subgroup( V4, [ (3,4) ] ), V4 ]
+  gap> NearringIdeals( n, "l" );
+  [ Subgroup( V4, [  ] ), Subgroup( V4, [ (3,4) ] ), 
+    Subgroup( V4, [ (1,2) ] ), Subgroup( V4, [ (1,2)(3,4) ] ), V4 ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InvariantSubnearrings}
+   
+'InvariantSubnearrings( <nr> )'  
+
+A subnear-ring $(M,+,\cdot)$ of a near-ring $(N,+,\cdot)$ is called an 
+*invariant subnear-ring* if both, $M \cdot N \subseteq M$ and
+$N \cdot M \subseteq M$.
+
+The function 'InvariantSubnearrings'  computes all invariant 
+subnear-rings of the near-ring <nr>.
+The function returns a list of near-rings representing the according 
+invariant subnear-rings.
+In case that <nr> is a transformation near-ring, 'FindGroup' is used 
+to determine the additive group of <nr> as a permutation group.
+
+|  gap> InvariantSubnearrings( LibraryNearring( "V4", 22 ) );
+  [ Nearring( Subgroup( V4, [ (1,2) ] ), function ( x, y )
+          return elms[tfle.(f[Position( elms, y )])[Position( elms, x )]
+             ];
+      end ), Nearring( V4, function ( x, y )
+          return elms[tfle.(f[Position( elms, y )])[Position( elms, x )]
+             ];
+      end ) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subnearrings}
+   
+'Subnearrings( <nr> )'  
+
+The function 'Subnearrings'  computes all subnear-rings of the near-ring 
+<nr>. The function returns a list of near-rings representing the 
+according subnear-rings.
+In case that <nr> is a transformation near-ring, 'FindGroup' is used 
+to determine the additive group of <nr> as a permutation group.
+
+|  gap> Subnearrings( LibraryNearring( "V4", 22 ) );
+  [ Nearring( Subgroup( V4, [  ] ), function ( x, y )
+          return elms[tfle.(f[Position( elms, y )])[Position( elms, x )]
+             ];
+      end ), Nearring( Subgroup( V4, [ (3,4) ] ), function ( x, y )
+          return elms[tfle.(f[Position( elms, y )])[Position( elms, x )]
+             ];
+      end ), Nearring( Subgroup( V4, [ (1,2) ] ), function ( x, y )
+          return elms[tfle.(f[Position( elms, y )])[Position( elms, x )]
+             ];
+      end ), Nearring( V4, function ( x, y )
+          return elms[tfle.(f[Position( elms, y )])[Position( elms, x )]
+             ];
+      end ) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Identity for near-rings}
+   
+'Identity( <nr> )'  
+
+The function 'Identity' returns a list containing the identity of the 
+multiplicative semigroup of the near-ring <nr> 
+if it exists and the empty list '[\ \ ]' otherwise.
+
+|  gap> Identity( LibraryNearring( "V4", 22 ) );    
+  [ (3,4) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Distributors}
+   
+'Distributors( <nr> )'  
+
+An element $x$ of a near-ring $(N,+,\cdot)$ is called a *distributor*
+if $x = n_1 \cdot (n_2 + n_3 ) - (n_1 \cdot n_2 + n_1 \cdot n_3 )$ for 
+some elements $n_1, n_2, n_3$ of $N$.
+
+The function 'Distributors' returns a list containing the distributors 
+of the near-ring <nr>.
+ 
+|  gap> Distributors( LibraryNearring( "S3", 19 ) );
+  [ (), (1,2,3), (1,3,2) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DistributiveElements}
+   
+'DistributiveElements( <nr> )'  
+
+An element $d$ of a right near-ring $(N,+,\cdot)$ is called a 
+*distributive element* if it is also left distributive over all elements,
+i.e. 
+$\forall n_1, n_2 \in N\:\ d \cdot (n_1 + n_2 ) = d \cdot n_1 + d \cdot n_2$. 
+
+The function 'DistributiveElements' returns a list containing the 
+distributive elements of the near-ring <nr>. 
+
+|  gap> DistributiveElements( LibraryNearring( "S3", 25 ) );
+  [ (), (1,2,3), (1,3,2) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsDistributiveNearring}
+   
+'IsDistributiveNearring( <nr> )'  
+
+A right near-ring $N$ is called *distributive near-ring* if its
+multiplication is also left distributive.
+
+The function 'IsDistributiveNearring' simply checks if all elements
+are distributive and returns the according boolean value 
+'true' or 'false'.
+
+|  gap> IsDistributiveNearring( LibraryNearring( "S3", 25 ) );
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ZeroSymmetricElements}
+   
+'ZeroSymmetricElements( <nr> )'  
+
+Let $(N,+,\cdot)$ be a right near-ring and denote by $0$ the neutral element 
+of $(N,+)$. 
+An element $n$ of $N$ is called a 
+*zero-symmetric element* if $n \cdot 0 = 0$. 
+
+*Remark\:*\ note that in a *right* near-ring $0 \cdot n = 0$ is true
+for all elements $n$.
+
+The function 'ZeroSymmetricElements' returns a list containing the 
+zero-symmetric elements of the near-ring <nr>. 
+
+|  gap> ZeroSymmetricElements( LibraryNearring( "S3", 25 ) ); 
+  [ (), (1,2,3), (1,3,2) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAbstractAffineNearring}
+   
+'IsAbstractAffineNearring( <nr> )'  
+
+A right near-ring $N$ is called *abstract affine* if its
+additive group is abelian and its zero-symmetric elements are exactly
+its distributive elements.
+
+The function 'IsAbstractAffineNear-ring' returns the according boolean 
+value 'true' or 'false'.
+
+|  gap> IsAbstractAffineNearring( LibraryNearring( "S3", 25 ) );
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdempotentElements for near-rings}
+   
+'IdempotentElements( <nr> )'  
+
+The function 'IdempotentElements' returns a list containing the 
+idempotent elements of the multiplicative semigroup of the near-ring <nr>. 
+
+|  gap> IdempotentElements( LibraryNearring( "S3", 25 ) );      
+  [ (), (2,3) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsBooleanNearring}
+   
+'IsBooleanNearring( <nr> )'  
+
+A right near-ring $N$ is called *boolean* if all its elements are
+idempotent with respect to multiplication.
+
+The function 'IsBooleanNearring' simply checks if all elements
+are idempotent and returns the according boolean value 
+'true' or 'false'.
+
+|  gap> IsBooleanNearring( LibraryNearring( "S3", 25 ) ); 
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NilpotentElements}
+   
+'NilpotentElements( <nr> )'  
+
+Let $(N,+,\cdot)$ be a near-ring with zero $0$. An element $n$ of $N$ is 
+called *nilpotent* if there is a positive integer $k$ such that
+$n^k = 0$.
+
+The function 'NilpotentElements' returns a list of sublists of length 
+$2$ where the first entry is a nilpotent element $n$ and the second
+entry is the smallest $k$ such that $n^k = 0$.
+
+|  gap> NilpotentElements( LibraryNearring( "V4", 4 ) ); 
+  [ [ (), 1 ], [ (3,4), 2 ], [ (1,2), 3 ], [ (1,2)(3,4), 3 ] ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsNilNearring}
+   
+'IsNilNearring( <nr> )'  
+
+A near-ring $N$ is called *nil* if all its elements are
+nilpotent.
+
+The function 'IsNilNearring' checks if all elements
+are nilpotent and returns the according boolean value 
+'true' or 'false'.
+
+|  gap> IsNilNearring( LibraryNearring( "V4", 4 ) );    
+  true
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsNilpotentNearring}
+   
+'IsNilpotentNearring( <nr> )'  
+
+A near-ring $N$ is called *nilpotent* if there is a positive integer
+$k$, s.t. $N^k = \{0\}$.
+
+The function 'IsNilpotentNearring' tests if
+the near-ring <nr> is nilpotent and returns the according boolean value 
+'true' or 'false'.
+
+|  gap> IsNilpotentNearring( LibraryNearring( "V4", 4 ) );
+  true
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsNilpotentFreeNearring}
+   
+'IsNilpotentFreeNearring( <nr> )'  
+
+A near-ring $N$ is called *nilpotent free* if its only nilpotent
+element is $0$.
+
+The function 'IsNilpotentFreeNearring' checks if 
+$0$ is the only nilpotent and returns the according boolean value 
+'true' or 'false'.
+
+|  gap> IsNilpotentFreeNearring( LibraryNearring( "V4", 22 ) );       
+  true
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCommutative for near-rings}
+   
+'IsCommutative( <nr> )'  
+
+A near-ring $(N,+,\cdot)$ is called *commutative* if 
+its multiplicative semigroup is commutative.
+
+The function 'IsCommutative' returns 
+the according value 'true' or 'false'.
+
+|  gap> IsCommutative( LibraryNearring( "C15", 1235 ) );       
+  false
+  gap> IsCommutative( LibraryNearring( "V4", 13 ) );   
+  true
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsDgNearring}
+   
+'IsDgNearring( <nr> )'  
+
+A near-ring $(N,+,\cdot)$ is called *distributively generated (d.g.)* if 
+$(N,+)$ is generated additively by the distributive elements of the
+near-ring.
+
+The function 'IsDgNearring' returns 
+the according value 'true' or 'false' for a near-ring <nr>.
+
+|  gap> IsDgNearring( LibraryNearring( "S3", 25 ) ); 
+  false
+  gap> IsDgNearring( LibraryNearring( "S3", 1 ) ); 
+  true
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsIntegralNearring}
+   
+'IsIntegralNearring( <nr> )'  
+
+A near-ring $(N,+,\cdot)$ with zero element $0$ is called *integral* if 
+it has no zero divisors, i.e. the condition $\forall n_1,n_2\:\ 
+n_1 \cdot n_2 = 0 \Rightarrow n_1 = 0 \lor n_2 = 0$ holds.
+
+The function 'IsIntegralNearring' returns 
+the according value 'true' or 'false' for a near-ring <nr>.
+
+|  gap> IsIntegralNearring( LibraryNearring( "S3", 24 ) );
+  true
+  gap> IsIntegralNearring( LibraryNearring( "S3", 25 ) );
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPrimeNearring}
+   
+'IsPrimeNearring( <nr> )'  
+
+A near-ring $(N,+,\cdot)$ with zero element $0$ is called *prime* if 
+the ideal $\{ 0 \}$ is a prime ideal.
+
+The function 'IsPrimeNearring' checks if <nr> is a prime near-ring
+by using the condition <for all non-zero ideals> $I,J\:\ I \cdot J \ne 
+\{ 0 \}$ and returns the according value 'true' or 'false'.
+
+|  gap> IsPrimeNearring( LibraryNearring( "V4", 11 ) );   
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{QuasiregularElements}
+   
+'QuasiregularElements( <nr> )'  
+
+Let $(N,+,\cdot)$ be a right near-ring. For an element $z \in N$, 
+denote the left ideal generated by the set $\{n - n\cdot z \mid n \in N\}$
+by $L_z$.
+An element $z$ of $N$ is 
+called *quasiregular* if $z \in L_z$.
+
+The function 'QuasiregularElements' returns a list of all 
+quasiregular elements of a near-ring <nr>.
+
+|  gap> QuasiregularElements( LibraryNearring( "V4", 4 ) ); 
+  [ (), (3,4), (1,2), (1,2)(3,4) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsQuasiregularNearring}
+   
+'IsQuasiregularNearring( <nr> )'  
+
+A near-ring $N$ is called *quasiregular* if all its elements are
+quasiregular.
+
+The function 'IsQuasiregularNearring' simply checks if all elements
+of the near-ring <nr> are quasiregular and returns the according 
+boolean value 'true' or 'false'.
+
+|  gap> IsQuasiregularNearring( LibraryNearring( "V4", 4 ) );
+  true
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RegularElements}
+   
+'RegularElements( <nr> )'  
+
+Let $(N,+,\cdot)$ be a near-ring. An element $n$ of $N$ is 
+called *regular* if there is an element $x$ such that 
+$n\cdot x\cdot n = n$.
+
+The function 'RegularElements' returns a list of all 
+regular elements of a near-ring <nr>.
+
+|  gap> RegularElements( LibraryNearring( "V4", 4 ) );       
+  [ () ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRegularNearring}
+   
+'IsRegularNearring( <nr> )'  
+
+A near-ring $N$ is called *regular* if all its elements are regular.
+
+The function 'IsRegularNearring' simply checks if all elements
+of the near-ring <nr> are regular and returns the according 
+boolean value 'true' or 'false'.
+
+|  gap> IsRegularNearring( LibraryNearring( "V4", 4 ) );
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPlanarNearring}
+   
+'IsPlanarNearring( <nr> )'  
+
+Let $(N,+,\cdot)$ be a right near-ring. For $a,b \in N$ define the 
+equivalence relation $\equiv$ by $a \equiv b\:\ \Leftrightarrow
+\forall n \in N\:\ n\cdot a = n\cdot b$. If $a \equiv b$ then $a$ and $b$
+are called *equivalent multipliers*.
+A near-ring $N$ is called *planar* if 
+$\mid N/_{\equiv} \mid \ge 3$ and if every equation of the form
+$x\cdot a = x\cdot b + c$ has a unique solution for two non equivalent
+multipliers $a$ and $b$.
+
+The function 'IsPlanarNearring' returns 
+the according value 'true' or 'false' for a near-ring <nr>.
+
+*Remark\:*\
+this function works only for library near-rings, i.e. near-rings which are
+constructed by using the function 'LibraryNearring'.
+
+|  gap> IsPlanarNearring( LibraryNearring( "V4", 22 ) );
+  false
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsNearfield}
+   
+'IsNearfield( <nr> )'  
+
+Let $(N,+,\cdot)$ be a near-ring with zero $0$ and denote by $N^{\*}$ 
+the set $N - \{0\}$. N is a *nearfield* if
+$(N^{\*},\cdot)$ is a group.
+
+The function 'IsNearfield' tests if <nr> has an identity and 
+if every non-zero element has a multiplicative inverse and returns
+the according value 'true' or 'false'.
+
+|  gap> IsNearfield( LibraryNearring( "V4", 16 ) );     
+  true
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LibraryNearringInfo}
+   
+'LibraryNearringInfo( <group\_name>, <list>, <string> )'  
+
+This function provides information about the specified library near-rings
+in a way similar to how near-rings are presented in the appendix of
+\cite{Pil83}.
+The parameter <group\_name> specifies the name of a group; valid
+names are exactly those which are also valid for the function
+'Library\-Near\-rings' (cf. section "LibraryNearring"). 
+
+The parameter <list> must be a non-empty list of integers defining the 
+classes of near-rings to be printed. Naturally, these integers must all fit 
+into the ranges described in section "LibraryNearring" for the according 
+groups.
+
+The third parameter <string> is optional. <string> must be a string
+consisting of one or more (or all) of the following characters\:\
+'l', 'm', 'i', 'v', 's', 'e', 'a'.
+Per default, (i.e.\ if this parameter is not specified), the output is 
+minimal. According to each specified character, the following is added\:\
+
+  'c': \\
+       print the meaning of the letters used in the output.
+
+  'm': \\
+       print the multiplication tables.
+
+  'i': \\
+       list the ideals.
+
+  'l': \\
+       list the left ideals.
+
+  'r': \\
+       list the right ideals.
+
+  'v': \\
+       list the invariant subnear-rings.
+
+  's': \\
+       list the subnear-rings.
+
+  'e': \\
+       list the near-ring endomorphisms.
+
+  'a': \\
+       list the near-ring automorphisms.
+
+
+*Examples\:*\
+
+'LibraryNearringInfo( \"C3\", [ 3 ], \"lmivsea\" )' will print all
+available in\-for\-ma\-tion on the third class of near-\-rings on the 
+group
+$C_3$.
+
+'LibraryNearringInfo( \"C4\", [ 1..12 ] )' will provide a minimal output
+for all classes of near-\-rings on $C_4$.
+
+'LibraryNearringInfo( \"S3\", [ 5, 18, 21 ], \"mi\" )' will print
+the minimal information plus the multiplication tables plus the ideals for
+the classes $5$, $18$, and $21$ of near-rings on the group $S_3$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Nearring records}
+   
+The record of a nearring has the following components\:\
+ 
+'isDomain', 'isNearring': \\ 
+  these two are always 'true' for a near-ring.
+  
+'isTransformationNearring': \\ 
+  this is bound and 'true' only for transformation near-rings (i.e.\ 
+  those near-rings that are generated by group transformations by using
+  the constructor function 'Nearring' in the second form).
+
+'generators': \\ 
+  this is bound only for a transformation near-ring and holds the set of 
+  generators of the transformation near-ring.
+
+'group': \\
+  this component holds the additive group of the near-ring as permutation
+  group.
+
+'addition', subtraction', multiplication': \\ 
+  these record fields contain the functions that represent the binary 
+  operations that can be performed with the elements of the near-ring on the 
+  additive group of the  
+  near-ring (addition, subtraction) resp.\ on the multiplicative
+  semigroup of the near-ring (multiplication)
+
+|  gap> nr := Nearring( Transformation( Group( (1,2) ), [2,1] ) );
+  Nearring( Transformation( Group( (1,2) ), [ 2, 1 ] ) ) 
+  gap> e := Elements( nr );
+  [ Transformation( Group( (1,2) ), [ 1, 1 ] ), 
+    Transformation( Group( (1,2) ), [ 1, 2 ] ), 
+    Transformation( Group( (1,2) ), [ 2, 1 ] ), 
+    Transformation( Group( (1,2) ), [ 2, 2 ] ) ]
+  gap> nr. addition( e[2], e[3] );
+  Transformation( Group( (1,2) ), [ 2, 2 ] )
+  gap> nr.multiplication( e[2], e[4] );
+  Transformation( Group( (1,2) ), [ 2, 2 ] )
+  gap> nr.multiplication( e[2], e[3] );
+  Transformation( Group( (1,2) ), [ 2, 1 ] )
+|
+
+'operations': \\ 
+  this is the operations record of the near-ring.
+
+'size', 'elements', 'endomorphisms', 
+      'automorphisms': \\ 
+  these entries become bound if the according functions have been performed
+  on the near-ring.
+%% 'PHI': \\ 
+%% 'equivalentMultipliers': \\ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Supportive Functions for Groups}
+   
+In order to support near-ring calculations, a few functions for groups had to 
+be added to the standard \GAP\ group library functions. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DisplayCayleyTable for groups}
+   
+'DisplayCayleyTable( <group> )'  
+
+'DisplayCayleyTable' prints the Cayley table of the group <group>. This 
+function works the same way as for semigroups and near-rings\:\ the 
+dispatcher function 'DisplayCayleyTable' calls
+'<group>.op\-er\-a\-tions.Display\-Ta\-ble' which performs the printing.
+
+|  gap> g := Group( (1,2), (3,4) );       # this is Klein\'s four group  
+  Group( (1,2), (3,4) )
+  gap> DisplayCayleyTable( g );
+  Let:
+  g0 := ()
+  g1 := (3,4)
+  g2 := (1,2)
+  g3 := (1,2)(3,4)
+
+    +  |'\|'| g0 g1 g2 g3 
+   ------------------
+    g0 |'\|'| g0 g1 g2 g3 
+    g1 |'\|'| g1 g0 g3 g2 
+    g2 |'\|'| g2 g3 g0 g1 
+    g3 |'\|'| g3 g2 g1 g0 
+
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Endomorphisms for groups} 
+   
+'Endomorphisms( <group> )'  
+
+'Endomorphisms' computes all the endomorphisms of the group <group>. 
+This function is most essential for computing the near-rings on a group.
+The endomorphisms are returned as a list of transformations s.t.\ 
+the identity endomorphism is always the last entry in this list. For each  
+transformation in this list the record component 
+'is\-Group\-En\-do\-mor\-phism' is
+set to 'true' and if such a transformation is in fact an automorphism 
+then in
+addition the record component 
+'is\-Group\-Auto\-mor\-phism' is set to 'true'.
+
+|  gap> g := Group( (1,2,3) );                                         
+  Group( (1,2,3) )
+  gap> Endomorphisms( g );
+  [ Transformation( Group( (1,2,3) ), [ 1, 1, 1 ] ), 
+    Transformation( Group( (1,2,3) ), [ 1, 3, 2 ] ), 
+    Transformation( Group( (1,2,3) ), [ 1, 2, 3 ] ) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Automorphisms for groups}
+   
+'Automorphisms( <group> )'  
+
+'Automorphisms' computes all the automorphisms of the group <group>. 
+The automorphisms are returned as a list of transformations s.t.\ 
+the identity automorphism is always the last entry in this list. For each  
+transformation in this list the record components 
+'is\-Group\-En\-do\-mor\-phism' 
+and 'is\-Group\-Auto\-mor\-phism' are both set to 'true'.
+
+|  gap> d8 := Group( (1,2,3,4), (2,4) ); # dihedral group of order 8
+  Group( (1,2,3,4), (2,4) )
+  gap> a := Automorphisms( d8 );
+  [ Transformation( Group( (1,2,3,4), (2,4) ), [ 1, 2, 8, 7, 5, 6, 4, 3 
+       ] ), Transformation( Group( (1,2,3,4), (2,4) ), 
+      [ 1, 3, 2, 7, 8, 6, 4, 5 ] ), Transformation( Group( (1,2,3,4), 
+      (2,4) ), [ 1, 3, 5, 4, 8, 6, 7, 2 ] ), 
+    Transformation( Group( (1,2,3,4), (2,4) ), [ 1, 5, 3, 7, 2, 6, 4, 8 
+       ] ), Transformation( Group( (1,2,3,4), (2,4) ), 
+      [ 1, 5, 8, 4, 2, 6, 7, 3 ] ), Transformation( Group( (1,2,3,4), 
+      (2,4) ), [ 1, 8, 2, 4, 3, 6, 7, 5 ] ), 
+    Transformation( Group( (1,2,3,4), (2,4) ), [ 1, 8, 5, 7, 3, 6, 4, 2 
+       ] ), Transformation( Group( (1,2,3,4), (2,4) ), 
+      [ 1, 2, 3, 4, 5, 6, 7, 8 ] ) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InnerAutomorphisms}
+   
+'InnerAutomorphisms( <group> )'  
+
+'InnerAutomorphisms' computes all the inner automorphisms of the group 
+<group>. 
+The inner automorphisms are returned as a list of transformations s.t.\ 
+the identity automorphism is always the last entry in this list. For each  
+transformation in this list the record components 
+'is\-Inner\-Auto\-mor\-phism', 
+'is\-Group\-En\-do\-mor\-phism', 
+and 'is\-Group\-Auto\-mor\-phism' are all set to 'true'.
+
+|  gap> i := InnerAutomorphisms( d8 );
+  [ Transformation( Group( (1,2,3,4), (2,4) ), [ 1, 2, 8, 7, 5, 6, 4, 3 
+       ] ), Transformation( Group( (1,2,3,4), (2,4) ), 
+      [ 1, 5, 3, 7, 2, 6, 4, 8 ] ), Transformation( Group( (1,2,3,4), 
+      (2,4) ), [ 1, 5, 8, 4, 2, 6, 7, 3 ] ), 
+    Transformation( Group( (1,2,3,4), (2,4) ), [ 1, 2, 3, 4, 5, 6, 7, 8 
+       ] ) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SmallestGeneratingSystem}
+   
+'SmallestGeneratingSystem( <group> )'  
+
+'SmallestGeneratingSystem' computes a smallest generating system of 
+the group <group> i.e.\ a smallest subset of the elements of the group 
+s.t.\ the group is generated by this subset.
+
+*Remark\:*\ there is a \GAP\ standard library function 
+'Smallest\-Generators' for
+permutation groups. This function computes a generating set of a given
+group such that its elements are smallest possible permutations (w.r.t.\
+the \GAP\ internal sorting of permutations).
+
+|  gap> s5 := SymmetricGroup( 5 );
+  Group( (1,5), (2,5), (3,5), (4,5) )
+  gap> SmallestGenerators( s5 );
+  [ (4,5), (3,4), (2,3), (1,2) ]
+  gap> SmallestGeneratingSystem( s5 );
+  [ (1,3,5)(2,4), (1,2)(3,4,5) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsIsomorphicGroup}
+   
+'IsIsomorphicGroup( <g1>, <g2> )'  
+
+'IsIsomorphicGroup' determines if the groups <g1> and <g2> are 
+isomorphic and if so, returns a group homomorphism that is an isomorphism
+between these two groups and 'false' otherwise.
+
+|  gap> g1 := Group( (1,2,3) );
+  Group( (1,2,3) )
+  gap> g2 := Group( (7,8,9) );
+  Group( (7,8,9) )
+  gap> g1 = g2;
+  false
+  gap> IsIsomorphicGroup( g1, g2 );
+  GroupHomomorphismByImages( Group( (1,2,3) ), Group( (7,8,9) ), 
+  [ (1,2,3) ], [ (7,8,9) ] )
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Predefined groups}
+   
+The following variables are predefined as according permutation groups
+with a default smallest set of generators\:\
+'C2', 'C3', 'C4', 'V4', 'C5', 'C6', 'S3', 
+'C7', 'C8', 'C2xC4', 'C2xC2xC2', 'D8', 'Q8', 
+'C9', 'C3xC3', 'C10', 'D10', 'C11', 'C12', 
+'C2xC6', 'D12', 'A4', 'T', 'C13', 'C14', 
+'D14', 'C15'. 
+
+|  gap> S3;
+  S3
+  gap> Elements( S3 );
+  [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ]
+  gap> IsPermGroup( S3 );
+  true
+  gap> S3.generators;
+  [ (1,2), (1,2,3) ]
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{How to find near-rings with certain properties} 
+   
+The near-ring library files can be used to systematically search for 
+near-rings with (or without) certain properties.
+
+For instance, the function 'LibraryNearring' can be integrated
+into a loop or occur as a part of the 'Filtered' or the
+'First' function to get all numbers of classes (or just the first class) 
+of near-rings on a specified group which have the specified properties.  
+
+In what follows, we shall give a few examples how this can be
+accomplished\:\ 
+
+To get the number of the first class of near-rings on the
+group $C_6$ which have an identity, one could use a command like\:\
+
+|  gap> First( [1..60], i ->                                       
+  >           Identity( LibraryNearring( "C6", i ) ) <> [ ] ); 
+  28
+|
+
+If we try the same with $S_3$, we will get an error message, indicating 
+that there is no near-ring with identity on $S_3$\:\
+
+|  gap> First( [1..39], i ->                  
+  >           Identity( LibraryNearring( "S3", i ) ) <> [ ] );
+  Error, at least one element of <list> must fulfill <func> in
+  First( [ 1 .. 39 ], function ( i ) ... end ) called from
+  main loop
+  brk> 
+  gap> 
+|
+
+To get all seven classes of near-rings with identity on the dihedral group
+$D_8$ of order $8$, something like the following will work fine\:\
+
+|  gap> l := Filtered( [1..1447], i ->                            
+  >           Identity( LibraryNearring( "D8", i ) ) <> [ ] );
+  [ 842, 844, 848, 849, 1094, 1096, 1097 ]
+  gap> time;
+  122490
+|
+
+Note that a search like this may take a few minutes.
+
+Here is another example that provides the class numbers of the four 
+boolean near-rings on $D_8$\:\
+
+|  gap> l := Filtered( [1..1447], i ->                            
+  >           IsBooleanNearring( LibraryNearring( "D8", i ) ) );       
+  [ 1314, 1380, 1446, 1447 ]
+|
+
+The search for class numbers of near-rings can also be accomplished in a 
+loop like the following\:\
+
+|  gap> l:=[ ];;
+  gap> for i in [1..1447] do
+  >      n := LibraryNearring( "D8", i );
+  >      if IsDgNearring( n ) and
+  >        not IsDistributiveNearring( n ) then
+  >          Add( l, i );
+  >      fi;
+  >    od;
+  gap> time;
+  261580
+  gap> l;
+  [ 765, 1094, 1098, 1306 ]
+|
+
+This provides a list of those class numbers of near-rings on $D_8$ which
+are distributively generated but not distributive.
+
+Two or more conditions for library near-rings can also be combined with 
+'or'\:\
+
+|  gap> l := [ ];;           
+  gap> for i in [1..1447] do
+  >      n := LibraryNearring( "D8", i );
+  >      if Size( ZeroSymmetricElements( n ) ) < 8 or
+  >         Identity( n ) <> [ ] or
+  >         IsIntegralNearring( n ) then
+  >           Add( l, i );
+  >      fi;
+  >    od;
+  gap> time;
+  124480
+  gap> l;
+  [ 842, 844, 848, 849, 1094, 1096, 1097, 1314, 1315, 1316, 1317, 1318, 
+    1319, 1320, 1321, 1322, 1323, 1324, 1325, 1326, 1327, 1328, 1329, 
+    1330, 1331, 1332, 1333, 1334, 1335, 1336, 1337, 1338, 1339, 1340, 
+    1341, 1342, 1343, 1344, 1345, 1346, 1347, 1348, 1349, 1350, 1351, 
+    1352, 1353, 1354, 1355, 1356, 1357, 1358, 1359, 1360, 1361, 1362, 
+    1363, 1364, 1365, 1366, 1367, 1368, 1369, 1370, 1371, 1372, 1373, 
+    1374, 1375, 1376, 1377, 1378, 1379, 1380, 1381, 1382, 1383, 1384, 
+    1385, 1386, 1387, 1388, 1389, 1390, 1391, 1392, 1393, 1394, 1395, 
+    1396, 1397, 1398, 1399, 1400, 1401, 1402, 1403, 1404, 1405, 1406, 
+    1407, 1408, 1409, 1410, 1411, 1412, 1413, 1414, 1415, 1416, 1417, 
+    1418, 1419, 1420, 1421, 1422, 1423, 1424, 1425, 1426, 1427, 1428, 
+    1429, 1430, 1431, 1432, 1433, 1434, 1435, 1436, 1437, 1438, 1439, 
+    1440, 1441, 1442, 1443, 1444, 1445, 1446, 1447 ]
+  gap> Length( l );
+  141
+|
+
+This provides a list of all 141 class numbers of near-rings on $D_8$ which
+are non-zerosymmetric or have an identity or are integral. 
+(cf. \cite{Pil83}, pp. 416ff).
+
+The following loop does the same for the near-rings on the quaternion group
+of order 8, $Q_8$\:\
+
+|  gap> l := [ ];;
+  gap> for i in [1..281] do
+  >      n := LibraryNearring( "Q8", i );
+  >      if Size( ZeroSymmetricElements( n ) ) < 8 or
+  >        Identity( n ) <> [ ] or
+  >          IsIntegralNearring( n ) then
+  >          Add( l, i );
+  >      fi;
+  >    od;
+  gap> time;
+  17740
+  gap> l;
+  [ 280, 281 ]
+|
+
+Once a list of class numbers has been computed (in this case here\:\ 'l'),
+e.g.\ the function 'Library\-Near\-ring\-Info' can be used to print
+some information about these near-rings\:\
+
+|  gap> LibraryNearringInfo( "Q8", l );
+  ----------------------------------------------------------------------
+  >>> GROUP: Q8
+  elements: [ n0, n1, n2, n3, n4, n5, n6, n7 ]
+  addition table:
+
+    +  |'\|'| n0 n1 n2 n3 n4 n5 n6 n7 
+   ------------------------------
+    n0 |'\|'| n0 n1 n2 n3 n4 n5 n6 n7 
+    n1 |'\|'| n1 n2 n3 n0 n7 n4 n5 n6 
+    n2 |'\|'| n2 n3 n0 n1 n6 n7 n4 n5 
+    n3 |'\|'| n3 n0 n1 n2 n5 n6 n7 n4 
+    n4 |'\|'| n4 n5 n6 n7 n2 n3 n0 n1 
+    n5 |'\|'| n5 n6 n7 n4 n1 n2 n3 n0 
+    n6 |'\|'| n6 n7 n4 n5 n0 n1 n2 n3 
+    n7 |'\|'| n7 n4 n5 n6 n3 n0 n1 n2 
+
+  group endomorphisms:
+  1:   [ n0, n0, n0, n0, n0, n0, n0, n0 ]
+  2:   [ n0, n0, n0, n0, n2, n2, n2, n2 ]
+  3:   [ n0, n1, n2, n3, n5, n6, n7, n4 ]
+  4:   [ n0, n1, n2, n3, n6, n7, n4, n5 ]
+  5:   [ n0, n1, n2, n3, n7, n4, n5, n6 ]
+  6:   [ n0, n2, n0, n2, n0, n2, n0, n2 ]
+  7:   [ n0, n2, n0, n2, n2, n0, n2, n0 ]
+  8:   [ n0, n3, n2, n1, n4, n7, n6, n5 ]
+  9:   [ n0, n3, n2, n1, n5, n4, n7, n6 ]
+  10:  [ n0, n3, n2, n1, n6, n5, n4, n7 ]
+  11:  [ n0, n3, n2, n1, n7, n6, n5, n4 ]
+  12:  [ n0, n4, n2, n6, n1, n7, n3, n5 ]
+  13:  [ n0, n4, n2, n6, n3, n5, n1, n7 ]
+  14:  [ n0, n4, n2, n6, n5, n1, n7, n3 ]
+  15:  [ n0, n4, n2, n6, n7, n3, n5, n1 ]
+  16:  [ n0, n5, n2, n7, n1, n4, n3, n6 ]
+  17:  [ n0, n5, n2, n7, n3, n6, n1, n4 ]
+  18:  [ n0, n5, n2, n7, n4, n3, n6, n1 ]
+  19:  [ n0, n5, n2, n7, n6, n1, n4, n3 ]
+  20:  [ n0, n6, n2, n4, n1, n5, n3, n7 ]
+  21:  [ n0, n6, n2, n4, n3, n7, n1, n5 ]
+  22:  [ n0, n6, n2, n4, n5, n3, n7, n1 ]
+  23:  [ n0, n6, n2, n4, n7, n1, n5, n3 ]
+  24:  [ n0, n7, n2, n5, n1, n6, n3, n4 ]
+  25:  [ n0, n7, n2, n5, n3, n4, n1, n6 ]
+  26:  [ n0, n7, n2, n5, n4, n1, n6, n3 ]
+  27:  [ n0, n7, n2, n5, n6, n3, n4, n1 ]
+  28:  [ n0, n1, n2, n3, n4, n5, n6, n7 ]
+
+  NEARRINGS:
+  ----------------------------------------------------------------------
+  280)  phi: [ 1, 28, 28, 28, 28, 28, 28, 28 ];  28;  -B----I--P-RW
+  ----------------------------------------------------------------------
+  281)  phi: [ 28, 28, 28, 28, 28, 28, 28, 28 ];  28;  -B----I--P-RW
+  ----------------------------------------------------------------------
+|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Defining near-rings with known multiplication table} 
+   
+Suppose that for a given group $g$ the multiplication table of a binary
+operation $\*$ on the elements of $g$ is known such that $\*$ is a
+near-ring multiplication on $g$. Then the constructor function 'Nearring'
+can be used to input the near-ring specified by $g$ and $\*$.
+
+An example shall illustrate a possibility how this could be accomplished\:\ 
+Take the group $S_3$, which in \GAP\ can be defined e.g.\ by
+
+|  gap> g := Group( (1,2), (1,2,3) );
+  Group( (1,2), (1,2,3) )
+|
+
+This group has the following list of elements\:\
+
+|  gap> Elements( g );
+  [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ]
+|
+
+Let '1' stand for the first element in this list, '2' for the second,
+and so on up to '6' which stands for the sixth element in the following
+multiplication table\:\
+
+\begin{center}
+\catcode`\|=12 \begin{tabular}{c|cccccc} \catcode`\|=13
+$\*$ & 1 & 2 & 3 & 4 & 5 & 6 \\
+\hline 
+1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+2 & 2 & 2 & 2 & 2 & 2 & 2 \\
+3 & 2 & 2 & 6 & 3 & 6 & 3 \\
+4 & 1 & 1 & 5 & 4 & 5 & 4 \\
+5 & 1 & 1 & 4 & 5 & 4 & 5 \\
+6 & 2 & 2 & 3 & 6 & 3 & 6 
+\end{tabular}
+\end{center}
+A near-ring on 'g' with this multiplication can be input by first defining  
+a multiplication function, say 'm' in the following way\:\
+
+|  gap> m := function( x, y )         
+  >   local elms, table;
+  >     elms := Elements( g );
+  >     table := [ [ 1, 1, 1, 1, 1, 1 ],
+  >                [ 2, 2, 2, 2, 2, 2 ],
+  >                [ 2, 2, 6, 3, 6, 3 ],
+  >                [ 1, 1, 5, 4, 5, 4 ],
+  >                [ 1, 1, 4, 5, 4, 5 ],
+  >                [ 2, 2, 3, 6, 3, 6 ] ];
+  >    
+  >     return elms[ table[Position( elms, x )][Position( elms, y )] ];
+  >   end;
+  function ( x, y ) ... end
+|
+
+Then the near-ring can be constructed by calling 'Nearring' with the
+parameters 'g' and 'm'\:\
+
+|  gap> n := Nearring( g, m );
+  Nearring( Group( (1,2), (1,2,3) ), function ( x, y )
+      local  elms, table;
+      elms := Elements( g );
+      table := [ [ 1, 1, 1, 1, 1, 1 ], [ 2, 2, 2, 2, 2, 2 ], 
+          [ 2, 2, 6, 3, 6, 3 ], [ 1, 1, 5, 4, 5, 4 ], 
+          [ 1, 1, 4, 5, 4, 5 ], [ 2, 2, 3, 6, 3, 6 ] ];
+      return elms[table[Position( elms, x )][Position( elms, y )]];
+  end )
+|

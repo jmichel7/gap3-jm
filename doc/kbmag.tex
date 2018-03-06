@@ -1,0 +1,889 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  Documentation for GAP interface to KBMAG            Derek Holt
+%%
+%Y  Copyright 1995 -- Mathematics Institute, Univ. of Warwick, UK.
+%%
+%%  This file describes the GAP interface to the stand-alone KBMAG
+%%  package (written in C for UNIX machines).
+%%
+%%
+\newcommand{\KBMAG}{{\sf KBMAG}}
+\Chapter{KBMAG}%
+\index{kbmag}
+{\KBMAG}  (pronounced ``Kay-bee-mag\'\') stands  for *Knuth--Bendix on
+Monoids, and Automatic Groups*.  It  is a stand-alone package  written
+in 'C', for use under UNIX, with an interface to {\GAP}.  This chapter
+describes  its use as  an external  share  library from within {\GAP}.
+The   current interface is   restricted  to finitely presented groups.
+Interfaces for the use of {\KBMAG} with monoids and semigroups will be
+released  as soon  as   these categories exist  as  established  types
+in{\GAP}.
+
+To use  this  package effectively,  some  knowledge  of the underlying
+theory  and algorithms  is  advisable.  The  Knuth-Bendix algorithm is
+described in various places in the literature. Good general references
+that deal with the applications to groups and monoids are \cite{LeC86}
+and  the  first few  chapters of   \cite{Sims94}.   For the  theory of
+automatic   groups  see  the   multi-author book  \cite{ECHLPT92}. The
+algorithms employed by {\KBMAG}   are described more  specifically  in
+\cite{EHR91} and \cite{Holt94}.
+
+The manual for the stand-alone {\KBMAG} package (which can be found in
+the 'doc' directory of the package) provides more detailed information
+on    the external 'C'   programs that  are called   from {\GAP}.  The
+stand-alone also     includes  a number     of  general programs   for
+manipulating finite  state automata,    which could easily    be  made
+accessible from {\GAP}.  This,  and other possible extensions, such as
+the provision of more orderings  on words, may be  made in the future,
+depending to some extent on user-demand.
+
+The overall  objective of {\KBMAG} is  to construct a  normal form for
+the elements of a  finitely presented group  $G$ in terms of the given
+generators, together with  a word reduction algorithm for  calculating
+the normal form representation  of an element in  $G$, given as a word
+in the generators.  If this can be achieved,  then it is also possible
+to enumerate the words  in normal form up to   a given length,  and to
+determine the order  of the group, by counting  the number of words in
+normal  form. In most  serious  applications,  this will be  infinite,
+since finite groups are (with some  exceptions) usually handled better
+by Todd-Coxeter related methods. In fact a  finite state automaton $W$
+is  calculated  that accepts precisely the   language of words  in the
+group  generators that are   in normal form,  and $W$  is used for the
+enumeration  and counting  functions.  It is possible  to  inspect $W$
+directly if required; for example, it is often  possible to use $W$ to
+determine whether an element in $G$ has finite or infinite order. (See
+Example 4 below.)
+
+The  normal form for an element  $g \in G$ is defined  to be the least
+word in the group generators (and their inverses) that represents $G$,
+with respect to  a specified ordering on the  set of all  words in the
+group generators.  The available  orderings are described  in "Setting
+the ordering" below.
+
+{\KBMAG} offers two possible means of achieving these objectives.  The
+first   is   to apply   the   Knuth-Bendix   algorithm  to  the  group
+presentation, with one of the  available orderings on words, and  hope
+that the algorithm will complete with a finite confluent presentation.
+(If the group is finite, then it is  guaranteed to complete eventually
+but,  like the  Todd-Coxeter procedure, it  may  take a long  time, or
+require more space  than  is  available.)  The second  is  to  use the
+automatic group program. This  also uses the Knuth-Bendix procedure as
+one component of the algorithm, but  it aims to compute certain finite
+state  automata rather  than to obtain   a  finite confluent rewriting
+system, and it completes successfully on many  examples for which such
+a finite system does not exist. In the current implementation, its use
+is  restricted to the shortlex ordering  on words.  That is, words are
+ordered first by increasing length, and then words of equal length are
+ordered lexicographically,   using the    specified ordering  of   the
+generators.
+
+For both of the above procedures, the first step is to create a {\GAP}
+record   known as  a  {\em  rewriting  system}  $R$ from the  finitely
+presented group $G$.  Some of the fields of this record can be used to
+specify  the input parameters  for the external  programs, such as the
+ordering on words to be used by the Knuth-Bendix procedure. One of the
+two  external programs is then run  on  $R$. If successful, it updates
+some of the fields of $R$, which  can then be  used to reduce words in
+the group  generators to normal form, and  to count and  enumerate the
+words in normal form.
+
+In fact, the relationship of a  rewriting system to  that of the group
+from which it is constructed is in many ways similar to that between a
+Presentation Record  and its associated  finitely presented  group, as
+described in  "Presentation  Records".  In  particular, the  rewriting
+rules, which can be thought of as (a highly redundant) set of defining
+relations for the group, can be changed, whereas the defining relators
+of a  finitely presented group  cannot be  altered without effectively
+changing the group itself.
+
+In the descriptions of the  functions that follow,  it is important to
+distinguish between  irreducible words, and  words in normal form.  As
+already stated, a word is in normal form if it is the least word under
+the ordering of the  rewriting system that  defines a particular group
+element.  So  there is always  a unique word in  normal form  for each
+group element,  and it is  determined by the  group generators and the
+ordering on words  in  the group   generators. A word  in a  rewriting
+system is said to be irreducible if it  does not contain the left hand
+side of any of the reduction  rules in the  system as a subword. Words
+in normal form are always irreducible, but the converse is true if and
+only   if  the rewriting system  is   confluent.  The automatic groups
+programs provide a  method of  reducing  words to normal  form without
+obtaining a  finite  confluent rewriting  system  (which may  not even
+exist).
+
+Diagnostic  output  from the {\GAP}  procedures   can be turned on  by
+setting the global variable  'InfoRWS'  to 'Print'. Diagnostic  output
+from the external programs    is controlled by setting  the  'silent',
+'verbose' or 'veryVerbose' flags of the rewriting system. See "Control
+parameters" below.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Creating a rewriting system}
+\index{rewriting systems!creating}
+'FpGroupToRWS(<G> [,<case\_change>])'
+\index{FpGroupToRWS!}
+
+'FpGroupToRWS' constructs and returns a   rewriting system <R> from  a
+finitely presented group <G>. The generators of <R> are the generators
+of  <G>  together with inverses  for  those  generators  which are not
+obviously involutory.  Normally, if a generator of  <G> prints as $a$,
+say, then its inverse  will print, as  might be expected, as $a^{-1}$.
+However,  if  the optional argument <case\_change>   is set to 'true',
+then its printing string  will be derived  by changing the case of the
+letters in  the original generator; so,  the inverse of $a$ will print
+as  $A$.  One advantage  of this  is that it   can  save space in  the
+temporary files used by the external programs.
+
+<R>  is  a  {\GAP} record.  However,   its internal storage   does not
+correspond precisely  to the way in which  it is displayed, and so the
+user is strongly advised not to attempt to modify its fields directly.
+(To convince yourself of  this,   try examining  some of  the   fields
+individually.)  In particular, the ordering on words to be used by the
+Knuth-Bendix   procedure should be changed, if   desired, by using the
+functions  'SetOrderingRWS'  and  'ReorderGeneratorsRWS'  described in
+"Setting  the ordering" below.   However, the control  fields that are
+described in  "Control parameters"    below  are designed to    be set
+directly.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elementary functions on rewriting systems}
+\index{rewriting systems!elementary functions}
+'IsRWS(<rws>)'
+\index{IsRWS!}
+
+Returns true if <rws> is a rewriting system.
+
+'IsConfluentRWS(<rws>)'
+\index{IsConfluentRWS!}
+
+Returns true if <rws> is a rewriting system that is known
+to be confluent.
+
+'IsAvailableNormalForm(<rws>)'
+\index{IsAvailableNormalForm!}
+
+Returns true if <rws> is a rewriting  system with an associated normal
+form.  When  this is    the  case, the  word-reduction,  counting  and
+enumeration functions  may be applied to  <rws> and are  guaranteed to
+give the correct answer.
+
+The normal  form  can  only be  created  by  applying one of   the two
+functions 'KB' or 'Automata' to <rws>.
+
+'IsAvailableReductionRWS(<rws>)'
+\index{IsAvailableReductionRWS!}
+
+Returns true  if <rws> is a  rewriting system for  which words  can be
+reduced.  When this   is the case,  the  word-reduction,  counting and
+enumeration functions may be applied  to <rws>, but are NOT guaranteed
+to give the correct answer.
+
+The result of 'ReduceWordRWS' will always  be equal to its argument in
+the underlying group of <rws>,  but it may not  be the correct  normal
+form.  The counting and enumeration algorithms may return answers that
+are too large (never too small).  This  situation results when 'KB' is
+run and exits,   for  some reason,  with  a   non-confluent  system of
+equations.
+
+'ResetRWS(<rws>)'
+\index{ResetRWS!}
+
+This function resets the rewriting system <rws> back to its form as it
+was before the application of 'KB' or 'Automata'. However, the current
+ordering  and values  of control  parameters  will not be changed. The
+normal form and  reduction algorithms will  be unavailable after  this
+call.
+
+
+'AddOriginalEqnsRWS(<rws>)'
+\index{AddOriginalEqnsRWS!}
+
+Occasionally, as a result  of a call of  'KB' on the rewriting  system
+<rws>, some   rewriting   rules can be  lost,   which  means  that the
+underlying  group of  <rws>   is changed.  This function  appends  the
+original defining relations of  the   group to the  rewriting  system,
+which ensures  that the underlying group  is made correct again. It is
+advisable  to call this function  in between two  calls of 'KB' on the
+same rewriting system.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Setting the ordering}
+\index{rewriting systems!setting the ordering}
+'SetOrderingRWS(<rws>, <ordering> [,<list>])'\\
+\index{SetOrderingRWS!}
+'ReorderGeneratorsRWS(<rws>, <p>)'
+\index{ReorderGeneratorsRWS!}
+
+'SetOrderingRWS' changes  the ordering on  the  words of the rewriting
+system  <rws>  to   <ordering>, which must  be  one    of the  strings
+``shortlex\",    ``recursive\", {``wtlex\"}  and  ``wreathprod\".  The
+default is ``shortlex\", and this is the ordering of rewriting systems
+returned  by    'FpGroupToRWS'.   The   orderings    {``wtlex\"}   and
+{``wreathprod\"} require the third parameter, <list>,  which must be a
+list  of  non-negative integers  in   one-one correspondence  with the
+generators of <rws>,   in the order  that they  are displayed   in the
+'generatorOrder'  field. They have  the effect of attaching weights or
+levels to the generators, in the cases {``wtlex\"} and ``wreathprod\",
+respectively.
+
+Each  of these orderings depends on  the order of  the generators, The
+current ordering of generators is displayed under the 'generatorOrder'
+field  when <rws> is  printed.  This ordering can   be changed  by the
+function  'ReorderGeneratorsRWS'.  The  second  parameter <p> to  this
+function should be a permutation that moves at most <ng> points, where
+<ng> is  the number of generators.  This permutation is applied to the
+current list of generators.
+
+In the {``shortlex\"} ordering, shorter words come before longer ones,
+and,  for words  of  equal length, the  lexicographically smaller word
+comes   first, using the   ordering   of generators  specified by  the
+'generatorOrder' field.  The   {``wtlex\"}  ordering is similar,   but
+instead of  using the length  of the word  as the first criterion, the
+total weight of the word  is used; this  is defined as  the sum of the
+weights of   the generators  in  the word.   So {``shortlex\"} is  the
+special   case of {``wtlex\"} in which   all  generators have the same
+nonzero weight.
+
+The {``recursive\"} ordering is  the special case  of {``wreathprod\"}
+in which the levels of the <ng> generators are $1,  2, \ldots, ng$, in
+the order defined by the 'generatorOrder' field.  We shall not attempt
+to give  a complete definition of  these orderings here, but refer the
+reader instead to pages  46--50 of \cite{Sims94}.  The {``recursive\"}
+ordering is the one appropriate  for a power-conjugate presentation of
+a  polycyclic  group, but  where   the generators are  ordered  in the
+reverse  order from the usual  convention  for polycyclic groups.  The
+confluent  presentation will then  be the  same as the power-conjugate
+presentation.  For example,  for the  Heisenberg  group $\langle x,y,z
+\hspace{1mm} \| \hspace{1mm}  [x,z]=[y,z]=1,  [y,x]=z \rangle  $,   a
+good   ordering  is {``recursive\"}  with    the  order of  generators
+$[z^{-1},z,y^{-1},y,x^{-1},x]$.   This    example is     included   in
+"Examples" below.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Control parameters}
+\index{rewriting systems!control parameters}
+The Knuth-Bendix procedure is unusually sensitive to the settings of a
+number of parameters  that control its  operation. In some examples, a
+small change  in   one of  these  parameters can  mean the  difference
+between  obtaining a confluent  rewriting system fairly quickly on the
+one hand, and  the  procedure running  on until it  uses all available
+memory on the other hand.
+
+Unfortunately, it is   almost  impossible to  give even  very  general
+guidelines   on these   settings,  although the    {``wreathproduct\"}
+orderings appear to  be  more sensitive  than the {``shortlex\"}   and
+{``wtlex\"} orderings.  The user  can  only acquire a  feeling for the
+influence of these parameters by  experimentation on a large number of
+examples.
+
+The control  parameters are defined  by the user  by setting values of
+certain fields of a rewriting system <rws> directly. These fields will
+now be listed.
+
+'<rws>.maxeqns': \\ 
+        A positive integer specifying  the maximum number of rewriting
+	rules allowed in <rws>.  The  default is 32767. If this number
+	is exceeded, then 'KB' or 'Automata' will abort.
+
+'<rws>.tidyint': \\
+	A positive integer,  100 by default.  During the  Knuth-Bendix
+	procedure, the search for overlaps is interrupted periodically
+	to tidy up the existing system  by removing and/or simplifying
+	rewriting rules  that have become  redundant. This  tidying is
+	done  after    finding '<rws>.tidyint' rules    since the last
+	tidying.
+
+'<rws>.confnum': \\
+	A  positive integer, 500    by  default.  If   '<rws>.confnum'
+	overlaps are processed  in  the Knuth-Bendix procedure  but no
+	new rules  are  found, then  a  fast test  for confluence   is
+	carried out. This saves a lot of time  if the system really is
+	confluent, but usually wastes time if it is not.
+
+'<rws>.maxstoredlen': \\
+        This    is a list   of  two   positive integers, <maxlhs>  and
+	<maxrhs>; the  default is that both  are infinite.  Only those
+	rewriting rules for  which the  left hand  side has  length at
+	most   <maxlhs>  and the right hand    side has length at most
+	<maxrhs> are stored;  longer   rules are  discarded. In   some
+	examples it  is essential to   impose such limits in order  to
+	obtain  a  confluent  rewriting   system. Of  course, if   the
+	Knuth-Bendix procedure  halts with  such limits imposed,  then
+	the    resulting system need   not be  confluent. However, the
+	confluence can  then be  tested be  re-running 'KB'  with  the
+	limits removed.  (To remove the  limits, unbind the field.) It
+	is  advisable  to  call 'AddOriginalEqnsRWS'  on  <rws> before
+	re-running 'KB'.
+
+'<rws>.maxoverlaplen': \\
+	This  is an  integer, which  is  infinite by default (when not
+	set).      Only      those    overlaps     of   total   length
+	'<rws>.maxoverlaplen'  are processed. Similar remarks apply to
+	those for 'maxstoredlen'.
+
+'<rws>.sorteqns': \\
+	This should be true or false, and false  is the default.  When
+	it is  true,   the rewriting  rules  are output  in order   of
+	increasing length  of left  hand  side.  (The  default is that
+	they are output in the order that they were found).
+
+'<rws>.maxoplen': \\
+	This is an  integer, which is  infinite  by default (when  not
+	set).  When it is set, the rewriting rules are output in order
+	of increasing length of left hand side (as if '<rws>.sorteqns'
+	were true), and only  those  rules having  left hand sides  of
+	length up to     '<rws>.maxoplen' are output   at all.  Again,
+	similar remarks apply to those for 'maxstoredlen'.
+
+'<rws>.maxreducelen': \\
+	A positive integer,  32767  by default.  This is  the  maximum
+	length that a word is   allowed to have during the   reduction
+	process.  It is  only likely to  be   exceeded when using  the
+	{``wreathproduct\"} or {``recursive\"} ordering.
+
+'<rws>.silent', '<rws>.verbose', '<rws>.veryVerbose': \\
+	These should be true  or false, and  are false by default.  It
+	only makes sense to set one of them to  be true.  They control
+	the  amount of diagnostic  output that is  printed by 'KB' and
+	'Automata'. By default there is a small amount of such output.
+
+'<rws>.maxstates', '<rws>.maxwdiffs': \\
+	These are positive integers, controlling the maximum number of
+	states of the word-reduction  automaton used by 'KB',  and the
+	maximum  number   of  word-differences allowed   when  running
+	'Automata', respectively. These numbers are normally increased
+	automatically   when required, so it   unusual to  want to set
+	these  flags. They can   be set when  either  it is desired to
+	limit these parameters   (and  prevent them   being  increased
+	automatically), or (as   occasionally happens), the number  of
+	word-differences increases too rapidly for the program to cope
+	-   when this happens, the  run  is usually  doomed to failure
+	anyway.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Knuth-Bendix program}
+\index{Knuth-Bendix}
+'KB(<rws>)'
+\index{KB!}
+
+Run the external Knuth-Bendix program  on the rewriting system  <rws>.
+'KB'  returns  true  if it  finds   a  confluent rewriting system  and
+otherwise false. In either case,  if it halts  normally, then it  will
+update <rws> by changing the 'equations'  field, which contains a list
+of   the rewriting rules, and by   appending a  finite state automaton
+'<rws>.reductionFSA' that  can be  used for  word reduction,  and  the
+counting and enumeration of irreducible words.
+
+All control parameters (as defined in the preceding section) should be
+set  before calling 'KB'. In the  author\'s experience,  it is usually
+most helpful to run 'KB' with the verbose flag '<rws>.verbose' set, in
+order   to follow what  is happening.   'KB'  will halt either when it
+finds a finite confluent system of rewriting rules, or when one of the
+control parameters (such as '<rws>.maxeqns') requires it to stop.  The
+program can also  be made to halt and  output manually at any time  by
+hitting the interrupt key (normally <ctr>-'C') once. (Hitting it twice
+has   unpredictable   consequences, since  {\GAP}    may intercept the
+signal.)
+	
+If 'KB' halts without finding a confluent system, but still manages to
+output the current system and update <rws>, then it is possible to use
+the  resulting   rewriting system  to  reduce  words,  and  count  and
+enumerate   the irreducible words; it  cannot   be guaranteed that the
+irreducible words are all in normal form, however. It is also possible
+to re-run 'KB'  on the current system,  usually after altering some of
+the control parameters. In fact, is some more difficult examples, this
+seems to be the only means of finding a finite confluent system.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The automatic groups program}
+\index{automatic groups program}
+'Automata(<rws>, [<large>], [<filestore>], [<diff1>])'
+\index{Automata!}
+
+Run  the  external automatic groups  program  on  the rewriting system
+<rws>.  'Autgroup' returns true if successful and false otherwise.  If
+successful, it appends two   finite state automata  '<rws>.diff1c' and
+'<rws>.wa'  to   <rws>. The  first    of  these    can  be used    for
+word-reduction, and   the   second for counting     and enumeration of
+irreducible words (i.e. words in normal  form). In fact, the second is
+the word-acceptor of the automatic structure. (The multiplier automata
+of  the  automatic structure  are not  currently saved when  using the
+{\GAP} interface. To access these, the user should either use {\KBMAG}
+as a stand-alone, or complain to the author.)
+
+The three optional parameters to 'Automata' are all boolean, and false
+by  default.  Setting  <large>  true results in   some of  the control
+parameters (such as  '<rws>.maxeqns'  and '<rws>.tidyint') being   set
+larger than they would be   otherwise. This is necessary for  examples
+that require a large amount of space. Setting <filestore> true results
+in more  use being made  of temporary files  than would  be otherwise.
+This makes the program run slower, but it may be  necessary if you are
+short of  core memory. Setting <diff1> to  be true is a more technical
+option, which is  explained more fully   in the documentation for  the
+stand-alone {\KBMAG} package. It is not  usually necessary or helpful,
+but it enables  one or two  examples to complete  that would otherwise
+run out of space.
+
+The ordering field of <rws> must  currently be equal to {``shortlex\"}
+for 'Automata' to be applicable. The control parameters for <rws> that
+are likely to be relevant are 'maxeqns' and 'maxwdiffs'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Word reduction}
+\index{word reduction}
+'IsReducedWordRWS(<rws>,<w>)'
+\index{IsReducedWordRWS!}
+
+Test  whether the word <w> in  the generators of  the rewriting system
+<rws> (or, equivalently, in the generators  of the underlying group of
+<rws>) is reduced or not, and return true or false.
+
+'IsReducedWordRWS' can only be used after 'KB'  or 'Automata' has been
+run successfully on <rws>. In the former  case, if 'KB' halted without
+a  confluent set of rules, then  irreducible words are not necessarily
+in  normal form (but  reducible  words are  definitely  not in  normal
+form).    If  'KB' completes with    a  confluent rewriting system  or
+'Automata' completes  successfully, then  it   is guaranteed that  all
+irreducible words are in normal form.
+
+\vspace{5mm}
+'ReduceWordRWS(<rws>,<w>)'
+\index{ReduceWordRWS!}
+
+Reduce the word  <w> in the generators of  the rewriting system  <rws>
+(or, equivalently, in the    generators  of the underlying   group  of
+<rws>), and return the result.
+
+'ReduceWordRWS' can only be used after 'KB' or 'Automata' has been run
+successfully on <rws>.  In the former case, if  'KB' halted without  a
+confluent  set of  rules, then the   irreducible word returned is  not
+necessarily in  normal   form.  If 'KB'  completes   with  a confluent
+rewriting  system or  'Automata'  completes  successfully, then it  is
+guaranteed that all irreducible words are in normal form.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Counting and enumerating irreducible words}
+\index{counting and enumerating irreducible words}
+'SizeRWS(<rws>)'
+\index{SizeRWS!}
+
+Returns the number of irreducible words in the rewriting system <rws>.
+If this is infinite, then the string {``infinite\"} is returned.
+
+'SizeRWS'   can only be  used  after 'KB'  or  'Automata' has been run
+successfully  on <rws>. In  the former case, if  'KB' halted without a
+confluent  set of rules, then the  number of  irreducible words may be
+greater than the number of words in normal form (which is equal to the
+order  of the underlying group  of  <rws>).  If 'KB'  completes with a
+confluent rewriting system  or 'Automata' completes successfully, then
+it is  guaranteed that 'SizeRWS' will  return the correct order of the
+underlying group.
+
+\vspace{5mm}
+'EnumerateRWS(<rws>, <min>, <max>)'
+\index{EnumerateRWS!}
+
+Enumerate  all  irreducible words in  the  rewriting system <rws> that
+have   lengths between <min> and <max>    (inclusive), which should be
+non-negative integers.    The result is returned  as  a list of words.
+The enumeration is by depth-first search  of a finite state automaton,
+and so  the words in the  list returned  are ordered lexicographically
+(not by shortlex).
+
+'EnumerateRWS' can only be used after 'KB'  or 'Automata' has been run
+successfully on <rws>. In  the former case,  if 'KB' halted  without a
+confluent set of  rules, then not all irreducible   words in the  list
+returned will necessarily be in normal form.  If 'KB' completes with a
+confluent rewriting  system or 'Automata' completes successfully, then
+it is guaranteed that all words in the list will be in normal form.
+
+\vspace{5mm}
+'SortEnumerateRWS(<rws>, <min>, <max>)'
+\index{SortEnumerateRWS!}
+
+This is the same as 'EnumerateRWS' but the  list returned contains the
+words in shortlex order; so shorter words  come before longer ones. It
+is slightly slower than 'EnumerateRWS'.
+
+\vspace{5mm}
+'SizeEnumerateRWS(<rws>, <min>, <max>)'
+\index{SizeEnumerateRWS!}
+
+This   returns the length   of  the list   that  would be returned  by
+'EnumerateRWS(<rws>,  <min>,   <max>)';    that is,  the    number  of
+irreducible words of <rws>  that have lengths  between <min> and <max>
+inclusive. It is faster than 'EnumerateRWS', since it does not need to
+store the words enumerated.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rewriting System Examples}
+\index{rewriting systems!examples}
+'Example 1'
+
+We start with a easy example - the alternating group $A_4$.
+|
+    gap> G:=FreeGroup("a","b");;
+    gap> a:=G.1;; b:=G.2;;
+    gap> G.relators:=[a^2, b^3, (a*b)^3];;
+    gap> R:=FpGroupToRWS(G);
+    rec(
+               isRWS := true,
+      generatorOrder := [a,b,b^-1],
+            inverses := [a,b^-1,b],
+            ordering := "shortlex",
+           equations := [
+             [b^2,b^-1],
+             [a*b*a,b^-1*a*b^-1]
+           ]
+    )
+    gap> KB(R);
+    #System is confluent.
+    #Halting with 11 equations.
+    true
+    gap> R;
+    rec(
+               isRWS := true,
+         isConfluent := true,
+      generatorOrder := [a,b,b^-1],
+            inverses := [a,b^-1,b],
+            ordering := "shortlex",
+           equations := [
+             [a^2,IdWord],
+             [b*b^-1,IdWord],
+             [b^-1*b,IdWord],
+             [b^2,b^-1],
+             [b^-1*a*b^-1,a*b*a],
+             [b^-2,b],
+             [b*a*b,a*b^-1*a],
+             [b^-1*a*b*a,b*a*b^-1],
+             [a*b*a*b^-1,b^-1*a*b],
+             [b*a*b^-1*a,b^-1*a*b],
+             [a*b^-1*a*b,b*a*b^-1]
+           ]
+    )
+    #The 'equations' field of <R> is now a complete system of rewriting rules
+    gap> SizeRWS(R);
+    12
+    gap> SortEnumerateRWS(R,0,12);
+    [ IdWord, a, b, b^-1, a*b, a*b^-1, b*a, b^-1*a, a*b*a, a*b^-1*a,
+      b*a*b^-1, b^-1*a*b ]
+    #We have enumerated all of the elements of the group
+|
+'Example 2'
+
+The Heisenberg group  - that is,  the free 2-generator nilpotent group
+of class 2.   For  this to complete,  we   need to use   the recursive
+ordering, and reverse our initial order of generators. (Alternatively,
+we  could avoid this reversal,  by using a wreathproduct ordering, and
+setting the levels of the generators to be 6,5,4,3,2,1.)
+|
+    gap> G:=FreeGroup("x","y","z");;
+    gap> x:=G.1;; y:=G.2;; z:=G.3;;
+    gap> G.relators:=[Comm(y,x)*z^-1, Comm(z,x), Comm(z,y)];;
+    gap> R:=FpGroupToRWS(G);
+    rec(
+               isRWS := true,
+      generatorOrder := [x,x^-1,y,y^-1,z,z^-1],
+            inverses := [x^-1,x,y^-1,y,z^-1,z],
+            ordering := "shortlex",
+           equations := [
+             [y^-1*x^-1*y,z*x^-1],
+             [z^-1*x^-1,x^-1*z^-1],
+             [z^-1*y^-1,y^-1*z^-1]
+           ]
+    )
+    gap> SetOrderingRWS(R,"recursive");
+    gap> ReorderGeneratorsRWS(R,(1,6)(2,5)(3,4));
+    gap> R;
+    rec(
+               isRWS := true,
+      generatorOrder := [z^-1,z,y^-1,y,x^-1,x],
+            inverses := [z,z^-1,y,y^-1,x,x^-1],
+            ordering := "recursive",
+           equations := [
+             [y^-1*x^-1*y,z*x^-1],
+             [z^-1*x^-1,x^-1*z^-1],
+             [z^-1*y^-1,y^-1*z^-1]
+           ]
+    )
+    gap> KB(R);
+    #System is confluent.
+    #Halting with 18 equations.
+    true
+    gap> R;
+    rec(
+               isRWS := true,
+         isConfluent := true,
+      generatorOrder := [z^-1,z,y^-1,y,x^-1,x],
+            inverses := [z,z^-1,y,y^-1,x,x^-1],
+            ordering := "recursive",
+           equations := [
+             [z^-1*z,IdWord],
+             [z*z^-1,IdWord],
+             [y^-1*y,IdWord],
+             [y*y^-1,IdWord],
+             [x^-1*x,IdWord],
+             [x*x^-1,IdWord],
+             [z^-1*x^-1,x^-1*z^-1],
+             [z^-1*y^-1,y^-1*z^-1],
+             [y^-1*x^-1,x^-1*y^-1*z],
+             [z*x^-1,x^-1*z],
+             [z^-1*x,x*z^-1],
+             [z*y^-1,y^-1*z],
+             [z^-1*y,y*z^-1],
+             [y*x,x*y*z],
+             [y^-1*x,x*y^-1*z^-1],
+             [y*x^-1,x^-1*y*z^-1],
+             [z*x,x*z],
+             [z*y,y*z]
+           ]
+    )
+    gap> SizeRWS(R);
+    "infinity"
+    gap> IsReducedWordRWS(R,z*y*x);
+    false
+    gap> ReduceWordRWS(R,z*y*x);
+    x*y*z^2
+    gap> IsReducedWordRWS(R,x*y*z^2);
+    true
+|
+'Example 3'
+
+This is an  example of the use  of the Knuth-Bendix algorithm to prove
+the nilpotence of a  finitely presented group.  (The method is due  to
+Sims, and is described in Chapter 11.8 of \cite{Sims94}.) This example
+is of intermediate difficulty, and demonstrates the necessity of using
+the 'maxstoredlen' control parameter.
+
+The group  is   $$  \langle a,b   \hspace{1mm}\|  \hspace{1mm}[b,a,b],
+[b,a,a,a,a],  [b,a,a,a,b,a,a] \rangle $$ with left-normed commutators.
+The first step  in the  method is to   check that there is  a  maximal
+nilpotent quotient of the group, for which we  could use, for example,
+the {\GAP}   'NilpotentQuotient'   command, from   the  shared-library
+``nq\".  We find that  there is a  maximal  such quotient, and it  has
+class 7, and the  layers going down  the lower central series have the
+abelian structures [0,0], [0], [0], [0], [0], [2], [2].
+
+By  using the  stand-alone  'C'   nilpotent  quotient program,  it  is
+possible to  find  a  power-commutator  presentation of  this  maximal
+quotient.  We now construct  a new presentation of  the same group, by
+introducing  the  generators  in  this  power-commutator presentation,
+together with  their definitions as powers  or commutators  of earlier
+generators.  It is this new presentation that  we use as input for the
+Knuth-Bendix program.  Again we  use the recursive ordering, but  this
+time we will  be careful to  introduce the  generators  in the correct
+order in the first place!
+|
+    gap> G:=FreeGroup("h","g","f","e","d","c","b","a");;
+    gap> h:=G.1;;g:=G.2;;f:=G.3;;e:=G.4;;d:=G.5;;c:=G.6;;b:=G.7;;a:=G.8;;
+    gap> G.relators:=[Comm(b,a)*c^-1, Comm(c,a)*d^-1, Comm(d,a)*e^-1,
+    > Comm(e,b)*f^-1, Comm(f,a)*g^-1, Comm(g,b)*h^-1,
+    > Comm(g,a), Comm(c,b), Comm(e,a)];;
+    gap> R:=FpGroupToRWS(G);                     
+    rec(
+               isRWS := true,
+      generatorOrder := [h,h^-1,g,g^-1,f,f^-1,e,e^-1,d,d^-1,c,c^-1,
+                                                       b,b^-1,a,a^-1],
+            inverses := [h^-1,h,g^-1,g,f^-1,f,e^-1,e,d^-1,d,c^-1,c,
+                                                       b^-1,b,a^-1,a],
+            ordering := "shortlex",
+           equations := [
+             [b^-1*a^-1*b,c*a^-1],
+             [c^-1*a^-1*c,d*a^-1],
+             [d^-1*a^-1*d,e*a^-1],
+             [e^-1*b^-1*e,f*b^-1],
+             [f^-1*a^-1*f,g*a^-1],
+             [g^-1*b^-1*g,h*b^-1],
+             [g^-1*a^-1,a^-1*g^-1],
+             [c^-1*b^-1,b^-1*c^-1],
+             [e^-1*a^-1,a^-1*e^-1]
+           ]
+    )
+    gap> SetOrderingRWS(R,"recursive");
+|
+A little experimentation reveals   that this example works  best  when
+only those equations with left and right hand sides of lengths at most
+10 are kept.
+|
+    gap> R.maxstoredlen:=[10,10];;
+    gap> R.verbose:=true;;
+    gap> KB(R);
+      #60 eqns; total len\:\hspace{2mm}lhs, rhs = 129, 143; 25 states; 0 secs.
+      #68 eqns; total len\:\hspace{2mm}lhs, rhs = 364, 326; 28 states; 0 secs.
+      #77 eqns; total len\:\hspace{2mm}lhs, rhs = 918, 486; 45 states; 0 secs.
+      #91 eqns; total len\:\hspace{2mm}lhs, rhs = 728, 683; 58 states; 0 secs.
+      #102 eqns; total len\:\hspace{2mm}lhs, rhs = 1385, 1479; 89 states; 0 secs.
+      . . . .
+      #310 eqns; total len\:\hspace{2mm}lhs, rhs = 4095, 4313; 489 states; 1 secs.
+      #200 eqns; total len\:\hspace{2mm}lhs, rhs = 2214, 2433; 292 states; 1 secs.
+      #194 eqns; total len\:\hspace{2mm}lhs, rhs = 835, 922; 204 states; 1 secs.
+      #157 eqns; total len\:\hspace{2mm}lhs, rhs = 702, 723; 126 states; 1 secs.
+      #151 eqns; total len\:\hspace{2mm}lhs, rhs = 553, 444; 107 states; 1 secs.
+      #101 eqns; total len\:\hspace{2mm}lhs, rhs = 204, 236; 19 states; 1 secs.
+      #No new eqns for some time - testing for confluence
+      #System is not confluent.
+      #172 eqns; total len\:\hspace{2mm}lhs, rhs = 616, 473; 156 states; 1 secs.
+      #171 eqns; total len\:\hspace{2mm}lhs, rhs = 606, 472; 156 states; 1 secs.
+      #No new eqns for some time - testing for confluence
+      #System is not confluent.
+      #151 eqns; total len\:\hspace{2mm}lhs, rhs = 452, 453; 92 states; 1 secs.
+      #151 eqns; total len\:\hspace{2mm}lhs, rhs = 452, 453; 92 states; 1 secs.
+      #No new eqns for some time - testing for confluence
+      #System is not confluent.
+      #101 eqns; total len\:\hspace{2mm}lhs, rhs = 200, 239; 15 states; 1 secs.
+      #101 eqns; total len\:\hspace{2mm}lhs, rhs = 200, 239; 15 states; 1 secs.
+      #No new eqns for some time - testing for confluence
+    #System is confluent.
+    #Halting with 101 equations.
+    WARNING: The monoid defined by the presentation may have changed,
+             since equations have been discarded.
+             If you re-run, include the original equations.
+    true
+    #We re-run with the 'maxstoredlen' limit removed and the original
+    #equations added, to check that the system really is confluent.
+    gap> Unbind(R.maxstoredlen);
+    gap> AddOriginalEqnsRWS(R);
+    gap> KB(R);
+      #101 eqns; total len\:\hspace{2mm}lhs, rhs = 200, 239; 15 states; 0 secs.
+      #No new eqns for some time - testing for confluence
+    #System is confluent.
+    #Halting with 101 equations.
+    true
+    #In fact, in this case, we did have a confluent set already.
+|
+Inspection  of the confluent  set now  reveals it   to be  precisely a
+power-commutator presentation  of  a nilpotent  group,  and so we have
+proved that the group we started with really is nilpotent.  Of course,
+this means also that it is equal to its largest nilpotent quotient, of
+which we already know the structure.
+
+'Example 4'
+
+Our final example illustrates the use of the 'Automata' command, which
+runs  the   automatic groups  programs.    The  group  has  a balanced
+symmetrical presentation with 3   generators and 3 relators,  and  was
+originally proposed  by  Heineken as a  possible  example of a  finite
+group with such a presentation. In fact, the 'Automata' command proves
+it to be infinite.
+
+This  example is of intermediate difficulty,  but there is  no need to
+use any special options.  It takes  about 20 minutes to  run on a fast
+WorkStation.
+
+We will not attempt to explain  all of the  output in detail here; the
+interested user should  consult the documentation  for the stand-alone
+{\KBMAG}  package. Roughly speaking,  it  first runs the  Knuth-Bendix
+program, which does not halt with a confluent rewriting system, but is
+used instead to construct a   word-difference finite state  automaton.
+This  in  turn is used  to construct  the word-acceptor and multiplier
+automata for the  group.    Sometimes the initial   constructions  are
+incorrect, and  part of the  procedure consists in checking  for this,
+and making corrections. In fact, in this example, the correct automata
+are considerably  smaller than the  ones first constructed.  The final
+stage is to run   an axiom-checking program, which  essentially checks
+that the  automata  satisfy  the  group relations.  If this  completes
+successfully,  then the correctness of   the automata has been proved,
+and they can be used for correct word-reduction and enumeration in the
+group.
+|
+    gap> G:=FreeGroup("a","b","c");;
+    gap> a:=G.1;;b:=G.2;;c:=G.3;;
+    gap> G.relators:=[Comm(a,Comm(a,b))*c^-1, Comm(b,Comm(b,c))*a^-1,
+    >                 Comm(c,Comm(c,a))*b^-1];
+    [ a^-1*b^-1*a^-1*b*a*b^-1*a*b*c^-1, b^-1*c^-1*b^-1*c*b*c^-1*b*c*a^-1, 
+      c^-1*a^-1*c^-1*a*c*a^-1*c*a*b^-1 ]
+    gap> R:=FpGroupToRWS(G);
+    rec(
+               isRWS := true,
+      generatorOrder := [a,a^-1,b,b^-1,c,c^-1],
+            inverses := [a^-1,a,b^-1,b,c^-1,c],
+            ordering := "shortlex",
+           equations := [
+             [a^-1*b^-1*a^-1*b*a,c*b^-1*a^-1*b],
+             [b^-1*c^-1*b^-1*c*b,a*c^-1*b^-1*c],
+             [c^-1*a^-1*c^-1*a*c,b*a^-1*c^-1*a]
+           ]
+    )
+    gap> Automata(R);
+    #Running Knuth-Bendix Program:
+    #Maximum number of equations exceeded.
+    #Halting with 200 equations.
+    #First word-difference machine with 161 states computed.
+    #Second word-difference machine with 175 states computed.
+    #Re-running Knuth-Bendix Program
+    #Halting with 7672 equations.
+    #First word-difference machine with 259 states computed.
+    #Second word-difference machine with 269 states computed.
+    #System is confluent, or halting factor condition holds.
+    #Running program to construct word-acceptor and multiplier automata
+    #Word-acceptor with 5488 states computed.
+    #General multiplier with 6806 states computed.
+    #Multiplier incorrect with generator number 2.
+    #Equation found between two words accepted by word-acceptor.
+    #Word-acceptor with 1106 states computed.
+    #General multiplier with 2428 states computed.
+    #Validity test on general multiplier succeeded.
+    #Running program to verify axioms on the automatic structure
+    #General length-2 multiplier with 2820 states computed.
+    #Checking inverse and short relations.
+    #Checking relation\:\hspace{2mm}'a\^-1\*b\^-1\*a\^-1\*b\*a = c\*b\^-1\*a\^-1\*b'
+    #Checking relation\:\hspace{2mm}'b\^-1\*c\^-1\*b\^-1\*c\*b = a\*c\^-1\*b\^-1\*c'
+    #Checking relation\:\hspace{2mm}'c\^-1\*a\^-1\*c\^-1\*a\*c = b\*a\^-1\*c\^-1\*a'
+    #Axiom checking succeeded.
+    #Minimal reducible word acceptor with 1058 states computed.
+    #Minimal Knuth-Bendix equation fsa with 1891 states computed.
+    #Minimal diff1 fsa with 271 states computed.
+    true
+    gap> SizeRWS(R);
+    "infinity"
+|
+We  have proved  that the group   is  infinite, but  it  would also be
+interesting  to know  whether   the  group  generators have   infinite
+order.    This  can often be   shown   by inspecting the word-acceptor
+automaton directly.
+
+The  {\GAP}  interface  to {\KBMAG}  includes a  number  of (currently
+undocumented)  functions for manipulating   finite state automata. The
+calculation below illustrates the use of one or  two of these. In this
+example, it turns out that  all powers of  the generators are accepted
+by  the word-acceptor automaton 'R.wa'.  The accepted language of this
+automaton  is precisely the set of  words in normal  form, and so this
+proves  that  each of   these   powers is  in   normal  form - so,  in
+particular, no such power is equal to the identity, and the generators
+have infinite order.
+
+The comments in the example below were added after the run.
+|
+    gap> IsFSA(R.wa);
+    true  #'R.wa' is a finite-state automaton.
+    gap> RecFields(R.wa);
+    [ "isFSA", "alphabet", "states", "flags", "initial",
+      "accepting", "table", "denseDTable", "operations",
+      "isInitializedFSA" ]
+    gap> R.wa.states.size;
+    1106	#The number of states of the automaton 'R.wa'
+    gap> R.wa.initial;
+    [ 1 ]   #The initial state of 'R.wa' is state number 1.
+    gap> R.wa.flags;
+    [ "BFS", "DFA", "accessible", "minimized", "trim" ]
+    #The 'flags' fields list properties that are known to be true in the
+    #automaton. For example, {``DFA\"} means that it is deterministic.
+    #The alphabet of the automaton is the set of integers $\{1, \ldots, 6 \}$,
+    #the integer $i$ in this set corresponds to the $i$-th generator of
+    #'R', as listed in 'R.generatorOrder'.
+    #To inspect transitions, we use the function 'TargetDFA'.
+    gap> TargetDFA(R.wa,1,1);
+    2   # The first generator, $a$, maps the initial state 1 to state 2.
+    gap> TargetDFA(R.wa,1,2);
+    8   #It maps state 2 to state 8 -
+    gap> TargetDFA(R.wa,1,8);
+    8   #and state 8 to itself.
+    gap> 8 in R.wa.accepting;
+    true
+|
+We now  know  that all powers  of  the first generator,  $a$,  map the
+initial state  of the  word-acceptor  to  an accepting   state,  which
+establishes our  claim that all powers of  $a$ are in  normal form. In
+fact, the same can be verified for all 6 generators.
+

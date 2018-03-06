@@ -1,0 +1,1755 @@
+<html><head><title>GAP3 Manual: 51 Characters</title></head>
+<body bgcolor="ffffff">
+<h1>51 Characters</h1>
+<P><P><P>
+The functions  described in this  chapter  are used to handle  characters
+(see Chapter <a href="chap049.htm">Character Tables</a>). For this,  in many cases one needs maps
+(see Chapter <a href="chap052.htm">Maps and Parametrized Maps</a>).
+<P>
+There are four kinds of functions:
+<P>
+First, those functions  which  get  informations about  characters;  they
+compute  the   scalar  product  of   characters   (see   <a href="chap051.htm#SECT001">ScalarProduct</a>,
+<a href="chap051.htm#SECT002">MatScalarProducts</a>), decomposition matrices    (see     <a href="chap051.htm#SECT003">Decomposition</a>,
+<a href="chap051.htm#SECT004">Subroutines  of  Decomposition</a>),   the kernel    of   a character  (see
+<a href="chap051.htm#SECT005">KernelChar</a>), <I>p</I>-blocks (see <a href="chap051.htm#SECT006">PrimeBlocks</a>), Frobenius-Schur indicators
+(see <a href="chap051.htm#SECT007">Indicator</a>), eigenvalues  of the corresponding representations (see
+<a href="chap051.htm#SECT008">Eigenvalues</a>), and Molien series of characters (see <a href="chap051.htm#SECT009">MolienSeries</a>), and
+decide if a  character might  be a  permutation character candidate  (see
+<a href="chap051.htm#SECT026">Permutation Character Candidates</a>).
+<P>
+Second, those functions which construct characters or virtual characters,
+that   is, differences  of   characters; these functions compute  reduced
+characters (see   <a href="chap051.htm#SECT010">Reduced</a>,  <a href="chap051.htm#SECT011">ReducedOrdinary</a>),  tensor  products  (see
+<a href="chap051.htm#SECT012">Tensored</a>), symmetrisations  (see   <a href="chap051.htm#SECT013">Symmetrisations</a>, <a href="chap051.htm#SECT014">SymmetricParts</a>,
+<a href="chap051.htm#SECT015">AntiSymmetricParts</a>,        <a href="chap051.htm#SECT016">MinusCharacter</a>,    <a href="chap051.htm#SECT017">OrthogonalComponents</a>,
+<a href="chap051.htm#SECT018">SymplecticComponents</a>), and    irreducibles   differences   of   virtual
+characters (see   <a href="chap051.htm#SECT019">IrreducibleDifferences</a>).   Further,  one can  compute
+restricted    characters  (see <a href="chap051.htm#SECT020">Restricted</a>),   inflated characters  (see
+<a href="chap051.htm#SECT021">Inflated</a>),  induced   characters (see <a href="chap051.htm#SECT022">Induced</a>,  <a href="chap051.htm#SECT023">InducedCyclic</a>), and
+permutation character candidates (see <a href="chap051.htm#SECT026">Permutation Character Candidates</a>,
+<a href="chap051.htm#SECT031">PermChars</a>).
+<P>
+Third, those functions which use general methods for lattices.  These are
+the LLL algorithm  to compute a lattice  base consisting of short vectors
+(see <a href="chap051.htm#SECT033">LLLReducedBasis</a>, <a href="chap051.htm#SECT034">LLLReducedGramMat</a>, <a href="chap051.htm#SECT035">LLL</a>), functions to compute
+all orthogonal embeddings of a  lattice (see <a href="chap051.htm#SECT036">OrthogonalEmbeddings</a>), and
+one for  the   special case   of <I>D<sub>n</sub></I> lattices     (see <a href="chap051.htm#SECT040">DnLattice</a>).  A
+backtrack search  for   irreducible  characters in  the  span  of  proper
+characters is performed by <a href="chap051.htm#SECT038">Extract</a>.
+<P>
+Finally, those functions   which  find special elements  of  parametrized
+characters (see <a href="chap052.htm#SECT001">More about  Maps and  Parametrized Maps</a>); they  compute
+the set of contained virtual characters (see <a href="chap051.htm#SECT041">ContainedDecomposables</a>) or
+characters (see   <a href="chap051.htm#SECT042">ContainedCharacters</a>),  the set of  contained  vectors
+which   possibly are  virtual  characters (see <a href="chap051.htm#SECT043">ContainedSpecialVectors</a>,
+<a href="chap051.htm#SECT045">ContainedPossibleVirtualCharacters</a>)      or     characters         (see
+<a href="chap051.htm#SECT044">ContainedPossibleCharacters</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap051.htm#SECT001">ScalarProduct</a>
+<LI> <A HREF="chap051.htm#SECT002">MatScalarProducts</a>
+<LI> <A HREF="chap051.htm#SECT003">Decomposition</a>
+<LI> <A HREF="chap051.htm#SECT004">Subroutines of Decomposition</a>
+<LI> <A HREF="chap051.htm#SECT005">KernelChar</a>
+<LI> <A HREF="chap051.htm#SECT006">PrimeBlocks</a>
+<LI> <A HREF="chap051.htm#SECT007">Indicator</a>
+<LI> <A HREF="chap051.htm#SECT008">Eigenvalues</a>
+<LI> <A HREF="chap051.htm#SECT009">MolienSeries</a>
+<LI> <A HREF="chap051.htm#SECT010">Reduced</a>
+<LI> <A HREF="chap051.htm#SECT011">ReducedOrdinary</a>
+<LI> <A HREF="chap051.htm#SECT012">Tensored</a>
+<LI> <A HREF="chap051.htm#SECT013">Symmetrisations</a>
+<LI> <A HREF="chap051.htm#SECT014">SymmetricParts</a>
+<LI> <A HREF="chap051.htm#SECT015">AntiSymmetricParts</a>
+<LI> <A HREF="chap051.htm#SECT016">MinusCharacter</a>
+<LI> <A HREF="chap051.htm#SECT017">OrthogonalComponents</a>
+<LI> <A HREF="chap051.htm#SECT018">SymplecticComponents</a>
+<LI> <A HREF="chap051.htm#SECT019">IrreducibleDifferences</a>
+<LI> <A HREF="chap051.htm#SECT020">Restricted</a>
+<LI> <A HREF="chap051.htm#SECT021">Inflated</a>
+<LI> <A HREF="chap051.htm#SECT022">Induced</a>
+<LI> <A HREF="chap051.htm#SECT023">InducedCyclic</a>
+<LI> <A HREF="chap051.htm#SECT024">CollapsedMat</a>
+<LI> <A HREF="chap051.htm#SECT025">Power</a>
+<LI> <A HREF="chap051.htm#SECT026">Permutation Character Candidates</a>
+<LI> <A HREF="chap051.htm#SECT027">IsPermChar</a>
+<LI> <A HREF="chap051.htm#SECT028">PermCharInfo</a>
+<LI> <A HREF="chap051.htm#SECT029">Inequalities</a>
+<LI> <A HREF="chap051.htm#SECT030">PermBounds</a>
+<LI> <A HREF="chap051.htm#SECT031">PermChars</a>
+<LI> <A HREF="chap051.htm#SECT032">Faithful Permutation Characters</a>
+<LI> <A HREF="chap051.htm#SECT033">LLLReducedBasis</a>
+<LI> <A HREF="chap051.htm#SECT034">LLLReducedGramMat</a>
+<LI> <A HREF="chap051.htm#SECT035">LLL</a>
+<LI> <A HREF="chap051.htm#SECT036">OrthogonalEmbeddings</a>
+<LI> <A HREF="chap051.htm#SECT037">ShortestVectors</a>
+<LI> <A HREF="chap051.htm#SECT038">Extract</a>
+<LI> <A HREF="chap051.htm#SECT039">Decreased</a>
+<LI> <A HREF="chap051.htm#SECT040">DnLattice</a>
+<LI> <A HREF="chap051.htm#SECT041">ContainedDecomposables</a>
+<LI> <A HREF="chap051.htm#SECT042">ContainedCharacters</a>
+<LI> <A HREF="chap051.htm#SECT043">ContainedSpecialVectors</a>
+<LI> <A HREF="chap051.htm#SECT044">ContainedPossibleCharacters</a>
+<LI> <A HREF="chap051.htm#SECT045">ContainedPossibleVirtualCharacters</a>
+</ol>
+<A NAME="SECT001"><h2>51.1 ScalarProduct</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>ScalarProduct( <var>tbl</var>, <var>character1</var>, <var>character2</var> )</code>
+<P>
+returns the scalar product  of <var>character1</var> and <var>character2</var>, regarded as
+characters of the character table <var>tbl</var>.
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> ScalarProduct( t, t.irreducibles[1], [ 5, 1, 2, 0, 0 ] );
+    1
+    gap> ScalarProduct( t, [ 4, 0, 1, -1, -1 ], [ 5, -1, 1, 0, 0 ] );
+    2/3</pre>
+<P><A NAME="SECT002"><h2>51.2 MatScalarProducts</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>MatScalarProducts( <var>tbl</var>, <var>chars1</var>, <var>chars2</var> )</code><BR> 
+<code>MatScalarProducts( <var>tbl</var>, <var>chars</var> )</code>
+<P>
+For   a character   table <var>tbl</var>   and   two lists  <var>chars1</var>, <var>chars2</var>  of
+characters, the first version returns the matrix  of scalar products (see
+<a href="chap051.htm#SECT001">ScalarProduct</a>); we have
+<P>
+<I><code>MatScalarProducts( <var>tbl</var>, <var>chars1</var>, <var>chars2</var> )[i][j]</code> =
+ <code>ScalarProduct( <var>tbl</var>, <var>chars1</var>[j], <var>chars2</var>[i] )</code></I>,
+<P>
+i.e., row  <code>i</code> contains the  scalar  products of  <code><var>chars2</var>[i]</code> with  all
+characters in <var>chars1</var>.
+<P>
+The second form returns a lower triangular matrix of scalar products:
+<P>
+<I><code>MatScalarProducts( <var>tbl</var>, <var>chars</var> )[i][j]</code> =
+ <code>ScalarProduct( <var>tbl</var>, <var>chars</var>[j], <var>chars</var>[i] )</code></I>
+<P>
+for <I><code>j</code>  &le; <code>i</code></I>.
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> chars:= Sublist( t.irreducibles, [ 2 .. 4 ] );;
+    gap> chars:= Set( Tensored( chars, chars ) );;
+    gap> MatScalarProducts( t, chars );
+    [ [ 2 ], [ 1, 3 ], [ 1, 2, 3 ], [ 2, 2, 1, 3 ], [ 2, 1, 2, 2, 3 ],
+      [ 2, 3, 3, 3, 3, 5 ] ]</pre>
+<P><A NAME="SECT003"><h2>51.3 Decomposition</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<A name = "I3"></a>
+
+<P>
+<code>Decomposition( <var>A</var>, <var>B</var>, <var>depth</var> )</code><BR> 
+<code>Decomposition( <var>A</var>, <var>B</var>, "nonnegative" )</code>
+<P>
+For  a <I>m &times;  n</I> matrix <var>A</var> of cyclotomics  that has rank <I>m  &le; n</I>,
+and     a  list <var>B</var>  of cyclotomic      vectors, each  of  dimension <I>n</I>,
+<code>Decomposition</code>  tries to  find  integral solutions   <var>x</var>  of  the linear
+equation systems <code><var>x</var> * <var>A</var> =  <var>B</var>[i]</code> by computing the <I>p</I>--adic series
+of hypothetical solutions.
+<P>
+<P>
+<code>Decomposition( <var>A</var>,  <var>B</var>,  <var>depth</var> )</code>, where   <var>depth</var> is a  nonnegative
+integer,   computes  for  every   vector   <code><var>B</var>[i]</code>   the  initial   part
+<I>&sum;<sub>k=0</sub><sup><var>depth</var></sup> x<sub>k</sub> p<sup>k</sup></I> (all <I>x<sub>k</sub></I>   integer vectors with  entries
+bounded   by <I>&plusmn;(p-1)/(2)</I>).  The   prime <I>p</I> is   83  first; if the
+reduction of <var>A</var>  modulo <I>p</I>   is singular, the   next  prime is   chosen
+automatically.
+<P>
+A list <var>X</var>  is  returned. If the  computed  initial  part really  <strong>is</strong>  a
+solution of  <code><var>x</var>  * <var>A</var> = <var>B</var>[i]</code>,   we have <code><var>X</var>[i]  = <var>x</var></code>, otherwise
+<code><var>X</var>[i] = false</code>.
+<P>
+<P>
+<code>Decomposition(  <var>A</var>, <var>B</var>, "nonnegative"  )</code> assumes that the solutions
+have only nonnegative entries, and that the first  column of <var>A</var> consists
+of positive integers.   In this  case   the necessary number <var>depth</var>   of
+iterations is computed; the <code>i</code>-th entry  of the returned list is <code>false</code>
+if there <strong>exists</strong> no nonnegative integral  solution of the system <code><var>x</var> *
+<var>A</var> = <var>B</var>[i]</code>, and it is the solution otherwise.
+<P>
+If <var>A</var> is singular, an error is signalled.
+<P>
+<pre>    gap> a5:= CharTable( "A5" );; a5m3:= CharTable( "A5mod3" );;
+    gap> a5m3.irreducibles;
+    [ [ 1, 1, 1, 1 ], [ 3, -1, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ],
+      [ 3, -1, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 4, 0, -1, -1 ] ]
+    gap> reg:= CharTableRegular( a5, 3 );;
+    gap> chars:= Restricted( a5, reg, a5.irreducibles );
+    [ [ 1, 1, 1, 1 ], [ 3, -1, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ],
+      [ 3, -1, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 4, 0, -1, -1 ],
+      [ 5, 1, 0, 0 ] ]
+    gap> Decomposition( a5m3.irreducibles, chars, "nonnegative" );
+    [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ],
+      [ 1, 0, 0, 1 ] ]
+    gap> last * a5m3.irreducibles = chars;
+    true</pre>
+<P>
+For   the  subroutines     of  <code>Decomposition</code>,   see  <a href="chap051.htm#SECT004">Subroutines    of
+Decomposition</a>.
+<P><A NAME="SECT004"><h2>51.4 Subroutines of Decomposition</h2></a>
+<P><P><P>
+Let <I>A</I> be a square integral matrix, <I>p</I> an  odd prime.  The reduction of
+<I>A</I> modulo <I>p</I> is <I><span style="text-decoration: overline">A</span></I>, its entries are  chosen in the interval
+<I>[-(p-1)/(2), (p-1)/(2)]</I>.  If <I><span style="text-decoration: overline">A</span></I> is regular over the
+field with <I>p</I> elements, we  can  form <I>A<sup>&prime;</sup> =  <span style="text-decoration: overline">A</span><sup>-1</sup></I>.
+Now consider the integral linear equation system <I>x A = b</I>, i.e., we look
+for an  integral solution <I>x</I>.  Define  <I>b<sub>0</sub>  = b</I>, and  then iteratively
+compute
+<P>
+<center><table><tr><td><I> x<sub>i</sub> = (b<sub>i</sub> A<sup>&prime;</sup>) </I> mod <I> p,  b<sub>i+1</sub> = 1/p (b<sub>i</sub> - x<sub>i</sub> A)
+   </i>\rm for<i> i = 0, 1, 2, ...  . </I></td></tr></table></center>
+<P>
+By induction, we get
+<P>
+<center><table><tr><td><I> p<sup>i+1</sup> b<sub>i+1</sub> + ( &sum;<sub>j=0</sub><sup>i</sup> p<sup>j</sup> x<sub>j</sub> ) A = b . </I></td></tr></table></center>
+<P>
+If there is an integral solution <I>x</I>, it is unique, and there is an index
+<I>l</I> such that <I>b<sub>l+1</sub></I> is zero and <I>x = &sum;<sub>j=0</sub><sup>l</sup> p<sup>j</sup> x<sub>j</sub></I>.
+<P>
+There are two useful generalizations.  First,  <I>A</I> need not be square; it
+is only necessary  that  there is a square   regular matrix formed   by a
+subset of columns.  Second, <I>A</I> does not need to be integral; the entries
+may be cyclotomic integers as well, in this case one  has to replace each
+column  of  <var>A</var>  by the columns  formed  by  the coefficients  (which are
+integers).  Note that this preprocessing must be performed compatibly for
+<var>A</var> and <var>b</var>.
+<P>
+And these are the subroutines called by <code>Decomposition</code>:
+<P>
+<P>
+<code>LinearIndependentColumns( <var>A</var> )</code>
+<A name = "I4"></a>
+
+<P>
+returns for a matrix <var>A</var> a maximal list <var>lic</var>  of positions such that the
+rank of <code>List( <var>A</var>, x -> Sublist( x,  <var>lic</var> ) )</code>  is the same as the rank
+of <var>A</var>.
+<P>
+<P>
+<code>InverseMatMod( <var>A</var>, <var>p</var> )</code>
+<A name = "I5"></a>
+
+<P>
+returns for a   square  integral matrix  <var>A</var>   and a prime  <var>p</var> a  matrix
+<I>A<sup>&prime;</sup></I> with the  property that <I>A<sup>&prime;</sup>  A</I> is  congruent to the
+identity matrix modulo <var>p</var>;  if <var>A</var> is  singular  modulo <var>p</var>,  <code>false</code> is
+returned.
+<P>
+<P>
+<code>PadicCoefficients( <var>A</var>, <var>Amodpinv</var>, <var>b</var>, <var>p</var>, <var>depth</var> )</code>
+<A name = "I6"></a>
+
+<P>
+returns the list <I>[ x<sub>0</sub>, x<sub>1</sub>, ..., x<sub>l</sub>, b<sub>l+1</sub> ]</I> where <I>l = <var>depth</var></I>
+or <I>l</I> is minimal with the property that <I>b<sub>l+1</sub> = 0</I>.
+<P>
+<P>
+<code>IntegralizedMat( <var>A</var> )</code>
+<A name = "I7"></a>
+<BR> 
+<code>IntegralizedMat( <var>A</var>, <var>inforec</var> )</code>
+<P>
+return for a matrix <var>A</var> of cyclotomics a  record <var>intmat</var> with components
+<code>mat</code> and <code>inforec</code>.  Each  family of galois  conjugate columns of <var>A</var> is
+encoded  in  a set of columns  of  the rational  matrix <code><var>intmat</var>.mat</code> by
+replacing  cyclotomics  by their coefficients.    <code><var>intmat</var>.inforec</code> is a
+record containing the information how to encode the columns.
+<P>
+If the only argument is <var>A</var>, the component <code>inforec</code> is computed that can
+be  entered as    second   argument <var>inforec</var>    in a   later    call  of
+<code>IntegralizedMat</code> with a matrix <var>B</var> that shall be encoded compatible with
+<var>A</var>.
+<P>
+<P>
+<code>DecompositionInt( <var>A</var>, <var>B</var>, <var>depth</var> )</code>
+<A name = "I8"></a>
+
+<P>
+does the   same as <code>Decomposition</code>  (see  <a href="chap051.htm#SECT003">Decomposition</a>),  but only for
+integral matrices <var>A</var>, <var>B</var>, and nonnegative integers <var>depth</var>.
+<P><A NAME="SECT005"><h2>51.5 KernelChar</h2></a>
+<P><P><P>
+<code>KernelChar( <var>char</var> )</code>
+<P>
+returns the set of classes which form the kernel of the character <var>char</var>,
+i.e. the set of positions <I>i</I> with <I>&lt;char&gt;[i] = <var>char</var>[1]</I>.
+<P>
+For a factor fusion map <var>fus</var>, <code>KernelChar( <var>fus</var> )</code> is the kernel of the
+epimorphism.
+<P>
+<pre>    gap> s4:= CharTable( "Symmetric", 4 );;
+    gap> s4.irreducibles;
+    [ [ 1, -1, 1, 1, -1 ], [ 3, -1, -1, 0, 1 ], [ 2, 0, 2, -1, 0 ],
+      [ 3, 1, -1, 0, -1 ], [ 1, 1, 1, 1, 1 ] ]
+    gap> List( last, KernelChar );
+    [ [ 1, 3, 4 ], [ 1 ], [ 1, 3 ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]</pre>
+<P><A NAME="SECT006"><h2>51.6 PrimeBlocks</h2></a>
+<P><P><P>
+<code>PrimeBlocks( <var>tbl</var>, <var>prime</var> )</code><BR> 
+<code>PrimeBlocks( <var>tbl</var>, <var>chars</var>, <var>prime</var> )</code>
+<P>
+For a  character table  <var>tbl</var> and a  prime <var>prime</var>,  <code>PrimeBlocks( <var>tbl</var>,
+<var>chars</var>, <var>prime</var> )</code> returns a record with fields
+<P>
+<DL><DT><code>block</code>:<DD><BR> 
+     a list of positive integers which has the same length as the list
+     <var>chars</var> of characters,
+     the entry <var>n</var> at position <var>i</var> in that list means that <code><var>chars</var>[<var>i</var>]</code>
+     belongs to the <var>n</var>-th <var>prime</var>-block
+</DL><P>
+<DL><DT><code>defect</code>:<DD><BR> 
+     a list of nonnegative integers, the value at position <var>i</var> is the
+     defect of the <var>i</var>--th block.
+</DL><P>
+<code>PrimeBlocks(   <var>tbl</var>,   <var>prime</var>  )</code>  does    the same  for    <code><var>chars</var> =
+<var>tbl</var>.irreducibles</code>, and  additionally  the  result  is stored    in  the
+<code>irredinfo</code> field of <var>tbl</var>.
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> PrimeBlocks( t, 2 ); PrimeBlocks( t, 3 ); PrimeBlocks( t, 5 );
+    rec(
+      block := [ 1, 1, 1, 2, 1 ],
+      defect := [ 2, 0 ] )
+    rec(
+      block := [ 1, 2, 3, 1, 1 ],
+      defect := [ 1, 0, 0 ] )
+    rec(
+      block := [ 1, 1, 1, 1, 2 ],
+      defect := [ 1, 0 ] )
+    gap> InverseMap( last.block ); # distribution of characters to blocks
+    [ [ 1, 2, 3, 4 ], 5 ]</pre>
+<P>
+If <code>InfoCharTable2 = Print</code>, the defects of the blocks and the heights of
+the contained characters are printed.
+<P><A NAME="SECT007"><h2>51.7 Indicator</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code>Indicator( <var>tbl</var>, <var>n</var> )</code><BR> 
+<code>Indicator( <var>tbl</var>, <var>chars</var>, <var>n</var> )</code><BR> 
+<code>Indicator( <var>modtbl</var>, 2 )</code>
+<P>
+For a character  table <var>tbl</var>, <code>Indicator(  <var>tbl</var>, <var>chars</var>, <var>n</var> )</code> returns
+the list of <var>n</var>-th  Frobenius  Schur indicators  for the list  <var>chars</var> of
+characters.
+<P>
+<code>Indicator(  <var>tbl</var>,  <var>n</var>    )</code>    does  the   same   for    <code><var>chars</var>    =
+<var>tbl</var>.irreducibles</code>, and additionally the result  is stored in the  field
+<code>irredinfo</code> of <var>tbl</var>.
+<P>
+<code>Indicator( <var>modtbl</var>, 2  )</code> returns the   list of 2nd  indicators for the
+irreducible characters of the Brauer  character table <var>modtbl</var> and stores
+the  indicators in the <code>irredinfo</code>  component of  <var>modtbl</var>; this does not
+work for tables in characteristic 2.
+<P>
+<pre>    gap> t:= CharTable( "M11" );; Indicator( t, t.irreducibles, 2 );
+    [ 1, 1, 0, 0, 1, 0, 0, 1, 1, 1 ]</pre>
+<P><A NAME="SECT008"><h2>51.8 Eigenvalues</h2></a>
+<P><P><P>
+<code>Eigenvalues( <var>tbl</var>, <var>char</var>, <var>class</var> )</code>
+<P>
+Let <I>M</I> be a matrix of a representation  with character <var>char</var> which is a
+character of the   table <var>tbl</var>, for an  element  in the  conjugacy  class
+<var>class</var>.    <code>Eigenvalues( <var>tbl</var>, <var>char</var>,  <var>class</var>  )</code>  returns a list  of
+length  <code><I>n</I>  =  <var>tbl</var>.orders[  <var>class</var>   ]</code> where at    position <code>i</code> the
+multiplicity of <code>E(n)^i  = <I>e<sup>(2&pi; i)/(n)</sup></I></code>  as eigenvalue of <I>M</I>
+is stored.
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> chi:= t.irreducibles[2];
+    [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ]
+    gap> List( [ 1 .. 5 ], i -> Eigenvalues( t, chi, i ) );
+    [ [ 3 ], [ 2, 1 ], [ 1, 1, 1 ], [ 0, 1, 1, 0, 1 ], [ 1, 0, 0, 1, 1 ] ]</pre>
+<P>
+<code>List( [1..<var>n</var>],  i ->  E(n)^i) * Eigenvalues(<var>tbl</var>,<var>char</var>,<var>class</var>) )</code>
+is equal to <code><var>char</var>[ <var>class</var> ]</code>.
+<P><A NAME="SECT009"><h2>51.9 MolienSeries</h2></a>
+<P><P><P>
+<code>MolienSeries( <var>psi</var> )</code> <BR> 
+<code>MolienSeries( <var>psi</var>, <var>chi</var> )</code> <BR> 
+<code>MolienSeries( <var>tbl</var>, <var>psi</var> )</code> <BR> 
+<code>MolienSeries( <var>tbl</var>, <var>psi</var>, <var>chi</var> )</code>
+<P>
+returns  a  record   that  describes the   series  <center><table><tr><td><I>  M<sub>&psi;,&chi;</sub>(z) =
+&sum;<sub>d=0</sub><sup>&infin;</sup> (&chi;,&psi;<sup>[d]</sup>)  z<sup>d</sup> </I></td></tr></table></center> where  <I>&psi;<sup>[d]</sup></I> denotes
+the symmetrization of <I>&psi;</I> with  the trivial character of the symmetric
+group <I>S<sub>d</sub></I> (see <a href="chap051.htm#SECT014">SymmetricParts</a>).
+<P>
+<var>psi</var> and  <var>chi</var> must be characters of  the table  <var>tbl</var>, the default for
+<I>&chi;</I> is  the trivial character.  If  no character table is given, <var>psi</var>
+and <var>chi</var> must be class function recods.
+<P>
+<P>
+<P>
+<code>ValueMolienSeries( <var>series</var>, <var>i</var> )</code>
+<A name = "I10"></a>
+
+<P>
+returns the <var>i</var>-th coefficient of the Molien series <var>series</var>.
+<P>
+<pre>    gap> psi:= Irr( CharTable( "A5" ) )[3];
+    Character( CharTable( "A5" ),
+    [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] )
+    gap> mol:= MolienSeries( psi );;
+    gap> List( [ 1 .. 10 ], i -> ValueMolienSeries( mol, i ) );
+    [ 0, 1, 0, 1, 0, 2, 0, 2, 0, 3 ] </pre>
+<P>
+The record returned by <code>MolienSeries</code> has components
+<P>
+<DL><DT><code>summands</code>:<DD> <BR> a list of records with components <code>numer</code>, <code>r</code>, and <code>k</code>,
+               describing the summand <I><code>numer</code> / (1-z<sup>r</sup>)<sup>k</sup></I>,
+</DL><P>
+<DL><DT><code>size</code>:<DD>     <BR> the <code>size</code> component of the character table,
+</DL><P>
+<DL><DT><code>degree</code>:<DD>   <BR> the degree of <var>psi</var>.
+</DL><P><A NAME="SECT010"><h2>51.10 Reduced</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code>Reduced( <var>tbl</var>, <var>constituents</var>, <var>reducibles</var> )</code><BR> 
+<code>Reduced( <var>tbl</var>, <var>reducibles</var> )</code>
+<P>
+returns    a record  with  fields <code>remainders</code>   and <code>irreducibles</code>, both
+lists: Let   <code>rems</code> be  the  set of  nonzero  characters obtained  from
+<var>reducibles</var> by subtraction of
+<P>
+<center><table><tr><td><I> &sum;<sub>&chi;&isin; <code>constituents</code></sub>
+   (<code>ScalarProduct(</code> <var>tbl</var>, &chi;, <var>reducibles</var><code>[i] )</code>)/(<P>)        <code>ScalarProduct(</code> <var>tbl</var>, &chi;, <var>constituents</var><code>[j] )</code>
+   . &chi; </I></td></tr></table></center>
+<P>
+from <code><var>reducibles</var>[i]</code> in the first case or subtraction of
+<P>
+<center><table><tr><td><I> &sum;<sub>j  &le; i</sub>
+   (<code>ScalarProduct( <var>tbl</var>, <var>reducibles</var>[j], <var>reducibles</var>[i] )</code>)/(<P>)        <code>ScalarProduct( <var>tbl</var>, <var>reducibles</var>[j], <var>reducibles</var>[j] )</code>
+   . <var>reducibles</var>[j] </I></td></tr></table></center>
+<P>
+in the second case.
+<P>
+Let  <code>irrs</code> be the list of  irreducible characters in  <code>rems</code>.  <code>rems</code> is
+reduced with <code>irrs</code> and all found  irreducibles until no new irreducibles
+are found.  Then  <code>irreducibles</code> is  the  set of  all found   irreducible
+characters, <code>remainders</code> is the set of all nonzero remainders.
+<P>
+If one  knows that <var>reducibles</var>    are ordinary characters of <var>tbl</var>   and
+<var>constituents</var> are irreducible ones, <a href="chap051.htm#SECT011">ReducedOrdinary</a>  <code>ReducedOrdinary</code>
+may be faster.
+<P>
+Note that elements of <code>remainders</code> may be only virtual characters even if
+<var>reducibles</var> are ordinary characters.
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> chars:= Sublist( t.irreducibles, [ 2 .. 4 ] );;
+    gap> chars:= Set( Tensored( chars, chars ) );;
+    gap> Reduced( t, chars );
+    rec(
+      remainders := [  ],
+      irreducibles :=
+       [ [ 1, 1, 1, 1, 1 ], [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ],
+          [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 4, 0, 1, -1, -1 ],
+          [ 5, 1, -1, 0, 0 ] ] )</pre>
+<P><A NAME="SECT011"><h2>51.11 ReducedOrdinary</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+<code>ReducedOrdinary( <var>tbl</var>, <var>constituents</var>, <var>reducibles</var> )</code>
+<P>
+works like   <a href="chap051.htm#SECT010">Reduced</a>   <code>Reduced</code>, but  assumes   that  the  elements of
+<var>constituents</var> and <var>reducibles</var>  are ordinary characters of the character
+table <var>tbl</var>.  So scalar  products are calculated  only for those pairs of
+characters where the degree of the constituent is smaller than the degree
+of the reducible.
+<P><A NAME="SECT012"><h2>51.12 Tensored</h2></a>
+<P><P>
+<A name = "I13"></a>
+
+<P>
+<code>Tensored( <var>chars1</var>, <var>chars2</var> )</code>
+<P>
+returns the list  of  tensor products  (i.e. pointwise  products)  of all
+characters in the list <var>chars1</var> with all characters in the list <var>chars2</var>.
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> chars1:= Sublist( t.irreducibles, [ 1 .. 3 ] );;
+    gap> chars2:= Sublist( t.irreducibles, [ 2 .. 3 ] );;
+    gap> Tensored( chars1, chars2 );
+    [ [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ],
+      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ],
+      [ 9, 1, 0, -2*E(5)-E(5)^2-E(5)^3-2*E(5)^4,
+          -E(5)-2*E(5)^2-2*E(5)^3-E(5)^4 ], [ 9, 1, 0, -1, -1 ],
+      [ 9, 1, 0, -1, -1 ],
+      [ 9, 1, 0, -E(5)-2*E(5)^2-2*E(5)^3-E(5)^4, -2*E(5)-E(5)^2-E(5)^3
+             -2*E(5)^4 ] ]</pre>
+<P>
+<strong>Note</strong> that duplicate tensor products are not deleted; the tensor product
+of  <code><var>chars1</var>[<var>i</var>]</code>  with <code><var>chars2</var>[<var>j</var>]</code>  is  stored at  position <I>(i-1)
+<code>Length( <var>chars1</var> )</code> + j</I>.
+<P><A NAME="SECT013"><h2>51.13 Symmetrisations</h2></a>
+<P><P>
+<A name = "I14"></a>
+
+<P>
+<code>Symmetrisations( <var>tbl</var>, <var>chars</var>, <var>Sn</var> )</code><BR> 
+<code>Symmetrisations( <var>tbl</var>, <var>chars</var>, <var>n</var> )</code>
+<P>
+returns the list  of nonzero symmetrisations  of the characters  <var>chars</var>,
+regarded as characters of the   character table <var>tbl</var>, with the  ordinary
+characters of the symmetric group of degree <var>n</var>; alternatively, the table
+of the symmetric group can be entered as <var>Sn</var>.
+<P>
+The  symmetrisation <I>&chi;<sup>[&lambda;]</sup></I> of  the  character <I>&chi;</I> of <var>tbl</var>
+with the character  <I>&lambda;</I> of the  symmetric group <I>S<sub>n</sub></I> of degree <I>n</I>
+is defined by
+<P>
+<center><table><tr><td><I> &chi;<sup>[&lambda;]</sup>(g) = 1/n! &sum;<sub>&rho; &isin; S<sub>n</sub></sub>
+                &lambda;(&rho;) &prod;<sub>k=1</sub><sup>n</sup> &chi;(g<sup>k</sup>)<sup>a<sub>k</sub>(&rho;)</sup>, </I></td></tr></table></center>
+<P>
+where <I>a<sub>k</sub>(&rho;)</I> is the number of cycles of length <I>k</I> in <I>&rho;</I>.
+<P>
+For special  symmetrisations, see <a href="chap051.htm#SECT014">SymmetricParts</a>, <a href="chap051.htm#SECT015">AntiSymmetricParts</a>,
+<a href="chap051.htm#SECT016">MinusCharacter</a> and <a href="chap051.htm#SECT017">OrthogonalComponents</a>, <a href="chap051.htm#SECT018">SymplecticComponents</a>.
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> chars:= Sublist( t.irreducibles, [ 1 .. 3 ] );;
+    gap> Symmetrisations( t, chars, 3 );
+    [ [ 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0 ], [ 1, 1, 1, 1, 1 ],
+      [ 1, 1, 1, 1, 1 ], [ 8, 0, -1, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ],
+      [ 10, -2, 1, 0, 0 ], [ 1, 1, 1, 1, 1 ],
+      [ 8, 0, -1, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 10, -2, 1, 0, 0 ] ]</pre>
+<P>
+<strong>Note</strong> that the returned list may contain zero characters, and duplicate
+characters are not deleted.
+<P><A NAME="SECT014"><h2>51.14 SymmetricParts</h2></a>
+<P><P>
+<A name = "I15"></a>
+
+<P>
+<code>SymmetricParts( <var>tbl</var>, <var>chars</var>, <var>n</var> )</code>
+<P>
+returns  the list of  symmetrisations of the characters <var>chars</var>, regarded
+as characters of the character table <var>tbl</var>, with the trivial character of
+the symmetric group of degree <var>n</var> (see <a href="chap051.htm#SECT013">Symmetrisations</a>).
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> SymmetricParts( t, t.irreducibles, 3 );
+    [ [ 1, 1, 1, 1, 1 ], [ 10, -2, 1, 0, 0 ], [ 10, -2, 1, 0, 0 ],
+      [ 20, 0, 2, 0, 0 ], [ 35, 3, 2, 0, 0 ] ]</pre>
+<P><A NAME="SECT015"><h2>51.15 AntiSymmetricParts</h2></a>
+<P><P>
+<A name = "I16"></a>
+
+<P>
+<code>AntiSymmetricParts( <var>tbl</var>, <var>chars</var>, <var>n</var> )</code>
+<P>
+returns the list of symmetrisations  of the characters <var>chars</var>,  regarded
+as  characters  of the  character    table <var>tbl</var>,  with  the  alternating
+character of the symmetric group of degree <var>n</var> (see <a href="chap051.htm#SECT013">Symmetrisations</a>).
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> AntiSymmetricParts( t, t.irreducibles, 3 );
+    [ [ 0, 0, 0, 0, 0 ], [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 1, 1 ],
+      [ 4, 0, 1, -1, -1 ], [ 10, -2, 1, 0, 0 ] ]</pre>
+<P><A NAME="SECT016"><h2>51.16 MinusCharacter</h2></a>
+<P><P>
+<A name = "I17"></a>
+
+<P>
+<code>MinusCharacter( <var>char</var>, <var>prime\_powermap</var>, <var>prime</var> )</code>
+<P>
+returns the (possibly  parametrized, see  chapter <a href="chap052.htm">Maps and  Parametrized
+Maps</a>) character <I>&chi;<sup>p-</sup></I>   for the character  <I>&chi; =   <var>char</var></I> and a
+prime <I>p  = <var>prime</var></I>, where <I>&chi;<sup>p-</sup></I>  is defined  by <I>&chi;<sup>p-</sup>(g) = (
+&chi;(g)<sup>p</sup> -   &chi;(g<sup>p</sup>) ) /  p</I>,  and <var>prime\_powermap</var> is  the (possibly
+parametrized) <I>p</I>-th powermap.
+<P>
+<pre>    gap> t:= CharTable( "S7" );; pow:= InitPowermap( t, 2 );;
+    gap> Congruences( t, t.irreducibles, pow, 2 );; pow;
+    [ 1, 1, 3, 4, [ 2, 9, 10 ], 6, 3, 8, 1, 1, [ 2, 9, 10 ], 3, 4, 6,
+      [ 7, 12 ] ]
+    gap> chars:= Sublist( t.irreducibles, [ 2 .. 5 ] );;
+    gap> List( chars, x-> MinusCharacter( x, pow, 2 ) );
+    [ [ 0, 0, 0, 0, [ 0, 1 ], 0, 0, 0, 0, 0, [ 0, 1 ], 0, 0, 0, [ 0, 1 ] ],
+      [ 15, -1, 3, 0, [ -2, -1, 0 ], 0, -1, 1, 5, -3, [ 0, 1, 2 ], -1, 0,
+          0, [ 0, 1 ] ],
+      [ 15, -1, 3, 0, [ -1, 0, 2 ], 0, -1, 1, 5, -3, [ 1, 2, 4 ], -1, 0,
+          0, 1 ],
+      [ 190, -2, 1, 1, [ 0, 2 ], 0, 1, 1, -10, -10, [ 0, 2 ], -1, -1, 0,
+          [ -1, 0 ] ] ]</pre>
+<P><A NAME="SECT017"><h2>51.17 OrthogonalComponents</h2></a>
+<P><P>
+<A name = "I18"></a>
+
+<A name = "I19"></a>
+
+<A name = "I20"></a>
+
+<P>
+<code>OrthogonalComponents( <var>tbl</var>, <var>chars</var>, <var>m</var> )</code>
+<P>
+If <I>&chi;</I> is a (nonlinear) character with  indicator <I>+1</I>, a splitting of
+the tensor power <I>&chi;<sup>m</sup></I>  is given by  the so-called Murnaghan functions
+(see <A href="biblio.htm#Mur58"><cite>Mur58</cite></a>).  These components  in general  have fewer irreducible
+constituents than the symmetrizations  with the symmetric group of degree
+<var>m</var> (see <a href="chap051.htm#SECT013">Symmetrisations</a>).
+<P>
+<code>OrthogonalComponents</code> returns  the set of  orthogonal symmetrisations of
+the characters of  the character table <var>tbl</var> in  the list <var>chars</var>, up  to
+the power <var>m</var>, where the integer <var>m</var> is one of <I>{ 2, 3, 4, 5, 6 }</I>.
+<P>
+<strong>Note</strong>: It is not checked  if all characters in <var>chars</var>  do really have
+indicator <I>+1</I>;  if there are characters   with indicator 0  or <I>-1</I>, the
+result might contain virtual characters, see also <a href="chap051.htm#SECT018">SymplecticComponents</a>.
+<P>
+The Murnaghan functions are implemented as in <A href="biblio.htm#Fra82"><cite>Fra82</cite></a>.
+<P>
+<pre>    gap> t:= CharTable( "A8" );; chi:= t.irreducibles[2];
+    [ 7, -1, 3, 4, 1, -1, 1, 2, 0, -1, 0, 0, -1, -1 ]
+    gap> OrthogonalComponents( t, [ chi ], 4 );
+    [ [ 21, -3, 1, 6, 0, 1, -1, 1, -2, 0, 0, 0, 1, 1 ],
+      [ 27, 3, 7, 9, 0, -1, 1, 2, 1, 0, -1, -1, -1, -1 ],
+      [ 105, 1, 5, 15, -3, 1, -1, 0, -1, 1, 0, 0, 0, 0 ],
+      [ 35, 3, -5, 5, 2, -1, -1, 0, 1, 0, 0, 0, 0, 0 ],
+      [ 77, -3, 13, 17, 2, 1, 1, 2, 1, 0, 0, 0, 2, 2 ],
+      [ 189, -3, -11, 9, 0, 1, 1, -1, 1, 0, 0, 0, -1, -1 ],
+      [ 330, -6, 10, 30, 0, -2, -2, 0, -2, 0, 1, 1, 0, 0 ],
+      [ 168, 8, 8, 6, -3, 0, 0, -2, 2, -1, 0, 0, 1, 1 ],
+      [ 35, 3, -5, 5, 2, -1, -1, 0, 1, 0, 0, 0, 0, 0 ],
+      [ 182, 6, 22, 29, 2, 2, 2, 2, 1, 0, 0, 0, -1, -1 ] ]</pre>
+<P><A NAME="SECT018"><h2>51.18 SymplecticComponents</h2></a>
+<P><P>
+<A name = "I21"></a>
+
+<A name = "I22"></a>
+
+<P>
+<code>SymplecticComponents( <var>tbl</var>, <var>chars</var>, <var>m</var> )</code>
+<P>
+If <I>&chi;</I> is a (nonlinear) character  with indicator <I>-1</I>, a splitting of
+the tensor power  <I>&chi;<sup>m</sup></I> is given in terms  of the  so-called Murnaghan
+functions   (see <A href="biblio.htm#Mur58"><cite>Mur58</cite></a>).  These components  in  general have fewer
+irreducible  constituents   than the  symmetrizations  with the symmetric
+group of degree <var>m</var> (see <a href="chap051.htm#SECT013">Symmetrisations</a>).
+<P>
+<code>SymplecticComponents</code> returns the  set of  symplectic symmetrisations of
+the characters of the  character table <var>tbl</var>  in the list <var>chars</var>,  up to
+the power <var>m</var>, where the integer <var>m</var> is one of <I>{ 2, 3, 4, 5 }</I>.
+<P>
+<strong>Note</strong>: It is not checked  if all characters in <var>chars</var>  do really have
+indicator <I>-1</I>;  if there are  characters with  indicator 0  or <I>+1</I>, the
+result might contain virtual characters, see also <a href="chap051.htm#SECT017">OrthogonalComponents</a>.
+<P>
+<pre>    gap> t:= CharTable( "U3(3)" );; chi:= t.irreducibles[2];
+    [ 6, -2, -3, 0, -2, -2, 2, 1, -1, -1, 0, 0, 1, 1 ]
+    gap> SymplecticComponents( t, [ chi ], 4 );
+    [ [ 14, -2, 5, -1, 2, 2, 2, 1, 0, 0, 0, 0, -1, -1 ],
+      [ 21, 5, 3, 0, 1, 1, 1, -1, 0, 0, -1, -1, 1, 1 ],
+      [ 64, 0, -8, -2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 ],
+      [ 14, 6, -4, 2, -2, -2, 2, 0, 0, 0, 0, 0, -2, -2 ],
+      [ 56, -8, 2, 2, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0 ],
+      [ 70, -10, 7, 1, 2, 2, 2, -1, 0, 0, 0, 0, -1, -1 ],
+      [ 189, -3, 0, 0, -3, -3, -3, 0, 0, 0, 1, 1, 0, 0 ],
+      [ 90, 10, 9, 0, -2, -2, -2, 1, -1, -1, 0, 0, 1, 1 ],
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+      [ 126, 14, -9, 0, 2, 2, 2, -1, 0, 0, 0, 0, -1, -1 ] ]</pre>
+<P><A NAME="SECT019"><h2>51.19 IrreducibleDifferences</h2></a>
+<P><P>
+<A name = "I23"></a>
+
+<P>
+<code>IrreducibleDifferences( <var>tbl</var>, <var>chars1</var>, <var>chars2</var> )</code><BR> 
+<code>IrreducibleDifferences( <var>tbl</var>, <var>chars1</var>, <var>chars2</var>, <var>scprmat</var> )</code><BR> 
+<code>IrreducibleDifferences( <var>tbl</var>, <var>chars</var>, "triangle" )</code><BR> 
+<code>IrreducibleDifferences( <var>tbl</var>, <var>chars</var>, "triangle", <var>scprmat</var> )</code>
+<P>
+returns the  list of irreducible  characters which occur as difference of
+two elements of <var>chars</var> (if <code>"triangle"</code> is specified) or of an element
+of <var>chars1</var> and an element of <var>chars2</var>; if  <var>scprmat</var> is not specified it
+will be computed (see <a href="chap051.htm#SECT002">MatScalarProducts</a>), otherwise we must have
+<center><table><tr><td><I>
+  <code><var>scprmat</var>[i][j] = ScalarProduct( <var>tbl</var>, <var>chars</var>[i], <var>chars</var>[j] )</code>
+</I></td></tr></table></center>
+resp.
+<center><table><tr><td><I>
+  <code><var>scprmat</var>[i][j] = ScalarProduct( <var>tbl</var>, <var>chars1</var>[i], <var>chars2</var>[j] )</code>
+</I></td></tr></table></center>.
+<P>
+<pre>    gap> t:= CharTable( "A5" );;
+    gap> chars:= Sublist( t.irreducibles, [ 2 .. 4 ] );;
+    gap> chars:= Set( Tensored( chars, chars ) );;
+    gap> IrreducibleDifferences( t, chars, "triangle" );
+    [ [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ],
+      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ]</pre>
+<P><A NAME="SECT020"><h2>51.20 Restricted</h2></a>
+<P><P>
+<A name = "I24"></a>
+
+<P>
+<code>Restricted( <var>tbl</var>, <var>subtbl</var>, <var>chars</var> )</code><BR> 
+<code>Restricted( <var>tbl</var>, <var>subtbl</var>, <var>chars</var>, <var>specification</var> )</code><BR> 
+<code>Restricted( <var>chars</var>, <var>fusionmap</var> )</code>
+<P>
+returns the restrictions, i.e. the indirections, of the characters in the
+list <var>chars</var> by a  subgroup fusion map.   This map can either be  entered
+directly  as  <var>fusionmap</var>, or  it must  be stored  on the character table
+<var>subtbl</var> and must have destination <var>tbl</var>; in the latter case the value of
+the  <code>specification</code> field  of the  desired   fusion may  be specified as
+<var>specification</var>  (see  <a href="chap049.htm#SECT045">GetFusionMap</a>).   If no  such   fusion is stored,
+<code>false</code> is returned.
+<P>
+The  fusion  map may be  a  parametrized  map (see  <a href="chap052.htm#SECT001">More  about Maps and
+Parametrized Maps</a>); any   value that is   not uniquely determined   in a
+restricted character is  set    to  an  unknown (see    <a href="chap017.htm#SECT001">Unknown</a>);   for
+parametrized indirection of characters, see <a href="chap052.htm#SECT002">CompositionMaps</a>.
+<P>
+Restriction and inflation are  the  same procedures, so <code>Restricted</code>  and
+<code>Inflated</code> are identical, see <a href="chap051.htm#SECT021">Inflated</a>.
+<P>
+<pre>    gap> s5:= CharTable( "A5.2" );; a5:= CharTable( "A5" );;
+    gap> Restricted( s5, a5, s5.irreducibles );
+    [ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 1, 1 ], [ 6, -2, 0, 1, 1 ],
+      [ 4, 0, 1, -1, -1 ], [ 4, 0, 1, -1, -1 ], [ 5, 1, -1, 0, 0 ],
+      [ 5, 1, -1, 0, 0 ] ]
+    gap> Restricted( s5.irreducibles, [ 1, 6, 2, 6 ] );
+                        # restrictions to the cyclic group of order 4
+    [ [ 1, 1, 1, 1 ], [ 1, -1, 1, -1 ], [ 6, 0, -2, 0 ], [ 4, 0, 0, 0 ],
+      [ 4, 0, 0, 0 ], [ 5, -1, 1, -1 ], [ 5, 1, 1, 1 ] ]</pre>
+<P><A NAME="SECT021"><h2>51.21 Inflated</h2></a>
+<P><P>
+<A name = "I25"></a>
+
+<P>
+<code>Inflated( <var>factortbl</var>, <var>tbl</var>, <var>chars</var> )</code><BR> 
+<code>Inflated( <var>factortbl</var>, <var>tbl</var>, <var>chars</var>, <var>specification</var> )</code><BR> 
+<code>Inflated( <var>chars</var>, <var>fusionmap</var> )</code>
+<P>
+returns the  inflations, i.e.  the indirections of  <var>chars</var> by  a  factor
+fusion map.  This map can  either be entered  directly as <var>fusionmap</var>, or
+it must be stored on the character table <var>tbl</var>  and must have destination
+<var>factortbl</var>; in the latter case the value of the <code>specification</code> field of
+the  desired   fusion   may   be  specified  as    <var>specification</var>   (see
+<a href="chap049.htm#SECT045">GetFusionMap</a>).  If no such fusion is stored, <code>false</code> is returned.
+<P>
+The  fusion map  may be  a parametrized map   (see <a href="chap052.htm#SECT001">More  about Maps  and
+Parametrized Maps</a>); any  value that  is not  uniquely determined in   an
+inflated character is set to an unknown (see <a href="chap017.htm#SECT001">Unknown</a>); for parametrized
+indirection of characters, see <a href="chap052.htm#SECT002">CompositionMaps</a>.
+<P>
+Restriction  and inflation are  the same procedures,  so <code>Restricted</code> and
+<code>Inflated</code> are identical, see <a href="chap051.htm#SECT020">Restricted</a>.
+<P>
+<pre>    gap> s4:= CharTable( "Symmetric", 4 );;
+    gap> s3:= CharTableFactorGroup( s4, [3] );;
+    gap> s3.irreducibles;
+    [ [ 1, -1, 1 ], [ 2, 0, -1 ], [ 1, 1, 1 ] ]
+    gap> s4.fusions;
+    [ rec(
+          map := [ 1, 2, 1, 3, 2 ],
+          type := "factor",
+          name := [ 'S', '4', '/', '[', ' ', '3', ' ', ']' ] ) ]
+    gap> Inflated( s3, s4, s3.irreducibles );
+    [ [ 1, -1, 1, 1, -1 ], [ 2, 0, 2, -1, 0 ], [ 1, 1, 1, 1, 1 ] ]</pre>
+<P><A NAME="SECT022"><h2>51.22 Induced</h2></a>
+<P><P>
+<A name = "I26"></a>
+
+<P>
+<code>Induced( <var>subtbl</var>, <var>tbl</var>, <var>chars</var> )</code><BR> 
+<code>Induced( <var>subtbl</var>, <var>tbl</var>, <var>chars</var>, <var>specification</var> )</code><BR> 
+<code>Induced( <var>subtbl</var>, <var>tbl</var>, <var>chars</var>, <var>fusionmap</var> )</code>
+<P>
+returns a set of characters induced from <var>subtbl</var>  to <var>tbl</var>; the elements
+of the list <var>chars</var>  will be induced. The  subgroup fusion map can either
+be entered directly as  <var>fusionmap</var>, or  it  must be stored on  the table
+<var>subtbl</var> and must have destination <var>tbl</var>; in the latter case the value of
+the  <code>specification</code>   field may be  specified    by <var>specification</var> (see
+<a href="chap049.htm#SECT045">GetFusionMap</a>). If no such fusion is stored, <code>false</code> is returned.
+<P>
+The fusion  map  may be a   parametrized  map (see <a href="chap052.htm#SECT001">More about   Maps and
+Parametrized Maps</a>);  any value  that is  not  uniquely determined  in an
+induced character is set to an unknown (see <a href="chap017.htm#SECT001">Unknown</a>).
+<P>
+<pre>    gap> Induced( a5, s5, a5.irreducibles );
+    [ [ 2, 2, 2, 2, 0, 0, 0 ], [ 6, -2, 0, 1, 0, 0, 0 ],
+      [ 6, -2, 0, 1, 0, 0, 0 ], [ 8, 0, 2, -2, 0, 0, 0 ],
+      [ 10, 2, -2, 0, 0, 0, 0 ] ]</pre>
+<P><A NAME="SECT023"><h2>51.23 InducedCyclic</h2></a>
+<P><P>
+<A name = "I27"></a>
+
+<P>
+<code>InducedCyclic( <var>tbl</var> )</code><BR> 
+<code>InducedCyclic( <var>tbl</var>, "all" )</code><BR> 
+<code>InducedCyclic( <var>tbl</var>, <var>classes</var> )</code><BR> 
+<code>InducedCyclic( <var>tbl</var>, <var>classes</var>, "all" )</code>
+<P>
+returns a set  of   characters of the  character  table  <var>tbl</var>. They  are
+characters  induced  from  cyclic subgroups of    <var>tbl</var>.  If <code>"all"</code> is
+specified, all irreducible   characters of those  subgroups are  induced,
+otherwise  only the  permutation  characters  are  computed.  If  a  list
+<var>classes</var> is specified, only  those  cyclic subgroups generated by  these
+classes are considered, otherwise all classes of <var>tbl</var> are considered.
+<P>
+Note that the powermaps for primes dividing  <code><var>tbl</var>.order</code> must be stored
+on <var>tbl</var>; if any powermap for a prime not  dividing <code><var>tbl</var>.order</code> that is
+smaller than  the maximal representative  order  is not  stored, this map
+will be computed (see <a href="chap052.htm#SECT012">Powermap</a>) and stored afterwards.
+<P>
+The   powermaps may be parametrized    maps   (see <a href="chap052.htm#SECT001">More about Maps   and
+Parametrized Maps</a>);  any value  that is not   uniquely determined  in an
+induced  character    is  set  to  an  unknown    (see  <a href="chap017.htm#SECT001">Unknown</a>).   The
+representative orders     of the  classes  to induce     from must not be
+parametrized (see <a href="chap052.htm#SECT001">More about Maps and Parametrized Maps</a>).
+<P>
+<pre>    gap> t:= CharTable( "A5" );; InducedCyclic( t, "all" );
+    [ [ 12, 0, 0, 2, 2 ], [ 12, 0, 0, E(5)^2+E(5)^3, E(5)+E(5)^4 ],
+      [ 12, 0, 0, E(5)+E(5)^4, E(5)^2+E(5)^3 ], [ 20, 0, -1, 0, 0 ],
+      [ 20, 0, 2, 0, 0 ], [ 30, -2, 0, 0, 0 ], [ 30, 2, 0, 0, 0 ],
+      [ 60, 0, 0, 0, 0 ] ]</pre>
+<P><A NAME="SECT024"><h2>51.24 CollapsedMat</h2></a>
+<P><P>
+<A name = "I28"></a>
+
+<P>
+<code>CollapsedMat( <var>mat</var>, <var>maps</var> )</code>
+<P>
+returns  a record  with fields  <code>mat</code> and <code>fusion</code>:  The <code>fusion</code> field
+contains the   fusion  that collapses  the  columns   of <var>mat</var>  that  are
+identical also for all maps in the list  <var>maps</var>, the <code>mat</code> field contains
+the image of <var>mat</var> under that fusion.
+<P>
+<pre>    gap> t.irreducibles;
+    [ [ 1, 1, 1, 1, 1 ], [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ],
+      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 4, 0, 1, -1, -1 ],
+      [ 5, 1, -1, 0, 0 ] ]
+    gap> t:= CharTable( "A5" );; RationalizedMat( t.irreducibles );
+    [ [ 1, 1, 1, 1, 1 ], [ 6, -2, 0, 1, 1 ], [ 4, 0, 1, -1, -1 ],
+      [ 5, 1, -1, 0, 0 ] ]
+    gap> CollapsedMat( last, [] );
+    rec(
+      mat := [ [ 1, 1, 1, 1 ], [ 6, -2, 0, 1 ], [ 4, 0, 1, -1 ],
+          [ 5, 1, -1, 0 ] ],
+      fusion := [ 1, 2, 3, 4, 4 ] )
+    gap> Restricted( last.mat, last.fusion );
+    [ [ 1, 1, 1, 1, 1 ], [ 6, -2, 0, 1, 1 ], [ 4, 0, 1, -1, -1 ],
+      [ 5, 1, -1, 0, 0 ] ]</pre>
+<P><A NAME="SECT025"><h2>51.25 Power</h2></a>
+<P><P><P>
+<code>Power( <var>powermap</var>, <var>chars</var>, <var>n</var> )</code>
+<P>
+returns the list of indirections of the characters  <var>chars</var> by the <var>n</var>-th
+powermap;  for a character <I>&chi;</I>  in  <var>chars</var>, this indirection is often
+called <I>&chi;<sup>(n)</sup></I>.   The powermap is  calculated from  the (necessarily
+stored)  powermaps of the  prime divisors of  <var>n</var> if it  is not stored in
+<var>powermap</var> (see <a href="chap052.htm#SECT030">Powmap</a>).
+<P>
+<strong>Note</strong> that <I>&chi;<sup>(n)</sup></I> is in general only a virtual characters.
+<P><P>
+<pre>    gap> t:= CharTable( "A5" );; Power( t.powermap, t.irreducibles, 2 );
+    [ [ 1, 1, 1, 1, 1 ], [ 3, 3, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ],
+      [ 3, 3, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ], [ 4, 4, 1, -1, -1 ],
+      [ 5, 5, -1, 0, 0 ] ]
+    gap> MatScalarProducts( t, t.irreducibles, last );
+    [ [ 1, 0, 0, 0, 0 ], [ 1, -1, 0, 0, 1 ], [ 1, 0, -1, 0, 1 ],
+      [ 1, -1, -1, 1, 1 ], [ 1, -1, -1, 0, 2 ] ]</pre>
+<P><A NAME="SECT026"><h2>51.26 Permutation Character Candidates</h2></a>
+<P><P>
+<A name = "I29"></a>
+
+<A name = "I30"></a>
+
+<A name = "I31"></a>
+
+<P>
+For groups <I>H,  G</I>  with <I>H &le; G</I>, the  induced  character <I>(1<sub>G</sub>)<sup>H</sup></I>  is
+called the <strong>permutation character</strong>  of the operation of  <I>G</I> on the right
+cosets of <I>H</I>.  If only the character table of  <I>G</I> is known, one can try
+to  get informations about  possible  subgroups of  <I>G</I>  by inspection of
+those characters <I>&pi;</I> which might be  permutation characters, using that
+such a character must have at least the following properties:
+<DL><DT><P>
+:<DD><I>&pi;(1)</I> divides <I>|G|</I>,
+</DL><DL><DT><P>
+:<DD><I>[&pi;,&psi;] &le;&psi;(1)</I> for each character <I>&psi;</I> of <I>G</I>,
+</DL><DL><DT><P>
+:<DD><I>[&pi;,1<sub>G</sub>]=1</I>,
+</DL><DL><DT><P>
+:<DD><I>&pi;(g)</I> is a nonnegative integer for <I>g &isin; G</I>,
+</DL><DL><DT><P>
+:<DD><I>&pi;(g)</I> is smaller than the centralizer order of <I>g</I> for
+      <I>1&ne; g&isin; G</I>,
+</DL><DL><DT><P>
+:<DD><I>&pi;(g) &le;&pi;(g<sup>m</sup>)</I> for <I>g&isin; G</I> and any integer <I>m</I>,
+</DL><DL><DT><P>
+:<DD><I>&pi;(g)=0</I> for every <I>|g|</I> not diving <I>(|G|)/(&pi;(1))</I>,
+</DL><DL><DT><P>
+:<DD><I>&pi;(1) |N<sub>G</sub>(g)|</I> divides <I>|G| &pi;(g)</I>, where <I>|N<sub>G</sub>(g)|</I> denotes
+      the normalizer order of <I>&lang; g &rang;</I>.
+</DL><P>
+Any  character with  these  properties   will be called   a  <strong>permutation
+character candidate</strong> from now on.
+<P>
+<strong>GAP3</strong>    provides some  algorithms   to   compute permutation  character
+candidates, see  <a href="chap051.htm#SECT031">PermChars</a>.  Some  information  about the  subgroup can
+computed   from  a    permutation character using    <code>PermCharInfo</code>  (see
+<a href="chap051.htm#SECT028">PermCharInfo</a>).
+<P><A NAME="SECT027"><h2>51.27 IsPermChar</h2></a>
+<P><P>
+<A name = "I32"></a>
+
+<A name = "I33"></a>
+
+<A name = "I34"></a>
+
+<P>
+<code>IsPermChar( <var>tbl</var>, <var>pi</var> )</code>
+<P>
+<strong>missing, like tests</strong> <code>TestPerm1</code>, <code>TestPerm2</code>, <code>TestPerm3</code>
+<P><A NAME="SECT028"><h2>51.28 PermCharInfo</h2></a>
+<P><P>
+<A name = "I35"></a>
+
+<P>
+<code>PermCharInfo( <var>tbl</var>, <var>permchars</var> )</code>
+<P>
+Let <var>tbl</var>  be the character table of  the group <I>G</I>, and  <var>permchars</var> the
+permutation character  <I>(1<sub>U</sub>)<sup>G</sup></I> for a subgroup <I>U</I>  of <I>G</I>, or a list of
+such characters.  <code>PermCharInfo</code> returns a record with components
+<P>
+<DL><DT><code>contained</code>:<DD><BR> 
+  a list containing for each character in <var>permchars</var> a list containing
+  at position <var>i</var> the number of elements of <I>U</I> that are contained in
+  class <var>i</var> of <var>tbl</var>, this is equal to
+  <I><code>permchar[<var>i</var>]</code> |U| / <code>tbl.centralizers[<var>i</var>]</code></I>,
+</DL><P>
+<DL><DT><code>bound</code>:<DD><BR> 
+  Let <code><var>permchars</var>[k]</code> be the permutation character <I>(1<sub>U</sub>)<sup>G</sup></I>.  Then the
+  class length in <I>U</I> of an element in class <var>i</var> of <var>tbl</var> must be a
+  multiple of the value
+  <I><code>bound[<var>k</var>][<var>i</var>]</code> = |U| / </I>gcd<I>( |U|, <code><var>tbl</var>.centralizers[<var>i</var>]</code> )</I>,
+</DL><P>
+<DL><DT><code>display</code>:<DD><BR> 
+  a record that can be used as second argument of <code>DisplayCharTable</code>
+  to display the permutation characters and the corresponding components
+  <code>contained</code> and <code>bound</code>, for the classes where at least one character
+  of <var>permchars</var> is nonzero,
+</DL><P>
+<DL><DT><code>ATLAS</code>:<DD><BR> 
+  list of strings containing for each character in <var>permchars</var> the
+  decomposition into <code><var>tbl</var>.irreducibles</code> in <strong>ATLAS</strong> notation.
+</DL><P>
+<pre>    gap> t:= CharTable("A6");;
+    gap> PermCharInfo( t, [ 15, 3, 0, 3, 1, 0, 0 ] );
+    rec(
+      contained := [ [ 1, 9, 0, 8, 6, 0, 0 ] ],
+      bound := [ [ 1, 3, 8, 8, 6, 24, 24 ] ],
+      display := rec(
+          classes := [ 1, 2, 4, 5 ],
+          chars := [ [ 15, 3, 0, 3, 1, 0, 0 ], [ 1, 9, 0, 8, 6, 0, 0 ],
+              [ 1, 3, 8, 8, 6, 24, 24 ] ],
+          letter := "I" ),
+      ATLAS := [ "1a+5b+9a" ] )
+    gap> DisplayCharTable( t, last.display );
+    A6
+
+         2  3  3  .  2
+         3  2  .  2  .
+         5  1  .  .  .
+
+           1a 2a 3b 4a
+        2P 1a 1a 3b 2a
+        3P 1a 2a 1a 4a
+        5P 1a 2a 3b 4a
+
+    I.1    15  3  3  1
+    I.2     1  9  8  6
+    I.3     1  3  8  6</pre>
+<P><A NAME="SECT029"><h2>51.29 Inequalities</h2></a>
+<P><P><P>
+<code>Inequalities( <var>tbl</var> )</code>
+<P>
+The condition  <I>&pi;(g)  &ge; 0</I>  for every permutation character candidate
+<I>&pi;</I> places restrictions on the  multiplicities <I>a<sub>i</sub></I> of the irreducible
+constituents  <I>&chi;<sub>i</sub></I>  of <I>&pi;  =  &sum;<sub>i=1</sub><sup>r</sup> a<sub>i</sub> &chi;<sub>i</sub></I>.   For every
+group element  <I>g</I> holds <I>&sum;<sub>i=1</sub><sup>r</sup> a<sub>i</sub> &chi;<sub>i</sub>(g)   &ge; 0</I>.  The power
+map provides even stronger conditions.
+<P>
+This   system of inequalities  is  kind  of  diagonalized, resulting in a
+system of  inequalities restricting  <I>a<sub>i</sub></I>  in  terms of  <I>a<sub>j</sub>, j  &lt; i</I>.
+These inequalities are  used   to construct characters  with  nonnegative
+values (see   <a href="chap051.htm#SECT031">PermChars</a>).  <code>PermChars</code> either   calls <code>Inequalities</code> or
+takes this  information  from the  record field   <code>ineq</code> of its  argument
+record.
+<P>
+The number of inequalities arising  in the process of diagonalization may
+grow very strong.
+<P>
+There are two strategies to perform  this diagonalization. The default is
+to  simply eliminate  one unknown <I>a<sub>i</sub></I>  after the  other with decreasing
+<I>i</I>.  In some cases it turns out to be better  first to look which choice
+for the next unknown will yield the fewest new inequalities.
+<P><A NAME="SECT030"><h2>51.30 PermBounds</h2></a>
+<P><P><P>
+<code>PermBounds( <var>tbl</var>, <var>d</var> )</code>
+<P>
+All characters <I>&pi;</I> satisfying <I>&pi;(g) &gt; 0</I> and <I>&pi;(1) = d</I> for a given
+degree <I>d</I> lie  in a simplex described  by these conditions. <code>PermBounds</code>
+computes the boundary points of this simplex for  <I>d = 0</I>, from which the
+boundary points for any other  <I>d</I>  are easily derived.  Some  conditions
+from the powermap are also involved.
+<P>
+For this purpose a matrix similar to the rationalized character table has
+to be inverted.
+<P>
+These boundary  points are used   by  <code>PermChars</code> (see  <a href="chap051.htm#SECT031">PermChars</a>)   to
+construct  all  permutation  character   candidates  of a  given  degree.
+<code>PermChars</code> either calls <code>PermBounds</code> or takes  this information from the
+record field <code>bounds</code> of its argument record.
+<P><A NAME="SECT031"><h2>51.31 PermChars</h2></a>
+<P><P>
+<A name = "I36"></a>
+
+<P>
+<code>PermChars( <var>tbl</var> )</code> <BR> 
+<code>PermChars( <var>tbl</var>, <var>degree</var> )</code> <BR> 
+<code>PermChars( <var>tbl</var>, <var>arec</var> )</code>
+<P>
+<strong>GAP3</strong> provides  several  algorithms to  determine  permutation character
+candidates from a given  character table.  The algorithm is selected from
+the  choice of the  record fields of the optional argument record <var>arec</var>.
+The  user is  encouraged to  try different approaches  especially  if one
+choice fails to come to an end.
+<P>
+Regardless of the algorithm used in a special case, <code>PermChars</code> returns a
+list of <strong>all</strong> permutation character candidates with  the properties given
+in <var>arec</var>.  There is no guarantee  that  a character of this  list  is in
+fact a  permutation character. But an empty list always means there is no
+permutation character with these properties (e.g. of a certain degree).
+<P>
+In  the  first  form  <code>PermChars(  <var>tbl</var>  )</code>  returns  the  list  of  all
+permutation characters of the group with character table <var>tbl</var>. This list
+might be  rather long  for big groups, and it might take  much time.  The
+algorithm depends on a preprocessing step, where the inequalities arising
+from the  condition  <I>&pi;(g)   &le;  0</I> are transformed  into  a system of
+inequalities that guides the search (see <a href="chap051.htm#SECT029">Inequalities</a>).
+<P>
+<pre>    gap> m11:= CharTable("M11");;
+    gap> PermChars(m11);;     # will return the list of 39 permutation
+                              # character candidates of <I>M11</I>. </pre>
+<P>
+There are two different search strategies for  this algorithm. One simply
+constructs all characters with nonnegative values and then tests for each
+such character whether its degree is a divisor of the order of the group.
+This is the default.  The other strategy uses the inequalities to predict
+if  it is  possible  to  find  a character  of  a  certain degree in  the
+currently searched part  of the search  tree. To choose this strategy set
+the field <code>mode</code> of <var>arec</var> to <code>"preview"</code> and the field <code>degree</code> to the
+degree (or a list of degrees which might be all divisors  of the order of
+the group) you  want to look for.  The  record field <code>ineq</code> can  take the
+inequalities from <code>Inequalities</code> if they are needed more than once.
+<P>
+In the second form <code>PermChars( <var>tbl</var>, <var>degree</var> )</code> returns the list of all
+permutation  characters  of  degree  <var>degree</var>.    For   that  purpose   a
+preprocessing  step  is  performed  where  essentially  the  rationalized
+character table is inverted in order to determine boundary points for the
+simplex in which  the permutation character candidates of a given  degree
+must lie (see  <a href="chap051.htm#SECT030">PermBounds</a>).   Note that inverting big  integer matrices
+needs  a  lot of time and space.  So this preprocessing is  restricted to
+groups with less than 100 classes, say.
+<P>
+<pre>    gap> PermChars(m11, 220);
+    [ [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ],
+      [ 220, 12, 4, 4, 0, 0, 0, 0, 0, 0 ],
+      [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ] </pre>
+<P>
+In the third form <code>PermChars( <var>tbl</var>, <var>arec</var>  )</code> returns  the list of  all
+permutation  characters which have the properties given  in  the argument
+record  <var>arec</var>. If <var>arec</var> contains a  degree in the record field <code>degree</code>
+then <code>PermChars</code> will behave exactly as in the second form.
+<P>
+<pre>    gap> PermChars(m11, rec(degree:= 220));
+    [ [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ],
+      [ 220, 12, 4, 4, 0, 0, 0, 0, 0, 0 ],
+      [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ] </pre>
+<P>
+Alternatively <var>arec</var> may  have the  record  fields <code>chars</code>  and  <code>torso</code>.
+<var>arec</var>.<code>chars</code> is  a list  of (in most cases  all) <strong>rational</strong> irreducible
+characters   of  <var>tbl</var>  which  might  be  constituents  of  the  required
+characters, and <var>arec</var>.<code>torso</code> is a list that  contains some known values
+of the required characters at the right positions.
+<P>
+<strong>Note</strong>: At least the degree <code><var>arec</var>.torso[1]</code>  must be an integer.   If
+<var>arec</var>.<code>chars</code> does not contain  all  rational irreducible characters  of
+<I>G</I>,  it may happen  that any scalar  product of  <I>&pi;</I> with  an  omitted
+character is negative; there should be nontrivial reasons for excluding a
+character that is known to be not a constituent of <I>&pi;</I>.
+<P>
+<pre>    gap> rat:= RationalizedMat(m11.irreducibles);;
+    gap> PermChars(m11, rec(torso:= [220], chars:= rat));
+    [ [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ],
+      [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ],
+      [ 220, 12, 4, 4, 0, 0, 0, 0, 0, 0 ] ]
+    gap> PermChars(m11, rec(torso:= [220,,,,,2], chars:= rat));
+    [ [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ] </pre>
+<P><A NAME="SECT032"><h2>51.32 Faithful Permutation Characters</h2></a>
+<P><P>
+<A name = "I37"></a>
+
+<P>
+<code>PermChars( <var>tbl</var>, <var>arec</var> )</code>
+<P>
+<code>PermChars</code> may as  well  determine faithful candidates  for  permutation
+characters. In  that  case  <var>arec</var>  requires the  fields  <code>normalsubgrp</code>,
+<code>nonfaithful</code>, <code>chars</code>, <code>lower</code>, <code>upper</code>, and <code>torso</code>.
+<P>
+Let <var>tbl</var> be the character table  of the group <I>G</I>, <var>arec</var>.<code>normalsubgrp</code>
+a   list   of  classes   forming   a   normal   subgroup   <I>N</I>  of   <I>G</I>.
+<var>arec</var>.<code>nonfaithful</code>   is   a   permutation   character   candidate  (see
+<a href="chap051.htm#SECT026">Permutation   Character   Candidates</a>)   of   <I>G</I>   with   kernel   <I>N</I>.
+<var>arec</var>.<code>chars</code> is a  list  of (in  most cases  all)  rational irreducible
+characters of <var>tbl</var>.
+<P>
+<code>PermChars</code> computes  all those  permutation character  candidates  <I>&pi;</I>
+having following properties:
+<DL><DT><P>
+:<DD>  <var>arec</var>.<code>chars</code>  contains  every  rational  irreducible  constituent of
+<I>&pi;</I>.
+</DL><DL><DT><P>
+:<DD>  <I>&pi;[i]  &ge;  <var>arec</var>.<code>lower</code>[i]</I> for  all integer  values of the  list
+<var>arec</var>.<code>lower</code>.
+</DL><DL><DT><P>
+:<DD>  <I>&pi;[i]  &le; <var>arec</var>.<code>upper</code>[i]</I>  for  all integer values  of  the list
+<var>arec</var>.<code>upper</code>.
+</DL><DL><DT><P>
+:<DD>  <I>&pi;[i]  =  <var>arec</var>.<code>torso</code>[i]</I>  for  all  integer  values  of the list
+<var>arec</var>.<code>torso</code>.
+</DL><DL><DT><P>
+:<DD> No irreducible constituent of <I>&pi;-<var>arec</var>.<code>nonfaithful</code></I> has <I>N</I> in its
+kernel.
+</DL><P>
+If  there exists a subgroup <I>V</I> of <I>G</I>, <I>V  &ge; N</I>, with <I>&lt;nonfaithful&gt; =
+(1<sub>V</sub>)<sup>G</sup></I>, the last condition means that the candidates for those possible
+subgroups <I>U</I> with <I>V = UN</I> are constructed.
+<P>
+<strong>Note</strong>:  At  least  the degree  <I>&lt;torso&gt;[1]</I> must  be  an  integer.   If
+<var>chars</var> does  not contain all  rational irreducible characters of <I>G</I>, it
+may  happen that any scalar product of <I>&pi;</I> with an omitted character is
+negative;  there should be nontrivial  reasons  for excluding a character
+that is known to be not a constituent of <I>&pi;</I>.
+<P><A NAME="SECT033"><h2>51.33 LLLReducedBasis</h2></a>
+<P><P>
+<A name = "I38"></a>
+
+<A name = "I39"></a>
+
+<A name = "I40"></a>
+
+<P>
+<code>LLLReducedBasis([<var>L</var>],<var>vectors</var>[,<var>y</var>][,"linearcomb"])</code>
+<P>
+<code>LLLReducedBasis</code> provides an implementation of the LLL lattice reduction
+algorithm by  Lenstra, Lenstra and Lov&aacute;sz (see <A href="biblio.htm#LLL82"><cite>LLL82</cite></a>,
+<A href="biblio.htm#Poh87"><cite>Poh87</cite></a>).   The  implementation follows    the description on  pages
+94f. in <A href="biblio.htm#Coh93"><cite>Coh93</cite></a>.
+<P>
+<code>LLLReducedBasis</code> returns  a record whose component  <code>basis</code> is a list of
+LLL reduced linearly independent vectors spanning the same lattice as the
+list <var>vectors</var>.
+<P>
+<var>L</var> must be  a lattice record whose scalar  product function is stored in
+the         component        <code>operations.NoMessageScalarProduct</code>       or
+<code>operations.ScalarProduct</code>.  It  must be a  function  of three arguments,
+namely the lattice and the  two vectors.  If  no lattice <var>L</var> is given the
+standard scalar product is taken.
+<P>
+In the  case  of option <code>"linearcomb"</code>,   the record contains  also the
+components <code>relations</code> and   <code>transformation</code>, which have  the  following
+meaning.   <code>relations</code> is  a basis  of the  relation  space of <var>vectors</var>,
+i.e.,  of   vectors   <var>x</var>   such that   <code><var>x</var>   *  <var>vectors</var></code>  is   zero.
+<code>transformation</code> gives the  expression of the  new lattice basis in terms
+of the old,  i.e., <code>transformation   *  <var>vectors</var></code>  equals the   <code>basis</code>
+component of the result.
+<P>
+Another optional argument is <var>y</var>, the ``sensitivity'' of the algorithm,
+a  rational number  between <I>1/4</I>  and  1  (the default value  is
+<I>3/4</I>).
+<P>
+(The function <a href="chap051.htm#SECT034">LLLReducedGramMat</a> computes an LLL reduced Gram matrix.)
+<P>
+<pre>    gap> vectors:= [ [ 9, 1, 0, -1, -1 ], [ 15, -1, 0, 0, 0 ],
+    >                [ 16, 0, 1, 1, 1 ], [ 20, 0, -1, 0, 0 ],
+    >                [ 25, 1, 1, 0, 0 ] ];;
+    gap> LLLReducedBasis( vectors, "linearcomb" );
+    rec(
+      basis :=
+       [ [ 1, 1, 1, 1, 1 ], [ 1, 1, -2, 1, 1 ], [ -1, 3, -1, -1, -1 ],
+          [ -3, 1, 0, 2, 2 ] ],
+      relations := [ [ -1, 0, -1, 0, 1 ] ],
+      transformation :=
+       [ [ 0, -1, 1, 0, 0 ], [ -1, -2, 0, 2, 0 ], [ 1, -2, 0, 1, 0 ],
+          [ -1, -2, 1, 1, 0 ] ] ) </pre>
+<P><A NAME="SECT034"><h2>51.34 LLLReducedGramMat</h2></a>
+<P><P>
+<A name = "I41"></a>
+
+<A name = "I42"></a>
+
+<P>
+<code>LLLReducedGramMat( <var>G</var> [,<var>y</var>] )</code>
+<P>
+<code>LLLReducedGramMat</code> provides  an   implementation  of the    LLL  lattice
+reduction  algorithm by    Lenstra,   Lenstra   and Lov&aacute;sz
+(see <A href="biblio.htm#LLL82"><cite>LLL82</cite></a>, <A href="biblio.htm#Poh87"><cite>Poh87</cite></a>).    The   implementation  follows    the
+description on pages 94f. in <A href="biblio.htm#Coh93"><cite>Coh93</cite></a>.
+<P>
+Let <var>G</var>  the Gram matrix  of the vectors  <I>(b<sub>1</sub>, b<sub>2</sub>, ..., b<sub>n</sub>)</I>; this
+means <var>G</var> is either a square  symmetric matrix or lower triangular matrix
+(only the entries in the lower triangular half are used by the program).
+<P>
+<code>LLLReducedGramMat</code> returns a record whose  component <code>remainder</code> is  the
+Gram matrix of the LLL reduced basis corresponding to <I>(b<sub>1</sub>, b<sub>2</sub>, ...,
+b<sub>n</sub>)</I>.  If <var>G</var>  was a lower triangular  matrix then also the  <code>remainder</code>
+component is a lower triangular matrix.
+<P>
+The  result   record   contains also   the  components    <code>relations</code> and
+<code>transformation</code>, which have the following meaning.
+<P>
+<code>relations</code> is  a basis of  the  space of  vectors <I>(x<sub>1</sub>,x<sub>2</sub>,...,x<sub>n</sub>)</I>
+such that <I>&sum;<sub>i=1</sub><sup>n</sup> x<sub>i</sub> b<sub>i</sub></I> is zero,  and <code>transformation</code> gives the
+expression of   the new  lattice   basis  in terms   of   the old,  i.e.,
+<code>transformation</code> is the  matrix <I>T</I> such that <I>T  . <var>G</var> . T<sup>tr</sup></I>
+is the <code>remainder</code> component of the result.
+<P>
+The optional argument  <var>y</var> denotes the  ``sensitivity'' of the algorithm,
+it must be a  rational number between <I>1/4</I>   and 1; the  default
+value is <I>&lt;y&gt; = 3/4</I>.
+<P>
+(The function <a href="chap051.htm#SECT033">LLLReducedBasis</a> computes an LLL reduced basis.)
+<P>
+<pre>    gap> g:= [ [ 4, 6, 5, 2, 2 ], [ 6, 13, 7, 4, 4 ],
+    >    [ 5, 7, 11, 2, 0 ], [ 2, 4, 2, 8, 4 ], [ 2, 4, 0, 4, 8 ] ];;
+    gap> LLLReducedGramMat( g );
+    rec(
+      remainder :=
+       [ [ 4, 2, 1, 2, -1 ], [ 2, 5, 0, 2, 0 ], [ 1, 0, 5, 0, 2 ],
+          [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ],
+      relation := [  ],
+      transformation :=
+       [ [ 1, 0, 0, 0, 0 ], [ -1, 1, 0, 0, 0 ], [ -1, 0, 1, 0, 0 ],
+          [ 0, 0, 0, 1, 0 ], [ -2, 0, 1, 0, 1 ] ],
+      scalarproducts := [ , [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ],
+          [ -1/4, 1/8, 37/75, 8/21 ] ],
+      bsnorms := [ 4, 4, 75/16, 168/25, 32/7 ] ) </pre>
+<P><A NAME="SECT035"><h2>51.35 LLL</h2></a>
+<P><P>
+<A name = "I43"></a>
+
+<A name = "I44"></a>
+
+<A name = "I45"></a>
+
+<P>
+<code>LLL( <var>tbl</var>, <var>characters</var> [, <var>y</var>] [, "sort"] [, "linearcomb"] )</code>
+<P>
+calls the LLL  algorithm (see <a href="chap051.htm#SECT033">LLLReducedBasis</a>)  in the case of lattices
+spanned by (virtual) characters <var>characters</var> of the character table <var>tbl</var>
+(see <a href="chap051.htm#SECT001">ScalarProduct</a>).  By finding shorter vectors in the lattice spanned
+by <var>characters</var>, i.e.  virtual characters  of smaller norm, in some cases
+<code>LLL</code> is able to find irreducible characters.
+<P>
+<code>LLL</code> returns a record with  at least components <code>irreducibles</code> (the list
+of found  irreducible  characters),  <code>remainders</code> (a list    of reducible
+virtual characters), and  <code>norms</code>  (the list  of norms  of <code>remainders</code>).
+<code>irreducibles</code> together    with <code>remainders</code>  span   the same  lattice as
+<var>characters</var>.
+<P>
+There are some optional parameters:
+<P>
+<DL><DT><var>y</var>:<DD><BR> controls the sensitivity of the algorithm;  the value of  <var>y</var> must
+       be between <I>1/4</I> and 1, the default value is <I>3/4</I>.
+</DL><P>
+<DL><DT><code>"sort"</code>:<DD><BR> 
+       <code>LLL</code> sorts  <var>characters</var>  and the  <code>remainders</code>  component of the
+       result according to the degrees.
+</DL><P>
+<DL><DT><code>"linearcomb"</code>:<DD><BR> The returned record contains components <code>irreddecomp</code>
+       and <code>reddecomp</code> which are decomposition matrices of <code>irreducibles</code>
+       and <code>remainders</code>, with respect to <var>characters</var>.
+</DL><P>
+<pre>    gap> s4:= CharTable( "Symmetric", 4 );;
+    gap> chars:= [ [ 8, 0, 0, -1, 0 ], [ 6, 0, 2, 0, 2 ],
+    >     [ 12, 0, -4, 0, 0 ], [ 6, 0, -2, 0, 0 ], [ 24, 0, 0, 0, 0 ],
+    >     [ 12, 0, 4, 0, 0 ], [ 6, 0, 2, 0, -2 ], [ 12, -2, 0, 0, 0 ],
+    >     [ 8, 0, 0, 2, 0 ], [ 12, 2, 0, 0, 0 ], [ 1, 1, 1, 1, 1 ] ];;
+    gap> LLL( s4, chars );
+    rec(
+      irreducibles :=
+       [ [ 2, 0, 2, -1, 0 ], [ 1, 1, 1, 1, 1 ], [ 3, 1, -1, 0, -1 ],
+          [ 3, -1, -1, 0, 1 ], [ 1, -1, 1, 1, -1 ] ],
+      remainders := [  ],
+      norms := [  ] )</pre>
+<P><A NAME="SECT036"><h2>51.36 OrthogonalEmbeddings</h2></a>
+<P><P>
+<A name = "I46"></a>
+
+<P>
+<code>OrthogonalEmbeddings( <var>G</var> [, "positive" ] [, <var>maxdim</var> ] )</code>
+<P>
+computes  all possible orthogonal  embeddings  of a lattice  given by its
+Gram matrix <I>G</I> which must be a regular matrix (see <a href="chap051.htm#SECT034">LLLReducedGramMat</a>).
+In other words, all solutions <I>X</I> of the problem
+<P>
+<center><table><tr><td><I> X<sup>tr</sup> X = G </I></td></tr></table></center>
+<P>
+are calculated (see <A href="biblio.htm#Ple90"><cite>Ple90</cite></a>).  Usually  there are many solutions <I>X</I>
+but  all  their  rows  are   chosen from a   small   set of  vectors,  so
+<code>OrthogonalEmbeddings</code> returns the solutions  in an encoded  form, namely
+as a record with components
+<P>
+<DL><DT><code>vectors</code>:<DD><BR> the list <I>[ x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub> ]</I> of vectors that may
+             be rows of a solution; these are exactly those vectors
+             that fulfill the condition <I>x<sub>i</sub> G<sup>-1</sup> x<sub>i</sub><sup>tr</sup>  &le; 1</I>
+             (see <a href="chap051.htm#SECT037">ShortestVectors</a>), and we have
+             <I>G = &sum;<sup>n</sup><sub>i=1</sub> x<sub>i</sub><sup>tr</sup> x<sub>i</sub></I>,
+</DL><P>
+<DL><DT><code>norms</code>:<DD>     the list of values <I>x<sub>i</sub> G<sup>-1</sup>x<sub>i</sub><sup>tr</sup></I>, and
+</DL><P>
+<DL><DT><code>solutions</code>:<DD><BR> a list <var>S</var> of lists; the <I>i</I>--th solution matrix is
+              <code>Sublist( <var>L</var>, <var>S</var>[<var>i</var>] )</code>, so the dimension of the
+              <I>i</I>--th solution is the length of <code><var>S</var>[<var>i</var>]</code>.
+</DL><P>
+The optional argument <code>"positive"</code> will cause <code>OrthogonalEmbeddings</code> to
+compute  only vectors <I>x<sub>i</sub></I> with  nonnegative entries.  In the context of
+characters  this is allowed  (and useful) if  <I>G</I> is the matrix of scalar
+products of ordinary characters.
+<P>
+When <code>OrthogonalEmbeddings</code> is called with the optional argument <var>maxdim</var>
+(a  positive   integer), it  computes  only solutions   up  to  dimension
+<var>maxdim</var>; this will accelerate the algorithm in some cases.
+<P>
+<I>G</I> may be  the  matrix of scalar  products of  some  virtual characters.
+From   the characters   and   the  embedding given  by  the   matrix <I>X</I>,
+<code>Decreased</code> (see <a href="chap051.htm#SECT039">Decreased</a>) may be able to compute irreducibles.
+<P>
+<pre>    gap> b := [ [  3, -1, -1 ], [ -1,  3, -1 ], [ -1, -1,  3 ] ];;
+    gap> c:=OrthogonalEmbeddings(b);
+    rec(
+      vectors :=
+       [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ], [ -1, 1, 0 ],
+          [ -1, 0, 1 ], [ 1, 0, 0 ], [ 0, -1, 1 ], [ 0, 1, 0 ],
+          [ 0, 0, 1 ] ],
+      norms := [ 1, 1, 1, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2 ],
+      solutions := [ [ 1, 2, 3 ], [ 1, 6, 6, 7, 7 ], [ 2, 5, 5, 8, 8 ],
+          [ 3, 4, 4, 9, 9 ], [ 4, 5, 6, 7, 8, 9 ] ] )
+    gap> Sublist( c.vectors, c.solutions[1] );
+    [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ] ]</pre>
+<P>
+<P>
+<code>OrthogonalEmbeddingsSpecialDimension</code>
+<A name = "I47"></a>
+<BR> 
+<code>          </code><code>( <var>tbl</var>, <var>reducibles</var>, <var>grammat</var> [, "positive" ], <var>dim</var> )</code>
+<P>
+This form can be  used if you want  to find irreducible characters of the
+table   <var>tbl</var>,  where <var>reducibles</var> is    a   list of virtual  characters,
+<var>grammat</var>  is the  matrix   of their scalar  products, and   <var>dim</var> is the
+maximal dimension of  an embedding.  First  all solutions up to <var>dim</var> are
+compute,  and  then <a href="chap051.htm#SECT039">Decreased</a>  <code>Decreased</code> is  called  in order to find
+irreducible characters of <var>tab</var>.
+<P>
+If <var>reducibles</var>  consists of ordinary  characters only,  you should enter
+the optional argument <code>"positive"</code>; this imposes some conditions on the
+possible embeddings (see the description of <code>OrthogonalEmbeddings</code>).
+<P>
+<code>OrthogonalEmbeddingsSpecialDimension</code> returns a record with components
+<P>
+<DL><DT><code>irreducibles</code>:<DD>  a list of found irreducibles, the intersection of all
+                 lists of irreducibles found by <code>Decreased</code>, for all
+                 possible embeddings, and
+</DL><P>
+<DL><DT><code>remainders</code>:<DD>    a list of remaining reducible virtual characters
+</DL><P><P>
+<pre>    gap> s6:= CharTable( "Symmetric", 6 );;
+    gap> b:= InducedCyclic( s6, "all" );;
+    gap> Add( b, [1,1,1,1,1,1,1,1,1,1,1] );
+    gap> c:= LLL( s6, b ).remainders;;
+    gap> g:= MatScalarProducts( s6, c, c );;
+    gap> d:= OrthogonalEmbeddingsSpecialDimension( s6, c, g, 8 );
+    rec(
+      irreducibles :=
+       [ [ 5, -3, 1, 1, 2, 0, -1, -1, -1, 0, 1 ], [ 5, 1, 1, -3, -1, 1,
+              2, -1, -1, 0, 0 ], [ 10, -2, -2, 2, 1, 1, 1, 0, 0, 0, -1 ],
+          [ 10, 2, -2, -2, 1, -1, 1, 0, 0, 0, 1 ] ],
+      remainders :=
+       [ [ 0, 4, 0, -4, 3, 1, -3, 0, 0, 0, -1 ], [ 4, 0, 0, 4, -2, 0, 1,
+              -2, 2, -1, 1 ], [ 6, 2, 2, -2, 3, -1, 0, 0, 0, 1, -2 ],
+          [ 14, 6, 2, 2, 2, 0, -1, 0, 0, -1, -1 ] ] )</pre>
+<P><A NAME="SECT037"><h2>51.37 ShortestVectors</h2></a>
+<P><P><P>
+<code>ShortestVectors( <var>G</var>, <var>m</var> )</code><BR> 
+<code>ShortestVectors( <var>G</var>, <var>m</var>, "positive" )</code>
+<P>
+computes all vectors <I>x</I> with <I>x G x<sup>tr</sup>  &le; m</I>,  where <I>G</I> is a matrix
+of a symmetric bilinear  form, and <I>m</I>  is a nonnegative integer.  If the
+optional argument <code>"positive"</code> is entered, only  those vectors <I>x</I> with
+nonnegative entries are computed.
+<P>
+<code>ShortestVectors</code> returns a record with components
+<P>
+<DL><DT><code>vectors</code>:<DD>  the list of vectors <I>x</I>, and
+</DL><P>
+<DL><DT><code>norms</code>:<DD>    the list of their norms according to the Gram matrix <I>G</I>.
+</DL><P>
+<pre>    gap> g:= [ [ 2, 1, 1 ], [ 1, 2, 1 ], [ 1, 1, 2 ] ];;
+    gap> ShortestVectors(g,4);
+    rec(
+      vectors := [ [ -1, 1, 1 ], [ 0, 0, 1 ], [ -1, 0, 1 ], [ 1, -1, 1 ],
+          [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ],
+          [ 1, 0, 0 ] ],
+      norms := [ 4, 2, 2, 4, 2, 4, 2, 2, 2 ] )</pre>
+<P>
+This algorithm is used in <a href="chap051.htm#SECT036">OrthogonalEmbeddings</a> <code>OrthogonalEmbeddings</code>.
+<P><A NAME="SECT038"><h2>51.38 Extract</h2></a>
+<P><P><P>
+<code>Extract( <var>tbl</var>, <var>reducibles</var>, <var>grammat</var> )</code><BR> 
+<code>Extract( <var>tbl</var>, <var>reducibles</var>, <var>grammat</var>, <var>missing</var> )</code>
+<P>
+tries  to  find irreducible  characters by  drawing  conclusions out of a
+given matrix <var>grammat</var> of scalar  products of the reducible characters in
+the  list    <var>reducibles</var>,  which  are characters of     the table <var>tbl</var>.
+<code>Extract</code> uses combinatorial and backtrack means.
+<P>
+<strong>Note\:\ 'Extract' works only with ordinary characters!</strong>
+<P>
+<DL><DT><var>missing</var>:<DD> number of characters missing to complete the <var>tbl</var>
+           perhaps <code>Extract</code> may be accelerated by the specification of
+           <var>missing</var>.
+</DL><P>
+<code>Extract</code> returns a record <var>extr</var> with components <code>solution</code> and <code>choice</code>
+where <code>solution</code> is   a  list <I>[  M<sub>1</sub>, ...,  M<sub>n</sub>  ]</I> of  decomposition
+matrices  that  satisfy the  equation <center><table><tr><td><I>   M<sub>i</sub><sup>tr</sup> . X   = <code>Sublist(
+<var>reducibles</var>, <var>extr</var>.choice[i] )</code>  , </I></td></tr></table></center> for a  matrix <I>X</I> of irreducible
+characters, and <code>choice</code> is a list of length  <I>n</I> whose entries are lists
+of indices.
+<P>
+So each column stands for one of the reducible input characters, and each
+row stands  for an   irreducible   character.  You can use    <a href="chap051.htm#SECT039">Decreased</a>
+<code>Decreased</code> to examine the solution for computable irreducibles.
+<P>
+<pre>    gap> s4 := CharTable( "Symmetric", 4 );;
+    gap> y := [ [ 5, 1, 5, 2, 1 ], [ 2, 0, 2, 2, 0 ], [ 3, -1, 3, 0, -1 ],
+    >  [ 6, 0, -2, 0, 0 ], [ 4, 0, 0, 1, 2 ] ];;
+    gap> g := MatScalarProducts( s4, y, y );
+    [ [ 6, 3, 2, 0, 2 ], [ 3, 2, 1, 0, 1 ], [ 2, 1, 2, 0, 0 ],
+      [ 0, 0, 0, 2, 1 ], [ 2, 1, 0, 1, 2 ] ]
+    gap> e:= Extract( s4, y, g, 5 );
+    rec(
+      solution :=
+       [ [ [ 1, 1, 0, 0, 2 ], [ 1, 0, 1, 0, 1 ], [ 0, 1, 0, 1, 0 ],
+              [ 0, 0, 1, 0, 1 ], [ 0, 0, 0, 1, 0 ] ] ],
+      choice := [ [ 2, 5, 3, 4, 1 ] ] )
+    # continued in <code>Decreased</code> ( see <a href="chap051.htm#SECT039">Decreased</a> )</pre>
+<P><A NAME="SECT039"><h2>51.39 Decreased</h2></a>
+<P><P><P>
+<code>Decreased( <var>tbl</var>, <var>reducibles</var>, <var>mat</var> )</code><BR> 
+<code>Decreased( <var>tbl</var>, <var>reducibles</var>, <var>mat</var>, <var>choice</var> )</code>
+<P>
+tries     to      solve   the    output      of    <a href="chap051.htm#SECT036">OrthogonalEmbeddings</a>
+<code>OrthogonalEmbeddings</code>  or    <a href="chap051.htm#SECT038">Extract</a>   <code>Extract</code> in   order   to  find
+irreducible characters.  <var>tbl</var> must  be  a character table,  <var>reducibles</var>
+the  list of characters used  for  the call of <code>OrtgogonalEmbeddings</code>  or
+<code>Extract</code>, <var>mat</var> one solution, and in the  case of a solution returned by
+<code>Extract</code>, <code>choice</code> must be the corresponding <code>choice</code> component.
+<P>
+<code>Decreased</code> returns a record with components
+<P>
+<DL><DT><code>irreducibles</code>:<DD><BR> 
+      the list of found irreducible characters,
+</DL><P>
+<DL><DT><code>remainders</code>:<DD><BR> 
+      the remaining reducible characters, and
+</DL><P>
+<DL><DT><code>matrix</code>:<DD><BR> 
+      the decomposition matrix of the characters in the <code>remainders</code>
+      component, which could not be solved.
+</DL><P>
+<pre>    # see example in <a href="chap051.htm#SECT038">Extract</a> <code>Extract</code>
+    gap> d := Decreased( s4, y, e.solution[1], e.choice[1] );
+    rec(
+      irreducibles :=
+       [ [ 1, 1, 1, 1, 1 ], [ 3, -1, -1, 0, 1 ], [ 1, -1, 1, 1, -1 ],
+          [ 3, 1, -1, 0, -1 ], [ 2, 0, 2, -1, 0 ] ],
+      remainders := [  ],
+      matrix := [  ] )</pre>
+<P><A NAME="SECT040"><h2>51.40 DnLattice</h2></a>
+<P><P>
+<A name = "I48"></a>
+
+<P>
+<code>DnLattice( <var>tbl</var>, <var>grammat</var>, <var>reducibles</var> )</code>
+<P>
+tries to find sublattices isomorphic to root  lattices of type <I>D<sub>n</sub></I> (for
+<I>n  &ge; 5</I>  or <I>n =  4</I>)  in a lattice that   is generated by the norm  2
+characters  <var>reducibles</var>,  which must be  characters  of the table <var>tbl</var>.
+<var>grammat</var>  must be the matrix  of scalar products  of <var>reducibles</var>, i.e.,
+the Gram matrix of the lattice.
+<P>
+<code>DnLattice</code> is able to find irreducible characters  if there is a lattice
+with  <I>n&gt;4</I>.  In the case  <I>n = 4</I> <code>DnLattice</code>  only  in some cases finds
+irreducibles.
+<P>
+<code>DnLattice</code> returns a record with components
+<P>
+<DL><DT><code>irreducibles</code>:<DD><BR> 
+       the list of found irreducible characters,
+</DL><P>
+<DL><DT><code>remainders</code>:<DD><BR> 
+       the list of remaining reducible characters, and
+</DL><P>
+<DL><DT><code>gram</code>:<DD><BR> 
+       the Gram matrix of the characters in <code>remainders</code>.
+</DL><P>
+The remaining   reducible  characters are transformed  into  a normalized
+form, so that the lattice-structure is  cleared up for further treatment.
+So  <code>DnLattice</code> might be   useful even if  it  fails to find  irreducible
+characters.
+<P>
+<pre>    gap> tbl:= CharTable( "Symmetric", 4 );;
+    gap> y1:=[ [ 2, 0, 2, 2, 0 ], [ 4, 0, 0, 1, 2 ], [ 5, -1, 1, -1, 1 ],
+    >          [ -1, 1, 3, -1, -1 ] ];;
+    gap> g1:= MatScalarProducts( tbl, y1, y1 );
+    [ [ 2, 1, 0, 0 ], [ 1, 2, 1, -1 ], [ 0, 1, 2, 0 ], [ 0, -1, 0, 2 ] ]
+    gap> e:= DnLattice( tbl, g1, y1 );
+    rec(
+      gram := [  ],
+      remainders := [  ],
+      irreducibles :=
+       [ [ 2, 0, 2, -1, 0 ], [ 1, -1, 1, 1, -1 ], [ 1, 1, 1, 1, 1 ],
+          [ 3, -1, -1, 0, 1 ] ] )</pre>
+<P>
+<P>
+<code>DnLatticeIterative( <var>tbl</var>, <var>arec</var> )</code>
+<A name = "I49"></a>
+
+<P>
+was made for iterative  use of <code>DnLattice</code>. <var>arec</var> must  be either a list
+of characters of the table <var>tbl</var>, or a record with components
+<P>
+<DL><DT><code>remainders</code>:<DD><BR> 
+       a list of characters of the character table <var>tbl</var>, and
+</DL><P>
+<DL><DT><code>norms</code>:<DD><BR> 
+       the norms of the characters in <code>remainders</code>,
+</DL><P>
+e.g., a record returned by <a href="chap051.htm#SECT035">LLL</a> <code>LLL</code>.  <code>DnLatticeIterative</code> will select
+the characters  of norm 2,  call <code>DnLattice</code>, reduce the  characters with
+found irreducibles, call <code>DnLattice</code> for the remaining characters, and so
+on, until no new irreducibles are found.
+<P>
+<code>DnLatticeIterative</code> returns (like <a href="chap051.htm#SECT035">LLL</a> <code>LLL</code>) a record with components
+<P>
+<DL><DT><code>irreducibles</code>:<DD><BR> 
+     the list of found irreducible characters,
+</DL><P>
+<DL><DT><code>remainders</code>:<DD><BR> 
+     the list of remaining reducible characters, and
+</DL><P>
+<DL><DT><code>norms</code>:<DD><BR> 
+     the list of norms of the characters in <code>remainders</code>.
+</DL><P>
+<pre>    gap> tbl:= CharTable( "Symmetric", 4 );;
+    gap> y1:= [ [ 2, 0, 2, 2, 0 ], [ 4, 0, 0, 1, 2 ],
+    >   [ 5, -1, 1, -1, 1 ], [ -1, 1, 3, -1, -1 ], [ 6, -2, 2, 0, 0 ] ];;
+    gap> DnLatticeIterative( tbl, y1);
+    rec(
+      irreducibles :=
+       [ [ 2, 0, 2, -1, 0 ], [ 1, -1, 1, 1, -1 ], [ 1, 1, 1, 1, 1 ],
+          [ 3, -1, -1, 0, 1 ] ],
+      remainders := [  ],
+      norms := [  ] )</pre>
+<P><A NAME="SECT041"><h2>51.41 ContainedDecomposables</h2></a>
+<P><P><P>
+<code>ContainedDecomposables( <var>constituents</var>, <var>moduls</var>, <var>parachar</var>, <var>func</var> )</code>
+<P>
+For a list of  <strong>rational</strong>  characters <var>constituents</var> and  a  parametrized
+rational character  <var>parachar</var>   (see <a href="chap052.htm#SECT001">More about Maps   and Parametrized
+Maps</a>),  the set of  all elements <I>&chi;</I> of   <var>parachar</var> is returned that
+satisfy  <I>&lt;func&gt;( &chi; )</I>  (i.e., for that  <code>true</code> is  returned) and that
+``modulo <var>moduls</var> lie in the  lattice spanned by <var>constituents</var>''. This
+means they lie in  the lattice spanned by  <var>constituents</var> and the set <I>{
+<var>moduls</var>[i].  e<sub>i</sub>; 1 &le;  i &le;  n}</I>, where   <I>n</I>  is the length  of
+<var>parachar</var> and <I>e<sub>i</sub></I> is the <I>i</I>-th vector of the standard base.
+<P>
+<pre>    gap> hs:= CharTable("HS");; s:= CharTable("HSM12");; s.identifier;
+    "5:4xa5"
+    gap> rat:= RationalizedMat(s.irreducibles);;
+    gap> fus:= InitFusion( s, hs );
+    [ 1, [ 2, 3 ], [ 2, 3 ], [ 2, 3 ], 4, 5, 5, [ 5, 6, 7 ], [ 5, 6, 7 ],
+      9, [ 8, 9 ], [ 8, 9 ], [ 8, 9, 10 ], [ 8, 9, 10 ], [ 11, 12 ],
+      [ 17, 18 ], [ 17, 18 ], [ 17, 18 ], 21, 21, 22, [ 23, 24 ],
+      [ 23, 24 ], [ 23, 24 ], [ 23, 24 ] ]
+    # restrict a rational character of <code>hs</code> by <code>fus</code>,
+    # see chapter <a href="chap052.htm">Maps and Parametrized Maps</a>:
+    gap> rest:= CompositionMaps( hs.irreducibles[8], fus );
+    [ 231, [ -9, 7 ], [ -9, 7 ], [ -9, 7 ], 6, 15, 15, [ -1, 15 ],
+      [ -1, 15 ], 1, [ 1, 6 ], [ 1, 6 ], [ 1, 6 ], [ 1, 6 ], [ -2, 0 ],
+      [ 1, 2 ], [ 1, 2 ], [ 1, 2 ], 0, 0, 1, 0, 0, 0, 0 ]
+    # all vectors in the lattice:
+    gap> ContainedDecomposables( rat, s.centralizers, rest, x -> true );
+    [ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, -9, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ] ]
+    # better filter, only characters (see <a href="chap051.htm#SECT042">ContainedCharacters</a>):
+    gap> ContainedDecomposables( rat, s.centralizers, rest,
+    >                  x->NonnegIntScalarProducts(s,s.irreducibles,x) );
+    [ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ] ]</pre>
+<P>
+An  application    of  <code>ContainedDecomposables</code> is  <a href="chap051.htm#SECT042">ContainedCharacters</a>
+<code>ContainedCharacters</code>.
+<P>
+For another  strategy  that works  also  for  irrational characters,  see
+<a href="chap051.htm#SECT043">ContainedSpecialVectors</a>.
+<P><A NAME="SECT042"><h2>51.42 ContainedCharacters</h2></a>
+<P><P><P>
+<code>ContainedCharacters( <var>tbl</var>, <var>constituents</var>, <var>parachar</var> )</code>
+<P>
+returns the set of all characters contained  in the parametrized rational
+character <var>parachar</var> (see <a href="chap052.htm#SECT001">More about Maps  and Parametrized Maps</a>), that
+modulo centralizer orders  lie   in the linear  span  of  the  <strong>rational</strong>
+characters  <var>constituents</var>  of the character   table <var>tbl</var>  and that have
+nonnegative integral scalar products with all elements of <var>constituents</var>.
+<P>
+<strong>Note</strong>: This does not  imply  that an element  of the  returned list is
+necessary a linear combination of <var>constituents</var>.
+<P>
+<pre>    gap> s:= CharTable( "HSM12" );; hs:= CharTable( "HS" );;
+    gap> rat:= RationalizedMat( s.irreducibles );;
+    gap> fus:= InitFusion( s, hs );;
+    gap> rest:= CompositionMaps( hs.irreducibles[8], fus );;
+    gap> ContainedCharacters( s, rat, rest );
+    [ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ] ]</pre>
+<P>
+<code>ContainedCharacters</code> calls <a href="chap051.htm#SECT041">ContainedDecomposables</a>
+<code>ContainedDecomposables</code>.
+<P><A NAME="SECT043"><h2>51.43 ContainedSpecialVectors</h2></a>
+<P><P><P>
+<code>ContainedSpecialVectors( <var>tbl</var>, <var>chars</var>, <var>parachar</var>, <var>func</var> )</code>
+<P>
+returns  the list  of all  elements <var>vec</var>  of the  parametrized character
+<var>parachar</var> (see <a href="chap052.htm#SECT001">More   about  Maps and Parametrized  Maps</a>),   that have
+integral norm and integral scalar product with the principal character of
+the character table <var>tbl</var> and that satisfy <code><var>func</var>( <var>tbl</var>, <var>chars</var>, <var>vec</var>
+)</code>, i.e., for that <code>true</code> is returned.
+<P>
+<pre>    gap> s:= CharTable( "HSM12" );; hs:= CharTable( "HS" );;
+    gap> fus:= InitFusion( s, hs );;
+    gap> rest:= CompositionMaps( hs.irreducibles[8], fus );;
+    # no further condition:
+    gap> ContainedSpecialVectors( s, s.irreducibles, rest,
+    >                      function(tbl,chars,vec) return true; end );;
+    gap> Length( last );
+    24
+    # better filter: those with integral scalar products
+    gap> ContainedSpecialVectors( s, s.irreducibles, rest,
+    >                             IntScalarProducts );
+    [ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, -9, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ] ]
+    # better filter: the scalar products must be nonnegative
+    gap> ContainedSpecialVectors( s, s.irreducibles, rest,
+    >                             NonnegIntScalarProducts );
+    [ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ] ]</pre>
+<P>
+Special cases of <code>ContainedSpecialVectors</code> are
+<a href="chap051.htm#SECT044">ContainedPossibleCharacters</a> <code>ContainedPossibleCharacters</code> and
+<a href="chap051.htm#SECT045">ContainedPossibleVirtualCharacters</a>
+<code>ContainedPossibleVirtualCharacters</code>.
+<P>
+<code>ContainedSpecialVectors</code> successively  examines all vectors contained in
+<var>parachar</var>, thus it might not be  useful if the indeterminateness exceeds
+<I>10<sup>6</sup></I>.  For another strategy  that  works for rational characters  only,
+see <a href="chap051.htm#SECT041">ContainedDecomposables</a>.
+<P><A NAME="SECT044"><h2>51.44 ContainedPossibleCharacters</h2></a>
+<P><P><P>
+<code>ContainedPossibleCharacters( <var>tbl</var>, <var>chars</var>, <var>parachar</var> )</code>
+<P>
+returns the  list of all   elements <var>vec</var>  of the parametrized  character
+<var>parachar</var> (see  <a href="chap052.htm#SECT001">More  about Maps and  Parametrized  Maps</a>), which  have
+integral norm and integral scalar product with the principal character of
+the character  table <var>tbl</var> and nonnegative  integral scalar  product with
+all elements of the list <var>chars</var> of characters of <var>tbl</var>.
+<P>
+<pre>    # see example in <a href="chap051.htm#SECT043">ContainedSpecialVectors</a>
+    gap> ContainedPossibleCharacters( s, s.irreducibles, rest );
+    [ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ] ]</pre>
+<P>
+<code>ContainedPossibleCharacters</code>       calls       <a href="chap051.htm#SECT043">ContainedSpecialVectors</a>
+<code>ContainedSpecialVectors</code>.
+<P>
+<code>ContainedPossibleCharacters</code> successively examines all vectors contained
+in <var>parachar</var>,  thus  it might not  be   useful if the  indeterminateness
+exceeds <I>10<sup>6</sup></I>.  For another strategy that  works for rational characters
+only, see <a href="chap051.htm#SECT041">ContainedDecomposables</a>.
+<P><A NAME="SECT045"><h2>51.45 ContainedPossibleVirtualCharacters</h2></a>
+<P><P><P>
+<code>ContainedPossibleVirtualCharacters( <var>tbl</var>, <var>chars</var>, <var>parachar</var> )</code>
+<P>
+returns the  list  of all elements <var>vec</var>  of  the parametrized  character
+<var>parachar</var> (see  <a href="chap052.htm#SECT001">More about  Maps  and  Parametrized Maps</a>), which  have
+integral norm and integral scalar product with the principal character of
+the  character table <var>tbl</var> and  integral scalar product with all elements
+of the list <var>chars</var> of characters of <var>tbl</var>.
+<P>
+<pre>    # see example in <a href="chap051.htm#SECT043">ContainedSpecialVectors</a>
+    gap> ContainedPossibleVirtualCharacters( s, s.irreducibles, rest );
+    [ [ 231, 7, -9, -9, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, -1, -1, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, -9, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ],
+      [ 231, 7, -9, 7, 6, 15, 15, 15, 15, 1, 6, 6, 1, 1, -2, 1, 2, 2, 0,
+          0, 1, 0, 0, 0, 0 ] ]</pre>
+<P>
+<code>ContainedPossibleVirtualCharacters</code>   calls    <a href="chap051.htm#SECT043">ContainedSpecialVectors</a>
+<code>ContainedSpecialVectors</code>.
+<P>
+<code>ContainedPossibleVirtualCharacters</code> successively examines   all  vectors
+that  are contained in  <var>parachar</var>, thus  it  might not  be useful if the
+indeterminateness exceeds  <I>10<sup>6</sup></I>.   For another strategy that  works for
+rational characters only, see <a href="chap051.htm#SECT041">ContainedDecomposables</a>.
+<P><a href ="chap050.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap052.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

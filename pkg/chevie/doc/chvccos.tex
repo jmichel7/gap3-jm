@@ -1,0 +1,913 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvccos.tex       CHEVIE documentation       Frank Luebeck, Jean Michel
+%%
+%A  $Id: chvccos.tex,v 1.1 1997/03/27 16:31:17 werner Exp $
+%%
+%Y  Copyright (C) 1992 - 2010  Lehrstuhl D f\"ur Mathematik, RWTH Aachen,
+%Y  and   University Paris VII.
+%%
+%%  This  file  contains  the  description  of  the  GAP functions of CHEVIE
+%%  dealing with Coxeter cosets.
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\bB{{\bf B}}
+\def\bG{{\bf G}}
+\def\bT{{\bf T}}
+
+\Chapter{Coxeter cosets}
+Let  $R$ be a root system in the  real vector space $V$ as in Chapter~"Root
+systems  and  finite  Coxeter  groups".  We  say that $F_0\in \GL(V)$ is an
+*automorphism  of $R$* if  it permutes $R$  and is of  finite order (finite
+order  is automatic  if $R$  generates $V$).  It follows by \cite[chap. VI,
+\S1.1,  lemme 1]{Bou68} that the dual $F_0^\ast\in\GL(V^\vee)$ permutes the
+coroots  $R^\vee\subset V^\vee$; thus $F_0$ normalizes the reflection group
+$W$  associated to $R$, that is  $w\mapsto F_0wF_0^{-1}$ is an automorphism
+of  $W$. Thus (see  "Reflection cosets") we  get a reflection coset $WF_0$,
+called here a *Coxeter coset*.
+
+The  motivation for introducing Coxeter  cosets comes from automorphisms of
+algebraic  reductive groups, in particular  non-split reductive groups over
+finite  fields. Let us,  as in "Algebraic  groups and semi-simple elements"
+fix a connected reductive algebraic group $\bG$. We assume $\bG$ is a group
+over an algebraic closure $\overline\F_q$ of a finite field $\F_q$, defined
+over  $\F_q$, which corresponds to be given a Frobenius endomorphism $F$ so
+that  the finite  group of  rational points  $\bG(\F_q)$ identifies  to the
+subgroup $\bG^F$ of fixed points under $F$.
+
+Let  $\bT$ be a maximal  torus of $\bG$, and  $\Phi$ (resp. $\Phi^\vee$) be
+the  roots (resp. coroots)  of $G$ with  respect to $\bT$  in the character
+group  $X(\bT)$ (resp. the  group of one-parameter  subgroups $Y(\bT)$). As
+explained  in  "Algebraic  groups  and  semi-simple elements" then $\bG$ is
+determined  up  to  isomorphism  by $(X(\bT),\Phi,Y(\bT),\Phi^\vee)$ and in
+\CHEVIE\   this   corresponds   to   give   a   rational  reflection  group
+$W=N_\bG(\bT)/\bT$ acting on the vector space $V=\Q\otimes X(\bT)$ together
+with a root system.
+
+If  $\bT$ is $F$-stable the Frobenius  endomorphism $F$ acts also naturally
+on  $X(T)$ and defines thus an endomorphism of $V$, which is of the form $q
+F_0$,  where $F_0\in\GL(V)$ is  of finite order  and normalizes $W$. We get
+thus  a Coxeter coset $WF_0\subset\GL(V)$. The data $(X(\bT), \Phi, Y(\bT),
+\Phi^\vee,   F_0)$,  and  the  integer   $q$  completely  determine  up  to
+isomorphism  the associated  *reductive finite  group* $\bG^F$.  Thus these
+data  is a way of representing  in \CHEVIE\ the essential information which
+determines  a finite reductive  group. Indeed, all  properties of Chevalley
+groups  can be computed from that datum\:\ symbols representing characters,
+conjugacy classes, and finally the whole character table of $\bG^F$.
+
+It turns out that an interesting part of the objects attached to this datum
+depends  only on $(V,W, F_0)$\:\ the order  of the maximal tori, the ``fake
+degrees\", the order of $\bG^F$, symbols representing unipotent characters,
+Deligne-Lusztig  induction in  terms of  ``almost characters\", the Fourier
+matrix  relating characters  and almost characters, etc$\ldots$ (see, e.g.,
+\cite{BMM93}).  It  is  thus  possible  to  extend  their  construction  to
+non-crystallographic  groups (or  even to  more general  complex reflection
+groups,  see "Spets"); this is why we did  not include a root system in the
+definition  of a reflection coset. However, unipotent conjugacy classes for
+instance depend on the root system thus do not exist in general.
+
+We  assume now that $\bT$  is contained in an  $F$-stable Borel subgroup of
+$\bG$.  This defines an order  on the roots, and  there is a unique element
+$\phi\in  W F_0$, the  *reduced element* of  the coset, which preserves the
+set of positive roots. It thus defines a *diagram automorphism*, that is an
+automorphism  of the Coxeter system $(W,S)$.  This element is stored in the
+component  '.phi' of the coset record. It may be defined without mentioning
+the  roots,  as  follows\:  $(W,F_0(S))$  is  another  Coxeter system, thus
+conjugate to $S$ by a unique element of $W$, thus there is a unique element
+$\phi\in WF_0$ which stabilizes $S$ (a proof follows from \cite[Theoreme 1,
+chap.  V, \S 3]{Bou68}). We  consider thus cosets of the form $W\phi$ where
+$\phi$  stabilizes $S$.  The coset  $W \phi$  is completely  defined by the
+permutation  '.phi' when $\bG$ is  semi-simple --- equivalently when $\Phi$
+generates  $V$; in this  case we just  need to specify  'phi' to define the
+coset.
+
+There is a slight generalisation of the above setup, covering in particular
+the  case of the Ree and Suzuki groups. We consider $\bG^F$ where $F$ not a
+Frobenius  endomorphism, but  an isogeny  such that  some power  $F^n$ is a
+Frobenius endomorphism. Then $F$ still defines an endomorphism of $V$ which
+normalizes  $W$; we define a real number $q$ such that $F^n$ is attached to
+an  $\F_{q^n}$-structure. Then  we still  have $F=q  F_0$ where $F_0$ is of
+finite  order but $q$  is no more  an integer. Thus $F_0\in\GL(V\otimes\R)$
+but  $F_0\notin\GL(V)$. For instance, for the  Ree and Suzuki groups, $F_0$
+is  an automorphism of order  $2$ of $W$, which  is of type $G_2$, $B_2$ or
+$F_4$, and $q=\sqrt 2$ for $B_2$ and $F_4$ and $q=\sqrt 3$ for $G_2$ To get
+this,  we need to start  from root systems for  $G_2$, $B_2$ or $F_4$ where
+all  the roots  have the  same length.  This kind  of root  system is *not*
+crystallographic.  Such more general root systems also exist for all finite
+Coxeter  groups such as  the dihedral groups  and $H_3$ and  $H_4$. We will
+call  here  *Weyl  cosets*  the  cosets  corresponding to rational forms of
+algebraic  groups, which include  thus some non-rational  roots systems for
+$B_2$, $G_2$ and $F_4$.
+
+Conjugacy  classes and irreducible characters of Coxeter cosets are defined
+as  for  general  reflection  cosets.  For  irreducible  characters of Weyl
+cosets,  in \CHEVIE\ we  choose (following Lusztig)  for each $\phi$-stable
+character  of $W$ a particular extension to a character of $W\rtimes\langle
+\phi \rangle$, which we will call the *preferred extension*. The *character
+table*  of the coset $W\phi$ is the table of the restrictions to $W\phi$ of
+the preferred extensions (See also the section below 'CharTable for Coxeter
+cosets'). The question of finding the conjugacy classes and character table
+of  a Coxeter coset can be reduced  to the case of irreducible root systems
+$R$.
+
+\begin{itemize}
+\item  The automorphism $\phi$ permutes  the irreducible components of $W$,
+and  $W\phi$ is a direct product of cosets where $\phi$ permutes cyclically
+the irreducible components of $W$. The preferred extension is defined to be
+the direct product of the preferred extension in each of these situations.
+
+\item  Assume  now  that  $W\phi$  is  a  descent  of  scalars, that is the
+decomposition  in irreducible components $W=W_1\times \cdots \times W_k$ is
+cyclically  permuted by $\phi$. Then there  are natural bijections from the
+$\phi$-conjugacy  classes of $W$ to the $\phi^k$-conjugacy classes of $W_1$
+as  well as from the $\phi$-stable characters of $W$ to the $\phi^k$-stable
+characters of $W_1$, which reduce the definition of preferred extensions on
+$W\phi$ to the definition for $W_1\phi^k$.
+
+\item  Assume now  that $W$  is the  Coxeter group  of an  irreducible root
+system.   $\phi$  permutes  the   simple  roots,  hence   induces  a  graph
+automorphism   on  the  corresponding  Dynkin  diagram.  If  $\phi=1$  then
+conjugacy  classes and characters coincide with  those of the Coxeter group
+$W$.  
+
+\item The nontrivial cases for crystallographic roots systems are (the order
+of  $\phi$ is  written as  left exponent  to the type)\:\ $^2A_n$, $^2D_n$,
+$^3D_4$, $^2E_6$.
+
+\item  For non-crystallographic root  systems where all  the roots have the
+same  length the additional cases  $^2B_2$, $^2G_2$, $^2F_4$ and $^2I_2(k)$
+arise.
+
+\item  In  case  $^3D_4$  the  group  $W\rtimes\langle  \phi\rangle$ can be
+embedded into the Coxeter group of type $F_4$, which induces a labeling for
+the  conjugacy classes of  the coset. The  preferred extension is chosen as
+the (single) extension with rational values.
+
+\item In case $^2D_n$ the group $W\rtimes\langle \phi\rangle$ is isomorphic
+to a Coxeter group of type $B_n$. This induces a canonical labeling for the
+conjugacy classes of the coset and allows to define the preferred extension
+in  a  combinatorial  way  using  the  labels (pairs of partitions) for the
+characters of the Coxeter group of type $B_n$.
+
+\item  In the remaining crystallographic  cases $\phi$ identifies to $-w_0$
+where  $w_0$  is  the  longest  element  of  $W$.  So, there is a canonical
+labeling  of the conjugacy classes and characters  of the coset by those of
+$W$.  The preferred extensions  are defined by  describing the signs of the
+character values on $-w_0$.
+\end{itemize}
+
+In  \GAP\ the most general  construction of a Coxeter  coset is by starting
+from  a  Coxeter  datum  specified  by  the  matrices  of 'simpleRoots' and
+'simpleCoroots',  and  giving  in  addition  the  matrix 'F0Mat' of the map
+$F_0\:V\rightarrow V$ (see the commands 'CoxeterCoset' and
+'CoxeterSubCoset').  As  for  Coxeter  groups,  the elements of $W\phi$ are
+uniquely determined by the permutation they induce on the set of roots $R$.
+We consider these permutations as 'Elements' of the Coxeter coset.
+
+Coxeter  cosets are  implemented in  {\GAP} by  a record  which points to a
+Coxeter  datum record  and has  additional fields  holding 'F0Mat'  and the
+corresponding   element  'phi'.  Functions  on   the  coset  (for  example,
+'ChevieClassInfo')  are  about  properties  of  the  group coset $W \phi$ ;
+however,  most definitions for  elements of untwisted  Coxeter groups apply
+without  change to elements in $W \phi$\:\ e.g., if we define the length of
+an  element $w\phi\in W \phi$  as the number of  positive roots it sends to
+negative  ones, it  is the  same as  the length  of $w$, i.e., $\phi$ is of
+length  $0$, since $\phi$ has  been chosen to preserve  the set of positive
+roots.  Similarly, the 'CoxeterWord' describing $w\phi$  is the same as the
+one for $w$, etc$\ldots$
+
+We  associate  to  a  Coxeter  coset  $W\phi$  a  *twisted Dynkin diagram*,
+consisting  of the Dynkin diagram of $W$ and the graph automorphism induced
+by  $\phi$  on  this  diagram  (this  specifies  the group $W\rtimes\langle
+F\rangle$,   mentioned  above,  up  to   isomorphism).  See  the  functions
+'ReflectionType', 'ReflectionName' and 'PrintDiagram' for Coxeter cosets.
+
+Below  is an example showing first how to *not* define, then how to define,
+the Weyl coset for a Suzuki group\:
+
+|    gap> 2B2:=CoxeterCoset(CoxeterGroup("B",2),(1,2));
+    Error, #I transposed of matrix for F0 must normalize set of coroots of\
+     parent.
+     in
+    CoxeterCoset( CoxeterGroup( "B", 2 ), (1,2) ) called from
+    main loop
+    brk>
+    gap> 2B2:=CoxeterCoset(CoxeterGroup("Bsym",2),(1,2));
+    2Bsym2
+    gap> Display(CharTable(2B2));
+    2Bsym2
+    
+         2 1      2     2
+    
+                  1   121
+    
+    2.     1      1     1
+    .11    1     -1    -1
+    1.1    . -ER(2) ER(2)
+    |
+
+A  *subcoset* $Hw\phi$ of $W\phi$ is given  by a reflection subgroup $H$ of
+$W$  and an element $w$ of $W$ such that $w\phi$ induces an automorphism of
+the  root  system  of  $H$.  For  algebraic  groups,  this corresponds to a
+rational  form of  a reductive  subgroup of  maximal rank.  For example, if
+$W\phi$  corresponds to  the algebraic  group $\bG$  and $H$ is the trivial
+subgroup, the coset $Hw\phi$ corresponds to a maximal torus $\bT_w$ of type
+$w$.
+
+|    gap> CoxeterSubCoset(2B2,[],Group(2B2).1);
+    (q^2-ER(2)q+1)|
+
+A subgroup $H$ which is a parabolic subgroup corresponds to a rational form
+of  a Levi  subgroup of  $\bG$. The  command 'Twistings'  gives all rational
+forms of such a Levi. 
+
+|    gap> W:=CoxeterGroup("B",2);
+    CoxeterGroup("B",2)
+    gap> Twistings(W,[1]);  
+    [ ~A1.(q-1), ~A1.(q+1) ]
+    gap> Twistings(W,[2]);
+    [ A1<2>.(q-1), A1<2>.(q+1) ]|
+
+Notice how we distinguish between subgroups generated by short roots and by
+long  roots. A general  $H$ corresponds to  a reductive subgroup of maximal
+rank.  Here we consider the subgroup generated  by the long roots in $B_2$,
+which  corresponds to a  subgroup of type  $SL_2\times SL_2$ in $SP_4$, and
+show its possible rational forms.
+
+|    gap> W:=CoxeterGroup("B",2);
+    CoxeterGroup("B",2)
+    gap> Twistings(W,[2,4]);
+    [ A1<2>xA1<4>, (A1xA1)<2,4> ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterCoset}
+\index{CoxeterCoset}
+
+'CoxeterCoset( <W>[, <FMat> ] )'
+
+'CoxeterCoset( <W>[, <FPerm>] )'
+
+This  function returns a Coxeter coset as  a \GAP\ object. The argument <W>
+must be a Coxeter group (created by 'CoxeterGroup' or
+'ReflectionSubgroup').  In the first  form the argument  <F0Mat> must be an
+invertible  matrix of  dimension 'Rank(<W>)',  representing an automorphism
+$F$  of the root system of the parent of <W>. In the second form <FPerm> is
+a  permutation of the roots of the parent  group of <W>; it is assumed that
+the corresponding <FMat> acts trivially on the orthogonal of these roots. A
+shortcut  is accepted if <W>  has same rank as  semisimple rank and <FPerm>
+preserves its simple roots\:\ one need only give the induced permutation of
+the simple roots.
+
+If  there is  no second  argument the  default for  <F0Mat> is the identity
+matrix.
+
+'CoxeterCoset' returns a record  from   which we document the   following
+components\:
+
+'isDomain', 'isFinite':\\
+        true
+
+'reflectionGroup':\\
+        the Coxeter group <W>
+
+'F0Mat':\\
+        the matrix acting on $V$ which represents the unique element $\phi$
+in $WF_0$ which preserves the positive roots.
+
+'phi':\\
+        the permutation of the roots of <W> induced by 'F0Mat'
+        (also the element of smallest length in the Coset $WF_0$).
+
+In  the  first example  we create a  Coxeter  coset corresponding  to the
+general unitary groups $GU_3(q)$ over finite fields with $q$ elements.
+
+|    gap> W := RootDatum("gl",3);;
+    gap> gu3 := CoxeterCoset( W, -IdentityMat( 3 ) );
+    2A2.(q+1)
+    gap> F4 := CoxeterGroup( "F", 4 );;
+    gap> D4 := ReflectionSubgroup( F4, [ 1, 2, 16, 48 ] );;
+    gap> PrintDiagram( D4 );
+    D4   9
+          \
+           1 - 16
+          /
+         2
+    gap> CoxeterCoset( D4, MatXPerm(D4,(2,9,16)) );
+    3D4<9,16,1,2>
+    gap> CoxeterCoset( D4, (2,9,16));
+    3D4<9,16,1,2>|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CoxeterSubCoset}
+\index{CoxeterSubCoset}
+
+'CoxeterSubCoset( <WF>, <r>[, <w>])'
+
+Returns the  reflection subcoset of  the Coxeter  coset <WF> generated by
+the  reflections with roots  specified by <r>.  <r> is  a list of indices
+specifying a subset  of the roots of <W>  where <W> is the  Coxeter group
+'CoxeterGroup(<WF>)'.  If specified,  <w> must be  an element of $W$ such
+that 'w\*WF.phi'  normalizes the subroot system  generated by <r>.  If
+absent,   the  default value   for  <w>  is '()'.   It    is an error, if
+'w\*WF.phi' does not normalize the subsystem.
+
+|    gap> CoxeterSubCoset( CoxeterCoset( CoxeterGroup( "A", 2 ), (1,2) ),
+    >                                                              [ 1 ] );
+    Error, must give w, such that w * WF.phi normalizes subroot system.
+     in
+    CoxeterSubCoset( CoxeterCoset( CoxeterGroup( "A", 2 ), (1,2) ), [ 1 ]
+     ) called from
+    main loop
+    brk>
+    gap> f4coset := CoxeterCoset( CoxeterGroup( "F", 4 ) );
+    F4
+    gap> w := RepresentativeOperation( CoxeterGroup( f4coset ),
+    >                      [ 1, 2, 9, 16 ], [ 1, 9, 16, 2], OnTuples );;
+    gap> 3d4again := CoxeterSubCoset( f4coset, [ 1, 2, 9, 16], w );
+    3D4<9,16,1,2>
+    gap> PrintDiagram( 3d4again );
+    phi acts as ( 2, 9,16) on the component below
+    D4   9
+          \
+           1 - 2
+          /
+         16 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions on Coxeter cosets}
+
+All functions for reflection cosets are implemented for Coxeter cosets.
+
+This includes 'Group( <WF> )' which returns the Coxeter group of which <WF>
+is  a coset; the functions  'Elements', 'Random', 'Representative', 'Size',
+'in',  Rank,  SemisimpleRank,  which  use  the  corresponding functions for
+'Group(   <WF>   )';   'ConjugacyClasses(   <WF>   )',  which  returns  the
+$\phi$-conjugacy  classes of <W>; the  corresponding 'PositionClass( <WF> ,
+<x>  )' and 'FusionConjugacyClasses( <HF>,  <WF> )', 'InductionTable( <HF>,
+<WF> )'.
+
+For  Weyl  coset  associated  to  a  finite  reductive  group  $\bG^F$, the
+characters of the coset correspond to unipotent Deligne-Lusztig characters,
+and  the  induction  from  a  subcoset  corresponding  to  a  Levi subgroup
+corresponds to the Lusztig induction of the Deligne-Lusztig characters (see
+more details in the next chapter). Here are some examples\:\
+
+Harish-Chandra induction in the basis of almost characters\:
+
+|    gap> WF := CoxeterCoset( CoxeterGroup( "A", 4 ), (1,4)(2,3) );
+    2A4
+    gap> Display( InductionTable( CoxeterSubCoset( WF, [ 2, 3 ] ), WF ) );
+    Induction from 2A2<2,3>.(q-1)(q+1) to 2A4
+          |'\|'|111 21 3
+    ________________
+    11111 |'\|'|  1  . .
+    2111  |'\|'|  .  1 .
+    221   |'\|'|  1  . .
+    311   |'\|'|  1  . 1
+    32    |'\|'|  .  . 1
+    41    |'\|'|  .  1 .
+    5     |'\|'|  .  . 1|
+
+Lusztig induction from a diagonal Levi\:
+
+|    gap> HF := CoxeterSubCoset( WF, [1, 2],
+    >                LongestCoxeterElement( CoxeterGroup( WF ) ) );;
+    gap> Display( InductionTable( HF, WF ) );
+    Induction from 2A2.(q+1)^2 to 2A4
+          |'\|'|111 21  3
+    _________________
+    11111 |'\|'| -1  .  .
+    2111  |'\|'| -2 -1  .
+    221   |'\|'| -1 -2  .
+    311   |'\|'|  1  2 -1
+    32    |'\|'|  . -2  1
+    41    |'\|'|  .  1 -2
+    5     |'\|'|  .  .  1|
+
+A descent of scalars\:
+
+|    gap> W := CoxeterCoset( CoxeterGroup( "A", 2, "A", 2 ), (1,3)(2,4) );
+    (A2xA2)
+    gap> Display( InductionTable( CoxeterSubCoset( W, [ 1, 3 ] ), W ) );
+    Induction from (A1xA1)<1,3>.(q-1)(q+1) to (A2xA2)
+        |'\|'|11 2
+    __________
+    111 |'\|'| 1 .
+    21  |'\|'| 1 1
+    3   |'\|'| . 1 |
+
+'Print(  <WF> )', 'ReflectionName( <WF> )'  and 'PrintDiagram( <WF> )' show
+the   isomorphism  type  of  the  reductive  group  $\bG^F$.  An  orbit  of
+$\phi=$<WF>.'phi'  on the  components is  put in  brackets if of length $k$
+greater  than $1$, and is preceded by the  order of $\phi^k$ on it, if this
+is  not $1$. For example '\"2(A2xA2)\"'  denotes 2 components of type $A_2$
+permuted  by $\phi$, and such that $\phi^2$ induces the non-trivial diagram
+automorphism  on any of them,  while '3D4' denotes an  orbit of length 1 on
+which $\phi$ is of order 3.
+
+|    gap> W := CoxeterCoset( CoxeterGroup( "A", 2, "G", 2, "A", 2 ),
+    >                                                       (1,5,2,6) );
+    2(A2xA2)<1,2,5,6>xG2<3,4>
+    gap> ReflectionName( W );
+    "2(A2xA2)<1,2,5,6>xG2<3,4>"
+    gap> W := CoxeterCoset( CoxeterGroup( "A", 2, "A", 2 ), (1,3,2,4) );
+    2(A2xA2)
+    gap> PrintDiagram( W );
+    phi permutes the next 2 components
+    phi^2 acts as (1,2) on the component below
+    A2    1 - 2
+    A2    3 - 4 |
+
+'ChevieClassInfo(   <WF>   )',   see   the   explicit   description   in
+"ChevieClassInfo for Coxeter cosets".
+
+\index{ChevieCharInfo}
+'ChevieCharInfo'   returns  additional   information  on   the  irreducible
+characters, see "ChevieCharInfo for reflection cosets".
+
+Finally,  some functions for elements of a Coxeter group work naturally for
+elements  of a Coxeter  coset\:\ 'CoxeterWord', 'EltWord', 'CoxeterLength',
+'LeftDescentSet',   'RightDescentSet',  'ReducedInRightCoset',  etc$\ldots$
+These  functions take the same value on  $w\phi\in W\phi$ that they take on
+$w\in W$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReflectionType for Coxeter cosets}
+\index{ReflectionType}
+
+'ReflectionType( <WF> )'
+
+returns the type of the  Coxeter coset <WF>.   This consists of a list of
+records, one for  each orbit of '<WF>.phi'  on the irreducible components
+of the Dynkin diagram of 'CoxeterGroup(<WF>)', which have two fields\:\\
+
+'orbit':\\ is a list of types of the irreducible components in the orbit.
+   These  types are the  same as returned  by the function 'ReflectionType'
+   for  an  irreducible  untwisted  Coxeter  group (see 'ReflectionType' in
+   chapter   "Root  systems   and  finite   Coxeter  groups")\:\  a  couple
+   '[<type>,<indices>]'  (a triple  for type  $I_2(n)$). The components are
+   ordered  according to the  action of '<WF>.phi',  so '<WF>.phi' maps the
+   generating permutations with indices in the first type to indices in the
+   second  type in  the same  order as  stored in  the type, etc $\ldots$\\
+   'phi':\\  if $k$ is  the number of  irreducible components in the orbit,
+   this  is the permutation which describes the action of '<WF>.phi'$^k$ on
+   the simple roots of the first irreducible component in the orbit.
+
+|    gap> W := CoxeterCoset( CoxeterGroup( "A", 2, "A", 2 ), (1,3,2,4) );
+    2(A2xA2)
+    gap> ReflectionType( W );
+    [ rec(orbit := [ rec(rank    := 2,
+          series  := "A",
+          indices := [ 1, 2 ]), rec(rank    := 2,
+          series  := "A",
+          indices := [ 3, 4 ]) ],
+          twist := (1,2)) ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ChevieClassInfo for Coxeter cosets}
+\index{ChevieClassInfo}
+
+'ChevieClassInfo( <WF> )'
+
+returns  information  about the conjugacy  classes   of the Coxeter coset
+<WF>.   The result is a   record   with three components\:\   'classtext'
+contains   a list     of  reduced words    for the   representatives   in
+'ConjugacyClasses(<WF>)',  'classnames' contains corresponding names  for
+the  classes, and 'classparams'  gives  corresponding parameters  for the
+classes.  Let <W> be the Coxeter group 'CoxeterGroup(<WF>)'.  In the case
+where $-1\notin W$, i.e., $\phi=-w_0$,  they are obtained by  multiplying
+by $w_0$ a set of representatives of {\it  maximal} length of the classes
+of $W$.
+
+|    gap> W := CoxeterGroup( "D", 4 );;
+    gap> ChevieClassInfo( CoxeterCoset( W, (1,2,4) ) );
+    rec(
+      classtext := [ [ 1 ], [  ], [ 1, 2, 3, 1, 2, 3 ], [ 3 ], [ 1, 3 ],
+          [ 1, 2, 3, 1, 2, 4, 3, 2 ], [ 1, 2, 3, 2 ] ],
+      classnames := [ "C_3", "\\tilde A_2", "C_3+A_1", "\\tilde A_2+A_1",
+         "F_4", "\\tilde A_2+A_2", "F_4(a_1)" ],
+      classparams :=
+       [ [ "C_3" ], [ "\\tilde A_2" ], [ "C_3+A_1" ], [ "\\tilde A_2+A_1"
+             ], [ "F_4" ], [ "\\tilde A_2+A_2" ], [ "F_4(a_1)" ] ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CharTable for Coxeter cosets}
+\index{CharTable}
+
+'CharTable(  <WF> )'
+
+This  function returns the  character table of  the Coxeter coset <WF> (see
+also  the introduction  of this  Chapter). We  call ``characters\'\' of the
+Coxeter  coset $WF$ with corresponding Coxeter group $W$ the restriction to
+$W  \phi$  of  a  set  containing  one  extension  of each $\phi$-invariant
+character  of $W$ to  the semidirect product  of $W$ with  the cyclic group
+generated  by  $\phi$.  (We  choose,  following  Lusztig,  in each case one
+non-canonical extension, called the preferred extension.)
+
+The returned record contains almost all components present in the character
+table  of a Coxeter group.  But if $\phi$ is  not trivial then there are no
+components 'powermap' (since powers of elements in the coset need not be in
+the  coset)  and  'orders'  (if  you  really  need  them, use 'MatXPerm' to
+determine the order of elements in the coset).
+
+|    gap> W := CoxeterCoset( CoxeterGroup( "D", 4 ), (1,2,4) );
+    3D4
+    gap> Display( CharTable( W ) );
+    3D4
+    
+           2  2   2     2      2  2      3      3
+           3  1   1     1      .  .      1      1
+    
+             C3 ~A2 C3+A1 ~A2+A1 F4 ~A2+A2 F4(a1)
+    
+    .4        1   1     1      1  1      1      1
+    .1111    -1   1     1     -1  1      1      1
+    .22       .   2     2      . -1     -1     -1
+    11.2      .   .     .      . -1      3      3
+    1.3       1   1    -1     -1  .     -2      2
+    1.111    -1   1    -1      1  .     -2      2
+    1.21      .   2    -2      .  .      2     -2
+    |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Frobenius}
+\index{Frobenius}
+
+'Frobenius( <WF> )( <o> [, <i>])'
+
+Given  a  Coxeter  coset  <WF>,  'Frobenius(<WF>)' returns a function which
+makes  '<WF>.phi' act on its  argument which is some  object for which this
+action  has  been  defined.  If  <o>  is  a  list,  it  applies recursively
+'Frobenius'  to each  element of  the list.  If it  is a  permutation or an
+integer,  it  returns  '<o>\^(<WF>.phi\^-1)'.  If  a second argument <i> is
+given,  it  applies  'Frobenius'  raised  to  the  <i>-th  power  (this  is
+convenient  for instance to apply the inverse of 'Frobenius'). Finally, for
+an   arbitrary  object  defined  by  a  record,  it  looks  if  the  method
+'<o>.operations.Frobenius'  is defined and  if so calls  this function with
+arguments <WF>, <o> and <i> (with 'i=1' if it was omitted).
+
+Such  an action of the Frobenius is  defined for instance for braids, Hecke
+elements and semisimple elements.
+
+|    gap> W:=CoxeterGroup("E",6);;WF:=CoxeterCoset(W,(1,6)(3,5));
+    2E6
+    gap> T:=Basis(Hecke(Group(WF)),"T");;Frobenius(WF)(T(1));
+    T(6)
+    gap> B:=Braid(W);; Frobenius(WF)(B(1,2,3));
+    265
+    gap> s:=SemisimpleElement(W,[1..6]/6);
+    <1/6,1/3,1/2,2/3,5/6,0>
+    gap> Frobenius(WF)(s);
+    <0,1/3,5/6,2/3,1/2,1/6>
+    gap> W:=CoxeterGroup("D",4);WF:=CoxeterCoset(W,(1,2,4));
+    CoxeterGroup("D",4)
+    3D4
+    gap> B:=Braid(W);;b:=B(1,3);
+    13
+    gap> Frobenius(WF)(b);
+    43
+    gap> Frobenius(WF)(b,-1);
+    23|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Twistings for Coxeter cosets}
+\index{Twistings}
+
+'Twistings( <W>, <L> )'
+
+<W>  should be a  Coxeter group record  or a Coxeter  coset record, and <L>
+should be a reflection subgroup of <W> (or of 'Group(<W>)' for a coset), or
+a sublist of the generating reflections of <W> (resp. 'Group(W)'), in which
+case  the call is  the same as 'Twistings(<W>,ReflectionSubgroup(<W>,<L>))'
+(resp.  'Twistings(<W>,ReflectionSubgroup(Group(<W>),<L>))').  
+
+The  function returns the list, up  to <W>-conjugacy, of Coxeter sub-cosets
+of  <W> whose  Coxeter group  is <L>  --- In  term of  algebraic groups, it
+corresponds  to  representatives  of  the  possible  twisted  forms  of the
+reductive  subgroup of maximal rank <L>. In  the case that $W$ represents a
+coset  $W\phi$,  the  subgroup  $L$  must  be  conjugate to $\phi(L)$ for a
+rational  form to exist. If $w\phi$ normalizes $L$, then the rational forms
+are classified by the the $\phi$-classes of $N_W(L)/L$.
+
+|    gap> W:=CoxeterGroup("E",6);
+    CoxeterGroup("E",6)
+    gap> WF:=CoxeterCoset(W,(1,6)(3,5));
+    2E6
+    gap> L:=ReflectionSubgroup(W,[2..5]);
+    ReflectionSubgroup(CoxeterGroup("E",6), [ 2, 3, 4, 5 ])
+    gap> Twistings(W,L);
+    [ D4<2,3,4,5>.(q-1)^2, 3D4<2,3,4,5>.(q^2+q+1), 
+      2D4<2,3,4,5>.(q-1)(q+1) ]
+    gap> Twistings(WF,L);
+    [ 2D4<2,5,4,3>.(q-1)(q+1), 3'D4<2,5,4,3>.(q^2-q+1), 
+      D4<2,3,4,5>.(q+1)^2 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RootDatum for Coxeter cosets}
+\index{RootDatum}
+
+'RootDatum(<type>[,<rank>])'
+
+The function 'RootDatum' can be used to get Coxeter cosets corresponding to
+known  types of  algebraic groups.  The twisted  types known are '\"2B2\"',
+'\"suzuki\"',  '\"2E6\"',  '\"2E6sc\"',  '\"2F4\"',  '\"2G2\"',  '\"ree\"',
+'\"2I\"',  '\"3D4\"',  '\"triality\"',  '\"3D4sc\"', '\"pso-\"', '\"so-\"',
+'\"spin-\"', '\"psu\"', '\"su\"', '\"u\"'.
+
+|    gap> RootDatum("su",4);
+    2A3|
+
+The above call is same as |CoxeterCoset(CoxeterGroup("A",3,"sc"),(1,3))|.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Torus for Coxeter cosets}
+\index{Torus}
+
+'Torus(<M>)'
+
+<M> should be an integral matrix of finite order. 'Torus' returns the coset
+|WF|   of  the  trivial  Coxeter   group  such  that  |WF.F0Mat=|<M>.  This
+corresponds  to  an  algebraic  torus  $\bT$  of  rank |Length(M)|, with an
+isogeny which acts by <M> on $X(\bT)$.
+
+|    gap> m:=[[0,-1],[1,-1]];
+    [ [ 0, -1 ], [ 1, -1 ] ]
+    gap> Torus(m);          
+    (q^2+q+1)|
+
+'Torus(<W>,i)'
+
+This  returns the Torus twisted  by the <i>-th conjugacy  class of <W>. For
+Coxeter groups or cosets it is the same as |Twistings(W,[])[i]|.
+
+|    gap> W:=CoxeterGroup("A",3);                    
+    CoxeterGroup("A",3)
+    gap> Twistings(W,[]);
+    [ (q-1)^3, (q-1)^2(q+1), (q-1)(q+1)^2, (q-1)(q^2+q+1), (q+1)(q^2+1) ]
+    gap> Torus(W,2);
+    (q-1)^2(q+1)
+    gap> W:=CoxeterCoset(CoxeterGroup("A",3),(1,3));
+    2A3
+    gap> Twistings(W,[]);
+    [ (q+1)^3, (q-1)(q+1)^2, (q-1)^2(q+1), (q+1)(q^2-q+1), (q-1)(q^2+1) ]
+    gap> Torus(W,2);
+    (q-1)(q+1)^2|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{StructureRationalPointsConnectedCentre}
+\index{StructureRationalPointsConnectedCentre}
+
+'StructureRationalPointsConnectedCentre(<G>,q)'
+
+<W>   should  be  a  Coxeter  group  record  or  a  Coxeter  coset  record,
+representing  a finite reductive group $\bG^F$, and <q> should be the prime
+power  associated  to  the  isogeny  <F>.  The function returns the abelian
+invariants  of the finite  abelian group $  Z^0\bG^F$ where $Z^0\bG$ is the
+connected center of $\bG$.
+
+In  the  following  example  one  determines the structure of $\bT({\mathbb
+F}_3)$ where $\bT$ runs over all the maximal tori of SL$_4$.
+
+|    gap> G:=RootDatum("sl",4);
+    RootDatum("sl",4)
+    gap> List(Twistings(G,[]),T->StructureRationalPointsConnectedCentre(T,3));
+    [ [ 2, 2, 2 ], [ 2, 8 ], [ 4, 8 ], [ 26 ], [ 40 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ClassTypes}
+\index{ClassTypes}
+
+'ClassTypes(<G> [,<p>])'
+
+<G>  should be a root  datum or a twisted  root datum representing a finite
+reductive group $\bG^F$ and <p> should be a prime. The function returns the
+class  types of <G>. Two elements of $\bG^F$ have the same {\em class type}
+if their centralizers are conjugate. If $su$ is the Jordan decomposition of
+an  element $x$, the class  type of $x$ is  determined by the class type of
+its semisimple part $s$ and the unipotent class of $u$ in $C_\bG(s)$.
+
+The   function  'ClassTypes'  is  presently  only  implemented  for  simply
+connected  groups, where  $C_\bG(s)$ is  connected. This  section is  a bit
+experimental and may change in the future.
+
+'ClassTypes'  returns  a  record  which  contains  a list of classtypes for
+semisimple  elements,  which  are  represented  by  'CoxeterSubCoset's  and
+contain additionnaly information on the unipotent classes of $C_\bG(s)$.
+
+The list of class types is different in bad characteristic, so the argument
+<p>  should give a characteristic.  If <p> is omitted  or equal to 0, then
+good characteristic is assumed.
+
+Let us give some examples:
+
+|    gap> t:=ClassTypes(RootDatum("sl",3));
+    ClassTypes(CoxeterCoset(RootDatum("sl",3)),good characteristic)
+    gap> Display(t);                
+    ClassTypes(CoxeterCoset(RootDatum("sl",3)),good characteristic)
+          Type |'\|'|Centralizer
+    ________________________
+    (q-1)^2    |'\|'|       P1^2
+    (q-1)(q+1) |'\|'|       P1P2
+    (q^2+q+1)  |'\|'|         P3
+    A1.(q-1)   |'\|'|    qP1^2P2
+    A2         |'\|'|q^3P1^2P2P3|
+
+By   default,  only  information  about  semisimple  centralizer  types  is
+returned\:\ the type, and its generic order.
+
+|    gap> Display(t,rec(unip:=true));      
+    ClassTypes(CoxeterCoset(RootDatum("sl",3)),good characteristic)
+          Type |'\|'|     u Centralizer
+    _______________________________
+    (q-1)^2    |'\|'|              P1^2
+    (q-1)(q+1) |'\|'|              P1P2
+    (q^2+q+1)  |'\|'|                P3
+    A1.(q-1)   |'\|'|    11     qP1^2P2
+               |'\|'|     2         qP1
+    A2         |'\|'|   111 q^3P1^2P2P3
+               |'\|'|    21       q^3P1
+               |'\|'|     3        3q^2
+               |'\|'|  3_E3        3q^2
+               |'\|'|3_E3^2        3q^2|
+
+Here  we  have  displayed  information  on  unipotent  classes,  with their
+centralizer.
+
+|    gap> Display(t,rec(nrClasses:=true));
+    ClassTypes(CoxeterCoset(RootDatum("sl",3)),good characteristic)
+          Type |'\|'|        nrClasses Centralizer
+    __________________________________________
+    (q-1)^2    |'\|'|(4-5q+2q_3+q^2)/6        P1^2
+    (q-1)(q+1) |'\|'|       (-q+q^2)/2        P1P2
+    (q^2+q+1)  |'\|'|  (1+q-q_3+q^2)/3          P3
+    A1.(q-1)   |'\|'|         -1+q-q_3     qP1^2P2
+    A2         |'\|'|              q_3 q^3P1^2P2P3|
+
+Here  we have added information on how many semisimple conjugacy classes of
+$\bG^F$  have a given type. The answer in general involves variables of the
+form |q_d| which represent $\gcd(q-1,d)$.
+
+Finally an example in bad characteristic:
+
+|    gap> t:=ClassTypes(CoxeterGroup("G",2),2);                           
+    ClassTypes(CoxeterCoset(CoxeterGroup("G",2)),char. 2)
+    gap> Display(t,rec(nrClasses:=true));
+    ClassTypes(CoxeterCoset(CoxeterGroup("G",2)),char. 2)
+            Type |'\|'|          nrClasses     Centralizer
+    __________________________________________________
+    (q-1)^2      |'\|'|(10-8q+2q_3+q^2)/12            P1^2
+    (q-1)(q+1)   |'\|'|        (-2q+q^2)/4            P1P2
+    (q-1)(q+1)   |'\|'|        (-2q+q^2)/4            P1P2
+    (q^2-q+1)    |'\|'|    (1-q-q_3+q^2)/6              P6
+    (q^2+q+1)    |'\|'|    (1+q-q_3+q^2)/6              P3
+    (q+1)^2      |'\|'|(-2-4q+2q_3+q^2)/12            P2^2
+    A1.(q-1)     |'\|'|       (-1+q-q_3)/2         qP1^2P2
+    A1.(q+1)     |'\|'|        (1+q-q_3)/2         qP1P2^2
+    G2           |'\|'|                  1 q^6P1^2P2^2P3P6
+    A2<1,5>      |'\|'|         (-1+q_3)/2     q^3P1^2P2P3
+    2A2<1,5>     |'\|'|         (-1+q_3)/2     q^3P1P2^2P6
+    ~A1<2>.(q-1) |'\|'|           (-2+q)/2         qP1^2P2
+    ~A1<2>.(q+1) |'\|'|                q/2         qP1P2^2|
+
+We  notice that if $q$ is  a power of $2$ such  that $q\equiv 2\pmod 3$, so
+that  |q_3=1|, some class  types do not  exist. We can  see what happens by
+using the function 'Value' to give a specific value to |q_3|\:
+
+|    gap> Display(Value(t,["q_3",1]),rec(nrClasses:=true));
+    ClassTypes(CoxeterCoset(CoxeterGroup("G",2)),char. 2) q_3=1
+            Type |'\|'|     nrClasses     Centralizer
+    _____________________________________________
+    (q-1)^2      |'\|'|(12-8q+q^2)/12            P1^2
+    (q-1)(q+1)   |'\|'|   (-2q+q^2)/4            P1P2
+    (q-1)(q+1)   |'\|'|   (-2q+q^2)/4            P1P2
+    (q^2-q+1)    |'\|'|    (-q+q^2)/6              P6
+    (q^2+q+1)    |'\|'|     (q+q^2)/6              P3
+    (q+1)^2      |'\|'|  (-4q+q^2)/12            P2^2
+    A1.(q-1)     |'\|'|      (-2+q)/2         qP1^2P2
+    A1.(q+1)     |'\|'|           q/2         qP1P2^2
+    G2           |'\|'|             1 q^6P1^2P2^2P3P6
+    ~A1<2>.(q-1) |'\|'|      (-2+q)/2         qP1^2P2
+    ~A1<2>.(q+1) |'\|'|           q/2         qP1P2^2|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Quasi-Semisimple elements of non-connected reductive groups}
+
+We  may  also  use  Coxeter  cosets  to represented non-connected reductive
+groups  of the form $\bG\rtimes\sigma$ where $\bG$ is a connected reductive
+group   and  $\sigma$  an   algebraic  automorphism  of   $\bG$,  and  more
+specifically the coset $\bG.\sigma$. We may always choose
+$\sigma\in\bG\cdot\sigma$  *quasi-semisimple*,  which  means  that $\sigma$
+preserves a pair $\bT\subset\bB$ of a maximal torus and a Borel subgroup of
+$\bG$.  If $\sigma$  is of  finite order,  it then  defines an automorphism
+$F_0$ of the root datum $(X(\bT), \Phi, Y(\bT), \Phi^\vee)$, thus a Coxeter
+coset. We refer to \cite{ss} for details.
+
+We  have  extended  the  functions  for  semi-simple  elements to work with
+quasi-semisimple   elements   $t\sigma\in\bT\cdot\sigma$.   Here,   as   in
+\cite{ss},  $\sigma$ is a quasi-central  automorphism uniquely defined by a
+diagram  automorphism  of  $(W,S)$,  taking  $\sigma$  symplectic  in  type
+$A_{2n}$.  We  recall  that  a  quasi-central element is a quasi-semisimple
+element such that the Weyl group of $C_\bG(\sigma)$ is equal to $W^\sigma$;
+such an element always exists in the coset $\bG\cdot\sigma$.
+
+Here are some examples\:
+
+|    gap> WF:=RootDatum("u",6);
+    2A5.(q+1)|
+
+The above defines the coset $\GL_6\cdot\sigma$ where $\sigma$ is the composed
+of transpose, inverse and the longest element of $W$.
+
+|    gap> l:=QuasiIsolatedRepresentatives(WF);
+    [ <0,0,0,0,0,0>, <1/4,0,0,0,0,3/4>, <1/4,1/4,0,0,3/4,3/4>, 
+      <1/4,1/4,1/4,3/4,3/4,3/4> ]|
+
+we define an element $t\sigma\in\bT\cdot\sigma$ to be quasi-isolated if the
+Weyl  group of $C_\bG(t\sigma)$ is not  in any proper parabolic subgroup of
+$W^\sigma$. This generalizes the definition for connected groups. The above
+shows  the  elements  $t$  where  $t\sigma$  runs  over  representatives of
+quasi-isolated  quasi-semisimple  classes  of  $\bG\cdot\sigma$.  The given
+representatives have been chosen $\sigma$-stable.
+
+|    gap> List(l,s->Centralizer(WF,s));
+    [ C3<3,2,1>, B2.(q+1), (A1xA1)<1,3>xA1<2>, 2A3<3,1,2> ]|
+
+in  the above,  the groups  $C_\bG(t\sigma)$ are  computed and displayed as
+extended  Coxeter groups (following the same convention as for centralisers
+in connected reductive groups).
+
+We  define an element $t\sigma\in\bT\cdot\sigma$ to be isolated if the Weyl
+group  of $C_\bG(t\sigma)^0$  is not  in any  proper parabolic  subgroup of
+$W^\sigma$. This generalizes the definition for connected groups.
+
+|    gap> List(l,s->IsIsolated(WF,s));           
+    [ true, false, true, true ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Centralizer for quasisemisimple elements}
+
+'Centralizer(<WF>, <t>)'
+
+<WF>   should  be   a  Coxeter   coset  representing   an  algebraic  coset
+$\bG\cdot\sigma$,  where $\bG$ is a  connected reductive group (represented
+by  'W:=Group(WF)'), and $\sigma$ is a quasi-central automorphism of $\bG$
+defined  by <WF>. The element <t> should  be a semisimple element of $\bG$.
+The    function   returns   an   extended   reflection   group   describing
+$C_\bG(t\sigma)$,    with   the   reflection    group   part   representing
+$C_\bG^0(t\sigma)$,  and the diagram automorphism  part being those induced
+by $C_\bG(t\sigma)/C_\bG(t\sigma)^0$ on $C_\bG(t\sigma)^0$.
+
+|    gap> WF:=RootDatum("u",6);                     
+    2A5.(q+1)
+    gap> s:=SemisimpleElement(Group(WF),[1/4,0,0,0,0,3/4]);
+    <1/4,0,0,0,0,3/4>
+    gap> Centralizer(WF,s);
+    B2.(q+1)
+    gap> Centralizer(WF,s^0);
+    C3<3,2,1>|
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{QuasiIsolatedRepresentatives for Coxeter cosets}
+
+'QuasiIsolatedRepresentatives(<WF>[, <p>])'
+
+<WF>   should  be   a  Coxeter   coset  representing   an  algebraic  coset
+$\bG\cdot\sigma$,  where $\bG$ is a  connected reductive group (represented
+by  'W:=Group(WF)'), and $\sigma$ is  a quasi-central automorphism of $\bG$
+defined  by <WF>.  The function  returns a  list of  semisimple elements of
+$\bG$   such  that   $t\sigma$,  when   $t$  runs   over  this   list,  are
+representatives  of the conjugacy classes of quasi-isolated quasisemisimple
+elements  of  $\bG\cdot\sigma$  (an  element  $t\sigma\in\bT\cdot\sigma$ is
+quasi-isolated  if the Weyl group of  $C_\bG(t\sigma)$ is not in any proper
+parabolic  subgroup of $W^\sigma$).  If a second  argument <p> is given, it
+lists only those representatives which exist in characteristic <p>.
+
+|    gap> QuasiIsolatedRepresentatives(RootDatum("2E6sc"));
+    [ <0,0,0,0,0,0>, <0,0,0,1/2,0,0>, <0,1/2,1/4,0,1/4,0>, 
+      <0,2/3,0,1/3,0,0>, <0,3/4,0,1/2,0,0> ]
+    gap> QuasiIsolatedRepresentatives(RootDatum("2E6sc"),2);
+    [ <0,0,0,0,0,0>, <0,2/3,0,1/3,0,0> ]
+    gap> QuasiIsolatedRepresentatives(RootDatum("2E6sc"),3);
+    [ <0,0,0,0,0,0>, <0,0,0,1/2,0,0>, <0,1/2,1/4,0,1/4,0>, 
+      <0,3/4,0,1/2,0,0> ]|
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsIsolated for Coxeter cosets}
+
+'IsIsolated(<WF>, <t>)'
+
+<WF>   should  be   a  Coxeter   coset  representing   an  algebraic  coset
+$\bG\cdot\sigma$,  where $\bG$ is a  connected reductive group (represented
+by  'W:=Group(WF)'), and $\sigma$ is  a quasi-central automorphism of $\bG$
+defined  by <WF>. The element <t> should  be a semisimple element of $\bG$.
+The  function returns a  boolean describing whether  $t\sigma$ is isolated,
+that  is whether the Weyl group of  $C_\bG(t\sigma)^0$ is not in any proper
+parabolic subgroup of $W^\sigma$.
+
+|    gap> WF:=RootDatum("u",6);
+    2A5.(q+1)
+    gap> l:=QuasiIsolatedRepresentatives(WF);
+    [ <0,0,0,0,0,0>, <1/4,0,0,0,0,3/4>, <1/4,1/4,0,0,3/4,3/4>, 
+      <1/4,1/4,1/4,3/4,3/4,3/4> ]
+    gap> List(l,s->IsIsolated(WF,s));           
+    [ true, false, true, true ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

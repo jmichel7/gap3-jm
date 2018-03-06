@@ -1,0 +1,551 @@
+<html><head><title>GAP3 Manual: 55 Monomiality Questions</title></head>
+<body bgcolor="ffffff">
+<h1>55 Monomiality Questions</h1>
+<P><P><P>
+This chapter describes functions dealing with monomiality questions.
+<P>
+Section <a href="chap055.htm#SECT001">More about Monomiality Questions</a> gives some hints how to use
+the functions in the package.
+<P>
+The next sections (see <a href="chap055.htm#SECT002">Alpha</a>, <a href="chap055.htm#SECT003">Delta</a>, <a href="chap055.htm#SECT004">BergerCondition</a>) describe
+functions that deal with character degrees and derived length.
+<P>
+The next sections describe tests for homogeneous restriction,
+quasiprimitivity, and induction from a normal subgroup of a group character
+(see <a href="chap055.htm#SECT005">TestHomogeneous</a>, <a href="chap055.htm#SECT006">TestQuasiPrimitive</a>, <a href="chap055.htm#SECT007">IsPrimitive for Characters</a>,
+<a href="chap055.htm#SECT008">TestInducedFromNormalSubgroup</a>).
+<P>
+The next sections describe tests for subnormally monomiality, monomiality,
+and relatively subnormally monomiality of a group or group character
+(see <a href="chap055.htm#SECT009">TestSubnormallyMonomial</a>, <a href="chap055.htm#SECT010">TestMonomialQuick</a>, <a href="chap055.htm#SECT011">TestMonomial</a>,
+<a href="chap055.htm#SECT012">TestRelativelySM</a>).
+<P>
+The final sections <a href="chap055.htm#SECT013">IsMinimalNonmonomial</a> and <a href="chap055.htm#SECT014">MinimalNonmonomialGroup</a>
+describe functions that construct minimal nonmonomial groups, or check
+whether a group is minimal nonmonomial.
+<P>
+<P>
+<P>
+All examples in this chapter use the symmetric group <I>S<sub>4</sub></I> and the
+special linear group <I>Sl(2,3)</I>.  For running the examples, you must first
+define the groups.
+<P>
+<pre>    gap> S4:= SolvableGroup( "S4" );;
+    gap> Sl23:= SolvableGroup( "Sl(2,3)" );; </pre>
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap055.htm#SECT001">More about Monomiality Questions</a>
+<LI> <A HREF="chap055.htm#SECT002">Alpha</a>
+<LI> <A HREF="chap055.htm#SECT003">Delta</a>
+<LI> <A HREF="chap055.htm#SECT004">BergerCondition</a>
+<LI> <A HREF="chap055.htm#SECT005">TestHomogeneous</a>
+<LI> <A HREF="chap055.htm#SECT006">TestQuasiPrimitive</a>
+<LI> <A HREF="chap055.htm#SECT007">IsPrimitive for Characters</a>
+<LI> <A HREF="chap055.htm#SECT008">TestInducedFromNormalSubgroup</a>
+<LI> <A HREF="chap055.htm#SECT009">TestSubnormallyMonomial</a>
+<LI> <A HREF="chap055.htm#SECT010">TestMonomialQuick</a>
+<LI> <A HREF="chap055.htm#SECT011">TestMonomial</a>
+<LI> <A HREF="chap055.htm#SECT012">TestRelativelySM</a>
+<LI> <A HREF="chap055.htm#SECT013">IsMinimalNonmonomial</a>
+<LI> <A HREF="chap055.htm#SECT014">MinimalNonmonomialGroup</a>
+</ol>
+<A NAME="SECT001"><h2>55.1 More about Monomiality Questions</h2></a>
+<P><P><P>
+<strong>Group Characters</strong>
+<P>
+All the functions in this package assume <strong>characters</strong> to be character records
+as described in chapter <a href="chap054.htm">Class Functions</a>.
+<P>
+<P>
+<P>
+<strong>Property Tests</strong>
+<P>
+When we ask whether a group character <I>&chi;</I> has a certain property, like
+quasiprimitivity, we usually want more information than yes or no.
+Often we are interested in the reason why a group character <I>&chi;</I> could be
+proved to have a certain property, e.g., whether monomiality of <I>&chi;</I>
+was proved by the observation that the underlying group is nilpotent, or 
+if it was necessary to construct a linear character of a subgroup from that
+<I>&chi;</I> can be induced.  In the latter case we also may be interested in this
+linear character.
+<P>
+Because of this the usual property checks of <strong>GAP3</strong> that return either <code>true</code>
+or <code>false</code> are not sufficient for us.
+Instead there are test functions that return a record with the possibly
+useful information.
+For example, the record returned by the function <code>TestQuasiPrimitive</code>
+(see <a href="chap055.htm#SECT006">TestQuasiPrimitive</a>) contains the component <code>isQuasiPrimitive</code> which is
+the known boolean property flag, a component <code>comment</code> which is a string
+telling the reason for the value of the <code>isQuasiPrimitive</code> component,
+and in the case that the argument <I>&chi;</I> was a not quasiprimitive character
+the component <code>character</code> which is an irreducible constituent of a
+nonhomogeneous restriction of <I>&chi;</I> to a normal subgroup.
+<P>
+The results of these test functions are stored in the respective records,
+in our example <I>&chi;</I> will have a component <code>testQuasiPrimitive</code> after
+the call of <code>TestQuasiPrimitive</code>.
+<P>
+Besides these test functions there are also the known property checks,
+e.g., the function <code>IsQuasiPrimitive</code> which will call <code>TestQuasiPrimitive</code>
+and return the value of the <code>isQuasiPrimitive</code> component of the result.
+<P>
+<P>
+<P>
+<strong>Where one should be careful</strong>
+<P>
+Monomiality questions usually involve computations in a lot of subgroups
+and factor groups of a given group, and for these groups often expensive
+calculations like that of the character table are necessary.
+If it is probable that the character table of a group will occur at
+a later stage again, one should try to store the group (with the character
+table stored in the group record) and use this record later rather than
+a new record that describes the same group.
+<P>
+An example: Suppose you want to restrict a character to a normal subgroup
+<I>N</I> that was constructed as a normal closure of some group elements, and
+suppose that you have already computed normal subgroups (by calls to
+<code>NormalSubgroups</code> or <code>MaximalNormalSubgroups</code>) and their character tables.
+Then you should look in the lists of known normal subgroups whether <I>N</I> is
+contained, and if yes you can use the known character table.
+<P>
+A mechanism that supports this for normal subgroups is described in
+<a href="chap054.htm#SECT014">Storing Subgroup Information</a>.  The following hint may be useful in this
+context.
+<P>
+If you know that sooner or later you will compute the character table of
+a group <I>G</I> then it may be advisable to do this as soon as possible.
+For example if you need the normal subgroups of <I>G</I> then they can be
+computed more efficiently if the character table of <I>G</I> is known, and they
+can be stored compatibly to the contained <I>G</I>-conjugacy classes.
+This correspondence of classes list and normal subgroup can be used very
+often.
+<P>
+<P>
+<P>
+<strong>Package Information</strong>
+<P>
+Some of the functions print (perhaps useful) information if the
+function <code>InfoMonomial</code> is set to the value <code>Print</code>.
+<P><A NAME="SECT002"><h2>55.2 Alpha</h2></a>
+<P><P><P>
+<code>Alpha( <var>G</var> )</code>
+<P>
+returns for a solvable group <var>G</var> a list whose <var>i</var>-th entry is the maximal
+derived length of groups <I>&lt;G&gt;  / </I>ker<I>(&chi;)</I> for <I>&chi;&isin; Irr(<var>G</var>)</I> with
+<I>&chi;(1)</I> at most the <var>i</var>-th irreducible degree of <var>G</var>.
+<P>
+The result is stored in the group record as <code><var>G</var>.alpha</code>.
+<P>
+<strong>Note</strong> that calling this function will cause the computation of factor groups
+of <var>G</var>, so it works efficiently only for AG groups.
+<P>
+<pre>    gap> Alpha( Sl23 );
+    [ 1, 3, 3 ]
+    gap> Alpha( S4 );
+    [ 1, 2, 3 ] </pre>
+<P><A NAME="SECT003"><h2>55.3 Delta</h2></a>
+<P><P><P>
+<code>Delta( <var>G</var> )</code>
+<P>
+returns for a solvable group <var>G</var> the list
+<code>[ 1, alp[2]-alp[1], ..., alp[<var>n</var>]-alp[<var>n</var>-1] ]</code>
+where <code>alp = Alpha( <var>G</var> )</code> (see <a href="chap055.htm#SECT002">Alpha</a>).
+<P>
+<pre>    gap> Delta( Sl23 );
+    [ 1, 2, 0 ]
+    gap> Delta( S4 );
+    [ 1, 1, 1 ] </pre>
+<P><A NAME="SECT004"><h2>55.4 BergerCondition</h2></a>
+<P><P><P>
+<code>BergerCondition( <var>chi</var> )</code><BR> 
+<code>BergerCondition(  <var>G</var>  )</code>
+<P>
+Called with an irreducible character <var>chi</var> of the group <I>G</I> of degree <I>d</I>,
+<code>BergerCondition</code> returns <code>true</code> if <var>chi</var> satisfies
+<I>M<sup>&prime;</sup>  &le; </I>ker<I>(&chi;)</I> for every normal subgroup <I>M</I> of <I>G</I> with the
+property that <I>M  &le; </I>ker<I>(&psi;)</I> for all <I>&psi; &isin; Irr(G)</I> with
+<I>&psi;(1) &lt; &chi;(1)</I>, and <code>false</code> otherwise.
+<P>
+Called with a group <var>G</var>, <code>BergerCondition</code> returns <code>true</code> if all irreducible
+characters of <var>G</var> satisfy the inequality above, and <code>false</code> otherwise;
+in the latter case <code>InfoMonomial</code> tells about the smallest degree for that the
+inequality is violated.
+<P>
+For groups of odd order the answer is always <code>true</code> by a theorem of
+T. R. Berger (see <A href="biblio.htm#Ber76"><cite>Ber76</cite></a>, Thm. 2.2).
+<P>
+<pre>    gap> BergerCondition( S4 );
+    true
+    gap> BergerCondition( Sl23 );
+    false
+    gap> List( Irr( Sl23 ), BergerCondition );
+    [ true, true, true, false, false, false, true ]
+    gap> List( Irr( Sl23 ), Degree );
+    [ 1, 1, 1, 2, 2, 2, 3 ] </pre>
+<P><A NAME="SECT005"><h2>55.5 TestHomogeneous</h2></a>
+<P><P><P>
+<code>TestHomogeneous( <var>chi</var>, <var>N</var> )</code>
+<P>
+returns a record with information whether the restriction of the character
+<var>chi</var> of the group <I>G</I> to the normal subgroup <var>N</var> of <I>G</I> is homogeneous,
+i.e., is a multiple of an irreducible character of <var>N</var>.
+<P>
+<var>N</var> may be given also as list of conjugacy class positions w.r. to <I>G</I>.
+<P>
+The components of the result are
+<P>
+<DL><DT><code>isHomogeneous</code>:<DD> <BR>  <code>true</code> or <code>false</code>,
+</DL><P>
+<DL><DT><code>comment</code>:<DD>       <BR>  a string telling a reason for the value of the
+                     <code>isHomogeneous</code> component,
+</DL><P>
+<DL><DT><code>character</code>:<DD>     <BR>  irreducible constituent of the restriction, only
+                     bound if the restriction had to be checked,
+</DL><P>
+<DL><DT><code>multiplicity</code>:<DD>  <BR>  multiplicity of the <code>character</code> component in the
+                     restriction of <var>chi</var>.
+</DL><P><P>
+<pre>    gap> chi:= Irr( Sl23 )[4];
+    Character( Sl(2,3), [ 2, -2, 0, -1, 1, -1, 1 ] )
+    gap> n:= NormalSubgroupClasses( Sl23, [ 1, 2, 3 ] );
+    Subgroup( Sl(2,3), [ b, c, d ] )
+    gap> TestHomogeneous( chi, [ 1, 2, 3 ] );
+    rec(
+      isHomogeneous := true,
+      comment := "restricts irreducibly" )
+    gap> chi:= Irr( Sl23 )[7];
+    Character( Sl(2,3), [ 3, 3, -1, 0, 0, 0, 0 ] )
+    gap> TestHomogeneous( chi, n );
+    #W  Warning: Group has no name
+    rec(
+      isHomogeneous := false,
+      comment := "restriction checked",
+      character := Character( Subgroup( Sl(2,3), [ b, c, d ] ),
+        [ 1, 1, -1, 1, -1 ] ),
+      multiplicity := 1 ) </pre>
+<P><A NAME="SECT006"><h2>55.6 TestQuasiPrimitive</h2></a>
+<P><P><P>
+<code>TestQuasiPrimitive( <var>chi</var> )</code>
+<P>
+returns a record with information about quasiprimitivity of the character
+<var>chi</var> of the group <I>G</I> (i.e., whether <var>chi</var> restricts homogeneously
+to every normal subgroup of <I>G</I>).
+<P>
+The record contains the components
+<P>
+<DL><DT><code>isQuasiPrimitive</code>:<DD>  <BR> <code>true</code> or <code>false</code>,
+</DL><P>
+<DL><DT><code>comment</code>:<DD>           <BR>  a string telling a reason for the value of the
+                         <code>isQuasiPrimitive</code> component,
+</DL><P>
+<DL><DT><code>character</code>:<DD>  <BR> an irreducible constituent of a nonhomogeneous
+                 restriction of <var>chi</var>, bound only if <var>chi</var> is not
+                 quasi-primitive.
+</DL><P>
+<P>
+<P>
+<code>IsQuasiPrimitive( <var>chi</var> )</code>
+<A name = "I0"></a>
+
+<P>
+returns <code>true</code> or <code>false</code>, depending on whether the character <var>chi</var> of the
+group <I>G</I> is quasiprimitive.
+<P>
+<pre>    gap> chi:= Irr( Sl23 )[4];
+    Character( Sl(2,3), [ 2, -2, 0, -1, 1, -1, 1 ] )
+    gap> TestQuasiPrimitive( chi );
+    #W  Warning: Group has no name
+    rec(
+      isQuasiPrimitive := true,
+      comment := "all restrictions checked" )
+    gap> chi:= Irr( Sl23 )[7];
+    Character( Sl(2,3), [ 3, 3, -1, 0, 0, 0, 0 ] )
+    gap> TestQuasiPrimitive( chi );
+    rec(
+      isQuasiPrimitive := false,
+      comment := "restriction checked",
+      character := Character( Subgroup( Sl(2,3), [ b, c, d ] ), 
+        [ 1, 1, -1, 1, -1 ] ) ) </pre>
+<P><A NAME="SECT007"><h2>55.7 IsPrimitive for Characters</h2></a>
+<P><P><P>
+<code>IsPrimitive( <var>chi</var> )</code>
+<P>
+returns <code>true</code> if the irreducible character <var>chi</var> of the solvable group <I>G</I>
+is not induced from any proper subgroup of <I>G</I>, and <code>false</code> otherwise.
+<P>
+<strong>Note</strong> that an irreducible character of a solvable group is primitive if and
+only if it is quasi-primitive (see <a href="chap055.htm#SECT006">TestQuasiPrimitive</a>).
+<P>
+<pre>    gap> IsPrimitive( Irr( Sl23 )[4] );
+    true
+    gap> IsPrimitive( Irr( Sl23 )[7] );
+    false </pre>
+<P><A NAME="SECT008"><h2>55.8 TestInducedFromNormalSubgroup</h2></a>
+<P><P><P>
+<code>TestInducedFromNormalSubgroup( <var>chi</var>, <var>N</var> )</code><BR> 
+<code>TestInducedFromNormalSubgroup( <var>chi</var> )</code>
+<P>
+returns a record with information about whether the irreducible character
+<var>chi</var> of the group <I>G</I> is induced from a <strong>proper</strong> normal subgroup of <I>G</I>.
+<P>
+If <var>chi</var> is the only argument then it is checked whether there is a
+maximal normal subgroup of <I>G</I> from that <var>chi</var> is induced.  If there
+is a second argument <var>N</var>, a normal subgroup of <I>G</I>, then it is checked
+whether <var>chi</var> is induced from <var>N</var>.
+<var>N</var> may also be given as the list of positions of conjugacy classes
+contained in the normal subgroup in question.
+<P>
+The result contains the components
+<P>
+<DL><DT><code>isInduced</code>:<DD> <BR> <code>true</code> or <code>false</code>,
+</DL><P>
+<DL><DT><code>comment</code>:<DD>   <BR> a string telling a reason for the value of the
+                <code>isInduced</code> component,
+</DL><P>
+<DL><DT><code>character</code>:<DD> <BR> if bound, a character of a maximal normal subgroup of <I>G</I>
+                or of the argument <var>N</var> from that <var>chi</var> is induced.
+</DL><P>
+<P>
+<P>
+<code>IsInducedFromNormalSubgroup( <var>chi</var> )</code>
+<P>
+returns <code>true</code> if the group character <var>chi</var> is induced from a <strong>proper</strong>
+normal subgroup of the group of <var>chi</var>, and <code>false</code> otherwise.
+<P>
+<pre>    gap> List( Irr( Sl23 ), IsInducedFromNormalSubgroup );
+    [ false, false, false, false, false, false, true ]
+    gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
+    >          TestInducedFromNormalSubgroup );
+    #W  Warning: Group has no name
+    [ rec(
+          isInduced := false,
+          comment := "linear character" ), rec(
+          isInduced := true,
+          comment := "induced from component '.character'",
+          character := Character( Subgroup( S4, [ b, c, d ] ), 
+            [ 1, 1, E(3), E(3)^2 ] ) ), rec(
+          isInduced := false,
+          comment := "all maximal normal subgroups checked" ) ] </pre>
+<P><A NAME="SECT009"><h2>55.9 TestSubnormallyMonomial</h2></a>
+<P><P><P>
+<code>TestSubnormallyMonomial( <var>G</var> )</code><BR> 
+<code>TestSubnormallyMonomial( <var>chi</var> )</code>
+<P>
+returns a record with information whether the group <var>G</var> or the
+irreducible group character <var>chi</var> of the group <I>G</I> is subnormally
+monomial.
+<P>
+The result contains the components
+<P>
+<DL><DT><code>isSubnormallyMonomial</code>:<DD> <BR> <code>true</code> or <code>false</code>,
+</DL><P>
+<DL><DT><code>comment</code>:<DD>   <BR> a string telling a reason for the value of the
+                <code>isSubnormallyMonomial</code> component,
+</DL><P>
+<DL><DT><code>character</code>:<DD> <BR> if bound, a character of <var>G</var> that is not
+                subnormally monomial.
+</DL><P>
+<P>
+<P>
+<code>IsSubnormallyMonomial( <var>G</var> )</code>
+<A name = "I1"></a>
+<BR> 
+<code>IsSubnormallyMonomial( <var>chi</var> )</code>
+<P>
+returns <code>true</code> if the group <var>G</var> or the group character <var>chi</var> is
+subnormally monomial, and <code>false</code> otherwise.
+<P>
+<pre>    gap> TestSubnormallyMonomial( S4 );
+    rec(
+      isSubnormallyMonomial := false,
+      character := Character( S4, [ 3, -1, 0, -1, 1 ] ),
+      comment := "found not SM character" )
+    gap> TestSubnormallyMonomial( Irr( S4 )[4] );
+    rec(
+      isSubnormallyMonomial := false,
+      comment := "all subnormal subgroups checked" )
+    gap> TestSubnormallyMonomial( SolvableGroup( "A4" ) );
+    #W  Warning: Group has no name
+    rec(
+      isSubnormallyMonomial := true,
+      comment := "all irreducibles checked" ) </pre>
+<P><A NAME="SECT010"><h2>55.10 TestMonomialQuick</h2></a>
+<P><P><P>
+<code>TestMonomialQuick( <var>chi</var> )</code><BR> 
+<code>TestMonomialQuick(  <var>G</var>  )</code>
+<P>
+does some easy checks whether the irreducible character <var>chi</var> or the group
+<var>G</var> are monomial.  <code>TestMonomialQuick</code> returns a record with components
+<P>
+<DL><DT><code>isMonomial</code>:<DD> <BR> either <code>true</code> or <code>false</code> or the string <code>"?"</code>, depending
+                 on whether (non)monomiality could be proved, and
+</DL><P>
+<DL><DT><code>comment</code>:<DD>    <BR> a string telling the reason for the value of the
+                 <code>isMonomial</code> component.
+</DL><P>
+A group <I>G</I> is proved to be monomial by <code>TestMonomialQuick</code> if
+its order is not divisible by the third power of a prime, or if <I>G</I> is
+nilpotent or Sylow abelian by supersolvable.  Nonsolvable groups are
+proved to me nonmonomial by <code>TestMonomialQuick</code>.
+<P>
+An irreducible character is proved to be monomial if it is linear, or if
+its codegree is a prime power, or if its group knows to be monomial, or
+if the factor group modulo the kernel can be proved to be monomial by
+<code>TestMonomialQuick</code>.
+<P>
+<pre>    gap> TestMonomialQuick( Irr( S4 )[3] );
+    rec(
+      isMonomial := true,
+      comment := "kernel factor group is supersolvable" )
+    gap> TestMonomialQuick( S4 );
+    rec(
+      isMonomial := true,
+      comment := "abelian by supersolvable group" )
+    gap> TestMonomialQuick( Sl23 );
+    rec(
+      isMonomial := "?",
+      comment := "no decision by cheap tests" ) </pre>
+<P><A NAME="SECT011"><h2>55.11 TestMonomial</h2></a>
+<P><P><P>
+<code>TestMonomial( <var>chi</var> )</code><BR> 
+<code>TestMonomial(  <var>G</var>  )</code>
+<P>
+returns a record containing information about monomiality of the group <var>G</var>
+or the group character <var>chi</var> of a solvable group, respectively.
+<P>
+If a character <var>chi</var> is proved to be monomial the result contains
+components <code>isMonomial</code> (then <code>true</code>), <code>comment</code> (a string telling a
+reason for monomiality), and if it was necessary to compute a linear
+character from that <var>chi</var> is induced, also a component <code>character</code>.
+<P>
+If <var>chi</var> or <var>G</var> is proved to be nonmonomial the component <code>isMonomial</code>
+is <code>false</code>, and in the case of <var>G</var> a nonmonomial character is contained
+in the component <code>character</code> if it had been necessary to compute it.
+<P>
+If the program cannot prove or disprove monomiality then the result
+record contains the component <code>isMonomial</code> with value <code>"?"</code>.
+<P>
+This case occurs in the call for a character <var>chi</var> if and only if
+<var>chi</var> is not induced from the inertia subgroup of a component of any
+reducible restriction to a normal subgroup.  It can happen that <var>chi</var>
+is monomial in this situation.
+<P>
+For a group this case occurs if no irreducible character can be proved
+to be nonmonomial, and if no decision is possible for at least one
+irreducible character.
+<P>
+<P>
+<P>
+<code>IsMonomial( <var>G</var> )</code>
+<A name = "I2"></a>
+<BR> 
+<code>IsMonomial( <var>chi</var> )</code>
+<A name = "I3"></a>
+
+<P>
+returns <code>true</code> if the group <var>G</var> or the character <var>chi</var> of a solvable group
+can be proved to be monomial, <code>false</code> if it can be proved to be nonmonomial,
+and the string <code>"?"</code> otherwise.
+<P>
+<pre>    gap> TestMonomial( S4 );
+    rec(
+      isMonomial := true,
+      comment := "abelian by supersolvable group" )
+    gap> TestMonomial( Sl23 );
+    rec(
+      isMonomial := false,
+      comment := "list Delta( G ) contains entry > 1" ) </pre>
+<P>
+<P>
+<P>
+<code>IsMonomial( <var>n</var> )</code>
+<A name = "I4"></a>
+
+<P>
+for a positive integer <var>n</var> returns <code>true</code> if every solvable group of order
+<var>n</var> is monomial, and <code>false</code> otherwise.
+<P>
+<pre>    gap> Filtered( [ 1 .. 111 ], x -> not IsMonomial( x ) );
+    [ 24, 48, 72, 96, 108 ] </pre>
+<P><A NAME="SECT012"><h2>55.12 TestRelativelySM</h2></a>
+<P><P><P>
+<code>TestRelativelySM( <var>G</var> )</code><BR> 
+<code>TestRelativelySM( <var>chi</var>, <var>N</var> )</code>
+<P>
+If the only argument is a SM group <var>G</var> then <code>TestRelativelySM</code> returns
+a record with information about whether <var>G</var> is relatively subnormally
+monomial (relatively SM) with respect to every normal subgroup.
+<P>
+If there are two arguments, an irreducible character <var>chi</var> of a SM group <I>G</I>
+and a normal subgroup <var>N</var> of <I>G</I>, then <code>TestRelativelySM</code> returns a record
+with information whether <var>chi</var> is relatively SM with respect to <var>N</var>, i.e,
+whether there is a subnormal subgroup <I>H</I> of <I>G</I> that contains <var>N</var> such that
+<var>chi</var> is induced from a character <I>&psi;</I> of <I>H</I> where the restriction of
+<I>&psi;</I> to <var>N</var> is irreducible.
+<P>
+The component <code>isRelativelySM</code> is <code>true</code> or <code>false</code>, the component
+<code>comment</code> contains a string that describes the reason.
+If the argument is <var>G</var>, and <var>G</var> is not relatively SM with respect to
+a normal subgroup then the component <code>character</code> contains a not
+relatively SM character of such a normal subgroup.
+<P>
+<strong>Note</strong>: It is not checked whether <I>G</I> is SM.
+<P>
+<pre>    gap> IsSubnormallyMonomial( SolvableGroup( "A4" ) );
+    #W  Warning: Group has no name
+    true
+    gap> TestRelativelySM( SolvableGroup( "A4" ) );
+    rec(
+      isRelativelySM := true,
+      comment :=
+       "normal subgroups are abelian or have nilpotent factor group" ) </pre>
+<P><A NAME="SECT013"><h2>55.13 IsMinimalNonmonomial</h2></a>
+<P><P><P>
+<code>IsMinimalNonmonomial( <var>G</var> ) </code>
+<P>
+returns <code>true</code> if the solvable group <var>G</var> is a minimal nonmonomial group,
+and <code>false</code> otherwise.
+A group is called <strong>minimal nonmonomial</strong> if it is nonmonomial,
+and all proper subgroups and factor groups are monomial.
+<P>
+The solvable minimal nonmonomial groups were classified by van der Waall
+(see <A href="biblio.htm#vdW76"><cite>vdW76</cite></a>).
+<P>
+<pre>    gap> IsMinimalNonmonomial( Sl23 );
+    true
+    gap> IsMinimalNonmonomial( S4 );
+    false </pre>
+<P><A NAME="SECT014"><h2>55.14 MinimalNonmonomialGroup</h2></a>
+<P><P><P>
+<code>MinimalNonmonomialGroup( <var>p</var>, <var>factsize</var> )</code>
+<P>
+returns a minimal nonmonomial group described by the parameters
+<var>factsize</var> and <var>p</var> if such a group exists, and <code>false</code> otherwise.
+<P>
+Suppose that a required group <I>K</I> exists.
+<var>factsize</var> is the size of the Fitting factor <I>K / F(K)</I>; this value must
+be 4, 8, an odd prime, twice an odd prime, or four times an odd prime.
+<P>
+In the case that <var>factsize</var> is twice an odd prime the centre <I>Z(K)</I> iscyclic
+of order <I>2<sup>p+1</sup></I>.  In all other cases <var>p</var> denotes the (unique) prime that
+divides the order of <I>F(K)</I>.
+<P>
+The solvable minimal nonmonomial groups were classified by van der Waall
+(see <A href="biblio.htm#vdW76"><cite>vdW76</cite></a>, the construction follows this article).
+<P>
+<pre>    gap> MinimalNonmonomialGroup(  2,  3 ); # <I>SL<sub>2</sub>(3)</I>
+    2^(1+2):3
+    gap> MinimalNonmonomialGroup(  3,  4 );
+    3^(1+2):4
+    gap> MinimalNonmonomialGroup(  5,  8 );
+    5^(1+2):Q8
+    gap> MinimalNonmonomialGroup( 13, 12 );
+    13^(1+2):2.D6
+    gap> MinimalNonmonomialGroup(  1, 14 );
+    2^(1+6):D14
+    gap> MinimalNonmonomialGroup(  2, 14 );
+    (2^(1+6)Y4):D14 </pre>
+<P><a href ="chap054.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap056.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

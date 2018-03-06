@@ -1,0 +1,1024 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  algebra.tex                 GAP documentation               Thomas Breuer
+%%
+%A  @(#)$Id: algebra.tex,v 1.1.1.1 1996/12/11 12:36:42 werner Exp $
+%%
+%Y  Copyright 1994-1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file contains the description of the algebra record and  polymorphic
+%%  functions for algebras.
+%%
+%H  $Log: algebra.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:42  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.1  1994/06/10  02:38:06  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.0  1994/05/19  13:59:20  sam
+%H  Initial Revision under RCS
+%H
+%%
+\def\MeatAxe{\sf MeatAxe}
+\Chapter{Algebras}
+
+This chapter introduces the data structures and functions for algebras
+in {\GAP}.  The word *algebra* in this manual means always *associative
+algebra*.
+
+At the moment {\GAP} supports only finitely presented algebras and
+matrix algebras.  For details about implementation and special functions for
+the different types of algebras, see "More about Algebras" and the chapters
+"Finitely Presented Algebras" and "Matrix Algebras".
+
+The treatment of algebras is very similar to that of groups.  For
+example, algebras in {\GAP} are always finitely generated, since for many
+questions the generators play an important role.
+If you are not familiar with the concepts that are used to handle groups
+in {\GAP} it might be useful to read the introduction and the overview
+sections in chapter "Groups".
+
+Algebras are created using 'Algebra' (see "Algebra") or 'UnitalAlgebra'
+(see "UnitalAlgebra"), subalgebras of a given algebra using 'Subalgebra'
+(see "Subalgebra") or 'UnitalSubalgebra' (see "UnitalSubalgebra").
+See "Parent Algebras and Subalgebras", and the corresponding section
+"More about Groups and Subgroups" in the chapter about groups for details
+about the distinction between parent algebras and subalgebras.
+
+The first sections of the chapter describe the data structures (see "More
+about Algebras") and the concepts of unital algebras (see "Algebras and
+Unital Algebras") and parent algebras (see "Parent Algebras and
+Subalgebras").
+
+The next sections describe the functions for the construction of
+algebras, and the tests for algebras (see "Algebra", "UnitalAlgebra",
+"IsAlgebra", "IsUnitalAlgebra", "Subalgebra", "UnitalSubalgebra",
+"IsSubalgebra", "AsAlgebra", "AsUnitalAlgebra", "AsSubalgebra",
+"AsUnitalSubalgebra").
+
+The next sections describe the different types of functions for algebras
+(see "Operations for Algebras", "Zero and One for Algebras", "Set
+Theoretic Functions for Algebras", "Property Tests for Algebras", "Vector
+Space Functions for Algebras", "Algebra Functions for Algebras",
+"TrivialSubalgebra").
+
+The next sections describe the operation of algebras (see "Operation for
+Algebras", "OperationHomomorphism for Algebras").
+
+The next sections describe algebra homomorphisms (see "Algebra
+Homomorphisms", "Mapping Functions for Algebra Homomorphisms").
+
+The next sections describe algebra elements (see "Algebra Elements",
+"IsAlgebraElement").
+
+The last section describes the implementation of the data structures
+(see "Algebra Records").
+
+At the moment there is no implementation for ideals, cosets, and factors
+of algebras in {\GAP}, and the only available algebra homomorphisms are
+operation homomorphisms.
+
+Also there is no implementation of bases for general algebras, this will
+be available as soon as it is for general vector spaces.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Algebras}
+
+Let $F$ be a field.  A ring $A$ is called an *$F$-algebra* if $A$ is
+an $F$-vector space.  All algebras in {\GAP} are *associative*, that is,
+the multiplication is associative.
+
+An algebra always contains a *zero element* that can be obtained by
+subtracting an arbitrary element from itself.  A discussion of *identity
+elements* of algebras (and of the consequences for the implementation in
+{\GAP}) can be found in "Algebras and Unital Algebras".
+
+*Elements of the field* $F$ are not regarded as elements of $A$.  The
+practical reason (besides the obvious mathematical one) for this is that
+even if the identity matrix is contained in the matrix algebra $A$ it is
+not possible to write '1 + a' for adding the identity matrix to the
+algebra element 'a', since independent of the algebra $A$ the meaning in
+{\GAP} is already defined as to add '1' to all positions of the matrix
+'a'.  Thus one has to write 'One( A ) + a' or 'a\^0\ + a' instead.
+
+The natural *operation domains* for algebras are modules
+(see "Operation for Algebras", and chapter "Modules").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebras and Unital Algebras}
+
+Not all algebras contain a (left and right) multiplicative neutral
+*identity element*, but if an algebra contains such an identity element
+it is unique.
+
+If an algebra $A$ contains a multiplicative neutral element then in
+general it cannot be derived from an arbitrary element $a$ of $A$ by
+forming $a / a$ or $a^0$, since these operations may be not defined for
+the algebra $A$.
+
+More precisely, it may be possible to invert $a$ or raise it to the
+zero-th power, but $A$ is not necessarily closed under these operations.
+For example, if $a$ is a square matrix in {\GAP} then we can form $a^0$
+which is the identity matrix of the same size and over the same field as
+$a$.
+
+On the other hand, an algebra may have a multiplicative neutral element
+that is *not* equal to the zero-th power of elements (see "Zero and One
+for Algebras").
+
+In many cases, however, the zero-th power of algebra elements
+is well-defined, with the result again in the algebra.  This holds for
+example for all finitely presented algebras (see chapter "Finitely
+Presented Algebras") and all those matrix algebras whose generators are
+the generators of a finite group.
+
+For practical purposes it is useful to distinguish general *algebras* and
+*unital algebras*.
+
+A unital algebra in {\GAP} is an algebra $U$ that is *known to contain*
+zero-th powers of elements, and all functions may assume this.  A not unital
+algebra $A$ may contain zero-th powers of elements or not, and no
+function for $A$ should assume existence or nonexistence of these
+elements in $A$.  So it may be possible to view $A$ as a unital algebra
+using 'AsUnitalAlgebra( <A> )' (see "AsUnitalAlgebra"), and of course it
+is always possible to view a unital algebra as algebra using
+'AsAlgebra( <U> )' (see "AsAlgebra").
+
+$A$ can have unital subalgebras, and of course $U$ can have subalgebras
+that are not unital.
+
+The images of unital algebras under operation homomorphisms are either
+unital or trivial, since the identity of the source acts trivially, so
+its image under the homomorphism is the identity of the image.
+
+The following example shows the main differences between algebras and unital
+algebras.
+
+|    gap> a:= [ [ 1, 0 ], [ 0, 0 ] ];;
+    gap> alg1:= Algebra( Rationals, [ a ] );
+    Algebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> id:= a^0;
+    [ [ 1, 0 ], [ 0, 1 ] ]
+    gap> id in alg1;
+    false
+    gap> alg2:= UnitalAlgebra( Rationals, [ a ] );
+    UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> id in alg2;
+    true
+    gap> alg3:= AsAlgebra( alg2 );
+    Algebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ]
+     ] )
+    gap> alg3 = alg2;
+    true
+    gap> AsUnitalAlgebra( alg1 );
+    Error, <D> is not unital |
+
+We see that if we want the identity matrix to be contained in an algebra
+that is not known to be unital, it might be necessary to add it to the
+generators.  If we would not have the possibility to define unital
+algebras, this would lead to the strange situations that a two-generator
+algebra means an algebra generated by one nonidentity generator and the
+identity matrix, or that an algebra is free on the set $X$ but is
+generated as algebra by the set $X$ plus the identity.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Parent Algebras and Subalgebras}
+
+{\GAP} distinguishs between parent algebras and subalgebras of parent
+algebras.  The concept is the same as that for groups (see "More about
+Groups and Subgroups"), so here it is only sketched.
+
+Each subalgebra belongs to  a unique parent algebra, the so-called
+*parent* of the subalgebra.  A parent algebra is its own parent.
+
+Parent algebras are constructed by 'Algebra' and 'UnitalAlgebra',
+subalgebras are constructed by 'Subalgebra' and 'UnitalSubalgebra'.
+The parent of the first argument of 'Subalgebra' will be the parent of the
+constructed subalgebra.
+
+Those algebra functions that take more than one algebra as argument
+require that  the arguments  have a  common parent.  Take for  instance
+'Centralizer'.  It takes two  arguments, an algebra <A> and an algebra
+<B>, where either <A> is a parent algebra, and <B> is a subalgebra of
+this parent  algebra, or <A> and <B> are subalgebras of a common parent
+algebra <P>, and  returns the centralizer of <B> in <A>.  This is
+represented as a subalgebra of the common parent of <A> and <B>.
+Note that a subalgebra of a parent algebra need not be a proper
+subalgebra.
+
+An exception to this rule is again the set theoretic function
+'Intersection' (see "Intersection"), which  allows to intersect algebras
+with different parents.
+
+Whenever you have  two subalgebras which have different  parent algebras
+but have a common superalgebra <A> you can use 'AsSubalgebra' or
+'AsUnitalSubalgebra' (see "AsSubalgebra", "AsUnitalSubalgebra") in order
+to construct new subalgebras which have a common parent algebra <A>.
+
+Note that subalgebras of unital algebras need not be unital (see "Algebras
+and Unital Algebras").
+
+The following sections describe  the functions  related  to  this concept
+(see "Algebra", "UnitalAlgebra", "IsAlgebra", "IsUnitalAlgebra",
+"AsAlgebra", "AsUnitalAlgebra", "Subalgebra", "UnitalSubalgebra",
+"AsSubalgebra", "AsUnitalSubalgebra", and also "IsParent", "Parent").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebra}
+
+'Algebra( <U> )'
+
+returns a parent algebra $A$ which is isomorphic to the parent algebra or
+subalgebra <U>.
+
+'Algebra( <F>, <gens> )' \\
+'Algebra( <F>, <gens>, <zero> )'
+
+returns a parent algebra over the field <F> and generated by the algebra
+elements in the list <gens>.  The zero element of this algebra may be
+entered as <zero>; this is necessary whenever <gens> is empty.
+
+|    gap> a:= [ [ 1 ] ];;
+    gap> alg:= Algebra( Rationals, [ a ] );
+    Algebra( Rationals, [ [ [ 1 ] ] ] )
+    gap> alg.name:= "alg";;
+    gap> sub:= Subalgebra( alg, [] );
+    Subalgebra( alg, [  ] )
+    gap> Algebra( sub );
+    Algebra( Rationals, [ [ [ 0 ] ] ] )
+    gap> Algebra( Rationals, [], 0*a );
+    Algebra( Rationals, [ [ [ 0 ] ] ] ) |
+
+The algebras returned by 'Algebra' are not unital.  For constructing
+unital algebras, use "UnitalAlgebra" 'UnitalAlgebra'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{UnitalAlgebra}
+
+'UnitalAlgebra( <U> )'
+
+returns a unital parent algebra $A$ which is isomorphic to the parent
+algebra or subalgebra <U>.  If <U> is not unital it is checked whether
+the zero-th power of elements is contained in <U>, and if not an error
+is signalled.
+
+'UnitalAlgebra( <F>, <gens> )' \\
+'UnitalAlgebra( <F>, <gens>, <zero> )'
+
+returns a unital parent algebra over the field <F> and generated by the
+algebra elements in the list <gens>.  The zero element of this algebra
+may be entered as <zero>; this is necessary whenever <gens> is empty.
+
+|    gap> alg1:= UnitalAlgebra( Rationals, [ NullMat( 2, 2 ) ] );
+    UnitalAlgebra( Rationals, [ [ [ 0, 0 ], [ 0, 0 ] ] ] )
+    gap> alg2:= UnitalAlgebra( Rationals, [], NullMat( 2, 2 ) );
+    UnitalAlgebra( Rationals, [ [ [ 0, 0 ], [ 0, 0 ] ] ] )
+    gap> alg3:= Algebra( alg1 );
+    Algebra( Rationals, [ [ [ 0, 0 ], [ 0, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ]
+     ] )
+    gap> alg1 = alg3;
+    true
+    gap> AsUnitalAlgebra( alg3 );
+    UnitalAlgebra( Rationals,
+    [ [ [ 0, 0 ], [ 0, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ] ) |
+
+The algebras returned by 'UnitalAlgebra' are unital.  For constructing
+algebras that are not unital, use "Algebra" 'Algebra'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAlgebra}
+
+'IsAlgebra( <obj> )'
+
+returns 'true' if  <obj>, which can be  an object of  arbitrary type, is
+a parent algebra or a subalgebra and 'false' otherwise.
+The function will signal an error if <obj> is an unbound variable.
+
+|    gap> IsAlgebra( FreeAlgebra( GF(2), 0 ) );
+    true
+    gap> IsAlgebra( 1/2 );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsUnitalAlgebra}
+
+'IsUnitalAlgebra( <obj> )'
+
+returns 'true' if  <obj>, which can be  an object of  arbitrary type, is
+a unital parent algebra or a unital subalgebra and 'false' otherwise.
+The function will signal an error if <obj> is an unbound variable.
+
+|    gap> IsUnitalAlgebra( FreeAlgebra( GF(2), 0 ) );
+    true
+    gap> IsUnitalAlgebra( Algebra( Rationals, [ [ [ 1 ] ] ] ) );
+    false |
+
+Note that the function does *not* check whether <obj> is an algebra that
+contains the zero-th power of elements, but just checks whether <obj> is
+an algebra with flag 'isUnitalAlgebra'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subalgebra}
+
+'Subalgebra( <A>, <gens> )'
+
+returns the subalgebra of the algebra <A> generated by the elements in
+the list <gens>.
+
+|    gap> a:= [ [ 1, 0 ], [ 0, 0 ] ];;
+    gap> b:= [ [ 0, 0 ], [ 0, 1 ] ] ;;
+    gap> alg:= Algebra( Rationals, [ a, b ] );;
+    gap> alg.name:= "alg";;
+    gap> s:= Subalgebra( alg, [ a ] );
+    Subalgebra( alg, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> s = alg;
+    false
+    gap> s:= UnitalSubalgebra( alg, [ a ] );
+    UnitalSubalgebra( alg, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> s = alg;
+    true |
+
+Note that 'Subalgebra', 'UnitalSubalgebra', 'AsSubalgebra' and
+'AsUnitalSubalgebra' are the only functions in which the name
+'Subalgebra' does not refer to the mathematical terms subalgebra and 
+superalgebra but to the implementation of algebras as subalgebras and
+parent algebras.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{UnitalSubalgebra}
+
+'UnitalSubalgebra( <A>, <gens> )'
+
+returns the unital subalgebra of the algebra <A> generated by the
+elements in the list <gens>.
+If <A> is not (known to be) unital then first it is checked that <A>
+really contains the zero-th power of elements.
+
+|    gap> a:= [ [ 1, 0 ], [ 0, 0 ] ];;
+    gap> b:= [ [ 0, 0 ], [ 0, 1 ] ] ;;
+    gap> alg:= Algebra( Rationals, [ a, b ] );;
+    gap> alg.name:= "alg";;
+    gap> s:= Subalgebra( alg, [ a ] );
+    Subalgebra( alg, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> s = alg;
+    false
+    gap> s:= UnitalSubalgebra( alg, [ a ] );
+    UnitalSubalgebra( alg, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> s = alg;
+    true |
+
+Note that 'Subalgebra', 'UnitalSubalgebra', 'AsSubalgebra' and
+'AsUnitalSubalgebra' are the only functions in which the name
+'Subalgebra' does not refer to the mathematical terms subalgebra and 
+superalgebra but to the implementation of algebras as subalgebras and
+parent algebras.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSubalgebra}
+
+'IsSubalgebra( <A>, <U> )'
+
+returns 'true' if <U> is a subalgebra of <A> and 'false' otherwise.
+
+Note that <A> and <U> must have a common  parent algebra. This function
+returns 'true' if and only if the set of elements of <U> is a subset of
+the set of elements of <A>.
+
+|    gap> a:= [ [ 1, 0 ], [ 0, 0 ] ];;
+    gap> b:= [ [ 0, 0 ], [ 0, 1 ] ] ;;
+    gap> alg:= Algebra( Rationals, [ a, b ] );;
+    gap> alg.name:= "alg";;
+    gap> IsSubalgebra( alg, alg );
+    true
+    gap> s:= UnitalSubalgebra( alg, [ a ] );
+    UnitalSubalgebra( alg, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> IsSubalgebra( alg, s );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AsAlgebra}
+
+'AsAlgebra( <D> )' \\
+'AsAlgebra( <F>, <D> )'
+
+Let <D> be a domain. 'AsAlgebra' returns an algebra $A$ over the field <F>
+such that the set of elements of <D> is the same as the set of elements of
+$A$ if this is possible.
+If <D> is an algebra the argument <F> may be omitted, the coefficients
+field of <D> is taken as coefficients field of <F> in this case.
+
+If <D> is a list of algebra elements these elements must form a algebra.
+Otherwise an error is signalled.
+
+|    gap> a:= [ [ 1, 0 ], [ 0, 0 ] ] * Z(2);;
+    gap> AsAlgebra( GF(2), [ a, 0*a ] );
+    Algebra( GF(2), [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2) ] ] ] ) |
+
+Note that this function returns a parent algebra or a subalgebra  of a
+parent algebra  depending on <D>. In order  to convert a   subalgebra
+into a parent algebra you must use 'Algebra' or 'UnitalAlgebra' (see
+"Algebra", "UnitalAlgebra").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AsUnitalAlgebra}
+
+'AsUnitalAlgebra( <D> )' \\
+'AsUnitalAlgebra( <F>, <D> )'
+
+Let <D> be a domain. 'AsUnitalAlgebra' returns a unital algebra $A$ over
+the field <F> such that the set of elements of <D> is the same as the set
+of elements of $A$ if this is possible.
+If <D> is an algebra the argument <F> may be omitted, the coefficients
+field of <D> is taken as coefficients field of <F> in this case.
+
+If <D> is a list of algebra elements these elements must form a unital
+algebra.  Otherwise an error is signalled.
+
+|    gap> a:= [ [ 1, 0 ], [ 0, 0 ] ] * Z(2);;
+    gap> AsUnitalAlgebra( GF(2), [ a, a^0, 0*a, a^0-a ] );
+    UnitalAlgebra( GF(2), [ [ [ 0*Z(2), 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ],
+      [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2) ] ] ] ) |
+
+Note that this function returns a parent algebra or a subalgebra  of a
+parent algebra  depending on <D>. In order  to convert a   subalgebra
+into a parent algebra you must use 'Algebra' or 'UnitalAlgebra' (see
+"Algebra", "UnitalAlgebra").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AsSubalgebra}
+
+'AsSubalgebra( <A>, <U> )'
+
+Let <A> be a parent algebra and <U> be a parent algebra or a subalgebra
+with a possibly different parent algebra, such that the generators of <U>
+are elements of <A>.  'AsSubalgebra' returns a new subalgebra $S$ such
+that $S$ has parent algebra <A> and is generated by the generators of <U>.
+
+|    gap> a:= [ [ 1, 0 ], [ 0, 0 ] ];;
+    gap> b:= [ [ 0, 0 ], [ 0, 1 ] ] ;;
+    gap> alg:= Algebra( Rationals, [ a, b ] );;
+    gap> alg.name:= "alg";;
+    gap> s:= Algebra( Rationals, [ a ] );
+    Algebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> AsSubalgebra( alg, s );
+    Subalgebra( alg, [ [ [ 1, 0 ], [ 0, 0 ] ] ] ) |
+
+Note that 'Subalgebra', 'UnitalSubalgebra', 'AsSubalgebra' and
+'AsUnitalSubalgebra' are the only functions in which the name
+'Subalgebra' does not refer to the mathematical terms subalgebra and 
+superalgebra but to the implementation of algebras as subalgebras and
+parent algebras.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AsUnitalSubalgebra}
+
+'AsUnitalSubalgebra( <A>, <U> )'
+
+Let <A> be a parent algebra and <U> be a parent algebra or a subalgebra
+with a possibly different parent algebra, such that the generators of <U>
+are elements of <A>.  'AsSubalgebra' returns a new unital subalgebra $S$
+such that $S$ has parent algebra <A> and is generated by the generators
+of <U>.  If <U> or <A> do not contain the zero-th power of elements an
+error is signalled.
+
+|    gap> a:= [ [ 1, 0 ], [ 0, 0 ] ];;
+    gap> b:= [ [ 0, 0 ], [ 0, 1 ] ];;
+    gap> alg:= Algebra( Rationals, [ a, b ] );;
+    gap> alg.name:= "alg";;
+    gap> s:= UnitalAlgebra( Rationals, [ a ] );
+    UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> AsSubalgebra( alg, s );
+    Subalgebra( alg, [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ] )
+    gap> AsUnitalSubalgebra( alg, s );
+    UnitalSubalgebra( alg, [ [ [ 1, 0 ], [ 0, 0 ] ] ] ) |
+    
+Note that 'Subalgebra', 'UnitalSubalgebra', 'AsSubalgebra' and
+'AsUnitalSubalgebra' are the only functions in which the name
+'Subalgebra' does not refer to the mathematical terms subalgebra and 
+superalgebra but to the implementation of algebras as subalgebras and
+parent algebras.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Algebras}
+
+'<A> \^\ <n>'
+
+The operator '\^' evaluates to the <n>-fold direct product of <A>,
+viewed as a free <A>-module.
+
+|    gap> a:= FreeAlgebra( GF(2), 2 );
+    UnitalAlgebra( GF(2), [ a.1, a.2 ] )
+    gap> a^2;
+    Module( UnitalAlgebra( GF(2), [ a.1, a.2 ] ), 
+    [ [ a.one, a.zero ], [ a.zero, a.one ] ] ) |
+
+\vspace{5mm}
+'<a> in <A>'
+
+The operator 'in' evaluates to 'true' if <a> is an element of <A> and
+'false' otherwise. <a> must be an element of the parent algebra of <A>.
+
+|    gap> a.1^3 + a.2 in a;
+    true
+    gap> 1 in a;
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Zero and One for Algebras}
+
+'Zero( <A> )' : \\
+    returns the additive neutral element of the algebra <A>.
+
+'One( <A> )' : \\
+    returns the (right and left) multiplicative neutral element of the
+    algebra <A> if this exists, and 'false' otherwise.
+    If <A> is a unital algebra then this element is obtained on raising
+    an arbitrary element to the zero-th power (see "Algebras and Unital
+    Algebras").
+
+|    gap> a:= Algebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] );
+    Algebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> Zero( a );
+    [ [ 0, 0 ], [ 0, 0 ] ]
+    gap> One( a );
+    [ [ 1, 0 ], [ 0, 0 ] ]
+    gap> a:= UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] );
+    UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> Zero( a );
+    [ [ 0, 0 ], [ 0, 0 ] ]
+    gap> One( a );
+    [ [ 1, 0 ], [ 0, 1 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Theoretic Functions for Algebras}
+
+As already mentioned in the introduction of the chapter, algebras are
+domains. Thus all set theoretic functions, for example 'Intersection'
+and 'Size' can be applied to algebras.
+All set theoretic functions not mentioned here are not treated specially
+for algebras.
+
+'Elements( <A> )' : \\
+    computes the elements of the algebra <A> using a Dimino algorithm.
+    The default function for algebras computes a vector space basis at
+    the same time.
+
+'Intersection( <A>, <H> )' : \\
+    returns the intersection of <A> and <H> either as set of elements
+    or as an algebra record.
+
+'IsSubset( <A>, <H> )' : \\
+    If <A> and <H> are algebras then 'IsSubset' tests whether the
+    generators of <H> are elements of <A>.
+    Otherwise 'DomainOps.IsSubset' is used.
+
+'Random( <A> )' : \\
+    returns a random element of the algebra <A>.
+    This requires the computation of a vector space basis.
+
+See also "Functions for Matrix Algebras", "Functions for Finitely
+Presented Algebras" for the set theoretic functions for the different
+types of algebras.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Property Tests for Algebras}
+
+The following property tests (cf. "Properties and Property Tests") are
+available for algebras.
+
+'IsAbelian( <A> )' : \\
+    returns 'true' if the algebra <A> is abelian and 'false' otherwise.
+    An algebra <A> is *abelian* if and only if for every $a, b\in <A>$
+    the equation $a\* b = b\* a$ holds.
+
+'IsCentral( <A>, <U> )' : \\
+    returns 'true' if the algebra <A> centralizes the algebra <U> and
+    'false' otherwise.
+    An algebra <A> *centralizes* an algebra <U> if and only if for all
+    $a\in <A>$ and for all $u\in <U>$ the equation $a\* u = u\* a$ holds.
+    Note that <U> need not to be a subalgebra of <A> but they must have
+    a common parent algebra.
+
+'IsFinite( <A> )' : \\
+    returns 'true' if the algebra <A> is finite, and 'false' otherwise.
+
+'IsTrivial( <A> )' : \\
+    returns 'true' if the algebra <A> consists only of the zero element,
+    and 'false' otherwise.  If <A> is a unital algebra it is of course
+    never trivial.
+
+All tests expect a parent algebra or subalgebra and return 'true' if the
+algebra has the property and 'false' otherwise.  Some functions may not
+terminate if the given algebra has an infinite set of elements.
+A warning may be printed in such cases.
+
+|    gap> IsAbelian( FreeAlgebra( GF(2), 2 ) );
+    false
+    gap> a:= UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] );
+    UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> a.name:= "a";;
+    gap> s1:= Subalgebra( a, [ One(a) ] );
+    Subalgebra( a, [ [ [ 1, 0 ], [ 0, 1 ] ] ] )
+    gap> IsCentral( a, s1 ); IsFinite( s1 );
+    true
+    false
+    gap> s2:= Subalgebra( a, [] );
+    Subalgebra( a, [  ] )
+    gap> IsFinite( s2 ); IsTrivial( s2 );
+    true
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Vector Space Functions for Algebras}
+
+A finite dimensional $F$-algebra $A$ is always a finite dimensional
+$F$-vector space.
+Thus in {\GAP}, an algebra is a vector space (see "IsVectorSpace"),
+and vector space functions such as 'Base' and 'Dimension' are applicable
+to algebras.
+
+|    gap> a:= UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] );
+    UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] )
+    gap> Dimension( a );
+    2
+    gap> Base( a );
+    [ [ [ 1, 0 ], [ 0, 1 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ] |
+
+The vector space structure is used also by the set theoretic functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebra Functions for Algebras}
+
+The functions desribed in this section compute certain  subalgebras
+of  a given algebra, e.g.,  'Centre' computes  the centre of an algebra.
+
+They return algebra records as described in "Algebra Records" for the
+computed subalgebras.  Some functions may not terminate if the given
+algebra has an infinite set of elements, while other functions may
+signal an error in such cases.
+
+Here the term ``subalgebra\'\'\ is used in a mathematical sense. But in
+{\GAP}, every algebra is either a parent algebra or a subalgebra of a
+unique parent algebra.  If you compute the centre $C$ of an algebra $U$
+with parent algebra $A$ then $C$ is a subalgebra of $U$ but its parent
+algebra is $A$ (see "Parent Algebras and Subalgebras").
+
+'Centralizer( <A>, <x> )' \\
+'Centralizer( <A>, <U> )' : \\
+    returns the centralizer of an element <x> in <A> where <x>
+    must be an element of the parent algebra of <A>, resp. the
+    centralizer of the algebra <U> in <A> where both algebras must have
+    a common parent.
+
+The *centralizer* of an element <x> in <A>  is defined as the set  $C$ of
+elements $c$ of <A> such that <c> and <x> commute.
+
+The *centralizer* of an algebra <U> in <A>  is  defined as  the set $C$  of
+elements $c$ of $A$ such that $c$ commutes with every element of <U>.
+
+|    gap> a:= MatAlgebra( GF(2), 2 );;
+    gap> a.name:= "a";;
+    gap> m:= [ [ 1, 1 ], [ 0, 1 ] ] * Z(2);;
+    gap> Centralizer( a, m );
+    UnitalSubalgebra( a, [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], 
+      [ [ 0*Z(2), Z(2)^0 ], [ 0*Z(2), 0*Z(2) ] ] ] ) |
+
+\vspace{5mm}
+
+'Centre( <A> )' : \\
+    returns the centre of <A> (that is, the centralizer of <A> in <A>).
+
+|    gap> c:= Centre( a );
+    UnitalSubalgebra( a, [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ] ) |
+
+\vspace{5mm}
+
+'Closure( <U>, <a> )' \\
+'Closure( <U>, <S> )'
+
+Let <U> be an algebra with  parent algebra $A$  and let <a> be an element
+of $A$.  Then 'Closure' returns the closure $C$ of <U> and <a> as
+subalgebra of $A$. The closure $C$ of <U> and <a> is the subalgebra
+generated by <U> and <a>.
+
+Let <U> and <S> be two algebras with a common parent algebra $A$. Then
+'Closure' returns the subalgebra of $A$ generated by <U> and <S>.
+
+|    gap> Closure( c, m );
+    UnitalSubalgebra( a, [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], 
+      [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TrivialSubalgebra}
+
+'TrivialSubalgebra( <U> )'
+
+Let <U> be an algebra with parent algebra $A$. Then 'TrivialSubalgebra'
+returns the trivial subalgebra $T$ of <U>, as subalgebra of $A$.
+
+|    gap> a:= MatAlgebra( GF(2), 2 );;
+    gap> a.name:= "a";;
+    gap> TrivialSubalgebra( a );
+    Subalgebra( a, [  ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operation for Algebras}
+
+'Operation( <A>, <M> )'
+
+Let $A$ be an $F$-algebra for a field $F$, and $M$ an $A$-module of
+$F$-dimension $n$.  With respect to a chosen $F$-basis of $M$, the action
+of an element of $A$ on $M$ can be described by an $n \times n$ matrix
+over $F$.  This induces an algebra homomorphism from $A$ onto a matrix
+algebra $A_M$, with action on its natural module equivalent to the action
+of $A$ on $M$.
+The matrix algebra $A_M$ can be computed as 'Operation( <A>, <M> )'.
+
+\vspace{5mm}
+
+'Operation( <A>, <B> )'
+
+returns the operation of the algebra <A> on an <A>-module $M$ with respect
+to the vector space basis <B> of $M$.
+
+Note that contrary to the situation for groups, the operation domains of
+algebras are not lists of elements but domains.
+
+For constructing the algebra homomorphism from $A$ onto $A_M$, and the
+module homomorphism from $M$ onto the equivalent $A_M$-module, see
+"OperationHomomorphism for Algebras" and "Module Homomorphisms",
+respectively.
+
+|    gap> a:= UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] );;
+    gap> m:= Module( a, [ [ 1, 0 ] ] );;
+    gap> op:= Operation( a, m );
+    UnitalAlgebra( Rationals, [ [ [ 1 ] ] ] )
+    gap> mat1:= PermutationMat( (1,2,3), 3, GF(2) );;
+    gap> mat2:= PermutationMat(   (1,2), 3, GF(2) );;
+    gap> u:= Algebra( GF(2), [ mat1, mat2 ] );; u.name:= "u";;
+    gap> nat:= NaturalModule( u );; nat.name:= "nat";;
+    gap> q:= nat / FixedSubmodule( nat );;
+    gap> op1:= Operation( u, q );
+    UnitalAlgebra( GF(2), [ [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, Z(2)^0 ] ], 
+      [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] ] )
+    gap> b:= Basis( q, [ [ 0, 1, 1 ], [ 0, 0, 1 ] ] * Z(2) );;
+    gap> op2:= Operation( u, b );
+    UnitalAlgebra( GF(2), [ [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ], 
+      [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] ] )
+    gap> IsEquivalent( NaturalModule( op1 ), NaturalModule( op2 ) );
+    true |
+
+If the dimension of $M$ is zero then the elements of $A_M$ cannot be
+represented as {\GAP} matrices.  The result is a null algebra, see
+"NullAlgebra", 'NullAlgebra'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OperationHomomorphism for Algebras}
+
+'OperationHomomorphism( <A>, <B> )'
+
+returns the algebra homomorphism (see "Algebra Homomorphisms") with
+source <A> and range <B>, provided that <B> is a matrix algebra that was
+constructed as operation of <A> on a suitable module <M> using
+'Operation( <A>, <M> )', see "Operation for Algebras".
+
+|    gap> ophom:= OperationHomomorphism( a, op );
+    OperationHomomorphism( UnitalAlgebra( Rationals,
+    [ [ [ 1, 0 ], [ 0, 0 ] ] ] ), UnitalAlgebra( Rationals,
+    [ [ [ 1 ] ] ] ) )
+    gap> Image( ophom, a.1 );
+    [ [ 1 ] ]
+    gap> Image( ophom, Zero( a ) );
+    [ [ 0 ] ]
+    gap> PreImagesRepresentative( ophom, [ [ 2 ] ] );
+    [ [ 2, 0 ], [ 0, 2 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebra Homomorphisms}%
+\index{homomorphisms!of algebras}
+
+An *algebra homomorphism* $\phi$ is a mapping that maps each element of an
+algebra $A$, called the source of $\phi$, to an element of an algebra $B$,
+called the range of $\phi$, such that for each pair $x, y \in A$ we have
+$(xy)^\phi = x^\phi y^\phi$ and $(x + y)^\phi = x^\phi + y^\phi$.
+
+An algebra homomorphism of unital algebras is *unital* if the zero-th
+power of elements in the source is mapped to the zero-th power of elements
+in the range.
+
+At the moment, only operation homomorphisms are supported in {\GAP} (see
+"OperationHomomorphism for Algebras").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Mapping Functions for Algebra Homomorphisms}
+
+This section describes how the mapping functions defined in chapter
+"Mappings" are implemented for algebra homomorphisms. Those functions not
+mentioned here are implemented by the default functions described in the
+respective sections.
+
+\vspace{5mm}
+'Image( <hom> )' \\
+'Image( <hom>, <H> )' \\
+'Images( <hom>, <H> )'
+
+The image of a subalgebra under a algebra  homomorphism is computed by
+computing the images of a set of generators of the subalgebra, and the
+result is the subalgebra generated by those images.
+
+\vspace{5mm}
+'PreImagesRepresentative( <hom>, <elm> )'
+
+|    gap> a:= UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ] ] );;
+    gap> a.name:= "a";;
+    gap> m:= Module( a, [ [ 1, 0 ] ] );;
+    gap> op:= Operation( a, m );
+    UnitalAlgebra( Rationals, [ [ [ 1 ] ] ] )
+    gap> ophom:= OperationHomomorphism( a, op );
+    OperationHomomorphism( a, UnitalAlgebra( Rationals, [ [ [ 1 ] ] ] ) )
+    gap> Image( ophom, a.1 );
+    [ [ 1 ] ]
+    gap> Image( ophom, Zero( a ) );
+    [ [ 0 ] ]
+    gap> PreImagesRepresentative( ophom, [ [ 2 ] ] );
+    [ [ 2, 0 ], [ 0, 2 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebra Elements}
+\index{equality!of algebra elements}%
+\index{ordering!of algebra elements}%
+\index{product!of algebra elements}%
+\index{product!of list and algebra element}%
+\index{sum!of algebra elements}%
+\index{sum!of list and algebra element}%
+\index{difference!of algebra elements}%
+\index{difference!of list and algebra element}%
+\index{power!of algebra elements}%
+\index{test!for algebra element}
+
+This section  describes the operations and  functions available
+for algebra  elements.
+
+Note  that algebra elements  may  exist independently of an algebra,
+e.g., you  can write down two  matrices  and  compute  their sum and
+product without ever defining an algebra that contains them.
+
+\vspace{5mm}
+
+*Comparisons of Algebra Elements*
+
+'<g> = <h>': \\
+evaluates to 'true'  if the algebra  elements <g>
+and  <h> are  equal and  to 'false' otherwise.
+
+'<g> \<> <h>': \\
+evaluates to 'true' if the algebra elements <g> and <h> are not equal
+and to 'false' otherwise.
+
+'<g> \<\ <h>' \\
+'<g> \<= <h>' \\
+'<g> >= <h>' \\
+'<g> > <h>'
+
+The operators '\<', '\<=', '>=' and '>' evaluate to 'true'  if  the algebra
+element <g> is strictly less than, less than or equal to, greater than or
+equal to  and strictly greater than the  algebra element <h>.  There  is no
+general ordering on all algebra  elements, so <g> and <h> should lie in
+the same parent algebra.  Note that for elements of finitely presented
+algebra, comparison means comparison with respect to the underlying free
+algebra (see "Elements of Finitely Presented Algebras").
+
+\vspace{5mm}
+
+*Arithmetic Operations for Algebra Elements*
+
+'<a> \*\ <b>' \\
+'<a> + <b>' \\
+'<a> - <b>'
+
+The operators '\*', '+' and '-' evaluate to the product, sum and difference
+of the two algebra elements <a> and <b>.  The operands must of course
+lie in a common parent algebra, otherwise an error is signalled.
+ 
+\vspace{5mm}
+'<a> / <c>'
+
+returns the quotient of the algebra element <a> by the nonzero element <c>
+of the base field of the algebra.
+
+\vspace{5mm}
+'<a> \^\ <i>'
+
+returns the <i>-th power of an algebra element <a> and a positive integer
+<i>.  If <i> is zero or negative, perhaps the result is not defined, or
+not contained in the algebra generated by <a>.
+
+\vspace{5mm}
+'<list> + <a>' \\
+'<a> + <list>' \\
+'<list> \*\ <a>' \\
+'<a> \*\ <list>'
+
+In this form the operators '+' and '\*' return a new list where each entry
+is the sum resp. product of <a>  and the   corresponding  entry  of <list>.
+Of   course addition resp. multiplication must be defined between <a> and
+each entry of <list>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAlgebraElement}
+
+'IsAlgebraElement( <obj> )'
+
+returns  'true' if  <obj>,  which may  be  an object of
+arbitrary type, is an algebra element, and  'false' otherwise. The function
+will signal an error if <obj> is an unbound variable.
+
+|    gap> IsAlgebraElement( (1,2) );
+    false
+    gap> IsAlgebraElement( NullMat( 2, 2 ) );
+    true
+    gap> IsAlgebraElement( FreeAlgebra( Rationals, 1 ).1 );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebra Records}
+
+Algebras and their subalgebras are represented by records.
+Once an algebra record is created you may add record components to it but
+you must *not* alter information already present.
+
+Algebra records must always contain the components 'isDomain' and
+'isAlgebra'.  Subalgebras contain  an additional component 'parent'.
+The components 'generators', 'zero' and 'one' are not necessarily
+contained.
+
+The contents of important record components of an algebra $A$ is
+described below.
+
+The *category components* are
+
+'isDomain': \\
+        is 'true'.
+
+'isAlgebra': \\
+        is 'true'.
+
+'isUnitalAlgebra': \\
+        is present (and then 'true') if $A$ is a unital algebra.
+
+The *identification components* are
+
+'field': \\
+        is the coefficient field of $A$.
+
+'generators': \\
+        is a list of algebra generators. Duplicate generators are allowed,
+        also the algebra zero may be among the generators.
+        Note that once created this entry must never be changed, as
+        most of the other entries depend on 'generators'.
+        If 'generators' is not bound it can be computed using 'Generators'.
+
+'parent': \\
+        if present this contains the algebra record of the parent algebra
+        of a subalgebra $A$, otherwise $A$ itself is a parent algebra.
+
+'zero': \\
+        is the additive neutral element of $A$, can be computed using
+        'Zero'.
+
+The component 'operations' contains  the *operations record* of $A$.
+This will usually be one of 'AlgebraOps', 'UnitalAlgebraOps', or a
+record for more specific algebras.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FFList}
+
+'FFList( <F> )'
+
+returns for a finite field <F> a list <l> of all elements of <F> in an
+ordering that is compatible with the ordering of field elements in the
+{\MeatAxe} share library (see chapter "The MeatAxe").
+
+The element of <F> corresponding to the number <n> is
+'<l>[ <n>+1 ]',
+and the canonical number of the field element <z> is
+'Position( <l>, <z> ) -1'.
+
+|    gap> FFList( GF( 8 ) );
+    [ 0*Z(2), Z(2)^0, Z(2^3), Z(2^3)^3, Z(2^3)^2, Z(2^3)^6, Z(2^3)^4,
+      Z(2^3)^5 ] |
+
+(This program was originally written by Meinolf Geck.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "%F\\|%V\\|%E"
+%%  fill-column:        73
+%%  fill-prefix:        "%%  "
+%%  eval:               (hide-body)
+%%  End:

@@ -1,0 +1,1334 @@
+<html><head><title>GAP3 Manual: 62 The Double Coset Enumerator</title></head>
+<body bgcolor="ffffff">
+<h1>62 The Double Coset Enumerator</h1>
+<P><P>
+\def\= {\hangafter=1\hangindent=2cm\hspace1.5cm}
+\def\Stab{\mathord</i>Stab<i>}
+\def\gen(#1)\left\langle#1\right\rangle
+\let\iso=\cong
+\def\split{\mathop:}
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap062.htm#SECT001">Double Coset Enumeration</a>
+<LI> <A HREF="chap062.htm#SECT002">Authorship and Contact Information</a>
+<LI> <A HREF="chap062.htm#SECT003">Installing the DCE Package</a>
+<LI> <A HREF="chap062.htm#SECT004">Mathematical Introduction</a>
+<LI> <A HREF="chap062.htm#SECT005">Gain Group Representation</a>
+<LI> <A HREF="chap062.htm#SECT006">DCE Words</a>
+<LI> <A HREF="chap062.htm#SECT007">DCE Presentations</a>
+<LI> <A HREF="chap062.htm#SECT008">Examples of Double Coset Enumeration</a>
+<LI> <A HREF="chap062.htm#SECT009">The DCE Universe</a>
+<LI> <A HREF="chap062.htm#SECT010">Informational Messages from DCE</a>
+<LI> <A HREF="chap062.htm#SECT011">DCE</a>
+<LI> <A HREF="chap062.htm#SECT012">DCESetup</a>
+<LI> <A HREF="chap062.htm#SECT013">DCEPerm</a>
+<LI> <A HREF="chap062.htm#SECT014">DCEPerms</a>
+<LI> <A HREF="chap062.htm#SECT015">DCEWrite</a>
+<LI> <A HREF="chap062.htm#SECT016">DCERead</a>
+<LI> <A HREF="chap062.htm#SECT017">Example of DCE Functions</a>
+<LI> <A HREF="chap062.htm#SECT018">Strategies for Double Coset Enumeration</a>
+<LI> <A HREF="chap062.htm#SECT019">Example of Double Coset Enumeration Strategies</a>
+<LI> <A HREF="chap062.htm#SECT020">Functions for Analyzing Double Coset Tables</a>
+<LI> <A HREF="chap062.htm#SECT021">DCEColAdj</a>
+<LI> <A HREF="chap062.htm#SECT022">DCEHOrbits</a>
+<LI> <A HREF="chap062.htm#SECT023">DCEColAdjSingle</a>
+<LI> <A HREF="chap062.htm#SECT024">Example of DCEColAdj</a>
+<LI> <A HREF="chap062.htm#SECT025">Double Coset Enumeration and Symmetric Presentations</a>
+<LI> <A HREF="chap062.htm#SECT026">SetupSymmetricPresentation</a>
+<LI> <A HREF="chap062.htm#SECT027">Examples of DCE and Symmetric Presentations</a>
+</ol>
+<A NAME="SECT001"><h2>62.1 Double Coset Enumeration</h2></a>
+<P><P><P>
+Double Coset Enumeration (DCE) can be seen either as a space- (and time-)
+saving    variant    of ordinary   Coset   Enumeration  (the Todd-Coxeter
+procedure), as a  way of constructing  finite quotients of HNN-extensions
+of known  groups or  as a way  of constructing  groups given by symmetric
+presentations in a   sense  defined by Robert   Curtis.  A  double  coset
+enumeration  works with   a finitely-presented   group   <I>G</I>, a  finitely
+generated subgroup  <I>H</I> (given by generators) and  a finite subgroup <I>K</I>,
+given explicitly,  usually as a  permutation group. The  action of <I>G</I> on
+the  cosets of <I>H</I> divides  into orbits under <I>K</I>,  and is constructed as
+such, using only a relatively small amount of information for each orbit.
+<P>
+The   next  two  sections   <a href="chap062.htm#SECT002">Authorship  and  Contact   Information</a>  and
+<a href="chap062.htm#SECT003">Installing the DCE Package</a> describe the authorship  of the package, and
+the simple procedure for installing it.
+<P>
+In <a href="chap062.htm#SECT004">Mathematical  Introduction</a> the calculation  performed  by the double
+coset enumerator,   and  the  meaning of the    input  is described  more
+precisely.  The following sections:  <a href="chap062.htm#SECT005">Gain Group Representation</a>,  <a href="chap062.htm#SECT006">DCE
+Words</a> and <a href="chap062.htm#SECT007">DCE  Presentations</a> describe how the   input is organized  as
+<strong>GAP3</strong> data, and  a number  of examples are  given in  <a href="chap062.htm#SECT008">Examples of Double
+Coset Enumeration</a>.
+<P>
+The data structure returned by DCE is described in <a href="chap062.htm#SECT009">The DCE Universe</a> and
+the control of the comments  printed during calculation in <a href="chap062.htm#SECT010">Informational
+Messages from DCE</a>.  Succeeding sections: <a href="chap062.htm#SECT011">DCE</a>, <a href="chap062.htm#SECT012">DCESetup</a>, <a href="chap062.htm#SECT013">DCEPerm</a>,
+<a href="chap062.htm#SECT014">DCEPerms</a>, <a href="chap062.htm#SECT015">DCEWrite</a> and <a href="chap062.htm#SECT016">DCERead</a> describe the basic functions used to
+run DCE, extract information from the result, and save and restore double
+coset  tables. The use   of these functions is  shown  in <a href="chap062.htm#SECT017">Example of DCE
+Functions</a>.
+<P>
+The user  can exert considerable control  over  the behaviour  of DCE, as
+described in <a href="chap062.htm#SECT018">Strategies for  Double  Coset Enumeration</a> and <a href="chap062.htm#SECT019">Example  of
+Double Coset Enumeration Strategies</a>.
+<P>
+Since double coset enumeration  can construct permutation representations
+of very high degree, it may not be  feasible to extract permutations from
+the result. Nevertheless, some analysis of the permutation representation
+may  be possible.  This is described  in <a href="chap062.htm#SECT020">Functions  for Analyzing Double
+Coset Tables</a>  and the functions used  are documented  in: <a href="chap062.htm#SECT021">DCEColAdj</a>,
+<a href="chap062.htm#SECT022">DCEHOrbits</a> and  <a href="chap062.htm#SECT023">DCEColAdjSingle</a>   and  demonstrated in   <a href="chap062.htm#SECT024">Example  of
+DCEColAdj</a>.
+<P>
+Finally,  the     link with Robert  Curtis'    notion   of a  symmetric
+presentation  is described in   <a href="chap062.htm#SECT025">Double  Coset Enumeration  and Symmetric
+Presentations</a>          with         detailed       documentation      in
+<a href="chap062.htm#SECT026">SetupSymmetricPresentation</a>    and   <a href="chap062.htm#SECT027">Examples  of  DCE   and  Symmetric
+Presentations</a>.
+<P>
+More detailed documentation of  the data structures  used in double coset
+enumeration, and the internal functions available to access them is found
+in the document ``GAP Double  Coset Enumerator -- Internals'', found in
+the <code>doc</code> directory of the <code>dce</code> package.
+<P><A NAME="SECT002"><h2>62.2 Authorship and Contact Information</h2></a>
+<P><P><P>
+The <code>dce</code> package was written by Steve Linton of the Division of Computer
+Science, University of St. Andrews,  North Haugh, St. Andrews, Fife, KY16
+9SS, UK<BR> e-mail: <code>sal@dcs.st-and.ac.uk</code>, and any problems or questions
+should be directed to him.
+<P>
+The work was done mainly during a visit  to Lehrstuhl D f"ur Mathematik,
+RWTH-Aachen, Aachen, Germany,  and the author gratefuly acknowledges  the
+hospitality of Lehrstuhl  D and  the  financial support  of the  Deutsche
+Forschungsgemeinschaft.
+<P><A NAME="SECT003"><h2>62.3 Installing the DCE Package</h2></a>
+<P><P><P>
+The DCE package is completely written in the <strong>GAP3</strong> language, it does not
+require any additional programs and/or compilations.   It will run on any
+computer that runs   <strong>GAP3</strong>.  In  the   following we  will describe   the
+installation under UNIX. The installation  on the Atari ST,  TT or IBM PC
+is similar.
+<P>
+In  the example we  give we will assume  that  <strong>GAP3</strong> is installed in the
+home directory of a pseudo user  <code>gap</code> and that you,  as user <code>gap</code>, want
+to install the DCE package.  Note that certain parts of the output in the
+examples should only be taken as rough outline, especially file sizes and
+file dates are <strong>not</strong> to be taken literally.
+<P>
+First of   all you have to  get  the file <code>dce.zoo</code> (see  <a href="chap056.htm#SECT001">Getting GAP</a>).
+Then you must locate the <strong>GAP3</strong> directories containing <code>lib/</code> and <code>doc/</code>,
+this is usually <code>gap3r4p2</code> where <code>2</code> is to be replaced by the current the
+patch level.
+<P>
+<pre>    user@host:~ > ls -l
+    drwxr-xr-x  11 gap      gap          1024 Jul  8 14:05 gap3r4p2
+    -rw-r--r--   1 gap      gap         76768 Sep 11 12:33 dce.zoo
+    user@host:~ > ls -l gap3r4p2
+    drwxr-xr-x   2 gap      gap          3072 Aug 26 11:53 doc
+    drwxr-xr-x   2 gap      gap          1024 Jul  8 14:05 grp
+    drwxr-xr-x   2 gap      gap          2048 Aug 26 09:42 lib
+    drwxr-xr-x   2 gap      gap          2048 Aug 26 09:42 src
+    drwxr-xr-x   2 gap      gap          1024 Aug 26 09:42 tst</pre>
+<P>
+Unpack the package using  <code>unzoo</code> (see <a href="chap056.htm#SECT003">Installation  of GAP  for UNIX</a>).
+Note that you  must be in the directory  containing <code>gap3r4p2</code>  to unpack
+the  files.  After  you  have  unpacked the  source  you  may remove  the
+<strong>archive-file</strong>.
+<P>
+<pre>    user@host:~ > unzoo x dce.zoo
+    user@host:~ > ls -l gap3r4p2/pkg/dce
+    -rw-r--r--   1 gap      gap          1536 Nov 22 04:16 README
+    -rw-r--r--   1 gap      gap        116553 Nov 22 04:02 init.g
+    -rw-r--r--   1 gap      gap         48652 Nov 22 04:18 dce.tex
+    -rw-r--r--   1 gap      gap        549708 Nov 22 04:18 dce.dvi
+    -rw-r--r--   1 gap      gap         14112 Nov 22 04:18 dce-inte.tex
+    -rw-r--r--   1 gap      gap        116553 Nov 22 03:41 dce.g</pre>
+<P>
+Copy the file <code>dce.tex</code> into the <code>doc/</code>  directory, and edit <code>manual.tex</code>
+(also in  the <code>doc/</code> directory) and add  a line <code>\Include{dce}</code> after the
+line  <code>\Include{cohomolo}</code> near the end  of the file.   Finally run latex
+again (see <a href="chap056.htm#SECT003">Installation of GAP for UNIX</a>).
+<P>
+<pre>    user@host:~ > cd gap3r4p2/pkg/dce
+    user@host:../dce > cp dce.tex ../../doc
+    user@host:../dce > cd ../../doc
+    user@host:../doc > vi manual.tex # and add the necessary line
+    user@host:../doc > latex manual
+    # a few messages about undefined references
+    user@host:../doc > latex manual
+    # a few messages about undefined references
+    user@host:../doc > makeindex manual
+    # 'makeindex' prints some diagnostic output
+    user@host:../doc > latex manual
+    # there should be no warnings this time</pre>
+<P>
+Now  it  is time to    test the installation.   Let  us  assume that  the
+executable of <strong>GAP3</strong> lives in <code>src/</code> and is called <code>gap</code>.
+<P>
+<pre>    user@host:~/gap3r4p2 > src/gap -b
+    gap> RequirePackage( "dce" );
+    gap> k := SymmetricGroup(3);
+    Group( (1,3), (2,3) )
+    gap> c := AbstractGenerator("c");;
+    gap> d := AbstractGenerator("d");;
+    gap> S5Pres := rec(
+    >    groupK := k,
+    >    gainGroups := [rec(), rec(dom := 3)],
+    >    gens := [rec(name := c, invol := true, wgg := 2),
+    >             rec(name := d, invol := true, wgg := 1)],
+    >    relators := [DCEWord(k,c*d)^3,DCEWord(k,[(2,3),c])^3],
+    >    subgens := [DCEWord(k,(1,2,3)), DCEWord(k,(1,2)), DCEWord(k,c)]);
+    rec(
+      groupK := Group( (1,3), (2,3) ),
+      gainGroups := [ rec(
+               ), rec(
+              dom := 3 ) ],
+      gens := [ rec(
+              name := c,
+              invol := true,
+              wgg := 2 ), rec(
+              name := d,
+              invol := true,
+              wgg := 1 ) ],
+      relators :=
+       [ DCEWord(Group( (1,3), (2,3) ),[c, d])^3, DCEWord(Group( (1,3),
+            (2,3) ),[(2,3), c])^3 ],
+      subgens :=
+       [ DCEWord(Group( (1,3), (2,3) ),[(1,2,3)]), DCEWord(Group( (1,3),
+            (2,3) ),[(1,2)]), DCEWord(Group( (1,3), (2,3) ),[c]) ] )
+    gap> u := DCE(S5Pres);
+    #I Set up generators and inverses
+    #I Set up column structure: 4 columns
+    #I Pre-processed relators
+    #I Done subgroup generators
+    #I Also done relators in subgroup
+    #I Pushing at weight 3
+    #I      1 double 1 single 1 blanks
+    #I 1 DCEWord(K,[c, d])^3
+    #I   1 cases
+    #I 1 DCEWord(K,[(2,3), c])^3
+    #I   1 cases
+    #I Pushing at weight 5
+    #I      3 double 5 single 1 blanks
+    #I 2 DCEWord(K,[c, d])^3
+    #I   1 cases
+    #I 2 DCEWord(K,[(2,3), c])^3
+    #I   1 cases
+    #I 3 DCEWord(K,[c, d])^3
+    #I   2 cases
+    #I 3 DCEWord(K,[(2,3), c])^3
+    #I   3 cases
+    #I Pushing at weight 101
+    #I      3 double 5 single 0 blanks
+    #I 1 DCEWord(K,[c, c])
+    #I   1 cases
+    #I 1 DCEWord(K,[d, d])
+    #I   1 cases
+    #I Pushing at weight 103
+    #I      3 double 5 single 0 blanks
+    #I 2 DCEWord(K,[c, c])
+    #I   1 cases
+    #I 2 DCEWord(K,[d, d])
+    #I   1 cases
+    #I 3 DCEWord(K,[c, c])
+    #I   2 cases
+    #I 3 DCEWord(K,[d, d])
+    #I   1 cases
+    &lt;&lt; Double coset table "No name" closed 3 double 5 single >></pre>
+<P>
+If <code>RequirePackage</code>  signals  an  error  check  the  permissions  of  the
+subdirectories <code>pkg/</code> and <code>dce/</code>.
+<P><A NAME="SECT004"><h2>62.4 Mathematical Introduction</h2></a>
+<P><P><P>
+Coset Enumeration  can  be  considered as   a   means of   constructing a
+permutation representation of a finitely-presented group. Let <I>G</I> be such
+a group, and let <I>&Omega;= H \  G</I> be the set of  right cosets of a
+subgroup <I>H</I>, on which <I>G</I> acts. Let <I>K</I> be a subgroup of <I>G</I>. The action
+of <I>K</I>   will divide  <I>&Omega;</I> into  orbits   corresponding to the double
+cosets <I>H \  G/K</I>. Now, suppose  that <I>x&isin; G</I> and  let <I>L = K&cap;
+K<sup>x<sup>-1</sup></sup></I>. Let <I>D&isin; H \  G/K</I> be a  double coset and let <I>d</I> be
+a fixed single coset  contained  in it (so  that  <I>D=dK</I>). Let <I>l&isin;  L</I>.
+Then
+<center><table><tr><td><I>
+(dl)x = (dx)l<sup>x</sup> &isin; (dx)K
+</I></td></tr></table></center>
+so that the action of <I>x</I> on <I>&Omega;</I> can be  computed from its action on
+a set of orbit representatives of <I>L</I> and its  action on <I>L</I>, which takes
+place within <I>K</I>. If <I>L</I> is large  this can provide a considerable saving
+of  space.  This  space   saving  is   the motivation   for double  coset
+enumeration. The group <I>L</I>  is called the  <strong> gain group</strong> of <I>x</I>, since
+the space saving is approximately a factor of <I>|L|</I>.
+<P>
+The   input  to the   double   coset  enumeration  algorithm includes   a
+specification  of a group <I>K</I>, and  of a set of  generators <I>X</I>. For each
+<I>x&isin; X</I>, a pair of subgroups <I>L<sub>x</sub>, L<sup>(x)</sup> &le; K</I> is given, together with
+an  isomorphism <I>&theta;<sub>x</sub> : L<sub>x</sub>  &rarr; L<sup>(x)</sup></I>.  This information
+defines a group <I>F</I>, obtained from the free product  of <I>K</I> with the free
+group   <I>F<sub>X</sub></I> by  requiring  that each  <I>x</I> act  by  conjugation on <I>L<sub>x</sub></I>
+according  to  the  map  <I>&theta;<sub>x</sub></I>.     Technically  <I>F</I> is  a  multiple
+HNN-extension of <I>K</I>.
+<P>
+The final  parts   of the input  (mathematically   speaking,  in practice
+additional input is used to  guide the program  towards efficiency) are a
+set of relators <I>R</I>  and a set of subgroup  generators <I>W</I>, consisting of
+elements of the free product of <I>K</I> and <I>F<sub>X</sub></I>, that  is words composed of
+the letters <I>x</I> and elements of <I>K</I>.
+<P>
+The algorithm then constructs a compact representation of the action of a
+group  <I>G = F/N</I>,  where <I>N =&lang; R&rang;<sup>F</sup></I>, on  the set <I>&Omega;</I> of
+cosets of  <I>H = &lang;  W&rang; N/N</I>.   This can also   be viewed as  a
+permutation action of <I>F</I>, with kernel <I>N</I>  and point stabiliser <I>&lang;
+W&rang; N</I>. We take this view to avoid writing <I>KN/N</I> all the time.
+<P>
+This representation is  organized in terms  of the orbits (double cosets)
+of <I>K</I> on <I>&Omega;</I>. For each orbit <I>D</I>, an arbitrary representative <I>d&isin;
+D</I> is chosen, and the group <I>M<sub>d</sub> = </I>Stab<I><sub>K</sub>(d)</I> is recorded (as a subgroup
+of <I>K</I>). For  historical  reasons this  group is  known  as the  ``muddle
+group'' of  the  double coset.  This  allows us to  refer to  elements of
+<I>&Omega;</I>  by expressions of  the form <I>dk</I>, with
+<center><table><tr><td><I>
+d<sub>1</sub>k<sub>1</sub> = d<sub>2</sub>k<sub>2</sub> \iff d<sub>1</sub> = d<sub>2</sub> </i> and <i>k<sub>1</sub>k<sub>2</sub><sup>-1</sup>&isin; M<sub>d<sub>1</sub></sub>.
+</I></td></tr></table></center>
+We call such an expression a <strong> name</strong> for the element of <I>&Omega;</I>.
+<P>
+In addition for each <I>x&isin;  X</I>, and for each  orbit of <I>L<sub>x</sub></I> contained in
+<I>D</I>, with representative <I>dk</I>, a name for the point <I>dkx</I> is recorded. By
+the arguments of the initial paragraph, the action of <I>x</I> on any <I>dk</I> can
+then be computed,  and the action of  <I>K</I> is by right  multiplication, so
+the full action of <I>F</I> (or equivalently <I>G</I>) is available.
+<P><A NAME="SECT005"><h2>62.5 Gain Group Representation</h2></a>
+<P><P><P>
+In the representation described  in section <a href="chap062.htm#SECT004">Mathematical  Introduction</a>,
+computing  the  action of a generator  <I>x</I>  on a double coset  named <I>dk</I>
+depends   on finding the  <I>L<sub>x</sub></I>-orbit representative  of  <I>dk</I>. The <I>L<sub>x</sub></I>
+orbits lying in <I>D = d<sup>K</sup></I> correspond to  the double cosets <I>M<sub>d</sub> \ 
+K/L<sub>x</sub></I> and so to the orbits of <I>M<sub>d</sub></I> on the left cosets <I>L<sub>x</sub></I>.
+<P>
+The effect of this is that the program spends most  of its time computing
+with the action of <I>K</I> on the left cosets of the various groups <I>L<sub>x</sub></I>. If
+this action can be represented in some more direct way, such as an action
+on points,  tuples or sets, then  there is a  huge  performance gain. The
+input  format of the program is  set up to reflect  this. Each gain group
+<I>L<sub>x</sub></I> is specified by  giving an action of  <I>K</I> on  some domain which  is
+permutationally equivalent to the action of <I>K</I> on left cosets of <I>L<sub>x</sub></I>.
+<P>
+It  sometimes happens that two generators  <I>x</I> and <I>y</I> have identical, or
+conjugate,  gain  groups.   The program does    a  considerable amount of
+pre-computation  with each gain  group, and builds some potentially large
+data structures, so it  is  sensible to combine   these for identical  or
+conjugate  gain groups. To allow this,  the gain groups  are specified as
+one part   of the  input,  and  then another  part  specifies,   for each
+generator, a    reference to the gain group    and possibly a conjugating
+element.
+<P><A NAME="SECT006"><h2>62.6 DCE Words</h2></a>
+<P><P>
+As  indicated in section   <a href="chap062.htm#SECT004">Mathematical Introduction</a>, the relators  and
+subgroup generators  are   specified as elements  of  the  free  product,
+<I>K*F<sub>X</sub></I> which is to say products of elements  of <I>K</I> and generators from
+<I>X</I>  (and their inverses).  These are represented  in <strong>GAP3</strong> as DCE Words,
+created using  the <code>DCEWord</code> function. This is  called as <code>DCEWord(K, l)</code>
+where <code>l</code> is an element of  <code>K</code>, a word  in abstract generators or a list
+of these.  DCE  Words are in <code>GroupElements</code>  and can be multiplied (when
+the groups <I>K</I> match), inverted, raised to powers and so forth.
+<P>
+<strong>Note</strong>  that    the  abstract  generators are      used  here  simply  as
+place-holders.  Although,  in general, creating abstract  generators with
+<code>AbstractGenerator</code> rather than <code>FreeGroup</code> is   a bad idea, it will  not
+cause problems here.  A new version of this package  will be produced for
+<strong>GAP3</strong> 4 which will avoid this problem.
+<P><A NAME="SECT007"><h2>62.7 DCE Presentations</h2></a>
+<P><P><P>
+The input to   the  <strong>GAP3</strong> Double   Coset Enumerator  is  presented   as a
+record. This has the following compulsory components.
+<P>
+<DL><DT><code>groupK</code>:<DD> The group <I>K</I>,  given as a <strong>GAP3</strong>  group. In general, it is best
+to represent <I>K</I> as a permutation group of low degree.
+</DL><P>
+<DL><DT><code>gainGroups</code>:<DD> This specifies the   types (<I>K</I>-conjugacy classes)  of gain
+groups <I>L</I> associated with the generators. It takes the form of a list of
+records, each with the following components:
+</DL><P>
+\= <code>dom</code> -- A representative  of a set on which <I>K</I> acts  in the same way
+that it acts on the left cosets of <I>L</I>.  If this  is not given then <I>L=K</I>
+and other fields are set accordingly.
+<P>
+\= <code>op</code> -- The operation of  <I>K</I>  on  this  set.  This  should be a <strong>GAP3</strong> 
+operation such as  <code>OnPoints</code>. If <code>op</code>  is not  given,  and <code> dom</code>  is an
+integer then <code>op</code> defaults to <code> OnPoints</code>. If <code>op</code> is not given and <code>dom</code>
+is a set, then the <code>op</code> defaults to <code>OnSets</code>.
+<P>
+<DL><DT><code>gens</code>:<DD> This field specifies  the generators (the set <I>X</I>).  It is a list
+of records, each with the fields:
+</DL><P>
+\= <code>name</code> --  The abstract generator  that  will  be used  to denote this
+generator in the relations and subgroup generators.
+<P>
+\= <code>invol</code>  --  A Boolean  value indicating whether this generator should
+be considered as its own inverse. Default <code>false</code>.
+<P>
+\= <code>inverse</code> -- The 'name'  of the  inverse  of this  generator.  This
+field is ignored if <code>invol</code> is present. If both <code>inverse</code> and <code>invol</code> are
+absent then a new generator will be created to be an inverse.
+<P>
+\= <code>wgg</code> --  The  index  (in  <code>gainGroups</code>)  of  the  gain  group of this
+generator (up to conjugacy).
+<P>
+\= <code>ggconj</code> -- The gain group conjugator.  The actual  gain group of this
+generator will be that  defined by entry  <code>wgg</code> of the <code>gainGroups</code> list,
+conjugated by  the  element <code>ggconj</code>  (of <I>K</I>). If   this field is absent
+then it is taken to be the identity of <I>K</I>.
+<P>
+\= <code>action</code> -- This specifies  the isomorphism  <I>&theta;<sub>x</sub></I> induced by <I>x</I>
+between <I>L<sub>x</sub></I> and <I>L<sub>x<sup>-1</sup></sub></I>.  It can be <code>false</code>, indicating no action,
+an  element  of  <I>K</I>,  indicating  action by conjugation, or it can be an
+explicit isomorphism. The default is <code>false</code>. If an explicit homomorphism
+is  given  and  the the field  <code>invol</code>  is not  present,  then  the field
+<code>inverse</code> must  be present;  that is,  a generator inverse to  <I>x</I> cannot
+be synthesized in this case.
+<P>
+<DL><DT><code>relators</code>:<DD>  The relations  of  the   presentation, as   a list   of  DCE
+Words. Certain additional  fields may be   added to the words (which  are
+represented as records) to optimize the  calculation. These are described
+below.
+</DL><P>
+<DL><DT><code>subgens</code>:<DD> The generators of <I>H</I>, as a list of DCE Words.
+</DL><P><A NAME="SECT008"><h2>62.8 Examples of Double Coset Enumeration</h2></a>
+<P><P><P>
+To save space and avoid clutter the examples are shown without the <code>gap></code>
+and <code>></code> prompts,  as they might appear in  an input file. For examples of
+DCE in operation  see <a href="chap062.htm#SECT017">Example of  DCE Functions</a> and <a href="chap062.htm#SECT019">Example  of Double
+Coset Enumeration Strategies</a>.
+<P>
+<P>
+<strong>The Symmetric group of degree 5</strong>
+<P>
+It is well known that
+<center><table><tr><td><I></td><td><table style="display:inline-table;"><tr><td><I>rcl
+G = S<sub>5</sub> = &lang;a,b,c,d .</I></td><td><I>|</I></td><td><I> a<sup>2</sup> = b<sup>2</sup> = c<sup>2</sup> = d<sup>2</sup> =
+(ab)<sup>3</sup> = (bc)<sup>3</sup> = (cd)<sup>3</sup> = <BR> 
+</I></td><td><I></I></td><td><I>.(ac)<sup>2</sup> = (ad)<sup>2</sup> = (bd)<sup>2</sup> = 1&rang;.<BR> 
+</I></td></tr></table style="display:inline-table;"></td><td></I></td></tr></table></center>
+For brevity we denote this presentation by a Coxeter diagram:
+<P>
+\setlength\unitlength1cm
+beg-picture<s></s>(4,1)(0,0.1)
+\put(0.5,0.5){\line(1,0)3}
+\multiput(0.5,0.5)(1,0)4{\circle0.1}
+\put(0.5,0.6){\makebox(0,0)[b]<I>a</I>}
+\put(1.5,0.6){\makebox(0,0)[b]<I>b</I>}
+\put(2.5,0.6){\makebox(0,0)[b]<I>c</I>}
+\put(3.5,0.6){\makebox(0,0)[b]<I>d</I>}
+end-picture<s></s>
+<P>
+We let  <I>K=\gen(a,b)\iso S<sub>3</sub></I> and identify <I>a</I>  with <I>(1,2)</I> and <I>b</I> with
+<I>(2,3)</I>. Then <I>G</I> is generated by <I>K</I> and <I>X = {c,d}</I>.  We can see from
+the presentation that  <I>L<sub>c</sub> = \gen(a) = </I>Stab<I><sub>K</sub>(3)</I>,  while <I>L<sub>d</sub> = K</I>. We
+set <I>H=\gen(a,b,c)\iso S<sub>4</sub></I> and obtain the following presentation:
+<P>
+<pre>    gap> k := SymmetricGroup(3);
+    Group( (1,3), (2,3) )
+    gap> c := AbstractGenerator("c");;
+    gap> d := AbstractGenerator("d");;
+    gap> S5Pres := rec(
+    >    groupK := k,
+    >    gainGroups := [rec(),           # default to L=K
+    >                   rec(dom := 3)],  # default to action on points
+    >    gens := [rec(name := c, invol := true, wgg := 2),
+    >             rec(name := d, invol := true, wgg := 1)],
+    >    relators := [DCEWord(k,c*d)^3,DCEWord(k,[(2,3),c])^3],
+    >    subgens := [DCEWord(k,(1,2,3)), DCEWord(k,(1,2)), DCEWord(k,c)]);;</pre>
+<P>
+<P>
+<strong>The Weyl Group of Type <I>E<sub>6</sub></I></strong>
+<P>
+We consider another group given by a Coxeter presentation
+<P>
+beg-picture<s></s>(5,2)(0,-0.9)
+\put(0.5,0.5){\line(1,0)4}
+\multiput(0.5,0.5)(1,0)5{\circle0.1}
+\put(0.5,0.6){\makebox(0,0)[b]<I>a</I>}
+\put(1.5,0.6){\makebox(0,0)[b]<I>b</I>}
+\put(2.5,0.6){\makebox(0,0)[b]<I>c</I>}
+\put(3.5,0.6){\makebox(0,0)[b]<I>d</I>}
+\put(4.5,0.6){\makebox(0,0)[b]<I>e</I>}
+\put(2.5,-0.5){\circle0.1}
+\put(2.5,-0.5){\line(0,1)1}
+\put(2.6,-0.5){\makebox(0,0)[l]<I>f</I>}
+end-picture<s></s>
+<P>
+This time we take <I>K=H=\gen(a,b,c,d,e)\iso S<sub>6</sub></I> and obtain the
+presentation:
+<P>
+<pre>    gap> k := SymmetricGroup(6);
+    Group( (1,6), (2,6), (3,6), (4,6), (5,6) )
+    gap> f := AbstractGenerator("f");;
+    gap> WE6Pres := rec (
+    >    groupK := k,
+    >    gainGroups := [rec(dom := [1,2,3])],  # action defaults to OnSets
+    >    gens := [rec(name := f,wgg := 1, invol := true)],
+    >    relators := [DCEWord(k,[(3,4),f])^3],
+    >    subgens := [DCEWord(k,(1,2,3,4,5,6)),DCEWord(k,(1,2))] );;</pre>
+<P>
+<P>
+<strong><I>S<sub>5</sub></I> revisited</strong>
+<P>
+To illustrate other features of the program, we consider the presentation
+of  <I>S<sub>5</sub></I>  again, but  this  time  we  choose  <I>K=\gen(b,c)\iso  S<sub>3</sub></I> and
+identify <I>b</I> with  <I>(1,2)</I> and <I>c</I> with   <I>(2,3)</I>.  Now <I>L<sub>a</sub> = \gen(c)  =
+</I>Stab<I><sub>K</sub>(1)</I>, while <I>L<sub>d</sub> = \gen(b)  = </I>Stab<I><sub>K</sub>(3)</I>. These are two conjugate
+subgroups of <I>K</I>, so we can use the <code>ggconj</code> feature  to combine the data
+structures for them.
+<P>
+We can present this as:
+<P>
+<pre>    gap> k := SymmetricGroup(3);
+    Group( (1,3), (2,3) )
+    gap> a := AbstractGenerator("a");;
+    gap> d := AbstractGenerator("d");;
+    gap> b := (1,2);;
+    gap> c := (2,3);;
+    gap> S5PresA := rec (
+    >    groupK := k,
+    >    gainGroups := [rec(dom := 1)],
+    >    gens := [rec(name := a, invol := true, wgg := 1),
+    >             rec(name := d, invol := true, wgg := 1, ggconj := (1,3))],
+    >    relators := [DCEWord(k,[c,d])^3,DCEWord(k,[a,b])^3,
+    >                 DCEWord(k,[a,d])^2],
+    >    subgens := [DCEWord(k,(1,2,3)),DCEWord(k,(1,2)), DCEWord(k,a)] );;</pre>
+<P>
+<P>
+<strong>The Harada-Norton Group</strong>
+<P>
+The almost-simple group <I>HN: 2</I>  can be constructed as follows. Take
+the symmetric group   <I>S<sub>12</sub></I> acting naturally  on <I>{1,...,12}</I> and
+let <I>L</I> be the stabiliser  of <I>{1,2,3,4,5,6}</I>.  Then <I>L \iso  S<sub>6</sub>&times;
+S<sub>6</sub></I>. Extend  <I>S<sub>12</sub></I> by adjoining an element  <I>a</I> which  normalizes <I>L</I>
+and  acts on each  factor <I>S<sub>6</sub></I>  by its  outer automorphism.  Impose  the
+additional relations <I>a<sup>2</sup> = 1</I> and <I>(a(6,7))<sup>5</sup>=1</I>.
+<P>
+With <I>H=K</I>, this construction translates directly into DCE input:
+<P>
+<pre>    gap> a := AbstractGenerator("a");;
+    gap> K := Group((1,2,3,4,5,6,7,8,9,10,11,12),(1,2));;
+    gap> L := Stabilizer(K,[1,2,3,4,5,6],OnSets);;
+    gap> f := GroupHomomorphismByImages( L,L,
+    >    [(1,5,4,3,2),(5,6),(12,8,9,10,11),(7,8)],
+    >    [(1,5,4,3,2),(1,4)(2,3)(5,6),(12,8,9,10,11),(12,9)(10,11)(7,8)] );;
+    gap> HNPres := rec(
+    >    groupK := K,
+    >    gainGroups := [ rec(dom := [1,2,3,4,5,6], op := OnSets)],
+    >    gens := [ rec( name := a, invol := true, wgg := 1, action := f)],
+    >    relators := [DCEWord(K,[a,(6,7)])^5],
+    >    strategy := rec(whichStrategy := "HLT", EC := [1140000]),
+    >    subgens := [(1,2,3,4,5,6,7,8,9,10,11,12),(1,2)]);;</pre>
+<P>
+<P>
+<strong>A Non-permutation Example</strong>
+<P>
+The programs were   written with the   case  of <I>K</I> a  permutation  group
+uppermost  in the  author's  mind,   however other representations   are
+possible.
+<P>
+In this example, we represent the symmetric group <I>S<sub>4</sub></I> as an AG-group in
+the Coxeter  presentation of  <I>S<sub>6</sub></I>. This  example  also demonstrates the
+explicit  use  of the  action of  <I>K</I>  on left cosets  of  <I>L<sub>x</sub></I>, when no
+suitable action on points, sets or similar is available.
+<P>
+<pre>    gap> k := AgGroup(SymmetricGroup(4));
+    Group( g1, g2, g3, g4 )
+    gap> a := PreImage(k.bijection,(1,2));
+    g1
+    gap> b := PreImage(k.bijection,(2,3));
+    g1*g2
+    gap> c := PreImage(k.bijection,(3,4));
+    g1*g4
+    gap> d := AbstractGenerator("d");;
+    gap> e := AbstractGenerator("e");;
+    gap> l := Subgroup(k,[a,b]);
+    Subgroup( Group( g1, g2, g3, g4 ), [ g1, g1*g2 ] )
+    gap> OurOp := function(cos,g)
+    >     return g^-1*cos;                   # note the inversion
+    > end;;
+    gap> Pres := rec (
+    >    groupK := k,
+    >    gainGroups := [rec(dom := k.identity*l, op := OurOp),rec()],
+    >    gens := [rec(name := d, invol := true, wgg := 1),
+    >             rec(name := e, invol := true, wgg := 2)],
+    >    relators := [DCEWord(k,d*e)^3,DCEWord(k,[c,d])^3],
+    >    subgens := [DCEWord(k,a),DCEWord(k,b), DCEWord(k,c),DCEWord(k,d)]);;</pre>
+<P><A NAME="SECT009"><h2>62.9 The DCE Universe</h2></a>
+<P><P><P>
+The various user  functions described below operate  on a record called a
+<strong>  DCE Universe</strong>. This is  created by the  function  <code>DCESetup</code> (or by
+<code>DCE</code>, which calls  <code>DCESetup</code>) and is then  passed as first argument  to
+all other DCE functions.  The following fields  are likely to be of  most
+interest:
+<P>
+<DL><DT><code>K</code>:<DD> The group <I>K</I>.  For brevity this group is given the <code>name</code> ``K''.
+</DL><P>
+<DL><DT><code>pres</code>:<DD> The presentation from which this universe was created.
+</DL><P>
+<DL><DT><code>isDCEUniverse</code>:<DD> Always <code>true</code>.
+</DL><P>
+<DL><DT><code>status</code>:<DD> A string describing   the  status of the  enumeration.   Values
+include:
+</DL><P>
+\= ``in end game'' -- The  program  believes  that the  enumeration is
+almost complete and  has  shifted to a Felsch-like  strategy  to  try and
+finish it.
+<P>
+\= ``early-closed'' -- The  table  is  closed,  that is  has  no blank
+entries, but the program   has not actually  proved that  the permutation
+representation described  satisfies  all the relations.  The program will
+stop under these circumstances if the degree falls within  a range set by
+the user (see <a href="chap062.htm#SECT018">Strategies for Double Coset Enumeration</a>
+<P>
+\= ``running'' -- Enumeration is in progress.
+<P>
+\= ``closed'' -- The enumeration has been completed.
+<P>
+\= ``Setting up'' --  The data structures are still being initialized.
+<P>
+\= ``Set up'' --  The data structures  are initialized but computation
+has not yet started.
+<P>
+<DL><DT><code>degree</code>:<DD> The  number of single  cosets represented by the current double
+coset table.
+</DL><P>
+<DL><DT><code>dcct</code>:<DD> The number of double cosets in the current table.
+</DL><P><A NAME="SECT010"><h2>62.10 Informational Messages from DCE</h2></a>
+<P><P><P>
+<code>InfoDCE1</code>
+<P>
+<code>InfoDCE2</code>
+<P>
+<code>InfoDCE3</code>
+<P>
+<code>InfoDCE4</code>
+<P>
+<code>DCEInfoPrint</code>
+<P>
+The level of information printed  by the programs   can be controlled  by
+setting  the    variables    <code>InfoDCE1</code>,  <code>InfoDCE2</code>,    <code>InfoDCE3</code>   and
+<code>InfoDCE4</code>. These can be  (sensibly) set to  either <code>DCEInfoPrint</code>  or to
+<code>Ignore</code>. By default <code>InfoDCE1</code> is set  to <code>DCEInfoPrint</code> and the rest to
+<code>Ignore</code>.   Setting further variables   to  <code>DCEInfoPrint</code>  produces more
+detailed comments. The higher numbered  variables are intended mainly for
+debugging.
+<P><A NAME="SECT011"><h2>62.11 DCE</h2></a>
+<P><P><P>
+<code>DCE(<var>pres</var>)</code>
+<P>
+The basic command to run the double coset enumerator is <code>DCE</code>. This takes
+one argument, the presentation record in  the format described above, and
+returns a DCE Universe of status ``closed'' or ``early-closed''. The
+exact details of operation are controlled by various  fields in the input
+structure, as described in <a href="chap062.htm#SECT018">Strategies for Double Coset Enumeration</a>.
+<P><A NAME="SECT012"><h2>62.12 DCESetup</h2></a>
+<P><P><P>
+<code>DCESetup(<var>pres</var>)</code>
+<P>
+This function is  called by <code>DCE</code> to initialize  all the data  structures
+needed. It returns a DCE Universe of status ``Set up''.
+<P><A NAME="SECT013"><h2>62.13 DCEPerm</h2></a>
+<P><P><P>
+<code>DCEPerm(<var>universe</var>,<var>word</var>)</code>
+<P>
+This function computes the permutation  action of  the DCEWord <var>word</var>  on
+the  single   cosets described by <var>universe</var>.    The status of <var>universe</var>
+should  be ``closed''   or  ``early-closed''.  The   first time this
+function (or <code>DCEPerms</code>)  is  called   some  large data  structures   are
+computed and stored in <var>universe</var>.
+<P><A NAME="SECT014"><h2>62.14 DCEPerms</h2></a>
+<P><P><P>
+<code>DCEPerms(<var>universe</var>)</code>
+<P>
+This  function   returns  a  list  of  permutations  which   generate the
+permutation  group  described  by  <var>universe</var>, which  should  have status
+``closed'' or ``early-closed''. The  permutations correspond  to the
+generators <I>X</I> of  the presentation  (except  any which  are inverses  of
+preceding generators) and then to the generators of <I>K</I>.
+<P><A NAME="SECT015"><h2>62.15 DCEWrite</h2></a>
+<P><P><P>
+<code>DCEWrite(<var>universe</var>,<var>filename</var>)</code>
+<P>
+This function writes    selected  information  from  the   DCE   Universe
+<var>universe</var> onto   the file <var>filename</var> in a   format suitable for recovery
+with <code>DCERead</code>.
+<P><A NAME="SECT016"><h2>62.16 DCERead</h2></a>
+<P><P><P>
+<code>DCERead(<var>universe</var>,<var>filename</var>)</code>
+<P>
+This function recovers  the  information written  to file  <var>filename</var>  by
+<code>DCEWrite</code>. <var>universe</var> must be a   DCE Universe of status ``Set   up'',
+created from  exactly  the same presentation  as was  used to create  the
+universe originally written to the file.
+<P><A NAME="SECT017"><h2>62.17 Example of DCE Functions</h2></a>
+<P><P><P>
+We take the first example presentation above,  run it and demonstrate the
+above functions on the result.
+<P>
+<pre>    gap> k := S5Pres.groupK;;
+    gap> c := S5Pres.gens[1].name;;
+    gap> d := S5Pres.gens[2].name;;
+    gap> u := DCE(S5Pres);
+    #I Set up generators and inverses
+    #I Set up column structure: 4 columns
+    #I Pre-processed relators
+    #I Done subgroup generators
+    #I Also done relators in subgroup
+    #I Pushing at weight 3
+    #I      1 double 1 single 1 blanks
+    #I 1 DCEWord(K,[c, d])^3
+    #I   1 cases
+    #I 1 DCEWord(K,[(2,3), c])^3
+    #I   1 cases
+    #I Pushing at weight 5
+    #I      3 double 5 single 1 blanks
+    #I 2 DCEWord(K,[c, d])^3
+    #I   1 cases
+    #I 2 DCEWord(K,[(2,3), c])^3
+    #I   1 cases
+    #I 3 DCEWord(K,[c, d])^3
+    #I   2 cases
+    #I 3 DCEWord(K,[(2,3), c])^3
+    #I   3 cases
+    #I Pushing at weight 101
+    #I      3 double 5 single 0 blanks
+    #I 1 DCEWord(K,[c, c])
+    #I   1 cases
+    #I 1 DCEWord(K,[d, d])
+    #I   1 cases
+    #I Pushing at weight 103
+    #I      3 double 5 single 0 blanks
+    #I 2 DCEWord(K,[c, c])
+    #I   1 cases
+    #I 2 DCEWord(K,[d, d])
+    #I   1 cases
+    #I 3 DCEWord(K,[c, c])
+    #I   2 cases
+    #I 3 DCEWord(K,[d, d])
+    #I   1 cases
+    &lt;&lt; Double coset table "No name" closed 3 double 5 single >>
+    gap> u.degree;
+    5
+    gap> u.status;
+    "closed"
+    gap> u.dcct;
+    3
+    gap> a1 := DCEWord(k,(1,2));
+    DCEWord(K,[(1,2)])
+    gap> b1 := DCEWord(k,(2,3));
+    DCEWord(K,[(2,3)])
+    gap> c1 := DCEWord(k,c);
+    DCEWord(K,[c])
+    gap> d1 := DCEWord(k,d);
+    DCEWord(K,[d])
+    gap> DCEPerm(u,a1);
+    #I Starting To Add Cosets
+    #I Done cosets, starting image
+    (4,5)
+    gap> DCEPerm(u,a1*c1*b1);
+    #I Done cosets, starting image
+    (2,4,5,3)
+    gap> DCEPerms(u);
+    #I Done cosets, starting image
+    #I Done cosets, starting image
+    #I Done cosets, starting image
+    #I Done cosets, starting image
+    [ (2,3), (1,2), (3,5), (3,4) ]
+    gap> DCEWrite(u,"s5.dct");
+    gap> u1 := DCESetup(S5Pres);
+    #I Set up generators and inverses
+    #I Set up column structure: 4 columns
+    #I Pre-processed relators
+    &lt;&lt; Double coset table "No name" Set up >>
+    gap> DCERead(u1,"s5.dct");
+    #I Read the file
+    gap> u1;
+    &lt;&lt; Double coset table "No name" closed 3 double 5 single >>
+    gap> DCEPerms(u1);
+    #I Starting To Add Cosets
+    #I Done cosets, starting image
+    #I Done cosets, starting image
+    #I Done cosets, starting image
+    #I Done cosets, starting image
+    [ (2,3), (1,2), (3,5), (3,4) ]</pre>
+<P><A NAME="SECT018"><h2>62.18 Strategies for Double Coset Enumeration</h2></a>
+<P><P><P>
+As with the Todd-Coxeter algorithm,   the order of defining new  (double)
+cosets    and applying relations    can  make a huge   difference  to the
+performance  of  the algorithm.   There  is considerable scope  for  user
+control of the strategy followed by the DCE program. This is exercised by
+setting  the   <code>strategy</code> field in   the   presentation record (and  less
+importantly by adding various fields  to the relators). This field should
+be  set to a record, for  which various  fields  are meaningful. The most
+important is <code>whichStrategy</code>, which should take one of three values:
+<P>
+<DL><DT>``HLT'':<DD>  A   weighted Haselgrove-Leech-Trotter strategy.  This  is the
+default.
+</DL><P>
+<DL><DT>``Felsch'':<DD> A pure Felsch strategy.
+</DL><P>
+<DL><DT>``Havas'':<DD> A  family    of  hybrid strategies,   controlled    by three
+parameters: <code>FF</code> which regulates the  use  of the preferred  definition
+list to ensure that all definitions get made  eventually (high values use
+the list more); <code>HavN</code> which is the number of double  cosets that will be
+filled  by definition before  the relators are  pushed from <code>HavK</code> double
+cosets.
+</DL><P>
+When it  completes  successfully  HLT  is   generally much  the   fastest
+strategy.
+<P>
+Apart from  the fields  <code>FF</code>, <code> HavN</code>  and <code>HavK</code>,  the  other meaningful
+field in the strategy record is <code>EC</code>, which  is the set (usually a range)
+of degrees at which early-closing is allowed.  Even if you know the exact
+degree  of  the final representation   it  is  worth-while allowing  some
+``slack'' so that the ``end-game'' strategy can come into play.
+<P>
+The ``HLT'' strategy can  be  fine-tuned by setting ``weights''  on
+the relators. Weights are integers, and a relator with higher weight will
+be used less than one  with lower weight. This  is done by adding a field
+<code>weight</code> to the relator record.    The default weight   is the base   two
+logarithm of the length of the relator (after consecutive elements of <I>K</I>
+in the relator have been combined).
+<P>
+Finally, setting the <code>insg</code> field of a relator causes it to  be used as a
+subgroup generator as well.
+<P><A NAME="SECT019"><h2>62.19 Example of Double Coset Enumeration Strategies</h2></a>
+<P><P><P>
+We look at a presentation for the sporadic  group <I>Fi<sub>22</sub></I>, given by the
+Coxeter diagram:
+<P>
+beg-picture<s></s>(5,3)(-0.3,-0.3)
+\put(0,1.4){\line(1,0)2}
+\multiput(0,1.4)(1,0)3{\circle0.1}
+\put(2.7,2.1){\circle0.1}
+\put(3.7,2.1){\circle0.1}
+\put(4.4,1.4){\circle0.1}
+\put(2.7,0.7){\circle0.1}
+\put(3.7,0.7){\circle0.1}
+\put(4.4,0){\circle0.1}
+\put(2,1.4){\line(1,1)0.7}
+\put(2,1.4){\line(1,-1)0.7}
+\put(2.7,2.1){\line(1,0)1}
+\put(2.7,0.7){\line(1,0)1}
+\put(3.7,2.1){\line(1,-1)0.7}
+\put(3.7,0.7){\line(1,1)0.7}
+\put(3.7,0.7){\line(1,-1)0.7}
+\put(0,1.55){\makebox(0,0)[b]<I>\scriptstyle(1,2)</I>}
+\put(1,1.55){\makebox(0,0)[b]<I>\scriptstyle(2,3)</I>}
+\put(2.1,1.55){\makebox(0,0)[br]<I>\scriptstyle(3,4)</I>}
+\put(2.7,2.25){\makebox(0,0)[b]<I>\scriptstyle(4,5)</I>}
+\put(3.7,2.25){\makebox(0,0)[b]<I>\scriptstyle(5,6)</I>}
+\put(4.5,1.45){\makebox(0,0)[l]<I>\scriptstyle(6,7)</I>}
+\put(2.7,0.6){\makebox(0,0)[t]<I>a</I>}
+\put(4.5,0){\makebox(0,0)[l]<I>g</I>}
+\put(3.7,0.6){\makebox(0,0)[tr]<I>f</I>}
+end-picture<s></s>
+<P>
+with    the  additional  relation   <I>(f(4,5)(6,7)(3,4)(5,6)a)<sup>4</sup>  =1</I> (the
+``hexagon'' relation).
+<P>
+As indicated by  the labels on the  diagram we take <I>K=S<sub>7</sub></I>. The subgroup
+generated by  all the  nodes  except the  left-most  has  index  3510. An
+enumeration over that subgroup is coded as:
+<P>
+<pre>    gap> k := SymmetricGroup(7);
+    Group( (1,7), (2,7), (3,7), (4,7), (5,7), (6,7) )
+    gap>
+    gap> aname := AbstractGenerator("a");; a := DCEWord(k,aname);
+    DCEWord(Group( (1,7), (2,7), (3,7), (4,7), (5,7), (6,7) ),[a])
+    gap> fname := AbstractGenerator("f");; f := DCEWord(k,fname);
+    DCEWord(Group( (1,7), (2,7), (3,7), (4,7), (5,7), (6,7) ),[f])
+    gap> gname := AbstractGenerator("g");; g := DCEWord(k,gname);
+    DCEWord(Group( (1,7), (2,7), (3,7), (4,7), (5,7), (6,7) ),[g])
+    gap>
+    gap> hexagon := (f*DCEWord(k,(4,5)*(6,7)*(3,4)*(5,6))*a)^4;
+    DCEWord(Group( (1,7), (2,7), (3,7), (4,7), (5,7),
+    (6,7) ),[f, (3,4,6,7,5), a])^4
+    gap> hexagon.name := "hex";
+    "hex"
+    gap>
+    gap> rel1 := (a*DCEWord(k,(3,4)))^3;
+    DCEWord(Group( (1,7), (2,7), (3,7), (4,7), (5,7), (6,7) ),[a, (3,4)])^
+    3
+    gap> rel2 := (f*DCEWord(k,(6,7)))^3;
+    DCEWord(Group( (1,7), (2,7), (3,7), (4,7), (5,7), (6,7) ),[f, (6,7)])^
+    3
+    gap> rel3 := (a*g)^2;
+    DCEWord(Group( (1,7), (2,7), (3,7), (4,7), (5,7), (6,7) ),[a, g])^2
+    gap> rel4 := (f*g)^3;
+    DCEWord(Group( (1,7), (2,7), (3,7), (4,7), (5,7), (6,7) ),[f, g])^3
+    gap>
+    gap> F22Pres := rec(
+    >    groupK := k,
+    >    gainGroups := [ rec(), rec(dom := 7, op := OnPoints),
+    >                    rec(dom := [1,2,3], op := OnSets)],
+    >    gens := [ rec( name := aname, invol := true, wgg := 3),
+    >              rec (name := fname, invol := true, wgg := 2),
+    >              rec (name := gname, invol := true, wgg := 1)],
+    >    relators := [rel1,rel2,rel4,rel3,hexagon],
+    >    subgens := [(2,3,4,5,6,7),(3,2),f,a,g] );;</pre>
+<P>
+<P>
+<strong>HLT Strategy</strong>
+<P>
+As  given,  this presentation  will use the  default  HLT  strategy. On a
+SparcStation 10-41 this enumeration takes 60.8 CPU  seconds and defines a
+total of 95 double cosets (for a final total of 24).
+<P>
+Since  we   know  the  correct   index   in this example,   we   can  use
+early-closing, by setting
+<P>
+<pre>    gap> F22Pres.strategy := rec(EC := [3510]);
+    rec(
+      EC := [ 3510 ] )
+    gap> DCE(F22Pres);
+    #I Set up generators and inverses
+    #I Set up column structure: 43 columns
+    #I Pre-processed relators
+    #I Done subgroup generators
+    #I Also done relators in subgroup
+    #I Pushing at weight 3
+    #I      1 double 7 single 2 blanks
+    #I 1 DCEWord(K,[a, (3,4)])^3
+    #I   4 cases
+    ...</pre>
+<P>
+The calculation proceeds identically  until, after 40 seconds, it reaches
+a table with 3510 single cosets and only  four blank entries. The program
+then changes  strategies and attempts  to fill the  blanks as seen in the
+following piece of output:
+<P>
+<pre>    ...
+    #I 13 hex
+    #I   70 cases
+    #I 22 DCEWord(K,[a, (3,4)])^3
+    #I   39 cases
+    #I 22 DCEWord(K,[f, (6,7)])^3
+    #I   9 cases
+    #I 22 DCEWord(K,[f, g])^3
+    #I   3 cases
+    #I 22 DCEWord(K,[a, g])^2
+    #I   8 cases
+    #I 15 hex
+    #I   90 cases
+    #I Entering Pre-early closing 24 3510 4
+    #I 48 DCEWord(K,[a, (3,4)])^3
+    #I   29 cases
+    #I 48 DCEWord(K,[f, (6,7)])^3
+    #I   5 cases
+    &lt;&lt; Double coset table "No name" early-closed 24 double 3510 single >></pre>
+<P>
+This succeeds after  a further 2 seconds,  producing a closed table. This
+method actually defines more double cosets (97), but is much faster.
+<P>
+We  can cause  the change  of strategies to    occur a little  earlier by
+widening the range of acceptable indices. With:
+<P>
+<pre>    gap> F22Pres.strategy := rec(EC := [3500..3600]);
+    rec(
+      EC := [ 3500 .. 3600 ] )
+    gap> u := DCE(F22Pres);
+    #I Set up generators and inverses
+    #I Set up column structure: 43 columns
+    #I Pre-processed relators
+    #I Done subgroup generators
+    #I Also done relators in subgroup
+    #I Pushing at weight 3
+    #I      1 double 7 single 2 blanks
+    #I 1 DCEWord(K,[a, (3,4)])^3
+    #I   4 cases
+    ...</pre>
+<P>
+With this option we see:
+<P>
+<pre>    ...
+    #I 13 hex
+    #I   70 cases
+    #I Entering Pre-early closing 24 3516 18
+    #I 22 DCEWord(K,[a, (3,4)])^3
+    #I   39 cases
+    #I 22 DCEWord(K,[f, (6,7)])^3
+    #I   9 cases
+    #I 22 DCEWord(K,[f, g])^3
+    #I   3 cases
+    #I 22 DCEWord(K,[a, g])^2
+    #I   8 cases
+    #I 22 hex
+    #I   130 cases
+    #I 22 DCEWord(K,[a, a])
+    #I   8 cases
+    #I 22 DCEWord(K,[f, f])
+    #I   3 cases
+    #I 22 DCEWord(K,[g, g])
+    #I   1 cases
+    #I 36 DCEWord(K,[a, (3,4)])^3
+    #I   39 cases
+    #I 36 DCEWord(K,[f, (6,7)])^3
+    #I   9 cases
+    #I 36 DCEWord(K,[f, g])^3
+    #I   3 cases
+    #I 36 DCEWord(K,[a, g])^2
+    #I   8 cases
+    #I 36 hex
+    #I   130 cases
+    &lt;&lt; Double coset table "No name" early-closed 24 double 3510 single >></pre>
+<P>
+and a run time of about 37 seconds.
+<P>
+Apart from the early-closing  criteria, we can tune  the behaviour of the
+HLT algorithm  by varying the relator weights.    We can see  the default
+weights by doing:
+<P>
+<pre>    gap> List(u.relators,r->[r,r.weight]);
+    [ [ DCEWord(K,[a, (3,4)])^3, 2 ], [ DCEWord(K,[f, (6,7)])^3, 2 ],
+      [ DCEWord(K,[f, g])^3, 2 ], [ DCEWord(K,[a, g])^2, 2 ], [ hex, 3 ],
+      [ DCEWord(K,[a, a]), 100 ], [ DCEWord(K,[f, f]), 100 ],
+      [ DCEWord(K,[g, g]), 100 ] ]</pre>
+<P>
+The relators  with  weight 100  are simply  added automatically to ensure
+that the algorithm cannot terminate without closing the table.
+<P>
+We could emulate the unweighted HLT  algorithm by setting
+<code>hexagon.weight:= 2;</code>
+<P>
+This  produces significantly   worse  performance,  as the long   hexagon
+relation  is pushed  more   often  than necessary.   On the  other   hand
+increasing its weight  to 4  also  produces  worse  performance than  the
+default, because unnecessarily much of the infinite hyperbolic reflection
+group (defined by the other relations) is constructed.
+<P>
+<P>
+<strong>Felsch Strategies</strong>
+<P>
+We can try this presentation with the Felsch strategy by simply setting:
+<P>
+<code>F22Pres.strategy := rec(whichStrategy := "Felsch",EC := [3500..3600]);</code>
+<P>
+Using  this  strategy the  enumeration   takes longer (92  seconds),  but
+defines only 35 double cosets in total. The Felsch algorithm can often be
+improved    by  adding  the    longer   relators  as  redundant  subgroup
+generators.  We can try  this by setting  <code>hexagon.insg := true;</code> but the
+improvement is very slight (to 91 seconds and 35 double cosets).
+<P>
+<P>
+<strong>Hybrid strategy</strong>
+<P>
+We can access the hybrid methods be setting
+<code>F22Pres.strategy.whichStrategy := "Havas";</code>
+<P>
+We first look at the preferred definition list alone, by setting
+<P>
+<pre>    gap> strat := F22Pres.strategy;
+    rec(
+      EC := [ 3500 .. 3600 ] )
+    gap> strat.FF := 5;
+    5
+    gap> strat.HavN := 100;
+    100
+    gap> strat.HavK := 0;
+    0</pre>
+<P>
+This  turns   out  to be   significantly worse  than   the  simple Felsch
+algorithm, defining 56  double cosets  and  taking 145 seconds.   Smaller
+values for <code>FF</code> produce performance closer to the simple Felsch.
+<P>
+By setting
+<P>
+<pre>    gap> strat.FF := 1;
+    1
+    gap> strat.HavN := 5;
+    5
+    gap> strat.HavK := 2;
+    2</pre>
+<P>
+We can try a hybrid strategies (without the PDL). This  runs in about 100
+seconds, making 41 definitions.
+<P><A NAME="SECT020"><h2>62.20 Functions for Analyzing Double Coset Tables</h2></a>
+<P><P><P>
+The functions <code>DCEPerm</code> and <code>DCEPerms</code> have already been described, while
+elementary information (such as the numbers of  single and double cosets)
+can   be   read  directly   from  the  DCE    Universe   produced  by  an
+enumeration.  When the number of single  cosets  is large, however, as in
+the example of <I>HN: 2</I> above, <code>DCEPerm</code> requires an improbably large
+amount of  space, so  permutations  cannot sensibly  be obtained. However
+some analysis of the permutation representation is possible directly from
+the double coset table.
+<P>
+Specifically, functions exist to  study  the orbits  of <I>H</I>,  and compute
+their  sizes and the collapsed  adjacency matrices of the orbital graphs.
+The performance  of these functions depends crucially  on the size of the
+group <I>M = H&cap; K</I>, which  will always be  the muddle group of the first
+double coset <I>HK</I>. When <I>M=K</I>, so  that <I>K &le; H</I>, then  each orbit of <I>H</I>
+is just a  union of double cosets  and  the algorithms are  fast, whereas
+when <I>M=1</I> there no benefit over extracting permutations.
+<P><A NAME="SECT021"><h2>62.21 DCEColAdj</h2></a>
+<P><P><P>
+<code>DCEColAdj(<var>universe</var>)</code>
+<P>
+This  function computes the complete set  of collapsed adjacency matrices
+(incidence matrices) for all the orbital graphs in the permutation action
+implied    by  <var>universe</var>, which    must  be a  DCE   Universe  of status
+``closed'' or ``early-closed''.   For very large  degrees, and/or if
+some of  the subgroup generators are long  words,  this function can take
+infeasibly long,  so   some  other  functions are  provided   for partial
+calculations.
+<P><A NAME="SECT022"><h2>62.22 DCEHOrbits</h2></a>
+<P><P><P>
+<code>DCEHOrbits(<var>universe</var>)</code>
+<P>
+This function  determines  the orbits  of <I>H</I>,   as  unions of orbits  of
+<I>M=H&cap; K</I>. Various  additions   are made  to  the data   structures  in
+<var>universe</var>, which  are   described   in   detail elsewhere.    The   most
+comprehensible field  is  <code>u.orbsizes</code> which gives  the  number of points
+(single cosets) in the orbits.
+<P><A NAME="SECT023"><h2>62.23 DCEColAdjSingle</h2></a>
+<P><P><P>
+<code>DCEColAdjSingle(<var>universe</var>,<var>orbnum</var>)</code>
+<P>
+This    function  determines   the  single    collapsed adjacency  matrix
+corresponding   to   orbital  graph number  <var>orbnum</var>   (in  the  ordering
+of  <code>&lt;universe>.orbsizes</code>).  This   takes   time   roughly   proportional
+to <code>&lt;universe>.orbsizes[&lt;orbnum>]</code>,  so  that  extracting  the  adjacency
+matrices  corresponding to  small  orbits  in  large representations   is
+possible.
+<P><A NAME="SECT024"><h2>62.24 Example of DCEColAdj</h2></a>
+<P><P><P>
+We return to the hexagon presentation for <I>Fi<sub>22</sub></I>, and  join it just as
+the double coset enumeration is finishing:
+<P>
+<pre>    gap> InfoDCE1 := Ignore;
+    function (...) internal; end
+    gap> u := DCE(F22Pres);
+    &lt;&lt; Double coset table "No name" early-closed 24 double 3510 single >>
+    gap> InfoDCE1 := DCEInfoPrint;;
+    gap> DCEHOrbits(u);
+    #I Completed preliminaries, index of M is  7
+    #I Annotated table
+    #I Completed orbit  1  size  1
+    #I Completed orbit  2  size  2816
+    #I Completed orbit  3  size  693
+    gap> u.orbsizes;
+    [ 1, 2816, 693 ]
+    gap> DCEColAdj(u);
+    #I Added contribution from  1 part 1
+    #I Added contribution from  1 part 2
+    #I Added contribution from  2 part 1
+    #I Added contribution from  2 part 5
+    #I Added contribution from  3 part 1
+    #I Added contribution from  4 part 1</pre>
+<P>
+\hspace35mm <I>...</I>
+<P>
+<pre>    #I Added contribution from  70 part 1
+    #I Added contribution from  70 part 3
+    #I Added contribution from  70 part 4
+    #I Added contribution from  70 part 5
+    #I Added contribution from  70 part 7
+    #I Added contribution from  77 part 1
+    #I Added contribution from  77 part 5
+    [ [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+      [ [ 0, 2816, 0 ], [ 1, 2248, 567 ], [ 0, 2304, 512 ] ],
+      [ [ 0, 0, 693 ], [ 0, 567, 126 ], [ 1, 512, 180 ] ] ]
+    gap> DCEColAdjSingle(u,3);
+    #I Added contribution from  2 part 5
+    #I Added contribution from  6 part 5
+    #I Added contribution from  7 part 3
+    #I Added contribution from  11 part 2
+    #I Added contribution from  13 part 5
+    #I Added contribution from  15 part 4
+    #I Added contribution from  19 part 1
+    #I Added contribution from  20 part 5
+    #I Added contribution from  22 part 4
+    #I Added contribution from  23 part 4
+    #I Added contribution from  26 part 1
+    #I Added contribution from  36 part 3
+    #I Added contribution from  42 part 7
+    #I Added contribution from  44 part 7
+    #I Added contribution from  61 part 1
+    #I Added contribution from  65 part 7
+    #I Added contribution from  70 part 5
+    [ [ 0, 0, 693 ], [ 0, 567, 126 ], [ 1, 512, 180 ] ]</pre>
+<P><A NAME="SECT025"><h2>62.25 Double Coset Enumeration and Symmetric Presentations</h2></a>
+<P><P><P>
+R.T. Curtis has defined the notion of a symmetric presentation: given a
+group  <I>K</I>, permuting  a set  <I>S</I>,  we consider  a  generating set <I>X</I> in
+bijection with <I>S</I>, with conjugation by <I>K</I> permuting <I>X</I> as <I>K</I> permutes
+<I>S</I>. A symmetric presentation  is such a  set up, together with relations
+given in terms of the elements of <I>K</I> and <I>T</I>.
+<P>
+It is not hard to see that, at least when  <I>K</I> is transitive on <I>S</I>, this
+is equivalent  to the   set up  for double   coset enumeration, with  one
+generator <I>t</I>, and  gain group equal  to the  point stabiliser in  <I>K</I> of
+some <I>s<sub>0</sub>&isin;  S</I>. The relations can  be written in terms  of <I>K</I>, <I>t</I> and
+conjugates of <I>t</I> by <I>K</I>, and so in terms of <I>K</I> and <I>t</I>.
+<P><A NAME="SECT026"><h2>62.26 SetupSymmetricPresentation</h2></a>
+<P><P><P>
+<code>SetupSymmetricPresentation(<var>K</var>,<var>name</var> [, <var>base</var> [, <var>op</var>]])</code>
+<P>
+The     function  <code>SetupSymmetricPresentation</code> implements the equivalence
+between presentations for DCE and Symmetric Presentations in the sense of
+Curtis.  The  argument  <var>K</var>  is  the group   acting,  and <var>name</var>   is  an
+<code>AbstractGenerator</code> that will be    used as <I>t</I>. The  optional  arguments
+<var>base</var>  and <var>op</var> can be used  to specify <I>s<sub>0</sub></I> and the  action  of <var>K</var> on
+<I>S</I>. <var>base</var> defaults to 1 and <var>op</var> to <code>OnPoints</code>.
+<P>
+The function returns a record with two components:
+<P>
+<DL><DT><code>skeleton</code>:<DD> a partial DCE Presentation.  The fields <code>K</code>, <code>gainGroups</code> and
+<code>gens</code> are bound.  Fields <code> relators</code>  and <code>subgens</code> must still be added,
+and <code>name</code> and <code>strategy</code> may be added, before enumeration.
+</DL><P>
+<DL><DT><code>makeGen</code>:<DD> is a function which  converts elements of <code>  Orbit(K,base,op)</code>
+into DCEWords for the corresponding symmetric Generators.
+</DL><P><A NAME="SECT027"><h2>62.27 Examples of DCE and Symmetric Presentations</h2></a>
+<P><P><P>
+<strong><I>M<sub>12</sub></I></strong>
+<P>
+The following input gives a symmetric presentation of the Mathieu
+group <I>M<sub>12</sub></I>:
+<P>
+<pre>    gap> t := AbstractGenerator("t");;
+    gap> K := Group((1,2,3,4,5),(1,2,3));
+    Group( (1,2,3,4,5), (1,2,3) )
+    gap> SGrec := SetupSymmetricPresentation(K,t);
+    rec(
+      skeleton := rec(
+          groupK := Group( (1,2,3,4,5), (1,2,3) ),
+          gainGroups := [ rec(
+                  dom := 1,
+                  op := function (...) internal; end ) ],
+          gens := [ rec(
+                  name := t,
+                  wgg := 1 ) ] ),
+      makeGen := function ( pt ) ... end )
+    gap> t := SGrec.makeGen;
+    function ( pt ) ... end
+    gap> Pres := SGrec.skeleton;
+    rec(
+      groupK := Group( (1,2,3,4,5), (1,2,3) ),
+      gainGroups := [ rec(
+              dom := 1,
+              op := function (...) internal; end ) ],
+      gens := [ rec(
+              name := t,
+              wgg := 1 ) ] )
+    gap> Pres.name := "M12 Symmetric";
+    "M12 Symmetric"
+    gap> Pres.strategy := rec(EC := [1000..3000]);
+    rec(
+      EC := [ 1000 .. 3000 ] )
+    gap> Pres.relators := [t(1)^3,(t(1)/t(2))^2*DCEWord(K,(3,4,5))];
+    [ DCEWord(Group( (1,2,3,4,5), (1,2,3) ),[t])^3,
+      DCEWord(Group( (1,2,3,4,5),
+        (1,2,3) ),[t, (1,3,4,5,2), t^-1, (1,2,5,4,3), t, (1,3,4,5,2), t^-1\ 
+    , (1,2,5,4,3), (3,4,5)]) ]
+    gap> Pres.subgens := [DCEWord(K,(1,2,3,4,5)),DCEWord(K,(1,2,3)),
+    >                  (DCEWord(K,(1,2,3,4,5))*t(1))^8];
+    [ DCEWord(Group( (1,2,3,4,5), (1,2,3) ),[(1,2,3,4,5)]),
+      DCEWord(Group( (1,2,3,4,5), (1,2,3) ),[(1,2,3)]),
+      DCEWord(Group( (1,2,3,4,5), (1,2,3) ),[(1,2,3,4,5), t])^8 ]
+    gap> Pres.relators[1].weight := 2;;   # default weight is too low</pre>
+<P>
+DCE enumerates this presentation in a few seconds.
+<P>
+<pre>    gap> InfoDCE1 := Ignore;
+    function (...) internal; end
+    gap> u := DCE(Pres);
+    &lt;&lt; Double coset table "M12 Symmetric" early-closed 47 double
+    1584 single >>
+    gap> time;
+    5400</pre>
+<P>
+<P>
+<strong><I>He: 2</I></strong>
+<P>
+The  following  is   a presentation of  <I>He:   2</I>  generated  by 180
+symmetric  generators  of  order 7 permuted  by   <I>3S<sub>7</sub>&times; 2</I>. This is
+really 30  generators permuted monomially,   but we don't have  monomial
+groups in GAP.
+<P>
+The following can be placed in an input file <code>he2.g</code>.
+<P>
+<pre>#
+# The group K we want is 3S7 x 2. We make this from a handy
+# representation of 3S7
+#
+DoubleP := function(p,n)
+    local l;
+    l := OnTuples([1..n],p);
+    Append(l,l+n);
+    return PermList(l);
+end;
+
+Swap := function(n)
+    return PermList(Concatenation([n+1..2*n],[1..n]));
+end;
+
+K := Group(
+    DoubleP((1, 2)( 3, 5)( 4, 7)( 6,10)( 8,12)( 9,14)(11,17)(13,20)
+        (15,23)(16,25)(18,28)(19,30)(21,33)(22,35)(24,37)(26,40)(27,41)
+        (29,44)(31,47)(32,49)(34,51)(36,54)(38,57)(39,46)(42,61)(43,63)
+        (45,66)(48,53)(50,70)(52,60)(55,73)(56,65)(58,76)(59,78)(62,75)
+        (64,80)(67,84)(68,74)(69,77)(71,85)(72,86)(79,89)(81,88)(82,87)
+        (83,90),90),
+    DoubleP(( 1, 3, 6)(44,65,49)
+        (2,4,8,13,21,34,52,10,16,26,28,43,64,82,5,9,15,24,38,58,77)
+        (7,11,18,29,45,67,63,14,22,20,32,50,61,33,25,39,37,56,75,86,57)
+        (12,19,31,48,69,51,71,23,36,55,74,87,76,88,40,59,79,41,60,80,90)
+        (17,27,42,62,81,47,30,46,68,84,70,85,89,78,35,53,72,66,83,73,54)
+        ,90),Swap(90) );
+#
+# Now lets get the generators we want
+#
+x := DCEWord(K,K.1);
+y := DCEWord(K,K.2);
+a := DCEWord(K,K.3);
+#
+# And the name for our generator outside K
+#
+t := AbstractGenerator("t");
+#
+# Now we can specify our setup
+#
+SGrec := SetupSymmetricPresentation(K,t);
+SG := SGrec.makeGen;
+Pres := SGrec.skeleton;
+#
+# We still have to put some fields in the presentation
+#
+Pres.name := "He:2 Symmetric";
+Pres.relators := [
+    SG(1)^7,(SG(1)* SG(2))^2,
+    SG(1)^2 / SG(3),
+    y^-7 / (SG(1)^-1*SG(2)^-2*SG(1)^2*SG(2)),
+    y^9 /  Comm(SG(1),SG(65)),
+    SG(1)*SG(91),
+    DCEWord(K,DoubleP((1,2)(3,5)(4,76)(6,10)(7,58)(8,12)(9,80)(11,70)
+            (13,20)(14,64)(15,23)(16,51)(17,50)(18,28)(19,42)(21,87)
+            (22,62)(24,37)(25,34)(26,40)(27,32)(29,68)(30,61)(31,85)
+            (33,82)(35,75)(36,72)(38,60)(39,66)(41,49)(43,69)(44,74)
+            (45,46)(47,71)(48,65)(52,57)(53,56)(54,86)(55,81)(59,84)
+            (63,77)(67,78)(73,88)(79,83)(89,90),90)) /
+    (SG(1)*SG(2)^2*SG(1)^2*SG(2)) ];
+Pres.subgens := [t,x,x^(y^3)*x^(y^-1*x*y^-2),
+                    Comm(x,y^-1*x*y^-1),Comm(x,y*x*y^2),a];
+Pres.strategy := rec(EC := [8000..12000]);</pre>
+<P>
+We can run this example quietly:
+<P>
+<pre>    gap> Read("he2.g");
+    gap> InfoDCE1 := Ignore;
+    function (...) internal; end
+    gap> u := DCE(Pres);
+    &lt;&lt; Double coset table "He:2 Symmetric" early-closed 9 double
+    8330 single >>
+    gap> time;
+    126716</pre>
+<a href ="chap061.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap063.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

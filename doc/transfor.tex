@@ -1,0 +1,355 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  GAP documentation                                   Goetz.Pfeiffer@UCG.IE
+%%
+%A  $Id: transfor.tex,v 2.0 1997/05/05 16:35:52 goetz Exp $
+%%
+%Y  Copyright (C) 1997, Mathematics Dept, University College Galway, Ireland.
+%%
+%%  This file documents the functions for transformations on $n$ points.
+%%
+\Chapter{Transformations}
+
+A transformation of degree  $n$ is a  map from the  set $\{1,  ... , n\}$
+into itself.   Thus a transformation $\alpha$  of degree $n$ associates a
+positive integer $i^\alpha$ less than or equal  to $n$ to each number $i$
+between $1$ and $n$.
+
+The degree of a transformation may not be larger than $2^{28}-1$ which is
+(currently) the highest index that can be accessed in a list.
+
+Special   cases  of    transformations   are permutations    (see chapter
+\"Permutations\").  However,  a   permutation must   be  converted to   a
+transformation before  most   of  the  functions   in  this  chapter  are
+applicable.
+
+The product of transformations is defined via  composition of maps.  Here
+transformations are multiplied in such a way that they act from the right
+on   the set  $\{1,    ... ,   n\}$.   That   is,  the  product  of   the
+transformations $\alpha$ and $\beta$ of degree $n$ is defined by
+\[
+  i\^(\alpha\beta) = (i\^\alpha)\^\beta\quad\mbox{for all }i = 1, ... ,n.
+\]
+With respect  to this  multiplication  the set of all  transformations of
+degree $n$ forms a monoid\:\ the full transformation monoid of degree $n$
+(see chapter "Transformation Monoids").
+
+Each transformation of  degree $n$ is  considered an element of  the full
+transformation  monoid  of degree  $n$ although   it is  not necessary to
+construct  a   full  transformation     monoid  before   working     with
+transformations.  But you can  only multiply two transformations  if they
+have the same  degree.  You  can,  however, multiply a transformation  of
+degree $n$ by a permutation of degree $n$.
+
+Transformations are entered and displayed by giving their lists of images
+as an argument to the function 'Transformation'.
+
+|    gap> Transformation( [ 3, 3, 4, 2, 5 ] );
+    Transformation( [ 3, 3, 4, 2, 5 ] )
+    gap> Transformation( [ 3, 3, 2 ] ) * Transformation( [ 1, 2, 1 ] );
+    Transformation( [ 1, 1, 2 ] )|
+
+This  chapter  describes functions that  deal  with transformations.  The
+first sections describe the representation  of a transformation in {\GAP}
+(see  "More  about   Transformations")   and   how a  transformation   is
+constructed as a {\GAP} object (see "Transformation").  The next sections
+describe  the comparisons and  the   operations which are available   for
+transformations (see "Comparisons of Transformations" and "Operations for
+Transformations").   There are a  function  to test  whether an arbitrary
+object  is  a transformation (see "IsTransformation")  and  a function to
+construct  the   identity    transformation   of a   given   degree  (see
+"IdentityTransformation").   Then   there  are   functions   that compute
+attributes of transformations (see "Degree of a Transformation", "Rank of
+a  Transformation",   "Image of a   Transformation",  and  "Kernel  of  a
+Transformation").   Finally,   there   are a  function    that converts a
+permutation to a transformation (see "TransPerm") and a function that, if
+possible converts a transformation to a permutation (see "PermTrans").
+
+The functions described here are in the file '\"transfor.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Transformations}
+
+A transformation $\alpha$ on $n$ points is completely defined by its list
+of images.   It   is stored as  a  record  with   the  following category
+components.
+
+'isTransformation': \\
+        is always set to 'true'.
+
+'domain': \\
+        is always set to 'Transformations'.
+
+Moreover it has the identification component
+
+'images':\\
+        containing  the list of  images in  such a way that  $i\^\alpha =
+        \alpha.'images[i]'$ for all $i \leq n$.
+
+The multiplication    of  these   transformations   can  be   efficiently
+implemented by using the sublist operator '\{\ \}'.  The product '<r> \*\ 
+<l>'  of    two  transformations  <l>   and   <r>  can  be   computed  as
+'Transformation( <r>.images\{ <l>.images \}  )'.  Note that the order has
+been chosen to have transformations act from the right on their domain.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Transformation}
+
+'Transformation( <lst> )'
+
+'Transformation' returns the transformation  defined by the list <lst> of
+images.  Each entry in <lst> must be a positive integer not exceeding the
+length of <lst>.
+
+|    gap> Transformation( [ 1, 4, 4, 2 ] );
+    Transformation( [ 1, 4, 4, 2 ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IdentityTransformation}
+
+'IdentityTransformation( <n> )'
+
+'IdentityTransformation'  returns,  for any  positive  <n>, the  identity
+transformation of degree $n$.
+
+|    gap> IdentityTransformation( 4 );
+    Transformation( [ 1 .. 4 ] )|
+
+The identity transformation  of degree $n$  acts  as the  identity in the
+full transformation monoid of degree $n$ (see "FullTransMonoid").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Transformations}%
+\index{equality!of transformations}%
+\index{ordering!of transformations}
+
+'<tr1> = <tr2>'\\
+'<tr1> \<> <tr2>'
+
+The equality operator '=' applied to two  transformations <tr1> and <tr2>
+evaluates to 'true' if the  two transformations are  equal and to 'false'
+otherwise.  The inequality  operator '\<>' applied to two transformations
+<tr1> and <tr2> evaluates to  'true' if the  two transformations are  not
+equal and to 'false' otherwise.  A transformation can also be compared to
+any other object  that is not a  transformation, of course they are never
+equal.
+    
+Two transformations are considered equal if and only if their image lists
+are equal  as lists.  In particular,  equal transformations must have the
+same degree.
+
+|    gap> Transformation( [ 1, 2, 3, 4 ] ) = IdentityTransformation( 4 );
+    true
+    gap> Transformation( [ 1, 4, 4, 2 ] ) = 
+    > Transformation( [ 1, 4, 4, 2, 5 ] );
+    false|
+
+\vspace{5mm}
+'<tr1> \<\ <tr2>' \\
+'<tr1> \<= <tr2>' \\
+'<tr1>  >  <tr2>' \\
+'<tr1>  >= <tr2>'
+
+The  operators  '\<', '\<=',   '>', and '>='  evaluate   to 'true' if the
+transformation <tr1> is less  than, less than  or equal to, greater than,
+or  greater  than or equal  to  the transformation <tr2>, and  to 'false'
+otherwise.
+
+Let  <tr1>  and <tr2> be  two transformations  that  are not equal.  Then
+<tr1> is considered smaller than <tr2> if and  only if the list of images
+of <tr1> is (lexicographically) smaller than the list of images of <tr2>.
+Note that this  way the  smallest  transformation of  degree  $n$ is  the
+transformation that maps every point to $1$.
+
+You can also compare transformations  with objects of  other types.  Here
+any object that is  not a transformation  will be considered smaller than
+any transformation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Transformations}
+ 
+'<tr1> \*\ <tr2>'%
+\index{product!of transformations}
+
+The operator '\*'  evaluates to  the product  of the two  transformations
+<tr1> and <tr2>.
+
+\vspace{5mm}
+'<tr> \*\ <perm>'\\
+'<perm> \*\ <tr>'%
+\index{product!of permutation and transformation}
+
+The operator '\*' evaluates to the product of the transformation <tr> and
+the permutation <perm> in the given order if the degree of <perm> is less
+than or equal to the degree of <tr>.
+
+\vspace{5mm}
+'<list> \*\ <tr>' \\
+'<tr> \*\ <list>'%
+\index{product!of list and transformation}
+
+The operator '\*'  evaluates to the list of  products of the  elements in
+<list> with the transformation <tr>.  That means that  the value is a new
+list <new> such that '<new>[<i>] = <list>[<i>] \*\ <tr>' or '<new>[<i>] =
+<tr> \*\ <list>[<i>]', respectively.
+
+\vspace{5mm}
+'<i> \^\ <tr>'%
+\index{image!under transformation}
+
+The operator '\^'  evaluates  to the image  $<i>\^<tr>$ of  the  positive
+integer <i> under the transformation <tr> if <i> is  less than the degree
+of <tr>.
+
+\vspace{5mm}
+'<tr> \^\ 0'
+
+The operator '\^' evaluates to  the identity transformation on $n$ points
+if <tr> is a transformation on $n$ points (see "IdentityTransformation").
+
+\vspace{5mm}
+'<tr> \^\ <i>'%
+\index{power!of transformation}
+
+For a  positive integer  <i>  the operator  '\^' evaluates to  the <i>-th
+power of the transformation <tr>.
+
+\vspace{5mm}
+'<tr> \^\ -1'%
+\index{inverse!of transformation}
+
+The operator '\^' evaluates to the  inverse mapping of the transformation
+<tr> which  is represented  as   a binary relation  (see chapter  "Binary
+Relations").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsTransformation}%
+\index{test!for transformation}
+
+'IsTransformation( <obj> )'
+
+'IsTransformation' returns  'true' if  <obj>,  which may  be an object of
+arbitrary type,  is  a  transformation  and 'false' otherwise.    It will
+signal an error if <obj> is an unbound variable.
+
+|    gap> IsTransformation( Transformation( [ 2, 1 ] ) );
+    true
+    gap> IsTransformation( 1 );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Degree of a Transformation}
+
+'Degree( <trans> )'
+
+'Degree' returns the degree of the transformation <trans>.
+
+|    gap> Degree( Transformation( [ 3, 3, 4, 2, 5 ] ) );
+    5|
+    
+The *degree* of a  transformation is the number of  points it  is defined
+upon.  It can therefore be  read off as the length  of the list of images
+of the transformation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rank of a Transformation}
+
+'Rank( <trans> )'
+
+'Rank' returns the rank of the transformation <trans>.
+
+|    gap> Rank( Transformation( [ 3, 3, 4, 2, 5 ] ) );
+    5|
+
+The *rank* of a transformation is the number of  points in its image.  It
+can  therefore be determined  as  the size of the   set of images  of the
+transformation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Image of a Transformation}
+
+'Image( <trans> )'
+
+'Image' returns the image of the transformation <trans>.
+
+|    gap> Image( Transformation( [ 3, 3, 4, 2, 5 ] ) );
+    [ 2, 3, 4, 5 ]|
+
+The   *image* of  a  transformation is  the  set  of its  images.   For a
+transformation of degree $n$  this is  always  a subset of the  set $\{1,
+ ... , n\}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Kernel of a Transformation}
+
+'Kernel( <trans> )'
+
+'Kernel' returns the kernel of the transformation <trans>.
+
+|    gap> Kernel( Transformation( [ 3, 3, 4, 2, 5 ] ) );
+    [ [ 1, 2 ], [ 3 ], [ 4 ], [ 5 ] ] |
+
+The *kernel*  of a transformation is the  set of its nonempty  preimages. 
+For a transformation of degree $n$ this is  always a partition of the set
+$\{1,  ... , n\}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermLeftQuoTrans}
+\index{quotient!of transformations}
+
+'PermLeftQuoTrans( <tr1>, <tr2> )'
+
+Given transformations <tr1> and  <tr2> with equal  kernel and  image, the
+permutation induced by '<tr1>\^-1 \*\ <tr2>'  on the set 'Image( <tr1> )'
+is computed.
+
+|    gap> a:= Transformation( [ 8, 7, 5, 3, 1, 3, 8, 8 ] );;
+    gap> Image(a);  Kernel(a);
+    [ 1, 3, 5, 7, 8 ]
+    [ [ 1, 7, 8 ], [ 2 ], [ 3 ], [ 4, 6 ], [ 5 ] 
+    gap> b:= Transformation( [ 1, 3, 8, 7, 5, 7, 1, 1 ] );;
+    gap> Image(b) = Image(a);  Kernel(b) = Kernel(a);
+    true
+    true
+    gap> PermLeftQuoTrans(a, b);
+    (1,5,8)(3,7) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TransPerm}%
+\index{convert!permutation to transformation}
+
+'TransPerm( <n>, <perm> )'
+
+'TransPerm' returns the bijective transformation of  degree <n> that acts
+on the set $\{1,  ... ,  n\}$ in the same way  as the permutation  <perm>
+does.
+
+|    gap> TransPerm( 4, (1,2,3) );
+    Transformation( [ 2, 3, 1, 4 ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermTrans}%
+\index{convert!transformation to permutation}
+
+'PermTrans( <trans> )'
+
+'PermTrans' returns  the   permutation  defined by   the   transformation
+<trans>.  If <trans> is not bijective, an error is signaled by 'PermList'
+(see \"PermList\").
+
+|    gap> PermTrans( Transformation( [ 2, 3, 1, 4 ] ) );
+    (1,2,3)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               LaTeX
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  TeX-master:         "manual"
+%%  eval:               (outline-minor-mode)
+%%  End:
+%%
+

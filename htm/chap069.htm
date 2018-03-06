@@ -1,0 +1,935 @@
+<html><head><title>GAP3 Manual: 69 The MeatAxe</title></head>
+<body bgcolor="ffffff">
+<h1>69 The MeatAxe</h1>
+<P><P><P>
+This chapter describes the main functions  of the <strong>MeatAxe</strong>  (Version 2.0)
+share library  for  computing  with  finite field matrices, permutations,
+matrix groups, matrix algebras, and their modules.
+<P>
+For the installation of the package, see <a href="chap057.htm#SECT009">Installing the MeatAxe Package</a>.
+<P>
+The chapter consists of seven parts.
+<P>
+First the idea of using the <strong>MeatAxe</strong> via <strong>GAP3</strong> is introduced
+(see <a href="chap069.htm#SECT001">More about the MeatAxe in GAP</a>, <a href="chap069.htm#SECT002">GapObject</a>), and an example shows
+how the programs can be used (see <a href="chap069.htm#SECT003">Using the MeatAxe in GAP. An Example</a>).
+<P>
+The second part describes functions and operations for single <strong>MeatAxe</strong>
+<strong>matrices</strong> (see <a href="chap069.htm#SECT004">MeatAxe Matrices</a>, <a href="chap069.htm#SECT005">MeatAxeMat</a>, <a href="chap069.htm#SECT006">Operations for MeatAxe
+Matrices</a>, <a href="chap069.htm#SECT007">Functions for MeatAxe Matrices</a>, <a href="chap069.htm#SECT008">BrauerCharacterValue</a>).
+<P>
+The third part describes functions and operations for single <strong>MeatAxe</strong>
+<strong>permutations</strong> (see <a href="chap069.htm#SECT009">MeatAxe Permutations</a>, <a href="chap069.htm#SECT010">MeatAxePerm</a>, <a href="chap069.htm#SECT011">Operations for
+MeatAxe Permutations</a>, <a href="chap069.htm#SECT012">Functions for MeatAxe Permutations</a>).
+<P>
+The fourth part describes functions and operations for <strong>groups</strong> of
+<strong>MeatAxe</strong> matrices (see <a href="chap069.htm#SECT013">MeatAxe Matrix Groups</a>, <a href="chap069.htm#SECT014">Functions for MeatAxe
+Matrix Groups</a>).
+<P>
+(Groups of <strong>MeatAxe</strong> permutations are not yet supported.)
+<P>
+The fifth part describes functions and operations for <strong>algebras</strong> of
+<strong>MeatAxe</strong> matrices (see <a href="chap069.htm#SECT015">MeatAxe Matrix Algebras</a>, <a href="chap069.htm#SECT016">Functions for MeatAxe
+Matrix Algebras</a>).
+<P>
+The sixth part describes functions and operations for <strong>modules</strong> for
+<strong>MeatAxe</strong> matrix algebras (see <a href="chap069.htm#SECT017">MeatAxe Modules</a>, <a href="chap069.htm#SECT018">Set Theoretic Functions
+for MeatAxe Modules</a>, <a href="chap069.htm#SECT019">Vector Space Functions for MeatAxe Modules</a>, <a href="chap069.htm#SECT020">Module
+Functions for MeatAxe Modules</a>).
+<P>
+The last part describes the data structures (see <a href="chap069.htm#SECT022">MeatAxe Object Records</a>).
+<P>
+<P>
+<P>
+If you want to use the functions in this package you must load it using
+<P>
+<pre>    gap> RequirePackage( "meataxe" );
+    #I  The MeatAxe share library functions are available now.
+    #I  All files will be placed in the directory
+    #I     '/var/tmp/tmp.017545'
+    #I  Use 'MeatAxe.SetDirectory( &lt;path> )' if you want to change. </pre>
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap069.htm#SECT001">More about the MeatAxe in GAP</a>
+<LI> <A HREF="chap069.htm#SECT002">GapObject</a>
+<LI> <A HREF="chap069.htm#SECT003">Using the MeatAxe in GAP. An Example</a>
+<LI> <A HREF="chap069.htm#SECT004">MeatAxe Matrices</a>
+<LI> <A HREF="chap069.htm#SECT005">MeatAxeMat</a>
+<LI> <A HREF="chap069.htm#SECT006">Operations for MeatAxe Matrices</a>
+<LI> <A HREF="chap069.htm#SECT007">Functions for MeatAxe Matrices</a>
+<LI> <A HREF="chap069.htm#SECT008">BrauerCharacterValue</a>
+<LI> <A HREF="chap069.htm#SECT009">MeatAxe Permutations</a>
+<LI> <A HREF="chap069.htm#SECT010">MeatAxePerm</a>
+<LI> <A HREF="chap069.htm#SECT011">Operations for MeatAxe Permutations</a>
+<LI> <A HREF="chap069.htm#SECT012">Functions for MeatAxe Permutations</a>
+<LI> <A HREF="chap069.htm#SECT013">MeatAxe Matrix Groups</a>
+<LI> <A HREF="chap069.htm#SECT014">Functions for MeatAxe Matrix Groups</a>
+<LI> <A HREF="chap069.htm#SECT015">MeatAxe Matrix Algebras</a>
+<LI> <A HREF="chap069.htm#SECT016">Functions for MeatAxe Matrix Algebras</a>
+<LI> <A HREF="chap069.htm#SECT017">MeatAxe Modules</a>
+<LI> <A HREF="chap069.htm#SECT018">Set Theoretic Functions for MeatAxe Modules</a>
+<LI> <A HREF="chap069.htm#SECT019">Vector Space Functions for MeatAxe Modules</a>
+<LI> <A HREF="chap069.htm#SECT020">Module Functions for MeatAxe Modules</a>
+<LI> <A HREF="chap069.htm#SECT021">MeatAxe.Unbind</a>
+<LI> <A HREF="chap069.htm#SECT022">MeatAxe Object Records</a>
+</ol>
+<A NAME="SECT001"><h2>69.1 More about the MeatAxe in GAP</h2></a>
+<P><P><P>
+The <strong>MeatAxe</strong> can be used to speed up computations that are possible also
+using ordinary <strong>GAP3</strong> functions.  But more interesting are functions that
+are not (or not yet) available in the <strong>GAP3</strong> library itself, such as that
+for the computation of submodule lattices (see <a href="chap069.htm#SECT020">Module Functions for MeatAxe
+Modules</a>).
+<P>
+The syntax of the functions is the usual <strong>GAP3</strong> syntax, so it might be
+useful to read the chapters about algebras and modules in <strong>GAP3</strong>
+(see chapters <a href="chap039.htm">Algebras</a>, <a href="chap042.htm">Modules</a>) if you want to work with <strong>MeatAxe</strong>
+modules.
+<P>
+The main idea is to let the <strong>MeatAxe</strong> functions do the main work,
+and use <strong>GAP3</strong> as a shell.  Since in <strong>MeatAxe</strong> philosophy, each object is
+contained in its own file, <strong>GAP3</strong>'s task is mainly to keep track of these
+files.  For example, for <strong>GAP3</strong> a <strong>MeatAxe</strong> matrix is a record containing
+at least information about the file name, the underlying finite field, and
+the dimensions of the matrix (see <a href="chap069.htm#SECT004">MeatAxe Matrices</a>).
+Multiplying two such matrices means to invoke the multiplication program
+of <strong>MeatAxe</strong>, to store the result in a new file, and notify this to <strong>GAP3</strong>.
+<P>
+This idea is used not only for basic calculations but also to access
+elaborate and powerful algorithms, for example the program to compute the
+composition factors of a module, or the submodule lattice (see <a href="chap069.htm#SECT020">Module
+Functions for MeatAxe Modules</a>).
+<P>
+In order to avoid conversion overhead the <strong>MeatAxe</strong> matrices are read into
+<strong>GAP3</strong> only if the user explicitly applies <code>GapObject</code> (see <a href="chap069.htm#SECT002">GapObject</a>),
+or applies an operator (like multiplication) to a <strong>MeatAxe</strong> matrix and an
+ordinary <strong>GAP3</strong> object.
+<P>
+Some of the functions, mainly <code>CompositionFactors</code>, print useful information
+if the variable <code>InfoMeatAxe</code> is set to the value <code>Print</code>.
+The default of <code>InfoMeatAxe</code> is <code>Print</code>, if you want to suppress the
+information you should set <code>InfoMeatAxe</code> to <code>Ignore</code>.
+<P>
+For details about the implementation of the standalone functions,
+see <A href="biblio.htm#Rin93"><cite>Rin93</cite></a>.
+<P><A NAME="SECT002"><h2>69.2 GapObject</h2></a>
+<P><P><P>
+<code>GapObject( <var>mtxobj</var> )</code>
+<P>
+returns the <strong>GAP3</strong> object corresponding to the <strong>MeatAxe</strong> object <var>mtxobj</var>
+which may be a <strong>MeatAxe</strong> matrix, a <strong>MeatAxe</strong> permutation, a <strong>MeatAxe</strong>
+matrix algebra, or a <strong>MeatAxe</strong> module.
+<P>
+Applied to an ordinary <strong>GAP3</strong> object, <code>GapObject</code> simply returns this object.
+<P>
+<pre>    gap> m:= [ [ 0, 1, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ] ] * GF(2).one;;
+    gap> mam:= MeatAxeMat( m, "file2" );;
+    #I  calling 'maketab' for field of size 2
+    gap> GapObject( mam );
+    [ [ 0*Z(2), Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2), Z(2)^0 ], 
+      [ Z(2)^0, 0*Z(2), 0*Z(2) ] ]
+    gap> map:= MeatAxePerm( (1,2,3), 3 );;
+    gap> perm:= GapObject( map );
+    (1,2,3)
+    gap> GapObject( perm );
+    (1,2,3) </pre>
+<P><A NAME="SECT003"><h2>69.3 Using the MeatAxe in GAP. An Example</h2></a>
+<P><P><P>
+In this example we compute the 2-modular irreducible representations and
+Brauer characters of the alternating group <I>A<sub>5</sub></I>.
+Perhaps it will raise the question whether one uses the <strong>MeatAxe</strong> in <strong>GAP3</strong>
+or <strong>GAP3</strong> for the <strong>MeatAxe</strong>.
+<P>
+First we take a permutation representation of <I>A<sub>5</sub></I> and convert the
+generators into <strong>MeatAxe</strong> matrices over the field <I>GF(2)</I>.
+<P>
+<pre>    gap> a5:= Group( (1,2,3,4,5), (1,2,3) );;
+    gap> Size( a5 );
+    60
+    gap> f:= GF(2);;
+    gap> m1:= MeatAxeMat( a5.1, f, [5,5] );
+    MeatAxeMat( "/var/tmp/tmp.017545/a", GF(2), [ 5, 5 ] )
+    gap> m2:= MeatAxeMat( a5.2, f, [5,5] );; </pre>
+<P>
+<code>m1</code> and <code>m2</code> are records that know about the files where the matrices
+are stored.  Let's look at such a matrix (without reading the file
+into <strong>GAP3</strong>).
+<P>
+<pre>    gap> Display( m1 );
+    MeatAxe.Matrix := [
+    [0,1,0,0,0],
+    [0,0,1,0,0],
+    [0,0,0,1,0],
+    [0,0,0,0,1],
+    [1,0,0,0,0]
+    ]*Z(2); </pre>
+<P>
+Next we inspect the 5 dimensional permutation module over <I>GF(2)</I>.
+It contains a trivial submodule <code>fix</code>, its quotient is called <code>quot</code>.
+<P>
+<pre>    gap> a:= UnitalAlgebra( f, [ m1, m2 ] );;
+    gap> nat:= NaturalModule( a );;
+    gap> fix:= FixedSubmodule( nat );;
+    gap> Dimension( fix );
+    1
+    gap> quot:= nat / fix;; </pre>
+<P>
+The action on <code>quot</code> is described by an algebra of <I>4&times; 4</I> matrices,
+the corresponding module turns out to be absolutely irreducible.
+Of course the action on <code>fix</code> would yield <I>1&times; 1</I> matrices,
+the generators being the identity.
+So we found already two of the four absolutely irreducible representations.
+<P>
+<pre>    gap> op:= Operation( a, quot );
+    UnitalAlgebra( GF(2),
+    [ MeatAxeMat( "/var/tmp/tmp.017545/t/g.1", GF(2), [ 4, 4 ], a.1 ),
+      MeatAxeMat( "/var/tmp/tmp.017545/t/g.2", GF(2), [ 4, 4 ], a.2 ) ] )
+    gap> nm:= NaturalModule( op );;
+    gap> IsIrreducible( nm );
+    true
+    gap> IsAbsolutelyIrreducible( nm );
+    true
+    gap> deg4:= nm.ring;; </pre>
+<P>
+Now we form the tensor product of the 4 dimensional module with itself,
+and compute the composition factors.
+<P>
+<pre>    gap> tens:= KroneckerProduct( nm, nm );;
+    gap> comp:= CompositionFactors( tens );;
+    #I   Name Mult  SF
+    #I     1a    4   1
+    #I     4a    1   1
+    #I     4b    2   2
+    #I
+    #I  Ascending composition series:
+    #I  4a  1a  4b  1a  1a  4b  1a  
+    gap> IsIrreducible( comp[3] );
+    true
+    gap> IsAbsolutelyIrreducible( comp[3] );
+    false </pre>
+<P>
+The information printed by <code>CompositionFactors</code> told that there is an
+irreducible but not absolutely irreducible factor <code>4b</code> of dimension 4,
+and we will enlarge the field in order to split this module.
+<P>
+<pre>    gap> sf:= SplittingField( comp[3] );
+    GF(2^2)
+    gap> new:= UnitalAlgebra( sf, [ comp[3].ring.1, comp[3].ring.2 ] );;
+    #I  calling 'maketab' for field of size 4
+    gap> nat:= NaturalModule( new );;
+    gap> comp:= CompositionFactors( nat );;
+    #I   Name Mult  SF
+    #I     2a    1   1
+    #I     2b    1   1
+    #I
+    #I  Ascending composition series:
+    #I  2a  2b  
+    gap> deg2:= List( comp, x -> x.ring );; </pre>
+<P>
+Now the representations are known.  Let's calculate the Brauer characters.
+For that, we need representatives of the 2-regular conjugacy classes of
+<I>A<sub>5</sub></I>.
+<P>
+<pre>    gap> repres:= [ a.1^0, a.1 * a.2 * a.1^3, a.1, a.1^2 ];;
+    gap> List( repres, OrderMeatAxeMat );
+    [ 1, 3, 5, 5 ] </pre>
+<P>
+The expression of the representatives of each irreducible representation
+in terms of the generators can be got using <code>MappedExpression</code>.
+<P>
+<pre>    gap> abstracts:= List( repres, x -> x.abstract );
+    [ a.one, a.1*a.2*a.1^3, a.1, a.1^2 ]
+    gap> mapped:= List( [ 1 .. 4 ],
+    >   x-> MappedExpression( abstracts[x],
+    >       a.freeAlgebra.generators, deg4.generators ) );;
+    gap> List( mapped, OrderMeatAxeMat );
+    [ 1, 3, 5, 5 ]
+    gap> List( mapped, BrauerCharacterValue );
+    [ 4, 1, -1, -1 ]
+    gap> mapped:= List( [ 1 .. 4 ],
+    >   x-> MappedExpression( abstracts[x],
+    >       a.freeAlgebra.generators, deg2[1].generators ) );;
+    gap> List( mapped, BrauerCharacterValue );
+    [ 2, -1, E(5)^2+E(5)^3, E(5)+E(5)^4 ] </pre>
+<P>
+The Brauer character of the trivial module is well-known, and
+that of the other 2-dimensional module is a Galois conjugate of the
+computed one, so we computed the 2-modular Brauer character table
+of <I>A<sub>5</sub></I>.
+<P>
+It is advisable to remove all the <strong>MeatAxe</strong> files before leaving <strong>GAP3</strong>.
+Call <code>MeatAxe.Unbind();</code> (see <a href="chap069.htm#SECT021">MeatAxe.Unbind</a>).
+<P><A NAME="SECT004"><h2>69.4 MeatAxe Matrices</h2></a>
+<P><A name = "I0"></a>
+
+<P>
+<strong>MeatAxe</strong> matrices behave similar to lists of lists that are regarded as
+matrices by <strong>GAP3</strong>, e.g., there are functions like <code>Rank</code> or <code>Transposed</code>
+that work for both types, and one can multiply or add two <strong>MeatAxe</strong>
+matrices, the result being again a <strong>MeatAxe</strong> matrix.
+But one cannot access rows or single entries of a <strong>MeatAxe</strong> matrix <var>mat</var>,
+for example <code><var>mat</var>[1]</code> will cause an error message.
+<P>
+<strong>MeatAxe</strong> matrices are constructed or notified by <a href="chap069.htm#SECT005">MeatAxeMat</a> <code>MeatAxeMat</code>.
+<P>
+<P>
+<P>
+<code>IsMeatAxeMat( <var>obj</var> )</code>
+<P>
+returns <code>true</code> if <var>obj</var> is a <strong>MeatAxe</strong> matrix, and <code>false</code> otherwise.
+<P><A NAME="SECT005"><h2>69.5 MeatAxeMat</h2></a>
+<P><P><P>
+<code>MeatAxeMat( <var>mat</var> [, <var>F</var> ] [, <var>abstract</var> ] [, <var>filename</var> ] )</code>
+<P>
+returns a <strong>MeatAxe</strong> matrix corresponding to the matrix <var>mat</var>, viewed over
+the finite field <var>F</var>, or over the field of all entries of <var>mat</var>.
+<P>
+If <var>mat</var> is already a <strong>MeatAxe</strong> matrix then the call means that it
+shall now be viewed over the field <var>F</var> which may be smaller or larger
+than the field <var>mat</var> was viewed over.
+<P>
+The optional argument <var>abstract</var> is an element of a free algebra
+(see chapter <a href="chap040.htm">Finitely Presented Algebras</a>) that represents the matrix
+in terms of generators.
+<P>
+If the optional argument <var>filename</var> is given, the <strong>MeatAxe</strong> matrix is
+written to the file with this name; a matrix constructed this way will
+<strong>not</strong> be removed by a call to <code>MeatAxe.Unbind</code>.  Otherwise <strong>GAP3</strong> creates
+a temporary file under the directory <code>MeatAxe.direc</code>.
+<P>
+<P>
+<P>
+<code>MeatAxeMat( <var>perm</var>, <var>F</var>, <var>dim</var> [,<var>abstract</var>][,<var>filename</var>] )</code>
+<P>
+does the same for a permutation <var>perm</var> that shall be converted into
+a permutation matrix over the field <var>F</var>, with <code><var>dim</var>[1]</code> rows and
+<code><var>dim</var>[2]</code> columns.
+<P>
+<P>
+<P>
+<code>MeatAxeMat( <var>file</var>, <var>F</var>, <var>dim</var> [, <var>abstract</var> ] )</code>
+<P>
+is the <strong>MeatAxe</strong> matrix stored on file <var>file</var>, viewed over the field
+<var>F</var>, with dimensions <var>dim</var>, and representation <var>abstract</var>.
+This may be used to make a shallow copy of a <strong>MeatAxe</strong> matrix, or to
+notify <strong>MeatAxe</strong> matrices that were not produced by <strong>GAP3</strong>.
+Such matrices are <strong>not</strong> removed by calls to <code>MeatAxe.Unbind</code>.
+<P>
+<strong>Note</strong>: No field change is allowed here.
+<P>
+<pre>    gap> f:= GF(2);;
+    gap> m:= [ [ 0, 1, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ] ] * f.one;;
+    gap> m1:= MeatAxeMat( m, "file2" );
+    MeatAxeMat( "/var/tmp/tmp.005046/file2", GF(2), [ 3, 3 ] )
+    gap> p:= (1,2,3);;
+    gap> m2:= MeatAxeMat( p, f, [ 3, 3 ], "file" );
+    MeatAxeMat( "/var/tmp/tmp.005046/file", GF(2), [ 3, 3 ] )
+    gap> Display( m2 );
+    MeatAxe.Matrix := [
+    [0,1,0],
+    [0,0,1],
+    [1,0,0]
+    ]*Z(2);
+    gap> n:= MeatAxeMat( "file", f, [ 3, 3 ] );; # just notify a matrix </pre>
+<P><A NAME="SECT006"><h2>69.6 Operations for MeatAxe Matrices</h2></a>
+<P><P><P>
+<strong>Comparisons of MeatAxe Matrices</strong>
+<P>
+<DL><DT><code><var>m1</var> = <var>m2</var></code>:<DD><BR> evaluates to <code>true</code> if the two <strong>MeatAxe</strong> matrices have the
+                 same entries and are viewed over the same field, and to
+                 <code>false</code> otherwise.
+                 The test for equality uses a shell script that is produced
+                 when it is needed for the first time.
+</DL><P>
+<DL><DT><code><var>m1</var> < <var>m2</var></code>:<DD> <BR> evaluates to <code>true</code> if and only if this relation holds
+                    for the file names of the two <strong>MeatAxe</strong> matrices.
+</DL><P>
+<P>
+<P>
+<strong>Arithmetic Operations of MeatAxe Matrices</strong>
+<P>
+The following arithmetic operations are admissible for <strong>MeatAxe</strong> matrices.
+<P>
+<DL><DT><code><var>m1</var> + <var>m2</var></code>:<DD><BR>   sum of the two <strong>MeatAxe</strong> matrices <var>m1</var>, <var>m2</var>
+</DL><P>
+<DL><DT><code><var>m1</var> - <var>m2</var></code>:<DD><BR>   difference of the two <strong>MeatAxe</strong> matrices <var>m1</var>, <var>m2</var>
+</DL><P>
+<DL><DT><code><var>m1</var> * <var>m2</var></code>:<DD><BR> product of the two <strong>MeatAxe</strong> matrices <var>m1</var>, <var>m2</var>
+</DL><P>
+<DL><DT><code><var>m1</var> ^ <var>m2</var></code>:<DD><BR> conjugation of the <strong>MeatAxe</strong> matrix <var>m1</var> by <var>m2</var>
+</DL><P>
+<DL><DT><code><var>m1</var> ^ <var>n</var></code>:<DD><BR>  <var>n</var>-th power of the <strong>MeatAxe</strong> matrix <var>m1</var>,
+                   for an integer <var>n</var>
+</DL><P><A NAME="SECT007"><h2>69.7 Functions for MeatAxe Matrices</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<A name = "I2"></a>
+
+<A name = "I3"></a>
+
+<A name = "I4"></a>
+
+<A name = "I5"></a>
+
+<A name = "I6"></a>
+
+<A name = "I7"></a>
+
+<A name = "I8"></a>
+
+<A name = "I9"></a>
+
+<A name = "I10"></a>
+
+<A name = "I11"></a>
+
+<P>
+The following functions that work for ordinary matrices in <strong>GAP3</strong> also
+work for <strong>MeatAxe</strong> matrices.
+<P>
+<DL><DT><code>UnitalAlgebra( <var>F</var>, <var>gens</var> )</code> :<DD> <BR> 
+     returns the unital <var>F</var>-algebra generated by the <strong>MeatAxe</strong> matrices
+     in the list <var>gens</var>.
+</DL><P>
+<DL><DT><code>Base( <var>mtxmat</var> )</code>:<DD> <BR> 
+     returns a <strong>MeatAxe</strong> matrix whose rows form a vector space basis of the
+     row space; the basis is in semi-echelon form.
+</DL><P>
+<DL><DT><code>BaseNullspace( <var>mtxmat</var> )</code>:<DD> <BR> 
+     returns a <strong>MeatAxe</strong> matrix in semi-echelon form whose rows are a basis
+     of the nullspace of the <strong>MeatAxe</strong> matrix <var>mtxmat</var>.
+</DL><P>
+<DL><DT><code>CharacteristicPolynomial( <var>mtxmat</var> )</code> :<DD> <BR> 
+     returns the characteristic polynomial of the <strong>MeatAxe</strong> matrix <var>mtxmat</var>.
+     The factorization of this polynomial is stored.
+</DL><P>
+<DL><DT><code>Dimensions( <var>mtxmat</var> )</code> :<DD> <BR> 
+     returns the list <code>[ <var>nrows</var>, <var>ncols</var> ]</code> where <var>nrows</var> is
+     the number of rows, <var>ncols</var> is the number of columns of
+     the <strong>MeatAxe</strong> matrix <var>mtxmat</var>.
+</DL><P>
+<DL><DT><code>Display( <var>mtxmat</var> )</code> :<DD> <BR> 
+     displays the <strong>MeatAxe</strong> matrix <var>mtxmat</var> (without reading into <strong>GAP3</strong>).
+</DL><P>
+<code>Group( <var>m1</var>, <var>m2</var>, \ldots <var>mn</var> )</code> <BR> 
+<DL><DT><code>Group( <var>gens</var>, <var>id</var> )</code> :<DD> <BR> 
+     returns the group generated by the <strong>MeatAxe</strong> matrices <var>m1</var>, <var>m2</var>,
+     ... <var>mn</var>, resp. the group generated by the <strong>MeatAxe</strong> matrices in
+     the list <var>gens</var>, where <var>id</var> is the appropriate identity <strong>MeatAxe</strong>
+     matrix.
+</DL><P>
+<DL><DT><code>InvariantForm( <var>mtxmats</var> )</code> :<DD> <BR> 
+     returns a <strong>MeatAxe</strong> matrix <I>M</I> such that <I>X<sup>tr</sup> M X = M</I> for all
+     <strong>MeatAxe</strong> matrices in the list <var>mtxmats</var> if such a matrix exists,
+     and <code>false</code> otherwise.  Note that the algebra generated by <var>mtxmats</var>
+     must act irreducibly, otherwise an error is signalled.
+</DL><P>
+<DL><DT><code>KroneckerProduct( <var>m1</var>, <var>m2</var> )</code> :<DD> <BR> 
+     returns a <strong>MeatAxe</strong> matrix that is the Kronecker product of the
+     <strong>MeatAxe</strong> matrices <var>m1</var>, <var>m2</var>.
+</DL><P>
+<DL><DT><code>Order( MeatAxeMatrices, <var>mtxmat</var> )</code> :<DD> <BR> 
+     returns the multiplicative order of the <strong>MeatAxe</strong> matrix <var>mtxmat</var>,
+     if this exists.
+     This can be computed also by <code>OrderMeatAxeMat( <var>mtxmat</var> )</code>.
+</DL><P>
+<DL><DT><code>Rank( <var>mtxmat</var> )</code>:<DD> <BR> 
+     returns the rank of the <strong>MeatAxe</strong> matrix <var>mtxmat</var>.
+</DL><P>
+<DL><DT><code>SumIntersectionSpaces( <var>mtxmat1</var>, <var>mtxmat2</var> )</code> :<DD> <BR> 
+     returns a list of two <strong>MeatAxe</strong> matrices, both in semi-echelon form,
+     whose rows are a basis of the sum resp. the intersection of row spaces
+     generated by the <strong>MeatAxe</strong> matrices <var>m1</var> and <var>m2</var>, respectively.
+</DL><P>
+<DL><DT><code>Trace( <var>mtxmat</var> )</code> :<DD> <BR> 
+     returns the trace of the <strong>MeatAxe</strong> matrix <var>mtxmat</var>.
+</DL><P>
+<DL><DT><code>Transposed( <var>mtxmat</var> )</code> :<DD> <BR> 
+     returns the transposed matrix of the <strong>MeatAxe</strong> matrix <var>mtxmat</var>.
+</DL><P><A NAME="SECT008"><h2>69.8 BrauerCharacterValue</h2></a>
+<P><P><P>
+<code>BrauerCharacterValue( <var>mtxmat</var> )</code>
+<P>
+returns the Brauer character value of the <strong>MeatAxe</strong> matrix <var>mtxmat</var>, which
+must of course be an invertible matrix of order relatively prime to the
+characteristic of its entries.
+<P>
+<pre>    gap> g:= MeatAxeMat( (1,2,3,4,5), GF(2), [ 5, 5 ] );;
+    gap> BrauerCharacterValue( g );
+    0 </pre>
+<P>
+(This program was originally written by
+J&uuml;rgen M&uuml;ller.)
+<P><A NAME="SECT009"><h2>69.9 MeatAxe Permutations</h2></a>
+<P><A name = "I12"></a>
+
+<P>
+<strong>MeatAxe</strong> permutations behave similar to permutations in <strong>GAP3</strong>, e.g., one
+can multiply two <strong>MeatAxe</strong> permutations, the result being again a <strong>MeatAxe</strong>
+permutation.  But one cannot map single points by a <strong>MeatAxe</strong> permutation
+using the exponentiation operator <code>^</code>.
+<P>
+<strong>MeatAxe</strong> permutations are constructed or notified by <a href="chap069.htm#SECT010">MeatAxePerm</a>
+<code>MeatAxePerm</code>.
+<P>
+<P>
+<P>
+<code>IsMeatAxePerm( <var>obj</var> )</code>
+<P>
+returns <code>true</code> if <var>obj</var> is a <strong>MeatAxe</strong> permutation, and <code>false</code> otherwise.
+<P><A NAME="SECT010"><h2>69.10 MeatAxePerm</h2></a>
+<P><P><P>
+<code>MeatAxePerm( <var>perm</var>, <var>maxpoint</var> )</code> <BR> 
+<code>MeatAxePerm( <var>perm</var>, <var>maxpoint</var>, <var>filename</var> )</code>
+<P>
+return a <strong>MeatAxe</strong> permutation corresponding to the permutation <var>perm</var>,
+acting on the points <code>[ 1 .. <var>maxpoint</var> ]</code>.
+If the optional argument <var>filename</var> is given, the <strong>MeatAxe</strong> permutation
+is written to the file with this name; a permutation constructed this way
+will <strong>not</strong> be removed by a call to <code>MeatAxe.Unbind</code>.  Otherwise <strong>GAP3</strong>
+creates a temporary file under the directory <code>MeatAxe.direc</code>.
+<P>
+<P>
+<P>
+<code>MeatAxePerm( <var>file</var>, <var>maxpoint</var> )</code>
+<P>
+is the <strong>MeatAxe</strong> permutation stored on file <var>file</var>.
+This may be used to notify <strong>MeatAxe</strong> permutations that were not produced
+by <strong>GAP3</strong>.  Such permutations are <strong>not</strong> removed by calls to <code>MeatAxe.Unbind</code>.
+<P>
+<pre>    gap> p1:= MeatAxePerm( (1,2,3), 3 );
+    MeatAxePerm( "/var/tmp/tmp.005046/a", 3 )
+    gap> p2:= MeatAxePerm( (1,2), 3, "perm2" );
+    MeatAxePerm( "/var/tmp/tmp.005046/perm2", 3 );
+    gap> p:= p1 * p2;
+    MeatAxePerm( "/var/tmp/tmp.005046/b", 3 )
+    gap> Display( p );
+    MeatAxe.Perms := [
+        (2,3)
+    ]; </pre>
+<P><A NAME="SECT011"><h2>69.11 Operations for MeatAxe Permutations</h2></a>
+<P><P><P>
+<strong>Comparisons of MeatAxe Permutations</strong>
+<P>
+<DL><DT><code><var>m1</var> = <var>m2</var></code>:<DD><BR> evaluates to <code>true</code> if the two <strong>MeatAxe</strong> permutations are
+                 equal as permutations, and to <code>false</code> otherwise.
+                 The test for equality uses a shell script that is produced
+                 when it is needed for the first time.
+</DL><P>
+<DL><DT><code><var>m1</var> < <var>m2</var></code>:<DD> <BR> evaluates to <code>true</code> if and only if this relation holds
+                    for the file names of the two <strong>MeatAxe</strong> permutations.
+</DL><P>
+<P>
+<P>
+<strong>Arithmetic Operations of MeatAxe Permutations</strong>
+<P>
+The following arithmetic operations are admissible for <strong>MeatAxe</strong>
+permutations.
+<P>
+<DL><DT><code><var>m1</var> * <var>m2</var></code>:<DD><BR> product of the two <strong>MeatAxe</strong> permutations <var>m1</var>, <var>m2</var>
+</DL><P>
+<DL><DT><code><var>m1</var> ^ <var>m2</var></code>:<DD><BR> conjugation of the <strong>MeatAxe</strong> permutation <var>m1</var> by <var>m2</var>
+</DL><P>
+<DL><DT><code><var>m1</var> ^ <var>n</var></code>:<DD><BR>  <var>n</var>-th power of the <strong>MeatAxe</strong> permutation <var>m1</var>,
+                   for an integer <var>n</var>
+</DL><P><A NAME="SECT012"><h2>69.12 Functions for MeatAxe Permutations</h2></a>
+<P><P>
+<A name = "I13"></a>
+
+<A name = "I14"></a>
+
+<P>
+The following functions that work for ordinary permutations in <strong>GAP3</strong> also
+work for <strong>MeatAxe</strong> permutations.
+<P>
+<DL><DT><code>Display( <var>mtxperm</var> )</code> :<DD> <BR> 
+     displays the <strong>MeatAxe</strong> permutation <var>mtxperm</var> (without reading the file
+     into <strong>GAP3</strong>).
+</DL><P>
+<DL><DT><code>Order( MeatAxePermutations, <var>mtxperm</var> )</code> :<DD> <BR> 
+     returns the multiplicative order of the <strong>MeatAxe</strong> permutation
+     <var>mtxperm</var>.
+     This can be computed also by <code>OrderMeatAxePerm( <var>mtxperm</var> )</code>.
+</DL><P><A NAME="SECT013"><h2>69.13 MeatAxe Matrix Groups</h2></a>
+<P><P><P>
+Groups of <strong>MeatAxe</strong> matrices are constructed using the usual <code>Group</code>
+command.
+<P>
+Only very few functions are available for <strong>MeatAxe</strong> matrix groups.
+For most of the applications one is interested in matrix algebras, e.g., 
+matrix representations as computed by <code>Operation</code> when applied to an
+algebra and a module.  For a permutation representation of a group of
+<strong>MeatAxe</strong> matrices, however, it is necessary to call <code>Operation</code>
+with a group as first argument (see <a href="chap069.htm#SECT014">Functions for MeatAxe Matrix Groups</a>).
+<P><A NAME="SECT014"><h2>69.14 Functions for MeatAxe Matrix Groups</h2></a>
+<P><P>
+<A name = "I15"></a>
+
+<A name = "I16"></a>
+
+<P>
+The following functions are overlaid in the operations record of
+<strong>MeatAxe</strong> matrix groups.
+<P>
+<DL><DT><code>Operation( <var>G</var>, <var>M</var> )</code> :<DD> <BR> 
+     Let <var>M</var> a <strong>MeatAxe</strong> module acted on by the group <var>G</var> of <strong>MeatAxe</strong>
+     matrices.
+     <code>Operation( <var>G</var>, <var>M</var> )</code> returns a permutation group with action on
+     the points equivalent to that of <var>G</var> on the vectors of the module <var>M</var>.
+</DL><P>
+<DL><DT><code>RandomOrders( <var>G</var> )</code> :<DD> <BR> 
+     returns a list with the orders of 120 random elements of the <strong>MeatAxe</strong>
+     matrix group <var>G</var>.
+</DL><P>
+It should be noted that no set theoretic functions (such as <code>Size</code>) are
+provided for <strong>MeatAxe</strong> matrix groups, and also group theoretic functions
+(such as <code>SylowSubgroup</code>) will not work.
+<P><A NAME="SECT015"><h2>69.15 MeatAxe Matrix Algebras</h2></a>
+<P><P><P>
+Algebras of <strong>MeatAxe</strong> matrices are constructed using the usual <code>Algebra</code>
+or <code>UnitalAlgebra</code> commands.
+<P>
+<strong>Note</strong> that <strong>all</strong> these algebras are regarded to be unital, that is, also
+if you construct an algebra by calling <code>Algebra</code> you will get a unital
+algebra.
+<P>
+<strong>MeatAxe</strong> matrix algebras are used to construct and describe <strong>MeatAxe</strong>
+modules and their structure (see <a href="chap069.htm#SECT017">MeatAxe Modules</a>).
+<P>
+For functions for <strong>MeatAxe</strong> matrix algebras see <a href="chap069.htm#SECT016">Functions for MeatAxe
+Matrix Algebras</a>.
+<P><A NAME="SECT016"><h2>69.16 Functions for MeatAxe Matrix Algebras</h2></a>
+<P><P>
+<A name = "I17"></a>
+
+<A name = "I18"></a>
+
+<A name = "I19"></a>
+
+<A name = "I20"></a>
+
+<P>
+The following functions are overlaid in the operations record of
+<strong>MeatAxe</strong> matrix algebras.
+<P>
+<code>Fingerprint( <var>A</var> )</code><BR> 
+<DL><DT><code>Fingerprint( <var>A</var>, <var>list</var> )</code> :<DD> <BR> 
+    returns the fingerprint of <var>A</var>, i.e., a list of nullities of
+    six ``standard'' words in <var>A</var> (for 2-generator algebras only) or of
+    the words with numbers in <var>list</var>.
+</DL><P>
+<pre>    gap> f:= GF(2);;
+    gap> a:= UnitalAlgebra( f, [ MeatAxeMat( (1,2,3,4,5), f, [5,5] ),
+    >                            MeatAxeMat( (1,2)      , f, [5,5] ) ] );;
+    gap> Fingerprint( a );
+    [ 1, 1, 1, 3, 0, 1 ] </pre>
+<P>
+<DL><DT><code>Module( <var>matalg</var>, <var>gens</var> )</code> :<DD> <BR> 
+    returns the module generated by the rows of the <strong>MeatAxe</strong> matrix <var>gens</var>,
+    and acted on by the <strong>MeatAxe</strong> matrix algebra <var>matalg</var>.
+    Such a module will usually contain the vectors of a basis in the <code>base</code>
+    component.
+</DL><P>
+<DL><DT><code>NaturalModule( <var>matalg</var> )</code> :<DD> <BR> 
+    returns the <var>n</var>-dimensional space acted on by the <strong>MeatAxe</strong> matrix
+    algebra <var>matalg</var> which consists of <I>n &times; n</I> <strong>MeatAxe</strong> matrices.
+</DL><P>
+<DL><DT><code>Operation( <var>A</var>, <var>M</var> )</code> :<DD> <BR> 
+     Let <var>M</var> be a <strong>MeatAxe</strong> module acted on by the <strong>MeatAxe</strong> matrix
+     algebra <var>A</var>.
+     <code>Operation( <var>A</var>, <var>M</var> )</code> returns a <strong>MeatAxe</strong> matrix algebra of
+     <I>n &times; n</I> matrices (where <I>n</I> is the dimension of <var>M</var>),
+     with action on its natural module equivalent to that of <var>A</var> on <var>M</var>. <BR> 
+     <strong>Note\:</strong>  
+     If <var>M</var> is a quotient module, it must be a quotient of the entire space.
+</DL><P>
+<DL><DT><code>RandomOrders( <var>A</var> )</code> :<DD> <BR> 
+     returns a list with the orders of 120 random elements of the <strong>MeatAxe</strong>
+     matrix algebra <var>A</var>, provided that the generators of <var>A</var> are invertible.
+</DL><P>
+It should be noted that no set theoretic functions (such as <code>Size</code>) and
+vector space functions (such as <code>Base</code>) are provided for <strong>MeatAxe</strong> matrix
+algebras, and also algebra functions (such as <code>Centre</code>) will not work.
+<P><A NAME="SECT017"><h2>69.17 MeatAxe Modules</h2></a>
+<P><P><P>
+<strong>MeatAxe</strong> modules are vector spaces acted on by <strong>MeatAxe</strong> matrix algebras.
+In the <strong>MeatAxe</strong> standalone these modules are described implicitly because
+the matrices contain all the necessary information there.
+In <strong>GAP3</strong> the modules are the concrete objects whose properties are inspected
+(see <a href="chap069.htm#SECT020">Module Functions for MeatAxe Modules</a>).
+<P><P>
+Note that most of the usual set theoreic and vector space functions are not
+provided for <strong>MeatAxe</strong> modules (see <a href="chap069.htm#SECT018">Set Theoretic Functions for MeatAxe
+Modules</a>, <a href="chap069.htm#SECT019">Vector Space Functions for MeatAxe Modules</a>).
+<P><A NAME="SECT018"><h2>69.18 Set Theoretic Functions for MeatAxe Modules</h2></a>
+<P><P>
+<A name = "I21"></a>
+
+<A name = "I22"></a>
+
+<P>
+<DL><DT><code>Size( <var>M</var> )</code> :<DD> <BR> 
+    returns the size of the <strong>MeatAxe</strong> module <var>M</var>.
+</DL><P>
+<DL><DT><code>Intersection( <var>M1</var>, <var>M2</var> )</code> :<DD> <BR> 
+    returns the intersection of the two <strong>MeatAxe</strong> modules <var>M1</var>, <var>M2</var> as a
+    <strong>MeatAxe</strong> module.
+</DL><P><A NAME="SECT019"><h2>69.19 Vector Space Functions for MeatAxe Modules</h2></a>
+<P><P>
+<A name = "I23"></a>
+
+<A name = "I24"></a>
+
+<P>
+<DL><DT><code>Base( <var>M</var> )</code> :<DD> <BR> 
+    returns a <strong>MeatAxe</strong> matrix in semi-echelon form whose rows are a
+    vector space basis of the <strong>MeatAxe</strong> module <var>M</var>.
+</DL><P>
+<DL><DT><code>Basis( <var>M</var>, <var>mtxmat</var> )</code> :<DD> <BR> 
+    returns a basis record for the <strong>MeatAxe</strong> module <var>M</var> with basis vectors
+    equal to the rows of <var>mtxmat</var>.
+</DL><P>
+<DL><DT><code>Dimension( <var>M</var> )</code> :<DD> <BR> 
+    returns the dimension of the <strong>MeatAxe</strong> module <var>M</var>.
+</DL><P>
+<DL><DT><code>SemiEchelonBasis( <var>M</var> )</code> :<DD> <BR> 
+    returns a basis record of the <strong>MeatAxe</strong> module <var>M</var> that is
+    semi-echelonized (see <a href="chap033.htm#SECT018">SemiEchelonBasis</a>).
+</DL><P><A NAME="SECT020"><h2>69.20 Module Functions for MeatAxe Modules</h2></a>
+<P><P>
+<A name = "I25"></a>
+
+<A name = "I26"></a>
+
+<A name = "I27"></a>
+
+<A name = "I28"></a>
+
+<A name = "I29"></a>
+
+<A name = "I30"></a>
+
+<A name = "I31"></a>
+
+<P>
+<DL><DT><code>CompositionFactors( <var>M</var> )</code> :<DD> <BR> 
+    For a <strong>MeatAxe</strong> module <var>M</var> that is acted on by the algebra <var>A</var>,
+    this returns a list of <strong>MeatAxe</strong> modules which are the actions of <var>A</var>
+    on the factors of a composition series of <var>M</var>.
+    The factors occur with same succession (and multiplicity) as in the
+    composition series.  The printed information means the following
+    (for this example, see <a href="chap069.htm#SECT003">Using the MeatAxe in GAP. An Example</a>).
+</DL><P>
+<pre>    gap> tens:= KroneckerProduct( nm, nm );;
+    gap> comp:= CompositionFactors( tens );;
+    #I   Name Mult  SF
+    #I     1a    4   1
+    #I     4a    1   1
+    #I     4b    2   2
+    #I
+    #I  Ascending composition series:
+    #I  4a  1a  4b  1a  1a  4b  1a  </pre>
+<P>
+<DL><DT><P>:<DD> The column with header <code>Name</code> lists the different composition factors
+      by a name consisting of the dimension and a letter to distinguish
+      different modules of same dimension, the <code>Mult</code> columns lists the
+      multiplicities of the composition factor in the module, and the <code>SF</code>
+      columns lists the exponential indices of the fields of definition in
+      the splitting fields.
+      In this case there is one 1-dimensional module <code>1a</code> with multiplicity
+      4 that is absolutely irreducible, also one 4-dimensional absolutely
+      irreducible module <code>4a</code> of dimension 4, and with multiplicity 2 we
+      have a 4-dimensional module <code>4b</code> that is not absolutely irreducible,
+      with splitting field of order <I>p<sup>2n</sup></I> when the field of definition
+      had order <I>p<sup>n</sup></I>.
+</DL><P>
+<DL><DT><code>FixedSubmodule( <var>M</var> )</code> :<DD> <BR> 
+    returns the submodule of fixed points in the <strong>MeatAxe</strong> module <var>M</var> under
+    the action of the generators of <code><var>M</var>.ring</code>.
+</DL><P>
+<DL><DT><code>GeneratorsSubmodule( <var>L</var>, <var>nr</var> )</code> :<DD> <BR> 
+    returns a <strong>MeatAxe</strong> matrix whose rows are a vector space basis of the
+    <var>nr</var>-th basis of the module with submodule lattice <var>L</var>.  The lattice
+    can be computed using the <code>Lattice</code> command (see below).
+</DL><P>
+<DL><DT><code>GeneratorsSubmodules( <var>M</var> )</code> :<DD> <BR> 
+    returns a list of <strong>MeatAxe</strong> matrices, one for each submodule of the
+    <strong>MeatAxe</strong> module <var>M</var>, whose rows are a vector space basis of the
+    submodule.  This works only if <var>M</var> is a natural module.
+</DL><P>
+<DL><DT><code>IsAbsolutelyIrreducible( <var>M</var> )</code> :<DD> <BR> 
+    returns <code>true</code> if the <strong>MeatAxe</strong> module <var>M</var> is absolutely irreducible,
+    <code>false</code> otherwise.
+</DL><P>
+<DL><DT><code>IsEquivalent( <var>M1</var>, <var>M2</var> )</code> :<DD> <BR> 
+    returns <code>true</code> if the irreducible <strong>MeatAxe</strong> modules <var>M1</var> and <var>M2</var>
+    are equivalent, and <code>false</code> otherwise.  If both <var>M1</var> and <var>M2</var> are
+    reducible, an error is signalled.
+</DL><P>
+<DL><DT><code>IsIrreducible( <var>M</var> )</code> :<DD> <BR> 
+    returns <code>true</code> if the <strong>MeatAxe</strong> module <var>M</var> is irreducible, <code>false</code>
+    otherwise.
+</DL><P>
+<DL><DT><code>KroneckerProduct( <var>M1</var>, <var>M2</var> )</code> :<DD> <BR> 
+    returns the Kronecker product of the <strong>MeatAxe</strong> modules <var>M1</var>, <var>M2</var>.
+    It is <strong>not</strong> checked that the acting rings are compatible.
+</DL><P>
+<DL><DT><code>Lattice( <var>M</var> )</code> :<DD> <BR> 
+    returns a list of records, each describing a component of the submodule
+    lattice of <var>M</var>; it has the components <code>dimensions</code> (a list, at position
+    <var>i</var> the dimension of the <var>i</var>-th submodule), <code>maxes</code> (a list, at
+    position <var>i</var> the list of indices of the maximal submodules of submodule
+    no. <var>i</var>), <code>weights</code> (a list of edge weights), and <code>XGAP</code> (a list used
+    to display the submodule lattice in \sf XGAP).
+    <strong>Note</strong> that <var>M</var> must be a natural module.
+</DL><P>
+<DL><DT><code>SplittingField( <var>M</var> )</code> :<DD> <BR> 
+    returns the splitting field of the <strong>MeatAxe</strong> module <var>M</var>.
+</DL><P>
+<DL><DT><code>StandardBasis( <var>M</var>, <var>seed</var> )</code> :<DD> <BR> 
+    returns a standard basis record for the <strong>MeatAxe</strong> module <var>M</var>.
+</DL><P><A NAME="SECT021"><h2>69.21 MeatAxe.Unbind</h2></a>
+<P><P><P>
+<code>MeatAxe.Unbind( <var>obj1</var>, <var>obj2</var>, ..., <var>objn</var> )</code><BR> 
+<code>MeatAxe.Unbind( <var>listofobjects</var> )</code>
+<P>
+Called without arguments, this removes all files and directories
+constructed by calls of <code>MeatAxeMat</code> and <code>Group</code>, provided they are still
+notified in <code>MeatAxe.files</code>, <code>MeatAxe.dirs</code> and <code>MeatAxe.fields</code>.
+<P>
+Otherwise all those files in <code>MeatAxe.files</code>, <code>MeatAxe.dirs</code> and
+<code>MeatAxe.fields</code> are removed that are specified in the argument list.
+<P>
+Before leaving <strong>GAP3</strong> after using the <strong>MeatAxe</strong> functions
+you should always call
+<P>
+<code>    gap> MeatAxe.Unbind(); </code>
+<P><A NAME="SECT022"><h2>69.22 MeatAxe Object Records</h2></a>
+<P><P><P>
+<strong>MeatAxe matrix records</strong>
+<P>
+A <strong>MeatAxe</strong> matrix in <strong>GAP3</strong> is a record that has necessarily the components
+<P>
+<DL><DT><code>isMeatAxeMat</code>:<DD><BR> always true,
+</DL><P>
+<DL><DT><code>isMatrix</code>:<DD><BR>   always true,
+</DL><P>
+<DL><DT><code>domain</code>:<DD><BR>     the record <code>MeatAxeMatrices</code>,
+</DL><P>
+<DL><DT><code>file</code> :<DD><BR>      the name of the file that contains the matrix in <strong>MeatAxe</strong>
+                format,
+</DL><P>
+<DL><DT><code>field</code>:<DD><BR>      the (finite) field the matrix is viewed over,
+</DL><P>
+<DL><DT><code>dimensions</code>:<DD><BR> list containing the numbers of rows and columns,
+</DL><P>
+<DL><DT><code>operations</code>:<DD><BR> the record <code>MeatAxeMatOps</code>.
+</DL><P>
+Optional components are
+<P>
+<DL><DT><code>structure</code>:<DD><BR> algebra or group that contains the matrix,
+</DL><P>
+<DL><DT><code>abstract</code>:<DD><BR>  an element of a free algebra (see <a href="chap040.htm#SECT002">FreeAlgebra</a>)
+               representing the construction of the matrix in terms of
+               generators.
+</DL><P>
+Furthermore the record is used to store information whenever it is 
+computed, e.g., the rank, the multiplicative order, and the inverse
+of a <strong>MeatAxe</strong> matrix.
+<P>
+<P>
+<P>
+<strong>MeatAxe permutation records</strong>
+<P>
+A <strong>MeatAxe</strong> permutation in <strong>GAP3</strong> is a record that has necessarily
+the components
+<P>
+<DL><DT><code>isMeatAxePerm</code>:<DD><BR> always true,
+</DL><P>
+<DL><DT><code>isPermutation</code>:<DD><BR> always true,
+</DL><P>
+<DL><DT><code>domain</code>:<DD><BR> the record <code>MeatAxePermutations</code>,
+</DL><P>
+<DL><DT><code>file</code>:<DD><BR>  the name of the file that contains the permutation in
+           <strong>MeatAxe</strong> format,
+</DL><P>
+<DL><DT><code>maxpoint</code>:<DD> <BR> an integer <var>n</var> that means that the permutation acts on
+               the point set <code>[ 1 .. <var>n</var> ]</code>
+</DL><P>
+<DL><DT><code>operations</code>:<DD><BR> the record <code>MeatAxePermOps</code>.
+</DL><P>
+Optional components are
+<P>
+<DL><DT><code>structure</code>:<DD><BR> group that contains the permutation, and
+</DL><P>
+<DL><DT><code>abstract</code>:<DD><BR>  an element of a free algebra (see <a href="chap040.htm#SECT002">FreeAlgebra</a>)
+               representing the construction of the permutation in terms of
+               generators.
+</DL><P>
+Furthermore the record is used to store information whenever it is 
+computed, e.g., the multiplicative order, and the inverse
+of a <strong>MeatAxe</strong> permutation.
+<P>
+<P>
+<P>
+<strong>MeatAxe</strong>
+<P>
+<code>MeatAxe</code> is a record that contains information about the usage of the
+<strong>MeatAxe</strong> with <strong>GAP3</strong>.  Currently it has the following components.
+<P>
+<DL><DT><code>PATH</code>:<DD><BR>     the path name of the directory that contains the <strong>MeatAxe</strong>
+              executables ,
+</DL><P>
+<DL><DT><code>fields</code>:<DD><BR>   a list where position <var>i</var> is bound if and only if
+            the field of order <var>i</var> has already been constructed by
+            the <code>maketab</code> command; in this case it contains the
+            name of the <code>pxxx.zzz</code> file,
+</DL><P>
+<DL><DT><code>files</code>:<DD><BR>    a list of all file names that were constructed by calls
+            to <strong>MeatAxe</strong> (for allowing to make clean),
+</DL><P>
+<DL><DT><code>dirs</code>:<DD><BR>     a list of all directory names that were constructed by calls
+            to <strong>MeatAxe</strong> (for allowing to make clean),
+</DL><P>
+<DL><DT><code>gennames</code>:<DD><BR> list of strings that are used as generator names
+            in <code>abstract</code> components of <strong>MeatAxe</strong> matrices,
+</DL><P>
+<DL><DT><code>alpha</code>:<DD><BR>    alphabet over which <code>gennames</code> entries are formed,
+</DL><P>
+<DL><DT><code>direc</code>:<DD><BR> directory that contains all the files that are constructed
+           using <strong>MeatAxe</strong> functions,
+</DL><P>
+<DL><DT><code>EXEC</code> :<DD> <BR> 
+    function of arbitrary many string arguments that calls <code>Exec</code>
+    for the concatenation of these arguments in the directory
+    <code>MeatAxe.direc</code>.
+</DL><P>
+<DL><DT><code>Maketab</code>:<DD><BR> function that produces field information files,
+</DL><P>
+<DL><DT><code>SetDirecory</code>:<DD><BR> function that sets the <code>direc</code> component,
+</DL><P>
+<DL><DT><code>TmpName</code>:<DD><BR> function of zero arguments that produces file names in the
+             directory <code>MeatAxe.direc</code>,
+</DL><P>
+<DL><DT><code>Unbind</code>:<DD><BR>   function to delete files (see <a href="chap069.htm#SECT021">MeatAxe.Unbind</a>).
+</DL><P>
+Furthermore some components are bound intermediately when <strong>MeatAxe</strong> output
+files are read.  So you should better not use the <code>MeatAxe</code> record to store
+your own objects.
+<P>
+<P>
+<P>
+<strong>Field information</strong>
+<P>
+The correspondence between the <strong>MeatAxe</strong> numbering and the <strong>GAP3</strong>
+numbering of the elements of a finite field <var>F</var> is given by the function
+<code>FFList</code> (see <a href="chap039.htm#SECT029">FFList</a>).
+The element of <var>F</var> corresponding to <strong>MeatAxe</strong> number <var>n</var> is
+<code>FFList( <var>F</var> )[ <var>n</var>+1 ]</code>,
+and the <strong>MeatAxe</strong> number of the field element <var>z</var> is
+<code>Position( FFList( <var>F</var> ), <var>z</var> ) -1</code>.
+<P><a href ="chap068.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap070.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

@@ -1,0 +1,318 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  matint.msk                  GAP documentation            Alexander Hulpke
+%A                                                           Thomas Breuer
+%A                                                           Rob Wainwright
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
+%% Ported to GAP3 J. Michel 2005
+%%
+\Chapter{Integral matrices and lattices}
+
+This is a subset of the functions available in GAP4, ported to GAP3 to be
+used by CHEVIE.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NullspaceIntMat}
+'NullspaceIntMat( <mat> )'
+
+If <mat> is a matrix with integral entries, this function returns a list of
+vectors  that forms  a basis  of the  integral nullspace  of <mat>, i.e. of
+those vectors in the nullspace of <mat> that have integral entries.
+
+|    gap> mat:=[[1,2,7],[4,5,6],[7,8,9],[10,11,19],[5,7,12]];;
+    gap> NullspaceMat(mat);
+    [ [ 1, 0, 3/4, -1/4, -3/4 ], [ 0, 1, -13/24, 1/8, -7/24 ] ]
+    gap> NullspaceIntMat(mat);
+    [ [ 1, 18, -9, 2, -6 ], [ 0, 24, -13, 3, -7 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SolutionIntMat}
+'SolutionIntMat( <mat>, <vec> )'
+
+If <mat> is a matrix with integral entries and <vec> a vector with integral
+entries,  this function returns a vector <x> with integer entries that is a
+solution  of the equation '<x>\*<mat>=<vec>'. It returns 'false' if no such
+vector exists.
+
+|    gap> mat:=[[1,2,7],[4,5,6],[7,8,9],[10,11,19],[5,7,12]];;
+    gap> SolutionMat(mat,[95,115,182]);
+    [ 47/4, -17/2, 67/4, 0, 0 ]
+    gap> SolutionIntMat(mat,[95,115,182]);
+    [ 2285, -5854, 4888, -1299, 0 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SolutionNullspaceIntMat}
+'SolutionNullspaceIntMat( <mat>, <vec> )'
+
+This  function returns  a list  of length  two, its  first entry  being the
+result  of a call  to 'SolutionIntMat' with  same arguments, the second the
+result of 'NullspaceIntMat' applied to the matrix <mat>. The calculation is
+performed faster than if two separate calls would be used.
+
+|    gap> mat:=[[1,2,7],[4,5,6],[7,8,9],[10,11,19],[5,7,12]];;
+    gap> SolutionNullspaceIntMat(mat,[95,115,182]);
+    [ [ 2285, -5854, 4888, -1299, 0 ],
+      [ [ 1, 18, -9, 2, -6 ], [ 0, 24, -13, 3, -7 ] ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BaseIntMat}
+'BaseIntMat( <mat> )'
+
+If <mat> is a matrix with integral entries, this function returns a list of
+vectors  that forms a basis of the integral row space of <mat>, i.e. of the
+set of integral linear combinations of the rows of <mat>.
+
+|    gap> mat:=[[1,2,7],[4,5,6],[10,11,19]];;
+    gap> BaseIntMat(mat);
+    [ [ 1, 2, 7 ], [ 0, 3, 7 ], [ 0, 0, 15 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{BaseIntersectionIntMats}
+'BaseIntersectionIntMats( <m>, <n> )'
+
+If  <m> and <n> are matrices with integral entries, this function returns a
+list  of vectors that forms a basis of the intersection of the integral row
+spaces of <m> and <n>.
+
+|    gap> nat:=[[5,7,2],[4,2,5],[7,1,4]];;
+    gap> BaseIntMat(nat);
+    [ [ 1, 1, 15 ], [ 0, 2, 55 ], [ 0, 0, 64 ] ]
+    gap> BaseIntersectionIntMats(mat,nat);
+    [ [ 1, 5, 509 ], [ 0, 6, 869 ], [ 0, 0, 960 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ComplementIntMat}
+'ComplementIntMat( <full>, <sub> )'
+
+Let  <full> be a list of integer  vectors generating an Integral module <M>
+and  <sub>  a  list  of  vectors  defining  a  submodule <S>. This function
+computes  a free basis for <M> that  extends <S>. I.e., if the dimension of
+<S> is <n> it determines a basis
+$B=\{\underline{b}_1,\ldots,\underline{b}_m\}$  for  <M>,  as  well  as <n>
+integers   $x_i$  such  that  the  <n>  vectors  $\underline{s}_i:=x_i\cdot
+\underline{b}_i\}$ form a basis for <S>.
+
+It returns a record with the following components\:
+
+'complement':\\
+   the vectors $\underline{b}_{n+1}$ up to $\underline{b}_m$ (they
+   generate a complement to <S>).
+
+'sub':\\
+   the vectors $s_i$ (a basis for <S>).
+
+'moduli':\\
+   the factors $x_i$.
+
+|    gap> m:=IdentityMat(3);;
+    gap> n:=[[1,2,3],[4,5,6]];;
+    gap> ComplementIntMat(m,n);
+    rec( complement := [ [ 0, 0, 1 ] ], sub := [ [ 1, 2, 3 ], [ 0, 3, 6 ] ],
+      moduli := [ 1, 3 ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TriangulizedIntegerMat}
+'TriangulizedIntegerMat( <mat> )'
+
+Computes  an upper  triangular form  of a  matrix with  integer entries. It
+returns a immutable matrix in upper triangular form.
+
+|    gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+    gap> TriangulizedIntegerMat(m);
+    [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TriangulizedIntegerMatTransform}
+'TriangulizedIntegerMatTransform( <mat> )'
+
+Computes  an upper  triangular form  of a  matrix with  integer entries. It
+returns  a record with  a component 'normal'  (a matrix in upper triangular
+form) and a component 'rowtrans' that gives the transformations done to the
+original matrix to bring it into upper triangular form.
+
+|    gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+    gap> n:=TriangulizedIntegerMatTransform(m);
+    rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ],
+      rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+      rowQ := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], rank := 3,
+      signdet := 1, rowtrans := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
+    gap> n.rowtrans*m=n.normal;
+    true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TriangulizeIntegerMat}
+'TriangulizeIntegerMat( <mat> )'
+
+Changes  <mat> to be in  upper triangular form. (The  result is the same as
+that  of 'TriangulizedIntegerMat', but  <mat> will be  modified, thus using
+less memory.)
+
+|    gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+    gap> TriangulizeIntegerMat(m); m;
+    [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{HermiteNormalFormIntegerMat}
+'HermiteNormalFormIntegerMat( <mat> )'
+
+This  operation computes  the Hermite  normal form  of a  matrix <mat> with
+integer  entries. The Hermite Normal Form  (HNF), $H$ of an integer matrix,
+$A$  is a row  equivalent upper triangular  form such that all off-diagonal
+entries  are reduced modulo the  diagonal entry of the  column they are in.
+There exists a unique unimodular matrix $Q$ such that $QA = H$.
+
+|    gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+    gap> HermiteNormalFormIntegerMat(m);
+    [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{HermiteNormalFormIntegerMatTransform}
+'HermiteNormalFormIntegerMatTransform( <mat> )'
+
+This operation computes the Hermite normal form of a matrix <mat> with
+integer entries. It returns a record with components 'normal' (a matrix
+$H$) and 'rowtrans' (a matrix $Q$) such that $QA=H$
+
+|    gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+    gap> n:=HermiteNormalFormIntegerMatTransform(m);
+    rec( normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ],
+      rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+      rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], rank := 3,
+      signdet := 1,
+      rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
+    gap> n.rowtrans*m=n.normal;
+    true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SmithNormalFormIntegerMat}
+'SmithNormalFormIntegerMat( <mat> )'
+
+This  operation  computes  the  Smith  normal  form  of a matrix <mat> with
+integer entries. The Smith Normal Form,$S$, of an integer matrix $A$ is the
+unique  equivalent diagonal  form with  $S_i$ dividing  $S_j$ for $i \< j$.
+There exist unimodular integer matrices $P, Q$ such that $PAQ = S.$
+
+|    gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+    gap> SmithNormalFormIntegerMat(m);
+    [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SmithNormalFormIntegerMatTransforms}
+'SmithNormalFormIntegerMatTransforms( <mat> )'
+
+This  operation  computes  the  Smith  normal  form  of a matrix <mat> with
+integer  entries. It  returns a  record with  components 'normal' (a matrix
+$S$),  'rowtrans' (a matrix  $P$), and 'coltrans'  (a matrix $Q$) such that
+$PAQ=S$.
+
+|    gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+    gap> n:=SmithNormalFormIntegerMatTransforms(m);
+    rec( normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ],
+      rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+      rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ],
+      colC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+      colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], rank := 3,
+      signdet := 1,
+      rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ],
+      coltrans := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ] )
+    gap> n.rowtrans*m*n.coltrans=n.normal;
+    true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DiagonalizeIntMat}
+'DiagonalizeIntMat( <mat> )'
+
+This  function changes <mat> to its SNF. (The result is the same as that of
+'SmithNormalFormIntegerMat',  but <mat>  will be  modified, thus using less
+memory.)
+
+|    gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+    gap> DiagonalizeIntMat(m);m;
+    [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NormalFormIntMat}
+
+All  the previous  routines build  on the  following ``workhorse'' routine:
+
+'NormalFormIntMat( <mat>, <options> )'
+
+This  general operation for computation of various Normal Forms is probably
+the most efficient.
+
+Options bit values:
+\begin{itemize}
+\item{0/1} Triangular Form / Smith Normal Form.
+
+\item{2}   Reduce off diagonal entries.
+
+\item{4}   Row Transformations.
+
+\item{8}   Col Transformations.
+
+\item{16}   Destructive (the original matrix may be destroyed)
+\end{itemize}
+
+Compute  a Triangular, Hermite  or Smith form  of the $n  \times m$ integer
+input  matrix  $A$.  Optionally,  compute  $n  \times  n$  and $m \times m$
+unimodular  transforming matrices $Q, P$  which satisfy $QA =  H$ or $QAP =
+S$.
+
+Note  option is a value ranging from 0  - 15 but not all options make sense
+(eg  reducing off diagonal entries with SNF option selected already). If an
+option makes no sense it is ignored.
+
+Returns  a record  with component  'normal' containing  the computed normal
+form  and optional components  'rowtrans' and/or 'coltrans'  which hold the
+respective transformation matrix. Also in the record are components holding
+the sign of the determinant, signdet, and the Rank of the matrix, rank.
+
+
+|    gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+    gap> NormalFormIntMat(m,0);  # Triangular, no transforms
+    rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3,
+      signdet := 1 )
+    gap> NormalFormIntMat(m,6);  # Hermite Normal Form with row transforms
+    rec( normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ],
+      rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+      rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], rank := 3,
+      signdet := 1,
+      rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
+    gap> NormalFormIntMat(m,13); # Smith Normal Form with both transforms
+    rec( normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ],
+      rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+      rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ],
+      colC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+      colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], rank := 3,
+      signdet := 1,
+      rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ],
+      coltrans := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ] )
+    gap> last.rowtrans*m*last.coltrans;
+    [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AbelianInvariantsOfList}
+'AbelianInvariantsOfList( <list> )'
+
+Given  a list of  positive integers, this  routine returns a  list of prime
+powers,  such that the prime  power factors of the  entries in the list are
+returned in sorted form.
+
+|    gap> AbelianInvariantsOfList([4,6,2,12]);
+    [ 2, 2, 3, 3, 4, 4 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Determinant of an integer matrix}
+\index{determinant!integer matrix}
+
+'DeterminantIntMat( <mat> )'
+
+Computes  the determinant of  an integer matrix  using the same strategy as
+'NormalFormIntMat'.  This method is faster  in general for matrices greater
+than  $20  \times  20$  but  quite  a  lot  slower for smaller matrices. It
+therefore   passes   the   work   to   the  more  general  'DeterminantMat'
+(see~"DeterminantMat") for these smaller matrices.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

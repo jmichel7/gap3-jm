@@ -1,0 +1,1034 @@
+<html><head><title>GAP3 Manual: 43 Mappings</title></head>
+<body bgcolor="ffffff">
+<h1>43 Mappings</h1>
+<P><P><P>
+A <strong>mapping</strong> is an object that maps each element of its source to a value
+in its range.
+<P>
+Precisely, a mapping is a triple.  The <strong>source</strong> is a set of objects.  The
+<strong>range</strong> is another set of objects.  The <strong>relation</strong> is a subset <I>S</I> of the
+cartesian product  of  the  source  with  the range, such  that for  each
+element <I>elm</I> of  the source there is exactly  one element  <I>img</I> of  the
+range, so that the pair  <I>(elm,img)</I> lies  in <I>S</I>.  This <I>img</I> is  called
+the image of  <I>elm</I>  under the mapping, and we say that the  mapping maps
+<I>elm</I> to <I>img</I>.
+<P>
+A  <strong>multi valued mapping</strong> is  an  object  that maps  each element  of its
+source to a set of values in its range.
+<P>
+Precisely,  a multi valued mapping is a triple.  The <strong>source</strong> is a set of
+objects.   The <strong>range</strong> is another set  of objects.  The <strong>relation</strong>  is  a
+subset <I>S</I> of the  cartesian product of  the  source with the range.  For
+each  element  <I>elm</I> of the  source  the  set  <I>img</I>  such  that the pair
+<I>(elm,img)</I> lies in <I>S</I> is called the set of <strong>images</strong> of <I>elm</I> under  the
+mapping, and we say that the mapping maps <I>elm</I> to this set.
+<P>
+Thus a mapping is a  special case of a multi valued mapping where the set
+of  images of  each element of the source contains  exactly one  element,
+which is then called the image of the element under the mapping.
+<P>
+Mappings    are   created    by    <strong>mapping    constructors</strong>    such   as
+<code>MappingByFunction</code>  (see  <a href="chap043.htm#SECT018">MappingByFunction</a>) or  <code>NaturalHomomorphism</code>
+(see <a href="chap007.htm#SECT110">NaturalHomomorphism</a>).
+<P>
+This  chapter contains sections  that  describe the  functions that  test
+whether  an  object  is  a  mapping  (see <a href="chap043.htm#SECT001">IsGeneralMapping</a>), whether  a
+mapping  is single valued (see  <a href="chap043.htm#SECT002">IsMapping</a>), and  the various  functions
+that  test if such a mapping has a  certain property (see  <a href="chap043.htm#SECT003">IsInjective</a>,
+<a href="chap043.htm#SECT004">IsSurjective</a>,    <a href="chap043.htm#SECT005">IsBijection</a>,   <a href="chap044.htm#SECT001">IsHomomorphism</a>,   <a href="chap044.htm#SECT002">IsMonomorphism</a>,
+<a href="chap044.htm#SECT003">IsEpimorphism</a>, <a href="chap044.htm#SECT004">IsIsomorphism</a>, <a href="chap044.htm#SECT003">IsEpimorphism</a>, and <a href="chap044.htm#SECT006">IsAutomorphism</a>).
+<P>
+Next  this chapter  contains functions that  describe  how  mappings  are
+compared  (see  <a href="chap043.htm#SECT006">Comparisons  of Mappings</a>)  and the operations  that are
+applicable to mappings (see <a href="chap043.htm#SECT007">Operations for Mappings</a>).
+<P>
+Next this chapter contains sections that describe the functions that deal
+with the  images and preimages of elements  under  mappings (see <a href="chap043.htm#SECT008">Image</a>,
+<a href="chap043.htm#SECT009">Images</a>,   <a href="chap043.htm#SECT010">ImagesRepresentative</a>,   <a href="chap043.htm#SECT011">PreImage</a>,     <a href="chap043.htm#SECT012">PreImages</a>,    and
+<a href="chap043.htm#SECT013">PreImagesRepresentative</a>).
+<P>
+Next  this  chapter contains sections that  describe the  functions  that
+compute  the  composition  of two mappings,  the  power of a mapping, the
+inverse of a mapping, and the  identity mapping  on a certain domain (see
+<a href="chap043.htm#SECT014">CompositionMapping</a>,     <a href="chap043.htm#SECT015">PowerMapping</a>,      <a href="chap043.htm#SECT016">InverseMapping</a>,      and
+<a href="chap043.htm#SECT017">IdentityMapping</a>).
+<P>
+Finally this chapter also contains a section  that describes how mappings
+are represented internally (see <a href="chap043.htm#SECT019">Mapping Records</a>).
+<P>
+The   functions   described   in   this   chapter   are   in   the   file
+<code><var>libname</var>/"mapping.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap043.htm#SECT001">IsGeneralMapping</a>
+<LI> <A HREF="chap043.htm#SECT002">IsMapping</a>
+<LI> <A HREF="chap043.htm#SECT003">IsInjective</a>
+<LI> <A HREF="chap043.htm#SECT004">IsSurjective</a>
+<LI> <A HREF="chap043.htm#SECT005">IsBijection</a>
+<LI> <A HREF="chap043.htm#SECT006">Comparisons of Mappings</a>
+<LI> <A HREF="chap043.htm#SECT007">Operations for Mappings</a>
+<LI> <A HREF="chap043.htm#SECT008">Image</a>
+<LI> <A HREF="chap043.htm#SECT009">Images</a>
+<LI> <A HREF="chap043.htm#SECT010">ImagesRepresentative</a>
+<LI> <A HREF="chap043.htm#SECT011">PreImage</a>
+<LI> <A HREF="chap043.htm#SECT012">PreImages</a>
+<LI> <A HREF="chap043.htm#SECT013">PreImagesRepresentative</a>
+<LI> <A HREF="chap043.htm#SECT014">CompositionMapping</a>
+<LI> <A HREF="chap043.htm#SECT015">PowerMapping</a>
+<LI> <A HREF="chap043.htm#SECT016">InverseMapping</a>
+<LI> <A HREF="chap043.htm#SECT017">IdentityMapping</a>
+<LI> <A HREF="chap043.htm#SECT018">MappingByFunction</a>
+<LI> <A HREF="chap043.htm#SECT019">Mapping Records</a>
+</ol>
+<A NAME="SECT001"><h2>43.1 IsGeneralMapping</h2></a>
+<P><P><P>
+<code>IsGeneralMapping( <var>obj</var> )</code>
+<P>
+<code>IsGeneralMapping</code>  returns  <code>true</code>  if the  object  <var>obj</var>  is a  mapping
+(possibly multi valued) and <code>false</code> otherwise.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsGeneralMapping( p4 );
+    true
+    gap> IsGeneralMapping( InverseMapping( p4 ) );
+    true    # note that the inverse mapping is multi valued
+    gap> IsGeneralMapping( x -> x^4 );
+    false    # a function is not a mapping </pre>
+<P>
+See  <a href="chap043.htm#SECT018">MappingByFunction</a>  for  the definition of  <code>MappingByFunction</code> and
+<a href="chap043.htm#SECT016">InverseMapping</a> for <code>InverseMapping</code>.
+<P><A NAME="SECT002"><h2>43.2 IsMapping</h2></a>
+<P><P><P>
+<code>IsMapping( <var>map</var> )</code>
+<P>
+<code>IsMapping</code> returns <code>true</code> if the general mapping <var>map</var>  is single valued
+and  <code>false</code>  otherwise.   Signals  an  error if  <var>map</var> is  not a general
+mapping.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsMapping( p4 );
+    true
+    gap> IsMapping( InverseMapping( p4 ) );
+    false    # note that the inverse mapping is multi valued
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsMapping( p5 );
+    true
+    gap> IsMapping( InverseMapping( p5 ) );
+    true    # <code>p5</code> is a bijection </pre>
+<P>
+<code>IsMapping</code> first tests if the  flag <code><var>map</var>.isMapping</code>  is bound.  If the
+flag   is   bound,   it   returns  its   value.    Otherwise   it   calls
+<code><var>map</var>.operations.IsMapping( <var>map</var> )</code>,  remembers the  returned  value in
+<code><var>map</var>.isMapping</code>, and returns it.
+<P>
+The default  function  called  this way is  <code>MappingOps.IsMapping</code>, which
+computes the sets of images of  all the elements in  the source of <var>map</var>,
+provided  this is finite,  and returns <code>true</code> if all those sets have size
+one.  Look in the index under <strong>IsMapping</strong> to see for  which mappings this
+function is overlaid.
+<P><A NAME="SECT003"><h2>43.3 IsInjective</h2></a>
+<P><P><P>
+<code>IsInjective( <var>map</var> )</code>
+<P>
+<code>IsInjective</code>  returns  <code>true</code>  if  the  mapping  <var>map</var> is  injective and
+<code>false</code> otherwise.  Signals an error if <var>map</var> is a multi valued mapping.
+<P>
+A mapping <I>map</I>  is <strong>injective</strong> if for  each element  <I>img</I>  of the range
+there  is at most one  element <I>elm</I>  of the  source that  <I>map</I> maps  to
+<I>img</I>.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsInjective( p4 );
+    false
+    gap> IsInjective( InverseMapping( p4 ) );
+    Error, &lt;map> must be a single valued mapping
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsInjective( p5 );
+    true
+    gap> IsInjective( InverseMapping( p5 ) );
+    true    # <code>p5</code> is a bijection </pre>
+<P>
+<code>IsInjective</code> first tests if  the flag <code><var>map</var>.isInjective</code>  is bound.  If
+the   flag   is  bound,  it  returns   this value.   Otherwise   it calls
+<code><var>map</var>.operations.isInjective( <var>map</var> )</code>, remembers  the returned value in
+<code><var>map</var>.isInjective</code>, and returns  it. 
+<P>
+The default  function called this  way is <code>MappingOps.IsInjective</code>, which
+compares  the sizes of the source and image of <var>map</var>, and  returns <code>true</code>
+if they are equal (see <a href="chap043.htm#SECT008">Image</a>).  Look  in  the index under <strong>IsInjective</strong>
+to see for which mappings this function is overlaid.
+<P><A NAME="SECT004"><h2>43.4 IsSurjective</h2></a>
+<P><P><P>
+<code>IsSurjective( <var>map</var> )</code>
+<P>
+<code>IsSurjective</code> returns  <code>true</code>  if  the mapping <var>map</var> is  surjective  and
+<code>false</code> otherwise.  Signals an  error if <var>map</var> is a multi valued mapping.
+<P>
+A mapping  <I>map</I> is <strong>surjective</strong> if for each element <I>img</I>  of the  range
+there  is at  least  one  element <I>elm</I>  of the source that <I>map</I> maps to
+<I>img</I>.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsSurjective( p4 );
+    false
+    gap> IsSurjective( InverseMapping( p4 ) );
+    Error, &lt;map> must be a single valued mapping
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsSurjective( p5 );
+    true
+    gap> IsSurjective( InverseMapping( p5 ) );
+    true    # <code>p5</code> is a bijection </pre>
+<P>
+<code>IsSurjective</code> first tests if the flag <code><var>map</var>.isSurjective</code> is bound.  If
+the   flag  is bound,  it   returns this    value.  Otherwise    it calls
+<code><var>map</var>.operations.IsSurjective( <var>map</var> )</code>, remembers the returned value in
+<code><var>map</var>.isSurjective</code>, and returns  it.
+<P>
+The default function called this  way is <code>MappingOps.IsSurjective</code>, which
+compares the sizes of the range and image of <var>map</var>, and returns <code>true</code> if
+they are equal (see <a href="chap043.htm#SECT008">Image</a>).  Look in the  index under <strong>IsSurjective</strong> to
+see for which mappings this function is overlaid.
+<P><A NAME="SECT005"><h2>43.5 IsBijection</h2></a>
+<P><P><P>
+<code>IsBijection( <var>map</var> )</code>
+<P>
+<code>IsBijection</code>  returns <code>true</code>  if the  mapping  <var>map</var> is a bijection  and
+<code>false</code> otherwise.  Signals an error if <var>map</var> is a multi valued mapping.
+<P>
+A mapping <I>map</I> is a <strong>bijection</strong> if  for each  element <I>img</I> of the range
+there is exactly  one  element  <I>elm</I>  of the  source that <I>map</I> maps  to
+<I>img</I>.  We also say that <I>map</I> is <strong>bijective</strong>.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsBijection( p4 );
+    false
+    gap> IsBijection( InverseMapping( p4 ) );
+    Error, &lt;map> must be a single valued mapping
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsBijection( p5 );
+    true
+    gap> IsBijection( InverseMapping( p5 ) );
+    true    # <code>p5</code> is a bijection </pre>
+<P>
+<code>IsBijection</code> first tests if  the flag <code><var>map</var>.isBijection</code>  is bound.  If
+the   flag is  bound,    it    returns its  value.   Otherwise it   calls
+<code><var>map</var>.operations.IsBijection( <var>map</var> )</code>, remembers  the returned value in
+<code><var>map</var>.isBijection</code>, and  returns it.
+<P>
+The  default function called this  way is <code>MappingOps.IsBijection</code>, which
+calls <code>IsInjective</code> and <code>IsSurjective</code>,  and returns the logical <strong>and</strong> of
+the  results.   This  function  is   seldom  overlaid,  because  all  the
+interesting work is done by <code>IsInjective</code> and <code>IsSurjective</code>.
+<P><A NAME="SECT006"><h2>43.6 Comparisons of Mappings</h2></a>
+<P><P><P>
+<code><var>map1</var> = <var>map2</var></code> <BR> 
+<code><var>map1</var> <> <var>map2</var></code>
+<P>
+The  equality operator  <code>=</code> applied  to two  mappings  <var>map1</var>  and <var>map2</var>
+evaluates to <code>true</code> if   the   two mappings    are equal and   to <code>false</code>
+otherwise.  The unequality operator <code><></code> applied  to two mappings <var>map1</var>
+and <var>map2</var> evaluates to <code>true</code> if the  two mappings are  not equal and to
+<code>false</code> otherwise.  A  mapping can also  be compared  with another object
+that is not a mapping, of course they are never equal.
+<P>
+Two mappings are considered equal if and only if their sources are equal,
+their ranges are equal, and for each elment <var>elm</var> of  the source <code>Images(
+<var>map1</var>, <var>elm</var> )</code> is equal to <code>Images( <var>map2</var>, <var>elm</var> )</code> (see <a href="chap043.htm#SECT009">Images</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> p13 := MappingByFunction( g, g, x -> x^13 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 13;
+    end )
+    gap> p4 = p13;
+    false
+    gap> p13 = IdentityMapping( g );
+    true </pre>
+<P>
+<code><var>map1</var> < <var>map2</var></code> <BR> 
+<code><var>map1</var> <= <var>map2</var></code> <BR> 
+<code><var>map1</var> >   <var>map2</var></code> <BR> 
+<code><var>map1</var> >=  <var>map2</var></code>
+<P>
+The  operators  <code><</code>, <code><=</code>,  <code>></code>,  and  <code>>=</code>  applied  to  two  mappings
+evaluates to  <code>true</code>  if <var>map1</var>  is less than,  less  than  or equal  to,
+greater than,  or greater  than or equal to <var>map2</var> and <code>false</code> otherwise.
+A mapping can also be compared with another object that is not a mapping,
+everything except booleans, lists, and records is smaller than a mapping.
+<P>
+If the source of <var>map1</var> is less than the source of <var>map2</var>, then <var>map1</var> is
+considered to be less  than <var>map2</var>.  If  the sources  are  equal  and the
+range  of <var>map1</var> is less  than   the  range of   <var>map2</var>,  then <var>map1</var>  is
+considered  to be less than  <var>map2</var>.  If the  sources and the ranges  are
+equal the  mappings are compared lexicographically with   respect  to the
+sets of images of the elements of the source under the mappings.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> p4 &lt; p5;
+    true    # since <code>(5,6,7)</code> is the smallest nontrivial element of <code>g</code>
+            # and the image of <code>(5,6,7)</code> under <code>p4</code> is smaller
+            # than the image of <code>(5,6,7)</code> under <code>p5</code> </pre>
+<P>
+The  operator  <code>=</code> calls  <code><var>map2</var>.operations.=(  <var>map1</var>,  <var>map2</var>  )</code>  and
+returns this value.  The operator <code><></code> also calls  <code><var>map2</var>.operations.=(
+<var>map1</var>, <var>map2</var> )</code> and returns the logical <strong>not</strong> of this value.
+<P>
+The  default  function  called this  way is  <code>MappingOps.=</code>, which  first
+compares  the sources of  <var>map1</var> and  <var>map2</var>, then, if  they  are  equal,
+compares the ranges of <var>map1</var> and <var>map2</var>, and then, if both are equal and
+the source is finite, compares the images of all  elements of the  source
+under <var>map1</var> and <var>map2</var>.  Look  in the index under <strong>equality</strong>  to see for
+which mappings this function is overlaid.
+<P>
+The  operator  <code><</code>  calls  <code><var>map2</var>.operations.<( <var>map1</var>, <var>map2</var> )</code>  and
+returns this  value.  The  operator  <code><=</code>  calls  <code><var>map2</var>.operations.<(
+<var>map2</var>, <var>map1</var> )</code>  and returns  the logical  <strong>not</strong>  of  this value.   The
+operator <code>></code> calls <code><var>map2</var>.operations.<( <var>map2</var>, <var>map1</var>  )</code> and  returns
+this  value.   The  operator  <code>>=</code> calls  <code><var>map2</var>.operations.<(  <var>map1</var>,
+<var>map2</var> )</code> and returns the logical <strong>not</strong> of this value.
+<P>
+The  default function called this way  is  <code>MappingOps.<</code>,  which  first
+compares the sources  of  <var>map1</var> and  <var>map2</var>, then, if  they  are  equal,
+compares the ranges of <var>map1</var> and <var>map2</var>, and then, if both are equal and
+the source is finite, compares the  images of  all elements of the source
+under <var>map1</var>  and <var>map2</var>.  Look in the index under <strong>ordering</strong> to  see for
+which mappings this function is overlaid.
+<P><A NAME="SECT007"><h2>43.7 Operations for Mappings</h2></a>
+<P><P><P>
+<code><var>map1</var> * <var>map2</var></code>
+<P>
+The product  operator  <code>*</code> applied  to  two  mappings <var>map1</var> and  <var>map2</var>
+evaluates to  the  product of the two  mappings, i.e., the  mapping <var>map</var>
+that maps each element <var>elm</var> of the source of <var>map1</var> to the value <code>(<var>elm</var>
+^  <var>map1</var>) ^ <var>map2</var></code>.  Note that the range of <var>map1</var> must be a subset
+of the source of <var>map2</var>.  If <var>map1</var> and <var>map2</var> are homomorphisms then  so
+is  the  result.   This  can also  be expressed  as  <code>CompositionMapping(
+<var>map2</var>, <var>map1</var> )</code> (see <a href="chap043.htm#SECT014">CompositionMapping</a>).  Note that the arguments of
+<code>CompositionMapping</code> are reversed.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> p20 := p4 * p5;
+    CompositionMapping( MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end ), MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end ) ) </pre>
+<P>
+<code><var>list</var> * <var>map</var></code> <BR> 
+<code><var>map</var> * <var>list</var></code>
+<P>
+As with  every other type of group  elements  a mapping <var>map</var> can also be
+multiplied  with a  list of  mappings <var>list</var>.   The result is a new list,
+such that each entry is  the product of the corresponding entry of <var>list</var>
+with <var>map</var> (see <a href="chap027.htm#SECT013">Operations for Lists</a>).
+<P>
+<code><var>elm</var> ^ <var>map</var></code>
+<P>
+The  power operator <code>^</code> applied to an element <var>elm</var> and  a mapping <var>map</var>
+evaluates to  the  image of <var>elm</var> under <var>map</var>,  i.e., the element  of the
+range to which <var>map</var> maps <var>elm</var>.  Note that <var>map</var> must be a single valued
+mapping, a multi valued mapping is not allowed (see <a href="chap043.htm#SECT009">Images</a>).  This  can
+also be expressed as <code>Image( <var>map</var>, <var>elm</var> )</code> (see <a href="chap043.htm#SECT008">Image</a>).
+<P>
+<pre>    gap> (1,2,3,4) ^ p4;
+    ()
+    gap> (2,4)(5,6,7) ^ p20;
+    (5,7,6) </pre>
+<P>
+<code><var>map</var> ^ 0</code>
+<P>
+The power operator <code>^</code> applied to a mapping <var>map</var>, for  which  the range
+must  be  a  subset of  the source, and the integer <code>0</code> evaluates  to the
+identity mapping on the source of <var>map</var>, i.e., the mapping that maps each
+element of the  source to  itself.  If <var>map</var> is a homomorphism then so is
+the result.  This can also be expressed as <code>IdentityMapping( <var>map</var>.source
+)</code> (see <a href="chap043.htm#SECT017">IdentityMapping</a>).
+<P>
+<pre>    gap> p20 ^ 0;
+    IdentityMapping( g ) </pre>
+<P>
+<code><var>map</var> ^ <var>n</var></code>
+<P>
+The power  operator <code>^</code>  applied to a mapping <var>map</var>, for which the range
+must be a subset of the source, and an positive integer <var>n</var>  evaluates to
+the <var>n</var>-fold composition of <var>map</var>.  If <var>map</var> is a homomorphism then so is
+the result.  This  can also be  expressed as <code>PowerMapping( <var>map</var>, <var>n</var> )</code>
+(see <a href="chap043.htm#SECT015">PowerMapping</a>).
+<P>
+<pre>    gap> p16 := p4 ^ 2;
+    CompositionMapping( CompositionMapping( IdentityMapping( g ), MappingB\ 
+    yFunction( g, g, function ( x )
+        return x ^ 4;
+    end ) ), CompositionMapping( IdentityMapping( g ), MappingByFunction( \ 
+    g, g, function ( x )
+        return x ^ 4;
+    end ) ) )
+    gap> p16 = MappingByFunction( g, g, x -> x^16 );
+    true </pre>
+<P>
+<code><var>bij</var> ^ -1</code>
+<P>
+The power operator <code>^</code> applied to a bijection <var>bij</var> and the integer <code>-1</code>
+evaluates to the inverse mapping  of <var>bij</var>,  i.e., the mapping that  maps
+each element <var>img</var> of the range of <var>bij</var> to the uniq element <var>elm</var> of the
+source of <var>bij</var> that maps to <var>img</var>.  Note that <var>bij</var> must be a bijection,
+a mapping  that  is not  a bijection is not allowed.   This can  also  be
+expressed as <code>InverseMapping( <var>bij</var> )</code> (see <a href="chap043.htm#SECT016">InverseMapping</a>).
+<P>
+<pre>    gap> p5 ^ -1;
+    InverseMapping( MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end ) )
+    gap> p4 ^ -1;
+    Error, &lt;lft> must be a bijection </pre>
+<P>
+<code><var>bij</var> ^ <var>z</var></code>
+<P>
+The  power  operator <code>^</code>  applied to a  bijection  <var>bij</var>, for  which the
+source and  the  range  must  be equal, and  an integer  <var>z</var>  returns the
+<var>z</var>-fold composition of <var>bij</var>.  If <var>z</var> is 0 or positive see above, if <var>z</var>
+is negative, this is  equivalent to <code>(<var>bij</var> ^ -1) ^ -<var>z</var></code>.  If  <var>bij</var>
+is an automorphism then so is  the result.
+<P>
+<code><var>aut1</var> ^ <var>aut2</var></code>
+<P>
+The power operator <code>^</code> applied to  two  automorphisms <var>aut1</var> and <var>aut2</var>,
+which must have equal sources (and thus ranges)  returns the conjugate of
+<var>aut1</var> by  <var>aut2</var>, i.e.,  <code><var>aut2</var> ^ -1  * <var>aut1</var>  *  <var>aut2</var></code>.   The
+result if of course again an automorphism.
+<P>
+The operator  <code>*</code>  calls <code><var>map2</var>.operations.*(   <var>map1</var>, <var>map2</var>  )</code> and
+returns this value.
+<P>
+The  default function called  this  way is  <code>MappingOps.*</code>  which  calls
+<code>CompositionMapping</code> to  do  the work.  This function is seldom overlaid,
+since <code>CompositionMapping</code> does all the interesting work.
+<P>
+The  operator  <code>^</code> calls  <code><var>map</var>.operations.^(  <var>map1</var>,  <var>map2</var>  )</code> and
+returns this value.
+<P>
+The  default  function  called this  way is  <code>MappingOps.^</code>, which calls
+<code>Image</code>, <code>IdentityMapping</code>, <code>InverseMapping</code>, or <code>PowerMapping</code> to do the
+work.     This   function    is   seldom    overlaid,   since    <code>Image</code>,
+<code>IdentityMapping</code>,  <code>InverseMapping</code>,   and  <code>PowerMapping</code>  do  all  the
+interesting work.
+<P><A NAME="SECT008"><h2>43.8 Image</h2></a>
+<P><P><P>
+<code>Image( <var>map</var>, <var>elm</var> )</code>
+<P>
+In this form <code>Image</code> returns the image of the element <var>elm</var> of the source
+of the mapping <var>map</var> under <var>map</var>, i.e., the element of the range to which
+<var>map</var>  maps <var>elm</var>.   Note  that  <var>map</var> must be a single valued mapping, a
+multi  valued  mapping is not  allowed (see  <a href="chap043.htm#SECT009">Images</a>).  This can also be
+expressed as <code><var>elm</var> ^ <var>map</var></code> (see <a href="chap043.htm#SECT007">Operations for Mappings</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> Image( p4, (2,4)(5,6,7) );
+    (5,6,7)
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> Image( p5, (2,4)(5,6,7) );
+    (2,4)(5,7,6) </pre>
+<P>
+<code>Image( <var>map</var>, <var>elms</var> )</code>
+<P>
+In this form  <code>Image</code> returns the  image of the set of elements <var>elms</var> of
+the source  of the mapping <var>map</var> under <var>map</var>,  i.e., set of images of the
+elements in <var>elms</var>.  <var>elms</var> may be a proper set (see <a href="chap028.htm">Sets</a>) or a  domain
+(see  <a href="chap004.htm">Domains</a>).   The result will be  a subset  of the  range of <var>map</var>,
+either as a proper set  or  as  a  domain.  Again <var>map</var> must be a  single
+valued mapping, a multi valued mapping is not allowed (see <a href="chap043.htm#SECT009">Images</a>).
+<P>
+<pre>    gap> Image( p4, Subgroup( g, [ (2,4), (5,6,7) ] ) );
+    [ (), (5,6,7), (5,7,6) ]
+    gap> Image( p5, [ (5,6,7), (2,4) ] );
+    [ (5,7,6), (2,4) ] </pre>
+<P>
+Note that in the  first example, the  result is returned as a proper set,
+even though it is mathematically a subgroup.  This is because <code>p4</code> is not
+known to be a homomorphism, even though it is one.
+<P>
+<code>Image( <var>map</var> )</code>
+<P>
+In  this form <code>Image</code> returns the image of the  mapping <var>map</var>, i.e.,  the
+subset  of element  of  the range  of <var>map</var>  that are  actually values of
+<var>map</var>.  Note that in  this case the argument may also be  a multi  valued
+mapping.
+<P>
+<pre>    gap> Image( p4 );
+    [ (), (5,6,7), (5,7,6) ]
+    gap> Image( p5 ) = g;
+    true </pre>
+<P>
+<code>Image</code> firsts checks in which form it is called.
+<P>
+In the  first case it  calls <code><var>map</var>.operations.ImageElm(  <var>map</var>, <var>elm</var> )</code>
+and returns this value.
+<P>
+The  default function called  this  way  is  <code>MappingOps.ImageElm</code>, which
+checks that <var>map</var>  is  indeed  a single  valued  mapping,  calls <code>Images(
+<var>map</var>, <var>elm</var> )</code>, and  returns  the single element of the set  returned by
+<code>Images</code>.  Look in the index under <strong>Image</strong> to see for which mappings this
+function is overlaid.
+<P>
+In the second case it calls <code><var>map</var>.operations.ImageSet( <var>map</var>,  <var>elms</var> )</code>
+and returns this value.
+<P>
+The default  function  called this  way is  <code>MappingOps.ImageSet</code>,  which
+checks that  <var>map</var>  is  indeed a  single valued  mapping,  calls <code>Images(
+<var>map</var>, <var>elms</var>  )</code>,  and returns  this  value.   Look  in the index  under
+<strong>Image</strong> to see for which mappings this function is overlaid.
+<P>
+In the third case  it tests if the field <code><var>map</var>.image</code> is bound.  If this
+field  is  bound,  it  simply  returns this value.   Otherwise  it  calls
+<code><var>map</var>.operations.ImageSource( <var>map</var> )</code>, remembers the returned  value in
+<code><var>map</var>.image</code>, and returns it.
+<P>
+The default function  called this way is  <code>MappingOps.ImageSource</code>, which
+calls <code>Images(  <var>map</var>,  <var>map</var>.source  )</code>,  and returns  this value.  This
+function  is  seldom   overlaid,  since   all   the   work  is   done  by
+<code><var>map</var>.operations.ImagesSet</code>.
+<P><A NAME="SECT009"><h2>43.9 Images</h2></a>
+<P><P><P>
+<code>Images( <var>map</var>, <var>elm</var> )</code>
+<P>
+In this form <code>Images</code> returns the set of images  of the element  <var>elm</var> in
+the source of the mapping <var>map</var> under <var>map</var>.  <var>map</var> may be a multi valued
+mapping.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> i4 := InverseMapping( p4 );
+    InverseMapping( MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end ) )
+    gap> IsMapping( i4 );
+    false    # <code>i4</code> is multi valued
+    gap> Images( i4, () );
+    [ (), (2,4), (1,2)(3,4), (1,2,3,4), (1,3), (1,3)(2,4), (1,4,3,2),
+      (1,4)(2,3) ]
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> i5 := InverseMapping( p5 );
+    InverseMapping( MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end ) )
+    gap> Images( i5, () );
+    [ () ] </pre>
+<P>
+<code>Images( <var>map</var>, <var>elms</var> )</code>
+<P>
+In this form <code>Images</code>  returns the set of  images of the set of  elements
+<var>elms</var> in the source  of <var>map</var> under  <var>map</var>.  <var>map</var> may be a multi valued
+mapping.   In any case <code>Images</code> returns a set of elements of the range of
+<var>map</var>,  either as  a  proper  set  (see  <a href="chap028.htm">Sets</a>)  or  as  a  domain  (see
+<a href="chap004.htm">Domains</a>).
+<P>
+<pre>    gap> Images( i4, [ (), (5,6,7) ] );
+    [ (), (5,6,7), (2,4), (2,4)(5,6,7), (1,2)(3,4), (1,2)(3,4)(5,6,7), 
+      (1,2,3,4), (1,2,3,4)(5,6,7), (1,3), (1,3)(5,6,7), (1,3)(2,4), 
+      (1,3)(2,4)(5,6,7), (1,4,3,2), (1,4,3,2)(5,6,7), (1,4)(2,3), 
+      (1,4)(2,3)(5,6,7) ]
+    gap> Images( i5, [ (), (5,6,7) ] );
+    [ (), (5,7,6) ] </pre>
+<P>
+<code>Images</code> first checks in which form it is called.
+<P>
+In the first  case it  calls <code><var>map</var>.operations.ImagesElm( <var>map</var>, <var>elm</var> )</code>
+and returns this value.
+<P>
+The default  function  called  this way is <code>MappingOps.ImagesElm</code>,  which
+just raises an error, since their is no default way to compute the images
+of an element under a  mapping about which nothing is known.  Look in the
+index  under <strong>Images</strong>  to  see  how images are computed  for  the various
+mappings.
+<P>
+In the second case it calls <code><var>map</var>.operations.ImagesSet( <var>map</var>, <var>elms</var> )</code>
+and returns this value.
+<P>
+The default  function  called this  way  is <code>MappingOps.ImagesSet</code>, which
+returns the union of the images of  all the elements  in  the set <var>elms</var>.
+Look in the index under <strong>Images</strong> to see for which mappings this  function
+is overlaid.
+<P><A NAME="SECT010"><h2>43.10 ImagesRepresentative</h2></a>
+<P><P><P>
+<code>ImagesRepresentative( <var>map</var>, <var>elm</var> )</code>
+<P>
+<code>ImagesRepresentative</code>  returns a representative of  the set of images of
+<var>elm</var>  under <var>map</var>,  i.e.,  a single element  <var>img</var>,  such that <code><var>img</var> in
+Images(  <var>map</var>,  <var>elm</var> )</code> (see <a href="chap043.htm#SECT009">Images</a>).   <var>map</var>  may be  a multi valued
+mapping.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> i4 := InverseMapping( p4 );
+    InverseMapping( MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end ) )
+    gap> IsMapping( i4 );
+    false    # <code>i4</code> is multi valued
+    gap> ImagesRepresentative( i4, () );
+    () </pre>
+<P>
+<code>ImagesRepresentative</code> calls <BR> 
+<code><var>map</var>.operations.ImagesRepresentative( <var>map</var>, <var>elm</var> )</code>
+and returns this value.
+<P>
+The       default      function       called       this      way       is
+<code>MappingOps.ImagesRepresentative</code>, which calls <code>Images(  <var>map</var>,  <var>elm</var> )</code>
+and  returns the first  element  in this set.   Look in  the  index under
+<strong>ImagesRepresentative</strong>  to  see  for  which  mappings  this  function  is
+overlaid.
+<P><A NAME="SECT011"><h2>43.11 PreImage</h2></a>
+<P><P><P>
+<code>PreImage( <var>bij</var>, <var>img</var> )</code>
+<P>
+In this form <code>PreImage</code> returns the preimage  of the element <var>img</var> of the
+range  of the bijection  <var>bij</var>  under <var>bij</var>.  The preimage is  the unique
+element of the  source of <var>bij</var> that is  mapped  by <var>bij</var> to <var>img</var>.  Note
+that <var>bij</var> must be a bijection, a mapping that is not a  bijection is not
+allowed (see <a href="chap043.htm#SECT012">PreImages</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> PreImage( p4, (5,6,7) );
+    Error, &lt;bij> must be a bijection, not an arbitrary mapping
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> PreImage( p5, (2,4)(5,6,7) );
+    (2,4)(5,7,6) </pre>
+<P>
+<code>PreImage( <var>bij</var>, <var>imgs</var> )</code>
+<P>
+In  this form <code>PreImage</code>  returns the preimage of the  elements <var>imgs</var> of
+the range of the bijection <var>bij</var>  under <var>bij</var>.  The  primage of <var>imgs</var> is
+the set  of all preimages  of the  elements  in <var>imgs</var>.   <var>imgs</var> may be a
+proper set (see <a href="chap028.htm#SECT002">Set</a>) or a domain (see <a href="chap004.htm">Domains</a>).  The result will be a
+subset of the source  of <var>bij</var>, either  as a proper  set or  as a domain.
+Again <var>bij</var> must be a bijection, a mapping that is not a bijection is not
+allowed (see <a href="chap043.htm#SECT012">PreImages</a>).
+<P>
+<pre>    gap> PreImage( p4, [ (), (5,6,7) ] );
+    [ (), (5,6,7), (2,4), (2,4)(5,6,7), (1,2)(3,4), (1,2)(3,4)(5,6,7), 
+      (1,2,3,4), (1,2,3,4)(5,6,7), (1,3), (1,3)(5,6,7), (1,3)(2,4), 
+      (1,3)(2,4)(5,6,7), (1,4,3,2), (1,4,3,2)(5,6,7), (1,4)(2,3), 
+      (1,4)(2,3)(5,6,7) ]
+    gap> PreImage( p5, Subgroup( g, [ (5,7,6), (2,4) ] ) );
+    [ (), (5,6,7), (5,7,6), (2,4), (2,4)(5,6,7), (2,4)(5,7,6) ] </pre>
+<P>
+<code>PreImage( <var>map</var> )</code>
+<P>
+In this form <code>PreImage</code> returns the preimage of  the  mapping <var>map</var>.  The
+preimage is  the set of  elements <var>elm</var>  of the source of <var>map</var> that  are
+actually  mapped  to at least  one element,  i.e.,  for which <code>PreImages(
+<var>map</var>, <var>elm</var> )</code> is nonempty.  Note that in this case the  argument may be
+an arbitrary mapping (especially a multi valued one).
+<P>
+<pre>    gap> PreImage( p4 ) = g;
+    true </pre>
+<P>
+<code>PreImage</code> firsts checks in which form it is called.
+<P>
+In the first case it calls <code><var>bij</var>.operations.PreImageElm( <var>bij</var>, <var>elm</var> )</code>
+and returns this value.
+<P>
+The default function called this  way  is <code>MappingOps.PreImageElm</code>, which
+checks that <var>bij</var> is indeed a  bijection, calls <code>PreImages(  <var>bij</var>, <var>elm</var>
+)</code>, and returns the single element of the  set returned  by  <code>PreImages</code>.
+Look in  the  index  under  <strong>PreImage</strong> to see  for  which  mappings  this
+function is overlaid.
+<P>
+In the second case  it calls <code><var>bij</var>.operations.PreImageSet( <var>bij</var>, <var>elms</var>
+)</code> and returns this value.
+<P>
+The default  function called  this way is <code>MappingOps.PreImageSet</code>, which
+checks that <var>map</var> is indeed a bijection,  calls <code>PreImages( <var>bij</var>, <var>elms</var>
+)</code>,  and  returns  this value.  Look in the index under <strong>PreImage</strong> to see
+for which mappings this is overlaid.
+<P>
+In the third case it tests  if the field  <code><var>map</var>.preImage</code> is bound.   If
+this field is bound,  it simply returns  this  value.  Otherwise it calls
+<code><var>map</var>.operations.PreImageRange( <var>map</var> )</code>,  remembers  the returned value
+in <code><var>map</var>.preImage</code>, and returns it.
+<P>
+The default function called this way is <code>MappingOps.PreImageRange</code>, which
+calls <code>PreImages( <var>map</var>, <var>map</var>.source  )</code>,  and returns this value.  This
+function  is   seldom  overlaid,   since   all  the   work  is  done   by
+<code><var>map</var>.operations.PreImagesSet</code>.
+<P><A NAME="SECT012"><h2>43.12 PreImages</h2></a>
+<P><P><P>
+<code>PreImages( <var>map</var>, <var>img</var> )</code>
+<P>
+In the first form <code>PreImages</code> returns the set of elements from the source
+of the mapping <var>map</var> that are mapped by <var>map</var> to the element <var>img</var> in the
+range  of <var>map</var>,  i.e.,  the set of elements  <var>elm</var> such  that  <code><var>img</var> in
+Images(  <var>map</var>, <var>elm</var>  )</code> (see <a href="chap043.htm#SECT009">Images</a>).  <var>map</var> may  be  a  multi valued
+mapping.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> PreImages( p4, (5,6,7) );
+    [ (5,6,7), (2,4)(5,6,7), (1,2)(3,4)(5,6,7), (1,2,3,4)(5,6,7), 
+      (1,3)(5,6,7), (1,3)(2,4)(5,6,7), (1,4,3,2)(5,6,7), 
+      (1,4)(2,3)(5,6,7) ]
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> PreImages( p5, (2,4)(5,6,7) );
+    [ (2,4)(5,7,6) ] </pre>
+<P>
+<code>PreImages( <var>map</var>, <var>imgs</var> )</code>
+<P>
+In the  second form <code>PreImages</code> returns  the set of all  preimages of the
+elements in the set of elements <var>imgs</var>, i.e., the  union of the preimages
+of the single elements of <var>imgs</var>.  <var>map</var> may be a multi valued mapping.
+<P>
+<pre>    gap> PreImages( p4, [ (), (5,6,7) ] );
+    [ (), (5,6,7), (2,4), (2,4)(5,6,7), (1,2)(3,4), (1,2)(3,4)(5,6,7), 
+      (1,2,3,4), (1,2,3,4)(5,6,7), (1,3), (1,3)(5,6,7), (1,3)(2,4), 
+      (1,3)(2,4)(5,6,7), (1,4,3,2), (1,4,3,2)(5,6,7), (1,4)(2,3), 
+      (1,4)(2,3)(5,6,7) ]
+    gap> PreImages( p5, [ (), (5,6,7) ] );
+    [ (), (5,7,6) ] </pre>
+<P>
+<code>PreImages</code> first checks in which form it is called.
+<P>
+In the first  case it calls  <code><var>map</var>.operations.PreImagesElm( <var>map</var>, <var>img</var>
+)</code> and returns this value.
+<P>
+The default function called this  way is <code>MappingOps.PreImagesElm</code>, which
+runs  through all elements of  the source of <var>map</var>, if it is  finite, and
+returns the set of those that have <var>img</var> in  their images.   Look  in the
+index under  <strong>PreImages</strong>  to see  for  which  mappings  this  function is
+overlaid.
+<P>
+In the second case if calls <code><var>map</var>.operations.PreImagesSet( <var>map</var>, <var>imgs</var>
+)</code> and returns this value.
+<P>
+The default function called this way is <code>MappingOps.PreImagesSet</code>,  which
+returns the union of the preimages of all the elements of the set <var>imgs</var>.
+Look in  the index  under <strong>PreImages</strong>  to  see  for which  mappings  this
+function is overlaid.
+<P><A NAME="SECT013"><h2>43.13 PreImagesRepresentative</h2></a>
+<P><P><P>
+<code>PreImagesRepresentative( <var>map</var>, <var>img</var> )</code>
+<P>
+<code>PreImagesRepresentative</code> returns   an representative   of  the  set   of
+preimages of <var>img</var> under <var>map</var>, i.e., a  single  element <var>elm</var>, such that
+<code><var>img</var> in Images( <var>map</var>, <var>elm</var> )</code> (see <a href="chap043.htm#SECT009">Images</a>).
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> PreImagesRepresentative( p4, (5,6,7) );
+    (5,6,7)
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> PreImagesRepresentative( p5, (2,4)(5,6,7) );
+    (2,4)(5,7,6) </pre>
+<P>
+<code>PreImagesRepresentative</code> calls <BR> 
+<code><var>map</var>.operations.PreImagesRepresentative( <var>map</var>, <var>img</var> )</code>
+and returns this value.
+<P>
+The       default      function       called      this       way       is
+<code>MappingOps.PreImagesRepresentative</code>,  which  calls  <code>PreImages(   <var>map</var>,
+<var>img</var>  )</code> and returns  the first element in this  set.  Look in the index
+under  <strong>PreImagesRepresentative</strong> to  see for which mappings this function
+is overlaid.
+<P><A NAME="SECT014"><h2>43.14 CompositionMapping</h2></a>
+<P><P><P>
+<code>CompositionMapping( <var>map1</var>.. )</code>
+<P>
+<code>CompositionMapping</code> returns  the  composition  of  the  mappings <var>map1</var>,
+<var>map2</var>,  etc.  where  the range  of each mapping must be a subset of  the
+source of the  previous  mapping.  The mappings need not be single valued
+mappings, i.e., multi valued mappings are allowed.
+<P>
+The composition of <var>map1</var> and <var>map2</var> is the mapping  <var>map</var> that maps each
+element <var>elm</var> of the source of <var>map2</var> to <code>Images( <var>map1</var>, Images( <var>map2</var>,
+<var>elm</var>  ) )</code>.  If <var>map1</var>  and <var>map2</var> are single valued  mappings this  can
+also be expressed as <code><var>map2</var> * <var>map1</var></code> (see <a href="chap043.htm#SECT007">Operations for Mappings</a>).
+Note the reversed operands.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> p20 := CompositionMapping( p4, p5 );
+    CompositionMapping( MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end ), MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end ) )
+    gap> (2,4)(5,6,7) ^ p20;
+    (5,7,6) </pre>
+<P>
+<code>CompositionMapping</code> calls <BR> 
+<code><var>map2</var>.operations.CompositionMapping( <var>map1</var>, <var>map2</var> )</code>
+and returns this value.
+<P>
+The default function called this way is  <code>MappingOps.CompositionMapping</code>,
+which  constructs a new mapping <var>com</var>.  This new mapping remembers <var>map1</var>
+and <var>map2</var>  as its factors in <code><var>com</var>.map1</code> and <code><var>com</var>.map2</code> and delegates
+everything  to  them.   For example to compute  <code>Images( <var>com</var>, <var>elm</var> )</code>,
+<code><var>com</var>.operations.ImagesElm</code>   calls    <code>Images(   <var>com</var>.map1,    Images(
+<var>com</var>.map2, <var>elm</var> ) )</code>.  Look in the index  under <strong>CompositionMapping</strong> to
+see for which mappings this function is overlaid.
+<P><A NAME="SECT015"><h2>43.15 PowerMapping</h2></a>
+<P><P><P>
+<code>PowerMapping( <var>map</var>, <var>n</var> )</code>
+<P>
+<code>PowerMapping</code> returns the <var>n</var>-th power of the mapping <var>map</var>.  <var>map</var> must
+be a  mapping whose  range  is  a subset of its  source.  <var>n</var>  must  be a
+nonnegative integer.  <var>map</var> may be a multi valued mapping.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> p16 := p4 ^ 2;
+    CompositionMapping( CompositionMapping( IdentityMapping( g ), MappingB\ 
+    yFunction( g, g, function ( x )
+        return x ^ 4;
+    end ) ), CompositionMapping( IdentityMapping( g ), MappingByFunction( \ 
+    g, g, function ( x )
+        return x ^ 4;
+    end ) ) )
+    gap> p16 = MappingByFunction( g, g, x -> x^16 );
+    true </pre>
+<P>
+<code>PowerMapping</code> calls  <code><var>map</var>.operations.PowerMapping( <var>map</var>,  <var>n</var>  )</code> and
+returns this value.
+<P>
+The default function called this way  is <code>MappingOps.PowerMapping</code>, which
+computes the power using a binary powering algorithm,  <code>IdentityMapping</code>,
+and  <code>CompositionMapping</code>.  This  function  is  seldom overlaid,  because
+<code>CompositionMapping</code> does the interesting work.
+<P><A NAME="SECT016"><h2>43.16 InverseMapping</h2></a>
+<P><P><P>
+<code>InverseMapping( <var>map</var> )</code>
+<P>
+<code>InverseMapping</code> returns the inverse mapping of  the  mapping <var>map</var>.  The
+inverse mapping  <var>inv</var>  is  a  mapping  with source  <code><var>map</var>.range</code>, range
+<code><var>map</var>.source</code>, such that each element <var>elm</var> of its source  is  mapped to
+the  set <code>PreImages( <var>map</var>, <var>elm</var> )</code>  (see <a href="chap043.htm#SECT012">PreImages</a>).  <var>map</var> may  be a
+multi valued mapping.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> i4 := InverseMapping( p4 );
+    InverseMapping( MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end ) )
+    gap> Images( i4, () );
+    [ (), (2,4), (1,2)(3,4), (1,2,3,4), (1,3), (1,3)(2,4), (1,4,3,2),
+      (1,4)(2,3) ] </pre>
+<P>
+<code>InverseMapping</code>  first tests   if  the  field <code><var>map</var>.inverseMapping</code>  is
+bound.  If the field is bound, it  returns its value.  Otherwise it calls
+<code><var>map</var>.operations.InverseMapping( <var>map</var> )</code>,  remembers the returned value
+in <code><var>map</var>.inverseMapping</code>, and returns it.
+<P>
+The default function   called  this  way is  <code>MappingOps.InverseMapping</code>,
+which constructs a new  mapping <var>inv</var>.   This new mapping remembers <var>map</var>
+as its    own inverse mapping   in <code><var>inv</var>.inverseMapping</code>   and delegates
+everything to  it.   For  example  to  compute  <code>Image( <var>inv</var>,  <var>elm</var> )</code>,
+<code><var>inv</var>.operations.ImageElm</code> calls <code>PreImage(<var>inv</var>.inverseMapping,<var>elm</var>)</code>.
+Special types of mappings will  overlay this  default function with  more
+efficient functions.
+<P><A NAME="SECT017"><h2>43.17 IdentityMapping</h2></a>
+<P><P><P>
+<code>IdentityMapping( <var>D</var> )</code>
+<P>
+<code>IdentityMapping</code> returns the identity mapping on the domain <var>D</var>.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> i := IdentityMapping( g );
+    IdentityMapping( g )
+    gap> (1,2,3,4) ^ i;
+    (1,2,3,4)
+    gap> IsBijection( i );
+    true </pre>
+<P>
+<code>IdentityMapping</code>  calls   <code><var>D</var>.operations.IdentityMapping(  <var>D</var>  )</code>  and
+returns this value.
+<P>
+The functions usually called  this way  are <code>GroupOps.IdentityMapping</code> if
+the domain  <var>D</var> is a group and  <code>FieldOps.IdentityMapping</code>  if the domain
+<var>D</var> is a field.
+<P><A NAME="SECT018"><h2>43.18 MappingByFunction</h2></a>
+<P><P><P>
+<code>MappingByFunction( <var>D</var>, <var>E</var>, <var>fun</var> )</code>
+<P>
+<code>MappingByFunction</code> returns a mapping <var>map</var> with source <var>D</var> and range <var>E</var>
+such that each element <var>d</var> of <var>D</var> is mapped to the element  <code><var>fun</var>(<var>d</var>)</code>,
+where <var>fun</var> is a <strong>GAP3</strong> function.
+<P>
+<pre>    gap> g := Group( (1,2,3,4), (1,2) );;  g.name := "g";;
+    gap> m := MappingByFunction( g, g, x -> x^2 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 2;
+    end )
+    gap> (1,2,3) ^ m;
+    (1,3,2)
+    gap> IsHomomorphism( m );
+    false </pre>
+<P>
+<code>MappingByFunction</code>  constructs  the mapping  in  the obvious  way.   For
+example the  image of  an  element  under  <var>map</var> is  simply  computed  by
+applying <var>fun</var> to the element.
+<P><A NAME="SECT019"><h2>43.19 Mapping Records</h2></a>
+<P><P><P>
+A mapping <var>map</var> is represented by a record with the following components
+<P>
+<DL><DT><code>isGeneralMapping</code>:<DD> <BR> 
+        always <code>true</code>, indicating that this is a general mapping.
+</DL><P>
+<DL><DT><code>source</code>:<DD> <BR> 
+        the  source of   the mapping,   i.e.,   the set  of   elements to
+        which the mapping can be applied.
+</DL><P>
+<DL><DT><code>range</code>:<DD> <BR> 
+        the   range   of the mapping,  i.e.,  a  set in   which all value
+        of the mapping lie.
+</DL><P>
+The following entries are optional.  The functions with the corresponding
+names will generally  test if they  are present.  If they are  then their
+value  is  simply returned.   Otherwise the  functions  will  perform the
+computation and add those fields to those record for the next time.
+<P>
+<DL><DT><code>isMapping</code>:<DD> <BR> 
+        <code>true</code> if <var>map</var> is a single valued mapping and <code>false</code> otherwise.
+</DL><P>
+<code>isInjective</code> <BR> 
+<code>isSurjective</code> <BR> 
+<code>isBijection</code> <BR> 
+<code>isHomomorphism</code> <BR> 
+<code>isMonomorphism</code> <BR> 
+<code>isEpimorphism</code> <BR> 
+<code>isIsomorphism</code> <BR> 
+<code>isEndomorphism</code> <BR> 
+<DL><DT><code>isAutomorphism</code>:<DD> <BR> 
+        <code>true</code> if  <var>map</var>  has  the  corresponding  property  and  <code>false</code>
+        otherwise.
+</DL><P>
+<DL><DT><code>preImage</code>:<DD> <BR> 
+        the subset  of  <code><var>map</var>.source</code>   of   elements   <var>pre</var>  that  are
+        actually mapped  to at   least  one   element, i.e.,   for  which
+        <code>Images( <var>map</var>, <var>pre</var> )</code> is nonempty.
+</DL><P>
+<DL><DT><code>image</code>:<DD> <BR> 
+        the  subset   of  <code><var>map</var>.range</code>  of    the elements <var>img</var>    that
+        are   actually  values of     the  mapping,   i.e.,   for   which
+        <code>PreImages( <var>map</var>, <var>img</var> )</code> is nonempty.
+</DL><P>
+<DL><DT><code>inverseMapping</code>:<DD> <BR> 
+        the    inverse  mapping  of  <var>map</var>.  This  is    a   mapping from
+        <code><var>map</var>.range</code>  to    <code><var>map</var>.source</code>  that    maps  each   element
+        <var>img</var> to the set <code>PreImages( <var>map</var>, <var>img</var> )</code>.
+</DL><P>
+The following entry is optional.  It must be bound only  if  the  inverse
+of <var>map</var> is indeed a single valued mapping.
+<P>
+<DL><DT><code>inverseFunction</code>:<DD> <BR> 
+        the inverse function of <var>map</var>.
+</DL><P>
+The  following entry is  optional.  It must be  bound only  if <var>map</var> is a
+homomorphism.
+<P>
+<DL><DT><code>kernel</code>:<DD> <BR> 
+        the  elements    of <code><var>map</var>.source</code>  that   are  mapped   to   the
+        identity element of <code><var>map</var>.range</code>.
+</DL><P><a href ="chap042.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap044.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

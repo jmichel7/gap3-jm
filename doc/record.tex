@@ -1,0 +1,814 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  record.tex                  GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: record.tex,v 1.1.1.1 1996/12/11 12:36:49 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes records, their operations and functions.
+%%
+%H  $Log: record.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:49  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.7.1.1  1994/08/04  09:46:19  vfelsch
+%H  eliminated misprint
+%H
+%H  Revision 3.7  1994/06/10  02:49:50  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.6  1993/05/04  11:41:34  fceller
+%H  fixed a spelling error
+%H
+%H  Revision 3.5  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.4  1993/02/09  10:45:19  felsch
+%H  examples fixed
+%H
+%H  Revision 3.3  1992/01/23  13:05:54  martin
+%H  changed a reference
+%H
+%H  Revision 3.2  1992/01/11  18:34:23  martin
+%H  removed the last *field* from records
+%H
+%H  Revision 3.1  1992/01/08  11:47:07  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Records}%
+\index{type!records}
+
+*Records* are  next to lists  the most important  way to  collect objects
+together.  A record is a collection of  *components*.  Each component has
+a unique *name*,    which  is  an  identifier  that   distinguishes  this
+component, and a *value*, which is an object of arbitrary type.  We often
+abbreviate *value   of a component* to   *element*.  We also  say  that a
+record *contains* its  elements.  You can  access and change the elements
+of a record using its name.
+
+Record  literals are  written by  writing down  the  components in  order
+between  'rec('  and  ')',  and  separating  them  by  commas  ','.  Each
+component consists of the  name, the assignment  operator  '\:=', and the
+value.   The  *empty  record*, i.e.,  the record  with no  components, is
+written as 'rec()'.
+
+|    gap> rec( a := 1, b := "2" );    # a record with two components
+    rec(
+      a := 1,
+      b := "2" )
+    gap> rec( a := 1, b := rec( c := 2 ) );    # record may contain records
+    rec(
+      a := 1,
+      b := rec(
+          c := 2 ) ) |
+
+Records usually contain elements of various types, i.e., they are usually
+not homogeneous like lists.
+
+The  first  section in this chapter   tells  you how  you  can access the
+elements of a record (see "Accessing Record Elements").
+
+The  next sections tell you  how you can  change the elements of a record
+(see "Record Assignment" and "Identical Records").
+
+The next sections describe the operations that  are available for records
+(see   "Comparisons  of   Records", "Operations for    Records",  "In for
+Records", and "Printing of Records").
+
+The next  section  describes the function that   tests if an  object is a
+record (see "IsRec").
+
+The next sections describe the functions that test whether a record has a
+component with  a given name, and  delete such a component (see "IsBound"
+and "Unbind").  Those functions are also applicable to lists (see chapter
+"Lists").
+
+The final sections describe the functions that create a  copy of a record
+(see "Copy" and      "ShallowCopy").  Again those  functions    are  also
+applicable to lists (see chapter "Lists").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Accessing Record Elements}%
+\index{accessing!record elements}
+
+'<rec>.<name>'
+
+The  above construct  evaluates to the value of the record component with
+the name  <name>  in the  record <rec>.   Note  that  the <name>  is  not
+evaluated, i.e., it is taken literal.
+
+|    gap> r := rec( a := 1, b := 2 );;
+    gap> r.a;
+    1
+    gap> r.b;
+    2 |
+
+'<rec>.(<name>)'
+
+This construct is similar to the above construct.  The difference is that
+the second  operand <name> is evaluated.  It must evaluate to a string or
+an integer otherwise an error is signalled.  The construct then evaluates
+to the element  of the  record <rec> whose name is, as a string, equal to
+<name>.
+
+|    gap> old := rec( a := 1, b := 2 );;
+    gap> new := rec();
+    rec(
+       )
+    gap> for i  in RecFields( old )  do
+    >        new.(i) := old.(i);
+    >    od;
+    gap> new;
+    rec(
+      a := 1,
+      b := 2 ) |
+
+If <rec> does not evaluate to a record, or if <name> does not evaluate to
+a  string, or if  '<rec>.<name>' is unbound,  an  error is signalled.  As
+usual you can leave the break loop (see "Break  Loops") with 'quit;'.  On
+the other hand you can return a result to be  used in place of the record
+element by 'return <expr>;'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Record Assignment}%
+\index{assignment!to a record}
+
+'<rec>.<name> \:= <obj>;'
+
+The record assignment assigns the object <obj>, which may be an object of
+arbitrary type, to the record component with the  name <name>, which must
+be an  identifier, of the  record <rec>.  That  means  that accessing the
+element with name <name> of the record <rec> will return <obj> after this
+assignment.  If the  record <rec> has  no component with the name <name>,
+the record is automatically extended to make room for the new component.
+
+|    gap> r := rec( a := 1, b := 2 );;
+    gap> r.a := 10;;  r;
+    rec(
+      a := 10,
+      b := 2 )
+    gap> r.c := 3;;  r;
+    rec(
+      a := 10,
+      b := 2,
+      c := 3 ) |
+
+The function 'IsBound' (see  "IsBound") can be used to  test if  a record
+has a component with a certain name, the function 'Unbind' (see "Unbind")
+can be used to remove a component with a certain name again.
+
+Note  that  assigning to a   record changes the  record.  The  ability to
+change an object is only available  for lists and records (see "Identical
+Records").
+
+'<rec>.(<name>) := <obj>;'
+
+This construct is similar to the above construct.  The difference is that
+the second operand <name> is evaluated.  It must  evaluate to a string or
+an integer otherwise an  error is signalled.  The  construct then assigns
+<obj>  to  the record component of the record <rec> whose  name is, as  a
+string, equal to <name>.
+
+If  <rec> does not  evaluate to a record, <name>   does not evaluate to a
+string, or <obj>  is a call  to a function  that does not return a value,
+e.g., 'Print'  (see "Print"), an  error  is signalled.   As usual you can
+leave the break loop (see "Break Loops") with 'quit;'.  On the other hand
+you can continue the assignment by returning a  record in the first case,
+a string in the second, or an  object to be assigned  in the third, using
+'return <expr>;'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Identical Records}%
+
+With  the record assignment  (see "Record Assignment")  it is possible to
+change a record.  The ability  to change an  object is only available for
+lists and  records.  This section describes  the semantic consequences of
+this fact.
+
+You may think that in the following example the second assignment changes
+the integer, and  that therefore the  above sentence, which claimed  that
+only records and lists can be changed, is wrong.
+
+|    i := 3;
+    i :=  i + 1;|
+
+But in this example not the *integer* '3' is changed by adding one to it.
+Instead the *variable*  'i'  is changed by assigning the value of  'i+1',
+which happens to be '4', to 'i'.  The same thing happens in the following
+example
+
+|    r := rec( a := 1 );
+    r := rec( a := 1, b := 2 );|
+
+The  second assignment does  not   change the  first  record, instead  it
+assigns a new  record to  the variable 'r'.    On the other hand,  in the
+following example the record is changed by the second assignment.
+
+|    r := rec( a := 1 );
+    r.b := 2;|
+
+To understand the difference first think of a variable as  a  name for an
+object.  The important  point is that a record  can have several names at
+the  same time.   An assignment  '<var>  \:=  <record>;'  means  in  this
+interpretation  that <var> is a name for the object <record>.  At the end
+of the following example  'r2'  still  has the value 'rec(  a \:= 1 )' as
+this record has not  been changed and nothing else has been  assigned  to
+'r2'.
+
+|    r1 := rec( a := 1 );
+    r2 := r1;
+    r1 := rec( a := 1, b := 2 );|
+
+But after the following example  the record for which 'r2'  is a name has
+been changed and thus the value of 'r2' is now 'rec( a \:= 1, b \:= 2 )'.
+
+|    r1 := rec( a := 1 );
+    r2 := r1;
+    r1.b := 2;|
+
+We shall say that two records are *identical* if changing  one of them by
+a  record assignment  also  changes  the  other  one.   This is  slightly
+incorrect, because if  *two*  records are identical, there  are  actually
+only two names  for *one*  record.  However, the  correct  usage would be
+very   awkward  and would only  add   to the confusion.     Note that two
+identical records must  be equal, because  there is only one records with
+two different names.  Thus identity is  an equivalence relation that is a
+refinement of equality.
+
+Let us now consider under which circumstances two records are identical.
+
+If you enter a record literal then the record denoted  by this literal is
+a new record  that is not  identical to any   other record.  Thus  in the
+following example 'r1' and 'r2' are  not identical, though they are equal
+of course.
+
+|    r1 := rec( a := 1 );
+    r2 := rec( a := 1 );|
+
+Also in the following example, no records in the list 'l' are identical.
+
+|    l := [];
+    for i  in [1..10]  do
+        l[i] := rec( a := 1 );
+    od;|
+
+If you assign a record to a variable no new record  is created.  Thus the
+record value of the variable on the left hand side and  the record on the
+right  hand side of the assignment   are identical.  So  in the following
+example 'r1' and 'r2' are identical records.
+
+|    r1 := rec( a := 1 );
+    r2 := r1;|
+
+If you pass a record as argument, the old record and  the argument of the
+function are identical.  Also if you return a record from a function, the
+old record and the value of  the function call  are identical.  So in the
+following example 'r1' and 'r2' are identical record
+
+|    r1 := rec( a := 1 );
+    f := function ( r )  return r;  end;
+    r2 := f( r1 );|
+
+The  functions 'Copy'  and  'ShallowCopy' (see  "Copy" and "ShallowCopy")
+accept a record and  return a new record that  is equal to the old record
+but  that is *not* identical to  the old  record.  The difference between
+'Copy' and  'ShallowCopy'  is that   in  the  case of  'ShallowCopy'  the
+corresponding elements of the new and  the old records will be identical,
+whereas in  the   case of  'Copy' they   will  only be  equal.  So in the
+following example 'r1' and 'r2' are not identical records.
+
+|    r1 := rec( a := 1 );
+    r2 := Copy( r1 );|
+
+If  you change a  record it keeps its identity.   Thus if two records are
+identical and you change one of them, you also change the other, and they
+are still identical afterwards.  On the  other hand, two records that are
+not identical will never become identical if you  change one of them.  So
+in the following  example both 'r1' and 'r2'  are changed,  and are still
+identical.
+
+|    r1 := rec( a := 1 );
+    r2 := r1;
+    r1.b := 2;|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Records}%
+\index{equality!of records}%
+\index{ordering!of records}
+
+'<rec1> = <rec2>' \\
+'<rec1> \<> <rec2>'
+
+The equality operator '=' returns 'true' if the record <rec1> is equal to
+the  record <rec2> and 'false'  otherwise.  The inequality operator '\<>'
+returns 'true' if  the record <rec1> is not  equal to <rec2> and  'false'
+otherwise.
+
+Usually two  records are considered equal, if  for  each component of one
+record the other record  has a component of  the same name with  an equal
+value and vice  versa.  You can  also compare records with other objects,
+they are of course different, unless the  record has a special comparison
+function (see below) that says otherwise.
+
+|    gap> rec( a := 1, b := 2 ) = rec( b := 2, a := 1 );
+    true
+    gap> rec( a := 1, b := 2 ) = rec( a := 2, b := 1 );
+    false
+    gap> rec( a := 1 ) = rec( a := 1, b := 2 );
+    false
+    gap> rec( a := 1 ) = 1;
+    false |
+
+However a record may contain a  special 'operations' record that contains
+a function that is called when this record is an operand of a comparison.
+The precise mechanism   is as follows.   If  the operand of the  equality
+operator '=' is a record, and if this record has an element with the name
+'operations' that is a record, and if this record has an element with the
+name '='  that  is a function,  then this   function is called   with the
+operands of  '='  as arguments, and the  value  of the  operation  is the
+result  returned  by this  function.  In this  case a  record may also be
+equal to an object  of  another type if this  function  says so.   It  is
+probably not a  good idea to define  a comparison function  in such a way
+that the  resulting relation is  not  an equivalence  relation, i.e., not
+reflexive,  symmetric,  and    transitive.   Note   that  there  is    no
+corresponding '\<>' function, because '<left> \<> <right>' is implemented
+as 'not <left> = <right>'.
+
+The  following  example shows  one  piece of  the  definition  of residue
+classes, using record operations.  Of course this  is far from a complete
+implementation (see "About Defining New Group Elements").   Note that the
+'='    must  be quoted,  so  that  it   is taken  as   an identifier (see
+"Identifiers").
+
+|    gap> ResidueOps := rec( );;
+    gap> ResidueOps.\= := function ( l, r )
+    >   return (l.modulus = r.modulus)
+    >     and (l.representative-r.representative) mod l.modulus = 0;
+    > end;;
+    gap> Residue := function ( representative, modulus )
+    >   return rec(
+    >     representative := representative,
+    >     modulus        := modulus,
+    >     operations     := ResidueOps );
+    > end;;
+    gap> l := Residue( 13, 23 );;
+    gap> r := Residue( -10, 23 );;
+    gap> l = r;
+    true
+    gap> l = Residue( 10, 23 );
+    false |
+
+'<rec1> \<  <rec2>' \\
+'<rec1> \<= <rec2>' \\
+'<rec1>  >  <rec2>' \\
+'<rec1>  >= <rec2>'
+
+The operators '\<', '\<=', '>', and '>=' evaluate to 'true' if the record
+<rec1>  is less than, less  than or equal   to, greater than, and greater
+than or equal to the record <rec2>, and to 'false' otherwise.
+
+To compare records  we  imagine that the components  of  both records are
+sorted   according  to  their  names.  Then   the   records  are compared
+lexicographically with  unbound elements considered smaller than anything
+else.  Precisely one record <rec1> is considered less than another record
+<rec2> if <rec2> has a component with  name <name2> and either <rec1> has
+no component with this name or '<rec1>.<name2> \< <rec2>.<name2>' and for
+each component of   <rec1> with name   '<name1> \< <name2>'  <rec2> has a
+component with this name and '<rec1>.<name1>  = <rec2>.<name1>'.  Records
+may also be compared  with objects of  other types, they are greater than
+anything else, unless  the record has a  special comparison function (see
+below) that says otherwise.
+
+|    gap> rec( a := 1, b := 2 ) < rec( b := 2, a := 1 );
+    false    # they are equal
+    gap> rec( a := 1, b := 2 ) < rec( a := 2, b := 0 );
+    true    # the 'a' elements are compared first and 1 is less than 2
+    gap> rec( a := 1 ) < rec( a := 1, b := 2 );
+    true    # unbound is less than 2
+    gap> rec( a := 1 ) < rec( a := 0, b := 2 );
+    false    # the 'a' elements are compared first and 0 is less than 1
+    gap> rec( b := 1 ) < rec( b := 0, a := 2 );
+    true    # the 'a'-s are compared first and unbound is less than 2
+    gap> rec( a := 1 ) < 1;
+    false    # other objects are less than records |
+
+However a record may contain  a special 'operations' record that contains
+a function that is called when this record is an operand of a comparison.
+The precise  mechanism is  as follows.  If  the  operand of the  equality
+operator '\<'  is a record, and if  this record has  an element  with the
+name 'operations'  that is a  record, and if  this record  has an element
+with the name '\<' that is a function, then  this function is called with
+the operands of '\<' as arguments, and the  value of the operation is the
+result  returned by this  function.   In this case a   record may also be
+smaller than an object  of another type if this  function says so.  It is
+probably not a  good idea to  define a comparison  function in such a way
+that  the  resulting  relation  is not  an  ordering relation,  i.e., not
+antisymmetric, and transitive.    Note  that there are  no  corresponding
+'\<=', '>', and '>=' functions, since those operations are implemented as
+'not <right> \< <left>', '<right> \< <left>', and 'not <left> \< <right>'
+respectively.
+
+The  following example shows  one   piece  of the  definition of  residue
+classes, using record operations.  Of course this is far from  a complete
+implementation (see "About Defining New Group  Elements").  Note that the
+'\<' must   be quoted,  so that  it   is  taken as   an  identifier  (see
+"Identifiers").
+
+|    gap> ResidueOps := rec( );;
+    gap> ResidueOps.\< := function ( l, r )
+    >   if l.modulus <> r.modulus  then
+    >     Error("<l> and <r> must have the same modulus");
+    >   fi;
+    >   return   l.representative mod l.modulus
+    >          < r.representative mod r.modulus;
+    > end;;
+    gap> Residue := function ( representative, modulus )
+    >   return rec(
+    >     representative := representative,
+    >     modulus        := modulus,
+    >     operations     := ResidueOps );
+    > end;;
+    gap> l := Residue( 13, 23 );;
+    gap> r := Residue( -1, 23 );;
+    gap> l < r;
+    true    # 13 is less than 22
+    gap> l < Residue( 10, 23 );
+    false    # 10 is less than 13 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Records}%
+\index{sum!of records}\index{difference!of records}%
+\index{product!of records}\index{quotient!of records}%
+\index{power!of records}
+
+Usually no  operations are defined   for  record.  However  a record  may
+contain  a special 'operations'  record  that contains functions that are
+called when this  record  is an   operand  of a binary  operation.   This
+mechanism is detailed below for the addition.
+
+'<obj> + <rec>', '<rec> + <obj>'
+
+If either operand  is a record, and  if  this record  contains an element
+with  name 'operations' that  is  a record, and   if this record  in turn
+contains an element  with  the name '+'  that  is  a function,  then this
+function is called with the two operands as  arguments, and the  value of
+the  addition is the value returned  by that  function.  If both operands
+are records with such a function '<rec>.operations.+', then  the function
+of the *right* operand is  called.  If either  operand  is a record,  but
+neither  operand has such  a function  '<rec>.operations.+',  an error is
+signalled.
+
+'<obj>  -  <rec>', '<rec>  -  <obj>' \\
+'<obj> \*\ <rec>', '<rec> \*\ <obj>' \\
+'<obj>  /  <rec>', '<rec>  /  <obj>' \\
+'<obj> mod <rec>', '<rec> mod <obj>' \\
+'<obj> \^\ <rec>', '<rec> \^\ <obj>'
+
+This is  evaluated similar,  but the functions   must obviously be called
+'-', '\*', '/', 'mod', '\^' respectively.
+
+The following example shows  one piece of  the  definition of  a  residue
+classes, using record operations.  Of course this is far  from a complete
+implementation (see "About Defining New Group  Elements").  Note that the
+'\*' must  be  quoted,  so  that   it   is taken  as an   identifier (see
+"Identifiers").
+
+|    gap> ResidueOps := rec( );;
+    gap> ResidueOps.\* := function ( l, r )
+    >   if l.modulus <> r.modulus  then
+    >     Error("<l> and <r> must have the same modulus");
+    >   fi;
+    >   return rec(
+    >     representative := (l.representative * r.representative)
+    >                       mod l.modulus,
+    >     modulus        := l.modulus,
+    >     operations     := ResidueOps );
+    > end;;
+    gap> Residue := function ( representative, modulus )
+    >   return rec(
+    >     representative := representative,
+    >     modulus        := modulus,
+    >     operations     := ResidueOps );
+    > end;;
+    gap> l := Residue( 13, 23 );;
+    gap> r := Residue( -1, 23 );;
+    gap> s := l * r;
+    rec(
+      representative := 10,
+      modulus := 23,
+      operations := rec(
+          \* := function ( l, r ) ... end ) ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{In for Records}%
+\index{in!for records}\index{membership test!for records}
+
+'<element> in <rec>'
+
+Usually the membership test is only defined  for lists.  However a record
+may contain a special 'operations' record, that  contains a function that
+is called  when this record  is the right  operand  of the 'in' operator.
+The precise mechanism is as follows.
+
+If the right operand of the 'in' operator is a record, and if this record
+contains an element  with the name 'operations'  that is a record, and if
+this record in turn contains  an  element with the  name  'in' that is  a
+function, then  this   function  is  called with    the two  operands  as
+arguments, and the value of the membership test  is the value returned by
+that function.  The function should of course return 'true' or 'false'.
+
+The following   example shows one  piece  of the definition  of   residue
+classes, using record operations.  Of course this is  far from a complete
+implementation (see "About Defining New Group Elements").  Note  that the
+'in'   must  be  quoted, so that  it  is  taken as   an  identifier  (see
+"Identifiers").
+
+|    gap> ResidueOps := rec( );;
+    gap> ResidueOps.\in := function ( l, r )
+    >   if IsInt( l )  then
+    >     return (l - r.representative) mod r.modulus = 0;
+    >   else
+    >     return false;
+    >   fi;
+    > end;;
+    gap> Residue:= function ( representative, modulus )
+    >   return rec(
+    >     representative := representative,
+    >     modulus        := modulus,
+    >     operations     := ResidueOps );
+    > end;;
+    gap> l := Residue( 13, 23 );;
+    gap> -10 in l;
+    true
+    gap> 10 in l;
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Printing of Records}
+
+'Print( <rec> )'
+
+If  a record   is  printed  by  'Print'  (see  "Print", "PrintTo",    and
+"AppendTo") or by the main loop (see "Main Loop"),  it is usually printed
+as record literal, i.e., as a sequence of components,  each in the format
+'<name> \:= <value>', separated by commas and enclosed in 'rec(' and ')'.
+
+|    gap> r := rec();;  r.a := 1;;  r.b := 2;;
+    gap> r;
+    rec(
+      a := 1,
+      b := 2 ) |
+
+But  if the record  has an element with the   name 'operations' that is a
+record, and if this record has an element with the name 'Print' that is a
+function, then this function is called with the record as argument.  This
+function must print whatever   the printed representation of the   record
+should look like.
+
+The following   example shows one piece  of   the definition  of  residue
+classes, using record operations.  Of course this  is far from a complete
+implementation (see "About Defining  New Group Elements").  Note that  it
+is typical for records  that mimic group  elements to print as a function
+call that, when evaluated, will create this group element record.
+
+|    gap> ResidueOps := rec( );;
+    gap> ResidueOps.Print := function ( r )
+    >   Print( "Residue( ",
+    >               r.representative mod r.modulus, ", ",
+    >               r.modulus, " )" );
+    > end;;
+    gap> Residue := function ( representative, modulus )
+    >   return rec(
+    >     representative := representative,
+    >     modulus        := modulus,
+    >     operations     := ResidueOps );
+    > end;;
+    gap> l := Residue( 33, 23 );
+    Residue( 10, 23 ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRec}%
+\index{test!for records}
+
+'IsRec( <obj> )'
+
+'IsRec' returns 'true'  if the object <obj>,  which  may be an object  of
+arbitrary type, is a record, and 'false' otherwise.  Will signal an error
+if <obj> is a variable with no assigned value.
+
+|    gap> IsRec( rec( a := 1, b := 2 ) );
+    true
+    gap> IsRec( IsRec );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsBound}%
+\index{test!for record elements}%
+\index{test!for list elements}
+
+'IsBound( <rec>.<name> )' \\
+'IsBound( <list>[<n>] )'
+
+In the first form  'IsBound'  returns 'true'  if the  record <rec> has  a
+component with the   name <name>, which  must   be an ident  and  'false'
+otherwise.    <rec>  must evaluate  to a   record, otherwise  an error is
+signalled.
+
+In  the second form  'IsBound'  returns 'true'  if the  list <list> has a
+element at the position <n>, and 'false' otherwise.  <list> must evaluate
+to a list, otherwise an error is signalled.
+
+|    gap> r := rec( a := 1, b := 2 );;
+    gap> IsBound( r.a );
+    true
+    gap> IsBound( r.c );
+    false
+    gap> l := [  , 2, 3,  , 5,  , 7,  ,  ,   , 11 ];;
+    gap> IsBound( l[7] );
+    true
+    gap> IsBound( l[4] );
+    false
+    gap> IsBound( l[101] );
+    false |
+
+Note that 'IsBound' is special in that it does not evaluate its argument,
+otherwise it would  always signal an error when  it is supposed to return
+'false'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Unbind}%
+
+'Unbind( <rec>.<name> )' \\
+'Unbind( <list>[<n>] )'
+
+In the first form 'Unbind' deletes the  component with the name <name> in
+the record <rec>.  That is, after  execution of 'Unbind', <rec> no longer
+has a record component  with this name.  Note that  it is not an error to
+unbind a nonexisting record component.  <rec> must  evaluate to a record,
+otherwise an error is signalled.
+
+In the second form  'Unbind' deletes the element  at the position <n>  in
+the list <list>.  That is, after execution of  'Unbind', <list> no longer
+has an assigned value at the position <n>.  Note that it  is not an error
+to unbind a  nonexisting list element.  <list>  must evaluate  to a list,
+otherwise an error is signalled.
+
+|    gap> r := rec( a := 1, b := 2 );;
+    gap> Unbind( r.a );  r;
+    rec(
+      b := 2 )
+    gap> Unbind( r.c );  r;
+    rec(
+      b := 2 )
+    gap> l := [  , 2, 3,  5,  , 7,  ,  ,  , 11 ];;
+    gap> Unbind( l[3] );  l;
+    [ , 2,, 5,, 7,,,, 11 ]
+    gap> Unbind( l[4] );  l;
+    [ , 2,,,, 7,,,, 11 ] |
+
+Note that 'Unbind' does not evaluate its argument, otherwise there  would
+be no way for 'Unbind' to tell which component to remove in which record,
+because it would only receive the value of this component.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Copy}%
+\index{copy!an object}\index{clone!an object}
+
+'Copy( <obj> )'
+
+'Copy' returns a copy <new> of the object <obj>.  You may apply 'Copy' to
+objects of any type, but for objects that are not lists or records 'Copy'
+simply returns the object itself.
+
+For lists and records  the result is a *new* list or  record that is *not
+identical* to  any  other  list  or  record (see  "Identical  Lists"  and
+"Identical Records").  This means that you  may modify this copy <new> by
+assignments (see "List Assignment" and "Record Assignment") or by  adding
+elements to it  (see "Add" and "Append"), without  modifying the original
+object <obj>.
+
+|    gap> list1 := [ 1, 2, 3 ];;
+    gap> list2 := Copy( list1 );
+    [ 1, 2, 3 ]
+    gap> list2[1] := 0;;  list2;
+    [ 0, 2, 3 ]
+    gap> list1;
+    [ 1, 2, 3 ] |
+
+That 'Copy' returns the object itself if it is not a  list or a record is
+consistent with this definition,  since  there is  no  way to  change the
+original object <obj> by modifying <new>, because in fact there is no way
+to change the object <new>.
+
+'Copy' basically executes the following code for  lists, and similar code
+for records.
+
+|    new := [];
+    for i  in [1..Length(obj)]  do
+        if IsBound(obj[i])  then
+            new[i] := Copy( obj[i] );
+        fi;
+    od; |
+
+Note that 'Copy' recursively copies all elements of the object <obj>.  If
+you    only   want  to   copy the  top    level  use   'ShallowCopy' (see
+"ShallowCopy").
+
+|    gap> list1 := [ [ 1, 2 ], [ 3, 4 ] ];;
+    gap> list2 := Copy( list1 );
+    [ [ 1, 2 ], [ 3, 4 ] ]
+    gap> list2[1][1] := 0;;  list2;
+    [ [ 0, 2 ], [ 3, 4 ] ]
+    gap> list1;
+    [ [ 1, 2 ], [ 3, 4 ] ] |
+
+The above code is  not entirely correct.  If the object  <obj> contains a
+list or record twice  this list or record is not  copied twice,  as would
+happen  with the  above  definition, but only once.   This means that the
+copy <new> and the object <obj> have exactly the same structure when view
+as a general graph.
+
+|    gap> sub := [ 1, 2 ];;  list1 := [ sub, sub ];;
+    gap> list2 := Copy( list1 );
+    [ [ 1, 2 ], [ 1, 2 ] ]
+    gap> list2[1][1] := 0;;  list2;
+    [ [ 0, 2 ], [ 0, 2 ] ]
+    gap> list1;
+    [ [ 1, 2 ], [ 1, 2 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ShallowCopy}%
+\index{copy!an object}\index{clone!an object}
+
+'ShallowCopy( <obj> )'
+
+'ShallowCopy' returns  a    copy of the object    <obj>.   You may  apply
+'ShallowCopy' to objects of any type, but for  objects that are not lists
+or records 'ShallowCopy' simply returns the object itself.
+
+For lists  and records the result  is a *new* list or record that is *not
+identical*  to  any  other  list  or record  (see  "Identical  Lists" and
+"Identical Records").  This means that you may modify this  copy <new> by
+assignments (see "List Assignment" and "Record  Assignment") or by adding
+elements  to it (see "Add" and "Append"), without  modifying the original
+object <obj>.
+
+|    gap> list1 := [ 1, 2, 3 ];;
+    gap> list2 := ShallowCopy( list1 );
+    [ 1, 2, 3 ]
+    gap> list2[1] := 0;;  list2;
+    [ 0, 2, 3 ]
+    gap> list1;
+    [ 1, 2, 3 ] |
+
+That 'ShallowCopy'  returns the object itself if  it is not  a  list or a
+record  is consistent with  this  definition, since  there  is no  way to
+change the original  object  <obj> by  modifying <new>, because  in  fact
+there is no way to change the object <new>.
+
+'ShallowCopy'   basically executes  the   following  code for lists,  and
+similar code for records.
+
+|    new := [];
+    for i  in [1..Length(obj)]  do
+        if IsBound(obj[i])  then
+            new[i] := obj[i];
+        fi;
+    od; |
+
+Note that 'ShallowCopy' only copies the top level.  The subobjects of the
+new object <new>  are identical  to  the corresponding  subobjects of the
+object <obj>.  If you want to copy recursively use 'Copy' (see "Copy").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RecFields}%
+
+'RecFields( <rec> )'
+
+'RecFields' returns a  list of strings corresponding  to the names of the
+record components of the record <rec>.
+
+|    gap> r := rec( a := 1, b := 2 );;
+    gap> RecFields( r );
+    [ "a", "b" ] |
+
+Note that you cannot use the string result in the  ordinary way to access
+or   change  a  record  component.  You  must    use the '<rec>.(<name>)'
+construct (see "Accessing Record Elements" and "Record Assignment").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

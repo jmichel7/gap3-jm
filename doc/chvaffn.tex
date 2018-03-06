@@ -1,0 +1,154 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvaffn.tex       CHEVIE documentation       Meinolf Geck, Frank Luebeck,
+%A                                                Jean Michel, G"otz Pfeiffer
+%%
+%%
+%Y  Copyright (C) 1992 - 1996  Lehrstuhl D f\"ur Mathematik, RWTH Aachen, IWR
+%Y  der Universit\"at Heidelberg, University of St. Andrews, and   University
+%Y  Paris VII.
+%%
+%%  This  file  contains  the  description  of  the  GAP functions of CHEVIE
+%%  dealing with affine Weyl groups and Hecke algebras
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{Affine Coxeter groups and Hecke algebras}
+
+In this chapter we describe functions dealing with affine Coxeter  groups
+and Hecke algebras.
+
+We follow the presentation in \cite{Kac}, \S1.1 and 3.7.
+
+A *generalized Cartan matrix* $C$ is a matrix of integers
+%% Jean\:\ can we drop this condition and have something which works for
+%% non-rational groups?
+of  size $n\times n$ and of rank  $l$ such that $c_{i,i}=2$, $c_{i,j}\le 0$
+is $i\ne j$, and $c_{i,j}=0$ if and only if $c_{j,i}=0$. We say that $C$ is
+*indecomposable* if it does not admit any block decomposition.
+
+Let $C$ be a generalized Cartan matrix. For $I$ a subset of
+$\{1,\ldots,n\}$ we denote by $C_I$ the square submatrix with indices $i,j$
+taken  in $I$. If $v$ is a real vector of length $n$, we write $v>0$ if for
+all  $i\in\{1,\ldots,n\}$ we have  $v_i>0$. It can  be shown that  $C$ is a
+Cartan  matrix if and  only if for  all sets $I$,  we have $\det C_I>0$; or
+equivalently,  if and only if there exists  $v>0$ such that $C.v>0$. $C$ is
+called  an *affine  Cartan matrix*  if for  all proper  subsets $I$ we have
+$\det  C_I>0$, but $\det  C=0$; or equivalently  if there exists $v>0$ such
+that $C.v=0$.
+
+Given  an  irreducible  Weyl  group  $W$  with  Cartan  matrix  $C$, we can
+construct a generalized Cartan matrix $\tilde C$ as follows. Let $\alpha_0$
+be the opposed of the highest root. Then the matrix $$\left
+(\begin{array}{cc}C&C.\alpha_0\\  \alpha_0.C&2\end{array}\right  )$$  is an
+affine  Cartan matrix. The affine Cartan  matrices which can be obtained in
+this  way are those  we are interested  in, which give  rise to affine Weyl
+groups.
+
+Let  $d=n-l$.  A  *realization*  of  a  generalized Cartan matrix is a pair
+$V,V^\vee$  of  vector  spaces  of  dimension  $n+d$  together with vectors
+$\alpha_1,\ldots,\alpha_n\in V$ (the *simple roots*),
+$\alpha^\vee_1,\ldots,\alpha^\vee_n\in V^\vee$ (the *simple coroots*), such
+that  $(\alpha^\vee_i, \alpha_j)=c_{i,j}$. Up to isomorphism, a realization
+is obtained as follows\:\ write $C=\left(
+\begin{array}{c}C_1\\C_2\end{array}\right)$  where  $C_1$  is  of rank $l$.
+Then  take $\alpha_i$ to  be the first  $n$ vectors in  a basis of $V$, and
+take  $\alpha^\vee_j$ to  be given  in the  dual basis  by the  rows of the
+matrix $$\left(\begin{array}{cc}C_1&0\\ C_2&\hbox{Id}_d\\
+\end{array}\right).$$  To $C$ we associate a  reflection group in the space
+$V$,   generated   by   the   *fundamental   reflections*  $r_i$  given  by
+$r_i(v)=v-(\alpha^\vee_i,v)\alpha_i$.  This is a  Coxeter group, called the
+*Affine  Weyl group* $\tilde  W$ associated to  $W$ when we  start with the
+affine Cartan matrix associated to a Weyl group $W$.
+
+The  Affine Weyl group  is infinite; it  has one additional generator $s_0$
+(the  reflection with respect  to $\alpha_0$) compared  to $W$. In \GAP\ we
+can  not use $0$ as a  label by default for a  generator of a Coxeter group
+(because  the default labels are used as indices, and indices start at 1 in
+\GAP)  so we label  it as 'n+1'  where 'n' is  the numbers of generators of
+$W$.  The user can change that by setting the field '.reflectionsLabels' of
+$\tilde  W$  to  'Concatenation([1..n],[0])'.  As  in  the  finite case, we
+associate  to the realization  of $\tilde W$  a Dynkin diagram.  We get the
+following diagrams\:
+
+|    gap> PrintDiagram(Affine(CoxeterGroup("A",1))); # infinite bond
+    A1~  1 oo 2
+    gap> PrintDiagram(Affine(CoxeterGroup("A",5)));  # for An, n not 1
+            - - - 6 - - -
+           /             \
+    A5~   1 - 2 - 3 - 4 - 5
+    gap> PrintDiagram(Affine(CoxeterGroup("B",4)));  # for Bn
+                  5
+                  |'\|'|
+    B4~   1 < 2 - 3 - 4
+    gap> PrintDiagram(Affine(CoxeterGroup("C",4)));  # for Cn
+    C4~   1 > 2 - 3 - 4 < 5
+    gap> PrintDiagram(Affine(CoxeterGroup("D",6)));  # for Dn
+    D6~  1           7
+          \         /
+           3 - 4 - 5
+          /         \
+         2           6
+    gap> PrintDiagram(Affine(CoxeterGroup("E",6)));
+                 7
+                 |'\|'|
+                 2
+                 |'\|'|
+    E6~  1 - 3 - 4 - 5 - 6
+    gap> PrintDiagram(Affine(CoxeterGroup("E",7)));
+                     2
+                     |'\|'|
+    E7~  8 - 1 - 3 - 4 - 5 - 6 - 7
+    gap> PrintDiagram(Affine(CoxeterGroup("E",8)));
+                 2
+                 |'\|'|
+    E8~  1 - 3 - 4 - 5 - 6 - 7 - 8 - 9
+    gap> PrintDiagram(Affine(CoxeterGroup("F",4)));
+    F4~  5 - 1 - 2 > 3 - 4
+    gap> PrintDiagram(Affine(CoxeterGroup("G",2)));
+    G2~  3 - 1 > 2|
+
+We  represent in \GAP\ the group $\tilde W$  as a matrix group in the space
+$V$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Affine}%
+\index{Affine}
+
+'Affine( <W> )'
+
+This function returns the affine Weyl corresponding to the Weyl group <W>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations and functions for Affine Weyl groups}
+
+All  matrix group operations are defined on  Affine Weyl groups, as well as
+all  functions  defined  for  abstract  Coxeter groups (in particular Hecke
+algebras and their Kazhdan-Lusztig bases).
+
+The  functions 'Print(<W>)'  and 'PrintDiagram(<W>)'  are also  defined and
+print an appropriate representation of <W>\:
+
+|    gap> W:=Affine(CoxeterGroup("A",4));
+    Affine(CoxeterGroup("A",4))
+    gap> PrintDiagram(W);
+            - - 5 - -
+           /         \
+    A4~   1 - 2 - 3 - 4|
+
+The  function  'ReflectionLength'  is  also  defined,  using the formula of
+Lewis, McCammond, Petersen and Schwer.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AffineRootAction}
+\index{AffineRootAction}
+
+'AffineRootAction(<W>,<w>,<x>)'
+
+The  Affine Weyl group <W> can be realized as affine transformations on the
+vector  space  spanned  by  the  roots  of  'W.linear'.  Given a vector <x>
+expressed  in the basis of simple roots  of 'W.linear' and <w> in <W>, this
+function  returns returns the image of <x>  under <w> realized as an affine
+transformation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

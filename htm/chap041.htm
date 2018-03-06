@@ -1,0 +1,246 @@
+<html><head><title>GAP3 Manual: 41 Matrix Algebras</title></head>
+<body bgcolor="ffffff">
+<h1>41 Matrix Algebras</h1>
+<P><P><P>
+This chapter describes the data structures and functions for matrix
+algebras in <strong>GAP3</strong>.  See chapter <a href="chap039.htm">Algebras</a> for the description of all
+those aspects that concern general algebras.
+<P>
+First the objects of interest in this chapter are introduced (see <a href="chap041.htm#SECT001">More
+about Matrix Algebras</a>, <a href="chap041.htm#SECT002">Bases for Matrix Algebras</a>).
+<P>
+The next sections describe functions for matrix algebras, first those
+that can be applied not only for matrix algebras (see <a href="chap041.htm#SECT003">IsMatAlgebra</a>,
+<a href="chap041.htm#SECT004">Zero and One for Matrix Algebras</a>, <a href="chap041.htm#SECT005">Functions for Matrix Algebras</a>, 
+<a href="chap041.htm#SECT006">Algebra Functions for Matrix Algebras</a>, <a href="chap041.htm#SECT007">RepresentativeOperation for
+Matrix Algebras</a>), and then specific matrix algebra functions (see
+<a href="chap041.htm#SECT008">MatAlgebra</a>, <a href="chap041.htm#SECT009">NullAlgebra</a>, <a href="chap041.htm#SECT010">Fingerprint</a>, <a href="chap041.htm#SECT011">NaturalModule</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap041.htm#SECT001">More about Matrix Algebras</a>
+<LI> <A HREF="chap041.htm#SECT002">Bases for Matrix Algebras</a>
+<LI> <A HREF="chap041.htm#SECT003">IsMatAlgebra</a>
+<LI> <A HREF="chap041.htm#SECT004">Zero and One for Matrix Algebras</a>
+<LI> <A HREF="chap041.htm#SECT005">Functions for Matrix Algebras</a>
+<LI> <A HREF="chap041.htm#SECT006">Algebra Functions for Matrix Algebras</a>
+<LI> <A HREF="chap041.htm#SECT007">RepresentativeOperation for Matrix Algebras</a>
+<LI> <A HREF="chap041.htm#SECT008">MatAlgebra</a>
+<LI> <A HREF="chap041.htm#SECT009">NullAlgebra</a>
+<LI> <A HREF="chap041.htm#SECT010">Fingerprint</a>
+<LI> <A HREF="chap041.htm#SECT011">NaturalModule</a>
+</ol>
+<A NAME="SECT001"><h2>41.1 More about Matrix Algebras</h2></a>
+<P><P><P>
+A <strong>matrix algebra</strong> is an algebra (see <a href="chap039.htm#SECT001">More about Algebras</a>) the elements
+of which are matrices.
+<P>
+There is a canonical isomorphism of a matrix algebra onto a row space
+(see chapter <a href="chap033.htm">Row Spaces</a>) that maps a matrix to the concatenation of its
+rows.  This makes all computations with matrix algebras that use its
+vector space structure as efficient as the corresponding computation with
+a row space.  For example the computation of a vector space basis, of
+coefficients with respect to such a basis, and of representatives under
+the action on a vector space by right multiplication.
+<P>
+If one is interested in matrix algebras as domains themselves then one
+should think of this algebra as of a row space that admits a
+multiplication.  For example, the convention for row spaces that the
+coefficients field must contain the field of the vector elements also
+applies to matrix algebras.  And the concept of vector space bases is
+the same as that for row spaces (see <a href="chap041.htm#SECT002">Bases for Matrix Algebras</a>).
+<P>
+In the chapter about modules (see chapter <a href="chap042.htm">Modules</a>) it is stated that
+modules are of interest mainly as operation domains of algebras.  Here
+we can state that matrix algebras are of interest mainly because they
+describe modules.  For some of the functions it is not obvious whether
+they are functions for modules or for algebras or for the matrices that
+generate an algebra.  For example, one usually talks about the
+fingerprint of an <I>A</I>-module <I>M</I>, but this is in fact computed as the
+list of nullspace dimensions of generators of a certain matrix algebra,
+namely the induced action of <I>A</I> on <I>M</I> as is computed using
+<code>Operation( <var>A</var>, <var>M</var> )</code> (see <a href="chap041.htm#SECT010">Fingerprint</a>, <a href="chap039.htm#SECT022">Operation for Algebras</a>).
+<P><A NAME="SECT002"><h2>41.2 Bases for Matrix Algebras</h2></a>
+<P><P><P>
+As stated in section <a href="chap041.htm#SECT001">More about Matrix Algebras</a>, the implementation of
+bases for matrix algebras follows that of row space bases, see <a href="chap033.htm#SECT002">Row Space
+Bases</a> for the details.  Consequently there are two types of bases,
+arbitrary bases and semi-echelonized bases, where the latter type can be
+defined as follows.  Let <I>&phi;</I> be the vector space homomorphism that
+maps a matrix in the algebra <I>A</I> to the concatenation of its rows, and
+let <I>B = (b<sub>1</sub>, b<sub>2</sub>, ..., b<sub>n</sub>)</I> be a vector space basis of <I>A</I>, then
+<I>B</I> is called <strong>semi-echelonized</strong> if and only if the row space basis
+<I>(&phi;(b<sub>1</sub>), &phi;(b<sub>2</sub>), ..., &phi;(b<sub>n</sub>))</I> is semi-echelonized,
+in the sense of <a href="chap033.htm#SECT002">Row Space Bases</a>.  The <strong>canonical basis</strong> is defined
+analogeously.
+<P>
+Due to the multiplicative structure that allows to view a matrix algebra
+<I>A</I> as an <I>A</I>-module with action via multiplication from the right,
+there is additionally the notion of a <strong>standard basis</strong> for <I>A</I>, which is
+essentially described in <a href="chap042.htm#SECT013">StandardBasis for Row Modules</a>.  The default way
+to compute a vector space basis of a matrix algebra from a set of
+generating matrices is to compute this standard basis and a
+semi-echelonized basis in parallel.
+<P>
+If the matrix algebra <I>A</I> is unital then every semi-echelonized basis and
+also the standard basis have <code>One( <var>A</var> )</code> as first basis vector.
+<P><A NAME="SECT003"><h2>41.3 IsMatAlgebra</h2></a>
+<P><P><P>
+<code>IsMatAlgebra( <var>obj</var> )</code>
+<P>
+returns <code>true</code> if <var>obj</var>, which may be an object of arbitrary type, is a
+matrix algebra and <code>false</code> otherwise.
+<P>
+<pre>    gap> IsMatAlgebra( FreeAlgebra( GF(2), 0 ) );
+    false
+    gap> IsMatAlgebra( Algebra( Rationals, [[[1]]] ) );
+    true </pre>
+<P><A NAME="SECT004"><h2>41.4 Zero and One for Matrix Algebras</h2></a>
+<P><P><P>
+<DL><DT><code>Zero( <var>A</var> )</code> :<DD> <BR> 
+    returns the square zero matrix of the same dimension and
+    characteristic as the elements of <var>A</var>.  This matrix is thought only
+    for testing whether a matrix is zero, usually all its rows will be
+    <strong>identical</strong> in order to save space.  So you should <strong>not</strong> use this
+    zero matrix for other purposes; use <a href="chap034.htm#SECT004">NullMat</a> <code>NullMat</code> instead.
+</DL><P>
+<DL><DT><code>One( <var>A</var> )</code> :<DD> <BR> 
+    returns for a unital matrix algebra <var>A</var> the identity matrix of the
+    same dimension and characteristic as the elements of <var>A</var>; for a not
+    unital matrix algebra <var>A</var> the (left and right) multiplicative
+    neutral element (if exists) is computed by solving a linear equation
+    system.
+</DL><P><A NAME="SECT005"><h2>41.5 Functions for Matrix Algebras</h2></a>
+<P><P><P>
+<code>Closure</code>, <code>Elements</code>, <code>IsFinite</code>, and <code>Size</code> are the only <strong>set theoretic
+functions</strong> that are overlaid in the operations records for matrix
+algebras and unital matrix algebras.
+See <a href="chap039.htm#SECT017">Set Theoretic Functions for Algebras</a> for an overview of set
+theoretic functions for general algebras.
+<P>
+No <strong>vector space functions</strong> are overlaid in the operations records for
+matrix algebras and unital matrix algebras.
+The <strong>functions for vector space bases</strong> are mainly the same as those for
+row space bases (see <a href="chap041.htm#SECT002">Bases for Matrix Algebras</a>).
+<P>
+For other functions for matrix algebras, see <a href="chap041.htm#SECT006">Algebra Functions for
+Matrix Algebras</a>.
+<P><A NAME="SECT006"><h2>41.6 Algebra Functions for Matrix Algebras</h2></a>
+<P><P><P>
+<code>Centralizer( <var>A</var>, <var>a</var> )</code> <BR> 
+<DL><DT><code>Centralizer( <var>A</var>, <var>S</var> )</code> :<DD> <BR> 
+    returns the element or subalgebra centralizer in the matrix algebra
+    <var>A</var>.  Centralizers in matrix algebras are computed by solving a
+    linear equation system.
+</DL><P>
+<DL><DT><code>Centre( <var>A</var> )</code> :<DD> <BR> 
+    returns the centre of the matrix algebra <var>A</var>, which is computed by
+    solving a linear equation system.
+</DL><P>
+<DL><DT><code>FpAlgebra( <var>A</var> )</code> :<DD> <BR> 
+    returns a finitely presented algebra that is isomorphic to <var>A</var>.
+    The presentation is computed using the structure constants, thus
+    a vector space basis of <var>A</var> has to be computed.
+    If <var>A</var> contains no multiplicative neutral element (see <a href="chap041.htm#SECT004">Zero and One
+    for Matrix Algebras</a>) an error is signalled.
+    (At the moment the implementation is really simpleminded.)
+</DL><P>
+<pre>    gap> a:= UnitalAlgebra( Rationals, [[[0,1],[0,0]]] );
+    UnitalAlgebra( Rationals, [ [ [ 0, 1 ], [ 0, 0 ] ] ] )
+    gap> FpAlgebra( a );
+    UnitalAlgebra( Rationals, [ a.1 ] )
+    gap> last.relators;
+    [ a.1^2 ] </pre>
+<P><A NAME="SECT007"><h2>41.7 RepresentativeOperation for Matrix Algebras</h2></a>
+<P><P><P>
+<code>RepresentativeOperation( <var>A</var>, <var>v1</var>, <var>v2</var> )</code>
+<P>
+returns the element in the matrix algebra <var>A</var> that maps <var>v1</var> to <var>v2</var>
+via right multiplication if such an element exists, and <code>false</code>
+otherwise.  <var>v1</var> and <var>v2</var> may be vectors or matrices of same dimension.
+<P>
+<pre>    gap> a:= MatAlgebra( GF(2), 2 );
+    UnitalAlgebra( GF(2), [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2) ] ], 
+      [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] ] )
+    gap> v1:= [ 1, 0 ] * Z(2);; v2:= [ 1, 1 ] * Z(2);;
+    gap> RepresentativeOperation( a, v1, v2 );
+    [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, Z(2)^0 ] ]
+    gap> t:= TrivialSubalgebra( a );;
+    gap> RepresentativeOperation( t, v1, v2 );
+    false </pre>
+<P><A NAME="SECT008"><h2>41.8 MatAlgebra</h2></a>
+<P><P><P>
+<code>MatAlgebra( <var>F</var>, <var>n</var> )</code>
+<P>
+returns the full matrix algebra of <var>n</var> by <var>n</var> matrices over the field <var>F</var>.
+<P>
+<pre>    gap> a:= MatAlgebra( GF(2), 2 );
+    UnitalAlgebra( GF(2), [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2) ] ], 
+      [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] ] )
+    gap> Size( a );
+    16 </pre>
+<P><A NAME="SECT009"><h2>41.9 NullAlgebra</h2></a>
+<P><P><P>
+<code>NullAlgebra( <var>F</var> )</code>
+<P>
+returns a trivial algebra (that is, it contains only the zero element)
+over the field <var>F</var>.
+This occurs in a natural way whenever <code>Operation</code> (see <a href="chap039.htm#SECT022">Operation for
+Algebras</a>) constructs a faithful representation of the zero module.
+<P>
+Here we meet the strange situation that an operation algebra does not
+consist of matrices, since in <strong>GAP3</strong> a matrix always has a positive
+number of rows and columns.  The element of a <code>NullAlgebra( <var>F</var> )</code> is
+the object <code>EmptyMat</code> that acts (trivially) on empty lists via right
+multiplication.
+<P>
+<pre>    gap> a:= NullAlgebra( GF(2) );
+    NullAlgebra( GF(2) )
+    gap> Size( a );
+    1
+    gap> Elements( a );
+    [ EmptyMat ]
+    gap> [] * EmptyMat;
+    [  ]
+    gap> IsAlgebra( a );
+    true </pre>
+<P><A NAME="SECT010"><h2>41.10 Fingerprint</h2></a>
+<P><P><P>
+<code>Fingerprint( <var>A</var> )</code><BR> 
+<code>Fingerprint( <var>A</var>, <var>list</var> )</code>
+<P>
+returns the fingerprint of the matrix algebra <var>A</var>, i.e., a list of
+nullities of six ``standard'' words in <var>A</var> (for 2-generator
+algebras only) or of the words with numbers in <var>list</var>.
+<P>
+<pre>    gap> m1:= PermutationMat( (1,2,3,4,5), 5, GF(2) );;
+    gap> m2:= PermutationMat( (1,2)      , 5, GF(2) );;
+    gap> a:= Algebra( GF(2), [ m1, m2 ] );;
+    gap> Fingerprint( a );
+    [ 1, 1, 1, 3, 0, 4 ] </pre>
+<P>
+Let <I>a</I> and <I>b</I> be the generators of a 2-generator matix algebra.
+The six standard words used by <code>Fingerprint</code> are <I>w<sub>1</sub>, w<sub>2</sub>, ..., w<sub>6</sub></I>
+where
+<center><table><tr><td><I> </td><td><table style="display:inline-table;"><tr><td><I> w<sub>1</sub> </I></td><td><I> = </I></td><td><I> a b + a + b, </I></td><td><I>
+                         w<sub>2</sub> </I></td><td><I> = </I></td><td><I> w<sub>1</sub> + a b<sup>2</sup>, </I></td></tr><tr><td><I> 
+                         w<sub>3</sub> </I></td><td><I> = </I></td><td><I> a + b w<sub>2</sub>,   </I></td><td><I>
+                         w<sub>4</sub> </I></td><td><I> = </I></td><td><I> b + w<sub>3</sub>,     </I></td></tr><tr><td><I> 
+                         w<sub>5</sub> </I></td><td><I> = </I></td><td><I> a b + w<sub>4</sub>,   </I></td><td><I>
+                         w<sub>6</sub> </I></td><td><I> = </I></td><td><I> a + w<sub>5</sub>     </I></td></tr></table style="display:inline-table;"></td><td> </I></td></tr></table></center>
+<P><A NAME="SECT011"><h2>41.11 NaturalModule</h2></a>
+<P><P><P>
+<code>NaturalModule( <var>A</var> )</code>
+<P>
+returns the <strong>natural module</strong> <I>M</I> of the matrix algebra <var>A</var>.
+If <var>A</var> consists of <I>n</I> by <I>n</I> matrices, and <I>F</I> is the coefficients field of
+<var>A</var> then <I>M</I> is an <I>n</I>-dimensional row space over the field <I>F</I>, viewed as
+<var>A</var>-right module (see <a href="chap042.htm#SECT004">Module</a>).
+<P>
+<pre>    gap> a:= MatAlgebra( GF(2), 2 );;
+    gap> a.name:= "a";;
+    gap> m:= NaturalModule( a );
+    Module( a, [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ) </pre>
+<P><a href ="chap040.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap042.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

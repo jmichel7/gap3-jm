@@ -1,0 +1,229 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GRAPE Package}
+
+{\GRAPE}  (Version~2.2)  is  a system for  computing with graphs,  and is
+primarily  designed  for constructing  and analysing  graphs  related  to
+groups and finite geometries.
+
+The vast  majority  of {\GRAPE}  functions  are written entirely  in  the
+{\GAP}  language,  except  for  the  automorphism  group  and isomorphism
+testing  functions,  which use  Brendan  McKay\'s  {\nauty} (Version~1.7)
+package \cite{Nau90}.
+
+Except for the {\nauty}~1.7 package included with  {\GRAPE}, the {\GRAPE}
+system  was designed  and  written by Leonard   H.   Soicher,  School  of
+Mathematical Sciences, Queen Mary  and Westfield College,  Mile End Road,
+London E1~4NS, U.K., email\: L.H.Soicher@qmw.ac.uk.
+
+Please tell Leonard  Soicher if  you install  {\GRAPE}.  Also, if you use
+{\GRAPE} to solve a problem then also tell him about it, and reference
+
+L.H.Soicher, {\GRAPE\:} a system for computing with graphs and groups, in
+<Groups and Computation>  (L. Finkelstein and W.M. Kantor, eds.),  DIMACS 
+Series  in Discrete  Mathematics and  Theoretical Computer Science  *11*, 
+pp. 287--291.
+
+If you use the automorphism group and graph isomorphism testing functions
+of {\GRAPE} then you  are  also using Brendan McKay\'s  {\nauty} package,
+and should also reference
+
+B.D.McKay,   {\nauty}  users  guide  (version   1.5),  Technical   Report
+TR-CS-90-02, Computer Science Department, Australian National University,
+1990.
+
+This document is in 'nauty17/nug.alw' in  postscript form.  There is also
+a readme for {\nauty} in 'nauty17/read.me'.
+
+*Warning*  A canonical  labelling  given  by  {\nauty} can  depend on the
+version of  {\nauty}  (Version~1.7 in  {\GRAPE}~2.2),  certain parameters
+of {\nauty} (always set  the  same  by {\GRAPE}~2.2) and the compiler and 
+computer used.  If  you  use  a  canonical labelling  (say by  using  the 
+'IsIsomorphicGraph' function) of  a graph stored on a file, then you must  
+be sure that this field  was created in the same environment in which you 
+are  presently  computing.  If in doubt, unbind the  'canonicalLabelling' 
+field of the graph.
+
+The only incompatible changes from {\GRAPE}~2.1 to {\GRAPE}~2.2 are  that 
+the function 'Components' is  now  called 'ConnectedComponents',  and the 
+function  'Component'  is now called 'ConnectedComponent', and only works
+for simple graphs.
+
+{\GRAPE} is provided \"as is\", with no warranty whatsoever.  Please read 
+the  copyright  notice  in the file 'COPYING'.
+
+Please   send   comments    on   {\GRAPE},   bug    reports,   etc.    to
+L.H.Soicher@qmw.ac.uk.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing the GRAPE Package}
+
+{\GRAPE} consists  of  two  parts.  The first  part  is  a set of  {\GAP}
+functions  for constructing and analysing  graphs,  which will run on any
+machine that supports  {\GAP}.  The second part is  based on the {\nauty}
+package written  in C  and  computes automorphism  groups of  graphs, and
+tests  for graph isomorphisms.  This  part  of the  package  can only  be
+installed under UNIX.
+
+If you  got a complete binary and  source distribution for  your machine,
+nothing   has to be   done  if you  want   to use {\GRAPE}  for  a single
+architecture.  If you  want to  use  {\GRAPE} for machines with different
+architectures  skip the extraction and   compilation part of this section
+and proceed with the creation of shell scripts described below.
+
+If you  got a complete source distribution,  skip the  extraction part of
+this section and proceed with the compilation part below.
+
+In the example we will assume that you, as user 'gap', are installing the
+{\GRAPE}  package  for  use  by  several  users  on  a  network   of  two
+DECstations, called  'bert' and 'tiffy',  and a PC running 386BSD, called
+'waldorf'.  We assume that {\GAP}  is  also  installed on  these machines
+following the instructions given in "Installation of GAP for UNIX".
+
+Note that certain parts  of  the  output  in the examples should  only be
+taken as rough outline, especially file sizes and file dates are *not* to
+be taken literally.
+
+First of  all you have to get  the file  'grape.zoo' (see "Getting GAP").
+Then you must locate the {\GAP} directories containing 'lib/' and 'doc/',
+this is usually  'gap3r4p0' where '0' is to   be replaced by  current the
+patch level.
+
+|    gap@tiffy:~ > ls -l
+    drwxr-xr-x  11 gap      gap          1024 Nov  8  1991 gap3r4p0
+    -rw-r--r--   1 gap      gap        342865 May 27 15:16 grape.zoo
+    gap@tiffy:~ > ls -l gap3r4p0
+    drwxr-xr-x   2 gap      gap          3072 Nov 26 11:53 doc
+    drwxr-xr-x   2 gap      gap          1024 Nov  8  1991 grp
+    drwxr-xr-x   2 gap      gap          2048 Nov 26 09:42 lib
+    drwxr-xr-x   2 gap      gap          2048 Nov 26 09:42 src
+    drwxr-xr-x   2 gap      gap          1024 Nov 26 09:42 tst|
+
+Unpack the  package using 'unzoo'  (see "Installation  of GAP for UNIX").
+Note that you must  be in the directory  containing 'gap3r4p0'  to unpack
+the files.   After   you have unpacked  the  source  you may   remove the
+*archive-file*.
+
+|    gap@tiffy:~ > unzoo x grape.zoo
+    gap@tiffy:~ > ls -l gap3r4p0/pkg/grape
+    -rw-r--r--    1 gap   1063 May 22 14:40 COPYING
+    -rw-r--r--    1 gap   2636 May 28 09:58 Makefile
+    -rw-r--r--    1 gap   4100 May 24 14:57 README
+    drwxr-xr-x    2 gap    512 May 28 11:36 bin
+    drwxr-xr-x    2 gap    512 May 25 14:52 doc
+    drwxr-xr-x    2 gap    512 May 22 16:59 grh
+    -rw-r--r--    1 gap  82053 May 27 12:19 init.g
+    drwxr-xr-x    2 gap    512 May 27 14:18 lib
+    drwxr-xr-x    2 gap    512 May 28 11:36 nauty17
+    drwxr-xr-x    2 gap    512 May 22 12:32 prs
+    drwxr-xr-x    2 gap    512 May 28 11:36 src |
+
+You are now able  to use the  all functions described in  chapter "Grape"
+except 'AutGroupGraph' and  'IsIsomorphicGraph'  which use the   {\nauty}
+package.
+
+|    gap> RequirePackage("grape");
+
+    Loading  GRAPE 2.2  (GRaph Algorithms using PErmutation groups),
+    by L.H.Soicher@qmw.ac.uk.
+
+    gap> gamma := JohnsonGraph( 4, 2 );
+    rec(
+      isGraph := true,
+      order := 6,
+      group := Group( (1,5)(2,6), (1,3)(4,6), (2,3)(4,5) ),
+      schreierVector := [ -1, 3, 2, 3, 1, 2 ],
+      adjacencies := [ [ 2, 3, 4, 5 ] ],
+      representatives := [ 1 ],
+      names := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ],
+          [ 3, 4 ] ],
+      isSimple := true ) |
+
+If the   documentation is not already   installed or an older  version is
+installed, copy the  file  'doc/grape.tex' into the 'doc/'  directory and
+run  latex again (see "Installation of   GAP for UNIX").   In general the
+documentation   will already be   installed  so you    can just skip  the
+following  step.  
+
+|    gap@tiffy:~ > cd gap3r4p0/pkg/grape
+    gap@tiffy:../grape > cp doc/grape.tex ../../doc
+    gap@tiffy:../grape > cd ../../doc
+    gap@tiffy:../doc > latex manual
+    # a few messages about undefined references
+    gap@tiffy:../doc > latex manual
+    # a few messages about undefined references
+    gap@tiffy:../doc > makeindex manual
+    # 'makeindex' prints some diagnostic output
+    gap@tiffy:../doc > latex manual
+    # there should be no warnings this time
+    gap@tiffy:../doc cd ../pkg/grape |
+
+In order to compile {\nauty} and the filters used by {\GRAPE} to interact
+with {\nauty} type 'make' to get a list of support machines.
+
+|    gap@tiffy:../grape > make
+    usage: 'make <target>' EXT=<ext> where target is one of
+    'dec-mips-ultrix-cc'   for DECstations running Ultrix with cc
+    'hp-hppa1.1-hpux-cc'   for HP 9000/700 under HP-UX with cc
+    'hp-hppa1.0-hpux-cc'   for HP 9000/800 under HP-UX with cc
+    'ibm-i386-386bsd-gcc2' for IBM PCs under 386BSD with GNU cc 2
+    'ibm-i386-386bsd-cc'   for IBM PCs under 386BSD with cc (GNU)
+    'sun-sparc-sunos-cc'   for SUN 4 under SunOS with cc
+    'bsd'                  for others under Berkeley UNIX with cc
+    'usg'                  for others under System V UNIX with cc
+
+    where <ext> should be a sensible extension, i.e.,
+    'EXT=.sun' for SUN or 'EXT=' if GRAPE only runs
+    on a single architecture |
+
+Select the target you need.  In your case we first compile the DECstation
+version.   We use  the  extension '-dec-mips-ultrix',  which creates  the
+binaries \\
+'dreadnaut-dec-mips-ultrix', 'drcanon3-dec-mips-ultrix', \\
+'gap3todr-dec-mips-ultrix' and 'drtogap3-dec-mips-ultrix' \\
+in the 'bin/' directory.
+
+|    gap@tiffy:../grape > make dec-mips-ultric-cc EXT=-dec-mips-ultrix
+    # you will see a lot of messages |
+
+Now repeat the compilation for the PC. *Do not* forget to clean up.
+
+|    gap@tiffy:../grape > rlogin waldorf
+    gap@waldorf:~ > cd gap3r4p0/pkg/grape
+    gap@waldorf:../grape > make clean
+    gap@waldorf:../grape > make ibm-i386-386bsd-gcc2 EXT=-ibm-i386-386bsd
+    # you will see a lot of messages
+    gap@waldorf:../grape > exit
+    gap@tiffy:../grape > |
+
+Switch into  the subdirectory 'bin/'  and create four shell scripts which
+will call the correct binary for each machine. Skeleton shell scripts are
+provided in 'bin/dreadnaut.sh', 'bin/drcanon3.sh', etc.
+
+|    gap@tiffy:../grape > cat > bin/dreadnaut
+    |\#|!/bin/csh
+    switch ( `hostname` )
+      case 'tiffy':
+      case 'bert':
+        exec $0-dec-mips-ultrix $* ;
+        breaksw ;
+      case 'waldorf':
+        exec $0-ibm-i386-386bsd $* ;
+        breaksw ;
+      default:
+        echo "dreadnaut: sorry, no executable exists for this machine" ;
+        breaksw ;
+    endsw
+    |<ctr>-'D'|
+    gap@tiffy:../grape > chmod 755 bin/dreadnaut|
+
+You  must also create similar  shell scripts for  'drcanon3', 'drtogap3',
+and 'gap3todr'.  Note  that if you  are using  {\GRAPE} only on a  single
+architecture you  can  specify  an empty  extension  using  'EXT='  as  a
+parameter  to 'make'.   In  this  case  *do not*  create the  above shell
+scripts.  The  following example will test the interface between {\GRAPE}
+and {\nauty}.
+
+|    gap> IsIsomorphicGraph( JohnsonGraph(7,3), JohnsonGraph(7,4) );
+    true
+    gap> AutGroupGraph( JohnsonGraph(4,2) );
+    Group( (3,4), (2,3)(4,5), (1,2)(5,6) ) |

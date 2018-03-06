@@ -1,0 +1,1389 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  permgrp.tex                 GAP documentation                   Udo Polis
+%%
+%A  @(#)$Id: permgrp.tex,v 1.2 1997/04/15 14:15:36 gap Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes those functions that deal with permutation groups
+%%
+%H  $Log: permgrp.tex,v $
+%H  Revision 1.2  1997/04/15 14:15:36  gap
+%H  Added documentation for extra functions for direct products
+%H
+%H  Revision 1.1.1.1  1996/12/11 12:36:49  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.18  1994/07/07  14:13:30  ahulpke
+%H  added documentation for random schreier sims
+%H
+%H  Revision 3.17  1994/06/17  19:03:32  vfelsch
+%H  examples adjusted to version 3.4
+%H
+%H  Revision 3.16  1994/06/09  12:12:24  vfelsch
+%H  index entries rearranged and output of examples updated
+%H
+%H  Revision 3.15  1993/03/10  13:35:09  fceller
+%H  added description of 'PermutationCharacter'
+%H
+%H  Revision 3.14  1993/02/12  14:20:47  felsch
+%H  examples adjusted to line length 72
+%H
+%H  Revision 3.13  1993/02/10  21:19:21  martin
+%H  added the description of composition series
+%H
+%H  Revision 3.12  1993/02/02  12:49:44  felsch
+%H  long lines fixed
+%H
+%H  Revision 3.11  1993/02/02  10:55:03  felsch
+%H  examples fixed
+%H
+%H  Revision 3.10  1993/01/22  19:34:56  martin
+%H  fixed Heiko's stuff
+%H
+%H  Revision 3.9  1993/01/15  11:44:16  fceller
+%H  added Heiko's changes in soluble permgroup stuff
+%H
+%H  Revision 3.8  1992/12/02  10:12:06  fceller
+%H  added functions for solvable perm groups
+%H
+%H  Revision 3.7  1992/04/30  12:01:23  martin
+%H  changed a few sentences to avoid bold non-roman fonts
+%H
+%H  Revision 3.6  1992/04/07  19:40:47  martin
+%H  changed everything
+%H
+%H  Revision 3.5  1992/04/02  21:06:23  martin
+%H  changed *domain functions* to *set theoretic functions*
+%H
+%H  Revision 3.4  1992/03/25  15:37:32  martin
+%H  added new sections for group homomorphisms
+%H
+%H  Revision 3.3  1992/03/10  12:17:54  martin
+%H  added 'IsRegular' and 'IsSemiRegular'
+%H
+%H  Revision 3.2  1992/01/16  13:14:07  martin
+%H  added 'MakeStabChainStrongGenerators'
+%H
+%H  Revision 3.1  1992/01/15  14:09:18  martin
+%H  initial revision under RCS
+%H
+%%
+\hyphenation{orbit-point}
+\hyphenation{orbit-points}
+\hyphenation{base-point}
+\hyphenation{gen-er-a-tor}
+\hyphenation{gen-er-a-tors}
+\Chapter{Permutation Groups}
+
+A permutation  group  is  a group of permutations  on a set  $\Omega$  of
+positive integers (see chapters "Groups" and "Permutations").
+
+Our  standard example  in this chapter will  be  the symmetric  group  of
+degree 4, which is defined by the following {\GAP} statements.
+
+|    gap> s4 := Group( (1,2), (1,2,3,4) );
+    Group( (1,2), (1,2,3,4) ) |
+
+This introduction  is followed by  a section that describes the  function
+that tests whether an object  is a permutation group or  not (see section
+"IsPermGroup").  The  next  sections  describe  the  functions  that  are
+related  to  the  set  of  points  moved  by  a  permutation  group  (see
+"PermGroupOps.MovedPoints",            "PermGroupOps.SmallestMovedPoint",
+"PermGroupOps.LargestMovedPoint", and "PermGroupOps.NrMovedPoints").  The
+following section  describes the concept of stabilizer chains, which  are
+used by most functions for permutation groups (see "Stabilizer  Chains").
+The following sections describe  the  functions that compute or  change a
+stabilizer     chain     (see     "StabChain",     "ExtendStabChain",
+"ReduceStabChain",  "MakeStabChainStrongGenerators").  The  next sections
+describe the  functions that  extract information from  stabilizer chains
+(see     "Base      for     Permutation     Groups",     "ListStabChain",
+"PermGroupOps.Indices", and  "PermGroupOps.StrongGenerators").  The  next
+two sections describe the functions that  find elements or subgroups of a
+permutation group with a property (see "PermGroupOps.ElementProperty" and
+"PermGroupOps.SubgroupProperty").
+
+If the permutation groups become bigger, computations become slower. In many
+cases it is preferable then, to use random methods for computation.
+This is explained in section "Random Methods for Permutation Groups".
+
+Because each permutation group  is a domain all  set theoretic  functions
+can  be  applied  to it  (see  chapter "Domains"  and "Set Functions  for
+Permutation Groups").  Also because each permutation group is after all a
+group all group functions can be applied to  it (see chapter "Groups" and
+"Group  Functions for  Permutation  Groups").  Finally  each  permutation
+group operates  naturally  on  the positive integers,  so all  operations
+functions  can  be  applied  (see  chapter  "Operations  of  Groups"  and
+"Operations of  Permutation  Groups").  The last  section in this chapter
+describes the representation  of  permutation  groups  (see  "Permutation
+Group Records").
+
+The external functions are in the file 'LIBNAME/\"permgrp.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPermGroup}
+
+'IsPermGroup( <obj> )'
+
+'IsPermGroup' returns 'true' if the object  <obj>, which may be an object
+of an arbitrary type, is  a permutation group, and 'false' otherwise.  It
+will signal an error if <obj> is an unbound variable.
+
+|    gap> s4 := Group( (1,2), (1,2,3,4) );; s4.name := "s4";;
+    gap> IsPermGroup( s4 );
+    true
+    gap> f := FactorGroup( s4, Subgroup( s4, [(1,2)(3,4),(1,3)(2,4)] ) );
+    (s4 / Subgroup( s4, [ (1,2)(3,4), (1,3)(2,4) ] ))
+    gap> IsPermGroup( f );
+    false    # see section "FactorGroup"
+    gap> IsPermGroup( [ 1, 2 ] );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGroupOps.MovedPoints}
+
+'PermGroupOps.MovedPoints( <G> )'
+
+'PermGroupOps.MovedPoints'  returns  the  set  of  moved  points  of  the
+permutation group <G>,  i.e., points  which  are  moved  by at  least one
+element of <G> (also see "PermGroupOps.NrMovedPoints").
+
+|    gap> s4 := Group( (1,3,5,7), (1,3) );;
+    gap> PermGroupOps.MovedPoints( s4 );
+    [ 1, 3, 5, 7 ]
+    gap> PermGroupOps.MovedPoints( Group( () ) );
+    [  ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGroupOps.SmallestMovedPoint}
+
+'PermGroupOps.SmallestMovedPoint( <G> )'
+
+'PermGroupOps.SmallestMovedPoint'  returns the smallest  positive integer
+which   is   moved   by    the   permutation   group    <G>   (see   also
+"PermGroupOps.LargestMovedPoint").  This function signals an error if <G>
+is trivial.
+
+|    gap> s3b := Group( (2,3), (2,3,4) );;
+    gap> PermGroupOps.SmallestMovedPoint( s3b );
+    2 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGroupOps.LargestMovedPoint}
+
+'PermGroupOps.LargestMovedPoint( <G> )'
+
+'PermGroupOps.LargestMovedPoint'  returns  the  largest positive  integer
+which    is   moved   by   the   permutation    group   <G>   (see   also
+"PermGroupOps.SmallestMovedPoint").  This  function  signals an  error if
+<G> is trivial.
+
+|    gap> s4 := Group( (1,2,3,4), (1,2) );;
+    gap> PermGroupOps.LargestMovedPoint( s4 );
+    4 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGroupOps.NrMovedPoints}
+
+'PermGroupOps.NrMovedPoints( <G> )'
+
+'PermGroupOps.NrMovedPoints'  returns  the number of moved points  of the
+permutation  group <G>,  i.e.,  points  which are moved by  at  least one
+element of <G> (also see "PermGroupOps.MovedPoints").
+
+|    gap> s4 := Group( (1,3,5,7), (1,3) );;
+    gap> PermGroupOps.NrMovedPoints( s4 );
+    4
+    gap> PermGroupOps.NrMovedPoints( Group( () ) );
+    0 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Stabilizer Chains}
+
+Most of  the algorithms for permutation groups  need a *stabilizer chain*
+of the group.  The concept of stabilizer chains was introduced by Charles
+Sims in \cite{Sim70}.
+
+If $[b_1, \ldots, b_n]$ is a list of points, $G^{(1)} = G$ and $G^{(i+1)}
+= Stab_{G^{(i)}}(b_i)$ such that $G^{(n+1)} = \{ () \}$.  The list $[b_1,
+\ldots, b_n]$ is  called a *base*  of $G$,  the points  $b_i$ are  called
+*basepoints*.   A  set $S$ of generators for $G$ satisfying the condition
+$\< S \cap G^{(i)} >$ = $G^{(i)}$ for each $1 \leq i \leq n$, is called a
+*strong  generating set*  (SGS)  of $G$.  More  precisely we ought to say
+that  a  set $S$  that satisfies the  conditions  above is a  SGS  of $G$
+*relative*  to $B$.   The chain  of subgroups of $G$ itself is called the
+*stabilizer chain* of $G$ relative to $B$.
+
+Since $[b_1, \ldots, b_n]$, where $n$ is the degree of $G$ and  $b_i$ are
+the moved  points of $G$, certainly is a base for $G$ there exists a base
+for each permutation group.  The number of points in a base is called the
+*length* of the base.  A base $B$ is called *reduced* if no stabilizer in
+the chain relative to $B$ is trivial, i.e., there exists no $i$ such that
+$G^{(i)} = G^{(i+1)}$.   Note that  different reduced bases for one group
+$G$  may  have  different  length.   For  example,  the  Chevalley  Group
+$G_2(4)$ possesses reduced bases of length 5 and 7.
+
+Let $R^{(i)}$ be a right transversal of $G^{(i+1)}$ in $G^{(i)}$, i.e., a
+set  of  right  coset representatives of the  cosets  of  $G^{(i+1)}$  in
+$G^{(i)}$.  Then each  element $g$ of $G$ has a unique  representation of
+the following form $g = r_n  \ldots r_1$ with  $r_i \in  R^{(i)}$.   Thus
+with the knowledge of  the transversals $R^{(i)}$ we know each element of
+$G$, in principle.  This is one  reason  why stabilizer chains are one of
+the most  useful tools for permutation  groups.  Furthermore  basic group
+theory  tells us  that  we  can  identify  the  cosets of  $G^{(i+1)}$ in
+$G^{(i)}$ with the points  in $O^{(i)} \:=  b_i^{G^{(i)}}$.   So we could
+represent  a  transversal   as  a  list  $T$  such   that  $T[p]$  is   a
+representative of  the coset  corresponding to the point $p \in O^{(i)}$,
+i.e., an element of $G^{(i)}$ that takes $b_i$ to $p$.
+
+For permutation groups of small degree this  might be  possible,  but for
+permutation groups of large degree it is still not good enough.  Our goal
+then is to store as  few different permutations as possible  such that we
+can still reconstruct each representative in $R^{(i)}$, and from them the
+elements in $G$.  A  *factorized inverse transversal* $T$ is a list where
+$T[p]$ is a *generator* of $G^{(i)}$ such that $p^{T[p]}$ is a point that
+lies earlier  in $O^{(i)}$ than $p$ (note that we consider $O^{(i)}$ as a
+list not  as a set).  If we assume inductively that we know an element $r
+\in G^{(i)}$ that  takes $b_i$ to $p^{T[p]}$, then  $r  T[p]^{-1}$  is an
+element in $G^{(i)}$ that takes $b_i$ to $p$.
+
+A stabilizer chain (see  "StabChain", "Permutation Group Records") is
+stored recursively  in {\GAP}.  The  group  record of a permutation group
+<G> with a stabilizer chain  has the following additional components.
+
+'orbit':  \\
+        List of orbitpoints of 'orbit[1]'  (which is the basepoint) under
+        the action of the generators.
+
+'transversal': \\
+        Factorized inverse transversal as defined above.
+
+'stabilizer': \\
+        Record for the  stabilizer  of the point 'orbit[1]' in the  group
+        generated  by  'generators'.  The components  of this  record are
+        again 'generators', 'orbit', 'transversal', 'identity' and
+	'stabilizer'.  The
+        last  stabilizer  in  the  stabilizer  chain  only  contains  the
+        components 'generators', which is an empty list, and 'identity'.
+
+'stabChain': \\
+	A record, that contains all information about the stabilizer chain.
+	Functions acessing the stabilizer chain should do it using this
+	record, as it is planned to remove the above three components from
+	the group record in the future. The components of the 'stabChain'
+	record are described in section "Permutation Group Records".
+
+Note  that the values of these components are  changed by functions  that
+change, extend, or reduce a base (see "StabChain", "ExtendStabChain",
+and "ReduceStabChain").
+
+Note  that the  records that represent  the  stabilizers  are  not  group
+records  (see "Group Records").  Thus you cannot  take such a  stabilizer
+and apply group functions to it.  The last 'stabilizer' in the stabilizer
+chain is a record whose component 'generators' is empty.
+
+Below you  find  an  example for  a *stabilizer chain* for the  symmetric
+group of degree 4.
+
+|    rec(
+        identity    := (),
+        generators  := [ (1,2), (1,2,3,4) ],
+        orbit       := [ 1, 2, 4, 3 ],
+        transversal := [ (), (1,2), (1,2,3,4), (1,2,3,4) ],
+        stabilizer := rec(
+            identity    := (),
+            generators  := [ (3,4), (2,4) ],
+            orbit       := [ 2, 4, 3 ],
+            transversal := [ , (), (3,4), (2,4) ],
+            stabilizer := rec(
+                identity    := (),
+                generators  := [ (3,4) ],
+                orbit       := [ 3, 4 ],
+                transversal := [ ,, (), (3,4) ],
+                stabilizer := rec(
+                    identity   := (),
+                    generators := [  ]
+                )
+            )
+        )
+    ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{StabChain}
+
+'StabChain( <G> )'\\
+'StabChain( <G>, <opt> )'
+
+'StabChain' computes and returns a stabilizer chain for <G>. The option
+record <opt> can be given and may contain information that will be used
+when computing the stabilizer chain.
+Giving this information might speed up computations. When using random
+methods (see "Random Methods for Permutation Groups"), 'StabChain' also
+guarantees, that the computed stabilizer chain confirms to the information
+given. For example giving the size ensures correctness of the stabilizer
+chain.
+
+If information of this kind can also be gotten from the parent group,
+'StabChain' does so.
+
+The following components of the option record are currectly supported\:
+
+'size':\\
+   The group size.
+
+'limit':\\
+   An upper limit for the group size.
+
+'base':\\
+   A list of points. If given, 'StabChain' computes a reduced base starting
+   with the points in 'base'.
+
+'knownBase':\\
+   A list of points, representing a known base.
+
+'random':\\
+  A value to supersede global or parent group setting of
+  'StabChainOptions.random' (see "Random Methods for Permutation Groups").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MakeStabChain}
+
+'MakeStabChain( <G> )' \\
+'MakeStabChain( <G>, <lst> )'
+
+'MakeStabChain' computes a *reduced* stabilizer chain for the permutation
+group <G>.
+
+If no stabilizer  chain for $G$ is already known and no argument <lst> is
+given,  it  computes a reduced stabilizer chain for the lexicographically
+smallest reduced base of <G>.
+
+If no stabilizer chain  for $G$ is already known and an argument <lst> is
+given, it computes  a *reduced* stabilizer chain with  a base that starts
+with the points in <lst>.  Note that  points in <lst>  that would lead to
+trivial stabilizers will be skipped (see "ExtendStabChain").
+
+Deterministically, the stabilizer  chain  is computed using  the 
+*Schreier-Sims-Algorithm*, which  is  described  in  \cite{Leo80}.   The 
+time used  is in  practice proportional to the third power of the degree
+of the group.
+
+If a stabilizer chain for  $G$ is already known and  no argument <lst> is
+given, it reduces the known stabilizer chain.
+
+If a stabilizer chain for $G$ is already known and  an argument <lst>  is
+given,  it  changes  the stabilizer chain  such  that  the  result  is  a
+*reduced* stabilizer chain with a  base that starts  with the  points  in
+<lst> (see "ExtendStabChain").  Note that points in <lst> that would lead
+to trivial stabilizers will be skipped.
+
+The  algorithm  used  in  this  case is  called  *basechange*,  which  is
+described in \cite{But82}.  The worst cases for  the basechange algorithm
+are groups of large degree which have a long base.
+
+|    gap> s4 := Group( (1,2), (1,2,3,4) );
+    Group( (1,2), (1,2,3,4) )
+    gap> MakeStabChain( s4 );    # compute a stabilizer chain
+    gap> Base( s4 );
+    [ 1, 2, 3 ]
+    gap> MakeStabChain( s4, [4,3,2,1] );    # perform a basechange
+    gap> Base( s4 );
+    [ 4, 3, 2 ] |
+
+'MakeStabChain' mainly works by calling 'StabChain' with appropriate
+parameters.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ExtendStabChain}
+
+'ExtendStabChain( <G>, <lst> )'
+
+'ExtendStabChain' inserts  trivial  stabilizers into the known stabilizer
+chain of  the permutation group <G> such  that <lst>  becomes the base of
+<G>.  The stabilizer chain which belongs to the base <lst> must reduce to
+the old stabilizer chain (see "ReduceStabChain").
+
+This function   is useful if  two  different  (sub-)groups  have  to have
+exactly the same base.
+
+|    gap> s4 := Group( (1,2), (1,2,3,4) );;
+    gap> MakeStabChain( s4, [3,2,1] );  Base( s4 );
+    [ 3, 2, 1 ]
+    gap> h := Subgroup( Parent(s4), [(1,2,3,4), (2,4)] );
+    Subgroup( Group( (1,2), (1,2,3,4) ), [ (1,2,3,4), (2,4) ] )
+    gap> Base( h );
+    [ 1, 2 ]
+    gap> MakeStabChain( h, Base( s4 ) );  Base( h );
+    [ 3, 2 ]
+    gap> ExtendStabChain( h, Base( s4 ) );  Base( h );
+    [ 3, 2, 1 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReduceStabChain}
+
+'ReduceStabChain( <G> )'
+
+'ReduceStabChain'  removes  trivial stabilizers  from a known  stabilizer
+chain of the permutation group <G>.  The result is a *reduced* stabilizer
+chain (also see "ExtendStabChain").
+
+|    gap> s4 := Group( (1,2), (1,2,3,4) );;
+    gap> Base( s4 );
+    [ 1, 2, 3 ]
+    gap> ExtendStabChain( s4, [ 1, 2, 3, 4 ] );  Base( s4 );
+    [ 1, 2, 3, 4 ]
+    gap> PermGroupOps.Indices( s4 );
+    [ 4, 3, 2, 1 ]
+    gap> ReduceStabChain( s4 );  Base( s4 );
+    [ 1, 2, 3 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{MakeStabChainStrongGenerators}
+
+'MakeStabChainStrongGenerators( <G>, <base>, <stronggens> )'
+
+'MakeStabChainStrongGenerators' computes a *reduced* stabilizer chain for
+the permutation group <G> with the base <base>  and the strong generating
+set <stronggens>.   <stronggens> must be  a strong generating set for <G>
+relative to  the base <base>; note that this  is  not tested.  Since  the
+generators for <G> are not  changed the strong generating set of <G>  got
+by    'PermGroupOps.StrongGenerators'   is   not   exactly   <stronggens>
+afterwards.  This  function is  mostly used to  reconstruct a  stabilizer
+chain for a  group <G> and works considerably faster than 'MakeStabChain'
+(see "MakeStabChain").
+
+|    gap> G := Group( (1,2), (1,2,3), (4,5) );;
+    gap> Base( G );
+    [ 1, 2, 4 ]
+    gap> ExtendStabChain( G, [1,2,3,4] );
+    gap> PermGroupOps.Indices( G );  base := Base( G );
+    [ 3, 2, 1, 2 ]    # note that the stabilizer chain is not reduced
+    [ 1, 2, 3, 4 ]
+    gap> stronggens := PermGroupOps.StrongGenerators( G );
+    [ (4,5), (2,3), (1,2), (1,2,3) ]
+    gap> H := Group( (1,2), (1,3), (4,5) );
+    Group( (1,2), (1,3), (4,5) )    # of course <G> = <H>
+    gap> MakeStabChainStrongGenerators( H, base, stronggens );
+    gap> PermGroupOps.Indices( H );  Base( H );
+    [ 3, 2, 2 ]       # note that the stabilizer chain is reduced
+    [ 1, 2, 4 ]
+    gap> PermGroupOps.StrongGenerators( H );
+    [ (4,5), (2,3), (1,2), (1,3) ]
+    # note that this is different from 'stronggens' |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Base for Permutation Groups}
+
+'Base( <G> )'
+
+'Base'  returns a base  for the permutation group <G>.   If a  stabilizer
+chain  for  <G>  is  already known,  'Base'  returns  the  base  for this
+stabilizer chain.  Otherwise a stabilizer chain for the lexicographically
+smallest  reduced  base  is  computed  and  its  base  is  returned  (see
+"Stabilizer Chains").
+
+|    gap> s4 := Group( (1,2,3,4), (1,2) );;
+    gap> Base( s4 );
+    [ 1, 2, 3 ]  |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGroupOps.Indices}
+
+'PermGroupOps.Indices( <G> )'
+
+'PermGroupOps.Indices'  returns a list <l>  of indices of the permutation
+group <G> with  respect to a stabilizer chain of <G>, i.e., '<l>[<i>]' is
+the index of  $G^{(i+1)}$  in $G^{(i)}$.  Thus  the size  of  <G>  is the
+product of all indices in <l>.  If  a stabilizer chain for <G> is already
+known,  'PermGroupOps.Indices' returns the indices  corresponding to this
+stabilizer    chain.    Otherwise    a   stabilizer   chain    with   the
+lexicographically  smallest reduced  base  is  computed  and  the indices
+corresponding to this chain are returned (see "Stabilizer Chains").
+
+|    gap> s4 := Group( (1,2,3,4), (1,2) );;
+    gap> PermGroupOps.Indices( s4 );
+    [ 4, 3, 2 ]    # note that for s4 the indices are
+                   # actually independent of the base |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGroupOps.StrongGenerators}
+
+'PermGroupOps.StrongGenerators( <G> )'
+
+'PermGroupOps.StrongGenerators' returns a list of  strong generators  for
+the permutation  group <G>.  If  a  stabilizer  chain for <G>  is already
+known,  'PermGroupOps.StrongGenerators'  returns a strong  generating set
+corresponding  to  this stabilizer chain.  Otherwise a  stabilizer  chain
+with the lexicographically smallest reduced base is computed and a strong
+generating  set corresponding to this chain is returned  (see "Stabilizer
+Chains").
+
+|    gap> s4 := Group( (1,2,3,4), (1,2) );;
+    gap> Base( s4 );
+    [ 1, 2, 3 ]
+    gap> PermGroupOps.StrongGenerators( s4 );
+    [ (3,4), (2,3,4), (1,2), (1,2,3,4) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ListStabChain}
+
+'ListStabChain( <G> )'
+
+'ListStabChain'  returns a list  of stabilizer  records of the stabilizer
+chain of the  permutation group <G>, i.e., the result  is a list <l> such
+that '<l>[<i>]' is the <i>-th stabilizer  $G^{(i)}$.  The records in that
+list are identical to the records of the  stabilizer chain.  Thus changes
+made  in a record  '<l>[<i>]'  are simultaneously done in  the stabilizer
+chain (see "Identical Records").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGroupOps.ElementProperty}
+
+'PermGroupOps.ElementProperty( <G>, <prop> )' \\
+'PermGroupOps.ElementProperty( <G>, <prop>, <K> )'
+
+'PermGroupOps.ElementProperty' returns an element  <g> in the permutation
+group <G> such that '<prop>(<g>)'  is 'true'.  <prop>  must be a function
+of one  argument that  returns either 'true'  or 'false'  when applied to
+an element of <G>.  If <G> has no such element, 'false' is returned.
+
+|    gap> V4 := Group((1,2),(3,4));;
+    gap> PermGroupOps.ElementProperty( V4, g -> (1,2)^g = (3,4) );
+    false |
+
+'PermGroupOps.ElementProperty' first computes a stabilizer chain for <G>,
+if necessary.   Then  it performs a backtrack search through  <G>  for an
+element  satisfying  <prop>,  i.e.,  enumerates  all  elements  of <G> as
+described in  section "Stabilizer  Chains", and applies  <prop>  to  each
+until one element  <g> is found for which '<prop>(<g>)' is  'true'.  This
+algorithm is described in detail in \cite{But82}.
+
+|    gap> S8 := Group( (1,2), (1,2,3,4,5,6,7,8) );;  S8.name := "S8";;
+    gap> Size( S8 );
+    40320
+    gap> V := Subgroup( S8, [(1,2),(1,2,3),(6,7),(6,7,8)] );;
+    gap> Size( V );
+    36
+    gap> U := V ^ (1,2,3,4)(5,6,7,8);;
+    gap> PermGroupOps.ElementProperty( S8, g -> U ^ g = V );
+    (1,4,2)(5,6)    # another permutation conjugating <U> to <V> |
+
+This search will of course take quite a while if <G> is large, especially
+if no element of <G>  satisfies <prop>, and therefore all elements of <G>
+must be tried.
+
+To  speed  up  the computation you  may  pass a subgroup  <K> of  <G>  as
+optional third argument.  This subgroup must preserve <prop> in the sense
+that either all  elements of a left coset '<g>\*<K>' satisfy <prop> or no
+element of '<g>\*<K>' does.
+
+In our example above such a  subgroup is the normalizer $N_G(V)$  because
+$h \in g N_G(V)$ takes $U$  to $V$ if and only if  $g$  does.  Of  course
+every subgroup of  $N_G(V)$ has  this  property too.   Below we  use  the
+subgroup $V$ itself.  In this example this speeds up the computation by a
+factor of 4.
+
+|    gap> K := Subgroup( S8, V.generators );;
+    gap> PermGroupOps.ElementProperty( S8, g -> U ^ g = V, K );
+    (1,4,2)(5,6) |
+
+In the following example,  we use  the same  subgroup, but  with a larger
+generating system.   This  speeds up the computation by another factor of
+3.   Something  like this  may  happen  frequently.   The  reason  is too
+complicated to be explained here.
+
+|    gap> K2 := Subgroup( S8, Union( V.generators, [(2,3),(7,8)] ) );;
+    gap> K2 = K;
+    true
+    gap> PermGroupOps.ElementProperty( S8, g -> U ^ g = V, K2 );
+    (1,4,2)(5,6) |
+
+Passing the full normalizer speeds up  the computation in this example by
+another  factor  of  2.   Beware   though  that  in  other  examples  the
+computation  of  the  normalizer  alone  may  take  longer  than  calling
+'PermGroupOps.ElementProperty' with only the subgroup itself as argument.
+
+|    gap> N := Normalizer( S8, V );
+    Subgroup( S8, [ (1,2), (1,2,3), (6,7), (6,7,8), (2,3), (7,8),
+      (1,6)(2,7)(3,8), (4,5) ] )
+    gap> Size( N );
+    144
+    gap> PermGroupOps.ElementProperty( S8, g -> U ^ g = V, N );
+    (1,4)(5,6) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGroupOps.SubgroupProperty}
+
+'PermGroupOps.SubgroupProperty( <G>, <prop> )' \\
+'PermGroupOps.SubgroupProperty( <G>, <prop>, <K> )'
+
+'PermGroupOps.SubgroupProperty'   returns  the   subgroup  <U>   of   the
+permutation group  <G> of  all elements in <G> that satisfy <prop>, i.e.,
+the  subgroup  of  all elements  <g> in <G>  such  that  '<prop>(<g>)' is
+'true'.  <prop> must be a function of  one  argument  that returns either
+'true' or 'false'  when applied  to an element  of  <G>.  Of  course  the
+elements   that   satisfy   <prop>   must  form   a   subgroup  of   <G>.
+'PermGroupOps.SubgroupProperty' builds a stabilizer chain for <U>.
+
+|    gap> S8 := Group( (1,2), (1,2,3,4,5,6,7,8) );;  S8.name := "S8";;
+    gap> Size(S8);
+    40320
+    gap> V := Subgroup( S8, [(1,2),(1,2,3),(6,7),(6,7,8)] );;
+    gap> Size(V);
+    36
+    gap> PermGroupOps.SubgroupProperty( S8, g -> V ^ g = V );
+    Subgroup( S8, [ (7,8), (6,7), (4,5), (2,3)(4,5)(6,8,7), (1,2),
+      (1,6,3,8)(2,7) ] )
+    # the normalizer of 'V' in 'S8' |
+
+'PermGroupOps.SubgroupProperty'  first  computes a  stabilizer chain  for
+<G>, if necessary.  Then it performs a backtrack search  through  <G> for
+the elements  satisfying <prop>, i.e.,  enumerates all elements of <G> as
+described in  section  "Stabilizer Chains",  and  applies <prop> to each,
+adding elements for which '<prop>(<g>)' is 'true' to  the  subgroup  <U>.
+Once <U> has  become non-trivial, it is used to eliminate whole cosets of
+stabilizers  in the stabilizer  chain  of  <G>  if  they  cannot  contain
+elements  with  the  property  <prop> that are not already  in <U>.  This
+algorithm is described in detail in \cite{But82}.
+
+This search will of course take quite a while if  <G> is large.  To speed
+up the  computation you may pass a subgroup  <K> of <U> as optional third
+argument.
+
+Passing  the subgroup $V$  itself,  speeds  up  the  computation in  this
+example by a factor of 2.
+
+|    gap> K := Subgroup( S8, V.generators );;
+    gap> PermGroupOps.SubgroupProperty( S8, g -> V ^ g = V, K );
+    Subgroup( S8, [ (1,2), (1,2,3), (6,7), (6,7,8), (2,3), (7,8), (4,5),
+      (1,6,3,8)(2,7) ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CentralCompositionSeriesPPermGroup}
+
+'CentralCompositionSeriesPPermGroup( <G> )'
+
+This  function calculates a central  composition series for the $p$-group
+<G>.   The  method used is known as Holt\'s algorithm.  If <G>  is not  a
+<p>-group, an error is signalled.
+
+|    gap> D := Group( (1,2,3,4), (1,3) );; D.name := "d8";;
+    gap> CentralCompositionSeriesPPermGroup( D );
+    [ d8, Subgroup( d8, [ (2,4), (1,3) ] ),
+      Subgroup( d8, [ (1,3)(2,4) ] ), Subgroup( d8, [  ] ) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermGroupOps.PgGroup}
+
+'PermGroupOps.PgGroup( <G> )'
+
+This function converts a permutation group <G> of prime power order $p^d$
+into an ag group <P> such that the presentation corresponds to a <p>-step
+central series of <G>.  This central composition series is constructed by
+calling             'CentralCompositionSeriesPPermGroup'             (see
+"CentralCompositionSeriesPPermGroup").   An isomorphism from the ag group
+to the permutation group is bound to '<P>.bijection'.
+
+There   is  no  dispatcher  to  this  function,  it  must  be  called  as
+'PermGroupOps.PgGroup'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Set Functions for Permutation Groups}
+
+All  set theoretic  functions  described in  chapter  "Domains"  are also
+applicable to permutation groups.  This section describes which functions
+are  implemented  specially  for  permutation  groups.    Functions   not
+mentioned  here  are  handled  by the default methods  described  in  the
+respective sections.
+
+\vspace{5mm}
+'Random( <G> )'%
+\index{Random!for Permutation Groups}
+
+To compute a random element in a permutation group <G>  {\GAP} computes a
+stabilizer chain for <G>, takes on each level a random representative and
+returns the  product of those.  All elements of <G> are chosen with equal
+probability by this method.
+
+\vspace{5mm}
+'Size( <G> )'%
+\index{Size!for Permutation Groups}
+
+'Size' calls  'StabChain'  (see "StabChain"),  if necessary,  and
+returns  the  product  of  the  indices  of  the  stabilizer  chain  (see
+"Stabilizer Chains").
+
+\vspace{5mm}
+'Elements( <G> )'%
+\index{Elements!for Permutation Groups}
+
+'Elements' calls 'StabChain' (see "StabChain"), if necessary, and
+enumerates the  elements of <G> as described in "Stabilizer  Chains".  It
+returns the set of those elements.
+
+\vspace{5mm}
+'Intersection( <G1>, <G2> )'%
+\index{Intersection!for Permutation Groups}
+
+'Intersection' first computes  stabilizer chains for <G1> and <G2>  for a
+common base.  If either group already has a stabilizer chain a basechange
+is  performed  (see  "MakeStabChain").   'Intersection'  enumerates   the
+elements of <G1> and <G2> using a backtrack  algorithm, eliminating whole
+cosets  of   stabilizers  in  the  stabilizer  chains  if  possible  (see
+"PermGroupOps.SubgroupProperty").  It builds a  stabilizer  chain for the
+intersection.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Group Functions for Permutation Groups}
+
+All group functions  for groups  described  in chapter  "Group"  are also
+applicable to permutation groups.  This section describes which functions
+are   implemented  specially  for   permutation  groups.   Functions  not
+mentioned  here  are handled  by the  default  methods described  in  the
+respective sections.
+
+\vspace{5mm}
+'<G> \^\ <p>' \\
+'ConjugateSubgroup( <G>, <p> )'%
+\index{Conjugate Subgroup!of Permutation Group}
+
+Returns the conjugate permutation group of  <G> with the permutation <p>.
+<p> must be an element of the parent group of <G>.  If a stabilizer chain
+for <G> is already known, it is also conjugated.
+
+\vspace{5mm}
+'Centralizer( <G>, <U> )'%
+\index{Centralizer!for Permutation Groups} \\
+'Centralizer( <G>, <g> )' \\
+'Normalizer( <G>, <U> )'%
+\index{Normalizer!for Permutation Groups}
+
+These  functions  first  compute  a  stabilizer  chain  for  <G>.   If  a
+stabilizer chain is already known a basechange may be performed to obtain
+a  base  that  is  better suited for the  problem.  These functions  then
+enumerate the  elements  of  <G> with a backtrack algorithm,  eliminating
+whole  cosets  of  stabilizers  in the  stabilizer chain if possible (see
+"PermGroupOps.SubgroupProperty").  They build  a stabilizer chain for the
+resulting subgroup.
+
+\vspace{5mm}
+'SylowSubgroup( <G>, <p> )'%
+\index{SylowSubgroup!for Permutation Groups}
+
+If <G> is not transitive, its <p>-Sylow subgroup is computed by starting
+with '<P>\:=<G>', and for each transitive constituent homomorphism <hom>
+iterating \\
+'<P> \:= PreImage( SylowSubgroup( Image( <hom>, <P> ), <p> ) )'.
+
+If <G>  is  transitive but  not  primitive,  its  <p>-Sylow  subgroup  is
+computed as \\
+'SylowSubgroup( PreImage( SylowSubgroup(Image(<hom>,<G>),<p>) ), <p> )'.
+
+If <G> is primitive,  'SylowSubgroup' takes random elements in <G>, until
+it finds a <p>-element <g>, whose centralizer in <G>  contains  the whole
+<p>-Sylow subgroup.   Such an element must exist, because a <p>-group has
+a nontrivial  centre.  Then the  <p>-Sylow subgroup of the centralizer is
+computed and  returned.   Note that  the  centralizer  must  be  a proper
+subgroup of <G>, because it operates imprimitively on the cycles of <g>.
+
+\vspace{5mm}
+'Coset( <U>, <g> )'%
+\index{Coset!for Permutation Groups}
+
+Returns   the  coset  '<U>\*<g>'.   The  representative  chosen   is  the
+lexicographically smallest element of that coset.  It is computed with an
+algorithm that is very similar to the backtrack algorithm.
+
+|    gap> s4 := Group( (1,2,3,4), (1,2) );;  s4.name := "s4";;
+    gap> u := Subgroup( s4, [(1,2,3)] );;
+    gap> Coset( u, (1,3,2) );
+    (Subgroup( s4, [ (1,2,3) ] )*())
+    gap> Coset( u, (3,2) );
+    (Subgroup( s4, [ (1,2,3) ] )*(2,3)) |
+
+\vspace{5mm}
+'Cosets( <G>, <U> )'%
+\index{Cosets!for Permutation Groups}
+
+Returns the  cosets  of <U> in  <G>.   'Cosets' first computes stabilizer
+chains for <G> and <U> with  a common  base.  If either subgroup  already
+has a stabilizer  chain, a basechange is performed (see "MakeStabChain").
+A  transversal is  computed recursively using the fact that  if  $S$ is a
+transversal of $U^{(2)} =  Stab_U(b_1)$ in  $G^{(2)}  = Stab_G(b_1)$, and
+$R^{(1)}$ is a transversal of $G^{(2)}$ in $G$, then a transversal of $U$
+in $G$ is a subset of $S \* R^{(1)}$.
+
+|    gap> Cosets( s4, u );
+    [ (Subgroup( s4, [ (1,2,3) ] )*()),
+      (Subgroup( s4, [ (1,2,3) ] )*(3,4)),
+      (Subgroup( s4, [ (1,2,3) ] )*(2,3)),
+      (Subgroup( s4, [ (1,2,3) ] )*(2,3,4)),
+      (Subgroup( s4, [ (1,2,3) ] )*(2,4,3)),
+      (Subgroup( s4, [ (1,2,3) ] )*(2,4)),
+      (Subgroup( s4, [ (1,2,3) ] )*(1,2,3,4)),
+      (Subgroup( s4, [ (1,2,3) ] )*(1,2,4)) ] |
+
+\vspace{5mm}
+'PermutationCharacter( <P> )'%
+\index{PermutationCharacter}
+
+Computes the character of the natural permutation representation of  <P>,
+i.e. it does the same as 'PermutationCharacter( <P>, ${\rm Stab}_P(1)$ )'
+but works much faster.
+
+|    gap> G := SymmetricPermGroup(5);;
+    gap> PermutationCharacter(G);
+    [ 5, 3, 1, 2, 0, 1, 0 ] |
+
+\vspace{5mm}
+'ElementaryAbelianSeries( <G> )'%
+\index{ElementaryAbelianSeries!for Permutation Groups}
+
+This  function  builds  an elementary  abelian series of <G>  by iterated
+construction of normal closures. If a  partial elementary abelian  series
+reaches  up  to  a  subgroup <U>  of <G> which  does not yet  contain the
+generator <s> of <G> then the series is extended up to the normal closure
+<N> of <U>  and <s>. If the factor  '<N>/<U>'  is not elementary abelian,
+i.e., if some commutator of <s> with one of its conjugates under <G> does
+not lie  in  <U>, intermediate  subgroups  are calculated  recursively by
+extending <U> with that commutator. If <G> is solvable this process  must
+come to  an  end  since commutators  of  arbitrary depth  cannot exist in
+solvable groups.
+
+Hence this method gives an elementary  abelian  series if <G> is solvable
+and gives an infinite recursion  if  it is not.  For permutation  groups,
+however, there is a  bound on the derived length that depends only on the
+degree <d> of the group. According to Dixon this is $(5 \log_3(d))/2$. So
+if  the commutators  get deeper  than this bound  the algorithm stops and
+sets   '<G>.isSolvable'  to  'false',  signalling  an  error.   Otherwise
+'<G>.isSolvable' is  set  to 'true' and the elementary abelian series  is
+returned as a list of subgroups of <G>.
+
+|    gap> S := Group( (1,2,3,4), (1,2) );; S.name := "s4";;
+    gap> ElementaryAbelianSeries( S );
+    [ Subgroup( s4, [ (1,2), (1,3,2), (1,4)(2,3), (1,2)(3,4) ] ),
+      Subgroup( s4, [ (1,3,2), (1,4)(2,3), (1,2)(3,4) ] ),
+      Subgroup( s4, [ (1,4)(2,3), (1,2)(3,4) ] ), Subgroup( s4, [  ] ) ]
+    gap> A := Group( (1,2,3), (3,4,5) );;
+    gap> ElementaryAbelianSeries( A );
+    Error, <G> must be solvable|
+
+\vspace{5mm}
+'IsSolvable( <G> )'%
+\index{IsSolvable!for Permutation Groups}
+
+Solvability of a  permutation group <G> is tested  by trying to construct
+an elementary abelian  series  as described  above.  After this has  been
+done  the  flag  '<G>.isSolvable' is  set  correctly,  so  its  value  is
+returned.
+
+|    gap> S := Group( (1,2,3,4), (1,2) );;
+    gap> IsSolvable( S );
+    true
+    gap> A := Group( (1,2,3), (3,4,5) );;
+    gap> IsSolvable( A );
+    false|
+
+\vspace{5mm}
+'CompositionSeries( <G> )'%
+\index{CompositionSeries!for Permutation Groups}
+
+A composition series for the solvable group <G> is calculated either from
+a given subnormal  series, which must be bound to  '<G>.subnormalSeries',
+in  which  case  '<G>.bssgs'  must  hold  the  corresponding  base-strong
+subnormal  generating system,  or  from an elementary abelian  series (as
+computed  by   'ElementaryAbelianSeries(   <G>  )'  above)  by  inserting
+intermediate subgroups  (i.e.   powers  of  the  polycyclic generators or
+composition  series along bases  of the vector spaces in  the  elementary
+abelian  series).   In either  case,  after  execution  of this function,
+'<G>.bssgs'  holds  a  base-strong   pag   system  corresponding  to  the
+composition series calculated.
+
+|    gap> S := Group( (1,2,3,4), (1,2) );; S.name := "s4";;
+    gap> CompositionSeries( S );
+    [ Subgroup( s4, [ (1,2), (1,3,2), (1,4)(2,3), (1,2)(3,4) ] ),
+      Subgroup( s4, [ (1,3,2), (1,4)(2,3), (1,2)(3,4) ] ),
+      Subgroup( s4, [ (1,4)(2,3), (1,2)(3,4) ] ),
+      Subgroup( s4, [ (1,2)(3,4) ] ), Subgroup( s4, [  ] ) ] |
+
+If <G> is not solvable then a composition series <cs> is computed with an
+algorithm by A. Seress and R.  Beals.  In this case the  factor  group of
+each  element '<cs>[<i>]' in the composition  series modulo  the next one
+'<cs>[<i>+1]'  are  represented as  primitive  permutation  groups.   One
+should call '<cs>[<i>].operations.FactorGroup( <cs>[<i>], <cs>[<i>+1]  )'
+directly to avoid the check in 'FactorGroup' that '<cs>[<i>+1]' is normal
+in '<cs>[<i>]'.  The natural homomorphism of '<cs>[<i>]' onto this factor
+group    will   be   given   as    a   'GroupHomomorphismByImages'   (see
+"GroupHomomorphismByImages").
+
+|    gap> pyl29 := Group( (1,2,3)(4,5,6)(7,8,9), (2,6,4,9,3,8,7,5),
+    >                     (4,7)(5,8)(6,9), (1,10)(4,7)(5,6)(8,9) );;
+    gap> pyl29.name := "pyl29";;
+    gap> cs := CompositionSeries( pyl29 );
+    [ Subgroup( pyl29, [ (1,9,5)(2,7,6)(3,8,4), (2,7,3,4)(5,8,9,6),
+          ( 1, 2,10)( 4, 9, 5)( 6, 8, 7), (2,6,4,9,3,8,7,5),
+          (4,7)(5,8)(6,9) ] ),
+      Subgroup( pyl29, [ (1,9,5)(2,7,6)(3,8,4), (2,7,3,4)(5,8,9,6),
+          ( 1, 2,10)( 4, 9, 5)( 6, 8, 7), (2,6,4,9,3,8,7,5) ] ),
+      Subgroup( pyl29, [ (1,9,5)(2,7,6)(3,8,4), (2,7,3,4)(5,8,9,6),
+          ( 1, 2,10)( 4, 9, 5)( 6, 8, 7) ] ), Subgroup( pyl29, [  ] ) ]
+    gap> List( [1..3], i->cs[i].operations.FactorGroup(cs[i],cs[i+1]) );
+    [ Group( (1,2) ), Group( (1,2) ),
+      Group( (1,9,5)(2,7,6)(3,8,4), (2,7,3,4)(5,8,9,6), ( 1, 2,10)
+        ( 4, 9, 5)( 6, 8, 7) ) ]
+    gap> List( last, Size );
+    [ 2, 2, 360 ] |
+
+\vspace{5mm}
+'ExponentsPermSolvablePermGroup( <G>, <perm> [, <start> ] )'%
+\index{ExponentsPermSolvablePermGroup}
+
+'ExponentsPermSolvablePermGroup' returns a  list <e>, such that '<perm> =
+<G>.bssgs[1]\^<e>[1]   {\*}    <G>.bssgs[2]\^<e>[2]   {\*}    ...    {\*}
+<G>.bssgs[<n>]\^<e>[<n>]',  where  '<G>.bssgs'  must   be   a  prime-step
+base-strong    subnormal    generating    system    as   calculated    by
+'ElementaryAbelianSeries' (see "ElementaryAbelianSeries"  and above).  If
+the   optional  third  argument  <start>  is  given,   the  list  entries
+'<exps>[1],  ...,  <exps>[<start>-1]'  are  left  unbound and the element
+<perm>  is  decomposed  as  product  of  the  remaining   pag  generators
+'<G>.bssgs[<start>], ..., <G>.bssgs[<n>]'.
+
+|    gap> S := Group( (1,2,3,4), (1,2) );; S.name := "s4";;
+    gap> ElementaryAbelianSeries( S );;
+    gap> S.bssgs;
+    [ (1,2), (1,3,2), (1,4)(2,3), (1,2)(3,4) ]
+    gap> ExponentsPermSolvablePermGroup( S, (1,2,3) );
+    [ 0, 2, 0, 0 ]|
+
+\vspace{5mm}
+'AgGroup( <G> )'%
+\index{AgGroup!for Permutation Groups}
+
+This function converts a solvable permutation group into an ag group.  It
+calculates an elementary abelian  series  and a prime-step  bssgs for <G>
+(see  'ElementaryAbelianSeries'  above)  and  then  finds  the   relators
+belonging    to    this    prime-step    bssgs   using    the    function
+'ExponentsPermSolvablePermGroup' (see above).  An isomorphism from the ag
+group to the permutation group is bound to 'AgGroup( <G> ).bijection'.
+
+|    gap> G := WreathProduct( SymmetricGroup( 4 ), CyclicGroup( 3 ) );;
+    gap> A := AgGroup( G );
+    Group( g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13 )
+    gap> (A.1*A.3)^A.bijection;
+    ( 1, 6,10, 2, 5, 9)( 3, 7,11)( 4, 8,12) |
+
+\vspace{5mm}
+'DirectProduct( <G>, <H> )'%
+\index{DirectProduct!for Permutation Groups}
+\index{DirectProductPermGroupCentre}
+\index{DirectProductPermGroupCentralizer}
+\index{DirectProductPermGroupSylowSubgroup}
+
+If <G> and <H> are both permutation groups, 'DirectProduct' constructs the
+direct product of <G> and <H> as an intransitive permutation group. There are
+special routines for 'Centre', 'Centralizer' and 'SylowSubgroup' for such
+groups that will work faster than the standard permutation group functions.
+These functions are 'DirectProductPermGroupCentre',
+'DirectProductPermGroupCentralizer' and 'DirectProductPermGroupSylowSubgroup'.
+You can enforce that these routines will be always used for direct products
+of permutation groups by issuing the following three commands (They are not
+performed by standard as the code has not been well-tested).
+
+|    gap> DirectProductPermGroupOps.Centre:=DirectProductPermGroupCentre;;
+    gap> DirectProductPermGroupOps.Centralizer:=
+    >    DirectProductPermGroupCentralizer;;
+    gap> DirectProductPermGroupOps.SylowSubgroup:=
+    >    DirectProductPermGroupSylowSubgroup;;|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations of Permutation Groups}
+
+All  functions  that deal  with  operations  of  groups are applicable to
+permutation groups (see "Operations of Groups").  This section  describes
+which  functions  are  implemented  specially  for   permutation  groups.
+Functions not mentioned here are handled by the default methods described
+in the respective sections.
+
+\vspace{5mm}
+'IsSemiRegular( <G>, <D>, <opr> )'%
+\index{IsSemiRegular!for Permutation Groups}
+
+'IsSemiRegular'  returns  'true'  if <G>  operates  semiregularly on  the
+domain <D> and 'false' otherwise.
+
+If $D$ is  a  list of integers and <opr>  is 'OnPoints',  'IsSemiRegular'
+uses the lemma  that  says that such an operation  is semiregular if  all
+orbits of $G$  on $D$ have the same length, and if for an arbitrary point
+$p$ of $D$ and for each generator $g$ of $G$ there is a permutation $z_g$
+(not  necessarily in  $G$) such  that $p^{z_g}  = p^g$ and which commutes
+with all elements  of $G$, and if  there is  a permutation $z$ (again not
+necessarily in $G$) that  permutes the orbits of $G$ on  $D$  setwise and
+commutes  with  all  elements  of  $G$.   This  can  be  tested  in  time
+proportional to $o n^2 + d n$, where $o$ is the size  of a  single orbit,
+$n$ is the number of generators of $G$, and $d$ is the size of $D$.
+
+\vspace{5mm}
+'RepresentativeOperation( <G>, <d>, <e>, <opr> )'%
+\index{RepresentativeOperation!for Permutation Groups}
+
+'RepresentativeOperation' returns  a  permutation <perm> in <G> that maps
+<d> to <e> in respect to the given operation  <opr> if such a permutation
+exists, and 'false' otherwise.
+
+If the  operation is 'OnPoints',  'OnPairs', 'OnTuples', or  'OnSets' and
+<d> and <e> are  positive integers or lists  of integers, a basechange is
+performed and the representative is computed  from the factorized inverse
+transversal (see "Stabilizer Chains" and "StabChain").
+
+If the operation is 'OnPoints', 'OnPairs', 'OnTuples' or 'OnSets' and <d>
+and <e> are permutations or lists of  permutations, a backtrack search is
+performed (see "PermGroupOps.ElementProperty").
+
+\vspace{5mm}
+'Stabilizer( <G>, <D>, <opr> )'%
+\index{Stabilizer!for Permutation Groups}
+
+'Stabilizer'  returns the stabilizer of  <D>  in <G> using the  operation
+<opr> on the <D>.  If <D> is a positive  integer (respectively  a list of
+positive  integers) and the  operation  <opr> is 'OnPoints' (respectively
+'OnPairs'   or  'OnTuples')  a  basechange  of  <G>   is  performed  (see
+"MakeStabChain").  If <D> is a set of positive integers and the operation
+<opr>   is  'OnSets'   a  backtrack  algorithm   for  set-stabilizers  of
+permutation groups is performed.
+
+\vspace{5mm}
+'Blocks( <G>, <D> [, <seed> ] [, <operation> ] )'%
+\index{Blocks!for Permutation Groups}
+
+Returns a partition of <D> being a minimal block system of <G> in respect
+to the  operation <opreration> on the objects  of  <D>.  If  the argument
+<seed> is given the objects of  <seed>  are contained in  the same block.
+If <D> is a list of positive integers an Atkinson algorithm is performed.
+
+Theoretically the algorithm lies in ${\cal{O}}(n^3 m)$ but in practice it
+is mostly in ${\cal{O}}(n^2 m)$ with $m$ the number of generators and $n$
+the cardinality of $D$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Homomorphisms for Permutation Groups}
+
+This  section  describes  the  various  homomorphisms  that  are  treated
+specially for permutation groups.
+
+\vspace{7mm}
+'GroupHomomorphisByImages( <P>, <H>, <gens>, <imgs> )'%
+\index{GroupHomomorphismsByImages!for permutation groups}
+
+The group homomorphism of  a permutation group <P> into another group <H>
+is handled especially  by 'GroupHomomorphisByImages'.  Below we  describe
+how the  various  mapping  functions  are implemented  for  such a  group
+homomorphism <ghom>.   The mapping  functions  not  mentioned  below  are
+implemented     by     the     default     functions     described     in
+"GroupHomomorphismByImages".
+
+To work with <ghom>,  a stabilizer  chain for  the source  of  <ghom>  is
+computed    and   stored    as   '<ghom>.orbit',    '<ghom>.transversal',
+'<ghom>.stabilizer'.  For every stabilizer <stab> in the stabilizer chain
+there  is  a  list  parallel  to  '<stab>.generators',  which  is  called
+'<stab>.genimages',   and   contains  images   of  the  generators.   The
+stabilizer chain is computed with a random Schreier Sims algorithm, using
+the size of the source to know when to stop.
+
+\vspace{5mm}
+'IsMapping( <ghom> )'%
+\index{IsMapping!for GroupHomomorphismByImages for permutation groups}
+
+To test  if <ghom> is a (single valued) mapping, all Schreier generatores
+are  computed.   Each  Schreier  generator  is  then  reduced  along  the
+stabilizer chain.  Because the chain is complete, each one must reduce to
+the  identity.   Parallel  the  images  of  the  strong   generators  are
+multiplied.  If they also reduce to the identity (in  the range),  <ghom>
+is a function, otherwise the remainders form  a normal generating set for
+the subgroup of images of the identity of the source.
+
+\vspace{5mm}
+'Image( <ghom>, <elm> )'%
+\index{Image!for GroupHomomorphismByImages for permutation groups}
+
+The  image of  an element <elm>  can be computed by reducing  the element
+along   the   stabilizer  chain,  and   at  each  step   multiplying  the
+corresponding images of the strong generators.
+
+\vspace{5mm}
+'CompositionMapping( <hom>, <ghom> )'%
+\index{CompositionMapping!for GroupHomomorphismByImages for permutation groups}
+
+The composition of  an  arbitrary group homomorphism <hom> and <ghom> the
+stabilizer  chain  of  <ghom> is copied.  On each level the images of the
+generators  in '<stab>.genimages'  are  replaced  by  their images  under
+<hom>.
+
+\vspace{7mm}
+'OperationHomomorphism( <P>, Operation( <P>, <list> ) )'%
+\index{OperationHomomorphism!for transitive constituents}
+
+The operation of a permutation group <P> on  a list <list> of integers is
+handled especially by 'OperationHomomorphism'.  (Note that <list> must be
+a union of orbits of <P> for 'Operation' to work.)  We call the resulting
+homomorphism  a *transitive constituent* homomorphism.  Below we describe
+how  the  various  mapping  functions  are implemented  for  a transitive
+constituent homomorphism <tchom>.   The  mapping functions  not mentioned
+below   are  implemented  by   the   default   functions   described   in
+"OperationHomomorphism".
+
+\vspace{5mm}
+'Image( <tchom>, <elm> )'%
+\index{Image!for transitive constituent homomorphisms}
+
+The image of an element is  computed  by restricting <elm> to <list> (see
+"RestrictedPerm")  and   conjugating   the  restricted  permutation  with
+'<tchom>.conperm',  which maps  it  to  a permutation  that  operates  on
+'[1..Length(<list>)]' instead of <list>.
+
+\vspace{5mm}
+'Image( <tchom>, <H> )'
+
+The image of a  subgroup <H> is computed as follows.  First  a stabilizer
+chain for <H> is  computed.  This stabilizer  chain is such that the base
+starts with points in  <list>.  Then  the images of the strong generators
+of <sub> form a strong generating set of the image.
+
+\vspace{5mm}
+'PreImages( <tchom>, <H> )'%
+\index{PreImages!for transitive constituent homomorphisms}
+
+The  preimage  of a  subgroup  <H>  is  computed  as  follows.   First  a
+stabilizer chain for the  source of <tchom> is computed.  This stabilizer
+chain is such that  the base starts with  the point in <list>.  Then  the
+kernel  of  <tchom>  is  a  stabilizer  in  this  stabilizer  chain.  The
+preimages  of  the  strong generators for  <H> together  with  the strong
+generators for the  kernel form a strong generating  set  of the preimage
+subgroup.
+
+\vspace{7mm}
+'OperationHomomorphism( <P>, Operation( <P>, <blocks>, OnSets ) )'%
+\index{OperationHomomorphism!for blocks}
+
+The operation of a permutation  group <P> on a block system <blocks> (see
+"Blocks") is handled especially  by 'OperationHomomorphism'.  We call the
+resulting homomorphism a *blocks  homomorphism*.   Below we describe  how
+the various mapping functions are implemented for a  blocks  homomorphism
+<bhom>.  The mapping functions not mentioned below are implemented by the
+default functions described in "OperationHomomorphism".
+
+\vspace{5mm}
+'Image( <bhom>, <elm> )'%
+\index{Image!for blocks homomorphisms}
+
+To compute  the  image  of  an element <elm> under <bhom>, the record for
+<bhom> contains a  list '<bhom>.reps',  which  contains for each point in
+the union of the blocks the position of this block in <blocks>.  Then the
+image of an element can simply be computed by applying  the element  to a
+representative  of each block  and  using '<bhom>.reps' to find in  which
+block the image lies.
+
+\vspace{5mm}
+'Image( <bhom>, <H> )' \\
+'PreImage( <bhom>, <elm> )'%
+\index{PreImage!for blocks homomorphisms} \\
+'PreImage( <bhom>, <H> )' \\
+'Kernel( <bhom> )'%
+\index{Kernel!for blocks homomorphisms}
+
+The image of a subgroup, the  preimage of an element, and the preimage of
+a  subgroup  are  computed  by  rather  complicated  algorithms.   For  a
+description of these algorithms see \cite{But85a}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Random Methods for Permutation Groups}
+\index{Random! Methods for Permutation Groups}
+\index{Schreier-Sims!Random}
+\index{StabChainOptions}
+
+When permutation groups become larger, computations become slower. This
+increase might make it impossible to compute with these groups. The reason
+is mainly the creation of stabilizer chains (see "StabChain")\:\ During
+this process a lot of schreier generators are produced for the next point
+stabilizer in the chain, and these generators must be processed. In actual
+examples, it is observed, however, that much fewer generators are needed.
+This observation can be justified theoretically and the random methods
+exploit it by using a method of the Schreier-Sims algorithm which gives the
+correct result with an user-given error probability. 
+
+*Advantage:*:\\
+  Computations become much faster. In fact, large problems may be handled
+  only by using random methods.
+
+*Disadvantages:*:\\
+  Computations might produce wrong results. However, you can set an error
+  margin, which is guaranteed. The practical performance is even better than
+  our guarantee. You should also keep in mind, that it is
+  impossible, to eliminate system, user or programming errors.
+
+However, there are many situations, when theory offers methods to check
+correctness of the results. As an example, consider the following situation.
+You want to compute some maximal subgroups of large sporadic groups. The
+ATLAS of finite groups then tells you the sizes of the groups as well as the
+sizes of the subgroups. The error of the random methods is one-sided in the
+sense that they never create strong generators which are not elements of the
+group. Hence if the resulting group
+sizes are correct, you have indeed obtained the correct result.
+You might also give this information to 'StabChain', and computation will
+not only be much faster, but also corresponding to the information, i.e. if
+you give the size, the stabilizer chain is computed correctly.
+
+The stabilizer chain is computed using methods from \cite{BCFS91}.
+
+*How to use the random methods*
+
+{\GAP} provides the global variable 'StabChainOptions'. This record might
+contain a component 'random'. If it is set to a number $i$ between 1 and
+1000 at the beginning, random methods with guaranteed correctness
+$\frac{i}{10}$ percent are used (though practically the probability for
+correctness is much higher). This means that at all applicable
+places random methods will be used automatically by the same function calls.
+If the component is not set or set to 1000, all computations are
+deterministic. By standard, this component is not set, so unless you
+explicitely allow random computations none are used.
+
+If the group acts on not more than a hundered points, the use of random
+methods has no advantage. For these groups always the deterministic methods
+are used.
+
+|    gap> g:=SL(4,7);
+    SL(4,7)
+    gap> o:=Orbit(g,[1,0,0,0]*Z(7)^0,OnLines);;Length(o);
+    400
+    gap> op:=Operation(g,o,OnLines);;|
+
+We create a large permutation group on 400 points. First we compute
+deterministic.
+
+|    gap> g:=Group(op.generators,());;
+    gap> StabChain(g);;time;
+    164736
+    gap> Size(g);
+    2317591180800|
+
+Now random methods will be used. We allow that the result is guaranteed
+correct only with 10 percent probability. The group is created anew.
+
+|    gap> StabChainOptions.random:=100;
+    100
+    gap> g:=Group(op.generators,());;
+    gap> StabChain(g);;time;
+    10350
+    gap> Size(g);
+    2317591180800|
+
+The result is still correct, though it took only less than one tenth of the
+time (your mileage may vary). If you give the algorithm a chance to check its
+results, things become even faster.
+
+|    gap> g:=Group(op.generators,());;
+    gap> StabChain(g,rec(size:=2317591180800));;time;
+    5054|
+
+*More about random methods*
+
+When stabilizer chains are created, while random methods are allowed, it is
+noted in the respective groups, by setting of a record component
+<G>'.stabChainOptions', which is itself a record, containg the component
+'random'. This component has the value indicated by 'StabChainOptions' at the
+time the group was created. Values set in this component override
+the global setting of 'StabChainOptions'. Whenever stabilizer chains are
+created for a group not posessing the '.stabChainOptions.random' entry, it is
+created anew from the global value 'StabChainOptions'.
+
+If a subgroup has no own record 'stabChainOptions', the one of the parent
+group is used instead.
+
+As errors induced by the random functions might propagate, any
+(applicable) object created from the group inherits the component
+'.stabChainOptions' from the group. This applies for example to
+'Operation's and Homomorphisms.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Permutation Group Records}
+
+All  groups are represented by a record that contains  information  about
+the  group.  A permutation group record contains the following components
+in addition to those described in section "Group Records".
+
+'isPermGroup': \\
+        always 'true'.
+
+'isFinite': \\
+        always 'true' as permutation groups are always of finite order.
+
+A  stabilizer  chain (see "Stabilizer Chains") is  stored recursively  in
+{\GAP}.   The group record  of a permutation group <G>  with a stabilizer
+chain has the following additional components.
+
+'orbit':  \\
+        List of orbitpoints of 'orbit[1]'  (which is the basepoint) under
+        the action of the generators.
+
+'transversal': \\
+        Factorized inverse transversal as defined in "Stabilizer Chains".
+
+'stabilizer': \\
+        Record for the  stabilizer  of the point 'orbit[1]' in the  group
+        generated  by  'generators'.  The components  of this  record are
+        again 'generators', 'orbit', 'transversal' and 'stabilizer'.  The
+        last  stabilizer  in  the  stabilizer  chain  only  contains  the
+        component 'generators', which is an empty list.
+
+'stabChainOptions': \\
+	A record, that contains information about creation of the stabilizer
+	chain. For example, whether it has been computed using random methods
+	(see "Random Methods for Permutation Groups"). Some functions also
+	use this record for passing local information about basechanges.
+
+'stabChain': \\
+	A record, that contains all information about the stabilizer chain.
+	Functions acessing the stabilizer chain should do it using this
+	record, as it is planned to remove the above three components from
+	the group record in the future. The components of the 'stabChain'
+	record are described below.
+
+The components of the 'stabChain' record for a group <G> are
+
+'identity': \\
+	Contains <G>'.identity'.
+
+'generators': \\
+	Contains a copy of the generators of <G>, created by
+	'ShallowCopy(G.generators)'.
+
+'orbit': \\
+	is the same as <G>'.orbit'.
+
+'transversal': \\
+	is the same as <G>'.transversal'.
+
+'stabilizer': \\
+	is the same as <G>'.stabilizer'.
+	
+Note  that the values of all these components are  changed by functions  that
+change, extend, or reduce a base (see "MakeStabChain", "ExtendStabChain",
+and "ReduceStabChain").
+
+Note that the records that represent  the stabilizers are  not themselves
+group  records  (see  "Group  Records").   Thus  you  cannot take such  a
+stabilizer and apply group functions to it.  The last 'stabilizer' in the
+stabilizer chain is a record whose component 'generators' is empty.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+

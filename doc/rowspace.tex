@@ -1,0 +1,877 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  rowspace.tex                GAP documentation               Thomas Breuer
+%%
+%A  @(#)$Id: rowspace.tex,v 1.1.1.1 1996/12/11 12:36:50 werner Exp $
+%%
+%Y  Copyright 1994-1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file contains descriptions of row spaces, row space bases, row space
+%%  cosets, and quotient spaces.
+%%
+%H  $Log: rowspace.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:50  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.8  1994/06/10  04:46:12  sam
+%H  fixed examples
+%H
+%H  Revision 3.7  1994/06/03  08:57:20  mschoene
+%H  changed a few things to avoid LaTeX warnings
+%H
+%H  Revision 3.6  1994/05/19  13:55:54  sam
+%H  replaced old version by this one.
+%H
+%%
+\Chapter{Row Spaces}
+
+This chapter consists essentially of four parts, according to the four
+different types of data structures that are described, after the usual brief
+discussion of the objects (see "More about Row Spaces",  "Row Space Bases",
+"Row Space Cosets", "Quotient Spaces", "Subspaces and Parent Spaces").
+
+The first part introduces row spaces, and their operations and functions
+(see "RowSpace", "Operations for Row Spaces", "Functions for Row Spaces",
+"IsRowSpace", "Subspace", "AsSubspace", "AsSpace", "NormedVectors").
+
+The second part introduces bases for row spaces, and their operations and
+functions (see "Coefficients for Row Space Bases", "SiftedVector", "Basis",
+"CanonicalBasis", "SemiEchelonBasis", "IsSemiEchelonBasis", "NumberVector",
+"ElementRowSpace").
+
+The third part introduces row space cosets, and their operations and
+functions (see "Operations for Row Space Cosets", "Functions for Row Space
+Cosets", "IsSpaceCoset").
+
+The fourth part introduces quotient spaces of row spaces, and their
+operations and functions (see "Operations for Quotient Spaces", "Functions
+for Quotient Spaces").
+
+The obligatory last sections describe the details of the implementation of
+the data structures (see "Row Space Records", "Row Space Basis Records",
+"Row Space Coset Records", "Quotient Space Records").
+
+*Note*\:\ 
+The current implementation of row spaces provides no homomorphisms of
+row spaces (linear maps), and also quotient spaces of quotient spaces are
+not supported.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Row Spaces}
+
+A *row space* is a vector space (see chapter "Vector Spaces"), whose elements
+are row vectors, that is, lists of elements in a common field.
+
+*Note* that for a row space $V$ over the field $F$ necessarily the
+characteristic of $F$ is the same as the characteristic of the vectors in
+$V$.
+Furthermore at the moment the field $F$ must contain the field spanned by all
+the elements in vectors of $V$, since in many computations vectors are
+normed, that is, divided by their first nonzero entry.
+
+The implementation of functions for these spaces and their elements uses the
+well-known linear algebra methods, such as Gaussian elimination, and many
+functions delegate the work to functions for matrices, e.g., a basis of a
+row space can be computed by performing Gaussian elimination to the matrix
+formed by the list of generators.  Thus in a sense, a row space in {\GAP} is
+nothing but a {\GAP} object that knows about the interpretation of a matrix
+as a generating set, and that knows about the functions that do the work.
+
+Row spaces are constructed using "RowSpace" 'RowSpace', full row spaces can
+also be constructed by '<F> \^\ <n>', for a field <F> and a positive integer
+<n>.
+
+The *zero element* of a row space <V> in {\GAP} is not necessarily stored in
+the row space record.  If necessary, it can be computed using 'Zero( <V> )'.
+
+The 'generators' component may contain zero vectors, so no function should
+expect a generator to be nonzero.
+
+For the usual concept of substructures and parent structures see "Subspaces
+and Parent Spaces".
+
+See "Operations for Row Spaces" and "Functions for Row Spaces" for an
+overview of applicable operators and functions, and "Row Space Records" for
+details of the implementation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Row Space Bases}
+
+Many computations with row spaces require the computation of a *basis*
+(which will always mean a vector space basis in {\GAP}), such as the
+computation of the dimension, or efficient membership test for the row
+space.
+
+Most of these computations do not rely on special properties of the chosen
+basis.  The computation of coefficients lists, however, is basis dependent.
+A natural way to distinguish these two situations is the following.
+
+For basis independent questions the row space is allowed to compute a
+suitable basis, and may store bases.  For example the dimension of the space
+<V> can be computed this way using 'Dimension( <V> )'.
+In such situations the component '<V>.basis' is used.  The value of this
+component depends on how it was constructed, so no function that accesses
+this component should assume special properties of this basis.
+
+On the other hand, the computation of coefficients of a vector <v> with
+respect to a basis <B> of <V> depends on this basis, so you have to call
+'Coefficients( <B>, <v> )', and *not* 'Coefficients( <V>, <v> )'.
+
+It should be mentioned that there are two types of row space bases.
+A basis of the first type is *semi-echelonized* (see "SemiEchelonBasis"
+for the definition and examples), its structure allows to perform
+efficient calculations of membership test and coefficients.
+
+A basis of the second type is *arbitrary*, that is, it has no special
+properties.  There are two ways to construct such a (user-defined) basis
+that is *not* necessarily semi-echelonized.  The first is to call
+'RowSpace' with the optional argument '\"basis\"'; this means that the
+generators are known to be linearly independent (see "RowSpace").
+The second way is to call 'Basis' with two arguments (see "Basis").
+The computation of coefficients with respect to an arbitrary basis is
+performed by computing a semi-echelonized basis, delegating the task to
+this basis, and then performing the base change.
+
+The functions that are available for row space bases are 'Coefficients'
+(see "Coefficients for Row Space Bases") and 'SiftedVector' (see
+"SiftedVector").
+
+The several available row space bases are described in "Basis",
+"CanonicalBasis", and "SemiEchelonBasis".
+For details of the implementation see "Row Space Basis Records".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Row Space Cosets}
+
+Let $V$ be a vector space, and $U$ a subspace of $V$.
+The set $v + U = \{ v + u; u \in U\}$ is called a *coset* of $U$ in $V$.
+
+In {\GAP}, cosets are of course domains that can be formed using the
+'\'+\'' operator, see "Operations for Row Space Cosets" and "Functions
+for Row Space Cosets" for an overview of applicable operators and
+functions, and "Row Space Coset Records" for details of the
+implementation.
+
+A coset $C = v + U$ is described by any representative $v$ and the space $U$.
+Equal cosets may have different representatives.  A canonical representative
+of the coset $C$ can be computed using 'CanonicalRepresentative( <C> )', it
+does only depend on $C$, especially not on the basis of $U$.
+
+Row spaces cosets can be regarded as elements of quotient spaces
+(see "Quotient Spaces").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Quotient Spaces}
+
+Let $V$ be a vector space, and $U$ a subspace of $V$.
+The set $\{ v + U; v \in V \}$ is again a vector space, the *quotient space*
+(or factor space) of $V$ modulo $U$.
+
+By definition of row spaces, a quotient space is not a row space.
+(One reason to describe quotient spaces here is that for general vector
+spaces at the moment no factor structures are supported.)
+
+Quotient spaces in {\GAP} are formed from two spaces using the '/'
+operator.  See the sections "Operations for Quotient Spaces" and
+"Functions for Quotient Spaces" for an overview of applicable operators
+and functions, and "Quotient Space Records" for details of the
+implementation.
+
+%T There is no distinction between space cosets and elements of quotient spaces
+%T in {\GAP}, since contrary to the situation in the group case, cosets of row
+%T spaces always belong to a quotient space in a natural way.
+
+\vspace{5mm}
+
+*Bases for Quotient Spaces of Row Spaces*
+
+A basis $B$ of a quotient $V / U$ for row spaces $V$ and $U$ is best
+described by bases of $V$ and $U$.
+If $B$ is a basis without special properties then it will delegate the work
+to a semi-echelonized basis.
+The concept of *semi-echelonized bases* makes sense also for quotient spaces
+of row spaces since for any semi-echelonized basis of $U$ the set $S$ of
+pivot columns is a subset of the set of pivot columns of a semi-echelonized
+basis of $V$.
+So the cosets $v + U$ for basis vectors $v$ with pivot column not in $S$
+form a semi-echelonized basis of $V / U$.
+The *canonical basis* of $V / U$ is the semi-echelonized basis derived in
+that way from the canonical basis of $V$ (see "CanonicalBasis").
+
+See "Functions for Quotient Spaces" for details about the bases.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subspaces and Parent Spaces}
+
+The concept described in this section is essentially the same as the concept
+of parent groups and subgroups (see "More about Groups and Subgroups").
+
+(The section should be moved to chapter "Vector Spaces", but for general
+vector spaces the concept does not yet apply.)
+
+Every row space $U$ is either constructed as *subspace* of an existing space
+$V$, for example using "Subspace" 'Subspace', or it is not.
+
+In the latter case the space is called a *parent space*, in the former case  
+$V$ is called the *parent* of $U$.
+
+One can only form sums of subspaces of the same parent space, form quotient
+spaces only for spaces with same parent, and cosets $v + U$ only for
+representatives $v$ in the parent of $U$.
+
+'Parent( <V> )' : \\
+    returns the parent space of the row space <V>,
+
+'IsParent( <V> )' : \\
+    returns 'true' if the row space <V> is a parent space,
+    and 'false' otherwise.
+
+See "AsSubspace", "AsSpace" for conversion functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RowSpace}
+
+'RowSpace( <F>, <generators> )'
+
+returns the row space that is generated by the vectors <generators> over
+the field <F>.  The elements in <generators> must be {\GAP} vectors.
+
+\vspace{5mm}
+
+'RowSpace( <F>, <generators>, <zero> )'
+
+Whenever the list <generators> is empty,  this call of 'RowSpace'  has to
+be used, with <zero> the zero vector of the space.
+
+\vspace{5mm}
+
+'RowSpace( <F>, <generators>, \"basis\"\ )'
+
+also returns the <F>-space generated by <generators>.  When the space is
+constructed in this way, the vectors <generators> are assumed to form a
+basis, and this is used for example when 'Dimension' is called for the
+space.
+
+It is *not* checked that the vectors are really linearly independent.
+
+\vspace{5mm}
+
+'RowSpace( <F>, <dimension> )' \\
+'<F> \^\ <n>'
+
+return the full row space of dimension <n> over the field <F>.
+The elements of this row space are all the vectors of length <n> with entries
+in <F>.
+
+|    gap> v1:= RowSpace( GF(2), [ [ 1, 1 ], [ 0, 1 ] ] * Z(2) );
+    RowSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> v2:= RowSpace( GF(2), [], [ 0, 0 ] * Z(2) );
+    RowSpace( GF(2), [ [ 0*Z(2), 0*Z(2) ] ] )
+    gap> v3:= RowSpace( GF(2), [ [ 1, 1 ], [ 0, 1 ] ] * Z(2), "basis" );
+    RowSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> v4:= RowSpace( GF(2), 2 );
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> v5:= GF(2) ^ 2 ;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> v3 = v4;
+    true |
+
+Note that the list of generators may contain zero vectors.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Row Spaces}
+
+*Comparisons of Row Spaces*
+
+'<V> = <W>' : \\
+    returns 'true' if the two row spaces <V>, <W> are equal as sets,
+    and 'false' otherwise.
+%T   *Note* that equal row spaces may have different coefficient fields
+%T   if we allow to choose a smaller coefficient field than the field 
+%T   defined by the vectors.
+
+'<V> \<\ <W>' : \\
+    returns 'true' if the row space <V> is smaller than the row space <W>,
+    and 'false' otherwise.  The first criteria of this ordering are the
+    comparison of the fields and the dimensions, row spaces over the same
+    field and of same dimension are compared by comparison of the
+    reversed canonical bases (see "CanonicalBasis").
+    
+\vspace{5mm}
+
+*Arithmetic Operations for Row Spaces*
+
+'<V> + <W>' : \\
+    returns the sum of the row spaces <V> and <W>, that is, the row space
+    generated by <V> and <W>.  This is computed using the Zassenhaus
+    algorithm.
+% (see "SumIntersectionMat").
+
+'<V> / <U>' : \\
+    returns the quotient space of <V> modulo its subspace <U>
+    (see "Quotient Spaces").
+
+|    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> s:= Subspace( v, [ [ 1, 1 ] * Z(2) ] );
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> t:= Subspace( v, [ [ 0, 1 ] * Z(2) ] );
+    Subspace( v, [ [ 0*Z(2), Z(2)^0 ] ] )
+    gap> s = t;
+    false
+    gap> s < t;
+    false
+    gap> t < s;
+    true
+    gap> u:= s+t;
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u = v;
+    true
+    gap> f:= u / s;
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] ) / 
+    [ [ Z(2)^0, Z(2)^0 ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for Row Spaces}
+
+The following functions are overlaid in the operations record of row spaces.
+
+The *set theoretic functions*
+
+'Closure', 'Elements', 'Intersection', 'Random', 'Size'.
+
+'Intersection( <V>, <W> )' : \\
+    returns the intersection of the two row spaces <V> and <W> that is
+    computed using the Zassenhaus algorithm.
+% (see "SumIntersectionMat").
+
+The *vector space specific functions*
+
+'Base( <V> )' : \\
+    returns the list of vectors of the canonical basis of the row space <V>
+    (see "CanonicalBasis").
+
+'Cosets( <V>, <U> )' : \\
+    returns the list of cosets of the subspace <U> in <V>, as does
+    'Elements( <V> / <U> )'.
+
+'Dimension( <V> )' : \\
+    returns the dimension of the row space.  For this, a basis of the
+    space is computed if not yet known.
+
+'Zero( <V> )' : \\
+    returns the zero element of the row space <V> (see "More about Row
+    Spaces").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRowSpace}
+
+'IsRowSpace( <obj> )'
+
+returns 'true' if <obj>, which can be an object of arbitrary
+type, is a row space and 'false' otherwise.
+
+|    gap> v:= GF(2) ^ 2;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> IsRowSpace( v );
+    true
+    gap> IsRowSpace( v / [ v.generators[1] ] );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subspace}
+
+'Subspace( <V>, <gens> )'
+
+returns the subspace of the row space <V> that is generated by the vectors
+in the list <gens>.
+
+|    gap> v:= GF(3)^2; v.name:= "v";;
+    RowSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> s:= Subspace( v, [ [ 1, -1 ] *Z(3)^0 ] );
+    Subspace( v, [ [ Z(3)^0, Z(3) ] ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AsSubspace}
+
+'AsSubspace( <V> ,<U> )'
+
+returns the row space <U>, viewed as a subspace of the rows space <V>.
+For that, <V> must be a parent space.
+
+|    gap> v:= GF(2)^2; v.name:="v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u:= RowSpace( GF(2), [ [ 1, 1 ] * Z(2) ] );
+    RowSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> w:= AsSubspace( v, u );
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> w = u;
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AsSpace}
+
+'AsSpace( <U> )'
+
+returns the subspace <U> as a parent space.
+
+|    gap> v:= GF(2)^2; v.name:="v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u:= Subspace( v, [ [ 1, 1 ] * Z(2) ] );
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> w:= AsSpace( u );
+    RowSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> w = u;
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NormedVectors}
+
+'NormedVectors( <V> )'
+
+returns the set of those vectors in the row space <V> for that the first
+nonzero entry is the identity of the underlying field.
+
+|    gap> v:= GF(3)^2;
+    RowSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> NormedVectors( v );
+    [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
+      [ Z(3)^0, Z(3) ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Coefficients for Row Space Bases}
+
+'Coefficients( <B>, <v> )'
+
+returns the coefficients vector of the vector <v> with respect to the
+basis <B> (see "Row Space Bases") of the vector space $V$,
+if <v> is an element of $V$.  Otherwise 'false' is returned.
+
+|    gap> v:= GF(3)^2; v.name:= "v";;
+    RowSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> b:= Basis( v );
+    Basis( v, [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> Coefficients( b, [ Z(3), Z(3) ] );
+    [ Z(3), Z(3) ]
+    gap> Coefficients( b, [ Z(3), Z(3)^2 ] );
+    [ Z(3), Z(3)^0 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SiftedVector}
+
+'SiftedVector( <B>, <v> )'
+
+returns the residuum of the vector <v> with respect to the basis <B> of
+the vector space $V$.  The exact meaning of this depends on the special
+properties of <B>.
+
+But in general this residuum is obtained on subtracting appropriate
+multiples of basis vectors, and <v> is contained in $V$ if and only if
+'SiftedVector( <B>, <v> )' is the zero vector of $V$.
+
+|    gap> v:= GF(3)^2; v.name:= "v";;
+    RowSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> s:= Subspace( v, [ [ 1, -1 ] *Z(3)^0 ] ); s.name:= "s";;
+    Subspace( v, [ [ Z(3)^0, Z(3) ] ] )
+    gap> b:= Basis(s);
+    SemiEchelonBasis( s, [ [ Z(3)^0, Z(3) ] ] )
+    gap> SiftedVector( b, [ Z(3), 0*Z(3) ] );
+    [ 0*Z(3), Z(3) ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Basis}
+
+'Basis( <V> )' \\
+'Basis( <V>, <vectors> )'
+
+'Basis( <V> )' returns a basis of the row space <V>.  If the component
+'<V>.canonicalBasis' or '<V>.semiEchelonBasis' was bound before the first
+call to 'Basis' for <V> then one of these bases is returned.  Otherwise a
+semi-echelonized basis (see "Row Space Bases") is computed.
+The basis is stored in '<V>.basis'.
+
+'Basis( <V>, <vectors> )' returns the basis of <V> that consists of the
+vectors in the list <vectors>.  In the case that '<V>.basis' was not bound
+before the call the basis is stored in this component.
+
+*Note* that it is not necessarily checked whether <vectors> is really
+linearly independent.
+
+|    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> b:= Basis( v, [ [ 1, 1 ], [ 1, 0 ] ] * Z(2) );
+    Basis( v, [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] )
+    gap> Coefficients( b, [ 0, 1 ] * Z(2) );
+    [ Z(2)^0, Z(2)^0 ]
+    gap> IsSemiEchelonBasis( b );
+    false |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CanonicalBasis}
+
+'CanonicalBasis( <V> )'
+
+returns the canonical basis of the row space <V>.  This is a special
+semi-echelonized basis (see "SemiEchelonBasis"), with the additional
+properties that for $j > i$ the position of the pivot of row $j$ is bigger
+than that of the pivot of row $i$, and that the pivot columns contain
+exactly one nonzero entry.
+
+|    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> cb:= CanonicalBasis( v );
+    CanonicalBasis( v )
+    gap> cb.vectors;
+    [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] |
+
+The canonical basis is obtained on applying a full Gaussian elimination to
+the generators of <V>, using "BaseMat" 'BaseMat'.
+If the component '<V>.semiEchelonBasis' is bound then this basis is used to
+compute the canonical basis, otherwise 'TriangulizeMat' is called.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SemiEchelonBasis}
+
+'SemiEchelonBasis( <V> )' \\
+'SemiEchelonBasis( <V>, <vectors> )'
+
+returns a semi-echelonized basis of the row space <V>.
+A basis is called *semi-echelonized* if the first non-zero element in every
+row is one, and all entries exactly below these elements are zero.
+
+If a second argument <vectors> is given, these vectors are taken as basis
+vectors.  Note that if the rows of <vectors> do not form a semi-echelonized
+basis then an error is signalled.
+
+|    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> SemiEchelonBasis( v );
+    SemiEchelonBasis( v, [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> b:= Basis( v, [ [ 1, 1 ], [ 0, 1 ] ] * Z(2) );
+    Basis( v, [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> IsSemiEchelonBasis( b );
+    true
+    gap> b;
+    SemiEchelonBasis( v, [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> Coefficients( b, [ 0, 1 ] * Z(2) );
+    [ 0*Z(2), Z(2)^0 ]
+    gap> Coefficients( b, [ 1, 0 ] * Z(2) );
+    [ Z(2)^0, Z(2)^0 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSemiEchelonBasis}
+
+'IsSemiEchelonBasis( <B> )'
+
+returns 'true' if <B> is a semi-echelonized basis (see "SemiEchelonBasis"),
+and 'false' otherwise.
+If <B> is semi-echelonized, and this was not yet stored before, after the
+call the operations record of <B> will be 'SemiEchelonBasisRowSpaceOps'.
+
+|    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> b1:= Basis( v, [ [ 0, 1 ], [ 1, 0 ] ] * Z(2) );
+    Basis( v, [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] )
+    gap> IsSemiEchelonBasis( b1 );
+    true
+    gap> b1;
+    SemiEchelonBasis( v, [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] )
+    gap> b2:= Basis( v, [ [ 0, 1 ], [ 1, 1 ] ] * Z(2) );
+    Basis( v, [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, Z(2)^0 ] ] )
+    gap> IsSemiEchelonBasis( b2 );
+    false
+    gap> b2;
+    Basis( v, [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, Z(2)^0 ] ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NumberVector}
+
+'NumberVector( <B>, <v> )'
+
+Let $<v> = \sum_{i=1}^n \lambda_i b_i$ where
+$<B> = (b_1, b_2, \ldots, b_n)$ is a basis of the vector space <V> over
+the finite field $F$ with $\|F\| = q$, and the $\lambda_i$ are elements
+of $F$.
+Let $\overline{\lambda}$ be the integer corresponding to $\lambda$ as
+defined by "FFList" 'FFList'.
+
+Then 'NumberVector( <B>, <v> )' returns
+$\sum_{i=1}^n \overline{\lambda_i} q^{i-1}$.
+
+|    gap> v:= GF(3)^3;; v.name:= "v";;
+    gap> b:= CanonicalBasis( v );;
+    gap> l:= List( [0 .. 6 ], x -> ElementRowSpace( b, x ) );
+    [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ Z(3)^0, Z(3)^0, 0*Z(3) ], [ Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), Z(3), 0*Z(3) ] ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ElementRowSpace}
+
+'ElementRowSpace( <B>, <n> )'
+
+returns the <n>-th element of the row space with basis <B>, with respect
+to the ordering defined in "NumberVector" 'NumberVector'.
+
+|    gap> v:= GF(3)^3;; v.name:= "v";;
+    gap> b:= CanonicalBasis( v );;
+    gap> l:= List( [0 .. 6 ], x -> ElementRowSpace( b, x ) );;
+    gap> List( l, x -> NumberVector( b, x ) );
+    [ 0, 1, 2, 3, 4, 5, 6 ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Row Space Cosets}
+
+*Comparison of Row Space Cosets*
+
+'<C1> = <C2>' : \\
+    returns 'true' if the two row space cosets <C1>, <C2> are equal, and
+    'false' otherwise.
+    *Note* that equal cosets need not have equal representatives (see
+    "Row Space Cosets").
+
+'<C1> \<\ <C2>' : \\
+    returns 'true' if the row space coset <C1> is smaller than the row space
+    coset <C2>, and 'false' otherwise.  This ordering is defined by
+    comparison of canonical representatives.
+
+\vspace{5mm}
+
+*Arithmetic Operations for Row Space Cosets*
+
+'<C1> + <C2>' : \\
+    If <C1> and <C2> are row space cosets that belong to the same quotient
+    space, the result is the row space coset that is the sum resp. the
+    difference of these vectors.  Otherwise an error is signalled.
+
+'<s> \*\ <C>' : \\
+    returns the row space coset that is the product of the scalar <s> and
+    the row space coset <C>, where <s> must be an element of the ground
+    field of the vector space that defines <C>.
+
+\vspace{5mm}
+
+*Membership Test for Row Space Cosets*
+
+'<v> in <C>' : \\
+    returns 'true' if the vector 'v' is an element of the row space coset
+    <C>, and false otherwise.
+
+|    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u:= Subspace( v, [ [ 1, 1 ] * Z(2) ] ); u.name:="u";;
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> f:= v / u;
+    v / [ [ Z(2)^0, Z(2)^0 ] ]
+    gap> elms:= Elements( f );
+    [ ([ 0*Z(2), 0*Z(2) ]+u), ([ 0*Z(2), Z(2)^0 ]+u) ]
+    gap> 2 * elms[2];
+    ([ 0*Z(2), 0*Z(2) ]+u)
+    gap> elms[2] + elms[1];
+    ([ 0*Z(2), Z(2)^0 ]+u)
+    gap> [ 1, 0 ] * Z(2) in elms[2];
+    true
+    gap> elms[1] = elms[2];
+    false |
+    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for Row Space Cosets}
+
+Since row space cosets are domains, all set theoretic functions are
+applicable to them.
+
+'Representative'
+    returns the value of the 'representative' component.  *Note* that equal
+    cosets may have different representatives.  Canonical representatives
+    can be computed using 'CanonicalRepresentative'.
+
+'CanonicalRepresentative( <C> )' : \\
+    returns the canonical representative of the row space coset <C>,
+    which is defined as the result of 'SiftedVector( <B>, <v> )' where
+    '<C> = <v> + <U>', and <B> is the canonical basis of <U>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsSpaceCoset}
+
+'IsSpaceCoset( <obj> )'
+
+returns 'true' if <obj>, which may be an arbitrary object, is a row space
+coset, and 'false' otherwise.
+
+|    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u:= Subspace( v, [ [ 1, 1 ] * Z(2) ] );
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> f:= v / u;
+    v / [ [ Z(2)^0, Z(2)^0 ] ]
+    gap> IsSpaceCoset( u );
+    false
+    gap> IsSpaceCoset( Random( f ) );
+    true |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Quotient Spaces}
+
+'<W1> = <W2>' : \\
+    returns 'true' if for the two quotient spaces '<W1> = <V1> / <U1>' and
+    '<W2> = <V2> / <U2>' the equalities '<V1> = <V2>' and '<U1> = <U2>'
+    hold, and 'false' otherwise.
+
+'<W1> \<\ <W2>' : \\
+    returns 'true' if for the two quotient spaces '<W1> = <V1> / <U1>' and
+    '<W2> = <V2> / <U2>' either '<U1> \<\ <U2>' or '<U1> = <U2>' and
+    '<V1> \<\ <V2>' hold, and 'false' otherwise.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for Quotient Spaces}
+
+Computations in quotient spaces usually delegate the work to computations in
+numerator and denominator.
+
+The following functions are overlaid in the operations record for quotient
+spaces.
+
+The *set theoretic* functions
+
+'Closure', 'Elements', 'IsSubset', 'Intersection',
+
+and the *vector space* functions
+
+'Base( <V> )' : \\
+    returns the vectors of the canonical basis of <V>,
+
+'Generators( <V> )' : \\
+    returns a list of cosets that generate <V>,
+
+'CanonicalBasis( <V> )' : \\
+    returns the canonical basis of $<V> = W / U$, this is derived from
+    the canonical basis of $W$.
+
+'SemiEchelonBasis( <V> )' \\
+'SemiEchelonBasis( <V>, <vectors> )' : \\
+    return a semi-echelonized basis of the quotient space <V>.
+    <vectors> can be a list of elements of <V>, or of representatives.
+
+'Basis( <V> )' \\
+'Basis( <V>, <vectors> )' : \\
+    return a basis of the quotient space <V>.
+    <vectors> can be a list of elements of <V>, or of representatives.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Row Space Records}
+
+In addition to  the record components described in "Vector Space Records"
+the following components must be present in a row space record.
+
+'isRowSpace': \\
+        is always 'true',
+
+'operations' : \\
+        the record 'RowSpaceOps'.
+
+Depending on the calculations in that the row space was involved, it may
+have lots of optional components, such as 'basis', 'dimension', 'size'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Row Space Basis Records}
+
+A vector space basis is a record with at least the following components.
+
+'isBasis' : \\
+    always 'true',
+
+'vectors' : \\
+    the list of basis vectors,
+
+'structure' : \\
+    the underlying vector space,
+
+'operations' : \\
+    a record that contains the functions for the basis, at least
+    'Coefficients', 'Print', and 'SiftedVector'.
+    Of course these functions depend on the special properties of the
+    basis, so different basis types have different operations record.
+
+Depending on the type of the basis, the basis record additionally contains
+some components that are assumed and used by the functions in the
+'operations' record.
+
+For arbitrary bases these are 'semiEchelonBasis' and 'basechange',
+for semi-echelonized bases these are the lists 'heads' and 'ishead'.
+Furthermore, the booleans 'isSemiEchelonBasis' and 'isCanonicalBasis' may
+be present.
+
+The operations records for the supported bases are
+
+'BasisRowSpaceOps' : \\
+    for arbitrary bases,
+
+'CanonicalBasisRowSpaceOps' : \\
+    for the canonical basis of a space,
+
+'SemiEchelonBasisRowSpaceOps' : \\
+    for semi-echelonized bases.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Row Space Coset Records}
+
+A row space coset $v + U$ is a record with at least the following components.
+
+'isDomain' : \\
+    always 'true',
+
+'isRowSpaceCoset' : \\
+    always 'true',
+
+'isSpaceCoset' : \\
+    always 'true',
+
+'factorDen' : \\
+    the row space $U$ if the coset is an element of $V / U$ for a space $V$,
+
+'representative' : \\
+    one element of the coset, *note* that equal cosets need not have equal
+    representatives (see "Row Space Cosets"),
+          
+'operations' : \\
+    the record 'SpaceCosetRowSpaceOps'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Quotient Space Records}
+
+A quotient space $V / U$ is a record with at least the following components.
+
+'isDomain' : \\
+    always 'true',
+
+'isRowSpace' : \\
+    always 'true',
+
+'isFactorSpace' : \\
+    always 'true',
+
+'field' : \\
+    the coefficients field,
+
+'factorNum' : \\
+    the row space $V$ (the numerator),
+
+'factorDen' : \\
+    the row space $U$ (the denominator),
+
+'operations' : \\
+    the record 'FactorRowSpaceOps'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "%F\\|%V\\|%E"
+%%  fill-column:        73
+%%  fill-prefix:        "%%  "
+%%  eval:               (hide-body)
+%%  End:

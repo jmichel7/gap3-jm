@@ -1,0 +1,530 @@
+#!/bin/csh
+set path=(../bin/`hostname` $path)
+unset time
+unset noclobber
+umask 022
+set RM=rm MV=mv CP=CP
+if ( -x /bin/rm ) set RM=/bin/rm
+if ( -x /bin/mv ) set MV=/bin/mv
+if ( -x /bin/cp ) set CP=/bin/cp
+
+echo -n "Verifying test data... "
+if ( `checksum m11.1` != 1580.2220857822 ) goto error
+if ( `checksum m11.2` != 1580.3824506882 ) goto error
+if ( `checksum ac.1` != 5690.4253201461 ) goto error
+if ( `checksum ac.2` != 5690.2545066497 ) goto error
+if ( `checksum C0.1` != 132.4057681350 ) goto error
+if ( `checksum C0.2` != 132.3762370388 ) goto error
+if ( `checksum Mat2` != 84.1701675618 ) goto error
+if ( `checksum Mat5` != 204.283667245 ) goto error
+if ( `checksum Mat9` != 300.2657099669 ) goto error
+if ( `checksum Mat25` != 588.2136374774 ) goto error
+if ( `checksum Mat67` != 588.3302511077 ) goto error
+if ( `checksum Mat125` != 588.310971162 ) goto error
+if ( `checksum Mat256` != 588.1118762231 ) goto error
+if ( `checksum Perm1` != 92.3947872295 ) goto error
+if ( `checksum Perm2` != 92.269570985 ) goto error
+echo "OK"
+
+
+if ( $#argv == 1 ) goto $1
+
+#####################################################################
+# MAKETAB/ZZZ
+#####################################################################
+zzz:
+echo -n "Testing MAKETAB/ZZZ:"
+foreach f ( 2 5 25 67 125 256 )
+	echo -n " GF($f)"
+	maketab $f > /dev/null
+	if ( $status != 0 ) goto error
+	zzztest $f > /dev/null
+	if ( $status != 0 ) goto error
+end
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+#####################################################################
+# ZCV/ZPR
+#####################################################################
+zcv:
+zpr:
+echo -n "Testing ZCV/ZPR:"
+
+cat Perm1 Perm2 Mat{2,5,9,25,67,125,256} > dummy
+zpr dummy dummy2
+zcv -Q dummy2 dummy3
+if ( ! { cmp dummy dummy3 } ) goto error
+$RM -f dummy dummy2 dummy3
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZCT/ZPT
+#####################################################################
+zct:
+zpt:
+echo -n "Testing ZCT/ZPT:"
+
+echo -n " Permutations"
+zpt dummy Perm1 Perm2 Perm1 Perm2
+if ( $status != 0 ) goto error
+zct 4,2-3,1 dummy dummy2
+if ( $status != 0 ) goto error
+zct 2 dummy2 dummy3
+if ( $status != 0 || ! { cmp dummy3 Perm2 } ) goto error
+zct 4 dummy2 dummy4
+if ( $status != 0 || ! { cmp dummy4 Perm1 } ) goto error
+
+echo -n " GF(5)"
+if ( ! { zpt -r 2 -c 2 x1 Mat5 Mat5 - Mat5 } ) goto error
+if ( ! { zpt -r 2 -c 1 x2 Mat5 Mat5 } ) goto error
+if ( ! { zpt -R 1 -c 1 y x } ) goto error
+if ( ! { zct 10-20,1-2:3-9 y z1 } ) goto error
+if ( ! { zct :3-9 y z2 } ) goto error
+if ( ! { zct 10-20 y z3 } ) goto error
+if ( `checksum y` != 780.2955875945 ) goto error
+if ( `checksum z1` != 51.482470537 ) goto error
+if ( `checksum z2` != 156.535836137 ) goto error
+if ( `checksum z3` != 188.1962988940 ) goto error
+
+echo " Ok"
+$RM -f x1 x2 y z1 z2 z3
+if ( $#argv == 1 ) goto end
+
+
+
+#####################################################################
+# ZCF
+#####################################################################
+zcf:
+echo -n "Testing ZCF:"
+
+echo -n " Permutations"
+zcf -Q 2 Perm1 x1
+zcf -Q 67 Perm2 x2
+if ( `checksum x1` != 72.1727940686 ) goto error
+if ( `checksum x2` != 412.4152666678 ) goto error
+$RM -f x{1,2}
+
+echo -n " GF(2)"
+zcf -Q 4 Mat2 x1
+zcf -Q 8 Mat2 x2
+zcf -Q 64 Mat2 x3
+zcf -Q 256 Mat2 x4
+zcf -Q 16 x4 x5
+zcf -Q 256 x5 x6
+if ( `checksum x1` != 156.3077623386 ) goto error
+if ( `checksum x2` != 300.3489847350 ) goto error
+if ( `checksum x3` != 588.2290345317 ) goto error
+if ( `checksum x4` != 588.1118762231 ) goto error
+if ( `checksum x5` != 300.739250189 ) goto error
+if ( `checksum x6` != 588.1118762231 ) goto error
+$RM -f x{1,2,3,4,5,6}
+
+echo -n " GF(3)"
+zcf -Q 3 Mat9 x1
+zcf -Q 9 x1 x2
+zcf -Q 27 x1 x3
+zcf -Q 81 x1 x4
+zcf -Q 81 x2 x5
+if ( `checksum x1` != 132.3443676712 ) goto error
+if ( `checksum x2` != 300.2657099669 ) goto error
+if ( `checksum x3` != 588.3386682308 ) goto error
+if ( `checksum x4` != 588.1829269091 ) goto error
+if ( `checksum x5` != 588.1829269091 ) goto error
+$RM -f x{1,2,3,4,5}
+
+echo -n " GF(5)"
+zcf -Q 25 Mat5 x1
+zcf -Q 5 x1 x2
+zcf -Q 125 Mat5 x3
+zcf -Q 5 x3 x4
+if ( `checksum x1` != 588.2136374774 ) goto error
+if ( `checksum x2` != 204.283667245 ) goto error
+if ( `checksum x3` != 588.310971162 ) goto error
+if ( `checksum x4` != 204.283667245 ) goto error
+$RM -f x{1,2,3,4}
+
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZOR
+#####################################################################
+zor:
+echo -n "Testing ZOR: Permutations"
+if ( "`zor Perm1`" != "ELEMENT 1 HAS ORDER 2" ) goto error
+if ( "`zor Perm2`" != "ELEMENT 1 HAS ORDER 5" ) goto error
+zmu Perm1 Perm2 x
+if ( "`zor x`" != "ELEMENT 1 HAS ORDER 18" ) goto error
+zmu x Perm2 y
+if ( "`zor y`" != "ELEMENT 1 HAS ORDER 14" ) goto error
+$RM -f x y
+
+foreach f (2 5 9 25 67 256)
+    echo -n " GF($f)"
+    if ( "`zor Mat$f`" != "ORDER IS 23" ) goto error
+end
+if ( "`zor m11.1`" != "ORDER IS 5" ) goto error
+if ( "`zor m11.2`" != "ORDER IS 3" ) goto error
+if ( "`zor ac.1`" != "ORDER IS 2" ) goto error
+if ( "`zor ac.2`" != "ORDER IS 6" ) goto error
+if ( "`zor C0.1`" != "ORDER IS 2" ) goto error
+if ( "`zor C0.2`" != "ORDER IS 23" ) goto error
+
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZUK
+#####################################################################
+zuk:
+echo -n "Testing ZUK: "
+zmo -Q Perm1 Perm2 o os
+zct 1-20:1-9 Mat2 mm
+zuk -Q mm os m2
+zct 1-20:1-9 Mat5 mm
+zuk -Q mm os m5
+zmo -Q Perm1 Perm1 o os
+zct 1-20:1-15 Mat9 mm
+zuk -Q mm os m9
+zct 1-20:1-15 Mat67 mm
+zuk -Q mm os m67
+if ( `checksum m2` != 72.565720009 ) goto error
+if ( `checksum m5` != 152.3403279429 ) goto error
+if ( `checksum m9` != 212.2606750699 ) goto error
+if ( `checksum m67` != 412.3687639806 ) goto error
+echo " Ok"
+$RM -f mm m2 m5 m9 m67 o os
+if ( $#argv == 1 ) goto end
+
+
+
+#####################################################################
+# ZAD/ZMU
+#####################################################################
+zad:
+zmu:
+echo -n "Testing ZAD/ZMU:"
+
+foreach f ( 2 5 9 25 67 125 256 )
+    zmu Mat$f Mat$f a
+    zad Mat$f a b$f
+end
+if ( `checksum b2` != 84.3260854010 ) goto error
+if ( `checksum b5` != 204.3853706129 ) goto error
+if ( `checksum b9` != 300.3411179034 ) goto error
+if ( `checksum b25` != 588.3404845323 ) goto error
+if ( `checksum b67` != 588.3297508606 ) goto error
+if ( `checksum b125` != 588.3652652946 ) goto error
+if ( `checksum b256` != 588.585784393 ) goto error
+$RM -f a b{2,5,9,25,67,125,256}
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZSI
+#####################################################################
+zsi:
+echo -n "Testing ZSI:"
+
+foreach f ( 2 5 9 25 67 125 256 )
+    echo -n " $f"
+    zct 1-10 Mat$f m
+    zct 8-15 Mat$f n
+    zct 11-24 Mat$f q
+    zsi -Q Mat$f Mat$f s1 i1
+    zsi -Q m n s2 i2
+    zsi -Q Mat$f m s3 i3
+    zsi -Q q m s4 i4
+    zpt -r 8 -c 1 x$f s1 s2 s3 s4 i1 i2 i3 i4
+    $RM -f {i,s}{1,2,3,4} m n q
+end
+if ( `checksum x2` != 384.1862547397 ) goto error
+if ( `checksum x5` != 1004.1189846506 ) goto error
+if ( `checksum x9` != 1500.950614678 ) goto error
+if ( `checksum x25` != 2988.630093959 ) goto error
+if ( `checksum x67` != 2988.1487608431 ) goto error
+if ( `checksum x125` != 2988.876776822 ) goto error
+if ( `checksum x256` != 2988.1532796076 ) goto error
+$RM -f x{2,5,9,25,67,125,256}
+
+echo " Ok"
+
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZTE
+#####################################################################
+zte:
+echo -n "Testing ZTE:"
+
+echo -n " Permutations"
+zte Perm1 Perm2 x1
+if ( `checksum x1` != 1612.3198593183 ) goto error
+
+echo -n " 2"
+zte Mat2 Mat2 x2
+if ( `checksum x2` != 41484.1750919850 ) goto error
+echo -n " 5"
+zte Mat5 Mat5 x3
+if ( `checksum x3` != 110604.1725989114 ) goto error
+echo -n " 9"
+zte Mat9 Mat9 x4
+if ( `checksum x4` != 165900.1690157962 ) goto error
+echo -n " 25"
+zte Mat25 Mat25 x5
+if ( `checksum x5` != 331788.373389295 ) goto error
+echo -n " 67"
+zte Mat67 Mat67 x6
+if ( `checksum x6` != 331788.1207955285 ) goto error
+echo -n " 125"
+zte Mat125 Mat125 x7
+if ( `checksum x7` != 331788.1186469864 ) goto error
+echo -n " 225"
+zte Mat256 Mat256 x8
+if ( `checksum x8` != 331788.2568263515 ) goto error
+
+$RM -f x{1,2,3,4,5,6,7,8}
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZSY
+#####################################################################
+zsy:
+echo -n "Testing ZSY:"
+
+echo -n " Permutations"
+zsy -Q e2 Perm1 x1
+zsy -Q e3 Perm1 x2
+if ( `checksum x1` !=  772.3117410804 ) goto error
+if ( `checksum x2` !=  4572.1646074191 ) goto error
+$RM -f x1 x2
+
+echo -n " Matrices"
+zct 1-5:1-7 Mat67 m67
+zct 1-5:1-6 Mat25 m25
+zct 1-7:1-7 Mat9 m9
+zsy -Q e2 Mat5 x1
+zsy -Q e3 m67 x2
+zsy -Q e4 m25 x3
+zsy -Q s2 Mat2 x4
+zsy -Q m3 m9 x5
+if ( `checksum x1` !=  25404.3020209772  ) goto error
+if ( `checksum x2` !=  362.1554181026  ) goto error
+if ( `checksum x3` !=  87.4019966339  ) goto error
+if ( `checksum x4` !=  11412.1035840264  ) goto error
+if ( `checksum x5` !=  6284.660868913  ) goto error
+$RM -f x{1,2,3,4,5} m{9,25,67}
+
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZCP
+#####################################################################
+zcp:
+echo -n "Testing ZCP: "
+zcp m11.1 > zcp.log
+zcp -f m11.1 >> zcp.log
+zcp -G m11.1 >> zcp.log
+zcp m11.2 >> zcp.log
+zcp -f m11.2 >> zcp.log
+zcp -G m11.2 >> zcp.log
+if (! { cmp zcp.log =zcp.log } ) goto error
+echo " Ok"
+$RM zcp.log
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZVP
+#####################################################################
+zvp:
+echo -n "Testing ZVP: "
+
+zcf -Q 3 Perm1 m1
+zcf -Q 3 Perm2 m2
+zad m1 m2 m3
+zvp -Q -sr10 -v -l 100 m1 m2 m3 p1 p2 orb
+if ( `checksum p1` != 232.855600413 ) goto error
+if ( `checksum p2` != 232.3300611021 ) goto error
+if ( `checksum orb` != 232.1754641617 ) goto error
+
+$RM -f m{1,2,3} p{1,2} orb
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZSM
+#####################################################################
+zsm:
+echo -n "Testing ZSM: "
+
+
+zsm -Q mw732 ac.1 ac.2 acw acnsp
+zsm -Q mw377 m11.1 m11.2 m11w m11nsp
+zsm -Q pwr7 m11.2 m11pwr
+zsm -Q pwr19 ac.2 acpwr
+if ( `checksum acw` != 5690.382527254 ) goto error
+if ( `checksum acnsp` != 182.117886886 ) goto error
+if ( `checksum acpwr` != 5690.2545066497 ) goto error
+if ( `checksum m11w` != 1580.2293157079 ) goto error
+if ( `checksum m11nsp` != 110.700473818 ) goto error
+if ( `checksum m11pwr` != 1580.3824506882 ) goto error
+
+$RM -f {ac,m11}{w,nsp,pwr}
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+
+#####################################################################
+# ZKD/ZMO
+#####################################################################
+zkd:
+zmo:
+echo -n "Testing ZMO/ZKD: "
+
+$CP Perm1 Perm.1
+$CP Perm2 Perm.2
+zmo -Q Perm1 Perm1 o1 os1
+zmo -Q Perm2 Perm2 o2 os2
+zmo -g 2 -Q Perm o os
+foreach f ( 2 67 )
+    zkd -Q $f os1 Perm2 k$f
+    zkd -Q $f os2 Perm1 kk$f
+end
+
+if ( `checksum o1` != 92.555959964 ) goto error
+if ( `checksum os1` !=  72.635950478 ) goto error
+if ( `checksum o2` != 92.3037606668 ) goto error
+if ( `checksum os2` != 60.2958376200 ) goto error
+if ( `checksum o` != 92.293111723 ) goto error
+if ( `checksum os` != 48.1177183984 ) goto error
+if ( `checksum k2` != 42.1435084383 ) goto error
+if ( `checksum kk2` != 36.4104902758 ) goto error
+if ( `checksum k67` != 237.2936653860 ) goto error
+if ( `checksum kk67` != 156.4003365128 ) goto error
+
+$RM -f Perm.1 Perm.2 o o1 o2 os os1 os2 k2 kk2 k67 kk67
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+
+
+#####################################################################
+# ZPC
+#####################################################################
+zpc:
+echo -n "Testing ZPC: "
+set x = ( `zpc Perm1 Perm2 Perm1 s1 s2 q1 q2` )
+if ( $#x < 6 || $x[4] != 11 || $x[6] != 9 ) goto error
+set x = ( `zpc s1 s2 s1 a1 a2 b1 b2` )
+if ( $x[1] != Transitive ) goto error
+set x = ( `zpc q1 q2 q1 s1 s2 q1 q2` )
+if ( $#x < 6 || $x[4] != 1 || $x[6] != 8 ) goto error
+set x = ( `zpc q1 q2 q1 s1 s2 q1 q2` )
+if ( $#x < 6 || $x[4] != 1 || $x[6] != 7 ) goto error
+set x = ( `zpc q1 q2 q1 s1 s2 q1 q2` )
+if ( $#x < 6 || $x[4] != 1 || $x[6] != 6 ) goto error
+set x = ( `zpc q1 q2 q1 s1 s2 q1 q2` )
+if ( $#x < 6 || $x[4] != 2 || $x[6] != 4 ) goto error
+set x = ( `zpc q1 q2 q1 s1 s2 q1 q2` )
+if ( $#x < 6 || $x[4] != 1 || $x[6] != 3 ) goto error
+set x = ( `zpc q1 q2 q1 s1 s2 q1 q2` )
+if ( $#x < 6 || $x[4] != 1 || $x[6] != 2 ) goto error
+set x = ( `zpc q1 q2 q1 s1 s2 q1 q2` )
+if ( $#x < 6 || $x[4] != 1 || $x[6] != 1 ) goto error
+
+zte Perm1 Perm1 z1
+zte Perm2 Perm2 z2
+set msg=(`zpc z1 z2 Perm1 s1 s2 q1 q2`)
+if ( $status != 0 || $msg[4] != 110 ) goto error
+set msg=(`zor s1`)
+if ( $status != 0 || $msg[5] != 2 ) goto error
+set msg=(`zor s2`)
+if ( $status != 0 || $msg[5] != 5 ) goto error
+set msg=(`zor q1`)
+if ( $status != 0 || $msg[5] != 2 ) goto error
+set msg=(`zor q2`)
+if ( $status != 0 || $msg[5] != 5 ) goto error
+
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+#####################################################################
+# ZTR
+#####################################################################
+ztr:
+echo -n "Testing ZTR"
+
+foreach f ( 2 5 9 25 67 125 256 )
+    ztr Mat$f b$f
+end
+echo -n " 2"; if ( `checksum b2` != 84.1963892729 ) goto error
+echo -n " 5"; if ( `checksum b5` != 204.3745149098 ) goto error
+echo -n " 9"; if ( `checksum b9` != 300.1049012148 ) goto error
+echo -n " 25"; if ( `checksum b25` != 588.499337148 ) goto error
+echo -n " 67"; if ( `checksum b67` != 588.2460095492 ) goto error
+echo -n " 125"; if ( `checksum b125` != 588.1177307444 ) goto error
+echo -n " 256"; if ( `checksum b256` != 588.127099834 ) goto error
+$RM -f b{2,5,9,25,67,125,256}
+echo " Ok"
+if ( $#argv == 1 ) goto end
+
+#####################################################################
+# LATTICE PACKAGE
+#####################################################################
+lattice:
+echo -n "Testing the lattice package:"
+$RM -f m11.log
+echo -n " chop"
+chop m11 > m11.log
+echo -n " pwkond"
+pwkond m11 >> m11.log
+echo -n " mkcycl"
+mkcycl m11 >> m11.log
+echo -n " mkinc"
+mkinc m11 >> m11.log
+echo -n " mkdotl"
+mkdotl m11 >> m11.log
+echo -n " mksub"
+mksub m11 >> m11.log
+if (! { cmp m11.out =m11.out } ) goto error
+if (! { cmp m11.lat =m11.lat } ) goto error
+$RM -f m11.{mnt,out,sub,v,dot,inc,cfinfo,md,lat,gra}
+echo " Ok"
+
+
+#####################################################################
+# Normal exit: Clean up
+#####################################################################
+end:
+set nonomatch
+$RM -f dummy* z1 z2 p1 p2 mat1 mat2 s1 s2 q1 q2 nsp p*.zzz
+$RM -f m111* m114*
+echo "All tests passed"
+exit
+
+
+#####################################################################
+# Error: Don't clean up
+#####################################################################
+error:
+echo "ERROR"
+exit
+
+
+
+
+

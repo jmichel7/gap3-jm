@@ -1,0 +1,909 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  classic.tex                  GAP documentation               Frank Celler
+%%
+%A  @(#)$Id: classic.tex,v 1.1 1997/03/10 13:49:00 gap Exp $
+%%
+%Y  Copyright 1996,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
+%%
+\Chapter{Classical Groups over Finite Fields}
+
+This  chapter describes functions   to recognise and deal with  classical
+groups over finite fields.   These functions  are still experimental  and
+are not yet  part of the main  {\GAP} library, you  must use  the command
+'RequirePackage' to load them.
+
+|    gap> RequirePackage("classic");|
+
+In addition to the standard {\GAP} library the share package 'meataxe' is
+required.  This package is automatically read in by the above command.
+
+The first sections describe a pseudo random function for matrix groups, a
+change to the function  'OrderMat', the function 'GeneralOrthogonalGroup'
+which computes generators for the group  of isometries fixing a quadratic
+form, and some     other utitlity functions  for   matrix  groups.    See
+"RecSL.Random",  "GeneralOrthogonalGroup", "SpinorNorm", "OrderMat",  and
+"PPD".
+
+The following sections describe functions to recognise the special linear
+group, the symplectic group, the  unitary group, and the orthogonal group
+in    a   non-constructive   way.    See  "RecognizeSL",   "RecognizeSP",
+"RecognizeSU", and "RecognizeSO".
+
+The   final sections describe  functions to  recognise the special linear
+group and the symplectic group in a constructive way.  See "CRecognizeSL"
+and "CRecognizeSP".
+
+Readers interested in the underlying algorithms are refered to
+
+[1]
+  Frank Celler,  Charles  R.    Leedham-Green, Scott H.    Murray,  Alice
+  C.  Niemeyer,  and E.  A.  O\'Brien, ``Generating  random elements of a
+  finite group\'\', J. of Comm. Algebra, 4931--4948, vol 23, 1995
+
+[2]
+  Frank Celler  and C. R.   Leedham-Green, ``Calculating the  Order of an
+  Invertible Matrix\'\', to appear in the DIMACS proceedings
+
+
+[3]
+  Frank Celler and C.  R. Leedham-Green, ``A Non-Constructive Recognition
+  Algorithm  for the  Special  Linear and  Other Classical Groups\'\', to
+  appear in the DIMACS proceedings
+
+
+[4]
+  Frank  Celler,   C.   R.  Leedham-Green,   ``A constructive recognition
+  algorithm for the special linear group\'\', preprint
+         
+[5]
+  Alice C. Niemeyer and Cheryl  E. Praeger, ``A Recognition Algorithm for
+  Classical Groups over Finite Fields\'\', submitted.
+
+The   non-constructive    recognition   algorithms   use    Aschbacher\'s
+classification  of   the maximal   subgroups  of  the   classical groups.
+Possible  classes  of  subgroups mentioned  below always   refer  to this
+classificaction, see
+
+[6]
+  Peter  Kleidman and  Martin Liebeck, ``The   Subgroup Structure of  the
+  Finite  Classical   Groups\'\',   Cambridge   University Press,  London
+  Math. Soc. Lecture Note Series, vol 129, 1990
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RecSL.Random}
+
+'RecSL.Random( <g> )'
+
+returns  a  pseudo random element  of  <g>.  See  [1] for  details.  This
+function works  for any group <g>, not  only matrix groups.  The standard
+{\GAP}   function 'Random'  does not  work   very well for  matrix groups
+because it tries to  compute a permutation  representation for  the group
+which is doomed to fail for larger dimensions or fields.  However, unlike
+'Random' this  function cannot guarantee  a uniform  distribution but for
+most randomised    algorithms   the  distribution   achieved   should  be
+sufficient.
+
+|    gap> g := SL(4,17);
+    SL(4,17)
+    gap> RecSL.Random(g);
+    [ [ Z(17)^6, Z(17)^3, Z(17)^4, Z(17)^11 ], 
+      [ Z(17)^2, Z(17)^0, Z(17)^13, Z(17)^8 ], 
+      [ Z(17)^10, Z(17)^8, Z(17)^15, Z(17)^8 ], 
+      [ Z(17)^10, Z(17)^9, 0*Z(17), Z(17)^3 ] ] |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GeneralOrthogonalGroup}
+
+'GeneralOrthogonalGroup( <s>, <d>, <q> )' \\
+'O( <s>, <d>, <q> )'
+
+returns the group of isometries fixing a non-degenerate quadratic form as
+matrix group.   <d> specifies the dimension,  <q> the  size of the finite
+field, and <s> the  sign of the quadratic  form $Q$.  If the dimension is
+odd, the sign must be 0.  If the dimension is even the  sign must be $-1$
+or $+1$.  The  quadratic form  $Q$  used is   returned  in the  component
+'quadraticForm', the corresponding  symmetric form $\beta$ is returned in
+the component 'symmetricForm'.
+
+Given the standard basis $B = \{e_1,  ..., e_d\}$ then 'symmetricForm' is
+the matrix $(f(e_i,e_j))$, 'quadraticForm'  is an upper triangular matrix
+$(q_{ij})$ such   that $q_{ij}  =  f(e_i,e_j)$ for   $i \< j$,  $q_{ii} =
+Q(e_i)$,  and $q_{ij}  =  0$ for $j \< i$,  and the  equations $2Q(e_i) =
+f(e_i,e_i)$ hold.
+
+There are precisely two isometry classes of  geometries in each dimension
+<d>.  If   <d> is  even then  the   geometries are distinguished  by  the
+dimension of the maximal totally singular  subspaces.  If the sign <s> is
+$+1$,  then the Witt  defect  of the  underlying vector space  is $0$, i.
+e. the maximal totally singular subspaces have  dimension $<d>/2$; if the
+sign is $-1$, the defect is $1$, i. e. the dimension is $<d>/2-1$.
+
+If <d> is odd then the geometries are distinguished by the *discriminant*
+of  the quadratic  form  $Q$  which   is defined  as  the determinant  of
+$(f(e_i,e_j))$  modulo  $(GF(q)^\star)^2$.  Note that the  determinant of
+$(f(e_i,e_j))$  is not independent of $B$   whereas modulo squares it is.
+However, the two geometries are similar and give rise to isomorphic
+groups of isometries.  'GeneralOrthogonalGroup' uses a quadratic form $Q$
+with discriminant $-2^{d-2}$ modulo  squares.
+
+In case of odd dimension, <q> must also be odd  because the group 'O(  0,
+2d+1, $2^k$ )' is  isomorphic to the symplectic  group 'Sp( 2d, $2^k$  )'
+and you can use the function 'SP' to construct it.
+
+|    gap> g := GeneralOrthogonalGroup(0,5,3);
+    O(0,5,3)
+    gap> Size( g );
+    103680
+    gap> Size( SP(4,3) ); 
+    51840
+    gap> DeterminantMat(g.1);
+    Z(3)^0
+    gap> DeterminantMat(g.2);
+    Z(3) |
+
+\vbox{
+|    gap> DisplayMat( g.symmetricForm );    
+     . 1 . . .
+     1 . . . .
+     . . 2 . .
+     . . . 2 .
+     . . . . 2|
+
+}\vbox{
+|     gap> DisplayMat( g.quadraticForm );
+     . 1 . . .
+     . . . . .
+     . . 1 . .
+     . . . 1 .
+     . . . . 1 |
+}
+
+You  can evaluate the quadratic form  on a vector  by multiplying it from
+both sides.
+
+|    gap> v1 := [1,2,0,1,2] * Z(3);     
+    [ Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0 ]
+    gap> v1 * g.quadraticForm * v1;
+    Z(3)^0
+    gap> v1 * g.symmetricForm * v1;
+    Z(3) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SpinorNorm}
+
+'SpinorNorm( <form>, <mat> )'
+
+computes the spinor norm  of <mat> with respect  to the symmetric bilinar
+<form>.
+
+Note that the underlying field must have odd characteristic.
+
+|    gap> z  := GF(9).root;;
+    gap> m1 := [[0,1,0,0,0,0,0,0,0],[1,2,2,0,0,0,0,0,0],
+    >  [0,0,0,1,0,0,0,0,0],[0,0,0,0,1,0,0,0,0],[0,0,0,0,0,1,0,0,0],
+    >  [0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,0,1],
+    >  [0,2,1,0,0,0,0,0,0]]*z^0;;
+    gap> m2 := [[z,0,0,0,0,0,0,0,0],[0,z^7,0,0,0,0,0,0,0],
+    >  [0,0,1,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0],[0,0,0,0,1,0,0,0,0],
+    >  [0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,0],
+    >  [0,0,0,0,0,0,0,0,1]]*z^0;;
+    gap> form := IdentityMat( 9, GF(9) );;
+    gap> form{[1,2]}{[1,2]} := [[0,2],[2,0]] * z^0;;
+    gap> m1 * form * TransposedMat(m1) = form;
+    true
+    gap> m2 * form * TransposedMat(m2) = form; 
+    true
+    gap> SpinorNorm( form, m1 );
+    Z(3)^0
+    gap> SpinorNorm( form, m2 );
+    Z(3^2)^5 |
+    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrderMat}
+
+'OrderMat( <mat> )'
+
+this function  works  as  described in  the {\GAP}  manual  but  uses the
+algorithm from  [2] for  matrices over finite  fields.   Therefore you no
+longer get a warning if  the order is larger  than 1000 for matrices over
+finite fields.
+
+|    gap> OrderMat( [ [ Z(17)^4, Z(17)^12, Z(17)^4, Z(17)^7 ], 
+    >   [ Z(17)^10, Z(17), Z(17)^11, 0*Z(17) ], 
+    >   [ Z(17)^8, Z(17)^13, Z(17)^0, Z(17)^14 ], 
+    >   [ Z(17)^14, Z(17)^10, Z(17), Z(17)^10 ] ] );
+    5220 |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PPD}
+
+'PPD( <F>, <mat>, <d>, <p>, <a> )'
+
+checks if <mat> is a primitive prime divisor element  (ppd element).  See
+[5] for details.  It returns either 'false' or a  pair $[e,f]$, where $e$
+is described  below and where $f$ is  'true' if the  ppd element is large
+and 'false' otherwise.
+
+Let $q = <p>^<a>$.  A matrix <mat> is a *ppd element* if it is an element
+of order  $n$ where $n$  is a multiple of  some prime $\ell$ that divides
+$q^e-1$  for some $e$ where $d/2\<e\le  d$, but $l\not\,\mid\; p^t-1$ for
+any  $t\<\log_pq^e$.   For a ppd element   it is  also  important to know
+whether $n, l$ satisfy the auxiliary condition $l>e+1$ or $(e+1)^2\mid n$
+in which case it is called large.
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RecognizeSL}
+
+'RecognizeSL( <g>, <n> )'
+
+answers the question  ``does <g> contain  the special linear group in its
+natural   representation\'\'.  It    returns  a record,   the  component
+'containsSL'   is 'true'  if <g> contains   the  special linear group and
+'false' otherwise.
+
+*Note   that* this algorithm  could be  called a *Monte-Vegas algorithm*,
+because it  is slightly better   than a *Monte-Carlo algorithm*, i.e.  an
+algorithm which might return an *incorrect result*, but worse than a *Las
+Vegas* which always returns  a correct result (but  for which the running
+time may be worse than expected).
+
+'RecognizeSL' is slightly better than a  Monte-Carlo algorithm because if
+'containsSL'  is true, i.e.   'RecognizeSL'   returns that the group  <g>
+contains the special linear group this result is always *correct*.  If it
+fails to  prove  it, that  is if the  component 'containsSL'  is 'false',
+there is a chance that this result is *incorrect*.  In  this case you get
+a list of  possible Aschbacher classes in which  <g> might lie.  Then you
+can use  other  packages like {\sf  MeatAxe}  or Smash or  the  functions
+'RecognizeSP', 'RecognizeSU', 'RecognizeSO' to prove that <g> indeed lies
+in such a category  and does not  contain  the special linear group  *or*
+rule out that <g> lies in any of those categories thus eventually proving
+that 'RecognizeSL'  was  wrong and <g>  does  indeed contain  the special
+linear group.
+
+'RecognizeSL'  tries to prove  that  the  matrix  group <g> contains  the
+special linear group using <n> random elements.  A good initial value for
+<n> is 10.
+
+*Example 1*
+
+In the first example  we want to  investigate the group generated by <m1>
+and <m2>.
+
+|    gap> m1 := [ [ 0*Z(17), Z(17), Z(17)^10, Z(17)^12, Z(17)^2 ], 
+      [ Z(17)^13, Z(17)^10, Z(17)^15, Z(17)^8, Z(17)^0 ], 
+      [ Z(17)^10, Z(17)^6, Z(17)^9, Z(17)^8, Z(17)^10 ], 
+      [ Z(17)^13, Z(17)^5, Z(17)^0, Z(17)^12, Z(17)^5 ], 
+      [ Z(17)^14, Z(17)^13, Z(17)^5, Z(17)^10, Z(17)^0 ] ];;
+    gap> m2 := [ [ 0*Z(17), Z(17)^10, Z(17)^2, 0*Z(17), Z(17)^10 ], 
+      [ 0*Z(17), Z(17)^6, Z(17)^0, Z(17)^4, Z(17)^15 ], 
+      [ Z(17)^7, Z(17)^6, Z(17)^10, Z(17), Z(17)^2 ], 
+      [ Z(17)^3, Z(17)^10, Z(17)^5, Z(17)^4, Z(17)^6 ], 
+      [ Z(17)^0, Z(17)^8, Z(17)^0, Z(17)^5, Z(17) ] ];;
+    gap> g := Group( m1, m2 );;
+    gap> sl := RecognizeSL( g, 1 );
+    &I  field: 17, dimension: 5, number of generators: 2
+    &I  <G> could be almost simple
+    &I  <G> could be reducible
+    &I  <G> could still contain SL( 5, 17 )
+    << SL recognition record >>
+    gap> sl.containsSL;
+    false |
+
+As  the algorithm is randomised in  nature it might fail  to prove that a
+group contains  the special linear group even   if the group does.   As a
+reminder it will print a line |<G> could still contain  SL|. In the above
+example  we forced it  to fail  by chosing only  one  random element.  If
+'RecognizeSL' fails but you suspect  that the group contains the  special
+linear  group you   can restart it   using  some more random  elements by
+supplying  the result   of  a previous  run   of  'RecognizeSL'  as first
+parameter instead of a group.
+
+|    gap> sl := RecognizeSL( sl, 20 );
+    &I  field: 17, dimension: 5, number of generators: 2
+    &I  <G> is SL( 5, 17 )
+    << SL recognition record >>
+    gap> sl.containsSL;
+    true |
+
+The record  component 'sl.containsSL'   is true, if   'RecognizeSL' could
+prove that <g> contains the special linear group and is 'false' if it was
+unable to prove it.   In this case 'SetPrintLevel' can  be used to see in
+what Aschbacher class <g> could lie.
+
+*Example 2*
+
+The   following  trivial example shows  how    to use 'SetPrintLevel' and
+explains how  to interpret the various record  components.
+
+|    gap> sl := RecognizeSL( SL(10,4), 0 );
+    &I  field: 4, dimension: 10, number of generators: 2
+    &I  <G> could be almost simple
+    &I  <G> could be an almost sporadic group
+    &I  <G> could be an alternating group
+    &I  <G> could be a classical group
+    &I  <G> could be definable over a larger field
+    &I  <G> could be definable over GF(2)
+    &I  <G> could be imprimitive
+    &I  <G> could be reducible
+    &I  <G> could be a tensor product
+    &I  <G> could still contain SL( 10, 4 )
+    << SL recognition record >>
+    gap> SetPrintLevel(sl,2); sl;     
+    &I  field: 4, dimension: 10, number of generators: 2
+    &I  <G> could be almost simple: A_1(2^2) ...
+    &I  <G> could be an almost sporadic group: M11 M12 M22 J2 J3 
+    &I  <G> could be an alternating group: A5 A6 A7 A8 A9 A10 A11 A12 
+    &I  <G> could be a classical group: SU SP Omega 
+    &I  <G> could be definable over a larger field
+    &I  <G> could be definable over GF(2)
+    &I  <G> could be imprimitive
+    &I  <G> could be reducible: 1 .. 9
+    &I  <G> could be a tensor product
+    &I  <G> could still contain SL( 10, 4 )
+    << SL recognition record >>|
+
+The following components are  set to 'true' if  the possibility that <g> lies
+in the corresponding Aschbacher class has not been ruled out.  A group <g> is
+called *an almost simple  group* if <g>  contains a non-abelian simple  group
+and is contained in  its automorphism group.   As abbrevation  \"simple\"\ is
+sometimes replaced by a concrete type of simple group in the following.  Note
+that  in these cases, namely  'isAlternating', 'isSporadic', 'isChevalley', a
+'true'  and  the corresponding lists   of possibilities mean  that the almost
+simple  group is also not  in one of the other  classes.  For example, if you
+have a Chevalley group not acting primitive the corresponding group might not
+turn up in the list 'expsChev'.
+
+'isAlternating':\\
+  <g> could be the central extension of  an almost alternating group.  In
+  this case the component 'alternating' contains the possible degrees.
+
+|    gap> sl.alternating;
+    [ 5, 6, 7, 8, 9, 10, 11, 12 ] |
+
+'isSporadic':\\
+  <g> could be  the central  extension of  an almost sporadic  group.  In
+  this  case the component 'sporadicGroups'  contains  a list of possible
+  sporadic groups as integers.  The corresponding names  can  be found in
+  'SporadicGroupInfo.names'.
+
+|    gap> List( sl.sporadicGroups, x -> SporadicGroupsInfo.names[x] );
+    [ "M11", "M12", "M22", "J2", "J3" ] |
+
+'isChevalley':\\
+  <g> could be a central extension of  an almost Chevalley group. In this
+  case  the component  'expsChev' contains  a list  of possible Chevalley
+  groups.
+
+|    gap> sl.expsChev[1];
+    [ 60, "A", 1, 2, 2, ChevA ] |
+
+'isOrthogonal':\\
+  <g> could be an orthogonal group in its natural representation.
+
+'isSymplectic':\\
+  <g> could be a symplectic group in its natural representation.
+
+'isUnitary':\\
+  <g> could be an unitary group in its natural representation.
+
+'isClassical':\\
+  the 'or' of 'isOrthogonal', 'isSymplectic', and 'isUnitary'.
+
+'isLarger':\\
+  the natural module could be isomorphic to a module of smaller dimension
+  over a *larger* field on which this extension field acts semi-linearly.
+
+'isMysteriousP':\\
+  the dimension of  the underlying vector space  must  be $r^m$  for some
+  prime $r$  and <g> could  be an extension  of a $r$-group of symplectic
+  type and exponent $r\cdot\gcd(2,r)$ by  a subgroup of $Sp(m,r)$, modulo
+  scalars.  A  $r$-group is of *symplectic  type* if every characteristic
+  abelian subgroup is cyclic.
+
+'isImprimitive':\\
+  <g> could act imprimitively on   the underlying vector space.  In  this
+  case the    component 'dimsImprimitive' contains   a  list  of possible
+  dimensions for a block.
+
+|    gap> sl.dimsImprimitive;
+    [ [ 1, 10 ], [ 2, 5 ], [ 5, 2 ] ] |
+
+'isReducible':\\
+  <g>  could act reducibly  on the underlying vector space.  In this case
+  the  component 'dimsReducible' contains  a  list of possible dimensions
+  for an  invariant subspace.  Note that an  empty list *together* with a
+  'true' in 'isReducible' means that every dimension is possible.
+
+|    gap> sl.dimsReducible;
+    [  ] |
+
+'isSmaller':\\
+  <g>  could be defined (modulo scalars)  over a *smaller* field. In this
+  case the component 'smallerField' contains the least possible field.
+
+|    gap> sl.smallerField;
+    GF(2) |
+
+'isTensorPower':\\
+  the natural module  could be contained  in a  non-trivial tensor power,
+  extended by a group  that permutes the  tensor  factors.  In this  case
+  'dimsTensorPowers' contains a list of possible dimensions.
+
+'isTensorProduct':\\
+  the natural module could be a non-trivial tensor product.
+
+*Example 3*
+
+We want to investigate the group generated by the following matrices over
+the field with 11 elements.
+
+|    gap> m1 := [[0,9,10,10,5,9,10],[9,0,6,2,7,7,2],[10,6,1,4,7,3,1],
+    >           [10,2,4,5,6,3,0],[5,7,7,6,4,10,6],[9,7,3,3,10,6,7],
+    >           [10,2,1,0,6,7,0]]*Z(11);;
+    gap> m2 := [[8,9,6,4,8,4,1],[5,2,5,0,7,7,4],[8,5,4,10,6,1,6],
+    >           [1,7,7,3,6,1,10],[9,2,9,1,5,9,7],[7,10,0,2,1,7,8],
+    >           [7,2,7,7,10,2,10]]*Z(11);;
+    gap> g := Group( m1, m2 );;
+    gap> sl := RecognizeSL( g, 20 );; SetPrintLevel( sl, 2 ); sl;
+    &I  field: 11, dimension: 7, number of generators: 2
+    &I  <G> could be almost simple: A_1(11^3) A_2(11^2) A_3(11^1)
+    &I                              B_3(11^1) C_3(11^1) G_2(11^1) 
+    &I  <G> could be an almost sporadic group: J1 
+    &I  <G> could be a classical group: Omega(7,11)
+    &I  <G> could be reducible: 0 1 3 4 6 
+    &I  <G> could still contain SL( 7, 11 )
+    << SL recognition record >> |
+    
+We can now use the MeatAxe to check if <g> is reducible, see "MeatAxeMat",
+"Algebra", "NaturalModule", and "IsIrreducible".
+
+|    gap> mm1 := MeatAxeMat(m1);;
+    gap> mm2 := MeatAxeMat(m2);;
+    gap> a := Algebra( GF(11), [m1, m2] );;
+    gap> m := NaturalModule(a);;
+    gap> IsIrreducible(m);
+    true |
+
+We now check if <g> fixes a quadratic form, see also "RecognizeSO".
+
+|    gap> so := RecognizeSO( sl, 0 );; SetPrintLevel( so, 2 );  so;
+    &I  field: 11, dimension: 7, number of generators: 2
+    &I  symmetric form is known
+    &I  quadratic form is known
+    &I  <G> could be almost simple: A_1(11^3) A_2(11^2) A_3(11^1)
+    &I                              G_2(11^1) 
+    &I  <G> could be an almost sporadic group: J1 
+    &I  <G> could still be an orthogonal group
+    << SO recognition record >> |
+
+So <g> could be  an  orthogonal group, $G_2$  or $J_1$  but we  have  now
+proved  that  'RecognizeSL'  was  correct and  <g>   does not contain the
+special linear group.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RecognizeSO}
+
+'RecognizeSO( RecognizeSL( <g>, 0 ), <n> )'
+
+answers the question ``is <g> an orthogonal group *modulo* scalars in its
+natural  representation\'\'.  *Note    that* the algorithm   is again   a
+*Monte-Vegas algorithm*, see "RecognizeSL".
+
+The dimension of the underlying vector space must be at least 7, as there
+are exceptional isomorphisms between  the orthogonal groups in dimensions
+$6$ or less and   other classical groups which    are not dealt  with  in
+'RecognizeSO'.   In dimension $8$  'RecognizeSO' will  *not* rule out the
+possibility of $O_7(q)$ embedded as irreducible subgroup of $O_8^+(q)$.
+
+In general you will first have called 'RecognizeSL' which has failed with
+the  possibility  that <g> could  be  an orthogonal  group.  You can then
+start 'RecognizeSO' with the result of 'RecognizeSL'\:
+
+'RecognizeSO( <sl>, 0 )'
+
+tries  to find a   quadratic  form and   uses the information  gained  in
+'RecognizeSL' to rule out possible subgroups of an orthogonal group.
+
+Again this   is  a   Monte-Vegas   algorithm,  see   "RecognizeSL".    If
+'RecognizeSO' succeeds,  an  invariant bilinear form  is  returned in the
+components 'symmetricForm' and a quadratic  form in 'quadraticForm'.  See
+"GeneralOrthogonalGroup"    for  information    about   the   format   of
+'quadraticForm'.
+
+*Example 1*
+
+We want to study the group generated by <m1> and <m2>.
+
+|    gap> z  := GF(9).root;;
+    gap> m1 := [[0,1,0,0,0,0,0,0,0],[1,2,2,0,0,0,0,0,0],
+           [0,0,0,1,0,0,0,0,0],[0,0,0,0,1,0,0,0,0],[0,0,0,0,0,1,0,0,0],
+           [0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,0,1],
+           [0,2,1,0,0,0,0,0,0]]*z^0;;
+    gap> m2 := [[z,0,0,0,0,0,0,0,0],[0,z^7,0,0,0,0,0,0,0],
+           [0,0,1,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0],[0,0,0,0,1,0,0,0,0],
+           [0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,0],
+           [0,0,0,0,0,0,0,0,1]]*z^0;;
+    gap> g := Group( m1, m2 );; |
+
+First we  check if <g>  already contains the  special linear  group using
+'RecognizeSL'.
+
+|    gap> sl := RecognizeSL( g, 10 );; SetPrintLevel(sl,2); sl;
+    &I  field: 9, dimension: 9, number of generators: 2
+    &I  <G> could be a classical group: Omega 
+    &I  <G> could be reducible: 0 1 8
+    &I  <G> could still contain SL( 9, 9 )
+    << SL recognition record >> |
+
+Hence <g> is   either reducible  or  an orthogonal  group.   We now   use
+'RecognizeSO' in order to prove that it is indeed an orthogonal group.
+
+|    gap> so := RecognizeSO( sl, 0 );
+    &W  Warning: group must act absolutely irreducible
+    &I  symmetric form is known
+    &I  quadratic form is known
+    &I  <G> contains Omega0( 9, 9 ) |
+
+Note that 'RecognizeSO'  issues  a warning if  <g>  was not  proven to be
+irreducible by 'RecognizeSL'   because  'RecognizeSO' will *not*  find  a
+quadratic form  fixed by  <g>  in this case.   However,  if  it  finds an
+invariant form (using  the MeatAxe) it has   proved that <g>  indeed acts
+irreducibly.
+
+\vbox{
+|    gap> DisplayMat( so.quadraticForm );
+     . 2 . . . . . . .
+     . . . . . . . . .
+     . . 2 . . . . . .
+     . . . 2 . . . . .
+     . . . . 2 . . . .
+     . . . . . 2 . . .
+     . . . . . . 2 . .
+     . . . . . . . 2 .
+     . . . . . . . . 2 |
+}
+
+\vbox{
+|    gap> DisplayMat( m1 * so.quadraticForm * TransposedMat(m1) );
+     . . . . . . . . .
+     2 . . . . . . . 2
+     . . 2 . . . . . .
+     . . . 2 . . . . .
+     . . . . 2 . . . .
+     . . . . . 2 . . .
+     . . . . . . 2 . .
+     . . . . . . . 2 .
+     . 1 . . . . . . 2 |
+}
+|    gap> DisplayMat( m2 * so.quadraticForm * TransposedMat(m2) );
+     . 2 . . . . . . .
+     . . . . . . . . .
+     . . 2 . . . . . .
+     . . . 2 . . . . .
+     . . . . 2 . . . .
+     . . . . . 2 . . .
+     . . . . . . 2 . .
+     . . . . . . . 2 .
+     . . . . . . . . 2 |
+
+Note that in general
+
+|    m  * so.quadraticForm *  TransposedMat(m) |
+
+is not equal to
+
+|    so.quadraticForm |
+
+for an element of  an orthogonal group because you  have to normalise the
+quadratic form such that it  is an upper   triangular matrix.  So in  the
+above example  for <m1> you  have to move  the  $1$ in position  $9,2$ to
+position $2,9$ adding it to  the $2$ which gives  a $0$, and you have  to
+move the $2$  in  position $1,2$  to position  $2,1$ thus   obtaining the
+original quadratic form.
+
+It is  possible that <g>  is an  orthogonal  group *modulo* scalars,  the
+component 'gScalars' contains for each generator the scalar involved.
+
+|    gap> so.gScalars;
+    [ Z(3)^0, Z(3)^0 ] |
+
+So in this case we are indeed looking at an orthogonal group because the
+scalars are trivial.
+
+|    gap> List( [m1,m2], DeterminantMat );
+    [ Z(3), Z(3)^0 ] |
+
+As <g> contains elements of determinant not equal to 1, <g> is not a
+subgroup of the special orthogonal group.
+
+|    gap> List( [m1,m2], x -> SpinorNorm(so.symmetricform,x) );
+    [ Z(3)^0, Z(3^2)^5 ] |
+
+Not all spinor norms of the generators are squares  therefore <g> must be
+the general orthogonal group of order
+
+|    gap> 2*9^(8^2/4)*Product(List([1..4],x->9^(2*x)-1));
+    44493674969194679721288953364480000 |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RecognizeSP}
+
+'RecognizeSP( RecognizeSL( <g>, 0 ), <n> )'
+'RecognizeSP( <sl>, 0 )'
+
+works like 'RecognizeSO' for the symplectic group  *modulo* scalars.  See
+"RecognizeSO" for details.
+
+The dimension  of the underlying vector space  must be even  and at least
+$4$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RecognizeSU}
+
+'RecognizeSU( RecognizeSL( <g>, 0 ), <n> )'
+'RecognizeSU( <sl>, 0 )'
+
+works like 'RecognizeSO' for  the  unitary group *modulo*  scalars.   See
+"RecognizeSO" for details.
+
+The dimension of the underlying vector space must be at least $3$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CRecognizeSL}
+
+'CRecognizeSL( <g> )'
+
+computes  a  standard generating  set for  a matrix group  <g> which must
+contain the *special linear group* together  with expressions for the new
+generators in '<g>.generators'.   This generating set  will allow you  to
+write any element of <g> as word in the *given* generator set of <g>.
+
+The  algorithm  is of polynomial  complexity  in the  dimension and field
+size. However, it  is a *Las Vegas algorithm*,  i.  e.  there is a chance
+that the algorithm fails  to complete in the  expected time, in this case
+the  component 'containsSL'  is  'false'.   You can  simply  restart  the
+algorithm by using  the result of  a failed computation as input (instead
+of <g>).
+
+'CRecognizeSL( <g>, <g>.generators )'
+
+Note   that  'CRecognizeSL'  might   reorder  the  generators   or remove
+duplicates.  In order to avoid reordering use the above form.
+
+*Example 1*
+
+The following matrices generate the special linear group.  We now want to
+show how to rewrite any matrix in <g> as  a straight line program in <m1>
+and <m2>.  A *straight line program* in a set ${\cal M}$ is an expression
+in ${\cal   M}$ and the  symbols   |^|, |*|, |(|,   |)|.  However, unlike
+expression *trees* the     straight  line program might    share   common
+subexpressions thus reducing the cost of evaluating them.
+
+|    gap> m1 := [ [ 0*Z(17), Z(17), Z(17)^10, Z(17)^12, Z(17)^2 ], 
+      [ Z(17)^13, Z(17)^10, Z(17)^15, Z(17)^8, Z(17)^0 ], 
+      [ Z(17)^10, Z(17)^6, Z(17)^9, Z(17)^8, Z(17)^10 ], 
+      [ Z(17)^13, Z(17)^5, Z(17)^0, Z(17)^12, Z(17)^5 ], 
+      [ Z(17)^14, Z(17)^13, Z(17)^5, Z(17)^10, Z(17)^0 ] ]
+    gap> m2 := [ [ 0*Z(17), Z(17)^10, Z(17)^2, 0*Z(17), Z(17)^10 ], 
+      [ 0*Z(17), Z(17)^6, Z(17)^0, Z(17)^4, Z(17)^15 ], 
+      [ Z(17)^7, Z(17)^6, Z(17)^10, Z(17), Z(17)^2 ], 
+      [ Z(17)^3, Z(17)^10, Z(17)^5, Z(17)^4, Z(17)^6 ], 
+      [ Z(17)^0, Z(17)^8, Z(17)^0, Z(17)^5, Z(17) ] ]
+    gap> g := Group( m1, m2 );;
+    gap> sl := CRecognizeSL( g );
+    &I  <G> is SL( 5, 17 )
+    << constructive SL recognition record >>
+    gap> sl.containsSL;
+    true |
+
+After a  successful  call  to 'CRecognizeSL'   you can  use  'Rewrite' to
+rewrite an element of <g> as word in the given generators.
+
+|    gap> x := [ [ 0*Z(17), Z(17)^3, Z(17)^11, Z(17)^10, Z(17)^6 ], 
+      [ Z(17)^8, Z(17)^0, Z(17)^11, Z(17)^12, Z(17)^12 ], 
+      [ Z(17)^15, Z(17)^4, Z(17)^2, Z(17)^11, 0*Z(17) ], 
+      [ 0*Z(17), Z(17)^0, Z(17), Z(17)^13, Z(17)^15 ], 
+      [ Z(17)^9, Z(17)^14, Z(17), Z(17)^0, Z(17)^5 ] ]
+    gap> t := Rewrite( sl, x );
+    ((t1)^10*(t2)^10*(t3)^6*(t4)^16)^g1*((t1)^11*(t2)^7*(t3)^2*(t4)^7)^g2
+    *((t1)^13*(t2)^11*(t3)^12*(t4)^5)^T35(g1^2)*(t1*(t2)^4*(t3)^2
+    *(t4)^3)^T43(g1*g2)*((t1)^14*(t2)^7*(t3)^5*(t4)^16)^id*((t1)^15*(t2)^11
+    *(t3)^16*(t4)^7)^g1*((t1)^16*(t2)^15*(t3)^11*(t4)^15)^g2*((t1)^7*(t2)^3
+    *(t3)^10*(t4)^4)^T35()*(t1*(t2)^2*(t3)^3*(t4)^9)^T43()*((t1)^14*(t2)^5
+    *(t3)^4*(t4)^6)^T35()*((t1)^11*(t2)^11*(t3)^10*(t4)^4)^g1 |
+
+Note that instead  of  a standard {\GAP}  word  in abstract  generators a
+straight line program is returned.  Use 'Value' in order to evaluate it.
+
+|    gap> Value( t, sl.generators );
+    [ [ 0*Z(17), Z(17)^3, Z(17)^11, Z(17)^10, Z(17)^6 ], 
+      [ Z(17)^8, Z(17)^0, Z(17)^11, Z(17)^12, Z(17)^12 ], 
+      [ Z(17)^15, Z(17)^4, Z(17)^2, Z(17)^11, 0*Z(17) ], 
+      [ 0*Z(17), Z(17)^0, Z(17), Z(17)^13, Z(17)^15 ], 
+      [ Z(17)^9, Z(17)^14, Z(17), Z(17)^0, Z(17)^5 ] ]
+    gap> x = last;
+    true |
+
+If you want to use
+
+|    gap> Value( t, g.generators ); |
+
+instead of
+
+|    gap> Value( t, sl.generators ); |
+
+you should construct 'sl' using
+
+|    gap> sl := CRecognizeSL( g, g.generators ); |
+
+because otherwise the  sets of '<g>.generators' and '<sl>.generators' are
+equal but the ordering might be different.
+
+*Example 2*
+
+In this  example  we want   to investigate the   structure of  the  group
+generated by the following matrices.
+
+|    gap> m1 := [ [  6, 10,  6, 10,  7,  6 ],
+    >            [  8,  6,  3,  7,  3,  2 ],
+    >            [  7,  5,  0,  8,  3,  2 ],
+    >            [  7,  6, 10,  4, 10,  5 ],
+    >            [  6,  4,  1,  2,  8,  0 ],
+    >            [  4,  5, 10, 10,  1,  6 ] ] * Z(11)^0;; |
+
+|    gap> m2 := [ [  4,  3,  7,  0,  3,  2 ],
+    >            [  3,  5,  4,  8,  7,  2 ],
+    >            [  7,  2,  3,  6,  9,  0 ],
+    >            [  4,  8,  8,  1,  1,  6 ],
+    >            [  0, 10,  3,  6, 10, 10 ],
+    >            [  7,  4,  6, 10,  2,  7 ] ] * Z(11)^0;;
+    gap> G := Group( m1, m2 );;
+    gap> sl := RecognizeSL( G, 20 );
+    &I  field: 11, dimension: 6, number of generators: 2
+    &I  <G> could be almost simple
+    &I  <G> could be definable over a larger field
+    &I  <G> could be imprimitive
+    &I  <G> could be reducible
+    &I  <G> could be a tensor product
+    &I  <G> could still contain SL( 6, 11 )
+    << SL recognition record >> |
+
+In order to check  if $G$ acts reducibly on  the underlying vector space,
+we use  the   MeatAxe.   Unlike the test   used   in the non-constructive
+recognition  the MeatAxe will construct an invariant subspace  $W$ if the
+group acts reducibly. The function  'SplitMatGroup' will also return  the
+action on the quotient space.
+
+|    gap> split := SplitMatGroup(g);;
+    gap> quo := Group( split.quotient, split.quotient[1]^0 );;
+    gap> RecognizeSL(quo,10);
+    &I  <G> is SL( 3, 11 )
+    << SL recognition record >> |
+
+giving  an epimorphism $\varphi$  from  <g> to  $SL(3,11)$.  In order  to
+investigate the group further we have to find generators for the kernel.
+
+Therefore we  either need a   presentation of   $SL(3,11)$ on the   given
+generators or we can use the following  algorithm to find elements in the
+kernel\:
+
+1) find a canonical expression  for  elements of $\varphi(g)$ as words in
+$\varphi(m1)$ and $\varphi(m2)$,
+
+2) take a random element $e$ of $g$,
+
+3) the  quotient of $e$ and  the expression for $\varphi(e)$ evaluated on
+$m1$ and $m2$ gives an random element in the kernel.
+
+|    gap> csl := CRecognizeSL( quo, quo.generators );
+    &I  <G> is SL( 3, 11 )
+    << constructive SL recognition record >>
+    gap> w := quo.1 * quo.2 * quo.1;;
+    gap> t := CRecSL.Rewrite( csl, w );;
+    gap> c := Value( t, [m1,m2] );; |
+
+The quotient of $m1\cdot m2\cdot m1$ and $c$ has  to act trivially on the
+quotient space.
+
+|    gap> k1 := (m1*m2*m1/c) ^ split.basis;;|
+
+\vbox{
+|    gap> DisplayMat(k1);
+      1  .  .  2  4  3
+      .  1  .  .  2  9
+      .  .  1  3 10 10
+      .  .  .  3  8  7
+      .  .  .  3  2  4
+      .  .  .  9  5  9 |
+}
+
+Computing another  element in the kernel   we try to recognise  the group
+generated by these two elements restricted to the invariant subspace $W$.
+
+|    gap> w := quo.2 * quo.1;;
+    gap> c := Value( CRecSL.Rewrite(csl,w), [m1,m2] );;
+    gap> k2 := (m2*m1/c) ^ split.basis;;
+    gap> sub := Group( k1{[4..6]}{[4..6]}, k2{[4..6]}{[4..6]} );;
+    gap> csl := CRecognizeSL( sub, sub.generators );
+    &I  <G> is SL( 3, 11 )
+    << constructive SL recognition record >> |
+
+We already knew that we can choose a basis  such that all elements of <g>
+have the form
+$$
+\left(\begin{array}{cc}
+  u & \star \\
+    & l \\
+\end{array}\right)
+$$
+and that  the  restriction to $u$ is   $SL(3,11)$.  Now we  know that the
+elements with $u =  1$ generate either  $SL(3,11)$ (in this case $\star =
+0$ for  all elements)  or  an  extension of  $SL(3,11)$ by  an elementary
+abelian $11$-group (if there are elements with $\star \neq 0$).
+
+|    gap> w := sub.1 * sub.2;;
+    gap> c := Value( CRecSL.Rewrite(csl,w), [k1,k2] );;|
+
+\vbox{
+|    gap> DisplayMat( k1*k2/c );
+      1  .  .  .  .  .
+      .  1  .  .  .  .
+      .  .  1  .  .  .
+      .  .  .  1  .  .
+      .  .  .  .  1  .
+      .  .  .  .  .  1 |
+}
+
+Repeating this process with a  few more  random  elements, we can  deduce
+with  high  probability  that $g$ is   indeed  the direct  product of two
+copies of $SL(3,11)$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CRecognizeSP}
+
+'CRecognizeSP( <g>, <form> )'\\
+'CRecognizeSP( <g>, <g>.generators, <form> )'
+
+works like 'CRecognizeSL' (see  "CRecognizeSL")  except that <g>  must be
+the symplectic group and <form> must be an invariant symplectic form.
+
+The dimension  of the underlying vector space  must be even  and at least
+$4$.
+
+*Example 1*
+
+|    gap> g := SPwithForm( 6, 11 );
+    SP(6,11)
+    gap> sp := CRecognizeSP( g, g.generators, g.symplecticForm );              
+    &I  <G> is SP( 6, 11 )
+    << constructive SP recognition record >>
+    gap> a := RecSL.Random(g);;
+    gap> t := Rewrite( sp, a );;
+    gap> a = Value( t, g.generators );
+    true |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%H  $Log: classic.tex,v $
+%H  Revision 1.1  1997/03/10 13:49:00  gap
+%H  VERSION 1.0
+%H
+%H  Revision 1.1  1996/11/18 20:02:48  fceller
+%H  added classic
+%H
+%H  Revision 1.1  1996/07/12 11:33:45  fceller
+%H  Initial revision
+%H
+%%

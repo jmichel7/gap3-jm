@@ -1,0 +1,234 @@
+<html><head><title>GAP3 Manual: 113 Some VKCURVE utility functions</title></head>
+<body bgcolor="ffffff">
+<h1>113 Some VKCURVE utility functions</h1>
+<P><P><P>
+We document here various utility functions defined by <strong>VKCURVE</strong> package
+and which may be useful also in other contexts.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap113.htm#SECT001">BigNorm</a>
+<LI> <A HREF="chap113.htm#SECT002">DecimalLog</a>
+<LI> <A HREF="chap113.htm#SECT003">ComplexRational</a>
+<LI> <A HREF="chap113.htm#SECT004">Dispersal</a>
+<LI> <A HREF="chap113.htm#SECT005">ConjugatePresentation</a>
+<LI> <A HREF="chap113.htm#SECT006">TryConjugatePresentation</a>
+<LI> <A HREF="chap113.htm#SECT007">FindRoots</a>
+<LI> <A HREF="chap113.htm#SECT008">Cut</a>
+</ol>
+<A NAME="SECT001"><h2>113.1 BigNorm</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>BigNorm(<var>c</var>)</code>
+<P>
+Given a <code>complex</code> number <var>c</var> with  real part <var>r</var> and imaginary part <var>j</var>,
+returns a "cheap substitute" to the norm of <var>c</var> given by <I><code>r</code>+<code>j</code></I>.
+<P>
+<pre>    gap> BigNorm(Complex(-1,-1));
+    2</pre>
+<P><A NAME="SECT002"><h2>113.2 DecimalLog</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>DecimalLog(<var>r</var>)</code>
+<P>
+Given a rational  number <var>r</var>, returns an integer <var>k</var>  such that <I>10<sup>k</sup>&lt;
+<code>r</code>  &le; 10<sup>k+1</sup></I>.
+<P>
+<pre>    gap> List([1,1/10,1/2,2,10],DecimalLog);
+    [ -1, -2, -1, 0, 1 ]</pre>
+<P><A NAME="SECT003"><h2>113.3 ComplexRational</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>ComplexRational(<var>c</var>)</code>
+<P>
+<var>c</var> is a cyclotomic or a <code>Complex</code> number with <code>Decimal</code> or real cyclotomic
+real  and imaginary parts. This function returns the corresponding rational
+complex number.
+<P>
+<pre>    gap> evalf(E(3)/3);
+    -0.1666666667+0.2886751346I
+    gap> ComplexRational(last);
+    -16666666667/100000000000+28867513459/100000000000I
+    gap> ComplexRational(E(3)/3);
+    -1/6+28867513457/100000000000I</pre>
+<P><A NAME="SECT004"><h2>113.4 Dispersal</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>Dispersal(v)</code>
+<P>
+<var>v</var> is a list of <code>complex</code> numbers representing points in the real plane.
+The result is a pair whose first element is the minimum distance between
+two elements of <var>v</var>, and the second is a pair of indices <code>[i,j]</code> such that
+<code>v[i]</code>, <code>v[j]</code> achieves this minimum distance.
+<P>
+<pre>    gap> Dispersal([Complex(1,1),Complex(0),Complex(1)]);
+    [ 1, [ 1, 3 ] ]</pre>
+<P><A NAME="SECT005"><h2>113.5 ConjugatePresentation</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>ConjugatePresentation(<var>p</var> [,<var>conjugation</var>])</code>
+<P>
+This  program modifies  a  presentation by  conjugating  a generator  by
+another. The conjugaction to apply is  described by a length-3 string of
+the same style  as the result of <code>DisplayPresentation</code>,  that is <code>"abA"</code>
+means replace  the second generator by  its conjugate by the  first, and
+<code>"Aba"</code> means replace it by its conjugate by the inverse of the first.
+<P>
+<pre>    gap> F:=FreeGroup(4);;
+    gap> p:=PresentationFpGroup(F/[F.4*F.1*F.2*F.3*F.4*F.1^-1*F.4^-1*
+    > F.3^-1*F.2^-1*F.1^-1,F.4*F.1*F.2*F.3*F.4*F.2*F.1^-1*F.4^-1*F.3^-1*
+    > F.2^-1*F.1^-1*F.3^-1,F.2*F.3*F.4*F.1*F.2*F.3*F.4*F.3^-1*F.2^-1*
+    > F.4^-1*F.3^-1*F.2^-1*F.1^-1*F.4^-1]);
+    gap> DisplayPresentation(p);
+    1: dabcd=abcda
+    2: dabcdb=cabcda
+    3: bcdabcd=dabcdbc
+    gap> DisplayPresentation(ConjugatePresentation(p,"cdC"));
+    #I  there are 4 generators and 3 relators of total length 36
+    1: cabdca=dcabdc
+    2: dcabdc=bdcabd
+    3: cabdca=abdcab</pre>
+<P><A NAME="SECT006"><h2>113.6 TryConjugatePresentation</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>TryConjugatePresentation(<var>p</var> [,<var>goal</var> [,<var>printlevel</var>]])</code>
+<P>
+This  program   tries  to  simplify  group   presentations  by  applying
+conjugations to the generators. The algorithm depends on random numbers,
+and on  tree-searching, so is  not reproducible. By default  the program
+stops as  soon as a shorter  presentation is found. Sometimes  this does
+not  give the  desired  presentation.  One can  give  a second  argument
+<var>goal</var>, then  the program will only  stop when a presentation  of length
+less than  <var>goal</var> is found. Finally,  a third argument can  be given and
+then  all presentations  the  programs  runs over  which  are of  length
+less  than  or  equal  to  this  argument  are  displayed.  Due  to  the
+non-deterministic  nature  of the  program,  it  may  be useful  to  run
+it  several times  on  the  same input.  Upon  failure  (to improve  the
+presentation), the program returns <var>p</var>.
+<P>
+<pre>    gap> Display(p);
+    1: ba=ab
+    2: dbd=bdb
+    3: cac=aca
+    4: bcb=cbc
+    5: dAca=Acad
+    6: dcdc=cdcd
+    7: adad=dada
+    8: dcDbdc=bdcbdB
+    9: dcdadc=adcdad
+    10: adcDad=dcDadc
+    11: BcccbdcAb=dcbACdddc
+    gap> p:=TryConjugatePresentation(p); 
+    #I  there are 4 generators and 11 relators of total length 100
+    #I  there are 4 generators and 11 relators of total length 120
+    #I  there are 4 generators and 10 relators of total length 100
+    #I  there are 4 generators and 11 relators of total length 132
+    #I  there are 4 generators and 11 relators of total length 114
+    #I  there are 4 generators and 11 relators of total length 110
+    #I  there are 4 generators and 11 relators of total length 104
+    #I  there are 4 generators and 11 relators of total length 114
+    #I  there are 4 generators and 11 relators of total length 110
+    #I  there are 4 generators and 11 relators of total length 104
+    #I  there are 4 generators and 8 relators of total length 76
+    #I  there are 4 generators and 8 relators of total length 74
+    #I  there are 4 generators and 8 relators of total length 72
+    #I  there are 4 generators and 8 relators of total length 70
+    #I  there are 4 generators and 7 relators of total length 52
+    # d-<I>&gt;</I>adA gives length 52
+    &lt;&lt; presentation with 4 gens and 7 rels of total length 52 >>
+    gap> Display(p); 
+    1: ba=ab
+    2: dc=cd
+    3: aca=cac
+    4: dbd=bdb
+    5: bcb=cbc
+    6: adad=dada
+    7: aBcADbdac=dBCacbdaB
+    gap> TryConjugatePresentation(p,48);
+    #I  there are 4 generators and 7 relators of total length 54
+    #I  there are 4 generators and 7 relators of total length 54
+    #I  there are 4 generators and 7 relators of total length 60
+    #I  there are 4 generators and 7 relators of total length 60
+    #I  there are 4 generators and 7 relators of total length 48
+    # d-<I>&gt;</I>bdB gives length 48
+    &lt;&lt; presentation with 4 gens and 7 rels of total length 48 >>
+    gap> Display(last);
+    1: ba=ab
+    2: bcb=cbc
+    3: cac=aca
+    4: dbd=bdb
+    5: cdc=dcd
+    6: adad=dada
+    7: dAbcBa=bAcBad</pre>
+<P><A NAME="SECT007"><h2>113.7 FindRoots</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>FindRoots(<var>p</var>, <var>approx</var>)</code>
+<P>
+<var>p</var>  should be a univariate <code>Mvp</code>  with cyclotomic or <code>Complex</code> rational or
+decimal  coefficients or  a list  of cyclotomics  or <code>Complex</code> rationals or
+decimals  which represents  the coefficients  of a  complex polynomial. The
+function  returns  <code>Complex</code>  rational  approximations  to the roots of <var>p</var>
+which  are  better  than  <var>approx</var>  (a  positive rational). Contrary to the
+functions  <code>SeparateRoots</code>, etc... described in  the previous chapter, this
+function handles quite well polynomials with multiple roots. We rely on the
+algorithms explained in detail in <A href="biblio.htm#HSS01"><cite>HSS01</cite></a>.
+<P>
+<pre>    gap> FindRoots((x-1)^5,1/100000000000);
+    [ 6249999999993/6250000000000+29/12500000000000I, 
+      12499999999993/12500000000000-39/12500000000000I, 
+      12500000000023/12500000000000+11/6250000000000I, 
+      12500000000023/12500000000000+11/6250000000000I, 
+      312499999999/312500000000-3/6250000000000I ]
+    gap> evalf(last);
+    [ 1, 1, 1, 1, 1 ]
+    gap> FindRoots(x^3-1,1/10);            
+    [ -1/2-108253175473/125000000000I, 1, -1/2+108253175473/125000000000I ]
+    gap> evalf(last);
+    [ -0.5-0.8660254038I, 1, -0.5+0.8660254038I ]
+    gap> List(last,x->x^3);
+    [ 1, 1, 1 ]</pre>
+<P><A NAME="SECT008"><h2>113.8 Cut</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>Cut(<var>string s</var> [, opt])</code>
+<P>
+The  first argument is a string, and the second one a record of options, if
+not  given taken equal to <code>rec()</code>. This function prints its string argument
+<var>s</var> on several lines not exceeding <var>opt.width</var>; if not given <var>opt.width</var> is
+taken  to be equal  <code>SizeScreen[1]-2</code>. This is  similar to how <strong>GAP3</strong> prints
+strings, excepted no continuation line characters are printed. The user can
+specify  after which  characters to  cut the  string by  specifying a field
+<code>opt.places</code>;  the defaut is <code>opt.places=","</code>,  but some other characters
+can  be used ---  for instance a  good choice for  printing big polynomials
+could  be <code>"+-"</code>. If a field <code>opt.file</code>  is given, the result is appended
+to  that file  instead of  written to  standard output;  this may  be quite
+useful for dumping some <strong>GAP3</strong> values to a file for later re-reading.
+<P>
+<pre>    gap> Cut("an, example, with, plenty, of, commas\n",rec(width:=10));
+    an,
+    example,
+    with,
+    plenty,
+    of,
+    commas
+    gap></pre>
+<P><a href ="chap112.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap114.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

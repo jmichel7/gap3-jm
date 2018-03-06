@@ -1,0 +1,809 @@
+<html><head><title>GAP3 Manual: 33 Row Spaces</title></head>
+<body bgcolor="ffffff">
+<h1>33 Row Spaces</h1>
+<P><P><P>
+This chapter consists essentially of four parts, according to the four
+different types of data structures that are described, after the usual brief
+discussion of the objects (see <a href="chap033.htm#SECT001">More about Row Spaces</a>,  <a href="chap033.htm#SECT002">Row Space Bases</a>,
+<a href="chap033.htm#SECT003">Row Space Cosets</a>, <a href="chap033.htm#SECT004">Quotient Spaces</a>, <a href="chap033.htm#SECT005">Subspaces and Parent Spaces</a>).
+<P>
+The first part introduces row spaces, and their operations and functions
+(see <a href="chap033.htm#SECT006">RowSpace</a>, <a href="chap033.htm#SECT007">Operations for Row Spaces</a>, <a href="chap033.htm#SECT008">Functions for Row Spaces</a>,
+<a href="chap033.htm#SECT009">IsRowSpace</a>, <a href="chap033.htm#SECT010">Subspace</a>, <a href="chap033.htm#SECT011">AsSubspace</a>, <a href="chap033.htm#SECT012">AsSpace</a>, <a href="chap033.htm#SECT013">NormedVectors</a>).
+<P>
+The second part introduces bases for row spaces, and their operations and
+functions (see <a href="chap033.htm#SECT014">Coefficients for Row Space Bases</a>, <a href="chap033.htm#SECT015">SiftedVector</a>, <a href="chap033.htm#SECT016">Basis</a>,
+<a href="chap033.htm#SECT017">CanonicalBasis</a>, <a href="chap033.htm#SECT018">SemiEchelonBasis</a>, <a href="chap033.htm#SECT019">IsSemiEchelonBasis</a>, <a href="chap033.htm#SECT020">NumberVector</a>,
+<a href="chap033.htm#SECT021">ElementRowSpace</a>).
+<P>
+The third part introduces row space cosets, and their operations and
+functions (see <a href="chap033.htm#SECT022">Operations for Row Space Cosets</a>, <a href="chap033.htm#SECT023">Functions for Row Space
+Cosets</a>, <a href="chap033.htm#SECT024">IsSpaceCoset</a>).
+<P>
+The fourth part introduces quotient spaces of row spaces, and their
+operations and functions (see <a href="chap033.htm#SECT025">Operations for Quotient Spaces</a>, <a href="chap033.htm#SECT026">Functions
+for Quotient Spaces</a>).
+<P>
+The obligatory last sections describe the details of the implementation of
+the data structures (see <a href="chap033.htm#SECT027">Row Space Records</a>, <a href="chap033.htm#SECT028">Row Space Basis Records</a>,
+<a href="chap033.htm#SECT029">Row Space Coset Records</a>, <a href="chap033.htm#SECT030">Quotient Space Records</a>).
+<P>
+<strong>Note</strong>: 
+The current implementation of row spaces provides no homomorphisms of
+row spaces (linear maps), and also quotient spaces of quotient spaces are
+not supported.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap033.htm#SECT001">More about Row Spaces</a>
+<LI> <A HREF="chap033.htm#SECT002">Row Space Bases</a>
+<LI> <A HREF="chap033.htm#SECT003">Row Space Cosets</a>
+<LI> <A HREF="chap033.htm#SECT004">Quotient Spaces</a>
+<LI> <A HREF="chap033.htm#SECT005">Subspaces and Parent Spaces</a>
+<LI> <A HREF="chap033.htm#SECT006">RowSpace</a>
+<LI> <A HREF="chap033.htm#SECT007">Operations for Row Spaces</a>
+<LI> <A HREF="chap033.htm#SECT008">Functions for Row Spaces</a>
+<LI> <A HREF="chap033.htm#SECT009">IsRowSpace</a>
+<LI> <A HREF="chap033.htm#SECT010">Subspace</a>
+<LI> <A HREF="chap033.htm#SECT011">AsSubspace</a>
+<LI> <A HREF="chap033.htm#SECT012">AsSpace</a>
+<LI> <A HREF="chap033.htm#SECT013">NormedVectors</a>
+<LI> <A HREF="chap033.htm#SECT014">Coefficients for Row Space Bases</a>
+<LI> <A HREF="chap033.htm#SECT015">SiftedVector</a>
+<LI> <A HREF="chap033.htm#SECT016">Basis</a>
+<LI> <A HREF="chap033.htm#SECT017">CanonicalBasis</a>
+<LI> <A HREF="chap033.htm#SECT018">SemiEchelonBasis</a>
+<LI> <A HREF="chap033.htm#SECT019">IsSemiEchelonBasis</a>
+<LI> <A HREF="chap033.htm#SECT020">NumberVector</a>
+<LI> <A HREF="chap033.htm#SECT021">ElementRowSpace</a>
+<LI> <A HREF="chap033.htm#SECT022">Operations for Row Space Cosets</a>
+<LI> <A HREF="chap033.htm#SECT023">Functions for Row Space Cosets</a>
+<LI> <A HREF="chap033.htm#SECT024">IsSpaceCoset</a>
+<LI> <A HREF="chap033.htm#SECT025">Operations for Quotient Spaces</a>
+<LI> <A HREF="chap033.htm#SECT026">Functions for Quotient Spaces</a>
+<LI> <A HREF="chap033.htm#SECT027">Row Space Records</a>
+<LI> <A HREF="chap033.htm#SECT028">Row Space Basis Records</a>
+<LI> <A HREF="chap033.htm#SECT029">Row Space Coset Records</a>
+<LI> <A HREF="chap033.htm#SECT030">Quotient Space Records</a>
+</ol>
+<A NAME="SECT001"><h2>33.1 More about Row Spaces</h2></a>
+<P><P><P>
+A <strong>row space</strong> is a vector space (see chapter <a href="chap009.htm">Vector Spaces</a>), whose elements
+are row vectors, that is, lists of elements in a common field.
+<P>
+<strong>Note</strong> that for a row space <I>V</I> over the field <I>F</I> necessarily the
+characteristic of <I>F</I> is the same as the characteristic of the vectors in
+<I>V</I>.
+Furthermore at the moment the field <I>F</I> must contain the field spanned by all
+the elements in vectors of <I>V</I>, since in many computations vectors are
+normed, that is, divided by their first nonzero entry.
+<P>
+The implementation of functions for these spaces and their elements uses the
+well-known linear algebra methods, such as Gaussian elimination, and many
+functions delegate the work to functions for matrices, e.g., a basis of a
+row space can be computed by performing Gaussian elimination to the matrix
+formed by the list of generators.  Thus in a sense, a row space in <strong>GAP3</strong> is
+nothing but a <strong>GAP3</strong> object that knows about the interpretation of a matrix
+as a generating set, and that knows about the functions that do the work.
+<P>
+Row spaces are constructed using <a href="chap033.htm#SECT006">RowSpace</a> <code>RowSpace</code>, full row spaces can
+also be constructed by <code><var>F</var> ^ <var>n</var></code>, for a field <var>F</var> and a positive integer
+<var>n</var>.
+<P>
+The <strong>zero element</strong> of a row space <var>V</var> in <strong>GAP3</strong> is not necessarily stored in
+the row space record.  If necessary, it can be computed using <code>Zero( <var>V</var> )</code>.
+<P>
+The <code>generators</code> component may contain zero vectors, so no function should
+expect a generator to be nonzero.
+<P>
+For the usual concept of substructures and parent structures see <a href="chap033.htm#SECT005">Subspaces
+and Parent Spaces</a>.
+<P>
+See <a href="chap033.htm#SECT007">Operations for Row Spaces</a> and <a href="chap033.htm#SECT008">Functions for Row Spaces</a> for an
+overview of applicable operators and functions, and <a href="chap033.htm#SECT027">Row Space Records</a> for
+details of the implementation.
+<P><A NAME="SECT002"><h2>33.2 Row Space Bases</h2></a>
+<P><P><P>
+Many computations with row spaces require the computation of a <strong>basis</strong>
+(which will always mean a vector space basis in <strong>GAP3</strong>), such as the
+computation of the dimension, or efficient membership test for the row
+space.
+<P>
+Most of these computations do not rely on special properties of the chosen
+basis.  The computation of coefficients lists, however, is basis dependent.
+A natural way to distinguish these two situations is the following.
+<P>
+For basis independent questions the row space is allowed to compute a
+suitable basis, and may store bases.  For example the dimension of the space
+<var>V</var> can be computed this way using <code>Dimension( <var>V</var> )</code>.
+In such situations the component <code><var>V</var>.basis</code> is used.  The value of this
+component depends on how it was constructed, so no function that accesses
+this component should assume special properties of this basis.
+<P>
+On the other hand, the computation of coefficients of a vector <var>v</var> with
+respect to a basis <var>B</var> of <var>V</var> depends on this basis, so you have to call
+<code>Coefficients( <var>B</var>, <var>v</var> )</code>, and <strong>not</strong> <code>Coefficients( <var>V</var>, <var>v</var> )</code>.
+<P>
+It should be mentioned that there are two types of row space bases.
+A basis of the first type is <strong>semi-echelonized</strong> (see <a href="chap033.htm#SECT018">SemiEchelonBasis</a>
+for the definition and examples), its structure allows to perform
+efficient calculations of membership test and coefficients.
+<P>
+A basis of the second type is <strong>arbitrary</strong>, that is, it has no special
+properties.  There are two ways to construct such a (user-defined) basis
+that is <strong>not</strong> necessarily semi-echelonized.  The first is to call
+<code>RowSpace</code> with the optional argument <code>"basis"</code>; this means that the
+generators are known to be linearly independent (see <a href="chap033.htm#SECT006">RowSpace</a>).
+The second way is to call <code>Basis</code> with two arguments (see <a href="chap033.htm#SECT016">Basis</a>).
+The computation of coefficients with respect to an arbitrary basis is
+performed by computing a semi-echelonized basis, delegating the task to
+this basis, and then performing the base change.
+<P>
+The functions that are available for row space bases are <code>Coefficients</code>
+(see <a href="chap033.htm#SECT014">Coefficients for Row Space Bases</a>) and <code>SiftedVector</code> (see
+<a href="chap033.htm#SECT015">SiftedVector</a>).
+<P>
+The several available row space bases are described in <a href="chap033.htm#SECT016">Basis</a>,
+<a href="chap033.htm#SECT017">CanonicalBasis</a>, and <a href="chap033.htm#SECT018">SemiEchelonBasis</a>.
+For details of the implementation see <a href="chap033.htm#SECT028">Row Space Basis Records</a>.
+<P><A NAME="SECT003"><h2>33.3 Row Space Cosets</h2></a>
+<P><P><P>
+Let <I>V</I> be a vector space, and <I>U</I> a subspace of <I>V</I>.
+The set <I>v + U = { v + u; u &isin; U}</I> is called a <strong>coset</strong> of <I>U</I> in <I>V</I>.
+<P>
+In <strong>GAP3</strong>, cosets are of course domains that can be formed using the
+<code>'+'</code> operator, see <a href="chap033.htm#SECT022">Operations for Row Space Cosets</a> and <a href="chap033.htm#SECT023">Functions
+for Row Space Cosets</a> for an overview of applicable operators and
+functions, and <a href="chap033.htm#SECT029">Row Space Coset Records</a> for details of the
+implementation.
+<P>
+A coset <I>C = v + U</I> is described by any representative <I>v</I> and the space <I>U</I>.
+Equal cosets may have different representatives.  A canonical representative
+of the coset <I>C</I> can be computed using <code>CanonicalRepresentative( <var>C</var> )</code>, it
+does only depend on <I>C</I>, especially not on the basis of <I>U</I>.
+<P>
+Row spaces cosets can be regarded as elements of quotient spaces
+(see <a href="chap033.htm#SECT004">Quotient Spaces</a>).
+<P><A NAME="SECT004"><h2>33.4 Quotient Spaces</h2></a>
+<P><P><P>
+Let <I>V</I> be a vector space, and <I>U</I> a subspace of <I>V</I>.
+The set <I>{ v + U; v &isin; V }</I> is again a vector space, the <strong>quotient space</strong>
+(or factor space) of <I>V</I> modulo <I>U</I>.
+<P>
+By definition of row spaces, a quotient space is not a row space.
+(One reason to describe quotient spaces here is that for general vector
+spaces at the moment no factor structures are supported.)
+<P>
+Quotient spaces in <strong>GAP3</strong> are formed from two spaces using the <code>/</code>
+operator.  See the sections <a href="chap033.htm#SECT025">Operations for Quotient Spaces</a> and
+<a href="chap033.htm#SECT026">Functions for Quotient Spaces</a> for an overview of applicable operators
+and functions, and <a href="chap033.htm#SECT030">Quotient Space Records</a> for details of the
+implementation.
+<P><P>
+<P>
+<P>
+<strong>Bases for Quotient Spaces of Row Spaces</strong>
+<P>
+A basis <I>B</I> of a quotient <I>V / U</I> for row spaces <I>V</I> and <I>U</I> is best
+described by bases of <I>V</I> and <I>U</I>.
+If <I>B</I> is a basis without special properties then it will delegate the work
+to a semi-echelonized basis.
+The concept of <strong>semi-echelonized bases</strong> makes sense also for quotient spaces
+of row spaces since for any semi-echelonized basis of <I>U</I> the set <I>S</I> of
+pivot columns is a subset of the set of pivot columns of a semi-echelonized
+basis of <I>V</I>.
+So the cosets <I>v + U</I> for basis vectors <I>v</I> with pivot column not in <I>S</I>
+form a semi-echelonized basis of <I>V / U</I>.
+The <strong>canonical basis</strong> of <I>V / U</I> is the semi-echelonized basis derived in
+that way from the canonical basis of <I>V</I> (see <a href="chap033.htm#SECT017">CanonicalBasis</a>).
+<P>
+See <a href="chap033.htm#SECT026">Functions for Quotient Spaces</a> for details about the bases.
+<P><A NAME="SECT005"><h2>33.5 Subspaces and Parent Spaces</h2></a>
+<P><P><P>
+The concept described in this section is essentially the same as the concept
+of parent groups and subgroups (see <a href="chap007.htm#SECT006">More about Groups and Subgroups</a>).
+<P>
+(The section should be moved to chapter <a href="chap009.htm">Vector Spaces</a>, but for general
+vector spaces the concept does not yet apply.)
+<P>
+Every row space <I>U</I> is either constructed as <strong>subspace</strong> of an existing space
+<I>V</I>, for example using <a href="chap033.htm#SECT010">Subspace</a> <code>Subspace</code>, or it is not.
+<P>
+In the latter case the space is called a <strong>parent space</strong>, in the former case  
+<I>V</I> is called the <strong>parent</strong> of <I>U</I>.
+<P>
+One can only form sums of subspaces of the same parent space, form quotient
+spaces only for spaces with same parent, and cosets <I>v + U</I> only for
+representatives <I>v</I> in the parent of <I>U</I>.
+<P>
+<DL><DT><code>Parent( <var>V</var> )</code> :<DD> <BR> 
+    returns the parent space of the row space <var>V</var>,
+</DL><P>
+<DL><DT><code>IsParent( <var>V</var> )</code> :<DD> <BR> 
+    returns <code>true</code> if the row space <var>V</var> is a parent space,
+    and <code>false</code> otherwise.
+</DL><P>
+See <a href="chap033.htm#SECT011">AsSubspace</a>, <a href="chap033.htm#SECT012">AsSpace</a> for conversion functions.
+<P><A NAME="SECT006"><h2>33.6 RowSpace</h2></a>
+<P><P><P>
+<code>RowSpace( <var>F</var>, <var>generators</var> )</code>
+<P>
+returns the row space that is generated by the vectors <var>generators</var> over
+the field <var>F</var>.  The elements in <var>generators</var> must be <strong>GAP3</strong> vectors.
+<P>
+<P>
+<P>
+<code>RowSpace( <var>F</var>, <var>generators</var>, <var>zero</var> )</code>
+<P>
+Whenever the list <var>generators</var> is empty,  this call of <code>RowSpace</code>  has to
+be used, with <var>zero</var> the zero vector of the space.
+<P>
+<P>
+<P>
+<code>RowSpace( <var>F</var>, <var>generators</var>, "basis" )</code>
+<P>
+also returns the <var>F</var>-space generated by <var>generators</var>.  When the space is
+constructed in this way, the vectors <var>generators</var> are assumed to form a
+basis, and this is used for example when <code>Dimension</code> is called for the
+space.
+<P>
+It is <strong>not</strong> checked that the vectors are really linearly independent.
+<P>
+<P>
+<P>
+<code>RowSpace( <var>F</var>, <var>dimension</var> )</code> <BR> 
+<code><var>F</var> ^ <var>n</var></code>
+<P>
+return the full row space of dimension <var>n</var> over the field <var>F</var>.
+The elements of this row space are all the vectors of length <var>n</var> with entries
+in <var>F</var>.
+<P>
+<pre>    gap> v1:= RowSpace( GF(2), [ [ 1, 1 ], [ 0, 1 ] ] * Z(2) );
+    RowSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> v2:= RowSpace( GF(2), [], [ 0, 0 ] * Z(2) );
+    RowSpace( GF(2), [ [ 0*Z(2), 0*Z(2) ] ] )
+    gap> v3:= RowSpace( GF(2), [ [ 1, 1 ], [ 0, 1 ] ] * Z(2), "basis" );
+    RowSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> v4:= RowSpace( GF(2), 2 );
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> v5:= GF(2) ^ 2 ;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> v3 = v4;
+    true </pre>
+<P>
+Note that the list of generators may contain zero vectors.
+<P><A NAME="SECT007"><h2>33.7 Operations for Row Spaces</h2></a>
+<P><P><P>
+<strong>Comparisons of Row Spaces</strong>
+<P>
+<DL><DT><code><var>V</var> = <var>W</var></code> :<DD> <BR> 
+    returns <code>true</code> if the two row spaces <var>V</var>, <var>W</var> are equal as sets,
+    and <code>false</code> otherwise.
+</DL><P><P>
+<DL><DT><code><var>V</var> < <var>W</var></code> :<DD> <BR> 
+    returns <code>true</code> if the row space <var>V</var> is smaller than the row space <var>W</var>,
+    and <code>false</code> otherwise.  The first criteria of this ordering are the
+    comparison of the fields and the dimensions, row spaces over the same
+    field and of same dimension are compared by comparison of the
+    reversed canonical bases (see <a href="chap033.htm#SECT017">CanonicalBasis</a>).
+</DL><P>
+<P>
+<P>
+<strong>Arithmetic Operations for Row Spaces</strong>
+<P>
+<DL><DT><code><var>V</var> + <var>W</var></code> :<DD> <BR> 
+    returns the sum of the row spaces <var>V</var> and <var>W</var>, that is, the row space
+    generated by <var>V</var> and <var>W</var>.  This is computed using the Zassenhaus
+    algorithm.
+</DL><P><P>
+<DL><DT><code><var>V</var> / <var>U</var></code> :<DD> <BR> 
+    returns the quotient space of <var>V</var> modulo its subspace <var>U</var>
+    (see <a href="chap033.htm#SECT004">Quotient Spaces</a>).
+</DL><P>
+<pre>    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> s:= Subspace( v, [ [ 1, 1 ] * Z(2) ] );
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> t:= Subspace( v, [ [ 0, 1 ] * Z(2) ] );
+    Subspace( v, [ [ 0*Z(2), Z(2)^0 ] ] )
+    gap> s = t;
+    false
+    gap> s &lt; t;
+    false
+    gap> t &lt; s;
+    true
+    gap> u:= s+t;
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u = v;
+    true
+    gap> f:= u / s;
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] ) / 
+    [ [ Z(2)^0, Z(2)^0 ] ] </pre>
+<P><A NAME="SECT008"><h2>33.8 Functions for Row Spaces</h2></a>
+<P><P><P>
+The following functions are overlaid in the operations record of row spaces.
+<P>
+The <strong>set theoretic functions</strong>
+<P>
+<code>Closure</code>, <code>Elements</code>, <code>Intersection</code>, <code>Random</code>, <code>Size</code>.
+<P>
+<DL><DT><code>Intersection( <var>V</var>, <var>W</var> )</code> :<DD> <BR> 
+    returns the intersection of the two row spaces <var>V</var> and <var>W</var> that is
+    computed using the Zassenhaus algorithm.
+</DL><P><P>
+The <strong>vector space specific functions</strong>
+<P>
+<DL><DT><code>Base( <var>V</var> )</code> :<DD> <BR> 
+    returns the list of vectors of the canonical basis of the row space <var>V</var>
+    (see <a href="chap033.htm#SECT017">CanonicalBasis</a>).
+</DL><P>
+<DL><DT><code>Cosets( <var>V</var>, <var>U</var> )</code> :<DD> <BR> 
+    returns the list of cosets of the subspace <var>U</var> in <var>V</var>, as does
+    <code>Elements( <var>V</var> / <var>U</var> )</code>.
+</DL><P>
+<DL><DT><code>Dimension( <var>V</var> )</code> :<DD> <BR> 
+    returns the dimension of the row space.  For this, a basis of the
+    space is computed if not yet known.
+</DL><P>
+<DL><DT><code>Zero( <var>V</var> )</code> :<DD> <BR> 
+    returns the zero element of the row space <var>V</var> (see <a href="chap033.htm#SECT001">More about Row
+    Spaces</a>).
+</DL><P><A NAME="SECT009"><h2>33.9 IsRowSpace</h2></a>
+<P><P><P>
+<code>IsRowSpace( <var>obj</var> )</code>
+<P>
+returns <code>true</code> if <var>obj</var>, which can be an object of arbitrary
+type, is a row space and <code>false</code> otherwise.
+<P>
+<pre>    gap> v:= GF(2) ^ 2;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> IsRowSpace( v );
+    true
+    gap> IsRowSpace( v / [ v.generators[1] ] );
+    false </pre>
+<P><A NAME="SECT010"><h2>33.10 Subspace</h2></a>
+<P><P><P>
+<code>Subspace( <var>V</var>, <var>gens</var> )</code>
+<P>
+returns the subspace of the row space <var>V</var> that is generated by the vectors
+in the list <var>gens</var>.
+<P>
+<pre>    gap> v:= GF(3)^2; v.name:= "v";;
+    RowSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> s:= Subspace( v, [ [ 1, -1 ] *Z(3)^0 ] );
+    Subspace( v, [ [ Z(3)^0, Z(3) ] ] ) </pre>
+<P><A NAME="SECT011"><h2>33.11 AsSubspace</h2></a>
+<P><P><P>
+<code>AsSubspace( <var>V</var> ,<var>U</var> )</code>
+<P>
+returns the row space <var>U</var>, viewed as a subspace of the rows space <var>V</var>.
+For that, <var>V</var> must be a parent space.
+<P>
+<pre>    gap> v:= GF(2)^2; v.name:="v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u:= RowSpace( GF(2), [ [ 1, 1 ] * Z(2) ] );
+    RowSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> w:= AsSubspace( v, u );
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> w = u;
+    true </pre>
+<P><A NAME="SECT012"><h2>33.12 AsSpace</h2></a>
+<P><P><P>
+<code>AsSpace( <var>U</var> )</code>
+<P>
+returns the subspace <var>U</var> as a parent space.
+<P>
+<pre>    gap> v:= GF(2)^2; v.name:="v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u:= Subspace( v, [ [ 1, 1 ] * Z(2) ] );
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> w:= AsSpace( u );
+    RowSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> w = u;
+    true </pre>
+<P><A NAME="SECT013"><h2>33.13 NormedVectors</h2></a>
+<P><P><P>
+<code>NormedVectors( <var>V</var> )</code>
+<P>
+returns the set of those vectors in the row space <var>V</var> for that the first
+nonzero entry is the identity of the underlying field.
+<P>
+<pre>    gap> v:= GF(3)^2;
+    RowSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> NormedVectors( v );
+    [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
+      [ Z(3)^0, Z(3) ] ] </pre>
+<P><A NAME="SECT014"><h2>33.14 Coefficients for Row Space Bases</h2></a>
+<P><P><P>
+<code>Coefficients( <var>B</var>, <var>v</var> )</code>
+<P>
+returns the coefficients vector of the vector <var>v</var> with respect to the
+basis <var>B</var> (see <a href="chap033.htm#SECT002">Row Space Bases</a>) of the vector space <I>V</I>,
+if <var>v</var> is an element of <I>V</I>.  Otherwise <code>false</code> is returned.
+<P>
+<pre>    gap> v:= GF(3)^2; v.name:= "v";;
+    RowSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> b:= Basis( v );
+    Basis( v, [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> Coefficients( b, [ Z(3), Z(3) ] );
+    [ Z(3), Z(3) ]
+    gap> Coefficients( b, [ Z(3), Z(3)^2 ] );
+    [ Z(3), Z(3)^0 ] </pre>
+<P><A NAME="SECT015"><h2>33.15 SiftedVector</h2></a>
+<P><P><P>
+<code>SiftedVector( <var>B</var>, <var>v</var> )</code>
+<P>
+returns the residuum of the vector <var>v</var> with respect to the basis <var>B</var> of
+the vector space <I>V</I>.  The exact meaning of this depends on the special
+properties of <var>B</var>.
+<P>
+But in general this residuum is obtained on subtracting appropriate
+multiples of basis vectors, and <var>v</var> is contained in <I>V</I> if and only if
+<code>SiftedVector( <var>B</var>, <var>v</var> )</code> is the zero vector of <I>V</I>.
+<P>
+<pre>    gap> v:= GF(3)^2; v.name:= "v";;
+    RowSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] )
+    gap> s:= Subspace( v, [ [ 1, -1 ] *Z(3)^0 ] ); s.name:= "s";;
+    Subspace( v, [ [ Z(3)^0, Z(3) ] ] )
+    gap> b:= Basis(s);
+    SemiEchelonBasis( s, [ [ Z(3)^0, Z(3) ] ] )
+    gap> SiftedVector( b, [ Z(3), 0*Z(3) ] );
+    [ 0*Z(3), Z(3) ] </pre>
+<P><A NAME="SECT016"><h2>33.16 Basis</h2></a>
+<P><P><P>
+<code>Basis( <var>V</var> )</code> <BR> 
+<code>Basis( <var>V</var>, <var>vectors</var> )</code>
+<P>
+<code>Basis( <var>V</var> )</code> returns a basis of the row space <var>V</var>.  If the component
+<code><var>V</var>.canonicalBasis</code> or <code><var>V</var>.semiEchelonBasis</code> was bound before the first
+call to <code>Basis</code> for <var>V</var> then one of these bases is returned.  Otherwise a
+semi-echelonized basis (see <a href="chap033.htm#SECT002">Row Space Bases</a>) is computed.
+The basis is stored in <code><var>V</var>.basis</code>.
+<P>
+<code>Basis( <var>V</var>, <var>vectors</var> )</code> returns the basis of <var>V</var> that consists of the
+vectors in the list <var>vectors</var>.  In the case that <code><var>V</var>.basis</code> was not bound
+before the call the basis is stored in this component.
+<P>
+<strong>Note</strong> that it is not necessarily checked whether <var>vectors</var> is really
+linearly independent.
+<P>
+<pre>    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> b:= Basis( v, [ [ 1, 1 ], [ 1, 0 ] ] * Z(2) );
+    Basis( v, [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] )
+    gap> Coefficients( b, [ 0, 1 ] * Z(2) );
+    [ Z(2)^0, Z(2)^0 ]
+    gap> IsSemiEchelonBasis( b );
+    false </pre>
+<P><A NAME="SECT017"><h2>33.17 CanonicalBasis</h2></a>
+<P><P><P>
+<code>CanonicalBasis( <var>V</var> )</code>
+<P>
+returns the canonical basis of the row space <var>V</var>.  This is a special
+semi-echelonized basis (see <a href="chap033.htm#SECT018">SemiEchelonBasis</a>), with the additional
+properties that for <I>j &gt; i</I> the position of the pivot of row <I>j</I> is bigger
+than that of the pivot of row <I>i</I>, and that the pivot columns contain
+exactly one nonzero entry.
+<P>
+<pre>    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> cb:= CanonicalBasis( v );
+    CanonicalBasis( v )
+    gap> cb.vectors;
+    [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] </pre>
+<P>
+The canonical basis is obtained on applying a full Gaussian elimination to
+the generators of <var>V</var>, using <a href="chap034.htm#SECT019">BaseMat</a> <code>BaseMat</code>.
+If the component <code><var>V</var>.semiEchelonBasis</code> is bound then this basis is used to
+compute the canonical basis, otherwise <code>TriangulizeMat</code> is called.
+<P><A NAME="SECT018"><h2>33.18 SemiEchelonBasis</h2></a>
+<P><P><P>
+<code>SemiEchelonBasis( <var>V</var> )</code> <BR> 
+<code>SemiEchelonBasis( <var>V</var>, <var>vectors</var> )</code>
+<P>
+returns a semi-echelonized basis of the row space <var>V</var>.
+A basis is called <strong>semi-echelonized</strong> if the first non-zero element in every
+row is one, and all entries exactly below these elements are zero.
+<P>
+If a second argument <var>vectors</var> is given, these vectors are taken as basis
+vectors.  Note that if the rows of <var>vectors</var> do not form a semi-echelonized
+basis then an error is signalled.
+<P>
+<pre>    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> SemiEchelonBasis( v );
+    SemiEchelonBasis( v, [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> b:= Basis( v, [ [ 1, 1 ], [ 0, 1 ] ] * Z(2) );
+    Basis( v, [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> IsSemiEchelonBasis( b );
+    true
+    gap> b;
+    SemiEchelonBasis( v, [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> Coefficients( b, [ 0, 1 ] * Z(2) );
+    [ 0*Z(2), Z(2)^0 ]
+    gap> Coefficients( b, [ 1, 0 ] * Z(2) );
+    [ Z(2)^0, Z(2)^0 ] </pre>
+<P><A NAME="SECT019"><h2>33.19 IsSemiEchelonBasis</h2></a>
+<P><P><P>
+<code>IsSemiEchelonBasis( <var>B</var> )</code>
+<P>
+returns <code>true</code> if <var>B</var> is a semi-echelonized basis (see <a href="chap033.htm#SECT018">SemiEchelonBasis</a>),
+and <code>false</code> otherwise.
+If <var>B</var> is semi-echelonized, and this was not yet stored before, after the
+call the operations record of <var>B</var> will be <code>SemiEchelonBasisRowSpaceOps</code>.
+<P>
+<pre>    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> b1:= Basis( v, [ [ 0, 1 ], [ 1, 0 ] ] * Z(2) );
+    Basis( v, [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] )
+    gap> IsSemiEchelonBasis( b1 );
+    true
+    gap> b1;
+    SemiEchelonBasis( v, [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] )
+    gap> b2:= Basis( v, [ [ 0, 1 ], [ 1, 1 ] ] * Z(2) );
+    Basis( v, [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, Z(2)^0 ] ] )
+    gap> IsSemiEchelonBasis( b2 );
+    false
+    gap> b2;
+    Basis( v, [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, Z(2)^0 ] ] ) </pre>
+<P><A NAME="SECT020"><h2>33.20 NumberVector</h2></a>
+<P><P><P>
+<code>NumberVector( <var>B</var>, <var>v</var> )</code>
+<P>
+Let <I>&lt;v&gt; = &sum;<sub>i=1</sub><sup>n</sup> &lambda;<sub>i</sub> b<sub>i</sub></I> where
+<I>&lt;B&gt; = (b<sub>1</sub>, b<sub>2</sub>, ..., b<sub>n</sub>)</I> is a basis of the vector space <var>V</var> over
+the finite field <I>F</I> with <I>|F| = q</I>, and the <I>&lambda;<sub>i</sub></I> are elements
+of <I>F</I>.
+Let <I><span style="text-decoration: overline">&lambda;</span></I> be the integer corresponding to <I>&lambda;</I> as
+defined by <a href="chap039.htm#SECT029">FFList</a> <code>FFList</code>.
+<P>
+Then <code>NumberVector( <var>B</var>, <var>v</var> )</code> returns
+<I>&sum;<sub>i=1</sub><sup>n</sup> <span style="text-decoration: overline">&lambda;<sub>i</sub></span> q<sup>i-1</sup></I>.
+<P>
+<pre>    gap> v:= GF(3)^3;; v.name:= "v";;
+    gap> b:= CanonicalBasis( v );;
+    gap> l:= List( [0 .. 6 ], x -> ElementRowSpace( b, x ) );
+    [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ Z(3)^0, Z(3)^0, 0*Z(3) ], [ Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), Z(3), 0*Z(3) ] ] </pre>
+<P><A NAME="SECT021"><h2>33.21 ElementRowSpace</h2></a>
+<P><P><P>
+<code>ElementRowSpace( <var>B</var>, <var>n</var> )</code>
+<P>
+returns the <var>n</var>-th element of the row space with basis <var>B</var>, with respect
+to the ordering defined in <a href="chap033.htm#SECT020">NumberVector</a> <code>NumberVector</code>.
+<P>
+<pre>    gap> v:= GF(3)^3;; v.name:= "v";;
+    gap> b:= CanonicalBasis( v );;
+    gap> l:= List( [0 .. 6 ], x -> ElementRowSpace( b, x ) );;
+    gap> List( l, x -> NumberVector( b, x ) );
+    [ 0, 1, 2, 3, 4, 5, 6 ] </pre>
+<P><A NAME="SECT022"><h2>33.22 Operations for Row Space Cosets</h2></a>
+<P><P><P>
+<strong>Comparison of Row Space Cosets</strong>
+<P>
+<DL><DT><code><var>C1</var> = <var>C2</var></code> :<DD> <BR> 
+    returns <code>true</code> if the two row space cosets <var>C1</var>, <var>C2</var> are equal, and
+    <code>false</code> otherwise.
+    <strong>Note</strong> that equal cosets need not have equal representatives (see
+    <a href="chap033.htm#SECT003">Row Space Cosets</a>).
+</DL><P>
+<DL><DT><code><var>C1</var> < <var>C2</var></code> :<DD> <BR> 
+    returns <code>true</code> if the row space coset <var>C1</var> is smaller than the row space
+    coset <var>C2</var>, and <code>false</code> otherwise.  This ordering is defined by
+    comparison of canonical representatives.
+</DL><P>
+<P>
+<P>
+<strong>Arithmetic Operations for Row Space Cosets</strong>
+<P>
+<DL><DT><code><var>C1</var> + <var>C2</var></code> :<DD> <BR> 
+    If <var>C1</var> and <var>C2</var> are row space cosets that belong to the same quotient
+    space, the result is the row space coset that is the sum resp. the
+    difference of these vectors.  Otherwise an error is signalled.
+</DL><P>
+<DL><DT><code><var>s</var> * <var>C</var></code> :<DD> <BR> 
+    returns the row space coset that is the product of the scalar <var>s</var> and
+    the row space coset <var>C</var>, where <var>s</var> must be an element of the ground
+    field of the vector space that defines <var>C</var>.
+</DL><P>
+<P>
+<P>
+<strong>Membership Test for Row Space Cosets</strong>
+<P>
+<DL><DT><code><var>v</var> in <var>C</var></code> :<DD> <BR> 
+    returns <code>true</code> if the vector <code>v</code> is an element of the row space coset
+    <var>C</var>, and false otherwise.
+</DL><P>
+<pre>    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u:= Subspace( v, [ [ 1, 1 ] * Z(2) ] ); u.name:="u";;
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> f:= v / u;
+    v / [ [ Z(2)^0, Z(2)^0 ] ]
+    gap> elms:= Elements( f );
+    [ ([ 0*Z(2), 0*Z(2) ]+u), ([ 0*Z(2), Z(2)^0 ]+u) ]
+    gap> 2 * elms[2];
+    ([ 0*Z(2), 0*Z(2) ]+u)
+    gap> elms[2] + elms[1];
+    ([ 0*Z(2), Z(2)^0 ]+u)
+    gap> [ 1, 0 ] * Z(2) in elms[2];
+    true
+    gap> elms[1] = elms[2];
+    false </pre>
+<P><A NAME="SECT023"><h2>33.23 Functions for Row Space Cosets</h2></a>
+<P><P><P>
+Since row space cosets are domains, all set theoretic functions are
+applicable to them.
+<P>
+<code>Representative</code>
+    returns the value of the <code>representative</code> component.  <strong>Note</strong> that equal
+    cosets may have different representatives.  Canonical representatives
+    can be computed using <code>CanonicalRepresentative</code>.
+<P>
+<DL><DT><code>CanonicalRepresentative( <var>C</var> )</code> :<DD> <BR> 
+    returns the canonical representative of the row space coset <var>C</var>,
+    which is defined as the result of <code>SiftedVector( <var>B</var>, <var>v</var> )</code> where
+    <code><var>C</var> = <var>v</var> + <var>U</var></code>, and <var>B</var> is the canonical basis of <var>U</var>.
+</DL><P><A NAME="SECT024"><h2>33.24 IsSpaceCoset</h2></a>
+<P><P><P>
+<code>IsSpaceCoset( <var>obj</var> )</code>
+<P>
+returns <code>true</code> if <var>obj</var>, which may be an arbitrary object, is a row space
+coset, and <code>false</code> otherwise.
+<P>
+<pre>    gap> v:= GF(2)^2; v.name:= "v";;
+    RowSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+    gap> u:= Subspace( v, [ [ 1, 1 ] * Z(2) ] );
+    Subspace( v, [ [ Z(2)^0, Z(2)^0 ] ] )
+    gap> f:= v / u;
+    v / [ [ Z(2)^0, Z(2)^0 ] ]
+    gap> IsSpaceCoset( u );
+    false
+    gap> IsSpaceCoset( Random( f ) );
+    true </pre>
+<P><A NAME="SECT025"><h2>33.25 Operations for Quotient Spaces</h2></a>
+<P><P><P>
+<DL><DT><code><var>W1</var> = <var>W2</var></code> :<DD> <BR> 
+    returns <code>true</code> if for the two quotient spaces <code><var>W1</var> = <var>V1</var> / <var>U1</var></code> and
+    <code><var>W2</var> = <var>V2</var> / <var>U2</var></code> the equalities <code><var>V1</var> = <var>V2</var></code> and <code><var>U1</var> = <var>U2</var></code>
+    hold, and <code>false</code> otherwise.
+</DL><P>
+<DL><DT><code><var>W1</var> < <var>W2</var></code> :<DD> <BR> 
+    returns <code>true</code> if for the two quotient spaces <code><var>W1</var> = <var>V1</var> / <var>U1</var></code> and
+    <code><var>W2</var> = <var>V2</var> / <var>U2</var></code> either <code><var>U1</var> < <var>U2</var></code> or <code><var>U1</var> = <var>U2</var></code> and
+    <code><var>V1</var> < <var>V2</var></code> hold, and <code>false</code> otherwise.
+</DL><P><A NAME="SECT026"><h2>33.26 Functions for Quotient Spaces</h2></a>
+<P><P><P>
+Computations in quotient spaces usually delegate the work to computations in
+numerator and denominator.
+<P>
+The following functions are overlaid in the operations record for quotient
+spaces.
+<P>
+The <strong>set theoretic</strong> functions
+<P>
+<code>Closure</code>, <code>Elements</code>, <code>IsSubset</code>, <code>Intersection</code>,
+<P>
+and the <strong>vector space</strong> functions
+<P>
+<DL><DT><code>Base( <var>V</var> )</code> :<DD> <BR> 
+    returns the vectors of the canonical basis of <var>V</var>,
+</DL><P>
+<DL><DT><code>Generators( <var>V</var> )</code> :<DD> <BR> 
+    returns a list of cosets that generate <var>V</var>,
+</DL><P>
+<DL><DT><code>CanonicalBasis( <var>V</var> )</code> :<DD> <BR> 
+    returns the canonical basis of <I>&lt;V&gt; = W / U</I>, this is derived from
+    the canonical basis of <I>W</I>.
+</DL><P>
+<code>SemiEchelonBasis( <var>V</var> )</code> <BR> 
+<DL><DT><code>SemiEchelonBasis( <var>V</var>, <var>vectors</var> )</code> :<DD> <BR> 
+    return a semi-echelonized basis of the quotient space <var>V</var>.
+    <var>vectors</var> can be a list of elements of <var>V</var>, or of representatives.
+</DL><P>
+<code>Basis( <var>V</var> )</code> <BR> 
+<DL><DT><code>Basis( <var>V</var>, <var>vectors</var> )</code> :<DD> <BR> 
+    return a basis of the quotient space <var>V</var>.
+    <var>vectors</var> can be a list of elements of <var>V</var>, or of representatives.
+</DL><P><A NAME="SECT027"><h2>33.27 Row Space Records</h2></a>
+<P><P><P>
+In addition to  the record components described in <a href="chap009.htm#SECT003">Vector Space Records</a>
+the following components must be present in a row space record.
+<P>
+<DL><DT><code>isRowSpace</code>:<DD> <BR> 
+        is always <code>true</code>,
+</DL><P>
+<DL><DT><code>operations</code> :<DD> <BR> 
+        the record <code>RowSpaceOps</code>.
+</DL><P>
+Depending on the calculations in that the row space was involved, it may
+have lots of optional components, such as <code>basis</code>, <code>dimension</code>, <code>size</code>.
+<P><A NAME="SECT028"><h2>33.28 Row Space Basis Records</h2></a>
+<P><P><P>
+A vector space basis is a record with at least the following components.
+<P>
+<DL><DT><code>isBasis</code> :<DD> <BR> 
+    always <code>true</code>,
+</DL><P>
+<DL><DT><code>vectors</code> :<DD> <BR> 
+    the list of basis vectors,
+</DL><P>
+<DL><DT><code>structure</code> :<DD> <BR> 
+    the underlying vector space,
+</DL><P>
+<DL><DT><code>operations</code> :<DD> <BR> 
+    a record that contains the functions for the basis, at least
+    <code>Coefficients</code>, <code>Print</code>, and <code>SiftedVector</code>.
+    Of course these functions depend on the special properties of the
+    basis, so different basis types have different operations record.
+</DL><P>
+Depending on the type of the basis, the basis record additionally contains
+some components that are assumed and used by the functions in the
+<code>operations</code> record.
+<P>
+For arbitrary bases these are <code>semiEchelonBasis</code> and <code>basechange</code>,
+for semi-echelonized bases these are the lists <code>heads</code> and <code>ishead</code>.
+Furthermore, the booleans <code>isSemiEchelonBasis</code> and <code>isCanonicalBasis</code> may
+be present.
+<P>
+The operations records for the supported bases are
+<P>
+<DL><DT><code>BasisRowSpaceOps</code> :<DD> <BR> 
+    for arbitrary bases,
+</DL><P>
+<DL><DT><code>CanonicalBasisRowSpaceOps</code> :<DD> <BR> 
+    for the canonical basis of a space,
+</DL><P>
+<DL><DT><code>SemiEchelonBasisRowSpaceOps</code> :<DD> <BR> 
+    for semi-echelonized bases.
+</DL><P><A NAME="SECT029"><h2>33.29 Row Space Coset Records</h2></a>
+<P><P><P>
+A row space coset <I>v + U</I> is a record with at least the following components.
+<P>
+<DL><DT><code>isDomain</code> :<DD> <BR> 
+    always <code>true</code>,
+</DL><P>
+<DL><DT><code>isRowSpaceCoset</code> :<DD> <BR> 
+    always <code>true</code>,
+</DL><P>
+<DL><DT><code>isSpaceCoset</code> :<DD> <BR> 
+    always <code>true</code>,
+</DL><P>
+<DL><DT><code>factorDen</code> :<DD> <BR> 
+    the row space <I>U</I> if the coset is an element of <I>V / U</I> for a space <I>V</I>,
+</DL><P>
+<DL><DT><code>representative</code> :<DD> <BR> 
+    one element of the coset, <strong>note</strong> that equal cosets need not have equal
+    representatives (see <a href="chap033.htm#SECT003">Row Space Cosets</a>),
+</DL><P>
+<DL><DT><code>operations</code> :<DD> <BR> 
+    the record <code>SpaceCosetRowSpaceOps</code>.
+</DL><P><A NAME="SECT030"><h2>33.30 Quotient Space Records</h2></a>
+<P><P><P>
+A quotient space <I>V / U</I> is a record with at least the following components.
+<P>
+<DL><DT><code>isDomain</code> :<DD> <BR> 
+    always <code>true</code>,
+</DL><P>
+<DL><DT><code>isRowSpace</code> :<DD> <BR> 
+    always <code>true</code>,
+</DL><P>
+<DL><DT><code>isFactorSpace</code> :<DD> <BR> 
+    always <code>true</code>,
+</DL><P>
+<DL><DT><code>field</code> :<DD> <BR> 
+    the coefficients field,
+</DL><P>
+<DL><DT><code>factorNum</code> :<DD> <BR> 
+    the row space <I>V</I> (the numerator),
+</DL><P>
+<DL><DT><code>factorDen</code> :<DD> <BR> 
+    the row space <I>U</I> (the denominator),
+</DL><P>
+<DL><DT><code>operations</code> :<DD> <BR> 
+    the record <code>FactorRowSpaceOps</code>.
+</DL><P><a href ="chap032.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap034.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

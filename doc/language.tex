@@ -1,0 +1,1067 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  language.tex                GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: language.tex,v 1.1.1.1 1996/12/11 12:36:47 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the {\GAP} programming language.
+%%
+%H  $Log: language.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:47  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.11  1993/03/11  17:54:26  fceller
+%H  strings are now lists
+%H
+%H  Revision 3.10  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.9  1993/02/18  15:52:09  felsch
+%H  index entries added
+%H
+%H  Revision 3.8  1993/02/17  07:43:50  felsch
+%H  examples fixed
+%H
+%H  Revision 3.7  1993/02/11  12:20:47  martin
+%H  changed reference "Strings" to "Strings and Characters"
+%H
+%H  Revision 3.6  1993/02/10  21:10:03  martin
+%H  fixed various typos, extended description for 3.2
+%H
+%H  Revision 3.5  1992/04/30  12:07:10  martin
+%H  changed a few sentences to avoid bold non-roman fonts
+%H
+%H  Revision 3.4  1992/04/09  11:36:01  martin
+%H  made a few changes so that two LaTeX passes suffice
+%H
+%H  Revision 3.3  1992/04/02  20:58:24  martin
+%H  fixed a wrong example in "While"
+%H
+%H  Revision 3.2  1992/03/11  15:59:22  martin
+%H  fixed several typos
+%H
+%H  Revision 3.1  1992/01/14  14:42:24  martin
+%H  changed the BNF for nicer online viewing
+%H
+%H  Revision 3.0  1991/12/27  16:10:27  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{The Programming Language}
+
+This chapter describes the {\GAP} programming language.   It should allow
+you in principle to predict the result of each and every input.  In order
+to know what we are talking about, we first have to  look more closely at
+the process of  interpretation  and the  various representations  of data
+involved.
+
+First we have the input to {\GAP}, given as a string  of characters.  How
+those characters enter {\GAP} is operating system  dependent,  e.g., they
+might be entered at a  terminal, pasted with  a mouse into  a window,  or
+read from a file.  The mechanism does not matter.  This representation of
+expressions by characters is called the *external representation* of  the
+expression.  Every expression has  at  least one external  representation
+that can be entered to get exactly this expression.
+
+The input, i.e., the external representation, is transformed in a process
+called *reading* to an internal representation.   At this point the input
+is analyzed  and inputs   that  are  not legal external  representations,
+according to the rules given below, are rejected  as errors.  Those rules
+are usually called the *syntax* of a programming language.
+
+The  internal  representation  created by  reading  is called  either  an
+*expression* or a *statement*.   Later we  will distinguish between those
+two terms, however now we will use them interchangeably.  The exact  form
+of the internal  representation does not matter.  It could be a string of
+characters  equal  to  the external  representation,  in  which case  the
+reading  would  only  need to check for errors.  It could be a series  of
+machine instructions  for the  processor  on  which {\GAP} is running, in
+which case the reading would  more appropriately  be  called compilation.
+It is in fact a tree--like structure.
+
+After the input has been read it is again transformed in a process called
+*evaluation* or *execution*.  Later we will distinguish between those two
+terms too, but for the moment we will use them interchangeably.  The name
+hints at the nature of this  process, it replaces an  expression with the
+value of the expression.  This  works  recursively,  i.e., to evaluate an
+expression  first the subexpressions  are evaluated and then the value of
+the expression is  computed according  to rules  given  below from  those
+values.  Those rules  are usually called the *semantics* of a programming
+language.
+
+The result of the evaluation is, not surprisingly, called a *value*.  The
+set of values    is  of course a    much smaller  set  than  the   set of
+expressions;  for  every value there  are   several expressions that will
+evaluate to   this  value.  Again  the form  in  which such  a   value is
+represented  internally does not   matter.  It is    in fact a tree--like
+structure again.
+
+The last process  is called *printing*.  It  takes the  value produced by
+the evaluation and creates an external representation,  i.e., a string of
+characters again.  What you do with this external representation is up to
+you. You can look at it, paste it with the  mouse into another window, or
+write it to a file.
+
+Lets look at an example to make this more clear.  Suppose you type in the
+following string of 8 characters
+
+|    1 + 2 * 3;|
+
+{\GAP}  takes   this external representation   and creates   a  tree like
+internal representation, which we can picture as follows
+
+|       +
+      / \
+     1   *
+        / \
+       2   3 |
+
+This expression is then evaluated.  To do this {\GAP} first evaluates the
+right subexpression '2\*3'.   Again to do this {\GAP} first evaluates its
+subexpressions 2  and 3.  However they  are so simple that they are their
+own value, we say that  they are  self--evaluating.  After  this has been
+done,  the rule for '\*' tells us that the value is the  product  of  the
+values of the  two  subexpressions,  which  in  this case  is clearly  6.
+Combining  this with the value  of the left operand of  the '+', which is
+self--evaluating too gives us  the value of the whole expression 7.  This
+is  then  printed,  i.e.,  converted  into  the  external  representation
+consisting of the single character '7'.
+
+In this fashion  we can predict the  result of every input  when we know
+the syntactic rules that govern the  process of reading and the semantic
+rules that  tell us for  every expression how  its value is  computed in
+terms of the values of the subexpressions. The syntactic rules are given
+in  sections  "Lexical  Structure", "Language  Symbols",  "Whitespaces",
+"Keywords", "Identifiers", and  "The Syntax in BNF",  the semantic rules
+are  given in  sections  "Expressions",  "Variables", "Function  Calls",
+"Comparisons",  "Operations",  "Statements",  "Assignments",  "Procedure
+Calls", "If",  "While", "Repeat",  "For", "Functions", and  the chapters
+describing the individual data types.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Lexical Structure}
+
+The input of {\GAP} consists of sequences of the following characters.
+
+Digits, uppercase and lowercase letters,  <space>, <tab>, <newline>,  and
+the special characters
+
+|    "       '       (       )       *       +       ,       _
+    .       /       :       ;       <       =       >       ~
+    [       \       ]       ^       _       {       }       & |
+
+Other  characters  will  be signalled  as  illegal.   Inside strings  and
+comments the full character set supported by the computer is allowed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Language Symbols}
+
+The  process of reading,  i.e., of assembling the input into expressions,
+has a subprocess,  called  *scanning*, that assembles the characters into
+symbols.   A *symbol*  is  a sequence of characters that form  a  lexical
+unit.  The  set of  symbols  consists of  keywords, identifiers, strings,
+integers, and operator and delimiter symbols.
+
+A keyword is a  reserved word  consisting entirely  of lowercase  letters
+(see "Keywords").  An identifier is a sequence of letters and digits that
+contains at  least one letter  and is not a keyword  (see "Identifiers").
+An integer is a  sequence of  digits  (see  "Integers").   A string is  a
+sequence  of   arbitrary  characters   enclosed  in  double  quotes  (see
+"Strings and Characters").
+
+Operator and delimiter symbols are
+
+|    +       -       *       /       ^       ~
+    =       <>      <       <=      >       >=
+    :=      .       ..      ->      ,       ;
+    [       ]       {       }       (       )  |
+
+Note  that during the process of  scanning also all whitespace is removed
+(see "Whitespaces").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Whitespaces}%
+\index{space}%
+\index{blank}\index{tabulator}\index{newline}\index{comments}
+
+The    characters <space>,  <tab>,   <newline>, and   <return> are called
+*whitespace characters*.   Whitespace is used   as necessary to  separate
+lexical symbols, such as integers, identifiers, or keywords.  For example
+'Thorondor' is  a single identifier, while 'Th  or  ondor' is the keyword
+'or' between the two identifiers 'Th'  and 'ondor'.  Whitespace may occur
+between any two  symbols, but not within a  symbol.  Two or more adjacent
+whitespaces are  equivalent to a single  whitespace.  Apart from the role
+as  separator  of  symbols,  whitespaces  are   otherwise  insignificant.
+Whitespaces may also  occur inside a string,  where they are significant.
+Whitespaces should also be used freely for improved readability.
+
+A  *comment* starts with the   character '\#', which is sometimes  called
+sharp or hatch, and continues to the end of the line on which the comment
+character appears.  The whole  comment, including '\#' and  the <newline>
+character  is  treated  as a single    whitespace.  Inside a  string, the
+comment character '\#' looses its role and is just an ordinary character.
+
+For example, the following statement
+
+|    if i<0 then a:=-i;else a:=i;fi; |
+
+is equivalent to
+
+|    if i < 0  then      & if i is negative
+        a := -i;        &     take its inverse
+    else                & otherwise
+        a := i;         &     take itself
+    fi; |
+
+(which by the  way  shows  that  it  is  possible  to  write  superfluous
+comments).  However the first statement is not equivalent to
+
+|    ifi<0thena:=-i;elsea:=i;fi; |
+
+since  the keyword 'if'  must  be separated from  the identifier 'i' by a
+whitespace,  and  similarly 'then'  and 'a',  and 'else' and  'a' must be
+separated.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Keywords}
+
+*Keywords* are reserved words that are used  to denote special operations
+or  are part of  statements.  They must not be used  as identifiers.  The
+keywords are
+
+|    and       do        elif      else      end       fi
+    for       function  if        in        local     mod
+    not       od        or        repeat    return    then
+    until     while     quit |
+
+Note that all keywords are written in lowercase.  For example only 'else'
+is   a  keyword;  'Else', 'eLsE',  'ELSE'   and   so  forth  are ordinary
+identifiers.  Keywords must not contain  whitespace, for  example 'el if'
+is not the same as 'elif'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Identifiers}
+
+An identifier is used to  refer to   a  variable (see  "Variables").   An
+identifier consists of letters,  digits,  and underscores '\_',  and must
+contain at least one letter  or underscore.   An identifier is terminated
+by the first character not in this class.  Examples  of valid identifiers
+are
+
+|    a                   foo                 aLongIdentifier
+    hello               Hello               HELLO
+    x100                100x                _100
+    some_people_prefer_underscores_to_separate_words
+    WePreferMixedCaseToSeparateWords |
+
+Note that  case  is  significant, so  the three identifiers in the second
+line are distinguished.
+
+The backslash |\| can be used to include other characters in identifiers;
+a backslash  followed  by  a character  is equivalent   to the character,
+except that this escape sequence  is considered to be an ordinary letter.
+For example |G\(2\,5\)| is an identifier, not a call to a function 'G'.
+
+An identifier that  starts with  a backslash is  never a  keyword, so for
+example |\*| and |\mod| are identifier.
+
+The length  of identifiers is not limited,   however only  the first 1023
+characters are significant.  The escape sequence |\|<newline> is ignored,
+making it possible to split long identifiers over multiple lines.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Expressions}%
+\index{evaluation}
+
+An  *expression* is a construct  that  evaluates  to a value.   Syntactic
+constructs that are executed to produce a side effect and return no value
+are called *statements*  (see "Statements").  Expressions appear as right
+hand  sides of assignments  (see "Assignments"),  as  actual arguments in
+function calls (see "Function Calls"), and in statements.
+
+Note that an expression is not the same as a value.  For example '1 + 11'
+is  an    expression, whose value is   the   integer  12.    The external
+representation of this integer is the character sequence '12', i.e., this
+sequence is output  if the integer is  printed.  This sequence is another
+expression whose value is  the integer 12.    The process of finding  the
+value of an  expression  is done by  the  interpreter and is  called  the
+*evaluation* of the expression.
+
+Variables,  function  calls, and integer, permutation, string,  function,
+list, and record literals (see "Variables", "Function Calls", "Integers",
+"Permutations",   "Strings   and   Characters",   "Functions",   "Lists",
+"Records"), are the simplest cases of expressions.
+
+Expressions,  for example the simple expressions  mentioned above, can be
+combined with the operators to form  more complex expressions.  Of course
+those expressions can then be combined further with the operators to form
+even more complex  expressions.  The *operators* fall into three classes.
+The  *comparisons*  are  '=', '\<>',  '\<=', '>',   '>=',  and  'in' (see
+"Comparisons" and "In").  The *arithmetic operators* are  '+', '-', '\*',
+'/', 'mod', and '\^'   (see "Operations").   The *logical  operators* are
+'not', 'and', and 'or' (see "Operations for Booleans").
+
+|    gap> 2 * 2;    # a very simple expression with value
+    4
+    gap> 2 * 2 + 9 = Fibonacci(7) and  Fibonacci(13) in Primes;
+    true            # a more complex expression |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Variables}%
+\index{scope}\index{bound}
+
+A *variable*  is a location in a  {\GAP} program that  points to a value.
+We say the variable is *bound* to this value.  If a variable is evaluated
+it evaluates to this value.
+
+Initially an ordinary variable is not  bound to  any value.  The variable
+can be bound to a  value  by *assigning* this value to  the variable (see
+"Assignments").  Because of this we sometimes say that a variable that is
+not bound to any value has no assigned value.  Assignment  is in fact the
+only way by which a variable, which is not an argument of a function, can
+be bound to  a  value.  After a variable  has  been bound to a   value an
+assignment can also be used to bind the variable to another value.
+
+A special class of  variables are *arguments* of functions.  They  behave
+similarly to other variables, except they are  bound to the  value of the
+actual arguments upon a function call (see "Function Calls").
+
+Each variable has a  name that is also called  its *identifier*.  This is
+because in  a given scope an identifier identifies a unique variable (see
+"Identifiers").  A *scope* is a lexical part of a program text.  There is
+the  global scope that encloses the  entire program  text, and there  are
+local  scopes that  range  from  the  'function'  keyword,  denoting  the
+beginning of a function  definition, to  the corresponding 'end' keyword.
+A local scope  introduces new  variables, whose identifiers are given  in
+the formal argument list and the 'local' declaration of the function (see
+"Functions").  Usage  of an  identifier in  a program  text refers to the
+variable in  the innermost scope  that has  this identifier as  its name.
+Because  this  mapping  from  identifiers  to variables is done  when the
+program is read, not when it is executed, {\GAP} is  said to have lexical
+scoping.   The  following example  shows  how  one identifier  refers  to
+different variables at different points in the program text.
+
+|     g := 0;            & global variable g
+     x := function ( a, b, c )
+        local   y;
+        g := c;         & c refers to argument c of function x
+        y := function ( y )
+            local  d, e, f;
+            d := y;     & y refers to argument y of function y
+            e := b;     & b refers to argument b of function x
+            f := g;     & g refers to global variable g
+            return d + e + f;
+        end;
+        return y( a );  & y refers to local y of function x
+    end; |
+
+It is important to note that the concept of a variable in {\GAP} is quite
+different from the concept  of  a variable in programming languages  like
+PASCAL.  In  those languages a variable  denotes a block of  memory.  The
+value of the variable is stored in this block.  So in those languages two
+variables can  have the  same value,  but  they can never  have identical
+values,  because  they  denote different  blocks of  memory.   (Note that
+PASCAL has  the concept of a reference  argument.  It seems as if such an
+argument and the variable used in the actual function  call have the same
+value, since changing the argument\'s value also changes the value of the
+variable  used in  the actual  function call.   But this is  not  so; the
+reference  argument is actually  a pointer  to the variable  used  in the
+actual function call, and it is the compiler that inserts enough magic to
+make the  pointer  invisible.)  In  order  for this to work the  compiler
+needs enough  information to compute the amount of memory needed for each
+variable in a  program,  which is  readily  available in the declarations
+PASCAL requires for every variable.
+
+In {\GAP} on the other hand each variable justs points to a value.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Function Calls}
+
+'<function-var>()' \\
+'<function-var>( <arg-expr> \{',' <arg-expr>\} )'
+
+The function call has the effect  of calling the function <function-var>.
+The precise semantics are as follows.
+
+First  {\GAP} evaluates the <function-var>.  Usually  <function-var> is a
+variable,  and  {\GAP} does nothing more  than taking  the value of  this
+variable.   It is allowed  though  that  <function-var> is a more complex
+expression,  namely it can for example be  a selection of  a list element
+'<list-var>[<int-expr>]',  or   a   selection  of   a   record  component
+'<record-var>.<ident>'.  In any  case {\GAP} tests whether the value is a
+function.  If it is not, {\GAP} signals an error.
+
+Next {\GAP} checks that the number of actual arguments <arg-expr>s agrees
+with the number of formal arguments as given  in the function definition.
+If they do not agree {\GAP}  signals an error.  An  exception is the case
+when there is  exactly one formal argument  with the name 'arg', in which
+case any number of actual arguments is allowed.
+
+Now {\GAP} allocates for each formal argument and for each formal local a
+new variable.  Remember that a variable is a location in a {\GAP} program
+that points  to  a value.  Thus for   each formal argument  and  for each
+formal local such a location is allocated.
+
+Next the arguments <arg-expr>s are evaluated, and the values are assigned
+to the newly created variables corresponding to the formal arguments.  Of
+course the first value  is assigned  to the new variable corresponding to
+the  first  formal argument, the second   value   is  assigned to the new
+variable corresponding   to   the second    formal argument, and   so on.
+However, {\GAP} does not make any guarantee about the order  in which the
+arguments are evaluated.  They might be evaluated left to right, right to
+left, or in  any  other order, but  each  argument is evaluated once.  An
+exception again occurs if the function has  only one formal argument with
+the name 'arg'.  In this case the values  of all the actual arguments are
+stored  in   a  list and this   list  is assigned  to the    new variable
+corresponding to the formal argument 'arg'.
+
+The  new variables corresponding to the  formal  locals are initially not
+bound to any   value.   So trying   to evaluate  those   variables before
+something has been assigned to them will signal an error.
+
+Now the body of the function, which is  a statement, is executed.  If the
+identifier of one of the formal arguments or formal locals appears in the
+body of the function it refers to the new variable that was allocated for
+this formal argument or formal local, and evaluates to  the value of this
+variable.
+
+If during the execution of the body of the function  a 'return' statement
+with  an expression (see "Return") is executed,  execution of the body is
+terminated  and  the value  of  the function  call  is the value  of  the
+expression  of  the 'return'.  If  during the  execution of  the  body  a
+'return'  statement  without an expression is executed,  execution of the
+body  is  terminated and the function  call does not produce  a value, in
+which case  we call this call a procedure  call (see  "Procedure Calls").
+If the  execution of  the body completes without execution of  a 'return'
+statement, the  function call again produces no  value, and again we talk
+about a procedure call.
+
+|    gap> Fibonacci( 11 );
+        # a call to the function 'Fibonacci' with actual argument '11'
+    89 |
+        
+|    gap> G.operations.RightCosets( G, Intersection( U, V ) );;
+        # a call to the function in 'G.operations.RightCosets'
+        # where the second actual argument is another function call |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons}
+
+'<left-expr> =   <right-expr>' \\
+'<left-expr> \<> <right-expr>'
+
+The operator '=' tests for equality of  its two operands and evaluates to
+'true' if they are equal and to 'false'  otherwise.  Likewise '\<>' tests
+for  inequality of its  two operands.  Note  that any two  objects can be
+compared, i.e., '=' and '\<>' will never  signal an error.  For each type
+of objects the definition of equality is given in the respective chapter.
+Objects of different types are  never equal, i.e.,  '=' evaluates in this
+case to 'false', and '\<>' evaluates to 'true'.
+
+'<left-expr> \<\ <right-expr>' \\
+'<left-expr> >   <right-expr>' \\
+'<left-expr> \<= <right-expr>' \\
+'<left-expr> >=  <right-expr>'
+
+'\<' denotes less than,  '\<=' less than or  equal, '>' greater than, and
+'>=' greater than or equal of its two operands.  For each type of objects
+the definition of the  ordering is given in  the respective chapter.  The
+ordering  of  objects  of different types  is as follows.  Rationals  are
+smallest,  next  are  cyclotomics, followed  by  finite  field  elements,
+permutations, words, words in solvable groups, boolean values, functions,
+lists, and records are largest.
+
+Comparison operators, which includes the operator 'in' (see "In") are not
+associative, i.e., it is not allowed to write '<a> =  <b> \<> <c> = <d>',
+you  must use '(<a>  =  <b>) \<>  (<c>  = <d>)'  instead.  The comparison
+operators have   higher precedence   than    the logical  operators  (see
+"Operations  for  Booleans"),  but lower  precedence  than the arithmetic
+operators (see "Operations").  Thus, for example, '<a> \*\ <b> =  <c> and
+<d>' is interpreted, '((<a> \*\ <b>) = <c>) and <d>)'.
+
+|    gap> 2 * 2 + 9 = Fibonacci(7);    # a comparison where the left
+    true                              # operand is an expression |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations}%
+\index{precedence}\index{associativity}
+
+'+ <right-expr>' \\
+'- <right-expr>' \\
+'<left-expr> +   <right-expr>' \\
+'<left-expr> -   <right-expr>' \\
+'<left-expr> \*\ <right-expr>' \\
+'<left-expr> /   <right-expr>' \\
+'<left-expr> mod <right-expr>' \\
+'<left-expr> \^\ <right-expr>'
+
+The arithmetic operators are  '+',  '-',  '\*',  '/',  'mod',  and  '\^'.
+The meanings (semantic) of those  operators generally depend on the types
+of the operands  involved, and they are  defined in the  various chapters
+describing the types.  However basically the meanings are as follows.
+
+'+' denotes the addition,  and '-'  the  subtraction  of ring  and  field
+elements.   '\*' is  the  multiplication of  group  elements,  '/' is the
+multiplication of the left operand with the inverse of the right operand.
+'mod' is only defined for integers  and rationals and denotes  the modulo
+operation.  '+' and '-' can also be used as unary  operations.  The unary
+'+' is ignored and unary '-' is equivalent to multiplication by -1.  '\^'
+denotes powering of a group  element  if the right operand is an integer,
+and is  also used to denote operation if  the  right operand  is  a group
+element.
+
+The *precedence* of those operators is as follows.  The powering operator
+'\^' has  the highest precedence, followed by the unary operators '+' and
+'-',  which are followed by the  multiplicative  operators '\*', '/', and
+'mod', and  the additive  binary operators '+' and  '-'  have  the lowest
+precedence.   That  means that the expression  '-2 \^\ -2 \*\  3 + 1'  is
+interpreted as '(-(2  \^\ (-2)) \*\ 3) + 1'.  If in doubt use parentheses
+to clarify your intention.
+
+The *associativity* of the arithmetic operators is as follows.'\^' is not
+associative,  i.e., it is  illegal to write '2\^3\^4', use parentheses to
+clarify whether  you mean '(2\^3)  \^\  4' or '2 \^\ (3\^4)'.  The  unary
+operators '+' and '-' are right associative, because they are written  to
+the left of their operands.  '\*', '/', 'mod', '+',  and '-' are all left
+associative, i.e., '1-2-3' is interpreted as '(1-2)-3'  not as '1-(2-3)'.
+Again, if in doubt use parentheses to clarify your intentions.
+
+The  arithmetic  operators  have higher  precedence  than  the comparison
+operators (see  "Comparisons" and  "In")  and the logical  operators (see
+"Operations for  Booleans").  Thus, for  example, '<a> \*\ <b> =  <c> and
+<d>' is interpreted, '((<a> \*\ <b>) = <c>) and <d>'.
+
+|    gap> 2 * 2 + 9;    & a very simple arithmetic expression
+    13 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Statements}%
+\index{execution}
+
+Assignments (see "Assignments"), Procedure calls (see "Procedure Calls"),
+'if'  statements  (see  "If"),  'while'  (see  "While"),  'repeat'   (see
+"Repeat") and  'for'  loops (see "For"), and the 'return'  statement (see
+"Return") are called statements.  They can be entered interactively or be
+part of a function definition.  Every statement must  be terminated by  a
+semicolon.
+
+Statements, unlike expressions, have no value.  They are executed only to
+produce an effect.  For example an assignment has the effect of assigning
+a   value to a  variable, a  'for' loop   has the  effect  of executing a
+statement sequence for  all elements in a  list and so  on.  We will talk
+about *evaluation* of expressions  but about *execution* of statements to
+emphasize this difference.
+
+It is possible to use expressions as statements.  However this does cause
+a warning.
+
+|    gap> if i <> 0  then  k = 16/i;  fi;
+    Syntax error: warning, this statement has no effect
+    if i <> 0  then  k = 16/i;  fi;
+                             ^ |
+
+As you can see from  the  example this is useful for those  users who are
+used to languages where '=' instead of '\:=' denotes assignment.
+
+A sequence  of  one or more  statements is a statement sequence, and  may
+occur  everywhere instead of  a single statement.  There  is nothing like
+PASCAL\'s  BEGIN-END, instead each  construct is terminated by a keyword.
+The most simple  statement sequence is a single  semicolon, which can  be
+used as an empty statement sequence.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Assignments}%
+\index{assignment!variable}
+
+'<var> \:= <expr>;'
+
+The *assignment* has the effect of assigning the value of the expressions
+<expr> to the variable <var>.
+
+The variable <var> may be an  ordinary variable (see "Variables"), a list
+element selection '<list-var>[<int-expr>]' (see  "List Assignment")  or a
+record  component   selection    '<record-var>.<ident>'   (see    "Record
+Assignment").  Since a list element or a record component may itself be a
+list or a record the  left hand side of  an assignment may be arbitrarily
+complex.
+
+Note that variables do  not have a type.  Thus  any value may be assigned
+to any variable.   For example a  variable with  an integer  value may be
+assigned a permutation or a list or anything else.
+
+If the expression  <expr> is a  function  call then  this  function  must
+return a value.   If the  function does not  return a  value  an error is
+signalled and you enter a break loop  (see "Break Loops").   As usual you
+can leave  the  break   loop   with  'quit;'.    If  you  enter   'return
+<return-expr>;' the value of the expression  <return-expr> is assigned to
+the variable, and execution continues after the assignment.
+
+|    gap> S6 := rec( size := 720 );; S6;
+    rec(
+      size := 720 )
+    gap> S6.generators := [ (1,2), (1,2,3,4,5) ];; S6;
+    rec(
+      size := 720,
+      generators := [ (1,2), (1,2,3,4,5) ] )
+    gap> S6.generators[2] := (1,2,3,4,5,6);; S6;
+    rec(
+      size := 720,
+      generators := [ (1,2), (1,2,3,4,5,6) ] ) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Procedure Calls}
+
+'<procedure-var>();' \\
+'<procedure-var>( <arg-expr> \{',' <arg-expr>\} );'
+
+The   procedure  call   has   the   effect   of  calling   the  procedure
+<procedure-var>.   A  procedure call is done exactly like a function call
+(see "Function Calls").  The distinction between functions and procedures
+is only for the  sake  of  the discussion,  {\GAP} does  not  distinguish
+between them.
+
+A *function* does return a value but does not produce a  side effect.  As
+a convention the name of a function is a noun, denoting what the function
+returns, e.g., 'Length', 'Concatenation' and 'Order'.
+
+A *procedure* is a  function that does  not return  a value but  produces
+some   effect.  Procedures  are called   only  for   this effect.  As   a
+convention the name of a procedure is a verb, denoting what the procedure
+does, e.g., 'Print', 'Append' and 'Sort'.
+
+|    gap> Read( "myfile.g" );     & a call to the procedure Read
+    gap> l := [ 1, 2 ];;
+    gap> Append( l, [3,4,5] );    & a call to the procedure Append |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{If}%
+\index{if}\index{if statement}%
+\index{fi}\index{then}\index{else}\index{elif}
+
+'if <bool-expr1>  then <statements1> \\
+\{ elif <bool-expr2>  then <statements2> \} \\
+{}[ else <statements3> ] \\
+fi;'
+
+The 'if' statement  allows  one  to  execute statements depending  on the
+value of some boolean expression. The execution is done as follows.
+
+First the expression <bool-expr1> following the 'if' is evaluated.  If it
+evaluates to 'true' the statement sequence  <statements1> after the first
+'then' is executed, and the execution of the 'if' statement is complete.
+
+Otherwise the expressions <bool-expr2> following the 'elif' are evaluated
+in turn.  There may  be any number of 'elif' parts, possibly none at all.
+As soon  as an expression evaluates to 'true' the corresponding statement
+sequence <statements2> is executed and execution of the 'if' statement is
+complete.
+
+If the 'if' expression  and all, if  any, 'elif' expressions  evaluate to
+'false'  and there is  an 'else'  part, which is  optional, its statement
+sequence <statements3>  is  executed   and the   execution of    the 'if'
+statement is complete.  If there is no 'else' part  the 'if' statement is
+complete without executing any statement sequence.
+
+Since the 'if' statement is  terminated by the  'fi' keyword there  is no
+question where an 'else' part belongs, i.e., {\GAP} has no dangling else.\\
+In 'if <expr1>  then  if <expr2>  then <stats1>  else <stats2>  fi;  fi;'\\
+the 'else' part  belongs  to  the  second   'if'  statement,  whereas  in\\
+'if <expr1>  then  if  <expr2>  then  <stats1>  fi;  else  <stats2>  fi;'\\
+the 'else' part belongs to the first 'if' statement.
+
+Since an if statement is  not an expression it  is not possible to  write
+
+|    abs := if x  > 0  then  x;  else  -x;  fi;|
+
+which would,  even  if  legal  syntax, be   meaningless,  since  the 'if'
+statement does not produce a value that could be assigned to 'abs'.
+
+If one expression evaluates neither to 'true'  nor to 'false' an error is
+signalled and a break loop (see "Break Loops") is  entered.  As usual you
+can leave   the break loop  with 'quit;'.   If you  enter 'return true;',
+execution  of the  'if' statement  continues  as if the expression  whose
+evaluation    failed had evaluated to  'true'.     Likewise, if you enter
+'return  false;', execution of  the  'if' statement  continues as if  the
+expression whose evaluation failed had evaluated to 'false'.
+
+|    gap> i := 10;;
+    gap> if 0 < i  then
+    >        s := 1;
+    >    elif i < 0  then
+    >        s := -1;
+    >    else
+    >        s := 0;
+    >    fi;
+    gap> s;
+    1        # the sign of i |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{While}%
+\index{while}\index{while loop}\index{loop!while}
+
+'while <bool-expr>  do <statements>  od;'
+
+The  'while' loop executes the statement  sequence <statements> while the
+condition <bool-expr> evaluates to 'true'.
+
+First <bool-expr> is evaluated.  If it evaluates  to 'false' execution of
+the 'while' loop  terminates and the  statement immediately following the
+'while' loop is executed next.  Otherwise if  it evaluates  to 'true' the
+<statements> are executed and the whole process begins again.
+
+The  difference  between the 'while'   loop and the  'repeat  until' loop
+(see "Repeat") is that the <statements>  in  the  'repeat until' loop are
+executed at least  once, while the  <statements> in the  'while' loop are
+not executed at all if <bool-expr> is 'false' at the first iteration.
+
+If  <bool-expr>  does  not  evaluate to 'true'  or 'false'  an  error  is
+signalled  and a break loop (see "Break Loops") is entered.  As usual you
+can  leave the break loop with 'quit;'.   If you  enter  'return false;',
+execution  continues with the  next  statement immediately following  the
+'while'  loop.   If you  enter  'return  true;',  execution continues  at
+<statements>, after  which  the  next evaluation of <bool-expr> may cause
+another error.
+
+|    gap> i := 0;;  s := 0;;
+    gap> while s <= 200  do
+    >        i := i + 1;  s := s + i^2;
+    >    od;
+    gap> s;
+    204        # first sum of the first i squares larger than 200 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Repeat}%
+\index{repeat}\index{repeat loop}\index{loop!repeat}\index{until}
+
+'repeat <statements>  until <bool-expr>;'
+
+The 'repeat' loop executes  the statement sequence <statements> until the
+condition <bool-expr> evaluates to 'true'.
+
+First <statements> are executed.   Then <bool-expr> is  evaluated.  If it
+evaluates   to 'true' the  'repeat'   loop  terminates and  the statement
+immediately following the  'repeat' loop is  executed next.  Otherwise if
+it evaluates to 'false' the whole process begins again with the execution
+of the <statements>.
+
+The  difference  between the 'while'  loop (see "While")  and the 'repeat
+until' loop  is that the  <statements>  in  the  'repeat until' loop  are
+executed  at least once,  while the  <statements> in the 'while' loop are
+not executed at all if <bool-expr> is 'false' at the first iteration.
+
+If  <bool-expr>  does  not evaluate to  'true'   or  'false' a  error  is
+signalled and a break loop (see "Break Loops") is entered.  As  usual you
+can leave  the break loop  with 'quit;'.   If  you  enter 'return true;',
+execution continues with the  next statement   immediately following  the
+'repeat' loop.   If you  enter 'return   false;', execution continues  at
+<statements>, after which the next  evaluation  of  <bool-expr> may cause
+another error.
+
+|    gap> i := 0;;  s := 0;;
+    gap> repeat
+    >        i := i + 1;  s := s + i^2;
+    >    until s > 200;
+    gap> s;
+    204        # first sum of the first i squares larger than 200 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{For}%
+\index{for}\index{for loop}\index{loop!for}\index{do}\index{od}
+
+'for <simple-var>  in <list-expr>  do <statements>  od;'
+
+The 'for' loop executes   the statement sequence <statements>  for  every
+element of the list <list-expr>.
+
+The statement sequence  <statements> is  first executed with <simple-var>
+bound  to  the first element of  the list  <list>, then with <simple-var>
+bound to the second element of <list> and  so on.  <simple-var> must be a
+simple  variable,   it   must not     be   a list     element   selection
+'<list-var>[<int-expr>]'     or       a    record    component  selection
+'<record-var>.<ident>'.
+
+The execution of the 'for' loop is exactly equivalent to the 'while' loop
+
+|    |<loop-list>| := |<list>|;
+    |<loop-index>| := 1;
+    while |<loop-index>| <= Length(|<loop-list>|) do
+        |<variable>| := |<loop-list>|[|<loop-index>|];
+        |<statements>|
+        |<loop-index>| := |<loop-index>| + 1;
+    od; |
+
+with the   exception   that  <loop-list> and <loop-index>  are  different
+variables for each 'for' loop that do not interfere with each other.
+
+The list <list> is very often a range.\\
+'for <variable> in [<from>..<to>] do <statements> od;'\\
+corresponds to the more common\\
+'for <variable> from <from> to <to>  do <statements> od;'\\
+in other programming languages.
+
+|    gap> s := 0;;
+    gap> for i  in [1..100]  do
+    >        s := s + i;
+    > od;
+    gap> s;
+    5050 |
+
+Note in the following example  how the modification of  the *list* in the
+loop body causes the loop body also to be executed for the new values
+
+|    gap> l := [ 1, 2, 3, 4, 5, 6 ];;
+    gap> for i  in l  do
+    >        Print( i, " " );
+    >        if i mod 2 = 0  then Add( l, 3 * i / 2 );  fi;
+    > od;  Print( "\n" );
+    1 2 3 4 5 6 3 6 9 9
+    gap> l;
+    [ 1, 2, 3, 4, 5, 6, 3, 6, 9, 9 ] |
+
+Note  in  the following example that  the  modification of the *variable*
+that holds the list has no influence on the loop
+
+|    gap> l := [ 1, 2, 3, 4, 5, 6 ];;
+    gap> for i  in l  do
+    >        Print( i, " " );
+    >        l := [];
+    > od;  Print( "\n" );
+    1 2 3 4 5 6
+    gap> l;
+    [  ] |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions}%
+\index{function}\index{end}\index{local}%
+\index{recursion}\index{recursive functions}%
+\index{environment}\index{body}
+
+|function (| [ <arg-ident> \{|,| <arg-ident>\} ] |)
+    |[ |local   |<loc-ident> \{|, |<loc-ident>\} |;| ]|
+    |<statements>|
+end|
+
+A function is in fact  a literal  and  not  a statement.  Such a function
+literal can be  assigned to a variable  or to  a list element or a record
+component.  Later  this function can  be called as described in "Function
+Calls".
+
+The following is an example  of a function definition.   It is a function
+to compute values of the Fibonacci sequence (see "Fibonacci")
+
+|    gap> fib := function ( n )
+    >         local  f1,  f2,  f3,  i;
+    >         f1 := 1;  f2 := 1;
+    >         for i  in [3..n]  do
+    >             f3 := f1 + f2;
+    >             f1 := f2;
+    >             f2 := f3;
+    >         od;
+    >         return f2;
+    >     end;;
+    gap> List( [1..10], fib );
+    [ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ] |
+
+Because for  each of the formal arguments <arg-ident> and for each of the
+formal locals <loc-ident>  a  new variable is allocated when the function
+is called (see "Function  Calls"), it is  possible that a  function calls
+itself.  This is usually called *recursion*. The following is a recursive
+function that computes values of the Fibonacci sequence
+
+|    gap> fib := function ( n )
+    >         if n < 3  then
+    >             return 1;
+    >         else
+    >             return fib(n-1) + fib(n-2);
+    >         fi;
+    >     end;;
+    gap> List( [1..10], fib );
+    [ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ] |
+
+Note that the recursive version needs '2 \*\ fib(<n>)-1' steps to compute
+'fib(<n>)', while the  iterative version   of 'fib'  needs  only  '<n>-2'
+steps.   Both are not optimal  however,  the library function 'Fibonacci'
+only needs on the order of 'Log(<n>)' steps.
+
+'<arg-ident> -> <expr>'
+
+This  is a  shorthand for\\
+'function (  <arg-ident> ) return <expr>; end'.\\
+<arg-ident>  must  be  a single  identifier, i.e., it is  not possible to
+write functions of several arguments this way.  Also 'arg' is not treated
+specially,  so  it  is  also impossible to  write  functions that take  a
+variable number of arguments this way.
+
+The following is an example of a typical use of such a function
+
+|    gap> Sum( List( [1..100], x -> x^2 ) );
+    338350 |
+
+When a function <fun1> definition  is evaluated  inside  another function
+<fun2>, {\GAP}  binds all the identifiers inside the function <fun1> that
+are identifiers of an argument or a  local of <fun2> to the corresponding
+variable.  This set of bindings is called the environment of the function
+<fun1>.  When <fun1> is called, its body is executed in this environment.
+The  following implementation of a simple stack uses this.  Values can be
+pushed  onto  the  stack  and  then  later  be  popped  off  again.   The
+interesting thing here  is that the  functions 'push'  and  'pop'  in the
+record returned by 'Stack' access the local variable 'stack' of  'Stack'.
+When 'Stack' is called a new  variable  for  the  identifier  'stack'  is
+created.   When the function  definitions of  'push' and  'pop' are  then
+evaluated (as part of the  'return' statement)  each reference to 'stack'
+is bound to this new variable.  Note also that the two stacks 'A' and 'B'
+do not interfere, because each call of 'Stack' creates a new variable for
+'stack'.
+
+|    gap> Stack := function ()
+    >         local   stack;
+    >         stack := [];
+    >         return rec(
+    >             push := function ( value )
+    >                 Add( stack, value );
+    >             end,
+    >             pop := function ()
+    >                 local   value;
+    >                 value := stack[Length(stack)];
+    >                 Unbind( stack[Length(stack)] );
+    >                 return value;
+    >             end
+    >         );
+    >    end;;
+    gap> A := Stack();;
+    gap> B := Stack();;
+    gap> A.push( 1 );  A.push( 2 );  A.push( 3 );
+    gap> B.push( 4 );  B.push( 5 );  B.push( 6 );
+    gap> A.pop();  A.pop();  A.pop();
+    3
+    2
+    1
+    gap> B.pop();  B.pop();  B.pop();
+    6
+    5
+    4 |
+
+This feature should be used rarely, since its implementation in {\GAP} is
+not very efficient.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Return}%
+\index{return}
+
+'return;'
+
+In this form 'return' terminates the call of  the innermost function that
+is currently executing, and control returns to  the calling function.  An
+error  is signalled if no  function is currently  executing.  No value is
+returned by the function.
+
+'return <expr>;'
+
+In this form 'return' terminates the call of the innermost  function that
+is currently executing, and returns  the value  of the expression <expr>.
+Control returns  to the calling  function.  An error is  signalled if  no
+function is currently executing.
+
+Both statements  can also be used in  break loops  (see  "Break  Loops").
+'return;'  has the effect  that the  computation  continues  where it was
+interrupted by an error or the user hitting  '<ctr>C'.   'return <expr>;'
+can be used to continue execution after an error.  What  happens with the
+value <expr> depends on the particular error.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Syntax in BNF}%
+\index{BNF}
+
+This section contains the definition  of the {\GAP} syntax in Backus-Naur
+form.
+
+A  BNF is a set of rules, whose left side  is the name of  a  syntactical
+construct.  Those  names  are enclosed in angle  brackets and  written in
+<italics>.  The right side of each rule contains a possible form for that
+syntactic  construct.   Each  right  side  may  contain  names  of  other
+syntactic  constructs,  again  enclosed in angle brackets and written  in
+<italics>,  or character  sequences that  must  occur literally; they are
+written in 'typewriter style'.
+
+Furthermore  each righthand side  can contain  the  following metasymbols
+written in *boldface*.  If the right  hand  side contains forms separated
+by a pipe symbol  ($\|$)  this means  that one  of the possible forms can
+occur.  If a part of a form  is enclosed  in square brackets  ([ ])  this
+means that this part is optional, i.e.  might be present or  missing.  If
+part  of the form is enclosed  in curly braces  (\{  \})  this means that
+the part may occur arbitrarily often, or possibly be missing.
+
+\newpage
+\begin{tabbing}
+<Permutation>  \=\:= \= <Expr>                                      \kill
+<Ident>        \>\:=  \>'a'$\|$...$\|$'z'$\|$'A'$\|$...$\|$'Z'$\|$'\_'
+\{'a'$\|$...$\|$'z'$\|$'A'$\|$...$\|$'Z'$\|$'0'$\|$...$\|$'9'$\|$'\_'\}\\
+<Var>          \>\:=  \><Ident>                                        \\
+               \>$\|$ \><Var> '.' <Ident>                              \\
+               \>$\|$ \><Var> '.' '(' <Expr> ')'                       \\
+               \>$\|$ \><Var> '[' <Expr> ']'                           \\
+               \>$\|$ \><Var> '\{' <Expr> '\}'                         \\
+               \>$\|$ \><Var> '(' [ <Expr> \{ ',' <Expr> \} ] ')'      \\
+<List>         \>\:=  \>'[' [ <Expr> ] \{',' [ <Expr> ] \} ']'         \\
+               \>$\|$ \>'[' <Expr> [, <Expr> ] '..' <Expr> ']'         \\
+<Record>       \>\:=  \>'rec(' [ <Ident> '\:=' <Expr>
+                           \{',' <Ident> '\:=' <Expr> \} ] ')'         \\
+<Permutation>  \>\:=  \>'(' <Expr> \{',' <Expr> \} ')'
+                     \{ '(' <Expr> \{',' <Expr> \} ')' \}              \\
+<Function>     \>\:=  \>'function (' [ <Ident> \{',' <Ident> \} ] ')'  \\
+               \>     \>    [ 'local'  <Ident> \{',' <Ident> \} ';' ]  \\
+               \>     \>    <Statements>                               \\
+               \>     \>'end'                                          \\
+<Char>         \>\:=  \>|'| <any character> |'|                        \\
+<String>       \>\:=  \>'\"' \{ <any character> \} '\"'                \\
+<Int>          \>\:=  \>'0'$\|$'1'$\|$...$\|$'9'
+                     \{ '0'$\|$'1'$\|$...$\|$'9' \}                    \\
+<Atom>         \>\:=  \><Int>                                          \\
+               \>$\|$ \><Var>                                          \\
+               \>$\|$ \>'(' <Expr> ')'                                 \\
+               \>$\|$ \><Permutation>                                  \\
+               \>$\|$ \><Char>                                         \\
+               \>$\|$ \><String>                                       \\
+               \>$\|$ \><Function>                                     \\
+               \>$\|$ \><List>                                         \\
+               \>$\|$ \><Record>                                       \\
+<Factor>       \>\:=  \>\{'+'$\|$'-'\} <Atom> [ '\^' \{'+'$\|$'-'\} <Atom> ]\\
+<Term>         \>\:=  \><Factor> \{ '\*'$\|$'/'$\|$'mod' <Factor> \}   \\
+<Arith>        \>\:=  \><Term> \{ '+'$\|$'-' <Term> \}                 \\
+<Rel>          \>\:=  \>\{ 'not' \} <Arith>
+       \{ |=|$\|$|<>|$\|$|<|$\|$|>|$\|$|<=|$\|$|>=|$\|$|in| <Arith> \} \\
+<And>          \>\:=  \><Rel> \{ 'and' <Rel> \}                        \\
+<Log>          \>\:=  \><And> \{ 'or' <And> \}                         \\
+<Expr>         \>\:=  \><Log>                                          \\
+               \>$\|$ \><Var> [ '->' <Log> ]                           \\
+<Statement>    \>\:=  \><Expr>                                         \\
+               \>$\|$ \><Var> '\:=' <Expr>                             \\
+               \>$\|$ \>'if'   <Expr>  'then' <Statements>             \\
+               \>     \>\{ 'elif' <Expr>  'then' \=<Statements> \}     \\
+               \>      \>[ 'else'                \><Statements>  ] 'fi'\\
+               \>$\|$ \>'for' <Var> 'in' <Expr> 'do' <Statements> 'od' \\
+               \>$\|$ \>'while' <Expr>  'do' <Statements>  'od'        \\
+               \>$\|$ \>'repeat' <Statements>  'until' <Expr>          \\
+               \>$\|$ \>'return' [ <Expr> ]                            \\
+               \>$\|$ \>'quit'                                         \\
+<Statements>   \>\:=  \>\{ <Statement> ';' \}                          \\
+               \>$\|$ \>';'
+\end{tabbing}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

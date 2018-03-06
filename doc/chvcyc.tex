@@ -1,0 +1,259 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvutil.tex       CHEVIE documentation       Meinolf Geck, Frank Luebeck,
+%A                                                Jean Michel, G"otz Pfeiffer
+%%
+%Y  Copyright (C) 1992 - 1996  Lehrstuhl D f\"ur Mathematik, RWTH Aachen, IWR
+%Y  der Universit\"at Heidelberg, University of St. Andrews, and   University
+%Y  Paris VII.
+%%
+%%  This  file  contains  utility functions.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{Cyclotomic polynomials}
+
+Cyclotomic  numbers, and cyclotomic polynomials  over the rationals or some
+cyclotomic  field, play an important role in the study of reductive groups,
+so  they do in \CHEVIE. Special facilities  are provided to deal with them.
+The  most prominent is the type 'CycPol'  which represents the product of a
+polynomial  with  a  rational  fraction  in  one variable with all poles or
+zeroes equal to 0 or roots of unity.
+
+The  advantages  of  representing  as  'CycPol'  objects  which  can  be so
+represented   are\:\  nice  display   (factorized),  less  storage,  faster
+multiplication,  division and evaluation. The big drawback is that addition
+and subtraction are not implemented!
+
+|    gap> q:=X(Cyclotomics);;q.name:="q";;
+    gap> p:=CycPol(q^18 + q^16 + 2*q^12 + q^8 + q^6);
+    (1+q^2-q^4+q^6+q^8)q^6P8
+    gap> p/CycPol(q^2+q+1);
+    (1+q^2-q^4+q^6+q^8)q^6P3^-1P8|
+
+The variable in a 'CycPol' will be denoted by 'q'. It is usually printed as
+'q'  but it is possible to change  its name, see 'Format' in 
+"Functions for CycPols".
+
+'CycPol's are represented internally by a record with fields\:
+
+'.coeff':  a coefficient, usually a cyclotomic number, but it can also be a
+polynomial  and actually can be any \GAP\ object which can be multiplied by
+cyclotomic polynomials.
+
+'.valuation': the valuation, positive  or negative.
+
+'.vcyc':  a list of  pairs $[e_i,m_i]$ representing  a root of  unity and a
+multiplicity  $m_i$. Actually $e_i$ should be a fraction $p/d$ with $p\< d$
+representing $E(d)^p$. The pair represents $(q-E(d)^p)^{m_i}$.
+
+So  if  we  let  |mu(e):=e->E(Denominator(e))^Numerator(e)|,  a  record 'r'
+represents 
+
+|r.coeff*q^r.valuation*Product(r.vcyc,p->(q-mu(p[1]))^p[2])|.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AsRootOfUnity}%
+\index{AsRootOfUnity}%
+
+'AsRootOfUnity( <c> )'
+
+<c>  should be  a cyclotomic  number. 'AsRootOfUnity'  returns the rational
+'e/n'  with $0\le e\<n$ (that is,  $e/n\in\Q/\Z$) if 'c=E(n)\^e', and false
+if <c> is not a root of unity. The code for this function has been provided
+by Thomas Breuer; we thank him for his help.
+
+|    gap> AsRootOfUnity(-E(9)^2-E(9)^5);
+    8/9
+    gap> AsRootOfUnity(-E(9)^4-E(9)^5);
+    false
+    gap> AsRootOfUnity(1);
+    0|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CycPol}%
+\index{CycPol}%
+
+'CycPol( <p> )'
+
+In the first form 'CycPol( <p> )' the argument is a polynomial\:
+
+|    gap> CycPol(3*q^3-3);
+    3P1P3|
+
+Special code  makes the conversion fast  if '<p>' has not  more than two
+nonzero coefficients.
+
+The  second form is  a fast and  efficient way of  specifying a CycPol with
+only positive multiplicities\: <p> should be a vector. The first element is
+taken  as a  the '.coeff'  of the  CycPol, the  second as the '.valuation'.
+Subsequent  elements  are  rationals  'i/d'  (with  $i\<  d$)  representing
+'(q-E(d)\^i)' or are integers $d$ representing $\Phi_d(q)$.
+
+|    gap> CycPol([3,-5,6,3/7]);
+    3q^-5P6(q-E7^3) |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCycPol}%
+\index{IsCycPol}%
+
+'IsCycPol( <p> )'
+
+This function returns 'true' if <p> is a 'CycPol' and 'false' otherwise.
+
+|    gap> IsCycPol(CycPol(1));
+    true
+    gap> IsCycPol(1);        
+    false|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions for CycPols}
+
+Multiplication '\*' division '/' and exponentiation '\^' work as usual, and
+the functions 'Degree', 'Valuation' and 'Value' work as for polynomials\:
+
+|    gap> p:=CycPol(q^18 + q^16 + 2*q^12 + q^8 + q^6);
+    (1+q^2-q^4+q^6+q^8)q^6P8
+    gap> Value(p,q);
+    q^18 + q^16 + 2*q^12 + q^8 + q^6
+    gap> p:=p/CycPol(q^2+q+1);
+    (1+q^2-q^4+q^6+q^8)q^6P3^-1P8
+    gap> Value(p,q);
+    Error, Cannot evaluate the non-Laurent polynomial CycPol (1+q^2-q^4+q^\
+    6+q^8)q^6P3^-1P8 in
+    f.operations.Value( f, x ) called from
+    Value( p, q ) called from
+    main loop
+    brk>
+    gap> Degree(p);
+    16
+    gap> Value(p,3);
+    431537382/13|
+
+\index{ComplexConjugate}
+The  function  'ComplexConjugate'  conjugates  '.coeff'  as well as all the
+roots of unity making up the 'CycPol'.
+
+Functions  'String' and  'Print' display  the $d$-th  cyclotomic polynomial
+$\Phi_d$  over the rationals as 'Pd'.  They also display as 'P\'d', 'P\"d',
+'P\"\'d', 'P\"\"d' factors of cyclotomic polynomials over extensions of the
+rationals\:
+
+|    gap> List(SchurElements(Hecke(ComplexReflectionGroup(4),q)),CycPol);
+    [ P2^2P3P4P6, 2ER(-3)q^-4P2^2P'3P'6, -2ER(-3)q^-4P2^2P"3P"6,
+      2q^-4P3P4, (3-ER(-3))/2q^-1P2^2P'3P"6, (3+ER(-3))/2q^-1P2^2P"3P'6, 
+      q^-2P2^2P4 ]|
+
+If  $\Phi_d$ factors in only  two pieces, the one  which has root 'E(d)' is
+denoted  'P\'d' and the  other one 'P\"d'  . The list  of commonly occuring
+factors  is as  follows (note  that the  conventions in \cite{Car85}, pages
+489--490 are different)\:
+
+% The following program makes the table below:
+% for n in Concatenation([3..16],[18,20,21,22,24,25,26,27,30,42]) do
+%   d:=CycPolOps.PhiDecompositions(n);d:=d{[2..Length(d)]};
+%   for l in d do
+%     p:=CycPol(Product(l,i->Mvp("q")-E(n)^i));
+%     Print(p,"=",Format(Value(p,Mvp("q")),rec(GAP:=true,reverse:=true)),"\n");
+%   od;
+% od;
+|    P'3=q-E(3)
+    P"3=q-E(3)^2
+    P'4=q-E(4)
+    P"4=q+E(4)
+    P'5=q^2+(1-ER(5))/2*q+1
+    P"5=q^2+(1+ER(5))/2*q+1
+    P'6=q+E(3)^2
+    P"6=q+E(3)
+    P'7=q^3+(1-ER(-7))/2*q^2+(-1-ER(-7))/2*q-1
+    P"7=q^3+(1+ER(-7))/2*q^2+(-1+ER(-7))/2*q-1
+    P'8=q^2-E(4)
+    P"8=q^2+E(4)
+    P"'8=q^2-ER(2)*q+1
+    P""8=q^2+ER(2)*q+1
+    P""'8=q^2-ER(-2)*q-1
+    P"""8=q^2+ER(-2)*q-1
+    P'9=q^3-E(3)
+    P"9=q^3-E(3)^2
+    P'10=q^2+(-1-ER(5))/2*q+1
+    P"10=q^2+(-1+ER(5))/2*q+1
+    P'11=q^5+(1-ER(-11))/2*q^4-q^3+q^2+(-1-ER(-11))/2*q-1
+    P"11=q^5+(1+ER(-11))/2*q^4-q^3+q^2+(-1+ER(-11))/2*q-1
+    P'12=q^2-E(4)*q-1
+    P"12=q^2+E(4)*q-1
+    P"'12=q^2+E(3)^2
+    P""12=q^2+E(3)
+    P""'12=q^2-ER(3)*q+1
+    P"""12=q^2+ER(3)*q+1
+    P(7)12=q+E(12)^7
+    P(8)12=q+E(12)^11
+    P(9)12=q+E(12)
+    P(10)12=q+E(12)^5
+    P'13=q^6+(1-ER(13))/2*q^5+2*q^4+(-1-ER(13))/2*q^3+2*q^2+(1-ER(13))/2*q+1
+    P"13=q^6+(1+ER(13))/2*q^5+2*q^4+(-1+ER(13))/2*q^3+2*q^2+(1+ER(13))/2*q+1
+    P'14=q^3+(-1+ER(-7))/2*q^2+(-1-ER(-7))/2*q+1
+    P"14=q^3+(-1-ER(-7))/2*q^2+(-1+ER(-7))/2*q+1
+    P'15=q^4+(-1-ER(5))/2*q^3+(1+ER(5))/2*q^2+(-1-ER(5))/2*q+1
+    P"15=q^4+(-1+ER(5))/2*q^3+(1-ER(5))/2*q^2+(-1+ER(5))/2*q+1
+    P"'15=q^4+E(3)^2*q^3+E(3)*q^2+q+E(3)^2
+    P""15=q^4+E(3)*q^3+E(3)^2*q^2+q+E(3)
+    P""'15=q^2+((1+ER(5))*E(3)^2)/2*q+E(3)
+    P"""15=q^2+((1-ER(5))*E(3)^2)/2*q+E(3)
+    P(7)15=q^2+((1+ER(5))*E(3))/2*q+E(3)^2
+    P(8)15=q^2+((1-ER(5))*E(3))/2*q+E(3)^2
+    P'16=q^4-ER(2)*q^2+1
+    P"16=q^4+ER(2)*q^2+1
+    P'18=q^3+E(3)^2
+    P"18=q^3+E(3)
+    P'20=q^4+(-1-ER(5))/2*q^2+1
+    P"20=q^4+(-1+ER(5))/2*q^2+1
+    P"'20=q^4+E(4)*q^3-q^2-E(4)*q+1
+    P""20=q^4-E(4)*q^3-q^2+E(4)*q+1
+    P'21=q^6+E(3)*q^5+E(3)^2*q^4+q^3+E(3)*q^2+E(3)^2*q+1
+    P"21=q^6+E(3)^2*q^5+E(3)*q^4+q^3+E(3)^2*q^2+E(3)*q+1
+    P'22=q^5+(-1-ER(-11))/2*q^4-q^3-q^2+(-1+ER(-11))/2*q+1
+    P"22=q^5+(-1+ER(-11))/2*q^4-q^3-q^2+(-1-ER(-11))/2*q+1
+    P'24=q^4+E(3)^2
+    P"24=q^4+E(3)
+    P"'24=q^4-ER(2)*q^3+q^2-ER(2)*q+1
+    P""24=q^4+ER(2)*q^3+q^2+ER(2)*q+1
+    P""'24=q^4-ER(6)*q^3+3*q^2-ER(6)*q+1
+    P"""24=q^4+ER(6)*q^3+3*q^2+ER(6)*q+1
+    P(7)24=q^4+ER(-2)*q^3-q^2-ER(-2)*q+1
+    P(8)24=q^4-ER(-2)*q^3-q^2+ER(-2)*q+1
+    P(9)24=q^2+ER(-2)*E(3)^2*q-E(3)
+    P(10)24=q^2-ER(-2)*E(3)^2*q-E(3)
+    P(11)24=q^2+ER(-2)*E(3)*q-E(3)^2
+    P(12)24=q^2-ER(-2)*E(3)*q-E(3)^2
+    P'25=q^10+(1-ER(5))/2*q^5+1
+    P"25=q^10+(1+ER(5))/2*q^5+1
+    P'26=q^6+(-1-ER(13))/2*q^5+2*q^4+(1-ER(13))/2*q^3+2*q^2+(-1-ER(13))/2*q+1
+    P"26=q^6+(-1+ER(13))/2*q^5+2*q^4+(1+ER(13))/2*q^3+2*q^2+(-1+ER(13))/2*q+1
+    P'27=q^9-E(3)
+    P"27=q^9-E(3)^2
+    P'30=q^4+(1-ER(5))/2*q^3+(1-ER(5))/2*q^2+(1-ER(5))/2*q+1
+    P"30=q^4+(1+ER(5))/2*q^3+(1+ER(5))/2*q^2+(1+ER(5))/2*q+1
+    P"'30=q^4-E(3)*q^3+E(3)^2*q^2-q+E(3)
+    P""30=q^4-E(3)^2*q^3+E(3)*q^2-q+E(3)^2
+    P""'30=q^2+((-1+ER(5))*E(3)^2)/2*q+E(3)
+    P"""30=q^2+((-1-ER(5))*E(3)^2)/2*q+E(3)
+    P(7)30=q^2+((-1+ER(5))*E(3))/2*q+E(3)^2
+    P(8)30=q^2+((-1-ER(5))*E(3))/2*q+E(3)^2
+    P'42=q^6-E(3)^2*q^5+E(3)*q^4-q^3+E(3)^2*q^2-E(3)*q+1
+    P"42=q^6-E(3)*q^5+E(3)^2*q^4-q^3+E(3)*q^2-E(3)^2*q+1|
+
+Finally the function 'Format(c,options)' takes the options\:
+
+'.vname':  a  string,  the  name  to  use  for printing the variable of the
+'CycPol' instead of 'q'.
+
+'.expand':  if set to 'true', each cyclotomic polynomial is replaced by its
+value before being printed.
+
+|    gap> p:=CycPol(q^6-1);
+    P1P2P3P6
+    gap> Format(p,rec(expand:=true));
+    "(q-1)(q+1)(q^2+q+1)(q^2-q+1)"
+    gap> Format(p,rec(expand:=true,vname:="x"));
+    "(x-1)(x+1)(x^2+x+1)(x^2-x+1)"|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

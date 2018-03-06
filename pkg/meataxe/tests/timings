@@ -1,0 +1,39 @@
+#!/bin/csh
+if ( x$1 == xmail ) then
+    unalias mail
+    exec $0 x | mail mringe@tiffy.math.rwth-aachen.de
+else if ( x$1 == xx ) then 
+    echo "Subject: MeatAxe Timings"
+    echo
+else
+    $0 x > results.`hostname`
+    cat results.`hostname` >> results
+endif
+set path=(../bin $path)
+unset time
+unset noclobber
+umask 022
+echo "-------------------------------------------------------------"
+echo -n `date +%d-%b-%y`"  "`hostname`"  "
+echo `uname -m`"  "`uname -sr`
+echo "-------------------------------------------------------------"
+
+zzztest -b 2 3 5 9 19 49 256
+/bin/rm -f p009.zzz p019.zzz p049.zzz p256.zzz
+
+echo -n "chop m11: GF(2) Dim=111 "
+chop m11 | tail -1
+/bin/rm -f m11[0-9]* m11.cfinfo
+
+echo -n "chop ac: GF(3) Dim=167 "
+chop ac | tail -1
+/bin/rm -f ac[0-9]* ac.cfinfo
+
+zte C0.1 C0.1 C0C0.1
+zte C0.2 C0.2 C0C0.2
+echo -n "chop C0xC0: GF(3) Dim=576 "
+chop C0C0 | tail -1
+/bin/rm -f C0C0*
+
+/bin/rm -f p???.zzz
+if (x$1 == x) echo "."

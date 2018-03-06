@@ -1,0 +1,1118 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  paramaps.g                  GAP documentation               Thomas Breuer
+%%
+%A  @(#)$Id: paramaps.tex,v 1.1.1.1 1996/12/11 12:36:49 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%H  $Log: paramaps.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:49  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.12  1994/06/10  02:50:14  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.11  1994/06/03  08:57:20  mschoene
+%H  changed a few things to avoid LaTeX warnings
+%H
+%H  Revision 3.10  1994/05/31  11:35:04  vfelsch
+%H  long line adjusted
+%H
+%H  Revision 3.9  1994/05/31  10:52:49  vfelsch
+%H  fixed overfull box
+%H
+%H  Revision 3.8  1994/05/25  12:51:56  sam
+%H  improved description of 'SubgroupFusions'
+%H
+%H  Revision 3.7  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.6  1993/02/18  14:48:13  felsch
+%H  long line adjusted
+%H
+%H  Revision 3.5  1993/02/15  15:57:37  felsch
+%H  examples fixed
+%H
+%H  Revision 3.3  1992/02/13  15:05:56  sam
+%H  renamed 'MatrixAutomorphisms' to 'MatAutomorphisms'
+%H
+%H  Revision 3.2  1992/01/21  17:13:50  sam
+%H  added description of 'CheckPermChar',
+%H  changed 'InitFusion' and examples appropriately
+%H
+%H  Revision 3.1  1991/12/27  16:46:58  sam
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Maps and Parametrized Maps}\index{maps}\index{parametrized maps}
+
+In this chapter, first the data structure of (parametrized) maps is
+introduced (see "More about Maps and Parametrized Maps").
+Then a description of several functions which mainly deal with parametrized
+maps follows; these are
+
+basic operations with paramaps (see "CompositionMaps", "InverseMap",
+"Indirected", "ProjectionMap", "Parametrized", "ContainedMaps",
+"UpdateMap", "CommutativeDiagram", "TransferDiagram"),
+
+functions which inform about ambiguity with respect to a paramap
+(see "Indeterminateness", "PrintAmbiguity"),
+
+functions used for the construction of powermaps and subgroup
+fusions (see "Powermap", "SubgroupFusions" and their subroutines
+"InitPowermap", "Congruences", "ConsiderKernels",
+"ConsiderSmallerPowermaps", "PowermapsAllowedBySymmetrisations",
+"InitFusion", "CheckPermChar", "CheckFixedPoints", "TestConsistencyMaps",
+"ConsiderTableAutomorphisms", "FusionsAllowedByRestrictions",
+"OrbitPowermaps", "OrbitFusions", "RepresentativesPowermaps",
+"RepresentativesFusions", "Powmap") and
+
+the function "ElementOrdersPowermap".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Maps and Parametrized Maps}
+\index{map!parametrized}\index{paramap}\index{class functions}
+
+Besides the characters, *powermaps* are an important part of a character
+table. Often their computation is not easy, and in general they cannot be
+obtained from the matrix of irreducible characters, so it is useful to store
+them on the table.
+
+If not only a single table is considered but different tables of groups
+and subgroups are used, also *subgroup fusion maps* must be known to get
+informations about the embedding or simply to induce or restrict characters.
+
+These are examples of class functions which are called *maps* for short;
+in \GAP, maps are lists\:\ Characters are maps, the lists of element orders,
+centralizer orders, classlengths are maps, and for a permutation <perm> of
+classes, 'ListPerm( <perm> )' is a map.
+
+When maps are constructed, in most cases one only knows that the image of
+any class is contained in a set of possible images, e.g. that the image of
+a class under a subgroup fusion is in the set of all classes with the same
+element order. Using further informations, like centralizer orders, powermaps
+and the restriction of characters, the sets of possible images can be
+diminished. In many cases, at the end the images are uniquely determined.
+
+For this, many functions do not only work with maps but with
+*parametrized maps* (or short paramaps)\:\ These are lists whose entries are
+either the images themselves (i.e. integers for fusion maps, powermaps,
+element orders etc.\ and cyclotomics for characters) or lists of possible
+images. Thus maps are special paramaps. A paramap <paramap> can be
+identified with the set of all maps <map> with '<map>[i] = <paramap>[i]'
+or '<map>[i]' contained in '<paramap>[i]'; we say that <map> is contained
+in <paramap> then.
+
+The composition of two paramaps is defined as the paramap that contains all
+compositions of elements of the paramaps. For example, the indirection of
+a character by a parametrized subgroup fusion map is the parametrized
+character that contains all possible restrictions of that character.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CompositionMaps}\index{map!composition}
+
+'CompositionMaps( <paramap2>, <paramap1> )'\\
+'CompositionMaps( <paramap2>, <paramap1>, <class> )'
+
+For parametrized maps <paramap1> and <paramap2> where '<paramap>[i]' is
+a bound position or a set of bound positions in <paramap2>,
+'CompositionMaps( <paramap2>, <paramap1> )' is a parametrized map with
+image 'CompositionMaps( <paramap2>, <paramap1>, <class> )' at position
+<class>.
+
+If '<paramap1>[ <class> ]' is unique, we have
+\[ 'CompositionMaps( <paramap2>, <paramap1>, <class> ) =
+<paramap2>[ <paramap1>[ <class> ] ]', \]
+otherwise it is the union of
+'<paramap2>[i]' for 'i' in '<paramap1>[ <class> ]'.
+
+|    gap> map1:= [ 1, [ 2, 3, 4 ], [ 4, 5 ], 1 ];;
+    gap> map2:= [ [ 1, 2 ], 2, 2, 3, 3 ];;
+    gap> CompositionMaps( map2, map1 ); CompositionMaps( map1, map2 );
+    [ [ 1, 2 ], [ 2, 3 ], 3, [ 1, 2 ] ]
+    [ [ 1, 2, 3, 4 ], [ 2, 3, 4 ], [ 2, 3, 4 ], [ 4, 5 ], [ 4, 5 ] ]|
+
+*Note*\:\ If you want to get indirections of characters which contain
+unknowns (see chapter "Unknowns") instead of sets of possible values,
+use "Indirected" 'Indirected'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InverseMap}\index{map!inverse of a}
+
+'InverseMap( <paramap> )'
+
+'InverseMap( <paramap> )[i]' is the unique preimage or the set of all
+preimages of 'i' under <paramap>, if there are any; otherwise it is unbound.
+
+(We have 'CompositionMaps( <paramap>, InverseMap( <paramap> ) )'
+the identity map.)
+
+|    gap> t:= CharTable( "2.A5" );; f:= CharTable( "A5" );;
+    gap> fus:= GetFusionMap( t, f );    # the factor fusion map
+    [ 1, 1, 2, 3, 3, 4, 4, 5, 5 ]
+    gap> inverse:= InverseMap( fus );
+    [ [ 1, 2 ], 3, [ 4, 5 ], [ 6, 7 ], [ 8, 9 ] ]
+    gap> CompositionMaps( fus, inverse );
+    [ 1, 2, 3, 4, 5 ]
+    gap> t.powermap[2];
+    [ 1, 1, 2, 4, 4, 8, 8, 6, 6 ]
+    # transfer a powermap up to the factor group\:
+    gap> CompositionMaps( fus, CompositionMaps( last, inverse ) );
+    [ 1, 1, 3, 5, 4 ]                   # is equal to 'f.powermap[2]'
+    # transfer a powermap down to the group\:
+    gap> CompositionMaps( inverse, CompositionMaps( last, fus ) );
+    [ [ 1, 2 ], [ 1, 2 ], [ 1, 2 ], [ 4, 5 ], [ 4, 5 ], [ 8, 9 ], 
+      [ 8, 9 ], [ 6, 7 ], [ 6, 7 ] ]    # contains 't.powermap[2]'|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ProjectionMap}
+
+'ProjectionMap( <map> )'
+
+For each image 'i' under the (necessarily *not* parametrized) map <map>,
+'ProjectionMap( <map> )[<i>]' is the smallest preimage of <i>.
+
+(We have 'CompositionMaps( <map>, ProjectionMap( <map> ) )' the identity map.)
+
+|    gap> ProjectionMap( [1,1,1,2,2,2,3,4,5,5,5,6,6,6,7,7,7] );
+    [ 1, 4, 7, 8, 9, 12, 15 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Parametrized}\index{map!parametrize}
+
+'Parametrized( <list> )'
+
+returns the parametrized cover of <list>, i.e.\ the parametrized map with
+smallest indeterminateness that contains all maps in <list>.
+'Parametrized' is the inverse function of "ContainedMaps" in the sense that
+'Parametrized( ContainedMaps( <paramap> ) ) = <paramap>'.
+
+|    gap> Parametrized( [ [ 1, 3, 4, 6, 8, 10, 11, 11, 15, 14 ],
+    >                    [ 1, 3, 4, 6, 8, 10, 11, 11, 14, 15 ],
+    >                    [ 1, 3, 4, 7, 8, 10, 12, 12, 15, 14 ], 
+    >                    [ 1, 3, 4, 7, 8, 10, 12, 12, 14, 15 ] ] );
+    [ 1, 3, 4, [ 6, 7 ], 8, 10, [ 11, 12 ], [ 11, 12 ], [ 14, 15 ],
+      [ 14, 15 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ContainedMaps}
+
+'ContainedMaps( <paramap> )'
+
+returns the set of all maps contained in the parametrized map <paramap>.
+'ContainedMaps' is the inverse function of "Parametrized" in the sense that
+'Parametrized( ContainedMaps( <paramap> ) ) = <paramap>'.
+
+|    gap> ContainedMaps( [ 1, 3, 4, [ 6, 7 ], 8, 10, [ 11, 12 ], [ 11, 12 ],
+    > 14, 15 ] );
+    [ [ 1, 3, 4, 6, 8, 10, 11, 11, 14, 15 ],
+      [ 1, 3, 4, 6, 8, 10, 11, 12, 14, 15 ],
+      [ 1, 3, 4, 6, 8, 10, 12, 11, 14, 15 ], 
+      [ 1, 3, 4, 6, 8, 10, 12, 12, 14, 15 ],
+      [ 1, 3, 4, 7, 8, 10, 11, 11, 14, 15 ],
+      [ 1, 3, 4, 7, 8, 10, 11, 12, 14, 15 ], 
+      [ 1, 3, 4, 7, 8, 10, 12, 11, 14, 15 ],
+      [ 1, 3, 4, 7, 8, 10, 12, 12, 14, 15 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{UpdateMap}
+
+'UpdateMap( <char>, <paramap>, <indirected> )'
+
+improves the paramap <paramap> using that <indirected> is the (possibly
+parametrized) indirection of the character <char> by <paramap>.
+
+|    gap> s:= CharTable( "S4(4).2" );; he:= CharTable( "He" );;
+    gap> fus:= InitFusion( s, he );
+    [ 1, 2, 2, [ 2, 3 ], 4, 4, [ 7, 8 ], [ 7, 8 ], 9, 9, 9, [ 10, 11 ], 
+      [ 10, 11 ], 18, 18, 25, 25, [ 26, 27 ], [ 26, 27 ], 2, [ 6, 7 ],
+      [ 6, 7 ], [ 6, 7, 8 ], 10, 10, 17, 17, 18, [ 19, 20 ], [ 19, 20 ] ]
+    gap> Filtered( s.irreducibles, x -> x[1] = 50 );
+    [ [ 50, 10, 10, 2, 5, 5, -2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, -1, -1,
+          10, 2, 2, 2, 1, 1, 0, 0, 0, -1, -1 ], 
+      [ 50, 10, 10, 2, 5, 5, -2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, -1, -1,
+          -10, -2, -2, -2, -1, -1, 0, 0, 0, 1, 1 ] ]
+    gap> UpdateMap( he.irreducibles[2], fus, last[1] + s.irreducibles[1] );
+    gap> fus;
+    [ 1, 2, 2, 3, 4, 4, 8, 7, 9, 9, 9, 10, 10, 18, 18, 25, 25, 
+      [ 26, 27 ], [ 26, 27 ], 2, [ 6, 7 ], [ 6, 7 ], [ 6, 7 ], 10, 10, 
+      17, 17, 18, [ 19, 20 ], [ 19, 20 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CommutativeDiagram}
+
+'CommutativeDiagram( <paramap1>, <paramap2>, <paramap3>, <paramap4> )'\\
+'CommutativeDiagram( <paramap1>, <paramap2>, <paramap3>, <paramap4>,
+                     <improvements> )'
+
+If \[ 'CompositionMaps(<paramap2>,<paramap1> ) =
+    CompositionMaps(<paramap4>,<paramap3> )' \]
+shall hold, the consistency is checked and the four maps
+will be improved according to this condition.
+
+If a record <improvements> with fields 'imp1', 'imp2', 'imp3', 'imp4' 
+(all lists) is entered as parameter, only diagrams containing elements of
+'imp<i>' as positions in the <i>-th paramap are considered.
+
+'CommutativeDiagram' returns 'false' if an inconsistency was found,
+otherwise a record is returned that contains four lists 'imp1', \ldots,
+'imp4', where 'imp<i>' is the list of classes where the <i>-th paramap was
+improved.
+
+|    gap> map1:= [ [ 1, 2, 3 ], [ 1, 3 ] ];;
+    gap> map2:= [ [ 1, 2 ], 1, [ 1, 3 ] ];;
+    gap> map3:= [ [ 2, 3 ], 3 ];; map4:= [ , 1, 2, [ 1, 2 ] ];;
+    gap> CommutativeDiagram( map1, map2, map3, map4 );
+    rec(
+      imp1 := [ 2 ],
+      imp2 := [ 1 ],
+      imp3 := [  ],
+      imp4 := [  ] )
+    gap> imp:= last;; map1; map2; map3; map4;
+    [ [ 1, 2, 3 ], 1 ]
+    [ 2, 1, [ 1, 3 ] ]
+    [ [ 2, 3 ], 3 ]
+    [ , 1, 2, [ 1, 2 ] ]
+    gap> CommutativeDiagram( map1, map2, map3, map4, imp );
+    rec(
+      imp1 := [  ],
+      imp2 := [  ],
+      imp3 := [  ],
+      imp4 := [  ] )|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TransferDiagram}
+
+'TransferDiagram( <inside1>, <between>, <inside2> )'\\
+'TransferDiagram( <inside1>, <between>, <inside2>, <improvements> )'
+
+Like in "CommutativeDiagram", it is checked that
+\[ 'CompositionMaps( <between>, <inside1> ) =
+    CompositionMaps( <inside2>, <between> )' \]
+holds for the paramaps <inside1>, <between> and <inside2>,
+that means the paramap <between> occurs twice in each commutative diagram.
+
+Additionally, "CheckFixedPoints" 'CheckFixedPoints' is called.
+
+If a record <improvements> with fields 'impinside1', 'impbetween' and
+'impinside2' is specified, only those diagrams with elements of
+'impinside1' as positions in <inside1>, elements of 'impbetween' as
+positions in <between> or elements of 'impinside2' as positions in
+<inside2> are considered.
+
+When an inconsistency occurs, the program immediately returns 'false';
+else it returns a record with lists 'impinside1', 'impbetween' and
+'impinside2' of found improvements.
+
+|    gap> s:= CharTable( "2F4(2)" );; ru:= CharTable( "Ru" );;
+    gap> fus:= InitFusion( s, ru );;
+    gap> permchar:= Sum( Sublist( ru.irreducibles, [ 1, 5, 6 ] ) );;
+    gap> CheckPermChar( s, ru, fus, permchar );; fus;
+    [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20, 
+      [ 25, 26 ], [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ],
+      [ 18, 19 ], [ 25, 26 ], [ 25, 26 ], 27, 27 ]
+    gap> TransferDiagram( s.powermap[2], fus, ru.powermap[2] );
+    rec(
+      impinside1 := [  ],
+      impbetween := [ 12, 23 ],
+      impinside2 := [  ] )
+    gap> TransferDiagram( s.powermap[3], fus, ru.powermap[3] );
+    rec( 
+      impinside1 := [  ], 
+      impbetween := [ 14, 24, 25 ], 
+      impinside2 := [  ] )
+    gap> TransferDiagram( s.powermap[2], fus, ru.powermap[2], last );
+    rec( 
+      impinside1 := [  ], 
+      impbetween := [  ], 
+      impinside2 := [  ] )
+    gap> fus;
+    [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, 15, 16, 18, 20, [ 25, 26 ],
+      [ 25, 26 ], 5, 5, 6, 8, 14, 13, 19, 19, [ 25, 26 ], [ 25, 26 ], 27,
+      27 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Indeterminateness}\index{map!indeterminateness}
+
+'Indeterminateness( <paramap> )'
+
+returns the indeterminateness of <paramap>, i.e. the number of maps contained
+in the parametrized map <paramap>
+
+|    gap> m11:= CharTable( "M11" );; m12:= CharTable( "M12" );;
+    gap> fus:= InitFusion( m11, m12 );
+    [ 1, [ 2, 3 ], [ 4, 5 ], [ 6, 7 ], 8, [ 9, 10 ], [ 11, 12 ],
+      [ 11, 12 ], [ 14, 15 ], [ 14, 15 ] ]
+    gap> Indeterminateness( fus );
+    256
+    gap> TestConsistencyMaps( m11.powermap, fus, m12.powermap );; fus;
+    [ 1, 3, 4, [ 6, 7 ], 8, 10, [ 11, 12 ], [ 11, 12 ], [ 14, 15 ],
+      [ 14, 15 ] ]
+    gap> Indeterminateness( fus );
+    32|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrintAmbiguity}
+
+'PrintAmbiguity( <list>, <paramap> )'
+
+prints for each character in <list> its position, its indeterminateness
+with respect to <paramap> and the list of ambiguous classes
+
+|    gap> s:= CharTable( "2F4(2)" );; ru:= CharTable( "Ru" );;
+    gap> fus:= InitFusion( s, ru );;
+    gap> permchar:= Sum( Sublist( ru.irreducibles, [ 1, 5, 6 ] ) );;
+    gap> CheckPermChar( s, ru, fus, permchar );; fus;
+    [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20, 
+      [ 25, 26 ], [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ],
+      [ 18, 19 ], [ 25, 26 ], [ 25, 26 ], 27, 27 ]
+    gap> PrintAmbiguity( Sublist( ru.irreducibles, [ 1 .. 8 ] ), fus );
+    1 1 [  ]
+    2 16 [ 16, 17, 26, 27 ]
+    3 16 [ 16, 17, 26, 27 ]
+    4 32 [ 12, 14, 23, 24, 25 ]
+    5 4 [ 12, 23 ]
+    6 1 [  ]
+    7 32 [ 12, 14, 23, 24, 25 ]
+    8 1 [  ]
+    gap> Indeterminateness( fus );
+    512|
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Powermap}\index{powermaps}
+
+'Powermap( <tbl>, <prime> )'\\
+'Powermap( <tbl>, <prime>, <parameters> )'
+
+returns a list of possibilities for the <prime>-th powermap of the
+character table <tbl>.
+
+The optional record <parameters> may have the following fields\:
+
+'chars':\\
+     a list of characters which are used for the check of kernels
+     (see "ConsiderKernels"), the test of congruences (see "Congruences")
+     and the test of scalar products of symmetrisations
+     (see "PowermapsAllowedBySymmetrisations");
+     the default is '<tbl>.irreducibles'
+
+'powermap':\\
+     a (parametrized) map which is an approximation of the desired map
+
+'decompose':\\
+     a boolean; if 'true', the symmetrisations of 'chars' must have all
+     constituents in 'chars', that will be used in the algorithm;
+     if 'chars' is not bound and '<tbl>.irreducibles' is complete,
+     the default value of 'decompose' is 'true', otherwise 'false'
+
+'quick':\\
+     a boolean; if 'true', the subroutines are called with the option
+     '\"quick\"'; especially, a unique map will be returned immediately
+     without checking all symmetrisations; the default value is 'false'
+
+'parameters':\\
+     a record with fields 'maxamb', 'minamb' and 'maxlen' which control
+     the subroutine "PowermapsAllowedBySymmetrisations"\:\ 
+     It only uses characters with actual indeterminateness up to
+     'maxamb', tests decomposability only for characters with actual
+     indeterminateness at least 'minamb' and admits a branch only
+     according to a character if there is one with at most 'maxlen'
+     possible minus-characters.
+
+|    # cf.\ example in "InitPowermap"
+    gap> t:= CharTable( "U4(3).4" );;
+    gap> pow:= Powermap( t, 2 );
+    [ [ 1, 1, 3, 4, 5, 2, 2, 8, 3, 4, 11, 12, 6, 14, 9, 1, 1, 2, 2, 3, 4,
+          5, 6, 8, 9, 9, 10, 11, 12, 16, 16, 16, 16, 17, 17, 18, 18, 18,
+          18, 20, 20, 20, 20, 22, 22, 24, 24, 25, 26, 28, 28, 29, 29 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SubgroupFusions}\index{fusions}\index{subgroup fusions}
+
+'SubgroupFusions( <subtbl>, <tbl> )'\\
+'SubgroupFusions( <subtbl>, <tbl>, <parameters> )'
+
+returns the list of all subgroup fusion maps from <subtbl> into <tbl>.
+
+The optional record <parameters> may have the following fields\:
+
+'chars':\\
+     a list of characters of <tbl> which will be restricted to <subtbl>,
+     (see "FusionsAllowedByRestrictions");
+     the default is '<tbl.irreducibles>'
+
+'subchars':\\
+     a list of characters of <subtbl> which are constituents of the
+     retrictions of 'chars', the default is '<subtbl>.irreducibles'
+
+'fusionmap':\\
+     a (parametrized) map which is an approximation of the desired map
+
+'decompose':\\
+     a boolean; if 'true', the restrictions of 'chars' must have all
+     constituents in 'subchars', that will be used in the algorithm;
+     if 'subchars' is not bound and '<subtbl>.irreducibles' is complete,
+     the default value of 'decompose' is 'true', otherwise 'false'
+
+'permchar':\\
+     a permutation character; only those fusions are computed which
+     afford that permutation character (see "CheckPermChar")
+
+'quick':\\
+     a boolean; if 'true', the subroutines are called with the option
+     '\"quick\"'; especially, a unique map will be returned immediately
+     without checking all symmetrisations; the default value is 'false'
+
+'parameters':\\
+     a record with fields 'maxamb', 'minamb' and 'maxlen' which control
+     the subroutine "FusionsAllowedByRestrictions"\:\ 
+     It only uses characters with actual indeterminateness up to
+     'maxamb', tests decomposability only for characters with actual
+     indeterminateness at least 'minamb' and admits a branch only
+     according to a character if there is one with at most 'maxlen'
+     possible restrictions.
+
+|    # cf.\ example in "FusionsAllowedByRestrictions"
+    gap> s:= CharTable( "U3(3)" );; t:= CharTable( "J4" );;
+    gap> SubgroupFusions( s, t, rec( quick:= true ) );
+    [ [ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ],
+      [ 1, 2, 4, 4, 5, 5, 6, 10, 13, 12, 14, 14, 21, 21 ],
+      [ 1, 2, 4, 4, 6, 6, 6, 10, 12, 13, 15, 15, 22, 22 ],
+      [ 1, 2, 4, 4, 6, 6, 6, 10, 12, 13, 16, 16, 22, 22 ],
+      [ 1, 2, 4, 4, 6, 6, 6, 10, 13, 12, 15, 15, 22, 22 ],
+      [ 1, 2, 4, 4, 6, 6, 6, 10, 13, 12, 16, 16, 22, 22 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InitPowermap}\index{powermaps}
+
+'InitPowermap( <tbl>, <prime> )'
+
+computes a (probably parametrized,
+see "More about Maps and Parametrized Maps") first
+approximation of of the <prime>-th powermap of the character table <tbl>,
+using that for any class 'i' of <tbl>, the following properties hold\:
+
+The centralizer order of the image is a multiple of the centralizer order of
+'i'. If the element order of 'i' is relative prime to <prime>, the
+centralizer orders of 'i' and its image must be equal.
+
+If <prime> divides the element order <x> of the class 'i', the element order
+of its image must be $<x> / <prime>$; otherwise the element orders of 'i'
+and its image must be equal. Of course, this is used only if the element
+orders are stored on the table.
+
+If no <prime>-th powermap is possible because of these properties, 'false' is
+returned.  Otherwise 'InitPowermap' returns the parametrized map.
+
+|    # cf.\ example in "Powermap"
+    gap> t:= CharTable( "U4(3).4" );;
+    gap> pow:= InitPowermap( t, 2 );
+    [ 1, 1, 3, 4, 5, [ 2, 16 ], [ 2, 16, 17 ], 8, 3, [ 3, 4 ], 
+      [ 11, 12 ], [ 11, 12 ], [ 6, 7, 18, 19, 30, 31, 32, 33 ], 14, 
+      [ 9, 20 ], 1, 1, 2, 2, 3, [ 3, 4, 5 ], [ 3, 4, 5 ], 
+      [ 6, 7, 18, 19, 30, 31, 32, 33 ], 8, 9, 9, [ 9, 10, 20, 21, 22 ], 
+      [ 11, 12 ], [ 11, 12 ], 16, 16, [ 2, 16 ], [ 2, 16 ], 17, 17, 
+      [ 6, 18, 30, 31, 32, 33 ], [ 6, 18, 30, 31, 32, 33 ], 
+      [ 6, 7, 18, 19, 30, 31, 32, 33 ], [ 6, 7, 18, 19, 30, 31, 32, 33 ], 
+      20, 20, [ 9, 20 ], [ 9, 20 ], [ 9, 10, 20, 21, 22 ], 
+      [ 9, 10, 20, 21, 22 ], 24, 24, [ 15, 25, 26, 40, 41, 42, 43 ], 
+      [ 15, 25, 26, 40, 41, 42, 43 ], [ 28, 29 ], [ 28, 29 ], [ 28, 29 ], 
+      [ 28, 29 ] ]
+    # continued in "Congruences"|
+
+'InitPowermap' is used by "Powermap" 'Powermap'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Congruences}\index{powermaps}
+
+'Congruences( <tbl>, <chars>, <prime\_powermap>, <prime> )'\\
+'Congruences( <tbl>, <chars>, <prime\_powermap>, <prime>, \"quick\" )'
+
+improves the parametrized map <prime\_powermap> (see "More about Maps and
+Parametrized Maps") that is an approximation of the <prime>-th powermap of the
+character table <tbl>\:
+
+For $G$ a group with character table <tbl>, $g \in G$ and a character $\chi$
+of <tbl>, the congruence
+\['GaloisCyc( \chi(<g>), <prime> )' \equiv\chi(g^{<prime>})\pmod{<prime>}\]
+holds; if the representative order of $g$ is relative prime to <prime>, we
+have
+\['GaloisCyc( \chi(g), <prime> ) = \chi(g^{<prime>})'.\]
+'Congruences' checks these congruences for the (virtual ) characters in the
+list <chars>.
+
+If '\"quick\"' is specified, only those classes are considered for which
+<prime\_powermap> is ambiguous.
+
+If there are classes for which no image is possible, 'false' is returned,
+otherwise 'Congruences' returns 'true'.
+
+|    # see example in "InitPowermap"
+    gap> Congruences( t, t.irreducibles, pow, 2 ); pow;
+    true
+    [ 1, 1, 3, 4, 5, [ 2, 16 ], [ 2, 16, 17 ], 8, 3, 4, 11, 12,
+      [ 6, 7, 18, 19 ], 14, [ 9, 20 ], 1, 1, 2, 2, 3, 4, 5,
+      [ 6, 7, 18, 19 ], 8, 9, 9, [ 10, 21 ], 11, 12, 16, 16, [ 2, 16 ],
+      [ 2, 16 ], 17, 17, [ 6, 18 ], [ 6, 18 ], [ 6, 7, 18, 19 ],
+      [ 6, 7, 18, 19 ], 20, 20, [ 9, 20 ], [ 9, 20 ], 22, 22, 24, 24,
+      [ 15, 25, 26 ], [ 15, 25, 26 ], 28, 28, 29, 29 ]
+    # continued in "ConsiderKernels"|
+
+'Congruences' is used by "Powermap" 'Powermap'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ConsiderKernels}\index{powermaps}
+
+'ConsiderKernels( <tbl>, <chars>, <prime\_powermap>, <prime> )'\\
+'ConsiderKernels( <tbl>, <chars>, <prime\_powermap>, <prime>, \"quick\" )'
+
+improves the parametrized map <prime\_powermap> (see "More about Maps and
+Parametrized Maps") that is an approximation of the <prime>-th powermap of
+the character table <tbl>\:
+
+For $G$ a group with character table <tbl>, the kernel of each character in
+the list <chars> is a normal subgroup of $G$, so for every
+$g \in 'Kernel( <chi> )'$ we have $g^{<prime>} \in 'Kernel( <chi> )'$.
+
+Depending on the order of the factor group modulo 'Kernel( <chi> )',
+there are two further properties\: If the order is relative prime to <prime>,
+for each $g \notin 'Kernel( <chi> )'$ the <prime>-th power is not contained
+in 'Kernel( <chi> )'; if the order is equal to <prime>, the <prime>-th powers
+of all elements lie in 'Kernel( <chi> )'.
+
+If '\"quick\"' is specified, only those classes are considered for which
+<prime\_powermap> is ambiguous.
+
+If 'Kernel( <chi> )' has an order not dividing '<tbl>.order' for an element
+<chi> of <chars>, or if no image is possible for a class,
+'false' is returned; otherwise 'ConsiderKernels' returns 'true'.
+
+*Note* that <chars> must consist of ordinary characters, since the kernel of
+a virtual character is not defined.
+
+|    # see example in "Congruences"
+    gap> ConsiderKernels( t, t.irreducibles, pow, 2 ); pow;
+    true
+    [ 1, 1, 3, 4, 5, 2, 2, 8, 3, 4, 11, 12, [ 6, 7 ], 14, 9, 1, 1, 2, 2,
+      3, 4, 5, [ 6, 7, 18, 19 ], 8, 9, 9, [ 10, 21 ], 11, 12, 16, 16,
+      [ 2, 16 ], [ 2, 16 ], 17, 17, [ 6, 18 ], [ 6, 18 ], 
+      [ 6, 7, 18, 19 ], [ 6, 7, 18, 19 ], 20, 20, [ 9, 20 ], [ 9, 20 ], 
+      22, 22, 24, 24, [ 15, 25, 26 ], [ 15, 25, 26 ], 28, 28, 29, 29 ]
+    # continued in "PowermapsAllowedBySymmetrisations"|
+
+'ConsiderKernels' is used by "Powermap" 'Powermap'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ConsiderSmallerPowermaps}\index{powermaps}
+
+'ConsiderSmallerPowermaps( <tbl>, <prime\_powermap>, <prime> )'\\
+'ConsiderSmallerPowermaps( <tbl>, <prime\_powermap>, <prime>, \"quick\" )'
+
+improves the parametrized map <prime\_powermap> (see chapter "Maps and
+Parametrized Maps") that is an approximation of the <prime>-th powermap of
+the character table <tbl>\:
+
+If $<prime> > '<tbl>.orders[i]'$ for a class 'i', try to improve
+<prime\_powermap> at class 'i' using that for $g$ in class 'i',
+$g_i^{<prime>} = g_i^{<prime>\ 'mod\ <tbl>.orders[i]'}$ holds; \\
+so if the '(<prime> mod <tbl>.orders[i])'-th powermap at class 'i' is
+determined by the maps stored in '<tbl>.powermap', this information is
+used.
+
+If '\"quick\"' is specified, only those classes are considered for which
+<prime\_powermap> is ambiguous.
+
+If there are classes for which no image is possible, 'false' is returned,
+otherwise 'true'.
+
+*Note*\:\ If '<tbl>.orders' is unbound, 'true' is returned without tests.
+
+|    gap> t:= CharTable( "3.A6" );; init:= InitPowermap( t, 5 );;
+    gap> Indeterminateness( init );
+    4096
+    gap> ConsiderSmallerPowermaps( t, init, 5 );;
+    gap> Indeterminateness( init );
+    256 |
+
+'ConsiderSmallerPowermaps' is used by "Powermap" 'Powermap'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InitFusion}\index{subgroup fusions}
+
+'InitFusion( <subtbl>, <tbl> )'
+
+computes a (probably parametrized, see "More about Maps and Parametrized
+Maps") first approximation of of the subgroup fusion from the character
+table <subtbl> into the character table <tbl>, using that for any class 'i'
+of <subtbl>, the centralizer order of the image is a multiple of the
+centralizer order of 'i' and the element order of 'i' is equal to the
+element order of its image (used only if element orders are stored on the
+tables).
+
+If no fusion map is possible because of these properties, 'false' is returned.
+Otherwise 'InitFusion' returns the parametrized map.
+
+|    gap> s:= CharTable( "2F4(2)" );; ru:= CharTable( "Ru" );;
+    gap> fus:= InitFusion( s, ru );
+    [ 1, 2, 2, 4, [ 5, 6 ], [ 5, 6, 7, 8 ], [ 5, 6, 7, 8 ], [ 9, 10 ], 
+      11, 14, 14, [ 13, 14, 15 ], [ 16, 17 ], [ 18, 19 ], 20, [ 25, 26 ],
+      [ 25, 26 ], [ 5, 6 ], [ 5, 6 ], [ 5, 6 ], [ 5, 6, 7, 8 ],
+      [ 13, 14, 15 ], [ 13, 14, 15 ], [ 18, 19 ], [ 18, 19 ], [ 25, 26 ],
+      [ 25, 26 ], [ 27, 28, 29 ], [ 27, 28, 29 ] ]|
+
+'InitFusion' is used by "SubgroupFusions" 'SubgroupFusions'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CheckPermChar}
+\index{subgroup fusions}
+\index{permutation character}
+
+'CheckPermChar( <subtbl>, <tbl>, <fusionmap>, <permchar> )'
+
+tries to  improve the parametrized  fusion <fusionmap> (see Chapter "Maps
+and  Parametrized  Maps") from  the  character  table  <subtbl> into  the
+character table  <tbl>  using  the permutation character  <permchar> that
+belongs to the required fusion\:\  A possible  image 'x'  of class 'i' is
+excluded if class 'i' is too large, and a possible image 'y' of class 'i'
+is  the right  image  if 'y' must be the image of {\em all} classes where
+'y' is a possible image.
+
+'CheckPermChar'  returns 'true'  if  no  inconsistency  occurred,  and
+'false' otherwise.
+
+|    gap> fus:= InitFusion( s, ru );; # cf. example in "InitFusion"
+    gap> permchar:= Sum( Sublist( ru.irreducibles, [ 1, 5, 6 ] ) );;
+    gap> CheckPermChar( s, ru, fus, permchar );; fus;
+    [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20, 
+      [ 25, 26 ], [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ],
+      [ 18, 19 ], [ 25, 26 ], [ 25, 26 ], 27, 27 ]|
+
+'CheckPermChar' is used by "SubgroupFusions" 'SubgroupFusions'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CheckFixedPoints}\index{subgroup fusions}
+
+'CheckFixedPoints( <inside1>, <between>, <inside2> )'
+
+If the parametrized map (see "More about Maps and Parametrized Maps")
+<between> transfers the parametrized map <inside1> to <inside2>, i.e.\ 
+$<inside2> \circ <between> = <between> \circ <inside1>$,
+<between> must map fixed points of <inside1> to fixed points of <inside2>.
+Using this property, 'CheckFixedPoints' tries to improve <between> and
+<inside2>.
+
+If an inconsistency occurs, 'false' is returned. Otherwise,
+'CheckFixedPoints' returns the list of classes where improvements were found.
+
+|    gap> s:= CharTable( "L4(3).2_2" );; o7:= CharTable( "O7(3)" );;
+    gap> fus:= InitFusion( s, o7 );;
+    gap> CheckFixedPoints( s.powermap[5], fus, o7.powermap[5] );
+    [ 48, 49 ]
+    gap> fus:= InitFusion( s, o7 );; Sublist( fus, [ 48, 49 ] );
+    [ [ 54, 55, 56, 57 ], [ 54, 55, 56, 57 ] ]
+    gap> CheckFixedPoints( s.powermap[5], fus, o7.powermap[5] );
+    [ 48, 49 ]
+    gap> Sublist( fus, [ 48, 49 ] );
+    [ [ 56, 57 ], [ 56, 57 ] ]|
+
+'CheckFixedPoints' is used by "SubgroupFusions" 'SubgroupFusions'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{TestConsistencyMaps}\index{subgroup fusions}
+
+'TestConsistencyMaps( <powmap1>, <fusmap>, <powmap2> )'\\
+'TestConsistencyMaps( <powmap1>, <fusmap>, <powmap2>, <fus\_imp> )'
+
+Like in "TransferDiagram", it is checked that parametrized maps
+(see chapter "Maps and Parametrized Maps") commute\:
+
+For all positions 'i' where both '<powmap1>[i]' and '<powmap2>[i]'
+are bound,
+\[ 'CompositionMaps( <fusmap>, <powmap1>[i] ) =
+ CompositionMaps( <powmap2>[i], <fusmap> )' \]
+shall hold,
+so <fusmap> occurs in diagrams for all considered elements of
+<powmap1> resp. <powmap2>, and it occurs twice in each diagram.
+
+If a set <fus\_imp> is specified, only those diagrams with
+elements of <fus\_imp> as preimages of <fusmap> are considered.
+
+'TestConsistencyMaps' stores all found improvements in <fusmap> and
+elements of <powmap1> and <powmap2>.
+When an inconsistency occurs, the program immediately returns 'false';
+otherwise 'true' is returned.
+
+'TestConsistencyMaps' stops if no more improvements of <fusmap> are
+possible.
+E.g.\ if <fusmap> was unique from the beginning, the powermaps will not
+be improved.  To transfer powermaps by fusions, use "TransferDiagram"
+'TransferDiagram'.
+
+|    gap> s:= CharTable( "2F4(2)" );; ru:= CharTable( "Ru" );;
+    gap> fus:= InitFusion( s, ru );;
+    gap> permchar:= Sum( Sublist( ru.irreducibles, [ 1, 5, 6 ] ) );;
+    gap> CheckPermChar( s, ru, fus, permchar );; fus;
+    [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20, 
+      [ 25, 26 ], [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ],
+      [ 18, 19 ], [ 25, 26 ], [ 25, 26 ], 27, 27 ]
+    gap> TestConsistencyMaps( s.powermap, fus, ru.powermap );
+    true
+    gap> fus;
+    [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, 15, 16, 18, 20, [ 25, 26 ],
+      [ 25, 26 ], 5, 5, 6, 8, 14, 13, 19, 19, [ 25, 26 ], [ 25, 26 ], 27,
+      27 ]
+    gap> Indeterminateness( fus );
+    16|
+
+'TestConsistencyMaps' is used by "SubgroupFusions" 'SubgroupFusions'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ConsiderTableAutomorphisms}\index{subgroup fusions}
+\index{table automorphisms}
+
+'ConsiderTableAutomorphisms( <parafus>, <tableautomorphisms> )'
+
+improves the parametrized subgroup fusion map <parafus> (see "More about
+Maps and Parametrized Maps")\:\ 
+Let $T$ be the permutation group that has the list <tableautomorphisms> as
+generators, let $T_0$ be the subgroup of $T$ that is maximal with the property
+that $T_0$ operates on the set of fusions contained in <parafus> by
+permutation of images.
+
+'ConsiderTableAutomorphisms' replaces orbits by representatives at suitable
+positions so that afterwards exactly one representative of fusion maps
+(that is contained in <parafus>) in every orbit under the operation of $T_0$
+is contained in <parafus>.
+
+The list of positions where improvements were found is returned.
+
+|    gap> fus:= InitFusion( s, ru );;
+    gap> permchar:= Sum( Sublist( ru.irreducibles, [ 1, 5, 6 ] ) );;
+    gap> CheckPermChar( s, ru, fus, permchar );; fus;
+    [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20, 
+      [ 25, 26 ], [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ],
+      [ 18, 19 ], [ 25, 26 ], [ 25, 26 ], 27, 27 ]
+    gap> ConsiderTableAutomorphisms( fus, ru.automorphisms );
+    [ 16 ]
+    gap> fus;
+    [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, [ 13, 15 ], 16, [ 18, 19 ], 20,
+      25, [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ], [ 18, 19 ],
+      [ 25, 26 ], [ 25, 26 ], 27, 27 ]|
+
+'ConsiderTableAutomorphisms' is used by 'SubgroupFusions' (see
+"SubgroupFusions").  Note that the function 'SubgroupFusions' forms
+orbits of fusion maps under table automorphisms, but it returns all
+possible fusions. If you want to get only orbit representatives, use
+the function 'RepresentativesFusions' (see "RepresentativesFusions").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PowermapsAllowedBySymmetrisations}\index{powermaps}
+
+'PowermapsAllowedBySymmetrisations( <tbl>, <subchars>, <chars>, <pow>,'\\
+|                                   |'<prime>, <parameters> )'
+
+returns a list of (possibly parametrized, see "More about Maps and
+Parametrized Maps") maps <map> which are contained in the parametrized map
+<pow> and which have the property that for all $\chi$ in the list <chars> of
+characters of the character table <tbl>, the symmetrizations
+      \[ \chi^{p-} = 'MinusCharacter( '\chi', <map>, <prime> )' \]
+(see "MinusCharacter") have nonnegative integral scalar products with all
+characters in the list <subchars>.
+
+<parameters> must be a record with fields
+
+'maxlen':\\ an integer that controls the position where branches take place
+
+'contained':\\ a function, usually "ContainedCharacters" or
+               "ContainedPossibleCharacters"; for a symmetrization <minus>,
+               it returns the list 'contained( <tbl>, <subchars>, <minus> )'
+
+'minamb', 'maxamb':\\ two arbitrary objects; <contained> is called only for
+                      symmetrizations <minus> with
+                      \[ 'minamb \< Indeterminateness( <minus> ) \< maxamb' \]
+
+'quick':\\ a boolean; if it is true, the scalar products of
+           uniquely determined symmetrizations are not checked.
+
+<pow> will be improved, i.e.\ is changed by the algorithm.
+
+If there is no character left which allows an immediate improvement but there
+are characters in <chars> with indeterminateness of the symmetrizations bigger
+than '<parameters>.minamb', a branch is necessary. Two kinds of branches may
+occur\:\ If '<parameters>.contained( <tbl>, <subchars>, <minus> )' has
+length at most '<parameters>.maxlen', the union of maps allowed by the
+characters in <minus> is computed; otherwise a suitable class 'c' is taken
+which is significant for some character, and the union of all admissible maps
+with image 'x' on 'c' is computed, where 'x' runs over '<pow>[c]'.
+
+|    # see example in "ConsiderKernels"
+    gap> t := CharTable( "U4(3).4" );;
+    gap> PowermapsAllowedBySymmetrisations(t,t.irreducibles,t.irreducibles,
+    >      pow, 2, rec( maxlen:=10, contained:=ContainedPossibleCharacters,
+    >      minamb:= 2, maxamb:= "infinity", quick:= false ) );
+    [ [ 1, 1, 3, 4, 5, 2, 2, 8, 3, 4, 11, 12, 6, 14, 9, 1, 1, 2, 2, 3, 4,
+          5, 6, 8, 9, 9, 10, 11, 12, 16, 16, 16, 16, 17, 17, 18, 18, 18,
+          18, 20, 20, 20, 20, 22, 22, 24, 24, 25, 26, 28, 28, 29, 29 ] ]
+    gap> t.powermap[2] = last[1];
+    true|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{FusionsAllowedByRestrictions}\index{subgroup fusions}
+
+'FusionsAllowedByRestrictions( <subtbl>, <tbl>, <subchars>, <chars>,'\\
+|                               |'<fus>, <parameters> )'
+
+returns a list of (possibly parametrized, see "More about Maps and
+Parametrized Maps")
+maps <map> which are contained in the parametrized map <fus> and which have
+the property that for all $\chi$ in the list <chars> of characters of the
+character table <tbl>, the restrictions
+      \[ \chi_{<subtbl>} = 'CompositionMaps( '\chi', <fus> )' \]
+(see "CompositionMaps") have nonnegative integral scalar products with all
+characters in the list <subchars>.
+
+<parameters> must be a record with fields
+
+'maxlen':\\ an integer that controls the position where branches take place
+
+'contained':\\ a function, usually "ContainedCharacters" or
+               "ContainedPossibleCharacters"; for a restriction <rest>, it
+               returns the list 'contained( <subtbl>, <subchars>, <rest> )';
+
+'minamb', 'maxamb':\\ two arbitrary objects; <contained> is called only for
+                      restrictions <rest> with
+                      'minamb \< Indeterminateness( <rest> ) \< maxamb';
+
+'quick':\\ a boolean value; if it is true, the scalar products of
+           uniquely determined restrictions are not checked.
+
+<fus> will be improved, i.e.\ is changed by the algorithm.
+
+If there is no character left which allows an immediate improvement but there
+are characters in <chars> with indeterminateness of the restrictions bigger
+than '<parameters>.minamb', a branch is necessary. Two kinds of branches may
+occur\:\ If '<parameters>.contained( <tbl>, <subchars>, <rest> )' has
+length at most '<parameters>.maxlen', the union of maps allowed by the
+characters in <rest> is computed; otherwise a suitable class 'c' is taken
+which is significant for some character, and the union of all admissible maps
+with image 'x' on 'c' is computed, where 'x' runs over '<fus>[c]'.
+
+|    gap> s:= CharTable( "U3(3)" );; t:= CharTable( "J4" );;
+    gap> fus:= InitFusion( s, t );;
+    gap> TestConsistencyMaps( s.powermap, fus, t.powermap );;
+    gap> ConsiderTableAutomorphisms( fus, t.automorphisms );; fus;
+    [ 1, 2, 4, 4, [ 5, 6 ], [ 5, 6 ], [ 5, 6 ], 10, 12, [ 12, 13 ], 
+      [ 14, 15, 16 ], [ 14, 15, 16 ], [ 21, 22 ], [ 21, 22 ] ]
+    gap> FusionsAllowedByRestrictions( s, t, s.irreducibles,
+    >             t.irreducibles, fus, rec( maxlen:= 10,
+    >             contained:= ContainedPossibleCharacters,
+    >             minamb:= 2, maxamb:= "infinity", quick:= false ) );
+    [ [ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ], 
+      [ 1, 2, 4, 4, 6, 6, 6, 10, 12, 13, 15, 15, 22, 22 ], 
+      [ 1, 2, 4, 4, 6, 6, 6, 10, 12, 13, 16, 16, 22, 22 ] ]
+    # cf.\ example in "SubgroupFusions"|
+
+'FusionsAllowedByRestrictions' is used by "SubgroupFusions"
+'SubgroupFusions'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrbitFusions}\index{subgroup fusions}
+\index{table automorphisms}
+
+'OrbitFusions( <subtblautomorphisms>, <fusionmap>, <tblautomorphisms> )'
+
+returns the orbit of the subgroup fusion map <fusionmap> under the operations
+of maximal admissible subgroups of the table automorphism groups of the
+character tables. <subtblautomorphisms> is a list of generators of the
+automorphisms of the subgroup table, <tblautomorphisms> is a list of
+generators of the automorphisms of the supergroup table.
+
+|    gap> s:= CharTable( "U3(3)" );; t:= CharTable( "J4" );;
+    gap> GetFusionMap( s, t );
+    [ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ]
+    gap> OrbitFusions( s.automorphisms, last, t.automorphisms );
+    [ [ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ], 
+      [ 1, 2, 4, 4, 5, 5, 6, 10, 13, 12, 14, 14, 21, 21 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{OrbitPowermaps}\index{powermaps}
+\index{matrix automorphisms}
+
+'OrbitPowermaps( <powermap>, <matautomorphisms> )'
+
+returns the orbit of the powermap <powermap> under the operation of the
+subgroup <matautomorphisms> of the maximal admissible subgroup of the matrix
+automorphisms of the corresponding character table.
+
+|    gap> t:= CharTable( "3.McL" );;
+    gap> maut:= MatAutomorphisms( t.irreducibles, [], Group( () ) );
+    Group( (55,58)(56,59)(57,60)(61,64)(62,65)(63,66), (35,36), (26,29)
+    (27,30)(28,31)(49,52)(50,53)(51,54), (40,43)(41,44)(42,45), ( 2, 3)
+    ( 5, 6)( 8, 9)(12,13)(15,16)(18,19)(21,22)(24,25)(27,28)(30,31)(33,34)
+    (38,39)(41,42)(44,45)(47,48)(50,51)(53,54)(56,57)(59,60)(62,63)
+    (65,66) )
+    gap> OrbitPowermaps( t.powermap[3], maut );
+    [ [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17,
+          4, 4, 4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 8, 9, 37,
+          37, 37, 40, 40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49,
+          49, 14, 14, 14, 14, 14, 14, 37, 37, 37, 37, 37, 37 ], 
+      [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17,
+          4, 4, 4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 9, 8, 37,
+          37, 37, 40, 40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49,
+          49, 14, 14, 14, 14, 14, 14, 37, 37, 37, 37, 37, 37 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RepresentativesFusions}\index{subgroup fusions}
+\index{table automorphisms}
+
+'RepresentativesFusions( <subtblautomorphisms>, <listoffusionmaps>,
+                         <tblautomorphisms> )'\\
+'RepresentativesFusions( <subtbl>, <listoffusionmaps>, <tbl> )'
+
+returns a list of representatives of the list <listoffusionmaps> of subgroup
+fusion maps under the operations of maximal admissible subgroups of the table
+automorphism groups of the character tables. <subtblautomorphisms> is a list
+of generators of the automorphisms of the subgroup table, <tblautomorphisms>
+is a list of generators of the automorphisms of the supergroup table.
+if the parameters <subtbl> and <tbl> (character tables) are used, the values
+of '<subtbl>.automorphisms' and '<subtbl>.automorphisms' will be
+taken.
+
+|    gap> s:= CharTable( "2F4(2)" );; ru:= CharTable( "Ru" );;
+    gap> SubgroupFusions( s, ru );
+    [ [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, 15, 16, 18, 20, 25, 26, 5, 5,
+          6, 8, 14, 13, 19, 19, 26, 25, 27, 27 ], 
+      [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, 15, 16, 18, 20, 26, 25, 5, 5,
+          6, 8, 14, 13, 19, 19, 25, 26, 27, 27 ] ]
+    gap> RepresentativesFusions( s, last, ru );
+    [ [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, 15, 16, 18, 20, 25, 26, 5, 5,
+          6, 8, 14, 13, 19, 19, 26, 25, 27, 27 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{RepresentativesPowermaps}\index{powermaps}%
+\index{matrix automorphisms}
+
+'RepresentativesPowermaps( <listofpowermaps>, <matautomorphisms> )'
+
+returns a list of representatives of the list <listofpowermaps> of powermaps
+under the operation of a subgroup <matautomorphisms> of the maximal
+admissible subgroup of matrix automorphisms of irreducible characters of the
+corresponding character table. 
+
+|    gap> t:= CharTable( "3.McL" );;
+    gap> maut:= MatAutomorphisms( t.irreducibles, [], Group( () ) );
+    Group( (55,58)(56,59)(57,60)(61,64)(62,65)(63,66), (35,36), (26,29)
+    (27,30)(28,31)(49,52)(50,53)(51,54), (40,43)(41,44)(42,45), ( 2, 3)
+    ( 5, 6)( 8, 9)(12,13)(15,16)(18,19)(21,22)(24,25)(27,28)(30,31)(33,34)
+    (38,39)(41,42)(44,45)(47,48)(50,51)(53,54)(56,57)(59,60)(62,63)
+    (65,66) )
+    gap> Powermap( t, 3 );
+    [ [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17,
+          4, 4, 4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 9, 8, 37,
+          37, 37, 40, 40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49,
+          49, 14, 14, 14, 14, 14, 14, 37, 37, 37, 37, 37, 37 ], 
+      [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17,
+          4, 4, 4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 8, 9, 37,
+          37, 37, 40, 40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49,
+          49, 14, 14, 14, 14, 14, 14, 37, 37, 37, 37, 37, 37 ] ]
+    gap> RepresentativesPowermaps( last, maut );
+    [ [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17,
+          4, 4, 4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 8, 9, 37,
+          37, 37, 40, 40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49,
+          49, 14, 14, 14, 14, 14, 14, 37, 37, 37, 37, 37, 37 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Indirected}\index{map!indirection by a}
+
+'Indirected( <char>, <paramap> )'
+
+We have
+\[ 'Indirected( <char>, <paramap> )[i]' = '<char>[ <paramap>[i] ]', \]
+if this value is unique; otherwise it is set unknown (see chapter "Unknowns").
+(For a parametrized indirection, see "CompositionMaps".)
+
+|    gap> m12:= CharTable( "M12" );;
+    gap> fus:= [ 1, 3, 4, [ 6, 7 ], 8, 10, [ 11, 12 ], [ 11, 12 ],
+    >            [ 14, 15 ], [ 14, 15 ] ];;  # parametrized subgroup fusion
+                                             # from $M_{11}$
+    gap> chars:= Sublist( m12.irreducibles, [ 1 .. 6 ] );;
+    gap> List( chars, x -> Indirected( x, fus ) );
+    [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
+      [ 11, 3, 2, Unknown(1), 1, 0, Unknown(2), Unknown(3), 0, 0 ], 
+      [ 11, 3, 2, Unknown(4), 1, 0, Unknown(5), Unknown(6), 0, 0 ], 
+      [ 16, 0, -2, 0, 1, 0, 0, 0, Unknown(7), Unknown(8) ], 
+      [ 16, 0, -2, 0, 1, 0, 0, 0, Unknown(9), Unknown(10) ], 
+      [ 45, -3, 0, 1, 0, 0, -1, -1, 1, 1 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Powmap}
+
+'Powmap( <powermap>, <n> )'\\
+'Powmap( <powermap>, <n>, <class> )'
+
+The first form returns the <n>-th powermap where <powermap> is the powermap of
+a character table (see "Character Table Records").
+If the <n>-th position in <powermap> is bound, this map is returned, otherwise
+it is computed from the (necessarily stored) powermaps of the prime divisors
+of <n>.
+
+The second form returns the image of <class> under the <n>-th powermap;
+for any valid class <class>, we have
+'Powmap( <powermap>, <n> )[ <class> ] = Powmap( <powermap>, <n>, <class> )'.
+
+The entries of <powermap> may be parametrized maps (see "More about Maps
+and Parametrized Maps").
+
+|    gap> t:= CharTable( "3.McL" );;
+    gap> Powmap( t.powermap, 3 );
+    [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17,
+      4, 4, 4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 8, 9, 37, 37, 
+      37, 40, 40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49, 49, 14, 
+      14, 14, 14, 14, 14, 37, 37, 37, 37, 37, 37 ]
+    gap> Powmap( t.powermap, 27 );
+    [ 1, 1, 1, 4, 4, 4, 1, 1, 1, 1, 11, 11, 11, 14, 14, 14, 17, 17, 17, 
+      4, 4, 4, 4, 4, 4, 29, 29, 29, 26, 26, 26, 32, 32, 32, 1, 1, 37, 37, 
+      37, 40, 40, 40, 43, 43, 43, 11, 11, 11, 52, 52, 52, 49, 49, 49, 14, 
+      14, 14, 14, 14, 14, 37, 37, 37, 37, 37, 37 ]
+    gap> Lcm( t.orders ); Powmap( t.powermap, last );
+    27720
+    [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ElementOrdersPowermap}
+
+'ElementOrdersPowermap( <powermap> )'
+
+returns the list of element orders given by the maps in the powermap
+<powermap>.  The entries at positions where the powermaps do not uniquely
+determine the element order are set to unknowns (see chapter "Unknowns").
+
+|    gap> t:= CharTable( "3.J3.2" );; t.powermap;
+    [ , [ 1, 2, 1, 2, 5, 6, 7, 3, 4, 10, 11, 12, 5, 6, 8, 9, 18, 19, 17,
+          10, 11, 12, 13, 14, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 1,
+          3, 7, 8, 8, 13, 18, 19, 17, 23, 23, 28, 30 ], 
+      [ 1, 1, 3, 3, 1, 1, 1, 8, 8, 10, 10, 10, 3, 3, 15, 15, 7, 7, 7, 20,
+          20, 20, 8, 8, 10, 10, 10, 30, 30, 28, 28, 32, 32, 32, 35, 36,
+          35, 38, 39, 36, 37, 37, 37, 38, 38, 47, 46 ],, 
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 2, 13, 14, 15, 16, 19, 17, 18, 
+          3, 4, 4, 23, 24, 5, 6, 6, 30, 31, 28, 29, 32, 34, 33, 35, 36, 
+          37, 38, 39, 40, 43, 41, 42, 44, 45, 47, 46 ],,,,,,,,,,,, 
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 
+          19, 20, 21, 22, 23, 24, 25, 26, 27, 1, 2, 1, 2, 32, 34, 33, 35, 
+          36, 37, 38, 39, 40, 41, 42, 43, 45, 44, 35, 35 ],, 
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 
+          19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 1, 2, 2, 
+          35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47 ] ]
+    gap> ElementOrdersPowermap( last );
+    [ 1, 3, 2, 6, 3, 3, 3, 4, 12, 5, 15, 15, 6, 6, 8, 24, 9, 9, 9, 10, 
+      30, 30, 12, 12, 15, 15, 15, 17, 51, 17, 51, 19, 57, 57, 2, 4, 6, 8, 
+      8, 12, 18, 18, 18, 24, 24, 34, 34 ]
+    gap> Unbind( t.powermap[17] ); ElementOrdersPowermap( t.powermap );
+    [ 1, 3, 2, 6, 3, 3, 3, 4, 12, 5, 15, 15, 6, 6, 8, 24, 9, 9, 9, 10, 
+      30, 30, 12, 12, 15, 15, 15, Unknown(11), Unknown(12), Unknown(13),
+      Unknown(14), 19, 57, 57, 2, 4, 6, 8, 8, 12, 18, 18, 18, 24, 24,
+      Unknown(15), Unknown(16) ]|
+

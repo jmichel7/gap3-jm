@@ -1,0 +1,397 @@
+<html><head><title>GAP3 Manual: 70 The Polycyclic Quotient Algorithm Package</title></head>
+<body bgcolor="ffffff">
+<h1>70 The Polycyclic Quotient Algorithm Package</h1>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+This package is written by  Eddie Lo.  The original program is  available
+for anonymous ftp at  math.rutgers.edu. The program is an  implementation
+of the  Baumslag-Cannonito-Miller  polycyclic quotient algorithm  and  is
+written in C. For more details read <A href="biblio.htm#BCMa"><cite>BCMa</cite></a>,<A href="biblio.htm#BCMb"><cite>BCMb</cite></a>, Section 11.6
+of <A href="biblio.htm#Sims94"><cite>Sims94</cite></a>and <A href="biblio.htm#Lo"><cite>Lo</cite></a>.
+<P>
+This package contains functions to compute the polycyclic quotients which
+appear in the derived series of a finitely presented group.
+<P>
+<DL><DT>Currently, there are five functions implemented in this package:<DD><BR> 
+    <code>CallPCQA</code>            (see <a href="chap070.htm#SECT003">CallPCQA</a>),<BR> 
+    <code>ExtendPCQA</code>          (see <a href="chap070.htm#SECT004">ExtendPCQA</a>),<BR> 
+    <code>AbelianComponent</code>    (see <a href="chap070.htm#SECT005">AbelianComponent</a>),<BR> 
+    <code>HirschLength</code>        (see <a href="chap070.htm#SECT006">HirschLength</a>),<BR> 
+    <code>ModuleAction</code>        (see <a href="chap070.htm#SECT007">ModuleAction</a>).
+</DL><P>
+Eddie Lo <BR> 
+email: hlo@math.rutgers.edu 
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap070.htm#SECT001">Installing the PCQA Package</a>
+<LI> <A HREF="chap070.htm#SECT002">Input format</a>
+<LI> <A HREF="chap070.htm#SECT003">CallPCQA</a>
+<LI> <A HREF="chap070.htm#SECT004">ExtendPCQA</a>
+<LI> <A HREF="chap070.htm#SECT005">AbelianComponent</a>
+<LI> <A HREF="chap070.htm#SECT006">HirschLength</a>
+<LI> <A HREF="chap070.htm#SECT007">ModuleAction</a>
+</ol>
+<A NAME="SECT001"><h2>70.1 Installing the PCQA Package</h2></a>
+<P><P><P>
+The PCQA is  written in C  and the  package can  only  be installed under
+UNIX.  It has  been tested on  SUNs running SunOS and  on IBM PCs running
+FreeBSD 2.1.0.  It requires the  GNU multiple precision arithmetic.  Make
+sure that this library is installed before trying to install the PCQA.
+<P>
+If you  got a complete binary  and source distribution  for your machine,
+nothing   has to  be  done  if you  want  to use  the  PCQA  for a single
+architecture.  If  you want to use  the PCQA  for machines with different
+architectures skip the extraction  and compilation  part of this  section
+and proceed with the creation of shell scripts described below.
+<P>
+If you  got a complete source distribution,  skip the  extraction part of
+this section and proceed with the compilation part below.
+<P>
+In the example we will assume that you, as user <code>gap</code>, are installing the
+PCQA  package for use by several  users on a network  of two SUNs, called
+<code>bert</code> and  <code>tiffy</code>, and a NeXTstation, called   <code>bjerun</code>. We assume that
+<strong>GAP3</strong>  is also  installed on these   machines following the instructions
+given in <a href="chap056.htm#SECT003">Installation of GAP for UNIX</a>.
+<P>
+Note that certain parts  of  the  output  in the examples should  only be
+taken as rough outline, especially file sizes and file dates are <strong>not</strong> to
+be taken literally.
+<P>
+First of all you  have to get the  file  <code>pcqa.zoo</code> (see <a href="chap056.htm#SECT001">Getting  GAP</a>).
+Then you must locate the <strong>GAP3</strong> directories containing <code>lib/</code> and <code>doc/</code>,
+this is usually <code>gap3r4p?</code> where  <code>?</code> is to be  be replaced by the  patch
+level.
+<P>
+<pre>    gap@tiffy:~ > ls -l
+    drwxr-xr-x  11 gap    gap      1024 Nov  8 15:16 gap3r4p3
+    -rw-r--r--   1 gap    gap    106307 Jan 24 15:16 pcqa.zoo </pre>
+<P>
+Unpack the  package using <code>unzoo</code> (see <a href="chap056.htm#SECT003">Installation  of  GAP for UNIX</a>).
+Note that you  must be in the  directory containing <code>gap3r4p?</code>  to unpack
+the  files.   After  you have  unpacked  the source   you  may remove the
+<strong>archive-file</strong>.
+<P>
+<pre>    gap@tiffy:~ > unzoo -x pcqa.zoo
+    gap@tiffy:~ > ls -l gap3r4p3/pkg/pcqa
+    -rw-r--r--   1 gap    gap      3697 Dec 14 15:58 Makefile
+    drwxr-xr-x   2 gap    gap      1024 Dec 14 15:57 bin/
+    drwxr-xr-x   2 gap    gap      1024 Dec 14 16:12 doc/
+    drwxr-xr-x   2 gap    gap      1024 Dec 15 18:28 examples/
+    -rw-r--r--   1 gap    gap     11819 Dec 14 13:31 init.g
+    drwxr-xr-x   2 gap    gap      3072 Dec 14 16:03 src/ </pre>
+<P>
+Switch into the directory <code>src/</code> and type <code>make</code> to compile the PCQA.  If
+the header files for  the GNU multiple  precision arithmetic are <strong>not</strong> in
+<code>/usr/local/include</code> you must set <code>GNUINC</code> to  the correct directory.  If
+the  library  for the     GNU  multiple  precision arithmetic    is <strong>not</strong>
+<code>/usr/local/lib/libgmp.a</code>  you must set  <code>GNULIB</code>.   In our case we first
+compile the SUN version.
+<P>
+<pre>    gap@tiffy:~ > cd gap3r4p3/pkg/pcqa/src
+    gap@tiffy:../src > make GNUINC=/usr/gnu/include \ 
+                            GNULIB=/usr/gnu/lib/libmp.a
+    </pre>#<code> you will see a lot of messages </code>
+<P>
+If you want to use  the PCQA on  multiple architectures you have to  move
+the executable to unique name.
+<P>
+<code>    gap@tiffy:../pcqa > mv bin/pcqa bin/pcqa-sun-sparc-sunos </code>
+<P>
+Now repeat the compilation  for the NeXTstation. <strong>Do not</strong> forget to clean
+up.
+<P>
+<pre>    gap@tiffy:../pcqa > rlogin bjerun
+    gap@bjerun:~ > cd gap3r4p3/pkg/pcqa/src
+    gap@bjerun:../src > make clean
+    gap@bjerun:../src > make
+    </pre>#<pre> you will see a lot of messages
+    gap@bjerun:../src > mv bin/pcqa ../bin/pcqa-next-m68k-mach
+    gap@bjerun:../src > exit
+    gap@tiffy:../src > </pre>
+<P>
+Switch into the  subdirectory <code>bin/</code> and  create a script which will call
+the correct binary for each machine.  A skeleton shell script is provided
+in <code>bin/pcqa.sh</code>.
+<P>
+<pre>    gap@tiffy:../src > cd ..
+    gap@tiffy:../pcqa > cat bin/pcqa.sh
+    </pre>#<pre>!/bin/csh
+    switch ( `hostname` )
+      case 'bert':
+      case 'tiffy':
+        exec $0-dec-mips-ultrix $* ;
+        breaksw ;
+      case 'bjerun':
+        exec $0-next-m68k-mach $* ;
+        breaksw ;
+      default:
+        echo "pcqa: sorry, no executable exists for this machine" ;
+        breaksw ;
+    endsw
+    </pre><var>ctr</var>-<code>D</code><pre>
+    gap@tiffy:../pcqa > chmod 755 bin/pcqa</pre>
+<P>
+Now it is time to test the package.
+<P>
+<pre>    gap> RequirePackage("pcqa");
+    gap> f := FreeGroup(2);
+    Group( f.1, f.2 )
+    gap> g := f/[f.1*f.2*f.1*f.2^-1*f.1^-1*f.2^-1];;
+    gap> ds := CallPCQA( g, 2 );
+    rec(
+      isDerivedSeries := true,
+      DerivedLength := 2,
+      QuotientStatus := 0,
+      PolycyclicPresentation := rec(
+	  Generators := 3,
+	  ExponentList := [ 0, 0, 0 ],
+	  ppRelations := [ [ [ 0, 1, -1 ], [ 0, 1, 0 ] ],
+	                   [ [ 0, 0, 1 ] ] ],
+	  pnRelations := [ [ [ 0, -1, 1 ], [ 0, -1, 0 ] ],
+	                   [ [ 0, 0, -1 ] ] ],
+	  npRelations := [ [ [ 0, 0, 1 ], [ 0, -1, 1 ] ],
+	                   [ [ 0, 0, 1 ] ] ],
+	  nnRelations := [ [ [ 0, 0, -1 ], [ 0, 1, -1 ] ],
+	                   [ [ 0, 0, -1 ] ] ],
+	  PowerRelations := [  ] ),
+      Homomorphisms := rec(
+	  Epimorphism := [ [ 1, 1, 0 ], [ 1, 0, 0 ] ],
+	  InverseMap := [ [ [ 2, 1 ] ], [ [ 3, -1 ], [ 1, 1 ] ],
+	                  [ [ 1, 1 ], [ 3, -1 ] ] ] ),
+      MembershipArray := [ 1, 3 ] )
+    gap> ExtendPCQA( g, ds.PolycyclicPresentation, ds.Homomorphisms );
+    rec(
+        QuotientStatus := 5 ) </pre>
+<P><A NAME="SECT002"><h2>70.2 Input format</h2></a>
+<P><P><P>
+This package uses the finitely presented group data structure  defined in
+GAP (see <strong>Finitely Presented Groups</strong>). It also defines and uses two types
+of  data structures.  One data structure defines a  consistent polycyclic
+presentation of a  polycyclic group and the other defines a  homomorphism
+and an inverse map between the finitely presented group and its quotient.
+<P><A NAME="SECT003"><h2>70.3 CallPCQA</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>CallPCQA( <var>G, n</var> )</code>
+<P>
+This  function attempts to compute the   quotient of a finitely presented
+group <I>G</I> by  the <I>n+1</I>-st term of its  derived series.  A record made up
+of   four   fields   is  returned.     The    fields are <strong>DerivedLength</strong>,
+<strong>QuotientStatus</strong> , <strong>PolycyclicPresentation</strong> and <strong>Homomorphisms</strong> .  If the
+quotient is not polycyclic then the field  <strong>QuotientStatus</strong> will return a
+positive number.    The group element represented   by the module element
+with that positive  number generates normally  a subgroup which cannot be
+finitely generated.  In this  case the field <strong>DerivedLength</strong> will  denote
+the  biggest integer <I>k</I> such  that the quotient of   <I>G</I> by the <I>k+1</I>-st
+term in the derived  series  is polycyclic.  The appropriate   polycyclic
+presentation  and maps will be   returned. If the field  <strong>QuotientStatus</strong>
+returns -1, then for some number <I>k &lt; n</I>, the <I>k</I>-th term of the derived
+series is  the same as  the <I>k+1</I>-st term of  the derived  series. In the
+remaining case <strong>QuotientStatus</strong> returns 0.
+<P>
+The  field <strong>PolycyclicPresentation</strong> is a  record made up of seven fields.
+The various conjugacy relations are stored in  the fields <strong>ppRelations</strong> ,
+<strong>pnRelations</strong>, <strong>npRelations</strong> and <strong>nnRelations</strong>. Each of these four fields
+is  an array of  exponent  sequences which correspond  to the appropriate
+left sides of the conjugacy relations .  If <I>a<sub>1</sub>,a<sub>2</sub>,...,a<sub>n</sub></I> denotes the
+polycyclic  generators  and <I>A<sub>1</sub>,A<sub>2</sub>,...,A<sub>n</sub></I>  their respective inverses,
+then the field <strong>ppRelations</strong> stores the relations of the form <I>a<sub>j</sub><sup>a<sub>i</sub></sup></I>
+with  <I>i  &lt;  j</I>, <strong>pnRelations</strong>     stores  the relations  of  the   form
+<I>A<sub>j</sub><sup>a<sub>i</sub></sup></I>, <strong>npRelations</strong> stores the  relations of the form  <I>a<sub>j</sub><sup>A<sub>i</sub></sup></I>
+and  <strong>nnRelations</strong> stores  the relations  of  the form  <I>A<sub>j</sub><sup>A<sub>i</sub></sup></I>.  The
+positive  and negative power relations  are  stored together similarly in
+the field <strong>PowerRelations</strong>.  The field <strong>Generators</strong> denotes the number of
+polycyclic  generators in the presentation  and  the field <strong>ExponentList</strong>
+contains the exponent   of the power  relations.   If there  is no  power
+relation  involving a  generator,then   the  corresponding entry  in  the
+<strong>ExponentList</strong> is equal to 0.
+<P>
+The field  <strong>Homomorphisms</strong> consists of a  homomorphism from the  finitely
+presented group to the polycyclic group and an inverse map backward.  The
+field  <strong>Epimorphism</strong>  stores the image of the generators of the  finitely
+presented group as exponent sequences of the polycyclic group . The field
+<strong>InverseMap</strong> stores a preimage of the polycyclic generators as a  word in
+the finitely presented group.
+<P>
+<pre>
+    gap> F := FreeGroup(2);
+    Group( f.1, f.2 )
+    gap> G := F/[F.1*F.2*F.1*F.2^-1*F.1^-1*F.2^-1];
+    Group( f.1, f.2 )
+    gap> ans := CallPCQA(G,2);
+    rec(
+      DerivedLength := 2,
+      QuotientStatus := 0,
+      PolycyclicPresentation := rec(
+          Generators := 3,
+          ExponentList := [ 0, 0, 0 ],
+          ppRelations := [ [ [ 0, 1, -1 ], [ 0, 1, 0 ] ],
+	                   [ [ 0, 0, 1 ] ] ],
+          pnRelations := [ [ [ 0, -1, 1 ], [ 0, -1, 0 ] ],
+	                   [ [ 0, 0, -1 ] ] ],
+          npRelations := [ [ [ 0, 0, 1 ], [ 0, -1, 1 ] ],
+	                   [ [ 0, 0, 1 ] ] ],
+          nnRelations := [ [ [ 0, 0, -1 ], [ 0, 1, -1 ] ],
+	                   [ [ 0, 0, -1 ] ] ],
+          PowerRelations := [  ] ),
+      Homomorphisms := rec(
+          Epimorphism := [ [ 1, 1, 0 ], [ 1, 0, 0 ] ],
+          InverseMap := [ [ [ 2, 1 ] ], [ [ 3, -1 ], [ 1, 1 ] ],
+	                  [ [ 1, 1 ], [ 3, -1 ] ] ] ),
+      MembershipArray := [ 1, 3 ] )
+</pre>
+<P><A NAME="SECT004"><h2>70.4 ExtendPCQA</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>ExtendPCQA( <var>G, CPP, HOM, m, n</var> )</code>
+<P>
+This function takes as input a finitely presented group <I>G</I>, a consistent
+polycyclic presentation <I>CPP</I> (<a href="chap070.htm#SECT003">CallPCQA</a>) of a polycyclic quotient <I>G/N</I>
+of <I>G</I>, an epimorphism and an inverse map as in the field <strong>Homomorphisms</strong>
+in <a href="chap070.htm#SECT003">CallPCQA</a>. It determines whether the quotient <I>G/[N,N]</I> is polycyclic
+and  returns the flag <strong>QuotientStatus</strong> . It also  returns the  polycyclic
+presentation and the appropriate homomorphism and map if the quotient  is
+polycyclic.
+<P>
+When the parameter <I>m</I> is a positive number the quotient  <I>G/[N,N]N<sup>m</sup></I> is
+computed.  When it is a negative number,  and if <I>K/[N,N]</I> is the torsion
+part of <I>N/[N,N]</I>, then the quotient <I>G/[N,N]K</I> is computed.  The default
+case is when <I>m = 0</I>.  If there are only  three arguments in the function
+call, <I>m</I> will be taken to be zero.
+<P>
+When the parameter  <I>n</I> is a nonzero number,  the quotient  <I>G/[N,G]</I>  is
+computed instead.  Otherwise the quotient <I>G/[N,N]</I> is computed.  If this
+argument is not assigned by the user,  then <I>n</I> is set to zero. Different
+combinations of  <I>m</I> and  <I>n</I> give different quotients. For example, when
+<strong>ExtendPCQA</strong> is called with <I>m = 6</I> and <I>n = 1</I>,the quotient <I>G/[N,G]N<sup>6</sup></I>
+is computed.
+<P>
+<pre>
+    gap> ExtendPCQA(G,ans.PolycyclicPresentation,ans.Homomorphisms);
+    rec(
+       QuotientStatus := 5 )
+    gap> ExtendPCQA(G,ans.PolycyclicPresentation,ans.Homomorphisms,6,1);
+    rec(
+      QuotientStatus := 0,
+      PolycyclicPresentation := rec(
+        Generators := 4,
+        ExponentList := [ 0, 0, 0, 6 ],
+        ppRelations := [ [[ 0, 1, -1, 0 ],[ 0, 1, 0, 0 ],[ 0, 0, 0, 1 ]],
+                         [[ 0, 0, 1, 1 ],[ 0, 0, 0, 1 ]],
+                         [[ 0, 0, 0, 1 ]] ],
+        pnRelations := [ [[ 0, -1, 1, 5 ],[ 0, -1, 0, 0 ],[ 0, 0, 0, 5]],
+                         [[ 0, 0, -1, 5 ],[ 0, 0, 0, 5 ]],
+                         [[ 0, 0, 0, 5 ]] ],
+        npRelations := [ [[ 0, 0, 1, 0 ],[ 0, -1, 1, 0 ],[ 0, 0, 0, 1 ]],
+                         [[ 0, 0, 1, 5 ],[ 0, 0, 0, 1 ]],
+                         [[ 0, 0, 0, 1 ]] ],
+        nnRelations := [ [[ 0, 0, -1, 0 ],[ 0, 1, -1, 5 ],[ 0, 0, 0, 5]],
+                         [[ 0, 0, -1, 1 ],[ 0, 0, 0, 5 ]],
+                         [[ 0, 0, 0, 5 ]] ],
+        PowerRelations := [ ,,,,,, [ 0, 0, 0, 0 ], [ 0, 0, 0, 5 ] ] ),
+      Homomorphisms := rec(
+        Epimorphism := [ [ 1, 1, 0, 0 ], [ 1, 0, 0, 0 ] ],
+        InverseMap :=
+          [ [[ 2, 1 ]], [[ 3, -1 ],[ 1, 1 ]], [[ 1, 1 ],[ 3, -1 ]],
+            [[ 5, -1 ],[ 4, -1 ],[ 5, 1 ],[ 4, 1 ]] ] ),
+      Next := 4 )
+</pre>
+<P><A NAME="SECT005"><h2>70.5 AbelianComponent</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>AbelianComponent( <var>QUOT</var> )</code>
+<P>
+This function  takes  as input the output of a  <strong>CallPCQA</strong>  function call
+(see <a href="chap070.htm#SECT003">CallPCQA</a>) or an  <strong>ExtendPCQA</strong> function call (see <a href="chap070.htm#SECT004">ExtendPCQA</a>) and
+returns the structure of the abelian groups  which appear as quotients in
+the derived series.  The structure of each of these quotients is given by
+an array of nonnegative integers.Read the section on <strong>ElementaryDivisors</strong>
+for details.
+<P>
+<pre>
+    gap> F := FreeGroup(3);
+    Group( f.1, f.2, f.3 )
+    gap> G := F/[F.1*F.2*F.1*F.2,F.2*F.3^2*F.2*F.3,F.3^6];
+    Group( f.1, f.2, f.3 )
+    gap> quot := CallPCQA(G,2);;
+    gap> AbelianComponent(quot);
+    [ [ 1, 2, 12 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
+</pre>
+<P><A NAME="SECT006"><h2>70.6 HirschLength</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>HirschLength( <var>CPP</var> )</code>
+<P>
+This function takes as  input a  consistent polycyclic presentation  (see
+<a href="chap070.htm#SECT003">CallPCQA</a>) and returns the Hirsch length of the group presented.
+<P>
+<pre>
+    gap> HirschLength(quot.PolycyclicPresentation);
+    11
+</pre>
+<P><A NAME="SECT007"><h2>70.7 ModuleAction</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>ModuleAction( <var>QUOT</var> )</code>
+<P>
+This function  takes as input the   output of a <strong>CallPCQA</strong>  function call
+(see <a href="chap070.htm#SECT003">CallPCQA</a>) or an <strong>ExtendPCQA</strong> function call (see <a href="chap070.htm#SECT004">ExtendPCQA</a>).  If
+the quotient <I>G/[N,N]</I>  returned by the function  call is polycyclic then
+<strong>ModuleAction</strong>   computes the  action    of  the  polycyclic   generators
+corresponding to <I>G/N</I> on  the polycyclic generators  of <I>N/[N,N]</I>.   The
+result is returned as an array of matrices.  Notice that the Smith normal
+form of  <I>G/[N,N]</I> is returned by the  function <strong>CallPCQA</strong> as part of the
+polycyclic presentation.
+<P>
+<pre>
+gap> ModuleAction(quot);
+[ [ [ 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0 ],
+    [ 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0 ], 
+    [ 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0 ], 
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0 ], 
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1 ], 
+    [ 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0 ], 
+    [ 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0 ], 
+    [ 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ], 
+    [ 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+    [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
+  [ [ -1, 0, -1, -1, -1, 0, 0, 0, 0, 0, 0 ], 
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
+    [ 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1 ], 
+    [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ],
+    [ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+    [ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ], 
+    [ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ] ], 
+  [ [ 1, -1, 0, 0, 0, 0, 0, 0, 0, 1, 0 ], 
+    [ 0, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0 ], 
+    [ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ], 
+    [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ], 
+    [ 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1 ], 
+    [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ], 
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 ] ] ]
+</pre>
+<P><a href ="chap069.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap071.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

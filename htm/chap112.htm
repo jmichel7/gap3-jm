@@ -1,0 +1,527 @@
+<html><head><title>GAP3 Manual: 112 The VKCURVE functions</title></head>
+<body bgcolor="ffffff">
+<h1>112 The VKCURVE functions</h1>
+<P><P><P>
+We document here the various functions which are used in Van Kampen' s
+algorithm as described in the introduction.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap112.htm#SECT001">Discy</a>
+<LI> <A HREF="chap112.htm#SECT002">ResultantMat</a>
+<LI> <A HREF="chap112.htm#SECT003">NewtonRoot</a>
+<LI> <A HREF="chap112.htm#SECT004">SeparateRootsInitialGuess</a>
+<LI> <A HREF="chap112.htm#SECT005">SeparateRoots</a>
+<LI> <A HREF="chap112.htm#SECT006">LoopsAroundPunctures</a>
+<LI> <A HREF="chap112.htm#SECT007">FollowMonodromy</a>
+<LI> <A HREF="chap112.htm#SECT008">ApproxFollowMonodromy</a>
+<LI> <A HREF="chap112.htm#SECT009">LBraidToWord</a>
+<LI> <A HREF="chap112.htm#SECT010">BnActsOnFn</a>
+<LI> <A HREF="chap112.htm#SECT011">VKQuotient</a>
+<LI> <A HREF="chap112.htm#SECT012">Display for presentations</a>
+<LI> <A HREF="chap112.htm#SECT013">ShrinkPresentation</a>
+</ol>
+<A NAME="SECT001"><h2>112.1 Discy</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>Discy( <var>Mvp p</var> )</code>
+<P>
+The input should be an <code>Mvp</code> in <code>x</code> and <code>y</code>, with rational coefficients.
+The  function  returns the  discriminant  of  <var>p</var>  with respect  to  <code>x</code>
+(an  <code>Mvp</code> in  <code>y</code>);  it uses  interpolation to  reduce  the problem  to
+discriminants of univariate polynomials,  and works reasonably fast (not
+hundreds of times slower than MAPLE...).
+<P>
+<pre>    gap> Discy(x+y^2+x^3+y^3);      
+    4+27y^4+54y^5+27y^6</pre>
+<P><A NAME="SECT002"><h2>112.2 ResultantMat</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>ResultantMat( <var>v</var>, <var>w</var> )</code>
+<P>
+<var>v</var> and  <var>w</var> are vectors  representing coefficients of  two polynomials.
+The function returns  Sylvester matrix for these  two polynomials (whose
+determinant  is  the resultant  of  the  two  polynomials). It  is  used
+internally by Discy.
+<P>
+<pre>    gap>  p:=x+y^2+x^3+y^3; 
+    x+y^2+x^3+y^3
+    gap>  c:=Coefficients(p,"x");
+    [ y^2+y^3, 1, 0, 1 ]
+    gap> PrintArray(ResultantMat(c,Derivative(c)));
+    [[      1,       0,       1, y^2+y^3,       0],
+     [      0,       1,       0,       1, y^2+y^3],
+     [      3,       0,       1,       0,       0],
+     [      0,       3,       0,       1,       0],
+     [      0,       0,       3,       0,       1]]
+    gap> DeterminantMat(ResultantMat(c,Derivative(c)));
+    4+27y^4+54y^5+27y^6</pre>
+<P><A NAME="SECT003"><h2>112.3 NewtonRoot</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<P>
+<code>NewtonRoot(<var>p</var>,<var>initial</var>,<var>precision</var>)</code>
+<P>
+Here  <var>p</var> is a list of <code>Complex</code> rationals representing the coefficients of
+a  polynomial. The function computes a  complex rational approximation to a
+root of <var>p</var>, guaranteed of distance closer than <var>precision</var> (a rational) to
+an  actual root. The first approximation used is <var>initial</var>. If <var>initial</var> is
+in  the  attraction  basin  of  a  root  of  <var>p</var>,  the  one approximated. A
+possibility  is that  the Newton  method starting  from <var>initial</var>  does not
+converge  (the  number  of  iterations  after  which  this  is  decided  is
+controlled  by  <code>VKCURVE.NewtonLim</code>);  then  the  function returns <code>false</code>.
+Otherwise  the function returns  a pair: the  approximation found, and an
+upper  bound of the distance between that approximation and an actual root.
+The  upper  bound  returned  is  a  power  of  10,  and  the  approximation
+denominator'  s  is  rounded  to  a  power  of  10,  in  order  to  return
+smaller-sized  rational result as much as  possible. The point of returning
+an upper bound is that it is usually better than the asked-for <var>precision</var>.
+For the precision estimate a good reference is <A href="biblio.htm#HSS01"><cite>HSS01</cite></a>.
+<P>
+<pre>    gap> p:=List([1,0,1],Complex); # p=x\^2+1
+    [ 1, 0, 1 ]
+    gap> NewtonRoot(p,Complex(1,1),10^-7);  
+    [ I, 1/1000000000 ]
+    # obtained precision is actually 10\^-9
+    gap> NewtonRoot(p,Complex(1),10^-7); 
+    false
+    # here Newton does not converge
+    </pre>
+<P><A NAME="SECT004"><h2>112.4 SeparateRootsInitialGuess</h2></a>
+<P><P>
+<A name = "I3"></a>
+
+<P>
+<code>SeparateRootsInitialGuess(<var>p</var>, <var>v</var>, <var>safety</var>)</code>
+<P>
+Here <var>p</var> is a list of complex rationals representing the coefficients of
+a polynomial, and <var>v</var> is a list  of approximations to roots of <var>p</var> which
+should lie  in different  attraction basins for  Newton' s  method. The
+result is a list <var>l</var> of complex rationals representing approximations to
+the roots of  <var>p</var> (each element of  <var>l</var> is the root  in whose attraction
+basin the  corresponding element of <var>v</var>  lies), such that if  <var>d</var> is the
+minimum distance  between two elements of  <var>l</var>, then there is  a root of
+<var>p</var>  within radius  <var>d</var>/(2*<var>safety</var>) of  any element  of <var>l</var>.  When the
+elements of  <var>v</var> do  not lie  in different  attraction basins  (which is
+necessarily the case if <var>p</var> has multiple roots), <code>false</code> is returned.
+<P>
+<pre>    gap> p:=List([1,0,1],Complex);
+    [ 1, 0, 1 ]
+    gap> SeparateRootsInitialGuess(p,[Complex(1,1),Complex(1,-1)],100);
+    [ I, -I ]
+    gap> SeparateRootsInitialGuess(p,[Complex(1,1),Complex(2,1)],100);
+    false # 1+I and 2+I not in different attraction basins</pre>
+<P><A NAME="SECT005"><h2>112.5 SeparateRoots</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>SeparateRoots(<var>p</var>, <var>safety</var>)</code>
+<P>
+Here  <var>p</var>  is  a univariate  <code>Mvp</code>  with  rational  or  complex  rational
+coefficients, or a  vector of rationals or  complex rationals describing
+the  coefficients of  such a  polynomial. The  result is  a list  <var>l</var> of
+complex rationals representing approximations to  the roots of <var>p</var>, such
+that if  <var>d</var> is the minimum  distance between two elements  of <var>l</var>, then
+there is a root of <var>p</var> within radius <var>d</var>/(2*<var>safety</var>) of any element of
+<var>l</var>. This  is not possible  when <var>p</var> has  multiple roots, in  which case
+<code>false</code> is returned.
+<P>
+<pre>    gap> SeparateRoots(x^2+1,100);
+    [ I, -I ]
+    gap> SeparateRoots((x-1)^2,100);
+    false
+    gap> SeparateRoots(x^3-1,100);  
+    [ -1/2-108253175473/125000000000I, 1, -1/2+108253175473/125000000000I]</pre>
+<P><A NAME="SECT006"><h2>112.6 LoopsAroundPunctures</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>LoopsAroundPunctures(<var>points</var>)</code>
+<P>
+The input is  a list of complex rational numbers.  The function computes
+piecewise-linear loops representing generators  of the fundamental group
+of the complement of <var>points</var> in the complex line.
+<P>
+<pre>    gap> LoopsAroundPunctures([Complex(0,0)]);
+    rec(
+      points := [ -I, -1, 1, I ],
+      segments := [ [ 1, 2 ], [ 1, 3 ], [ 2, 4 ], [ 3, 4 ] ],
+      loops := [ [ 4, -3, -1, 2 ] ] )</pre>
+<P>
+The output is a record with  three fields. The field <code>points</code> contains a
+list of complex  rational numbers. The field <code>segments</code>  contains a list
+of oriented segments, each of them  encoded by the list of the positions
+in <code>points</code> of  its two endpoints. The field <code>loops</code>  contains a list of
+list of  integers. Each list  of integers represents a  piecewise linear
+loop, obtained  by concatenating the  elements of <code>segments</code>  indexed by
+the integers (a negative integer is used when the opposed orientation of
+the segment has to be taken).
+<P><A NAME="SECT007"><h2>112.7 FollowMonodromy</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>FollowMonodromy(<var>r</var>,<var>segno</var>,<var>print</var>)</code>
+<P>
+This function computes the monodromy braid  of the solution in <I>x</I> of an
+equation  <I>P(x,y)=0</I>  along  a  segment <I>[y<sub>0</sub>,y<sub>1</sub>]</I>.  It  is  called  by
+<code>FundamentalGroup</code>, once for each of the segments. The first argument is
+a global record, similar to  the one produced by <code>FundamentalGroup</code> (see
+the  documentation of  this function)  but only  containing intermediate
+information.  The second  argument is  the  position of  the segment  in
+<code>r.segments</code>. The third argument is  a print function, determined by the
+printlevel  set by  the user  (typically, by  calling <code>FundamentalGroup</code>
+with a second argument).
+<P>
+The function returns an element of the ambient braid group <code>r.B</code>.
+<P>
+This function has no reason to be  called directly by the user, so we do
+not illustrate its  behavior. Instead, we explain what  is displayed on
+screen when the user sets the printlevel to <I>2</I>.
+<P>
+What is quoted below is an excerpt of what is displayed on screen
+during the execution of
+<pre>    gap>  FundamentalGroup((x+3*y)*(x+y-1)*(x-y),2);
+
+    &lt;1/16>    1 time=          0   ?2?1?3
+    &lt;1/16>    2 time=      0.125   R2. ?3
+    &lt;1/16>    3 time=    0.28125   R2. ?2
+    &lt;1/16>    4 time=   0.453125   ?2R1?2
+    &lt;1/16>    5 time=   0.578125   R1. ?2
+    ======================================
+    =    Nontrivial braiding = 2         =
+    ======================================
+    &lt;1/16>    6 time=   0.734375   R1. ?1
+    &lt;1/16>    7 time=    0.84375   . ?0. 
+    &lt;1/16>    8 time=   0.859375   ?1R0?1
+    # The following braid was computed by FollowMonodromy in 8 steps.
+    monodromy[1]:=B(2);
+    # segment 1/16 Time=0.1sec</pre>
+<P>
+<code>FollowMonodromy</code> computes  its results by subdividing  the segment into
+smaller  subsegments  on which  the  approximations  are controlled.  It
+starts at one  end and moves subsegment after subsegment.  A new line is
+displayed at each step.
+<P>
+The  first column  indicates which  segment is  studied. In  the example
+above, the function  is computing the monodromy along  the first segment
+(out  of  <I>16</I>).  This  gives  a  rough  indication  of  the  time  left
+before  completion of  the total  procedure.  The second  column is  the
+number of  iterations so  far (number of  subsegments). In  our example,
+<code>FollowMonodromy</code>  had to  cut the  segment into  <I>8</I> subsegments.  Each
+subsegment has its own length. The cumulative length at a given step, as
+a  fraction of  the  total length  of the  segment,  is displayed  after
+<code>time=</code>.  This  gives  a  rough  indication  of  the  time  left  before
+completion  of the  computation of  the monodromy  of this  segment. The
+segment is completed when this fraction reaches <I>1</I>.
+<P>
+The last column has to do with the piecewise-linear approximation of the
+geometric monodromy  braid. It is  subdivided into sub-columns  for each
+string. In  the example above,  there are  three strings. At  each step,
+some strings are fixed (they are  indicated by <code>. </code> in the corresponding
+column). A symbol like <code>R5</code> or <code>?3</code> indicates that the string is moving.
+The exact meaning of the symbol has to do with the complexity of certain
+sub-computations.
+<P>
+As  some strings  are moving,  it  happens that  their real  projections
+cross. When such a crossing occurs, it is detected and the corresponding
+element of <I>B<sub>n</sub></I> is displayed on screen (<code>Nontrivial braiding =</code>...) The
+monodromy braid is the product of these elements of <I>B<sub>n</sub></I>, multiplied in
+the order in which they occur.
+<P><A NAME="SECT008"><h2>112.8 ApproxFollowMonodromy</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>ApproxFollowMonodromy(<var>r</var>,<var>segno</var>,<var>pr</var>)</code>
+<P>
+This function  computes an approximation  of the monodromy braid  of the
+solution in <I>x</I>  of an equation <I>P(x,y)=0</I> along  a segment <I>[y<sub>0</sub>,y<sub>1</sub>]</I>.
+It is called  by <code>FundamentalGroup</code>, once for each of  the segments. The
+first  argument is  a  global record,  similar to  the  one produced  by
+<code>FundamentalGroup</code>  (see the  documentation of  this function)  but only
+containing intermediate information. The second argument is the position
+of the segment in <code>r.segments</code>. The  third argument is a print function,
+determined  by the  printlevel set  by the  user (typically,  by calling
+<code>FundamentalGroup</code> with a second argument).
+<P>
+Contrary to <code>FollowMonodromy</code>,  <code>ApproxFollowMonodromy</code> does not control
+the approximations; it just uses a  heuristic for how much to move along
+the segment  between linear braid  computations, and this  heuristic may
+possibly fail. However,  we have not yet found an  example for which the
+result is actually incorrect, and thus the existence is justified by the
+fact that  for some difficult  computations, it is sometimes  many times
+faster  than <code>FollowMonodromy</code>.  We illustrate  its typical  output when
+<var>printlevel</var> is 2.
+<P>
+<pre>   VKCURVE.monodromyApprox:=true;
+    FundamentalGroup((x+3*y)*(x+y-1)*(x-y),2);</pre>
+<P>
+  ....
+<P>
+<pre>    5.3.6. ***rejected
+    4.3.6.&lt;15/16>mindist=3 step=1/2 total=0 logdisc=1 ***rejected
+    3.3.4.&lt;15/16>mindist=3 step=1/4 total=0 logdisc=1 ***rejected
+    3.3.4.&lt;15/16>mindist=3 step=1/8 total=0 logdisc=1 ***rejected
+    3.3.3.&lt;15/16>mindist=3 step=1/16 total=0 logdisc=1
+    3.2.3.&lt;15/16>mindist=2.92 step=1/16 total=1/16 logdisc=1
+    3.3.3.&lt;15/16>mindist=2.83 step=1/16 total=1/8 logdisc=1
+    3.2.3.&lt;15/16>mindist=2.75 step=1/16 total=3/16 logdisc=1
+    3.3.3.&lt;15/16>mindist=2.67 step=1/16 total=1/4 logdisc=1
+    ======================================
+    =    Nontrivial braiding = 2         =
+    ======================================
+    3.2.3.&lt;15/16>mindist=2.63 step=1/16 total=5/16 logdisc=1
+    3.2.3.&lt;15/16>mindist=2.75 step=1/16 total=3/8 logdisc=1
+    3.3.3.&lt;15/16>mindist=2.88 step=1/16 total=7/16 logdisc=1
+    3.2.3.&lt;15/16>mindist=3 step=1/16 total=1/2 logdisc=1
+    3.3.3.&lt;15/16>mindist=3.13 step=1/16 total=9/16 logdisc=1
+    3.2.3.&lt;15/16>mindist=3.25 step=1/16 total=5/8 logdisc=1
+    3.3.3.&lt;15/16>mindist=3.38 step=1/16 total=11/16 logdisc=1
+    3.2.3.&lt;15/16>mindist=3.5 step=1/16 total=3/4 logdisc=1
+    3.2.3.&lt;15/16>mindist=3.63 step=1/16 total=13/16 logdisc=1
+    3.2.3.&lt;15/16>mindist=3.75 step=1/16 total=7/8 logdisc=1
+    3.2.3.&lt;15/16>mindist=3.88 step=1/16 total=15/16 logdisc=1 ***up
+    # Monodromy error=0
+    # Minimal distance=2.625
+    # Minimal step=1/16=-0.05208125+0.01041875I
+    # Adaptivity=10
+    monodromy[15]:=B(2);
+    # segment 15/16 Time=0.2sec</pre>
+<P>
+Here at each  step the following information is  displayed: first, how
+many iterations of  the Newton method were necessary to  compute each of
+the 3  roots of the current  polynomial <I>f(x,y<sub>0</sub>)</I> if we  are looking at
+the point <I>y<sub>0</sub></I> of the segment.  Then, which segment we are dealing with
+(here the  15th of  16 in  all). Then the  minimum distance  between two
+roots of  <I>f(x,y<sub>0</sub>)</I> (used in our  heuristic). Then the current  step in
+fractions of the length of the segment  we are looking at, and the total
+fraction of the segment we have  done. Finally, the decimal logarithm of
+the absolute  value of the discriminant  at the current point  (used in
+the heuristic). Finally, an indication if the heuristic predicts that we
+should  halve the  step  (<code>***rejected</code>)  or that  we  may double  it
+(<code>***up</code>).
+<P>
+The function returns an element of the ambient braid group <code>r.B</code>.
+<P><A NAME="SECT009"><h2>112.9 LBraidToWord</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>LBraidToWord(<var>v1</var>,<var>v2</var>,<var>B</var>)</code>
+<P>
+This function converts  the linear braid given by <var>v1</var>  and <var>v2</var> into an
+element of the braid group <var>B</var>.
+<P>
+<pre>    gap> B:=Braid(CoxeterGroupSymmetricGroup(3)); 
+    function ( arg ) ... end
+    gap> i:=Complex(0,1);
+    I
+    gap> LBraidToWord([1+i,2+i,3+i],[2+i,1+2*i,4-6*i],B);
+    1</pre>
+<P>
+The  list <var>v1</var> and <var>v2</var> must have the same length, say <I>n</I>. The braid group
+<var>B</var>   should  be  the   braid  group  on   <I>n</I>  strings,  in  its  <strong>CHEVIE</strong> 
+implementation.  The elements of  <var>v1</var> (resp. <var>v2</var>)  should be <I>n</I> distinct
+complex  rational  numbers.  We  use  the  Brieskorn  basepoint, namely the
+contractible  set  <I>C+iV<sub>&#x211D;</sub></I>  where  <I>C</I>  is  a real chamber; therefore the
+endpoints need not be equal (hence, if the path is indeed a loop, the final
+endpoint must be given). The linear braid considered is the one with affine
+strings  connecting each point in <var>v1</var>  to the corresponding point in <var>v2</var>.
+These strings should be non-crossing. When the numbers in <var>v1</var> (resp. <var>v2</var>)
+have  distinct real parts, the  real picture of the  braid defines a unique
+element  of <var>B</var>. When some real parts are equal, we apply a lexicographical
+desingularization,  corresponding  to  a  rotation  of  <var>v1</var> and <var>v2</var> by an
+arbitrary small positive angle.
+<P><A NAME="SECT010"><h2>112.10 BnActsOnFn</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code>BnActsOnFn(<var>braid b</var>,<var>Free group F</var>)</code>
+<P>
+This function  implements the Hurwitz action  of the braid group  on <I>n</I>
+strings  on  the  free  group  on <I>n</I>  generators,  where  the  standard
+generator  <I>&sigma;<sub>i</sub></I> of  <I>B<sub>n</sub></I>  fixes  the generators  <I>f<sub>1</sub>,...,f<sub>n</sub></I>,
+except <I>f<sub>i</sub></I> which is mapped to  <I>f<sub>i+1</sub></I> and <I>f<sub>i+1</sub></I> which is mapped
+to <I>f<sub>i+1</sub><sup>-1</sup>f<sub>i</sub>f<sub>i+1</sub></I>.
+<P>
+<pre>    gap> B:=Braid(CoxeterGroupSymmetricGroup(3));
+    function ( arg ) ... end
+    gap> b:=B(1);
+    1
+    gap> BnActsOnFn(b,FreeGroup(3));
+    GroupHomomorphismByImages( Group( f.1, f.2, f.3 ), Group( f.1, f.2, f.3 ), 
+    [ f.1, f.2, f.3 ], [ f.2, f.2^-1*f.1*f.2, f.3 ] )
+    gap> BnActsOnFn(b^2,FreeGroup(3));
+    GroupHomomorphismByImages( Group( f.1, f.2, f.3 ), Group( f.1, f.2, f.3 ), 
+    [ f.1, f.2, f.3 ], [ f.2^-1*f.1*f.2, f.2^-1*f.1^-1*f.2*f.1*f.2, f.3 ] )</pre>
+<P>
+The second input is the free group on <I>n</I> generators. The first input is
+an  element  of  the  braid  group  on  <I>n</I>  strings,  in  its  <strong>CHEVIE</strong> 
+implementation.
+<P><A NAME="SECT011"><h2>112.11 VKQuotient</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+<code>VKQuotient(<var>braids</var>,[<var>bad</var>])</code>
+<P>
+The input  <var>braid</var> is a  list of  braids <I>b<sub>1</sub>,...,b<sub>d</sub></I>, living  in the
+braid group  on <I>n</I> strings.  Each <I>b<sub>i</sub></I>  defines by Hurwitz  action an
+automorphism <I>&phi;<sub>i</sub></I> of  the free group <I>F<sub>n</sub></I>. The  function return the
+group  defined by  the abstract  presentation: <center><table><tr><td><I>&lt;  f<sub>1</sub>,...,f<sub>n</sub> |
+&forall; i,j, &phi;<sub>i</sub>(f<sub>j</sub>)=f<sub>j</sub> &gt; </I></td></tr></table></center>
+<P>
+The  optional   second  argument  <var>bad</var>   is  another  list   of  braids
+<I>c<sub>1</sub>,...,c<sub>e</sub></I>  (representing the  monodromy  around bad  roots of  the
+discriminant). For each  <I>c<sub>k</sub></I>, we denote by  <I>&psi;<sub>k</sub></I> the corresponding
+Hurwitz automorphism of  <I>F<sub>n</sub></I>. When a second argument  is supplied, the
+function  returns  the  group  defined by  the  abstract  presentation:
+<center><table><tr><td><I>&lt;  f<sub>1</sub>,...,f<sub>n</sub>,g<sub>1</sub>,...,g<sub>k</sub> |  &forall; i,j,k,  &phi;<sub>i</sub>(f<sub>j</sub>)=f<sub>j</sub>,
+&psi;<sub>k</sub>(f<sub>j</sub>) g<sub>k</sub>=g<sub>k</sub> f<sub>j</sub> &gt; </I></td></tr></table></center>
+<P><P>
+<pre>    gap> B:=Braid(CoxeterGroupSymmetricGroup(3));
+    function ( arg ) ... end
+    gap> b1:=B(1)^3; b2:=B(2);                   
+    1.1.1
+    2
+    gap> g:=VKQuotient([b1,b2]);                 
+    Group( f.1, f.2, f.3 )
+    gap>  last.relators;  
+    [ f.2^-1*f.1^-1*f.2*f.1*f.2*f.1^-1, IdWord,
+      f.2^-1*f.1^-1*f.2^-1*f.1*f.2*f.1, f.3*f.2^-1, IdWord, f.3^-1*f.2 ]
+    gap> p:=PresentationFpGroup(g);Display(p);
+    &lt;&lt; presentation with 3 gens and 4 rels of total length 16 >>
+    1: c=b
+    2: b=c
+    3: bab=aba
+    4: aba=bab
+    gap> SimplifyPresentation(p);Display(p);
+    #I  there are 2 generators and 1 relator of total length 6
+    1: bab=aba</pre>
+<P><A NAME="SECT012"><h2>112.12 Display for presentations</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code>Display(<var>p</var>)</code>
+<P>
+Displays  the presentation  <var>p</var> in  a  compact form,  using the  letters
+<code>abc...</code> for the generators and <code>ABC...</code> for their inverses. In addition
+the  program tries  to  show  relations in  "positive"  form, i.e.  as
+equalities between words involving no inverses.
+<P>
+<pre>    gap> F:=FreeGroup(2);;
+    gap> p:=PresentationFpGroup(F/[F.2*F.1*F.2*F.1^-1*F.2^-1*F.1^-1]);
+    &lt;&lt; presentation with 2 gens and 1 rels of total length 6 >>
+    gap> Display(p);
+    1: bab=aba
+    gap> PrintRec(p);
+    rec(
+      isTietze           := true,
+      operations         := PresentationOps,
+      generators         := [ f.1, f.2 ],
+      tietze             := [ 2, 1, 6, [ f.1, f.2 ], [ 2, 1, 0, -1, -2 ], 
+      [ [ -2, -1, 2, 1, 2, -1 ] ], [ 6 ], [ 0 ], 0, false, 0, 0, 0, 0, 
+      [ 2, 1, 6 ], 0, 0, 0, 0, 0 ],
+      components         := [ 1, 2 ],
+      1                  := f.1,
+      2                  := f.2,
+      nextFree           := 3,
+      identity           := IdWord,
+      eliminationsLimit  := 100,
+      expandLimit        := 150,
+      generatorsLimit    := 0,
+      lengthLimit        := infinity,
+      loopLimit          := infinity,
+      printLevel         := 1,
+      saveLimit          := 10,
+      searchSimultaneous := 20,
+      protected          := 0 )</pre>
+<P><A NAME="SECT013"><h2>112.13 ShrinkPresentation</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+<code>ShrinkPresentation(<var>p</var> [,<var>tries</var>])</code>
+<P>
+This is our  own program to simplify group presentations.  We have found
+heuristics which make it somewhat  more efficient than <strong>GAP3</strong>' s programs
+<code>SimplifiedFpGroup</code> and  <code>TzGoGo</code>, but  the algorithm depends  on random
+numbers so  is not  reproducible. The  main idea  is to  rotate relators
+between calls  to <strong>GAP3</strong>  functions. By default  1000 such  rotations are
+tried (unless the  presentation is so small that  less rotations exhaust
+all possible  ones), but the  actual number  tried can be  controlled by
+giving a second  parameter <var>tries</var> to the function.  Another useful tool
+to deal  with presentations  is <code>TryConjugatePresentation</code>  described in
+the utility functions.
+<P>
+<pre>    gap> DisplayPresentation(p);
+    1: ab=ba
+    2: dbd=bdb
+    3: bcb=cbc
+    4: cac=aca
+    5: adca=cadc
+    6: dcdc=cdcd
+    7: adad=dada
+    8: Dbdcbd=cDbdcb
+    9: adcDad=dcDadc
+    10: dcdadc=adcdad
+    11: dcabdcbda=adbcbadcb
+    12: caCbdcbad=bdcbadBcb
+    13: cbDadcbad=bDadcbadc
+    14: cdAbCadBc=bdcAbCdBa
+    15: cdCbdcabdc=bdcbadcdaD
+    16: DDBcccbdcAb=cAbCdcBCddc
+    17: CdaBdbAdcbCad=abdcAbDadBCbb
+    18: bdbcabdcAADAdBDa=cbadcbDadcBDABDb
+    19: CbdbadcDbbdCbDDadcBCDAdBCDbdaDCDbdcbadcBCDAdBCDBBdacDbdccb
+        =abdbcabdcAdcbCDDBCDABDABDbbdcbDadcbCDAdBCabDACbdBadcaDbAdd
+    gap> ShrinkPresentation(p);   
+    #I  there are 4 generators and 19 relators of total length 332
+    #I  there are 4 generators and 17 relators of total length 300
+    #I  there are 4 generators and 17 relators of total length 282
+    #I  there are 4 generators and 17 relators of total length 278
+    #I  there are 4 generators and 16 relators of total length 254
+    #I  there are 4 generators and 15 relators of total length 250
+    #I  there are 4 generators and 15 relators of total length 248
+    #I  there are 4 generators and 15 relators of total length 246
+    #I  there are 4 generators and 14 relators of total length 216
+    #I  there are 4 generators and 13 relators of total length 210
+    #I  there are 4 generators and 13 relators of total length 202
+    #I  there are 4 generators and 13 relators of total length 194
+    #I  there are 4 generators and 12 relators of total length 174
+    #I  there are 4 generators and 12 relators of total length 170
+    #I  there are 4 generators and 12 relators of total length 164
+    #I  there are 4 generators and 12 relators of total length 162
+    #I  there are 4 generators and 12 relators of total length 148
+    #I  there are 4 generators and 12 relators of total length 134
+    #I  there are 4 generators and 12 relators of total length 130
+    #I  there are 4 generators and 12 relators of total length 126
+    #I  there are 4 generators and 12 relators of total length 124
+    #I  there are 4 generators and 12 relators of total length 118
+    #I  there are 4 generators and 12 relators of total length 116
+    #I  there are 4 generators and 11 relators of total length 100
+    gap> DisplayPresentation(p);
+    1: ba=ab
+    2: dbd=bdb
+    3: cac=aca
+    4: bcb=cbc
+    5: dAca=Acad
+    6: dcdc=cdcd
+    7: adad=dada
+    8: dcDbdc=bdcbdB
+    9: dcdadc=adcdad
+    10: adcDad=dcDadc
+    11: BcccbdcAb=dcbACdddc</pre>
+<P><a href ="chap111.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap113.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

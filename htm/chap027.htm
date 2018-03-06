@@ -1,0 +1,1510 @@
+<html><head><title>GAP3 Manual: 27 Lists</title></head>
+<body bgcolor="ffffff">
+<h1>27 Lists</h1>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+Lists  are the  most  important way  to collect objects  and  treat  them
+together.  A <strong>list</strong> is a collection  of elements.  A list  also implies a
+partial mapping from the integers  to  the elements.   I.e.,  there is  a
+first element of a list, a second, a third, and so on.
+<P>
+List constants are written by writing down the  elements in order between
+square brackets <code>[</code>, <code>]</code>, and separating them with commas <code>,</code>.  An <strong>empty
+list</strong>, i.e., a list with no elements, is written as <code>[]</code>.
+<P>
+<pre>    gap> [ 1, 2, 3 ];
+    [ 1, 2, 3 ]    # a list with three elements
+    gap> [ [], [ 1 ], [ 1, 2 ] ];
+    [ [  ], [ 1 ], [ 1, 2 ] ]    # a list may contain other lists </pre>
+<P>
+Usually a list has no holes, i.e., contain an element  at every position.
+However, it is  absolutely  legal  to  have  lists with holes.   They are
+created by leaving the entry between the  commas empty.  Lists with holes
+are sometimes  convenient when  the  list  represents  a mapping  from  a
+finite, but  not consecutive, subset  of the positive  integers.  We  say
+that a list that has no holes is <strong>dense</strong>.
+<P>
+<pre>    gap> l := [ , 4, 9,, 25,, 49,,,, 121 ];;
+    gap> l[3];
+    9
+    gap> l[4];
+    Error, List Element: &lt;list>[4] must have a value </pre>
+<P>
+It is most common  that a list contains  only elements of one type.  This
+is not a must  though.  It  is  absolutely possible  to  have lists whose
+elements  are of different types.  We say that a list whose elements  are
+all of the same type is <strong>homogeneous</strong>.
+<P>
+<pre>    gap> l := [ 1, E(2), Z(3), (1,2,3), [1,2,3], "What a mess" ];;
+    gap> l[1];  l[3];  l[5][2];
+    1
+    Z(3)
+    2 </pre>
+<P>
+The first sections  describe the functions  that test if  an object is  a
+list and convert an object to a list (see <a href="chap027.htm#SECT001">IsList</a> and <a href="chap027.htm#SECT002">List</a>).
+<P>
+The next section describes  how one can  access elements of  a  list (see
+<a href="chap027.htm#SECT004">List Elements</a> and <a href="chap027.htm#SECT005">Length</a>).
+<P>
+The  next sections  describe    how one can  change   lists   (see  <a href="chap027.htm#SECT006">List
+Assignment</a>, <a href="chap027.htm#SECT007">Add</a>, <a href="chap027.htm#SECT008">Append</a>, <a href="chap027.htm#SECT009">Identical Lists</a>, <a href="chap027.htm#SECT011">Enlarging Lists</a>).
+<P>
+The  next sections  describe   the operations  applicable to lists   (see
+<a href="chap027.htm#SECT012">Comparisons of Lists</a> and <a href="chap027.htm#SECT013">Operations for Lists</a>).
+<P>
+The next sections describe how one can find elements in a list (see <a href="chap027.htm#SECT014">In</a>,
+<a href="chap027.htm#SECT015">Position</a>, <a href="chap027.htm#SECT016">PositionSorted</a>, <a href="chap027.htm#SECT019">PositionProperty</a>).
+<P>
+The next sections describe the functions  that construct new lists, e.g.,
+sublists    (see   <a href="chap027.htm#SECT022">Concatenation</a>,   <a href="chap027.htm#SECT023">Flat</a>,   <a href="chap027.htm#SECT024">Reversed</a>,    <a href="chap027.htm#SECT025">Sublist</a>,
+<a href="chap027.htm#SECT026">Cartesian</a>).
+<P>
+The next sections describe the functions deal with the subset of elements
+of a list    that have  a  certain property  (see  <a href="chap027.htm#SECT027">Number</a>, <a href="chap027.htm#SECT028">Collected</a>,
+<a href="chap027.htm#SECT030">Filtered</a>, <a href="chap027.htm#SECT032">ForAll</a>, <a href="chap027.htm#SECT033">ForAny</a>, <a href="chap027.htm#SECT034">First</a>).
+<P>
+The  next sections describe the functions  that sort lists  (see  <a href="chap027.htm#SECT035">Sort</a>,
+<a href="chap027.htm#SECT036">SortParallel</a>, <a href="chap027.htm#SECT038">Sortex</a>, <a href="chap027.htm#SECT041">Permuted</a>).
+<P>
+The  next sections describe the functions  to  compute the product,  sum,
+maximum, and minimum  of the elements  in  a list (see <a href="chap027.htm#SECT042">Product</a>,  <a href="chap027.htm#SECT043">Sum</a>,
+<a href="chap027.htm#SECT045">Maximum</a>, <a href="chap027.htm#SECT046">Minimum</a>, <a href="chap027.htm#SECT047">Iterated</a>).
+<P>
+The final section describes the function that takes a random element from
+a list (see <a href="chap027.htm#SECT048">RandomList</a>).
+<P>
+Lists are also used to represent sets,  subsets, vectors, and ranges (see
+<a href="chap028.htm">Sets</a>, <a href="chap029.htm">Boolean Lists</a>, <a href="chap032.htm">Vectors</a>, and <a href="chap031.htm">Ranges</a>).
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap027.htm#SECT001">IsList</a>
+<LI> <A HREF="chap027.htm#SECT002">List</a>
+<LI> <A HREF="chap027.htm#SECT003">ApplyFunc</a>
+<LI> <A HREF="chap027.htm#SECT004">List Elements</a>
+<LI> <A HREF="chap027.htm#SECT005">Length</a>
+<LI> <A HREF="chap027.htm#SECT006">List Assignment</a>
+<LI> <A HREF="chap027.htm#SECT007">Add</a>
+<LI> <A HREF="chap027.htm#SECT008">Append</a>
+<LI> <A HREF="chap027.htm#SECT009">Identical Lists</a>
+<LI> <A HREF="chap027.htm#SECT010">IsIdentical</a>
+<LI> <A HREF="chap027.htm#SECT011">Enlarging Lists</a>
+<LI> <A HREF="chap027.htm#SECT012">Comparisons of Lists</a>
+<LI> <A HREF="chap027.htm#SECT013">Operations for Lists</a>
+<LI> <A HREF="chap027.htm#SECT014">In</a>
+<LI> <A HREF="chap027.htm#SECT015">Position</a>
+<LI> <A HREF="chap027.htm#SECT016">PositionSorted</a>
+<LI> <A HREF="chap027.htm#SECT017">PositionSet</a>
+<LI> <A HREF="chap027.htm#SECT018">Positions</a>
+<LI> <A HREF="chap027.htm#SECT019">PositionProperty</a>
+<LI> <A HREF="chap027.htm#SECT020">PositionsProperty</a>
+<LI> <A HREF="chap027.htm#SECT021">PositionSublist</a>
+<LI> <A HREF="chap027.htm#SECT022">Concatenation</a>
+<LI> <A HREF="chap027.htm#SECT023">Flat</a>
+<LI> <A HREF="chap027.htm#SECT024">Reversed</a>
+<LI> <A HREF="chap027.htm#SECT025">Sublist</a>
+<LI> <A HREF="chap027.htm#SECT026">Cartesian</a>
+<LI> <A HREF="chap027.htm#SECT027">Number</a>
+<LI> <A HREF="chap027.htm#SECT028">Collected</a>
+<LI> <A HREF="chap027.htm#SECT029">CollectBy</a>
+<LI> <A HREF="chap027.htm#SECT030">Filtered</a>
+<LI> <A HREF="chap027.htm#SECT031">Zip</a>
+<LI> <A HREF="chap027.htm#SECT032">ForAll</a>
+<LI> <A HREF="chap027.htm#SECT033">ForAny</a>
+<LI> <A HREF="chap027.htm#SECT034">First</a>
+<LI> <A HREF="chap027.htm#SECT035">Sort</a>
+<LI> <A HREF="chap027.htm#SECT036">SortParallel</a>
+<LI> <A HREF="chap027.htm#SECT037">SortBy</a>
+<LI> <A HREF="chap027.htm#SECT038">Sortex</a>
+<LI> <A HREF="chap027.htm#SECT039">SortingPerm</a>
+<LI> <A HREF="chap027.htm#SECT040">PermListList</a>
+<LI> <A HREF="chap027.htm#SECT041">Permuted</a>
+<LI> <A HREF="chap027.htm#SECT042">Product</a>
+<LI> <A HREF="chap027.htm#SECT043">Sum</a>
+<LI> <A HREF="chap027.htm#SECT044">ValuePol</a>
+<LI> <A HREF="chap027.htm#SECT045">Maximum</a>
+<LI> <A HREF="chap027.htm#SECT046">Minimum</a>
+<LI> <A HREF="chap027.htm#SECT047">Iterated</a>
+<LI> <A HREF="chap027.htm#SECT048">RandomList</a>
+</ol>
+<A NAME="SECT001"><h2>27.1 IsList</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>IsList( <var>obj</var> )</code>
+<P>
+<code>IsList</code> returns <code>true</code> if the argument <var>obj</var>, which can be  an arbitrary
+object, is a list  and <code>false</code> otherwise.  Will signal  an error if <var>obj</var>
+is an unbound variable.
+<P>
+<pre>    gap> IsList( [ 1, 3, 5, 7 ] );
+    true
+    gap> IsList( 1 );
+    false </pre>
+<P><A NAME="SECT002"><h2>27.2 List</h2></a>
+<P><P>
+<A name = "I2"></a>
+
+<A name = "I3"></a>
+
+<P>
+<code>List( <var>obj</var> )</code> <BR> 
+<code>List( <var>list</var>, <var>func</var> )</code>
+<P>
+In  its  first  form  <code>List</code> returns the argument <var>obj</var>, which must be  a
+list, a permutation, a string or a word, converted into a list.  If <var>obj</var>
+is  a list, it is  simply returned.   If <var>obj</var>  is a  permutation, <code>List</code>
+returns a list  where the <var>i</var>-th element  is the image  of <var>i</var> under  the
+permutation <var>obj</var>.  If <var>obj</var> is a word, <code>List</code> returns a list  where  the
+<var>i</var>-th element is the <var>i</var>-th generator of  the  word, as a word of length
+1.
+<P>
+<pre>    gap> List( [1,2,3] );
+    [ 1, 2, 3 ]
+    gap> List( (1,2)(3,4,5) );
+    [ 2, 1, 4, 5, 3 ] </pre>
+<P>
+In its second  form <code>List</code> returns a new  list, where each element is the
+result  of applying  the  function <var>func</var>, which  must  take  exactly one
+argument and handle the elements  of <var>list</var>, to the corresponding element
+of the list <var>list</var>.  The list <var>list</var> must not contain holes.
+<P>
+<pre>    gap> List( [1,2,3], x->x^2 );
+    [ 1, 4, 9 ]
+    gap> List( [1..10], IsPrime );
+    [ false, true, true, false, true, false, true, false, false, false ]</pre>
+<P>
+Note that this function  is called <code>map</code> in  Lisp and many other  similar
+programming languages.  This name violates the <strong>GAP3</strong> rule that verbs are
+used for functions  that change their arguments.   According to this rule
+<code>map</code> would change <var>list</var>, replacing every element with the result of the
+application <var>func</var> to this argument.
+<P><A NAME="SECT003"><h2>27.3 ApplyFunc</h2></a>
+<P><P><P>
+<code>ApplyFunc( <var>func</var>, <var>arglist</var> )</code>
+<P>
+<code>ApplyFunc</code> invokes the function <var>func</var> as if it had been called with the
+elements of <var>arglist</var> as its arguments and returns the value, if any,
+returned by that invocation. 
+<P>
+<pre>    gap> foo := function(arg1, arg2) 
+    > Print("first ",arg1," second ",arg2,"\n"); end;
+    function ( arg1, arg2 ) ... end
+    gap> foo(1,2);
+    first 1 second 2
+    gap> ApplyFunc(foo,[1,2]);
+    first 1 second 2
+    gap> ApplyFunc(Position,[[1,2,3],2]);
+    2 </pre>
+<P><A NAME="SECT004"><h2>27.4 List Elements</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code><var>list</var>[ <var>pos</var> ]</code>
+<P>
+The above construct evaluates to the <var>pos</var>-th element of the list <var>list</var>.
+<var>pos</var>  must be a positive integer.  List indexing is done  with origin 1,
+i.e., the first element of the list is the element at position 1.
+<P>
+<pre>    gap> l := [ 2, 3, 5, 7, 11, 13 ];;
+    gap> l[1];
+    2
+    gap> l[2];
+    3
+    gap> l[6];
+    13 </pre>
+<P>
+If <var>list</var> does not evaluate to a  list, or <var>pos</var>  does not evaluate to  a
+positive integer, or <code><var>list</var>[<var>pos</var>]</code>  is  unbound an  error is signalled.
+As usual you  can leave the break  loop (see <a href="chap003.htm#SECT002">Break Loops</a>) with <code>quit;</code>.
+On the other hand you can return a result to be used in place of the list
+element by <code>return <var>expr</var>;</code>.
+<P>
+<code><var>list</var>{ <var>poss</var> }</code>
+<P>
+The above  construct evaluates to a new list <var>new</var> whose first element is
+<code><var>list</var>[<var>poss</var>[1]]</code>, whose  second element is <code><var>list</var>[<var>poss</var>[2]]</code>, and so
+on.  <var>poss</var>  must be a dense list of positive integers, it need, however,
+not be  sorted  and  may  contain  duplicate  elements.  If for  any <var>i</var>,
+<code><var>list</var>[ <var>poss</var>[<var>i</var>] ]</code> is unbound, an error is signalled.
+<P>
+<pre>    gap> l := [ 2, 3, 5, 7, 11, 13, 17, 19 ];;
+    gap> l{[4..6]};
+    [ 7, 11, 13 ]
+    gap> l{[1,7,1,8]};
+    [ 2, 17, 2, 19 ] </pre>
+<P>
+The result is a new  list, that is not identical to any other  list.  The
+elements of that list however are identical to the corresponding elements
+of the left operand (see <a href="chap027.htm#SECT009">Identical Lists</a>).
+<P>
+It  is possible to nest such sublist extractions,  as can be seen  in the
+following example.
+<P>
+<pre>    gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;
+    gap> m{[1,2,3]}{[3,2]};
+    [ [ 3, 2 ], [ 6, 5 ], [ 9, 8 ] ]
+    gap> l := m{[1,2,3]};; l{[3,2]};
+    [ [ 7, 8, 9 ], [ 4, 5, 6 ] ] </pre>
+<P>
+Note  the difference between  the  two  examples.   The  latter  extracts
+elements 1, 2, and 3 from <var>m</var> and then extracts the elements 3 and 2 from
+<strong>this list</strong>.  The former extracts elements 1,  2, and 3 from <var>m</var> and then
+extracts the elements 3 and 2 from <strong>each of those element lists</strong>.
+<P>
+To be precise.  With each selector <code>[<var>pos</var>]</code> or <code>{<var>poss</var>}</code> we associate
+a  <strong>level</strong>  that  is  defined  as  the number  of selectors  of the  form
+<code>{<var>poss</var>}</code> to its left in the same expression.  For example
+<P>
+<pre>        l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
+    level   0      0      1     1      1     2   </pre>
+<P>
+Then   a  selector  <code><var>list</var>[<var>pos</var>]</code>  of  level  <var>level</var>  is  computed  as
+<code>ListElement(<var>list</var>,<var>pos</var>,<var>level</var>)</code>, where  <code>ListElement</code> is  defined  as
+follows
+<P>
+<pre>    ListElement := function ( list, pos, level )
+        if level = 0  then
+            return list[pos];
+        else
+            return List( list, elm -> ListElement(elm,pos,level-1) );
+        fi;
+    end; </pre>
+<P>
+and  a selector  <code><var>list</var>{<var>poss</var>}</code>  of  level  <var>level</var>  is  computed  as
+<code>ListElements(<var>list</var>,<var>poss</var>,<var>level</var>)</code>, where <code>ListElements</code> is defined as
+follows
+<P>
+<pre>    ListElements := function ( list, poss, level )
+        if level = 0  then
+            return list{poss};
+        else
+            return List( list, elm -> ListElements(elm,poss,level-1) );
+        fi;
+    end; </pre>
+<P><A NAME="SECT005"><h2>27.5 Length</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>Length( <var>list</var> )</code>
+<P>
+<code>Length</code> returns the length of the list  <var>list</var>.  The <strong>length</strong> is defined
+as 0 for the empty list, and as the largest positive integer <var>index</var> such
+that <code><var>list</var>[<var>index</var>]</code>  has an assigned value  for  nonempty lists.  Note
+that the length of a list may  change if new elements are  added to it or
+assigned to previously unassigned positions.
+<P>
+<pre>    gap> Length( [] );
+    0
+    gap> Length( [ 2, 3, 5, 7, 11, 13, 17, 19 ] );
+    8
+    gap> Length( [ 1, 2,,, 5 ] );
+    5 </pre>
+<P>
+For lists  that contain no holes <code>Length</code>,  <code>Number</code> (see  <a href="chap027.htm#SECT027">Number</a>), and
+<code>Size</code> (see <a href="chap004.htm#SECT010">Size</a>) return the same value.  For lists with holes <code>Length</code>
+returns the largest  index of a  bound entry, <code>Number</code> returns the number
+of bound entries, and <code>Size</code> signals an error.
+<P><A NAME="SECT006"><h2>27.6 List Assignment</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code><var>list</var>[ <var>pos</var> ] := <var>object</var>;</code>
+<P>
+The list  assignment  assigns the  object  <var>object</var>, which can be  of any
+type, to the list  entry at the position <var>pos</var>, which must  be a positive
+integer, in the  list  <var>list</var>.  That means that  accessing  the  <var>pos</var>-th
+element of the list <var>list</var> will return <var>object</var> after this assignment.
+<P>
+<pre>    gap> l := [ 1, 2, 3 ];;
+    gap> l[1] := 3;;  l;                # assign a new object
+    [ 3, 2, 3 ]
+    gap> l[2] := [ 4, 5, 6 ];;  l;      # <var>object</var> may be of any type
+    [ 3, [ 4, 5, 6 ], 3 ]
+    gap> l[ l[1] ] := 10;;  l;          # <var>index</var> may be an expression
+    [ 3, [ 4, 5, 6 ], 10 ] </pre>
+<P>
+If  the index  <var>pos</var> is larger  than the  length of  the list <var>list</var> (see
+<a href="chap027.htm#SECT005">Length</a>),  the list is automatically enlarged to make room  for the  new
+element.  Note that it is possible to generate lists with holes that way.
+<P>
+<pre>    gap> l[4] := "another entry";;  l; # <var>list</var> is enlarged
+    [ 3, [ 4, 5, 6 ], 10, "another entry" ]
+    gap> l[ 10 ] := 1;;  l;            # now <var>list</var> has a hole
+    [ 3, [ 4, 5, 6 ], 10, "another entry",,,,,, 1 ] </pre>
+<P>
+The   function <code>Add</code> (see  <a href="chap027.htm#SECT007">Add</a>) should  be used  if you  want to add an
+element to the end of the list.
+<P>
+Note that assigning to a list changes the list.  The ability to change an
+object is only available for lists and records (see <a href="chap027.htm#SECT009">Identical Lists</a>).
+<P>
+If <var>list</var> does not evaluate  to a list,  <var>pos</var>  does  not evaluate  to  a
+positive integer  or <var>object</var>  is  a  call to a  function which  does not
+return a value, for example <code>Print</code> (see <a href="chap003.htm#SECT014">Print</a>), an error  is signalled
+As usual you can  leave the  break loop (see <a href="chap003.htm#SECT002">Break Loops</a>) with <code>quit;</code>.
+On the other hand you can continue the assignment by returning a list, an
+index or an object using <code>return <var>expr</var>;</code>.
+<P>
+<code><var>list</var>{ <var>poss</var> } := <var>objects</var>;</code>
+<P>
+The list assignment  assigns the object <code><var>objects</var>[1]</code>,  which  can be of
+any  type,  to  the list <var>list</var>  at the position <code><var>poss</var>[1]</code>, the  object
+<code><var>objects</var>[2]</code> to <code><var>list</var>[<var>poss</var>[2]]</code>, and so on.  <var>poss</var> must be a dense
+list  of  positive  integers, it need, however,  not  be  sorted and  may
+contain duplicate elements.  <var>objects</var> must be a dense list and must have
+the same length as <var>poss</var>.
+<P>
+<pre>    gap> l := [ 2, 3, 5, 7, 11, 13, 17, 19 ];;
+    gap> l{[1..4]} := [10..13];;  l;
+    [ 10, 11, 12, 13, 11, 13, 17, 19 ]
+    gap> l{[1,7,1,10]} := [ 1, 2, 3, 4 ];; l;
+    [ 3, 11, 12, 13, 11, 13, 2, 19,, 4 ] </pre>
+<P>
+It  is possible to nest  such sublist assignments, as can be seen  in the
+following example.
+<P>
+<pre>    gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;
+    gap> m{[1,2,3]}{[3,2]} := [ [11,12], [13,14], [15,16] ];;  m;
+    [ [ 1, 12, 11 ], [ 4, 14, 13 ], [ 7, 16, 15 ], [ 10, 11, 12 ] ] </pre>
+<P>
+The  exact behaviour  is defined in the  same way as for list extractions
+(see   <a href="chap027.htm#SECT004">List  Elements</a>).   Namely   with  each   selector  <code>[<var>pos</var>]</code>  or
+<code>{<var>poss</var>}</code>  we  associate a <strong>level</strong>  that is  defined as  the number of
+selectors of the form <code>{<var>poss</var>}</code>  to its  left  in the same expression.
+For example
+<P>
+<pre>        l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
+    level   0      0      1     1      1     2   </pre>
+<P>
+Then  a list assignment <code><var>list</var>[<var>pos</var>]  :=  <var>vals</var>;</code> of level <var>level</var> is
+computed  as  <code>ListAssignment(  <var>list</var>, <var>pos</var>,  <var>vals</var>, <var>level</var> )</code>, where
+<code>ListAssignment</code> is defined as follows
+<P>
+<pre>    ListAssignment := function ( list, pos, vals, level )
+        local  i;
+        if level = 0  then
+            list[pos] := vals;
+        else
+            for i  in [1..Length(list)]  do
+                ListAssignment( list[i], pos, vals[i], level-1 );
+            od;
+        fi;
+    end; </pre>
+<P>
+and  a  list assignment <code><var>list</var>{<var>poss</var>} := <var>vals</var></code> of level <var>level</var> is
+computed  as <code>ListAssignments( <var>list</var>, <var>poss</var>, <var>vals</var>, <var>level</var> )</code>,  where
+<code>ListAssignments</code> is defined as follows
+<P>
+<pre>    ListAssignments := function ( list, poss, vals, level )
+        local  i;
+        if level = 0  then
+            list{poss} := vals;
+        else
+            for i  in [1..Length(list)]  do
+                ListAssignments( list[i], poss, vals[i], level-1 );
+            od;
+        fi;
+    end; </pre>
+<P><A NAME="SECT007"><h2>27.7 Add</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>Add( <var>list</var>, <var>elm</var> )</code>
+<P>
+<code>Add</code> adds the element <var>elm</var>  to the end of  the list <var>list</var>, i.e., it is
+equivalent to  the assignment <code><var>list</var>[  Length(<var>list</var>) + 1 ] :=  <var>elm</var></code>.
+The list is  automatically enlarged  to  make room  for the new  element.
+<code>Add</code> returns nothing, it is called only for its side effect.
+<P>
+Note that adding to  a list changes the list.   The ability to change  an
+object is only available for lists and records (see <a href="chap027.htm#SECT009">Identical Lists</a>).
+<P>
+To add more than one element to a list use <code>Append</code> (see <a href="chap027.htm#SECT008">Append</a>).
+<P>
+<pre>    gap> l := [ 2, 3, 5 ];;  Add( l, 7 );  l;
+    [ 2, 3, 5, 7 ] </pre>
+<P><A NAME="SECT008"><h2>27.8 Append</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<A name = "I9"></a>
+
+<P>
+<code>Append( <var>list1</var>, <var>list2</var> )</code>
+<P>
+<code>Append</code> adds (see <a href="chap027.htm#SECT007">Add</a>) the elements of the list <var>list2</var>  to the end of
+the list <var>list1</var>.   <var>list2</var>   may  contain   holes, in which   case   the
+corresponding entries in <var>list1</var>  will be left unbound.  <code>Append</code> returns
+nothing, it is called only for its side effect.
+<P>
+<pre>    gap> l := [ 2, 3, 5 ];; Append( l, [ 7, 11, 13 ] );  l;
+    [ 2, 3, 5, 7, 11, 13 ]
+    gap> Append( l, [ 17,, 23 ] ); l;
+    [ 2, 3, 5, 7, 11, 13, 17,, 23 ] </pre>
+<P>
+Note that appending to a list changes the list.  The ability to change an
+object is only available for lists and records (see <a href="chap027.htm#SECT009">Identical Lists</a>).
+<P>
+Note that <code>Append</code> changes the first argument, while <code>Concatenation</code> (see
+<a href="chap027.htm#SECT022">Concatenation</a>) creates  a new list and  leaves its arguments unchanged.
+As usual the name of the function that work  destructively is a verb, but
+the name of the function that creates a new object is a substantive.
+<P><A NAME="SECT009"><h2>27.9 Identical Lists</h2></a>
+<P><P><P>
+With the  list assignment (see <a href="chap027.htm#SECT006">List  Assignment</a>, <a href="chap027.htm#SECT007">Add</a>, <a href="chap027.htm#SECT008">Append</a>) it is
+possible   to change a list.    The ability to   change an object is only
+available  for  lists and records.  This   section describes the semantic
+consequences of this fact.
+<P>
+You may think that in the following example the second assignment changes
+the integer, and  that therefore the  above sentence, which claimed  that
+only lists and records can be changed is wrong
+<P>
+<pre>    i := 3;
+    i :=  i + 1;</pre>
+<P>
+But in this example not the <strong>integer</strong> <code>3</code> is changed by adding one to it.
+Instead  the <strong>variable</strong>  <code>i</code>  is changed by assigning the value of <code>i+1</code>,
+which happens to be <code>4</code>, to <code>i</code>.  The same thing happens in the following
+example
+<P>
+<pre>    l := [ 1,  2 ];
+    l := [ 1, 2,  3 ];</pre>
+<P>
+The second assignment does not change the first list, instead  it assigns
+a new  list  to  the variable <code>l</code>.   On the other hand,  in the following
+example the  list  is changed by the second assignment.
+<P>
+<pre>    l := [ 1,  2 ];
+    l[3] := 3;</pre>
+<P>
+To understand the difference  first think  of a variable as a name for an
+object.  The important point is that a list can have several names at the
+same  time.    An   assignment  <code><var>var</var>   :=   <var>list</var>;</code>  means  in   this
+interpretation that <var>var</var> is a name for the object <var>list</var>.  At the end of
+the following example  <code>l2</code> still  has the value <code>[ 1, 2 ]</code> as this  list
+has not been changed and nothing else has been assigned to it.
+<P>
+<pre>    l1 := [ 1, 2 ];
+    l2 := l1;
+    l1 := [ 1, 2, 3 ]; </pre>
+<P>
+But  after  the following  example the list for which <code>l2</code> is a  name has
+been changed and thus the value of <code>l2</code> is now <code>[ 1, 2, 3 ]</code>.
+<P>
+<pre>    l1 := [ 1, 2 ];
+    l2 := l1;
+    l1[3] := 3;</pre>
+<P>
+We shall say that two lists are <strong>identical</strong> if changing one of them  by a
+list assignment also changes the other one.   This is slightly incorrect,
+because if  <strong>two</strong> lists are identical,  there are actually only two names
+for <strong>one</strong>  list.  However, the correct  usage  would be  very awkward and
+would only add to the confusion.   Note that two  identical lists must be
+equal, because  there is only  one list with  two  different names.  Thus
+identity is an equivalence relation that is a refinement of equality.
+<P>
+Let us now consider under which circumstances two lists are identical.
+<P>
+If  you enter a list  literal than the list  denoted by this literal is a
+new list that is not identical  to any other list.  Thus in the following
+example <code>l1</code> and <code>l2</code> are not identical, though they are equal of course.
+<P>
+<pre>    l1 := [ 1, 2 ];
+    l2 := [ 1, 2 ];</pre>
+<P>
+Also in the following example, no lists in the list <code>l</code> are identical.
+<P>
+<pre>    l := [];
+    for i  in [1..10]  do l[i] := [ 1, 2 ];  od;</pre>
+<P>
+If you assign a list to a variable no new list is created.  Thus the list
+value of  the variable on  the left hand side  and the  list on the right
+hand side of the assignment  are identical.  So in  the following example
+<code>l1</code> and <code>l2</code> are identical lists.
+<P>
+<pre>    l1 := [ 1, 2 ];
+    l2 := l1;</pre>
+<P>
+If you pass  a  list as argument, the  old  list and the argument  of the
+function are identical.  Also if  you return a list from a  function, the
+old list  and the  value of  the function call are  identical.  So in the
+following example <code>l1</code> and <code>l2</code> are identical list
+<P>
+<pre>    l1 := [ 1, 2 ];
+    f := function ( l )  return l;  end;
+    l2 := f( l1 ); </pre>
+<P>
+The functions <code>Copy</code>  and  <code>ShallowCopy</code> (see <a href="chap046.htm#SECT011">Copy</a>  and  <a href="chap046.htm#SECT012">ShallowCopy</a>)
+accept  a list and return a  new list that  is equal to the  old list but
+that is <strong>not</strong>  identical to the old list.  The  difference between <code>Copy</code>
+and <code>ShallowCopy</code> is that  in the case of <code>ShallowCopy</code> the corresponding
+elements of the new and the old lists  will be  identical, whereas in the
+case of <code>Copy</code> they will only be equal.  So in the following example <code>l1</code>
+and <code>l2</code> are not identical lists.
+<P>
+<pre>    l1 := [ 1, 2 ];
+    l2 := Copy( l1 );</pre>
+<P>
+If  you change a list  it  keeps its  identity.   Thus if  two  lists are
+identical and you change one of them, you also change the other, and they
+are still identical  afterwards.  On  the other hand, two lists that  are
+not identical will never become  identical if you change one of them.  So
+in  the following example both <code>l1</code> and <code>l2</code>  are changed,  and are still
+identical.
+<P>
+<pre>    l1 := [ 1, 2 ];
+    l2 := l1;
+    l1[1] := 2;</pre>
+<P><A NAME="SECT010"><h2>27.10 IsIdentical</h2></a>
+<P><P><P>
+<code>IsIdentical( <var>l</var>, <var>r</var> )</code>
+<P>
+<code>IsIdentical</code>  returns <code>true</code>  if the objects <var>l</var> and <var>r</var>  are identical.
+Unchangeable  objects  are  considered   identical  if   the  are  equal.
+Changeable  objects, i.e., lists  and  records, are identical if changing
+one of them by  an assignment  also  changes the  other one, as described
+in <a href="chap027.htm#SECT009">Identical Lists</a>.
+<P>
+<pre>    gap> IsIdentical( 1, 1 );
+    true
+    gap> IsIdentical( 1, () );
+    false
+    gap> l := [ 'h', 'a', 'l', 'l', 'o' ];;
+    gap> l = "hallo";
+    true
+    gap> IsIdentical( l, "hallo" );
+    false </pre>
+<P><A NAME="SECT011"><h2>27.11 Enlarging Lists</h2></a>
+<P><P><P>
+The previous section  (see    <a href="chap027.htm#SECT006">List Assignment</a>) told you   (among  other
+things), that it is possible to assign beyond the  logical end of a list,
+automatically enlarging  the list.   This section  tells  you how this is
+done.
+<P>
+It would be  extremly wasteful to  make all  lists large enough  so  that
+there is room for all assignments, because some lists  may have more than
+100000 elements, while most lists have less than 10 elements.
+<P>
+On the other hand suppose every assignment beyond the end of a list would
+be done by allocating  new space for the list  and copying all entries to
+the new space.  Then creating a  list of 1000  elements by assigning them
+in order, would take half a million copy operations and also create a lot
+of garbage that the garbage collector would have to reclaim.
+<P>
+So the  following strategy is used.   If a list is  created it is created
+with exactly  the  correct size.  If a   list is enlarged,  because of an
+assignment  beyond   the end of the  list,   it is enlarged   by at least
+<code><var>length</var>/8 + 4</code> entries.  Therefore the next  assignments beyond the end
+of the list do not need to enlarge the list.  For example creating a list
+of  1000 elements by   assigning them in order,   would now take  only 32
+enlargements.
+<P>
+The result of this is of course that the <strong>physical length</strong>, which is also
+called the size, of a  list may be different  from the <strong>logical  length</strong>,
+which is usually called  simply the length of  the list.  Aside  from the
+implications for  the performance you need not  be  aware of the physical
+length.    In fact  all you can   ever  observe, for   example by calling
+<code>Length</code> is the logical length.
+<P>
+Suppose that <code>Length</code> would  have to take   the physical length and  then
+test how many entries at the end of a list are unassigned, to compute the
+logical length of the list.  That would take  too much time.  In order to
+make <code>Length</code>, and other functions that need to  know the logical length,
+more efficient, the length of a list is stored along with the list.
+<P>
+A  note aside.  In the previous  version 2.4 of <strong>GAP3</strong> a  list was indeed
+enlarged   every time  an assignment beyond   the  end  of  the list  was
+performed.  To deal with the above inefficiency the following hacks where
+used.  Instead of creating  lists in order they  were usually  created in
+reverse   order.   In situations   where this  was  not  possible a dummy
+assignment to the last position was performed, for example
+<P>
+<pre>    l := [];
+    l[1000] := "dummy";
+    l[1] := first_value();
+    for i  from 2  to 1000  do l[i] := next_value(l[i-1]);  od; </pre>
+<P><A NAME="SECT012"><h2>27.12 Comparisons of Lists</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+<code><var>list1</var> = <var>list2</var></code> <BR> 
+<code><var>list1</var> <> <var>list2</var></code>
+<P>
+The equality operator <code>=</code> evaluates  to <code>true</code> if  the two lists  <var>list1</var>
+and <var>list2</var> are  equal and  <code>false</code>  otherwise.  The inequality  operator
+<code><></code>  evaluates to <code>true</code>  if the  two lists are   not equal and <code>false</code>
+otherwise.  Two  lists <var>list1</var> and <var>list2</var> are  equal if  and only if for
+every index  <var>i</var>, either  both entries <code><var>list1</var>[<var>i</var>]</code>  and <code><var>list2</var>[<var>i</var>]</code>
+are unbound, or   both are bound and  are  equal,  i.e., <code><var>list1</var>[<var>i</var>]  =
+<var>list2</var>[<var>i</var>]</code> is <code>true</code>.
+<P>
+<pre>    gap> [ 1, 2, 3 ] = [ 1, 2, 3 ];
+    true
+    gap> [ , 2, 3 ] = [ 1, 2, ];
+    false
+    gap> [ 1, 2, 3 ] = [ 3, 2, 1 ];
+    false </pre>
+<P>
+<code><var>list1</var> < <var>list2</var></code>, <code><var>list1</var> <= <var>list2</var></code>
+<code><var>list1</var>  > <var>list2</var></code>, <code><var>list1</var>  >= <var>list2</var></code>
+<P>
+The operators  <code><</code>,  <code><=</code>, <code>></code> and <code>>=</code>  evaluate to <code>true</code> if the list
+<var>list1</var> is  less than,  less  than or equal  to, greater than, or greater
+than or equal to the  list <var>list2</var> and  to <code>false</code> otherwise.   Lists are
+ordered lexicographically,  with  unbound  entries comparing very  small.
+That means the following.  Let <var>i</var> be the smallest positive integer  <var>i</var>,
+such that  neither  both entries  <code><var>list1</var>[<var>i</var>]</code>  and  <code><var>list2</var>[<var>i</var>]</code> are
+unbound, nor both are bound and equal.  Then <var>list1</var> is less than <var>list2</var>
+if  either <code><var>list1</var>[<var>i</var>]</code> is unbound (and  <code><var>list2</var>[<var>i</var>]</code> is not) or both
+are bound and <code><var>list1</var>[<var>i</var>] < <var>list2</var>[<var>i</var>]</code> is <code>true</code>.
+<P>
+<pre>    gap> [ 1, 2, 3, 4 ] &lt; [ 1, 2, 4, 8 ];
+    true    # <code><var>list1</var>[3] < <var>list2</var>[3]</code>
+    gap> [ 1, 2, 3 ] &lt; [ 1, 2, 3, 4 ];
+    true    # <code><var>list1</var>[4]</code> is unbound and therefore very small
+    gap> [ 1, , 3, 4 ] &lt; [ 1, 2, 3 ];
+    true    # <code><var>list1</var>[2]</code> is unbound and therefore very small </pre>
+<P>
+You  can also compare  objects of other  types, for  example integers  or
+permutations with  lists.  Of course  those objects are never equal  to a
+list.  Records (see <a href="chap046.htm">Records</a>) are greater  than lists,  objects of every
+other type are smaller than lists.
+<P>
+<pre>    gap> 123 &lt; [ 1, 2, 3 ];
+    true
+    gap> [ 1, 2, 3 ] &lt; rec( a := 123 );
+    true </pre>
+<P><A NAME="SECT013"><h2>27.13 Operations for Lists</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code><var>list</var> * <var>obj</var></code><BR> 
+<code><var>obj</var> * <var>list</var></code>
+<P>
+The operator <code>*</code>  evaluates to the product  of list <var>list</var> by  an object
+<var>obj</var>.  The product  is a  new list that   at each position contains  the
+product of  the corresponding element  of  <var>list</var> by  <var>obj</var>.  <var>list</var>  may
+contain holes,  in which case  the result will contain  holes at the same
+positions.
+<P>
+The elements of <var>list</var> and <var>obj</var> must be  objects of the following types;
+integers (see <a href="chap010.htm">Integers</a>), rationals  (see <a href="chap012.htm">Rationals</a>), cyclotomics (see
+<a href="chap013.htm">Cyclotomics</a>),   elements  of a  finite  field  (see  <a href="chap018.htm">Finite  Fields</a>),
+permutations  (see <a href="chap020.htm">Permutations</a>), matrices   (see <a href="chap034.htm">Matrices</a>), words in
+abstract  generators (see  <a href="chap022.htm">Words in  Abstract Generators</a>), or  words in
+solvable groups (see <a href="chap024.htm">Words in Finite Polycyclic Groups</a>).
+<P>
+<pre>    gap> [ 1, 2, 3 ] * 2;
+    [ 2, 4, 6 ]
+    gap> 2 * [ 2, 3,, 5,, 7 ];
+    [ 4, 6,, 10,, 14 ]
+    gap> [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ] * (1,4);
+    [ (1,4), (1,4)(2,3), (1,2,4), (1,2,3,4), (1,3,2,4), (1,3,4) ] </pre>
+<P>
+Many more operators are  available for  vectors and  matrices,  which are
+also represented by lists (see <a href="chap032.htm#SECT001">Operations  for Vectors</a>, <a href="chap034.htm#SECT001">Operations for
+Matrices</a>).
+<P><A NAME="SECT014"><h2>27.14 In</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+<code><var>elm</var> in <var>list</var></code>
+<P>
+The <code>in</code> operator evaluates  to <code>true</code> if the object  <var>elm</var> is an element
+of  the  list <var>list</var> and  to <code>false</code>  otherwise.  <var>elm</var> is  an element of
+<var>list</var>    if there   is   a     positive  integer   <var>index</var>  such    that
+<code><var>list</var>[<var>index</var>]=<var>elm</var></code> is  <code>true</code>.     <var>elm</var>  may be an  object    of an
+arbitrary type and <var>list</var> may be a list containing elements of any type.
+<P>
+It is  much faster  to test for  membership for  sets, because for  sets,
+which  are always sorted  (see <a href="chap028.htm">Sets</a>),   <code>in</code>  can use a  binary search,
+instead of the linear search used  for ordinary lists.   So if you have a
+list for which you want to perform a large number of membership tests you
+may consider converting it to a set with the function <code>Set</code> (see <a href="chap028.htm#SECT002">Set</a>).
+<P>
+<pre>    gap> 1 in [ 2, 2, 1, 3 ];
+    true
+    gap> 1 in [ 4, -1, 0, 3 ];
+    false
+    gap> s := Set([2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32]);;
+    gap> 17 in s;
+    false        # uses binary search and only 4 comparisons
+    gap> 1 in [ "This", "is", "a", "list", "of", "strings" ];
+    false
+    gap> [1,2] in [ [0,6], [0,4], [1,3], [1,5], [1,2], [3,4] ];
+    true </pre>
+<P>
+<code>Position</code> (see  <a href="chap027.htm#SECT015">Position</a>) and  <code>PositionSorted</code> (see <a href="chap027.htm#SECT016">PositionSorted</a>)
+allow you to find the position of an element in a list.
+<P><A NAME="SECT015"><h2>27.15 Position</h2></a>
+<P><P>
+<A name = "I13"></a>
+
+<P>
+<code>Position( <var>list</var>, <var>elm</var> )</code><BR> 
+<code>Position( <var>list</var>, <var>elm</var>, <var>after</var> )</code>
+<P>
+<code>Position</code>  returns  the position of the element <var>elm</var>,  which may be  an
+object  of  any type, in  the list <var>list</var>.  If the  element is not in the
+list the  result is  <code>false</code>.  If  the element appears several times, the
+first position is returned.
+<P>
+The three  argument form  begins the  search  at position  <var>after</var>+1, and
+returns the position  of the  next occurence  of  <var>elm</var>. If there  are no
+more, it returns <code>false</code>.
+<P>
+It is  much faster to  search for an element  in a set, because for sets,
+which are always sorted (see <a href="chap028.htm">Sets</a>), <code>Position</code> can use a binary search,
+instead of the  linear search used for ordinary  lists.  So if you have a
+list for which you want  to perform a large  number  of searches you  may
+consider converting it to a set with the function <code>Set</code> (see <a href="chap028.htm#SECT002">Set</a>).
+<P>
+<pre>    gap> Position( [ 2, 2, 1, 3 ],  1 );
+    3
+    gap> Position( [ 2, 1, 1, 3 ], 1 );
+    2
+    gap> Position( [ 2, 1, 1, 3 ], 1, 2 );
+    3
+    gap> Position( [ 2, 1, 1, 3 ], 1, 3 );
+    false
+    gap> Position( [ 4, -1, 0, 3 ],  1 );
+    false
+    gap> s := Set([2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32]);;
+    gap> Position( s,  17 );
+    false        # uses binary search and only 4 comparisons
+    gap> Position( [ "This", "is", "a", "list", "of", "strings" ],  1 );
+    false
+    gap> Position( [ [0,6], [0,4], [1,3], [1,5], [1,2], [3,4] ],  [1,2] );
+    5 </pre>
+<P>
+The <code>in</code>  operator (see <a href="chap027.htm#SECT014">In</a>) can  be used if  you are only interested to
+know  whether the element is in  the list  or not.  <code>PositionSorted</code> (see
+<a href="chap027.htm#SECT016">PositionSorted</a>) can be used if the list  is sorted.  <code>PositionProperty</code>
+(see <a href="chap027.htm#SECT019">PositionProperty</a>) allows  you to find  the position  of an element
+that satisfies a certain property in a list.
+<P><A NAME="SECT016"><h2>27.16 PositionSorted</h2></a>
+<P><P>
+<A name = "I14"></a>
+
+<P>
+<code>PositionSorted( <var>list</var>, <var>elm</var> )</code> <BR> 
+<code>PositionSorted( <var>list</var>, <var>elm</var>, <var>func</var> )</code>
+<P>
+In the first form <code>PositionSorted</code>   returns the position of the  element
+<var>elm</var>, which may be an  object of  any type, with respect  to  the sorted
+list <var>list</var>.
+<P>
+In the second form <code>PositionSorted</code> returns  the position of  the element
+<var>elm</var>,  which may be  an  object of  any type with   respect to  the list
+<var>list</var>, which must be sorted with respect  to  <var>func</var>.  <var>func</var> must  be a
+function  of  two arguments that returns <code>true</code>  if the first argument is
+less than the second argument and <code>false</code> otherwise.
+<P>
+<code>PositionSorted</code> returns <var>pos</var> such  that <code><var>list</var>[<var>pos</var>-1] < <var>elm</var></code>  and
+<code><var>elm</var> <= <var>list</var>[<var>pos</var>]</code>.  That means,  if <var>elm</var> appears once in <var>list</var>,
+its position is returned.  If <var>elm</var> appears several  times in <var>list</var>, the
+position of the first occurrence is returned.  If <var>elm</var> is not an element
+of <var>list</var>, the index where <var>elm</var> must be inserted to keep the list sorted
+is returned.
+<P>
+<pre>    gap> PositionSorted( [1,4,5,5,6,7], 0 );
+    1
+    gap> PositionSorted( [1,4,5,5,6,7], 2 );
+    2
+    gap> PositionSorted( [1,4,5,5,6,7], 4 );
+    2
+    gap> PositionSorted( [1,4,5,5,6,7], 5 );
+    3
+    gap> PositionSorted( [1,4,5,5,6,7], 8 );
+    7 </pre>
+<P>
+<code>Position</code> (see <a href="chap027.htm#SECT015">Position</a>) is another function that returns the position
+of an element in a list.  <code>Position</code>  accepts unsorted lists, uses linear
+instead of binary search and returns <code>false</code> if <var>elm</var> is not in <var>list</var>.
+<A NAME="SECT017"><h2>27.17 PositionSet</h2></a>
+<P><P>
+<A name = "I15"></a>
+
+<P>
+<code>PositionSet( <var>list</var>, <var>elm</var> )</code> <BR> 
+<code>PositionSet( <var>list</var>, <var>elm</var>, <var>func</var> )</code>
+<P>
+In the first form <code>PositionSet</code>   returns the position of the  element
+<var>elm</var>, which may be an  object of  any type, with respect  to  the sorted
+list <var>list</var>.
+<P>
+In the second form <code>PositionSet</code> returns  the position of  the element
+<var>elm</var>,  which may be  an  object of  any type with   respect to  the list
+<var>list</var>, which must be sorted with respect  to  <var>func</var>.  <var>func</var> must  be a
+function  of  two arguments that returns <code>true</code>  if the first argument is
+less than the second argument and <code>false</code> otherwise.
+<P>
+<code>PositionSet</code>  returns <var>pos</var>  such  that <code><var>list</var>[<var>pos</var>-1]  < <var>elm</var></code>  and
+<code><var>elm</var> = <var>list</var>[<var>pos</var>]</code>.  That  means, if <var>elm</var>  appears once in  <var>list</var>,
+its position is returned.  If <var>elm</var>  appears several times in <var>list</var>, the
+position of the first occurrence is returned.  If <var>elm</var> is not an element
+of <var>list</var>, then <code>false</code> is returned.
+<P>
+<pre>    gap> PositionSet( [1,4,5,5,6,7], 0 );
+    false
+    gap> PositionSet( [1,4,5,5,6,7], 2 );
+    false
+    gap> PositionSet( [1,4,5,5,6,7], 4 );
+    2
+    gap> PositionSet( [1,4,5,5,6,7], 5 );
+    3
+    gap> PositionSet( [1,4,5,5,6,7], 8 );
+    false </pre>
+<P>
+<code>PositionSet</code>  is very similar to <code>PositionSorted</code> (see <a href="chap027.htm#SECT016">PositionSorted</a>)
+but returns <code>false</code> when <var>elm</var> is not an element of <var>list</var>.
+<P><A NAME="SECT018"><h2>27.18 Positions</h2></a>
+<P><P><P>
+<code>Positions( <var>list</var>, <var>elm</var> )</code>
+<P>
+Returns  the list of indices in <var>list</var>  where <var>elm</var> occurs, where <var>elm</var> may
+be an object of any type.
+<P>
+<pre>   gap> Positions([2,1,3,1],1);
+   [ 2, 4 ]
+   gap> Positions([2,1,3,1],4);
+   [  ]
+   gap> Positions([2,1,3,1],2);
+   [ 1 ]</pre>
+<P><A NAME="SECT019"><h2>27.19 PositionProperty</h2></a>
+<P><P><P>
+<code>PositionProperty( <var>list</var>, <var>func</var> )</code>
+<P>
+<code>PositionProperty</code> returns the position of the first element in  the list
+<var>list</var> for which the unary  function <var>func</var>  returns <code>true</code>.  <var>list</var> must
+not contain holes.  If <var>func</var> returns <code>false</code> for all elements  of <var>list</var>
+<code>false</code>  is returned.   <var>func</var> must  return <code>true</code> or   <code>false</code> for every
+element of <var>list</var>, otherwise an error is signalled.
+<P>
+<pre>    gap> PositionProperty( [10^7..10^8], IsPrime );
+    20
+    gap> PositionProperty( [10^5..10^6],
+    >                      n -> not IsPrime(n) and IsPrimePowerInt(n) );
+    490 </pre>
+<P>
+<code>First</code> (see <a href="chap027.htm#SECT034">First</a>) allows you to extract the first element of a list
+that satisfies a certain property.
+<P><A NAME="SECT020"><h2>27.20 PositionsProperty</h2></a>
+<P><P><P>
+<code>PositionsProperty( <var>list</var>, <var>func</var> )</code>
+<P>
+<code>PositionsProperty</code>  returns the  list of  indices <code>i</code>  in <var>list</var> for which
+<code>func(list[i])</code>  returns true. Here  <var>list</var> should be  a list without holes
+and <var>func</var> be a unary function.
+<P>
+<pre>   gap> PositionsProperty([1..9],IsPrime);
+   [ 2, 3, 5, 7 ]
+   gap> PositionsProperty([1..9],x->x>5);
+   [ 6, 7, 8, 9 ]</pre>
+<P><A NAME="SECT021"><h2>27.21 PositionSublist</h2></a>
+<P><P>
+<A name = "I16"></a>
+
+<P>
+<code>PositionSublist(<var>l</var>,<var>sub</var>)</code>
+<P>
+Returns the position of the first occurrence of the list <var>sub</var> as a sublist
+of consecutive elements in <var>l</var>, or <code>false</code> if there is no such occurrence.
+<P>
+<pre>gap> PositionSublist("abcde","cd");
+3
+gap> PositionSublist([1,0,0,1,0,1],[1,0,1]);
+4</pre>
+<P><A NAME="SECT022"><h2>27.22 Concatenation</h2></a>
+<P><P>
+<A name = "I17"></a>
+
+<P>
+<code>Concatenation( <var>list1</var>, <var>list2</var>.. )</code> <BR> 
+<code>Concatenation( <var>list</var> )</code>
+<P>
+In the first form <code>Concatenation</code> returns  the concatenation of the lists
+<var>list1</var>, <var>list2</var>, etc.  The <strong>concatenation</strong> is  the list that begins with
+the elements of <var>list1</var>, followed  by the elements  of <var>list2</var> and so on.
+Each list  may also contain holes,  in which  case the concatenation also
+contains holes at the corresponding positions.
+<P>
+<pre>    gap> Concatenation( [ 1, 2, 3 ], [ 4, 5 ] );
+    [ 1, 2, 3, 4, 5 ]
+    gap> Concatenation( [2,3,,5,,7], [11,,13,,,,17,,19] );
+    [ 2, 3,, 5,, 7, 11,, 13,,,, 17,, 19 ] </pre>
+<P>
+In the second form <var>list</var> must be a list  of lists <var>list1</var>, <var>list2</var>, etc,
+and <code>Concatenation</code> returns the concatenation of those lists.
+<P>
+<pre>    gap> Concatenation( [ [1,2,3], [2,3,4], [3,4,5] ] );
+    [ 1, 2, 3, 2, 3, 4, 3, 4, 5 ] </pre>
+<P>
+The result is a new list, that is  not identical to any  other list.  The
+elements of that list however are identical to the corresponding elements
+of the argument lists (see <a href="chap027.htm#SECT009">Identical Lists</a>).
+<P>
+Note that <code>Concatenation</code>  creates a  new  list and  leaves it  arguments
+unchanged, while <code>Append</code> (see <a href="chap027.htm#SECT008">Append</a>)  changes its first argument.  As
+usual the name of the  function that works destructively is  a verb,  but
+the name of the function that creates a new object is a substantive.
+<P>
+<code>Set(Concatenation(<var>set1</var>,<var>set2</var>..))</code> (see <a href="chap028.htm#SECT002">Set</a>) is a way to compute the
+union of sets, however, <code>Union</code> (see <a href="chap004.htm#SECT013">Union</a>) is more efficient.
+<P><A NAME="SECT023"><h2>27.23 Flat</h2></a>
+<P><P><P>
+<code>Flat( <var>list</var> )</code>
+<P>
+<code>Flat</code> returns  the list of all  elements that are  contained in the list
+<var>list</var> or its sublists.   That  is, <code>Flat</code> first makes  a new empty  list
+<var>new</var>.  Then it loops over the elements <var>elm</var> of <var>list</var>.  If <var>elm</var> is not
+a list it is added to <var>new</var>, otherwise <code>Flat</code> appends <code>Flat( <var>elm</var>  )</code> to
+<var>new</var>.
+<P>
+<pre>    gap> Flat( [ 1, [ 2, 3 ], [ [ 1, 2 ], 3 ] ] );
+    [ 1, 2, 3, 1, 2, 3 ]
+    gap> Flat( [ ] );
+    [  ] </pre>
+<P><A NAME="SECT024"><h2>27.24 Reversed</h2></a>
+<P><P>
+<A name = "I18"></a>
+
+<P>
+<code>Reversed( <var>list</var> )</code>
+<P>
+<code>Reversed</code>  returns a new  list  that contains the  elements of  the list
+<var>list</var>, which must not  contain  holes, in  reverse order.  The  argument
+list is unchanged.
+<P>
+<pre>    gap> Reversed( [ 1, 4, 5, 5, 6, 7 ] );
+    [ 7, 6, 5, 5, 4, 1 ] </pre>
+<P>
+The result is a new list, that is  not identical to any  other list.  The
+elements of that list however are identical to the corresponding elements
+of the argument list (see <a href="chap027.htm#SECT009">Identical Lists</a>).
+<P><A NAME="SECT025"><h2>27.25 Sublist</h2></a>
+<P><P><P>
+<code>Sublist( <var>list</var>, <var>inds</var> )</code>
+<P>
+<code>Sublist</code>  returns a new  list in which  the <var>i</var>-th element  is the element
+<code><var>list</var>[  <var>inds</var>[ <var>i</var> ]  ]</code>, of the  list <var>list</var>. <var>inds</var>  must be a list of
+positive  integers without holes,  it need, however,  not be sorted and may
+contains duplicate elements.
+<P>
+<pre>    gap> Sublist( [ 2, 3, 5, 7, 11, 13, 17, 19 ], [4..6] );
+    [ 7, 11, 13 ]
+    gap> Sublist( [ 2, 3, 5, 7, 11, 13, 17, 19 ], [1,7,1,8] );
+    [ 2, 17, 2, 19 ]
+    gap> Sublist( [ 1, , 2, , , 3 ], [ 1..4 ] );
+    [ 1,, 2 ] </pre>
+<P>
+<code>Filtered</code>  (see <a href="chap027.htm#SECT030">Filtered</a>)  allows you  to extract  elements from  a list
+according to a predicate.
+<P>
+<code>Sublist</code>  has  been  made  obsolete  by  the introduction of the construct
+<code><var>list</var>{  <var>inds</var> }</code> (see <a href="chap027.htm#SECT004">List Elements</a>), excepted that in the last case
+an error is signaled if <code><var>list</var>[ <var>inds</var>[ <var>i</var> ] ]</code> is unbound for some <code>i</code>.
+<P><A NAME="SECT026"><h2>27.26 Cartesian</h2></a>
+<P><P>
+<A name = "I19"></a>
+
+<A name = "I20"></a>
+
+<P>
+<code>Cartesian( <var>list1</var>, <var>list2</var>.. )</code> <BR> 
+<code>Cartesian( <var>list</var> )</code>
+<P>
+In the first form <code>Cartesian</code> returns  the cartesian product of the lists
+<var>list1</var>, <var>list2</var>, etc.
+<P>
+In the second form <var>list</var> must be a list of lists <var>list1</var>, <var>list2</var>, etc.,
+and <code>Cartesian</code> returns the cartesian product of those lists.
+<P>
+The <strong>cartesian  product</strong> is a list <var>cart</var>  of lists <var>tup</var>,  such that the
+first  element of <var>tup</var> is  an element of  <var>list1</var>, the second element of
+<var>tup</var> is an element of <var>list2</var>, and so on.   The total number of elements
+in  <var>cart</var> is the   product of the  lengths  of the  argument  lists.  In
+particular <var>cart</var> is empty  if and only if  at least one of  the argument
+lists  is  empty.  Also <var>cart</var>   contains duplicates  if  and only  if no
+argument list is empty and at least one contains duplicates.
+<P>
+The last index runs fastest.  That means that the first element <var>tup1</var> of
+<var>cart</var> contains  the first element from <var>list1</var>,  from <var>list2</var> and so on.
+The second   element <var>tup2</var>  of <var>cart</var> contains   the  first element from
+<var>list1</var>, the first from <var>list2</var>, an so on, but the last element of <var>tup2</var>
+is  the  second element  of the  last argument  list.   This implies that
+<var>cart</var> is a set if and only if all argument lists are sets.
+<P>
+<pre>    gap> Cartesian( [1,2], [3,4], [5,6] );
+    [ [ 1, 3, 5 ], [ 1, 3, 6 ], [ 1, 4, 5 ], [ 1, 4, 6 ], [ 2, 3, 5 ],
+      [ 2, 3, 6 ], [ 2, 4, 5 ], [ 2, 4, 6 ] ]
+    gap> Cartesian( [1,2,2], [1,1,2] );
+    [ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], 
+      [ 2, 1 ], [ 2, 1 ], [ 2, 2 ] ] </pre>
+<P>
+The function <code>Tuples</code>   (see  <a href="chap047.htm#SECT009">Tuples</a>) computes the   <var>k</var>-fold cartesian
+product of a list.
+<P><A NAME="SECT027"><h2>27.27 Number</h2></a>
+<P><P>
+<A name = "I21"></a>
+
+<P>
+<code>Number( <var>list</var> )</code> <BR> 
+<code>Number( <var>list</var>, <var>func</var> )</code>
+<P>
+In the first  form <code>Number</code> returns  the number of  bound entries  in the
+list <var>list</var>.
+<P>
+For  lists that contain no holes  <code>Number</code>,  <code>Length</code> (see <a href="chap027.htm#SECT005">Length</a>), and
+<code>Size</code> (see <a href="chap004.htm#SECT010">Size</a>) return the same value.  For lists with holes <code>Number</code>
+returns  the number of bound entries,  <code>Length</code> returns the largest index
+of a bound entry, and <code>Size</code> signals an error.
+<P>
+<code>Number</code> returns the number of elements of the list <var>list</var> for  which the
+unary function <var>func</var> returns <code>true</code>.   If an   element for which  <var>func</var>
+returns <code>true</code>  appears several times in <var>list</var>  it  will also be counted
+several times.   <var>func</var> must return either  <code>true</code> or  <code>false</code>  for every
+element of <var>list</var>, otherwise an error is signalled.
+<P>
+<pre>    gap> Number( [ 2, 3, 5, 7 ] );
+    4
+    gap> Number( [, 2, 3,, 5,, 7,,,, 11 ] );
+    5
+    gap> Number( [1..20], IsPrime );
+    8
+    gap> Number( [ 1, 3, 4, -4, 4, 7, 10, 6 ], IsPrimePowerInt );
+    4
+    gap> Number( [ 1, 3, 4, -4, 4, 7, 10, 6 ],
+    >            n -> IsPrimePowerInt(n) and n mod 2 &lt;> 0 );
+    2 </pre>
+<P>
+<code>Filtered</code> (see <a href="chap027.htm#SECT030">Filtered</a>) allows you to extract the  elements of a list
+that have a certain property.
+<P><A NAME="SECT028"><h2>27.28 Collected</h2></a>
+<P><P><P>
+<code>Collected( <var>list</var> )</code>
+<P>
+<code>Collected</code> returns  a new list  <var>new</var> that  contains for each  different
+element <var>elm</var> of  <var>list</var> a list  of two  elements, the first  element  is
+<var>elm</var> itself, and the second element is the number of times <var>elm</var> appears
+in <var>list</var>.  The order of those pairs in <var>new</var> corresponds to the ordering
+of the elements <var>elm</var>, so that the result is sorted.
+<P>
+<pre>    gap> Factors( Factorial( 10 ) );
+    [ 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 5, 5, 7 ]
+    gap> Collected( last );
+    [ [ 2, 8 ], [ 3, 4 ], [ 5, 2 ], [ 7, 1 ] ]
+    gap> Collected( last );
+    [ [ [ 2, 8 ], 1 ], [ [ 3, 4 ], 1 ], [ [ 5, 2 ], 1 ], [ [ 7, 1 ], 1 ] ] </pre>
+<P><A NAME="SECT029"><h2>27.29 CollectBy</h2></a>
+<P><P><P>
+<code>CollectBy(<var>list</var>, <var>f</var>)</code>
+<P>
+<var>list</var>  should be a  list and <var>f</var>  a unary function,  or a list of the same
+length as <var>list</var>. Let <I>v<sub>1</sub>,...,v<sub>n</sub></I> be the distinct values (sorted) that
+the  function  <var>f</var>  takes  on  the  elements  of <var>list</var> (resp. the distinct
+entries  of the  list <var>f</var>).  The function  <code>CollectBy</code> returns a list whose
+<I>i</I>-th  item is the sublist  of the elements of  <var>list</var> where <var>f</var> takes the
+value  <I>v<sub>i</sub></I>  (resp.  where  the  corresponding  element of <var>f</var> is equal to
+<I>v<sub>i</sub></I>).
+<P>
+<pre>  gap> CollectBy([1..15],x->x mod 4);
+   [ [ 4, 8, 12 ], [ 1, 5, 9, 13 ], [ 2, 6, 10, 14 ], [ 3, 7, 11, 15 ] ]</pre>
+<P><A NAME="SECT030"><h2>27.30 Filtered</h2></a>
+<P><P><P>
+<code>Filtered( <var>list</var>, <var>func</var> )</code>
+<P>
+<code>Filtered</code> returns  a new list that  contains those elements of  the list
+<var>list</var> for which the unary function <var>func</var> returns  <code>true</code>.  The order of
+the elements in the result is the same  as the order of the corresponding
+elements  of <var>list</var>.  If  an  element, for   which <var>func</var> returns  <code>true</code>
+appears several times  in <var>list</var> it will  also appear the same  number of
+times  in the result.   <var>list</var>  may contain  holes,  they are  ignored by
+<code>Filtered</code>.  <var>func</var>  must  return  either  <code>true</code> or <code>false</code>    for every
+element of <var>list</var>, otherwise an error is signalled.
+<P>
+<pre>    gap> Filtered( [1..20], IsPrime );
+    [ 2, 3, 5, 7, 11, 13, 17, 19 ]
+    gap> Filtered( [ 1, 3, 4, -4, 4, 7, 10, 6 ], IsPrimePowerInt );
+    [ 3, 4, 4, 7 ]
+    gap> Filtered( [ 1, 3, 4, -4, 4, 7, 10, 6 ],
+    >              n -> IsPrimePowerInt(n) and n mod 2 &lt;> 0 );
+    [ 3, 7 ] </pre>
+<P>
+The result is a new list, that is  not identical to any  other list.  The
+elements of that list however are identical to the corresponding elements
+of the argument list (see <a href="chap027.htm#SECT009">Identical Lists</a>).
+<P>
+<code>Sublist</code> (see <a href="chap027.htm#SECT025">Sublist</a>)  allows  you  to extract  elements of   a  list
+according to indices given in another list.
+<P><A NAME="SECT031"><h2>27.31 Zip</h2></a>
+<P><P><P>
+<code>Zip(<var>a1</var>,...,<var>an</var>,<var>f</var>)</code>
+<P>
+The  first arguments <var>a1</var>,...,<var>an</var> should be  lists of the same length, and
+the last argument a function taking <var>n</var> arguments. This functions zips with
+the  function <var>f</var> the lists  <var>a1</var>,..,<var>an</var>, that is it  returns a list whose
+<I>i</I>-th entry is <code>f(a1[i],a2[i],..,an[i])</code>.
+<P>
+<pre>   gap> Zip([1..9],[1..9],function(x,y)return x*y;end);
+   [ 1, 4, 9, 16, 25, 36, 49, 64, 81 ]</pre>
+<P><A NAME="SECT032"><h2>27.32 ForAll</h2></a>
+<P><P><P>
+<code>ForAll( <var>list</var>, <var>func</var> )</code>
+<P>
+<code>ForAll</code> returns  <code>true</code> if the  unary function <var>func</var> returns <code>true</code> for
+all  elements of  the list   <var>list</var> and <code>false</code>  otherwise.   <var>list</var>  may
+contain  holes.   <var>func</var> must return either  <code>true</code> or <code>false</code> for  every
+element of <var>list</var>, otherwise an error is signalled.
+<P>
+<pre>    gap> ForAll( [1..20], IsPrime );
+    false
+    gap> ForAll( [2,3,4,5,8,9], IsPrimePowerInt );
+    true
+    gap> ForAll( [2..14], n -> IsPrimePowerInt(n) or n mod 2 = 0 );
+    true </pre>
+<P>
+<code>ForAny</code>  (see <a href="chap027.htm#SECT033">ForAny</a>) allows  you  to test if  any  element  of a list
+satisfies a certain property.
+<P><A NAME="SECT033"><h2>27.33 ForAny</h2></a>
+<P><P><P>
+<code>ForAny( <var>list</var>, <var>func</var> )</code>
+<P>
+<code>ForAny</code> returns <code>true</code> if the unary function  <var>func</var> returns <code>true</code>  for
+at  least one element of the list <var>list</var>  and <code>false</code>  otherwise.  <var>list</var>
+may contain holes.  <var>func</var> must return either <code>true</code> or <code>false</code> for every
+element of <var>list</var>, otherwise <code>ForAny</code> signals an error.
+<P>
+<pre>    gap> ForAny( [1..20], IsPrime );
+    true
+    gap> ForAny( [2,3,4,5,8,9], IsPrimePowerInt );
+    true
+    gap> ForAny( [2..14],
+    >    n -> IsPrimePowerInt(n) and n mod 5 = 0 and not IsPrime(n) );
+    false </pre>
+<P>
+<code>ForAll</code> (see <a href="chap027.htm#SECT032">ForAll</a>)  allows  you to test  if all  elements of  a list
+satisfies a certain propertie.
+<P><A NAME="SECT034"><h2>27.34 First</h2></a>
+<P><P><P>
+<code>First( <var>list</var>, <var>func</var> )</code>
+<P>
+<code>First</code> returns the first element of the list <var>list</var> for which  the unary
+function <var>func</var> returns <code>true</code>.  <var>list</var>  may  contain holes.  <var>func</var> must
+return either <code>true</code> or <code>false</code> for every element of <var>list</var>, otherwise an
+error is  signalled.  If  <var>func</var> returns <code>false</code>   for every element   of
+<var>list</var> an error is signalled.
+<P>
+<pre>    gap> First( [10^7..10^8], IsPrime );
+    10000019
+    gap> First( [10^5..10^6],
+    >           n -> not IsPrime(n) and IsPrimePowerInt(n) );
+    100489 </pre>
+<P>
+<code>PositionProperty</code>   (see <a href="chap027.htm#SECT019">PositionProperty</a>) allows   you   to  find the
+position of  the first  element  in a    list  that satisfies   a certain
+property.
+<P><A NAME="SECT035"><h2>27.35 Sort</h2></a>
+<P><P>
+<A name = "I22"></a>
+
+<P>
+<code>Sort( <var>list</var> )</code> <BR> 
+<code>Sort( <var>list</var>, <var>func</var> )</code>
+<P>
+<code>Sort</code>  sorts the list <var>list</var> in increasing order. In the first form <code>Sort</code>
+uses  the operator <code><</code> to compare the  elements. In the second form <code>Sort</code>
+uses  the  function  <var>func</var>  to  compare  elements. This function must be a
+function  taking two arguments that returns <code>true</code> if the first is strictly
+smaller than the second and <code>false</code> otherwise.
+<P>
+<code>Sort</code>  does not return anything, since it changes the argument <var>list</var>. Use
+<code>ShallowCopy</code>   (see  <a href="chap046.htm#SECT012">ShallowCopy</a>)  if  you  want  to  keep  <var>list</var>.  Use
+<code>Reversed</code>  (see  <a href="chap027.htm#SECT024">Reversed</a>)  if  you  want  to  get  a new list sorted in
+decreasing order.
+<P>
+It  is possible to sort lists  that contain multiple elements which compare
+equal.  In the first form, it is  guaranteed that those elements keep their
+relative  order, but not in the seccond i.e., <code>Sort</code> is stable in the first
+form but not in te second.
+<P>
+<pre>    gap> list := [ 5, 4, 6, 1, 7, 5 ];;  Sort( list );  list;
+    [ 1, 4, 5, 5, 6, 7 ]
+    gap> list := [ [0,6], [1,2], [1,3], [1,5], [0,4], [3,4] ];;
+    gap> Sort( list, function(v,w) return v*v &lt; w*w; end ); list;
+    [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 3, 4 ], [ 1, 5 ], [ 0, 6 ] ]
+    #  sorted according to the Euclidian distance from [0,0]
+    gap> list := [ [0,6], [1,3], [3,4], [1,5], [1,2], [0,4], ];;
+    gap> Sort( list, function(v,w) return v[1] &lt; w[1]; end ); list;
+    [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
+    # note the random order of the elements with equal first component </pre>
+<P>
+<code>SortParallel</code>  (see <a href="chap027.htm#SECT036">SortParallel</a>) allows you to  sort a list and apply
+the exchanges  that are necessary to  another list in parallel.  <code>Sortex</code>
+(see <a href="chap027.htm#SECT038">Sortex</a>) sorts a list and returns the sorting permutation.
+<P><A NAME="SECT036"><h2>27.36 SortParallel</h2></a>
+<P><P><P>
+<code>SortParallel( <var>list1</var>, <var>list2</var> )</code> <BR> 
+<code>SortParallel( <var>list1</var>, <var>list2</var>, <var>func</var> )</code>
+<P>
+<code>SortParallel</code> sorts the list <var>list1</var>  in increasing order just as <code>Sort</code>
+(see <a href="chap027.htm#SECT035">Sort</a>) does.  In  parallel it applies  the same exchanges  that are
+necessary to sort <var>list1</var> to the list <var>list2</var>, which must of  course have
+at least as many elements as <var>list1</var> does.
+<P>
+<pre>    gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+    gap> list2 := [ 2, 3, 5, 7, 8, 9 ];;
+    gap> SortParallel( list1, list2 );
+    gap> list1;
+    [ 1, 4, 5, 5, 6, 7 ]
+    gap> list2;
+    [ 7, 3, 2, 9, 5, 8 ]    # <code>[ 7, 3, 9, 2, 5, 8 ]</code> is also possible </pre>
+<P>
+<code>Sortex</code> (see <a href="chap027.htm#SECT038">Sortex</a>) sorts a list and returns the sorting permutation.
+<P><A NAME="SECT037"><h2>27.37 SortBy</h2></a>
+<P><P><P>
+<code>SortBy(<var>list</var>, <var>fist</var>)</code>
+<P>
+<var>list</var>  should be a list and <var>func</var> a unary function. The function <code>SortBy</code>
+sorts the list <var>list</var> according to the value that the function <var>func</var> takes
+on each element of the list.
+<P>
+<pre>   gap> l:=[1..15];
+   [ 1 .. 15 ]
+   gap> SortBy(l,x->x mod 4);      
+   gap> l;
+   [ 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 ]</pre>
+<P><A NAME="SECT038"><h2>27.38 Sortex</h2></a>
+<P><P><P>
+<code>Sortex( <var>list</var> )</code>
+<P>
+<code>Sortex</code> sorts the list <var>list</var> and  returns the  permutation that must be
+applied to <var>list</var> to obtain the sorted list.
+<P>
+<pre>    gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+    gap> list2 := Copy( list1 );;
+    gap> perm := Sortex( list1 );
+    (1,3,5,6,4)
+    gap> list1;
+    [ 1, 4, 5, 5, 6, 7 ]
+    gap> Permuted( list2, perm );
+    [ 1, 4, 5, 5, 6, 7 ] </pre>
+<P>
+<code>Permuted</code> (see <a href="chap027.htm#SECT041">Permuted</a>) allows you to rearrange a list according to a
+given permutation.
+<P><A NAME="SECT039"><h2>27.39 SortingPerm</h2></a>
+<P><P><P>
+<code>SortingPerm( <var>list</var> )</code>
+<P>
+<code>SortingPerm</code> returns  the permutation that must be  applied to <var>list</var> to
+sort it into ascending order.
+<P>
+<pre>    gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+    gap> list2 := Copy( list1 );;
+    gap> perm := SortingPerm( list1 );
+    (1,3,5,6,4)
+    gap> list1;
+    [ 5, 4, 6, 1, 7, 5 ]
+    gap> Permuted( list2, perm );
+    [ 1, 4, 5, 5, 6, 7 ] </pre>
+<P>
+<code>Sortex( <var>list</var> )</code> (see <a href="chap027.htm#SECT038">Sortex</a>) returns the same permutation as
+<code>SortingPerm( <var>list</var> )</code>, and also applies it to <var>list</var> (in place).
+<P><A NAME="SECT040"><h2>27.40 PermListList</h2></a>
+<P><P><P>
+<code>PermListList( <var>list1</var>, <var>list2</var> )</code>
+<P>
+<code>PermListList</code> returns a  permutation that may  be applied  to <var>list1</var> to
+obtain <var>list2</var>, if there is one. Otherwise it returns <code>false</code>.
+<P>
+<pre>    gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+    gap> list2 := [ 4, 1, 7, 5, 5, 6 ];;
+    gap> perm := PermListList(list1, list2);
+    (1,2,4)(3,5,6)
+    gap> Permuted( list2, perm );
+    [ 5, 4, 6, 1, 7, 5 ] </pre>
+<P><A NAME="SECT041"><h2>27.41 Permuted</h2></a>
+<P><P><P>
+<code>Permuted( <var>list</var>, <var>perm</var> )</code>
+<P>
+<code>Permuted</code> returns  a new  list <var>new</var> that contains  the elements  of the
+list  <var>list</var>  permuted according  to  the  permutation  <var>perm</var>.   That is
+<code><var>new</var>[<var>i</var>^<var>perm</var>] = <var>list</var>[<var>i</var>]</code>.
+<P>
+<pre>    gap> Permuted( [ 5, 4, 6, 1, 7, 5 ], (1,3,5,6,4) );
+    [ 1, 4, 5, 5, 6, 7 ] </pre>
+<P>
+<code>Sortex</code> (see <a href="chap027.htm#SECT038">Sortex</a>) allows you to compute the permutation that must
+be applied to a list to get the sorted list.
+<P><A NAME="SECT042"><h2>27.42 Product</h2></a>
+<P><P>
+<A name = "I23"></a>
+
+<P>
+<code>Product( <var>list</var> )</code> <BR> 
+<code>Product( <var>list</var>, <var>func</var> )</code>
+<P>
+In the first form <code>Product</code> returns  the product  of  the elements of the
+list <var>list</var>, which must have no holes.  If <var>list</var> is empty, the integer 1
+is returned.
+<P>
+In the second form <code>Product</code> applies the function <var>func</var> to  each element
+of the list <var>list</var>, which must have no holes, and multiplies the results.
+If the <var>list</var> is empty, the integer 1 is returned.
+<P>
+<pre>    gap> Product( [ 2, 3, 5, 7, 11, 13, 17, 19 ] );
+    9699690
+    gap> Product( [1..10], x->x^2 );
+    13168189440000
+    gap> Product( [ (1,2), (1,3), (1,4), (2,3), (2,4), (3,4) ] );
+    (1,4)(2,3) </pre>
+<P>
+<code>Sum</code> (see <a href="chap027.htm#SECT043">Sum</a>) computes the sum of the elements of a list.
+<P><A NAME="SECT043"><h2>27.43 Sum</h2></a>
+<P><P>
+<A name = "I24"></a>
+
+<P>
+<code>Sum( <var>list</var> )</code> <BR> 
+<code>Sum( <var>list</var>, <var>func</var> )</code>
+<P>
+In the first form <code>Sum</code>   returns the sum  of the  elements of the   list
+<var>list</var>, which must have no holes.  If <var>list</var> is empty 0 is returned.
+<P>
+In the second form <code>Sum</code>  applies the function <var>func</var>  to each element of
+the list <var>list</var>, which must have no holes, and  sums the results.  If the
+<var>list</var> is empty 0 is returned.
+<P>
+<pre>    gap> Sum( [ 2, 3, 5, 7, 11, 13, 17, 19 ] );
+    77
+    gap> Sum( [1..10], x->x^2 );
+    385
+    gap> Sum( [ [1,2], [3,4], [5,6] ] );
+    [ 9, 12 ] </pre>
+<P>
+<code>Product</code> (see <a href="chap027.htm#SECT042">Product</a>) computes the product of the elements of a list.
+<P><A NAME="SECT044"><h2>27.44 ValuePol</h2></a>
+<P><P><P>
+<code>ValuePol( <var>list</var>, <var>x</var> )</code>
+<P>
+<var>list</var> represents the coefficients of a polynomial. The function <code>ValuePol</code>
+returns  the value of that  polynomial at <var>x</var>, using  Horner' s scheme. It
+thus  represents  the  most  efficient  way  to  evaluate  the  value  of a
+polynomial.
+<P>
+<pre>    gap> q:=X(Rationals);;q.name:="q";;
+    gap> ValuePol([1..5],q);
+    5*q^4 + 4*q^3 + 3*q^2 + 2*q + 1</pre>
+<P><A NAME="SECT045"><h2>27.45 Maximum</h2></a>
+<P><P>
+<A name = "I25"></a>
+
+<A name = "I26"></a>
+
+<P>
+<code>Maximum( <var>obj1</var>, <var>obj2</var>.. )</code> <BR> 
+<code>Maximum( <var>list</var> )</code>
+<P>
+<code>Maximum</code> returns  the  maximum of  its  arguments,  i.e.,  that argument
+<I>obj<sub>i</sub></I> for  which  <I>obj<sub>k</sub> &lt;= obj<sub>i</sub></I> for all  <I>k</I>.   In its second  form
+<code>Maximum</code> takes  a list <var>list</var> and returns the maximum of the elements of
+this list.
+<P>
+Typically the arguments  or elements  of the  list  respectively will  be
+integers, but actually they  can be  objects of an arbitrary  type.  This
+works because any two objects can be compared using the <code><</code> operator.
+<P>
+<pre>    gap> Maximum( -123, 700, 123, 0, -1000 );
+    700
+    gap> Maximum( [ -123, 700, 123, 0, -1000 ] );
+    700
+    gap> Maximum( [ 1, 2 ], [ 0, 15 ], [ 1, 5 ], [ 2, -11 ] );
+    [ 2, -11 ]        # lists are compared elementwise </pre>
+<P><A NAME="SECT046"><h2>27.46 Minimum</h2></a>
+<P><P>
+<A name = "I27"></a>
+
+<A name = "I28"></a>
+
+<P>
+<code>Minimum( <var>obj1</var>, <var>obj2</var>.. )</code> <BR> 
+<code>Minimum( <var>list</var> )</code>
+<P>
+<code>Minimum</code>  returns  the  minimum of  its  arguments, i.e.,  that argument
+<I>obj<sub>i</sub></I>  for which  <I>obj<sub>i</sub> &lt;=  obj<sub>k</sub></I>  for all <I>k</I>.  In its second  form
+<code>Minimum</code> takes a list <var>list</var> and returns the  minimum of the elements of
+this list.
+<P>
+Typically  the  arguments  or elements  of  the list respectively will be
+integers, but actually  they can be  objects  of an arbitrary type.  This
+works because any two objects can be compared using the <code><</code> operator.
+<P>
+<pre>    gap> Minimum( -123, 700, 123, 0, -1000 );
+    -1000
+    gap> Minimum( [ -123, 700, 123, 0, -1000 ] );
+    -1000
+    gap> Minimum( [ 1, 2 ], [ 0, 15 ], [ 1, 5 ], [ 2, -11 ] );
+    [ 0, 15 ]        # lists are compared elementwise </pre>
+<P><A NAME="SECT047"><h2>27.47 Iterated</h2></a>
+<P><P>
+<A name = "I29"></a>
+
+<P>
+<code>Iterated( <var>list</var>, <var>f</var> )</code>
+<P>
+<code>Iterated</code> returns the result of the iterated application of the function
+<var>f</var>,  which must take  two arguments,  to the  elements of  <var>list</var>.  More
+precisely  <code>Iterated</code> returns the  result of the  following  application,
+<code><var>f</var>(..<var>f</var>( <var>f</var>( <var>list</var>[1], <var>list</var>[2] ), <var>list</var>[3] ),..,<var>list</var>[<var>n</var>] )</code>.
+<P>
+<pre>    gap> Iterated( [ 126, 66, 105 ], Gcd );
+    3 </pre>
+<P><A NAME="SECT048"><h2>27.48 RandomList</h2></a>
+<P><P><P>
+<code>RandomList( <var>list</var> )</code>
+<P>
+<code>RandomList</code> returns a  random element of  the list <var>list</var>.   The results
+are equally distributed,  i.e.,  all elements are  equally  likely  to be
+selected.
+<P>
+<pre>    gap> RandomList( [1..200] );
+    192
+    gap> RandomList( [1..200] );
+    152
+    gap> RandomList( [ [ 1, 2 ], 3, [ 4, 5 ], 6 ] );
+    [ 4, 5 ] </pre>
+<P>
+<code>RandomSeed( <var>n</var> )</code>
+<A name = "I30"></a>
+
+<P>
+<code>RandomSeed</code> seeds the pseudo random number generator <code>RandomList</code>.  Thus
+to reproduce a computation  exactly   you can call <code>RandomSeed</code> each time
+before you  start  the computation.   When <strong>GAP3</strong> is started   the pseudo
+random number generator is seeded with 1.
+<P>
+<pre>    gap> RandomSeed(1);  RandomList([1..100]);  RandomList([1..100]);
+    96
+    76
+    gap> RandomSeed(1);  RandomList([1..100]);  RandomList([1..100]);
+    96
+    76 </pre>
+<P>
+<code>RandomList</code>  is   called  by  all  random    functions for domains  (see
+<a href="chap004.htm#SECT016">Random</a>).
+<P><a href ="chap026.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap028.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

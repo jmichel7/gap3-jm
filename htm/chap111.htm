@@ -1,0 +1,455 @@
+<html><head><title>GAP3 Manual: 111 Multivariate polynomials and rational fractions</title></head>
+<body bgcolor="ffffff">
+<h1>111 Multivariate polynomials and rational fractions</h1>
+<P><P><P>
+The  functions  described  in  this  file  were  written  to  alleviate the
+deficiency of <strong>GAP3</strong> in manipulating multi-variate polynomials. In <strong>GAP3</strong> one
+can  only define  one-variable polynomials  over a  given ring; this allows
+multi-variate polynomials by taking this ring to be a polynomial ring; but,
+in  addition to providing little flexibility in the choice of coefficients,
+this  "full" representation makes  for somewhat inefficient computation.
+The  use of the  <code>Mvp</code> (MultiVariate Polynomials)  described here is faster
+than  <strong>GAP3</strong> polynomials as soon as there are two variables or more. What is
+implemented   here  is   actually  "Puiseux   polynomials",  i.e.  linear
+combinations  of monomials  of the  type <I>x<sub>1</sub><sup>a<sub>1</sub></sup>...  x<sub>n</sub><sup>a<sub>n</sub></sup></I> where
+<I>x<sub>i</sub></I> are variables and <I>a<sub>i</sub></I> are exponents which can be arbitrary rational
+numbers. Some functions described below need their argument to involve only
+variables  to integral powers;  we will refer  to such objects as "Laurent
+polynomials";  some functions  require further  that variables  are raised
+only  to positive powers: we refer then to "true polynomials". Rational
+fractions  (<code>RatFrac</code>)  have  been  added,  thanks to work of Gwena&euml;lle Genet (the main difficulty there was to write an algorithm for the
+Gcd  of multivariate polynomials, a  non-trivial task). The coefficients of
+our  polynomials  can  in  principle  be  elements  of  any  ring, but some
+algorithms like division or Gcd require the coefficients of their arguments
+to be invertible.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap111.htm#SECT001">Mvp</a>
+<LI> <A HREF="chap111.htm#SECT002">Operations for Mvp</a>
+<LI> <A HREF="chap111.htm#SECT003">IsMvp</a>
+<LI> <A HREF="chap111.htm#SECT004">ScalMvp</a>
+<LI> <A HREF="chap111.htm#SECT005">Variables for Mvp</a>
+<LI> <A HREF="chap111.htm#SECT006">LaurentDenominator</a>
+<LI> <A HREF="chap111.htm#SECT007">OnPolynomials</a>
+<LI> <A HREF="chap111.htm#SECT008">MvpGcd</a>
+<LI> <A HREF="chap111.htm#SECT009">MvpLcm</a>
+<LI> <A HREF="chap111.htm#SECT010">RatFrac</a>
+<LI> <A HREF="chap111.htm#SECT011">Operations for RatFrac</a>
+<LI> <A HREF="chap111.htm#SECT012">IsRatFrac</a>
+</ol>
+<A NAME="SECT001"><h2>111.1 Mvp</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+<code>Mvp( <var>string s</var> [, <var>coeffs v</var>] )</code>
+<P>
+Defines an indeterminate with name <var>s</var> suitable to build multivariate
+polynomials.
+<P>
+<pre>    gap> x:=Mvp("x");y:=Mvp("y");(x+y)^3;
+    x
+    y
+    3xy^2+3x^2y+x^3+y^3</pre>
+<P>
+If a  second argument (a vector  of coefficients <var>v</var>) is  given, returns
+<code>Sum([1..Length(v)],i->Mvp(s)^(i-1)*v[i])</code>.
+<P>
+<pre>    gap> Mvp("a",[1,2,0,4]);
+    1+2a+4a^3</pre>
+<P>
+<code>Mvp( <var>polynomial x</var>)</code>
+<P>
+Converts  the <strong>GAP3</strong>  polynomial  <var>x</var> to  an  <code>Mvp</code>. It  is  an error  if
+<code>x.baseRing.indeterminate.name</code> is not bound; otherwise this is taken as
+the name of the <code>Mvp</code> variable.
+<P>
+<pre>    gap> q:=Indeterminate(Rationals);
+    X(Rationals)
+    gap> Mvp(q^2+q);
+    Error, X(Rationals) should have .name bound in
+    Mvp( q ^ 2 + q ) called from
+    main loop
+    brk> 
+    gap> q.name:="q";;
+    gap> Mvp(q^2+q); 
+    q+q^2</pre>
+<P>
+<code>Mvp( <var>FracRat x</var>)</code>
+<P>
+Returns <code>false</code> if the argument rational fraction is not in fact a Laurent
+polynomial. Otherwise returns that polynomial.
+<P>
+<pre>    gap> Mvp(x/y);
+    xy^-1
+    gap> Mvp(x/(y+1));
+    false</pre>
+<P>
+<code>Mvp( <var>elm</var>, <var>coeff</var>)</code>
+<P>
+Build efficiently an <code>Mvp</code> from the given list of coefficients and the list
+<var>elm</var>   describing  the  corresponding  monomials.  A  monomial  is  itself
+described  by a record with a field  <code>.elm</code> containing the list of involved
+variable  names and a  field <code>.coeff</code> containing  the list of corresponding
+exponents.
+<P>
+<pre>    gap> Mvp([rec(elm:=["y","x"],coeff:=[1,-1])],[1]);       
+    x^-1y</pre>
+<P>
+<code>Mvp( <var>scalar x</var>)</code>
+<P>
+A  scalar is  anything which  is  not one  of the  previous types  (like
+a  cyclotomic,  or a  finite-field-element,  etc).  Returns the  constant
+multivariate polynomial whose constant term is <var>x</var>.
+<P>
+<pre>    gap> Degree(Mvp(1));
+    0</pre>
+<P><A NAME="SECT002"><h2>111.2 Operations for Mvp</h2></a>
+<P><P><P>
+The arithmetic operations <code>+</code>, <code>-</code>, <code>*</code>,  <code>/</code> and <code>^</code> work for <code>Mvp</code>s.
+They also  have <code>Print</code> and  <code>String</code> methods. The operations  <code>+</code>, <code>-</code>,
+<code>*</code> work  for any inputs. <code>/</code>  works only for Laurent  polynomials, and
+may return  a rational  fraction (see  below); if one  is sure  that the
+division is exact, one should call <code>MvpOps.ExactDiv</code> (see below).
+<P>
+<pre>    gap> x:=Mvp("x");y:=Mvp("y");
+    x
+    y
+    gap> a:=x^(-1/2);
+    x^(-1/2)
+    gap> (a+y)^4;
+    x^-2+4x^(-3/2)y+6x^-1y^2+4x^(-1/2)y^3+y^4
+    gap> (x^2-y^2)/(x-y);
+    x+y
+    gap> (x-y^2)/(x-y);
+    (x-y^2)/(x-y)
+    gap> (x-y^2)/(x^(1/2)-y);
+    Error, x^(1/2)-y is not a polynomial with respect to x
+     in
+    V.operations.Coefficients( V, v ) called from
+    Coefficients( q, var ) called from
+    MvpOps.ExactDiv( x, q ) called from
+    fun( arg[1][i] ) called from
+    List( p, function ( x ) ... end ) called from
+    ...
+    brk></pre>
+<P>
+Only monomials can be raised to a non-integral power; they can be raised
+to  a fractional  power of  denominator  <code>b</code> only  if <code>GetRoot(x,b)</code>  is
+defined  where <code>x</code>  is  their  leading coefficient.  For  an <code>Mvp</code>  <var>m</var>,
+the  function  <code>GetRoot(m,n)</code> is  equivalent  to  <code>m^(1/n)</code>. Raising  a
+non-monomial Laurent polynomial  to a negative power  returns a rational
+fraction.
+<P>
+<pre>    gap> (2*x)^(1/2);
+    ER(2)x^(1/2)
+    gap> (evalf(2)*x)^(1/2);
+    1.4142135624x^(1/2)
+    gap> GetRoot(evalf(2)*x,2);
+    1.4142135624x^(1/2)</pre>
+<P>
+<A name = "I1"></a>
+
+The <code>Degree</code> of a monomial is the sum of  the exponent of the variables.
+The <code>Degree</code> of an <code>Mvp</code> is the largest degree of a monomial.
+<P>
+<pre>    gap> a;
+    x^(-1/2)
+    gap> Degree(a);
+    -1/2
+    gap> Degree(a+x);
+    1
+    gap> Degree(Mvp(0));
+    -1</pre>
+<P>
+<A name = "I2"></a>
+
+The <code>Valuation</code> of an <code>Mvp</code> is the minimal degree of a monomial.
+<P>
+<pre>    gap> a;
+    x^(-1/2)
+    gap> Valuation(a);
+    -1/2
+    gap> Valuation(a+x);
+    -1/2
+    gap> Valuation(Mvp(0));
+    -1</pre>
+<P>
+The  <code>Format</code> routine formats  <code>Mvp</code>s in such  a way that  they can be read
+back  in by <strong>GAP3</strong> or by some other systems, by giving an appropriate option
+as  a second argument, or using the functions <code>FormatGAP</code>, <code>FormatMaple</code> or
+<code>FormatTeX</code>.  The <code>String</code>  method is  equivalent to  <code>Format</code>, and gives a
+compact display.
+<P>
+<pre>    gap> p:=7*x^5*y^-1-2;  
+    -2+7x^5y^-1
+    gap> Format(p);        
+    "-2+7x^5y^-1"
+    gap> FormatGAP(p);  
+    "-2+7*x^5*y^-1"
+    gap> FormatMaple(p);
+    "-2+7*x^5*y^(-1)"
+    gap> FormatTeX(p);  
+    "-2+7x^5y^{-1}"</pre>
+<P>
+<A name = "I3"></a>
+
+The <code>Value</code> method evaluates an <code>Mvp</code> by fixing simultaneously the value
+of several  variables. The  syntax is  <code>Value(x, [  <var>string1</var>, <var>value1</var>,
+<var>string2</var>, <var>value2</var>, <I>...</I> ])</code>.
+<P>
+<pre>    gap> p;
+    -2+7x^5y^-1
+    gap> Value(p,["x",2]);
+    -2+224y^-1
+    gap> Value(p,["y",3]);
+    -2+7/3x^5
+    gap> Value(p,["x",2,"y",3]);
+    218/3</pre>
+<P>
+One  should pay  attention to  the fact  that the  last value  is not  a
+rational  number,  but  a  constant <code>Mvp</code>  (for  consistency).  See  the
+function <code>ScalMvp</code> below for how to convert such constants to their base
+ring.
+<P>
+<pre>    gap> Value(p,["x",y]);
+    -2+7y^4
+    gap> Value(p,["x",y,"y",x]);
+    -2+7x^-1y^5</pre>
+<P>
+Evaluating an  <code>Mvp</code> which is  a Puiseux  polynomial may cause  calls to
+<code>GetRoot</code>
+<P>
+<pre>    gap> p:=x^(1/2)*y^(1/3);
+    x^(1/2)y^(1/3)
+    gap> Value(p,["x",y]);
+    y^(5/6)
+    gap>  Value(p,["x",2]);
+    ER(2)y^(1/3)
+    gap>  Value(p,["y",2]);
+    Error, : unable to compute 3-th root of 2
+     in
+    GetRoot( values[i], d[i] ) called from
+    f.operations.Value( f, x ) called from
+    Value( p, [ "y", 2 ] ) called from
+    main loop
+    brk></pre>
+<P>
+<A name = "I4"></a>
+
+The  function <code>Derivative(p,v)</code> returns the  derivative of <code>p</code> with respect
+to  the variable given by the string <code>v</code>; if <code>v</code> is not given, with respect
+to the first variable in alphabetical order.
+<P>
+<pre>    gap>  p:=7*x^5*y^-1-2;
+    -2+7x^5y^-1
+    gap> Derivative(p,"x");
+    35x^4y^-1
+    gap> Derivative(p,"y");
+    -7x^5y^-2
+    gap> Derivative(p);
+    35x^4y^-1
+    gap>  p:=x^(1/2)*y^(1/3);
+    x^(1/2)y^(1/3)
+    gap>  Derivative(p,"x");
+    1/2x^(-1/2)y^(1/3)
+    gap>  Derivative(p,"y");
+    1/3x^(1/2)y^(-2/3)
+    gap>  Derivative(p,"z");
+    0</pre>
+<P>
+<A name = "I5"></a>
+
+The function <code>Coefficients(<var>p</var>, <var>var</var>)</code> is defined only for <code>Mvp</code>s which
+are polynomials in the variable <var>var</var> . It returns as a list the list of
+coefficients of <var>p</var> with respect to <var>var</var>.
+<P>
+<pre>    gap> p:=x+y^-1;
+    y^-1+x
+    gap> Coefficients(p,"x");
+    [ y^-1, 1 ]
+    gap> Coefficients(p,"y");
+    Error, y^-1+x is not a polynomial with respect to y
+     in
+    V.operations.Coefficients( V, v ) called from
+    Coefficients( p, "y" ) called from
+    main loop
+    brk></pre>
+<P>
+The same  caveat is  applicable to <code>Coefficients</code>  as to  <code>Value</code>: the
+result  is always  a  list of  <code>Mvp</code>s.  To  get a  list  of scalars  for
+univariate polynomials represented as <code>Mvp</code>s, one should use <code>ScalMvp</code>.
+<P>
+<A name = "I6"></a>
+
+Finally we  mention the  functions <code>ComplexConjugate</code> and  <code>evalf</code> which
+are defined using  for coefficients the <code>Complex</code>  and <code>Decimal</code> numbers
+of the <strong>CHEVIE</strong> package.
+<P>
+<pre>    gap> p:=E(3)*x+E(5);
+    E5+E3x
+    gap> evalf(p);
+    0.3090169944+0.9510565163I+(-0.5+0.8660254038I)x
+    gap> p:=E(3)*x+E(5);          
+    E5+E3x
+    gap> ComplexConjugate(p);
+    E5^4+E3^2x
+    gap> evalf(p);
+    0.3090169944+0.9510565163I+(-0.5+0.8660254038I)x
+    gap> ComplexConjugate(last);
+    0.3090169944-0.9510565163I+(-0.5-0.8660254038I)x</pre>
+<P><A NAME="SECT003"><h2>111.3 IsMvp</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>IsMvp( <var>p</var> )</code>
+<P>
+Returns <code>true</code> if <var>p</var> is an <code>Mvp</code> and false otherwise.
+<P>
+<pre>    gap> IsMvp(1+Mvp("x"));
+    true
+    gap> IsMvp(1);         
+    false</pre>
+<P><A NAME="SECT004"><h2>111.4 ScalMvp</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>ScalMvp( <var>p</var> )</code>
+<P>
+If  <var>p</var> is  an  <code>Mvp</code> then  if  <var>p</var>  is a  scalar,  return that  scalar,
+otherwise return  <code>false</code>. Or  if <var>p</var>  is a  list, then  apply <code>ScalMvp</code>
+recursively to  it (but return false  if it contains any  <code>Mvp</code> which is
+not a scalar). Else assume <var>p</var> is already a scalar and thus return <var>p</var>.
+<P>
+<pre>    gap> v:=[Mvp("x"),Mvp("y")];        
+    [ x, y ]
+    gap> ScalMvp(v);
+    false
+    gap> w:=List(v,p->Value(p,["x",2,"y",3]));
+    [ 2, 3 ]
+    gap> Gcd(w);
+    Error, sorry, the elements of &lt;arg> lie in no common ring domain in
+    Domain( arg[1] ) called from
+    DefaultRing( ns ) called from
+    Gcd( w ) called from
+    main loop
+    brk> 
+    gap> Gcd(ScalMvp(w));
+    1</pre>
+<P><A NAME="SECT005"><h2>111.5 Variables for Mvp</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code>Variables for Mvp( <var>p</var> )</code>
+<P>
+Returns the list of variables of the <code>Mvp</code> <var>p</var> as a sorted list of strings.
+<P>
+<pre>    gap> Variables(x+x^4+y);
+    [ "x", "y" ]</pre>
+<P><A NAME="SECT006"><h2>111.6 LaurentDenominator</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+<code>LaurentDenominator( <var>p1</var>, <var>p2</var>, ... )</code>
+<P>
+Returns the unique monomial <code>m</code> of minimal degree such that for all the
+Laurent polynomial arguments <var>p1</var>, <var>p2</var>, etc... the product <I>m* p<sub>i</sub></I> is
+a true polynomial.
+<P>
+<pre>    gap> LaurentDenominator(x^-1,y^-2+x^4);
+    xy^2</pre>
+<P><A NAME="SECT007"><h2>111.7 OnPolynomials</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code>OnPolynomials( <var>m</var>, <var>p</var> [,<var>vars</var>] )</code>
+<P>
+Implements  the action of  a matrix on  <code>Mvp</code>s. <var>vars</var> should  be a list of
+strings representing variables. If <I>v</I><code>=List(vars,Mvp)</code>, the polynomial <I>p</I>
+is  changed  by  replacing  in  it  <I>v<sub>i</sub></I>  by <I>(v&times; m)<sub>i</sub></I>. If <var>vars</var> is
+omitted, it is taken to be <code>Variables(p)</code>.
+<P>
+<pre>    gap> OnPolynomials([[1,2],[3,1]],x+y);    
+    3x+4y</pre>
+<P><A NAME="SECT008"><h2>111.8 MvpGcd</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+<code>MvpGcd( <var>p1</var>, <var>p2</var>, ...)</code>
+<P>
+Returns  the Gcd  of the  <code>Mvp</code> arguments.  The arguments  must be  true
+polynomials.
+<P>
+<pre>    gap> MvpGcd(x^2-y^2,(x+y)^2);
+    x+y</pre>
+<P><A NAME="SECT009"><h2>111.9 MvpLcm</h2></a>
+<P><P>
+<A name = "I13"></a>
+
+<P>
+<code>MvpLcm( <var>p1</var>, <var>p2</var>, ...)</code>
+<P>
+Returns  the Lcm  of the  <code>Mvp</code> arguments.  The arguments  must be  true
+polynomials.
+<P>
+<pre>    gap> MvpLcm(x^2-y^2,(x+y)^2);
+    xy^2-x^2y-x^3+y^3</pre>
+<P><A NAME="SECT010"><h2>111.10 RatFrac</h2></a>
+<P><P>
+<A name = "I14"></a>
+
+<P>
+<code>RatFrac( <var>num</var> [,<var>den</var>] )</code>
+<P>
+Build the rational fraction (<code>RatFrac</code>) with numerator <var>num</var> and denominator 
+<var>den</var> (when <var>den</var> is omitted it is taken to be 1).
+<P>
+<pre>    gap> RatFrac(x,y);
+    x/y
+    gap> RatFrac(x*y^-1);
+    x/y</pre>
+<P><A NAME="SECT011"><h2>111.11 Operations for RatFrac</h2></a>
+<P><P><P>
+The arithmetic operations <code>+</code>, <code>-</code>, <code>*</code>,  <code>/</code> and <code>^</code> work for <code>RatFrac</code>s.
+They also  have <code>Print</code> and  <code>String</code> methods.
+<P>
+<pre>    gap> 1/(x+1)+y^-1;
+    (1+x+y)/(y+xy)
+    gap> 1/(x+1)*y^-1;
+    1/(y+xy)
+    gap> 1/(x+1)/y;   
+    1/(y+xy)
+    gap> 1/(x+1)^-2;
+    1+2x+x^2</pre>
+<P>
+<DL><DT>Similarly to <code>Mvp</code>s, <code>RatFrac</code>s hav <code>Format</code> and <code>Value</code> methods:<DD>
+</DL><P>
+<pre>    gap> Format(1/(x*y+1));
+    "1/(1+xy)"
+    gap> FormatGAP(1/(x*y+1));
+    "1/(1+x*y)"
+    gap> Value(1/(x*y+1),["x",2]);
+    1/(1+2y)</pre>
+<P><A NAME="SECT012"><h2>111.12 IsRatFrac</h2></a>
+<P><P>
+<A name = "I15"></a>
+
+<P>
+<code>IsRatFrac( <var>p</var> )</code>
+<P>
+Returns <code>true</code> if <var>p</var> is an <code>Mvp</code> and false otherwise.
+<P>
+<pre>    gap> IsRatFrac(1+RatFrac(x));
+    true
+    gap> IsRatFrac(x);         
+    false</pre>
+<P><a href ="chap110.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap112.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

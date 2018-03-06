@@ -1,0 +1,792 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  environm.tex                GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: environm.tex,v 1.1.1.1 1996/12/11 12:36:44 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This chapter describes the functions and facilites of {\GAP} environment.
+%%
+%H  $Log: environm.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:44  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.12  1994/05/02  13:49:49  sam
+%H  fixed a typo (found by K. Lux)
+%H
+%H  Revision 3.11  1994/01/10  19:24:36  mschoene
+%H  fixed trivial typo (noted by mfn)
+%H
+%H  Revision 3.10  1993/10/11  11:30:57  fceller
+%H  clarified with variable to use in 'Edit'
+%H
+%H  Revision 3.9  1993/05/05  13:59:57  fceller
+%H  added 'LogInputTo'
+%H
+%H  Revision 3.8  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.7  1993/02/18  09:19:03  felsch
+%H  example fixed
+%H
+%H  Revision 3.6  1993/02/11  12:20:47  martin
+%H  changed reference "Strings" to "Strings and Characters"
+%H
+%H  Revision 3.5  1993/02/10  20:49:08  martin
+%H  fixed some typos
+%H
+%H  Revision 3.4  1992/04/02  15:43:12  martin
+%H  replaced 'Linelength' by 'SizeScreen'
+%H
+%H  Revision 3.3  1992/03/12  16:18:31  martin
+%H  fixed several typos
+%H
+%H  Revision 3.2  1992/01/23  13:44:51  martin
+%H  added 'LogTo' and 'Linelength'
+%H
+%H  Revision 3.1  1992/01/11  18:32:46  martin
+%H  changed the sections 'Help' and 'Reading Sections' to fit on one screen
+%H
+%H  Revision 3.0  1991/12/27  16:10:27  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Environment}
+
+This  chapter describes the  interactive  environment in  which  you  use
+{\GAP}.
+
+The first sections describe  the main read  eval print loop and the break
+loop (see "Main Loop", "Break Loops", and "Error").
+
+The next section describes the commands you  can use to edit  the current
+input line (see "Line Editing").
+
+The next sections describe the {\GAP} help  system (see  "Help", "Reading
+Sections",  "Format of Sections",    "Browsing through   the   Sections",
+"Redisplaying a Section", "Abbreviating Section Names", "Help Index").
+
+The next sections  describe  the input and output functions  (see "Read",
+"ReadLib", "Print",  "PrintTo",  "AppendTo",  "LogTo", "LogInputTo",  and
+"SizeScreen").
+
+The  next  sections describe  the  functions that  allow you to   collect
+statistics about a computation (see "Runtime", "Profile").
+
+The last sections describe the functions that allow  you to execute other
+programs as subprocesses from within {\GAP} (see "Exec" and "Edit").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Main Loop}%
+\index{read eval print loop}\index{loop!read eval print}%
+\index{prompt}\index{prompt!partial}%
+\index{syntax errors}\index{errors!syntax}%
+\index{output!suppressing}%
+\index{last}\index{previous result}%
+
+The normal  interaction with {\GAP} happens in  the so--called *read eval
+print* loop.  This means that you type an input, {\GAP}  first reads  it,
+evaluates it, and prints the result.  The exact sequence is as follows.
+
+To show you that  it is ready  to accept your  input, {\GAP} displays the
+*prompt* 'gap> '.  When you see this, you know that {\GAP} is waiting for
+your input.
+
+Note that every statement must be terminated by a  semicolon.   You  must
+also enter <return> before {\GAP} starts to read and evaluate your input.
+Because  {\GAP} does not  do anything until  you enter  <return>, you can
+edit  your input to fix typos and only when  everything is  correct enter
+<return> and have {\GAP}  take a  look at it (see "Line Editing").  It is
+also possible to enter several statements as  input on a single line.  Of
+course each statement must be terminated by a semicolon.
+
+It is absolutely acceptable to enter a single statement on several lines.
+When you have entered the beginning of a  statement, but the statement is
+not  yet  complete, and  you  enter  <return>, {\GAP}  will  display  the
+*partial prompt*   '> '.   When you see   this, you  know that {\GAP}  is
+waiting for the rest of the statement.  This happens also when you forget
+the semicolon ';' that terminates every {\GAP} statement.
+
+When you enter <return>, {\GAP} first checks your  input to see  if it is
+syntactically  correct (see chapter  "The Programming  Language"  for the
+definition  of syntactically correct).   If it is  not, {\GAP}  prints an
+error message of the following form
+
+|    gap> 1 * ;
+    Syntax error: expression expected
+    1 * ;
+        ^ |
+
+The first line tells you what is wrong about  the input, in this case the
+'\*' operator takes  two expressions as  operands, so obviously the right
+one is missing.  If the  input came from a  file (see "Read"), this  line
+will also contain the filename and the line number.  The second line is a
+copy of the input.  And the third  line contains a  caret pointing to the
+place in the previous line where {\GAP} realized that something is wrong.
+This need not be  the exact place where  the error is,  but it is usually
+quite close.
+
+Sometimes, you will also  see a partial prompt after  you have entered an
+input  that is  syntactically incorrect.   This is  because  {\GAP} is so
+confused by your  input, that it thinks that  there is still something to
+follow.  In this case you  should enter ';<return>' repeatedly,  ignoring
+further error messages,  until you see the full  prompt  again.  When you
+see the full prompt, you know that {\GAP} forgave you and is now ready to
+accept your next -- hopefully correct -- input.
+
+If your input is syntactically correct, {\GAP} evaluates  or executes it,
+i.e., performs the  required computations  (see chapter "The  Programming
+Language" for the definition of the evaluation).
+
+If you do not see a prompt, you know that {\GAP} is still working on your
+last input.   Of  course,  you  can  *type ahead*,   i.e., already  start
+entering new input, but it  will not be  accepted by {\GAP} until  {\GAP}
+has completed the ongoing computation.
+
+When {\GAP} is ready it will usually print the result of the computation,
+i.e., the value computed.  Note that not  all statements produce a value,
+for example, if you enter a 'for'  loop, nothing will be printed, because
+the 'for' loop does not produce a value that could be printed.
+
+Also  sometimes you do  not want to see the   result.  For example if you
+have  computed a value and now  want to assign the  result to a variable,
+you  probably do not   want to see the   value again.  You  can terminate
+statements by *two* semicolons to suppress the printing of the result.
+
+If you have entered several statements on a single line {\GAP} will first
+read, evaluate, and  print the first one,  then read evaluate, and  print
+the second one, and so on.  This means that the second statement will not
+even be checked  for  syntactical correctness until {\GAP}  has completed
+the first computation.
+
+After the result has been printed {\GAP} will display another prompt, and
+wait for your next input.  And  the whole process  starts all over again.
+Note that a  new  prompt will  only  be  printed after  {\GAP} has  read,
+evaluated, and printed the  last  statement if  you have entered  several
+statements on a single line.
+
+In each statement  that you  enter the  result of  the previous statement
+that produced  a value is available in  the variable 'last'.  The next to
+previous result is available in  'last2' and  the result produced  before
+that is available in 'last3'.
+
+|    gap> 1; 2; 3;
+    1
+    2
+    3
+    gap> last3 + last2 * last;
+    7 |
+
+Also in each statement the time spent by the  last  statement, whether it
+produced a value or not, is available in the variable 'time'.  This is an
+integer that holds the number of milliseconds.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Break Loops}%
+
+When  an  error  has  occurred  or when you  interrupt {\GAP}, usually by
+hitting <ctr>-'C', {\GAP} enters a break loop,  that is in most  respects
+like the main read  eval print loop  (see "Main Loop").  That is, you can
+enter  statements,  {\GAP} reads  them, evaluates  them,  and prints  the
+result if  any.  However those  evaluations  happen within the context in
+which the error  occurred.   So you can look at the  arguments and  local
+variables of the functions that were active  when the error happened  and
+even change  them.   The  prompt is changed  from 'gap> ' to  'brk>  ' to
+indicate that you are in a break loop.
+
+There are two ways to leave a break loop.
+
+The first is to quit the break loop and continue in the main loop.  To do
+this  you enter 'quit;'  or hit the <eof>  (*e*nd *o*f *f*ile) character,
+which is usually <ctr>-'D'.   In this  case  control returns to  the main
+loop, and you can enter new statements.
+
+The other way is  to return  from a  break loop.  To  do this  you  enter
+'return;' or 'return <expr>;'.  If the break loop was entered because you
+interrupted {\GAP}, then you can continue by entering  'return;'.  If the
+break loop was  entered due to  an error, you  usually have  to  return a
+value to continue the computation.   For example,  if the break  loop was
+entered because a  variable  had no assigned  value, you  must return the
+value that this variable should have to continue the computation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Error}%
+
+'Error( <messages>... )'
+
+'Error' signals  an  error.  First  the messages <messages> are  printed,
+this  is done exactly as if 'Print' (see "Print") were  called with these
+arguments.  Then a break loop (see "Break Loops") is  entered, unless the
+standard error output is not connected to a terminal.  You can leave this
+break  loop  with 'return;'  to  continue execution  with  the  statement
+following the call to 'Error'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Line Editing}%
+
+{\GAP} allows you to edit the current input line with a number of editing
+commands.  Those commands  are accessible either as  *control keys* or as
+*escape keys*.  You enter a control key  by  pressing the <ctr> key, and,
+while still holding the <ctr> key  down, hitting another  key <key>.  You
+enter an escape key by hitting <esc> and then hitting  another key <key>.
+Below   we denote control  keys   by  <ctr>-<key>  and  escape  keys   by
+<esc>-<key>.  The case  of <key>  does   not matter, i.e., <ctr>-'A'  and
+<ctr>-'a' are equivalent.
+
+Characters  not mentioned below always  insert  themselves at the current
+cursor position.
+
+The first few commands allow you to move the cursor on the current line.
+
+<ctr>-'A'       move the cursor to the beginning of the line. \\
+<esc>-'B'       move the cursor to the beginning of the previous word. \\
+<ctr>-'B'       move the cursor backward one character. \\
+<ctr>-'F'       move the cursor forward  one character. \\
+<esc>-'F'       move the cursor to the end of the next word. \\
+<ctr>-'E'       move the cursor to the end of the line.
+
+The next commands delete or  kill  text.  The  last killed   text can  be
+reinserted, possibly at a different position with the yank command.
+
+<ctr>-'H' or <del> delete the character left of the cursor. \\
+<ctr>-'D'       delete the character under the cursor. \\
+<ctr>-'K'       kill up to the end of the line. \\
+<esc>-'D'       kill forward to the end of the next word. \\
+<esc>-<del>     kill backward to the beginning of the last word. \\
+<ctr>-'X'       kill entire input line, and discard all pending input. \\
+<ctr>-'Y'       insert (yank) a just killed text.
+
+The next commands allow you to change the input.
+
+<ctr>-'T'       exchange (twiddle) current and previous character. \\
+<esc>-'U'       uppercase next word. \\
+<esc>-'L'       lowercase next word. \\
+<esc>-'C'       capitalize next word.
+
+The <tab> character, which is in fact the control key <ctr>-'I', looks at
+the characters before the cursor, interprets them as the  beginning of an
+identifier and  tries to complete this identifier.  If there is more than
+one possible completion, it completes to the longest common prefix of all
+those completions.   If  the  characters  to the  left  of the cursor are
+already  the longest  common  prefix of all completions  hitting <tab>  a
+second time will display all possible completions.
+
+<tab>           complete the identifier before the cursor.
+
+The next  commands allow  you to fetch  previous lines, e.g.,  to correct
+typos, etc.  This history is limited to about 8000 characters.
+
+<ctr>-'L'       insert last input line before current character.\\
+<ctr>-'P'       redisplay  the last input   line, another  <ctr>-'P' will
+                redisplay the line  before that, etc.   If  the cursor is
+                not in the first column  only the lines starting with the
+                string to the left  of the cursor  are taken.\\
+<ctr>-'N'       Like <ctr>-'P' but goes the other way round  through  the
+                history.\\
+<esc>-'\<'      goes to the beginning of the history.\\
+<esc>-'>'       goes to the end of the history.\\
+<ctr>-'O'       accepts this line and perform a <ctr>-'N'.
+
+Finally there are a few miscellaneous commands.
+
+<ctr>-'V'       enter next character literally, i.e., enter it even if it
+                is one of the control keys.\\
+<ctr>-'U'       execute the next command 4 times.\\
+<esc>-<num>     execute the next command <num> times.\\
+<esc>-<ctr>-'L'  repaint input line.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Help}%
+
+This  section describes  together with  the following sections the {\GAP}
+help system.  The help system lets you read the manual interactively.
+
+'?<section>'
+
+The help command '?' displays the section  with the name <section> on the
+screen.  For  example '?Help'  will display this   section on the screen.
+You should not  type in  the single quotes,   they are only  used in help
+sections to delimit text that you should enter into {\GAP} or that {\GAP}
+prints in response.  When the whole section has been displayed the normal
+{\GAP} prompt 'gap>' is shown and normal {\GAP} interaction resumes.
+
+The section "Reading  Sections"  tells  you what actions  you can perform
+while  you are reading  a  section.   You  command {\GAP} to display this
+section  by  entering '?Reading Sections', without quotes.   The  section
+"Format of Sections" describes the format of sections and the conventions
+used, "Browsing through the  Sections" lists the commands you use to flip
+through  sections, "Redisplaying  a  Section" describes  how  to  read  a
+section again, "Abbreviating Section Names" tells you how to avoid typing
+the long section names, and "Help Index" describes the index command.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Reading Sections}%
+\index{help!scrolling}
+
+If the  section is longer than 24  lines {\GAP} stops  after 24 lines and
+displays
+
+|    -- <space> for more --|
+
+If you press <space> {\GAP} displays the next 24 lines of the section and
+then stops again.   This  goes on   until  the whole   section  has  been
+displayed, at which  point {\GAP}  will  return immediately to  the  main
+{\GAP} loop.  Pressing 'f' has the same effect as <space>.
+
+You can also press 'b' or the key labeled <del> which will scroll back to
+the *previous* 24 lines of  the section.  If  you press 'b' or <del> when
+{\GAP} is displaying the top of a section {\GAP} will ring the bell.
+
+You can  also press 'q'  to quit and  return immediately back to the main
+{\GAP} loop without reading the rest of the section.
+
+Actually the 24 is only a default,  if you have a larger screen  that can
+display more lines of text you  may want to tell this to {\GAP} with  the
+'-y <rows>' option when you start {\GAP}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Format of Sections}%
+\index{help!format}
+
+This section describes the format of sections when they are displayed  on
+the screen and the special conventions used.
+
+As you can see {\GAP} indents sections 4 spaces and  prints a header line
+containing  the  name of the  section  on the  left and  the  name of the
+chapter on the right.
+
+|<text>|
+
+Text enclosed in angle brackets is used for arguments in the descriptions
+of  functions and for other placeholders.   It  means that you should not
+actually  enter this text into  {\GAP} but replace   it by an appropriate
+text depending on what you  want to do.   For example when we write  that
+you should enter '?<section>' to see the section with the name <section>,
+<section> servers as  a placeholder, indicating  that  you can enter  the
+name of the section that you want to  see at this  place.  In the printed
+manual such text is printed in italics.
+
+|'text'|
+
+Text  enclosed  in single  quotes  is used  for  names of  variables  and
+functions and other  text that you may actually enter into  your computer
+and see on  your  screen.  The text enclosed in single quotes may contain
+placeholders enclosed in angle brackets as described above.   For example
+when the  help  text  for 'IsPrime'  says  that the form of  the  call is
+|'IsPrime( <n> )'| this means that you should actually enter the IsPrime(
+and  ),  without the  quotes,  but  replace the  <n> with the  number (or
+expression) that  you  want  to test.  In the printed manual this text is
+printed in a monospaced  (all characters have  the same width) typewriter
+font.
+
+|"text"|
+
+Text enclosed  in  double  quotes  is  used for cross references to other
+parts of the manual.  So the text inside the double quotes is the name of
+another  section of  the manual.  This is  used  to  direct you  to other
+sections that describe a topic or  a  function used  in this section.  So
+for example "Abbreviating Section Names" is a cross reference to the next
+section.  In the printed manual the text is replaced by the number of the
+section.
+
+|_| and |^|
+
+In mathematical formulas the underscore and  the caret are used to denote
+subscription  and superscription.  Ordinarily they apply only to the very
+next  character  following,   unless  a   whole  expression  enclosed  in
+parentheses follows.  So for example |x_1^(i+1)| denotes the variable 'x'
+with  subscript  1 raised  to the  'i+1'  power.  In  the  printed manual
+mathematical  formulas are typeset in italics (actually mathitalics)  and
+subscripts and superscripts are actually lowered and raised.
+
+Longer examples are usually  paragraphs of their  own that are indented 8
+spaces from the left margin, i.e.  4 spaces further than  the surrounding
+text.  Everything  on the lines with  the prompts 'gap>' and '>',  except
+the  prompts  themselves  of course,  is the  input  you  have  to  type,
+everything else is {\GAP}\'s response.   In the printed  manual  examples
+are also indented 4 spaces  and are  printed  in  a monospaced typewriter
+font.
+
+|    gap> ?Format of Sections
+    Format of Sections ______________________________________ Environment
+
+    This section describes the format of sections when they are displayed
+    on the screen and the special conventions used.
+
+    ... |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Browsing through the Sections}%
+\index{help!browsing}
+
+The help  sections are organized like  a book into chapters.  This should
+not  surprise you, since   the same source  is used  both for the printed
+manual and the online help.  Just as you can flip  through the pages of a
+book there are special commands to browse through the help sections.
+
+'?>' \\
+'?\<'
+
+The two help commands '?\<' and '?>' correspond to the flipping of pages.
+'?\<' takes you to the section preceding the current section and displays
+it, and '?>' takes you to the section following the current section.
+
+'?\<\<' \\
+'?>>'
+
+'?\<\<' is like '?\<',  only  more so.  It   takes you back to  the first
+section of the current  chapter, which gives an  overview of the sections
+described in  this chapter.  If you  are already in  this section '?\<\<'
+takes you to the first section of  the previous chapter.  '?>>' takes you
+to the first section of the next chapter.
+
+'?-'\\
+'?+'
+
+{\GAP} remembers the sections that you have read.  '?-'  takes you to the
+one that you  have read before  the  current one, and  displays it again.
+Further '?-' takes you further back  in this history.  '?+' reverses this
+process, i.e.,  it  takes you  back to   the section that   you have read
+*after* the current one.  It is important to  note, that '?-' and '?+' do
+*not* alter the history like the other help commands.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Redisplaying a Section}%
+\index{help!redisplaying}
+
+'?'
+
+The help command '?' followed by no section name redisplays the last help
+section again.  So  if you  reach  the bottom of  a long help section and
+already forgot what  was mentioned at the beginning, or, for example, the
+examples  do  not  seem  to  agree  with  your   interpretation  of   the
+explanations, use '?' to read the whole section again from the beginning.
+
+When  '?' is used before any section  has  been read {\GAP}  displays the
+section 'Welcome to GAP'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Abbreviating Section Names}%
+\index{help!abbreviating}
+
+Upper and lower case in <section> are not distinguished, so typing either
+'?Abbreviating Section Names' or '?abbreviating section names' will  show
+this very section.
+
+Each  word  in  <section>  may be  abbreviated.   So  instead  of  typing
+'?abbreviating section names'  you may also type '?abb sec nam',  or even
+'?a s n'.  You  must not omit the spaces separating  the words.  For each
+word in the section name you must  give at least the first character.  As
+another example you may  type '?oper for int' instead of '?operations for
+integers', which is especially handy when you can not remember whether it
+was 'operations' or 'operators'.
+
+If an abbreviation matches multiple   section names a   list of all these
+section names is displayed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Help Index}%
+\index{help!index}
+
+'??<topic>'
+
+'??' looks up <topic> in {\GAP}\'s index and prints all the index entries
+that contain the substring <topic>.  Then you can decide which section is
+the one you are actually interested in and request this one.
+
+|    gap> ??help
+        help ______________________________________________________ Index
+        Help
+        Reading Sections (help!scrolling)
+        Format of the Sections (help!format)
+        Browsing through the Sections (help!browsing)
+        Redisplaying a Section (help!redisplaying)
+        Abbreviating Section Names (help!abbreviating)
+        Help Index
+    gap> |
+
+The first thing on each line is the name of the  section.  If the name of
+the section matches <topic> nothing more is printed.  Otherwise the index
+entry  that matched   <topic>  is printed   in  parentheses following the
+section name.  For  each section only  the first matching index entry  is
+printed.  The  order  of the sections corresponds  to  their order in the
+{\GAP} manual, so that related sections should be adjacent.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Read}%
+\index{read!a file}\index{load!a file}%
+\index{file!read a}\index{file!load a}
+
+'Read( <filename> )'
+
+'Read' reads the input from the  file with the filename <filename>, which
+must be a string.
+
+'Read' first opens the file <filename>.   If the file  does not exist, or
+if {\GAP} can not open it, e.g., because of access restrictions, an error
+is signalled.
+
+Then the contents of the file are read and evaluated, but the results are
+not printed.  The  reading and printing happens exactly  as described for
+the main loop (see "Main Loop").
+
+If an   input in  the file contains   a syntactical  error, a message  is
+printed, and the rest of  this statement is ignored,  but the rest of the
+file is read.
+
+If a statement in the file  causes an error  a break loop is entered (see
+"Break Loops").   The  input for this break  loop  is not taken  from the
+file, but from the input connected to the 'stderr'  output of {\GAP}.  If
+'stderr'  is not connected to  a terminal, no  break loop is entered.  If
+this break loop is left with 'quit' (or <ctr>-'D') the file is closed and
+{\GAP} does not continue to read from it.
+
+Note that a statement may not begin in one file and end in another, i.e.,
+<eof> (*e*nd *o*f *f*ile) is not treated as  whitespace, but as a special
+symbol that must not appear inside any statement.
+
+Note that one file may very well contain a read statement causing another
+file to  be read, before input is again taken from the first file.  There
+is an operating  system dependent maximum on the number of files that may
+be open at once, usually it is 15.
+
+The special  file name '\"\*stdin\*\"'  denotes the standard input, i.e.,
+the stream through  which the user  enters commands to {\GAP}.  The exact
+behaviour of  'Read( \"\*stdin\*\" )'  is operating system dependent, but
+usually  the  following happens.   If {\GAP}   was started  with no input
+redirection, statements are read from  the terminal stream until the user
+enters the end of file character,  which is usually <ctr>-'D'.  Note that
+terminal  streams are special,  in that  they  may  yield ordinary  input
+*after* an end of file.  Thus when control returns to the main read eval
+print loop the user can continue with {\GAP}.  If {\GAP} was started with
+an input  redirection, statements are read  from the current  position in
+the input file up  to the end of the  file.  When control returns  to the
+main read eval print loop the input stream will still return end of file,
+and {\GAP} will terminate.  The special file name '\"\*errin\*\"' denotes
+the stream  connected with the 'stderr' output.   This stream  is usually
+connected  to the terminal,  even if  the standard  input was redirected,
+unless  the  standard error  stream was  also  redirected, in  which case
+opening of '\"\*errin\*\"' fails, and 'Read' will signal an error.
+
+'Read'  is implemented  in  terms of the  function 'READ', which  behaves
+exactly like 'Read', except that 'READ' does not signal an  error when it
+can not open  the file.  Instead it returns 'true' or 'false' to indicate
+whether opening the file was successful or not.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ReadLib}%
+\index{read!a library file}\index{load!a library file}%
+\index{file!read a library}\index{file!load a library}
+
+'ReadLib( <name> )'
+
+'ReadLib'  reads   input from  the  library  file  with  the name <name>.
+'ReadLib' prefixes  <name> with the value of  the variable  'LIBNAME' and
+appends the string '\".g\"' and calls 'Read'  (see "Read") with this file
+name.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Print}%
+
+'Print( <obj1>, <obj2>... )'
+
+'Print' prints the objects <obj1>, <obj2>... etc. to the standard output.
+The output looks exactly like  the printed  representation of the objects
+printed by the main loop.  The exception are strings,  which are  printed
+without  the enclosing  quotes  and  a  few  other  transformations  (see
+"Strings  and Characters").   Note that  no  space  or newline is printed
+between  the  objects.  'PrintTo'  can  be used  to print to a  file (see
+"PrintTo").
+
+|    gap> for i  in [1..5]  do
+    >     Print( i, " ", i^2, " ", i^3, "\n" );
+    > od;
+    1 1 1
+    2 4 8
+    3 9 27
+    4 16 64
+    5 25 125 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PrintTo}%
+\index{print!to a file}%
+\index{file!print to a}
+
+'PrintTo( <filename>, <obj1>, <obj2>... )'
+
+'PrintTo' works  like  'Print', except that  the output is printed to the
+file with the name <filename> instead of the  standard output.  This file
+must of  course be writable by {\GAP},  otherwise  an error is signalled.
+Note that 'PrintTo' will overwrite the previous contents  of this file if
+it  already existed.  'AppendTo' can be used  to append  to  a file  (see
+"AppendTo").
+
+The  special  file  name  '\"\*stdout\*\"' can  be  used to print  to the
+standard output.   This is equivalent to a  plain 'Print', except  that a
+plain  'Print'  that is  executed  while   evaluating an argument    to a
+'PrintTo' call will  also  print to  the output  file opened by  the last
+'PrintTo'  call,  while  'PrintTo(  \"\*stdout\*\", <obj1>,  <obj2>... )'
+always   prints to     the standard output.    The  special   file   name
+'\"\*errout\*\"' can be used to print to the standard error  output file,
+which is usually connected with the terminal, even if the standard output
+was redirected.
+
+There is an  operating  system dependent maximum to the number  of output
+files that may be open at once, usually this is 14.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{AppendTo}%
+\index{append!to a file}%
+\index{file!append to a}
+
+'AppendTo( <filename>, <obj1>, <obj2>... )'
+
+'AppendTo' works like  'PrintTo'  (see "PrintTo"), except that the output
+does not overwrite the previous contents of the  file, but is appended to
+the file.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LogTo}%
+\index{log!to a file}%
+\index{file!log to a}
+
+'LogTo( <filename> )'
+
+'LogTo' causes the subsequent interaction  to be logged to the file  with
+the name <filename>, i.e., everything you see on your  terminal will also
+appear in this  file.   This file must  of course be  writable by {\GAP},
+otherwise  an error  is  signalled.  Note that 'LogTo' will overwrite the
+previous contents of this file if it already existed.
+
+'LogTo()'
+
+In this form 'LogTo' stops logging again.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{LogInputTo}%
+\index{log input!to a file}%
+\index{file!log input to a}
+
+'LogInputTo( <filename> )'
+
+'LogInputTo' causes  the subsequent input lines to be logged to the  file
+with the name <filename>, i.e., every line  you type will also appear  in
+this file.  This file must  of course be writable by {\GAP}, otherwise an
+error is signalled.  Note that 'LogInputTo'  will  overwrite the previous
+contents of this file if it already existed.
+
+'LogInputTo()'
+
+In this form 'LogInputTo' stops logging again.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SizeScreen}%
+
+'SizeScreen()'
+
+In this form 'SizeScreen' returns the size of the screen as  a list  with
+two entries.  The first is the length of each line,  the  second  is  the
+number of lines.
+
+'SizeScreen( [ <x>, <y> ] )'
+
+In this form 'SizeScreen' sets the size of the screen.  <x> is the length
+of  each line, <y> is the number of  lines.  Either value may be missing,
+to leave  this value unaffected.  Note that those parameters can  also be
+set with the command line options '-x <x>' and '-y <y>' (see "Getting and
+Installing GAP").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Runtime}%
+
+'Runtime()'
+
+'Runtime' returns the time spent by {\GAP} in milliseconds as an integer.
+This is usually the cpu time,  i.e., not the  wall clock time.  Also time
+spent by subprocesses of {\GAP} (see "Exec") is not counted.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Profile}%
+
+'Profile( true )'
+
+In this form 'Profile' turns  the  profiling on.  Subsequent computations
+will record the time spent by each function and the number of  times each
+function was called.  Old profiling information is cleared.
+
+'Profile( false )'
+
+In  this   form 'Profile' turns    the  profiling off  again.    Recorded
+information is still kept, so you can  display it even  after turning the
+profiling off.
+
+'Profile()'
+
+In   this  form 'Profile'  displays  the  collected  information   in the
+following format.
+
+|    gap> Factors( 10^21+1 );;    # make sure that the library is loaded
+    gap> Profile( true );
+    gap> Factors( 10^42+1 );
+    [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
+    gap> Profile( false );
+    gap> Profile();
+     count    time percent time/call child function
+         4    1811      76     452    2324  FactorsRho
+        18     171       7       9     237  PowerModInt
+       127      94       3       0      94  GcdInt
+        41      83       3       2     415  IsPrimeInt
+        91      59       2       0      59  TraceModQF
+       511      47       1       0      39  QuoInt
+        22      23       0       1      23  Jacobi
+       116      20       0       0      31  log
+         3      20       0       6      70  SmallestRootInt
+         1      19       0      19    2370  FactorsInt
+        26      15       0       0      39  LogInt
+         4       4       0       1       4  Concatenation
+         5       4       0       0      20  RootInt
+         7       0       0       0       0  Add
+        26       0       0       0       0  Length
+        13       0       0       0       0  NextPrimeInt
+         4       0       0       0       0  AddSet
+         4       0       0       0       0  IsList
+         4       0       0       0       0  Sort
+         8       0       0       0       0  Append
+              2369     100                  TOTAL |
+
+The last  column contains the  name  of the function.   The  first column
+contains the number of times each function was called.  The second column
+contains the time spent in this function.  The third column  contains the
+percentage of the total  time spent in this  function.  The fourth column
+contains the time per call, i.e., the quotient of the second by the first
+number.  The fifth column  contains the time  spent  in this function and
+all other functions called, directly or indirectly, by this function.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Exec}%
+
+'Exec( <command> )'
+
+'Exec'  executes  the  command  given by  the  string <command>   in  the
+operating system.  How this happens is operating system dependent.  Under
+UNIX, for example, a new  shell is started  and <command>  is passed as a
+command to this shell.
+
+|    gap> Exec( "date" );
+    Fri Dec 13 17:00:29 MET 1991 |
+
+'Edit' (see "Edit") should be used to call an editor from within {\GAP}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Edit}%
+
+'Edit( <filename> )'
+
+'Edit' starts an editor  with  the file  whose  filename is given by  the
+string <filename>, and reads the file back into  {\GAP} when you exit the
+editor again.  You should set the {\GAP} variable 'EDITOR' to the name of
+the  editor  that you  usually use,  e.g.,  '/usr/ucb/vi'.   This can for
+example  be done in   your '.gaprc' file  (see  the sections on operating
+system dependent features in chapter "Getting and Installing GAP").
+

@@ -1,0 +1,162 @@
+<html><head><title>GAP3 Manual: 17 Unknowns</title></head>
+<body bgcolor="ffffff">
+<h1>17 Unknowns</h1>
+<P><P>
+<A name = "I0"></a>
+
+<P>
+Sometimes  the  result  of  an   operation  does  not  allow   further
+computations with it.  In many cases, then an error is signalled,  and
+the computation is stopped.
+<P>
+This is not  appropriate  for some applications  in  character theory.
+For example,  if a  character shall be induced  up (see <a href="chap051.htm#SECT022">Induced</a>) but
+the subgroup fusion is only a parametrized map  (see chapter <a href="chap052.htm">Maps and
+Parametrized  Maps</a>), there  are  positions where  the  value  of  the
+induced character are not known, and other values which are determined
+by the fusion map:
+<P>
+<pre>    gap> m11:= CharTable( "M11" );; m12:= CharTable( "M12" );;
+    gap> fus:= InitFusion( m11, m12 );
+    [ 1, [ 2, 3 ], [ 4, 5 ], [ 6, 7 ], 8, [ 9, 10 ], [ 11, 12 ],
+      [ 11, 12 ], [ 14, 15 ], [ 14, 15 ] ]
+    gap> Induced(m11,m12,Sublist(m11.irreducibles,[ 6 .. 9 ]),fus);
+    #I Induced: subgroup order not dividing sum in character 1 at class 4
+    #I Induced: subgroup order not dividing sum in character 1 at class 5
+    #I Induced: subgroup order not dividing sum in character 1 at class 14
+    #I Induced: subgroup order not dividing sum in character 1 at class 15
+    #I Induced: subgroup order not dividing sum in character 2 at class 4
+    #I Induced: subgroup order not dividing sum in character 2 at class 5
+    #I Induced: subgroup order not dividing sum in character 2 at class 14
+    #I Induced: subgroup order not dividing sum in character 2 at class 15
+    #I Induced: subgroup order not dividing sum in character 3 at class 2
+    #I Induced: subgroup order not dividing sum in character 3 at class 3
+    #I Induced: subgroup order not dividing sum in character 3 at class 4
+    #I Induced: subgroup order not dividing sum in character 3 at class 5
+    #I Induced: subgroup order not dividing sum in character 3 at class 9
+    #I Induced: subgroup order not dividing sum in character 3 at class 10
+    #I Induced: subgroup order not dividing sum in character 4 at class 2
+    #I Induced: subgroup order not dividing sum in character 4 at class 3
+    #I Induced: subgroup order not dividing sum in character 4 at class 6
+    #I Induced: subgroup order not dividing sum in character 4 at class 7
+    #I Induced: subgroup order not dividing sum in character 4 at class 11
+    #I Induced: subgroup order not dividing sum in character 4 at class 12
+    #I Induced: subgroup order not dividing sum in character 4 at class 14
+    #I Induced: subgroup order not dividing sum in character 4 at class 15
+    [ [ 192, 0, 0, Unknown(9), Unknown(12), 0, 0, 2, 0, 0, 0, 0, 0,
+          Unknown(15), Unknown(18) ], 
+      [ 192, 0, 0, Unknown(27), Unknown(30), 0, 0, 2, 0, 0, 0, 0, 0,
+          Unknown(33), Unknown(36) ], 
+      [ 528, Unknown(45), Unknown(48), Unknown(51), Unknown(54), 0, 0, 
+          -2, Unknown(57), Unknown(60), 0, 0, 0, 0, 0 ], 
+      [ 540, Unknown(75), Unknown(78), 0, 0, Unknown(81), Unknown(84), 0, 
+          0, 0, Unknown(87), Unknown(90), 0, Unknown(93), Unknown(96) ] ]</pre>
+<P>
+For this  and other  situations,  in  <strong>GAP3</strong> there  is  the  data  type
+<strong>unknown</strong>.   Objects  of this type, further on  called <strong>unknowns</strong>, may
+stand for any cyclotomic (see <a href="chap013.htm">Cyclotomics</a>).
+<P>
+Unknowns are  parametrized by positive integers.  When a <strong>GAP3</strong> session
+is started, no unknowns do exist.
+<P>
+The only ways to create unknowns are to call  <a href="chap017.htm#SECT001">Unknown</a> <code>Unknown</code> or a
+function that calls it, or to do arithmetical operations with unknowns
+(see <a href="chap017.htm#SECT004">Operations for Unknowns</a>).
+<P>
+Two properties should be noted:
+<P>
+Lists  of cyclotomics and unknowns are  no vectors, so cannot be added
+or multiplied like vectors; as a  consequence, unknowns never occur in
+matrices.
+<P>
+<strong>GAP3</strong> objects  which are printed to files will contain fixed unknowns,
+i.e., function calls <code>Unknown(  <var>n</var> )</code>  instead of <code>Unknown()</code>,  so be
+careful to read files printed in different  sessions, since  there may
+be the same unknown at different places.
+<P>
+The rest  of this  chapter  contains  informations  about the  unknown
+constructor  (see   <a href="chap017.htm#SECT001">Unknown</a>),  the  characteristic   function   (see
+<a href="chap017.htm#SECT002">IsUnknown</a>),  and  comparison  of  and  arithmetical  operations  for
+unknowns  (see <a href="chap017.htm#SECT003">Comparisons  of Unknowns</a>, <a href="chap017.htm#SECT004">Operations for Unknowns</a>);
+more is not yet known about unknowns.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap017.htm#SECT001">Unknown</a>
+<LI> <A HREF="chap017.htm#SECT002">IsUnknown</a>
+<LI> <A HREF="chap017.htm#SECT003">Comparisons of Unknowns</a>
+<LI> <A HREF="chap017.htm#SECT004">Operations for Unknowns</a>
+</ol>
+<A NAME="SECT001"><h2>17.1 Unknown</h2></a>
+<P><P><P>
+<code>Unknown()</code><BR> 
+<code>Unknown( <var>n</var> )</code>
+<P>
+<code>Unknown()</code>  returns  a new unknown value, i.e. the first  one that is
+larger than all unknowns which exist in the actual <strong>GAP3</strong> session.
+<P>
+<code>Unknown(  <var>n</var>  )</code> returns the  <var>n</var>-th  unknown;  if it did not  exist
+already, it is created.
+<P>
+<pre>    gap> Unknown(); Unknown(2000); Unknown();
+    Unknown(97)     # There were created already 96 unknowns.
+    Unknown(2000)
+    Unknown(2001)</pre>
+<P><A NAME="SECT002"><h2>17.2 IsUnknown</h2></a>
+<P><P><P>
+<code>IsUnknown( <var>obj</var> )</code>
+<P>
+returns  <code>true</code> if  <var>obj</var>  is  an  object of type unknown, and <code>false</code>
+otherwise.  Will signal an error if <var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsUnknown( Unknown ); IsUnknown( Unknown() );
+    false
+    true
+    gap> IsUnknown( Unknown(2) );
+    true</pre>
+<P><A NAME="SECT003"><h2>17.3 Comparisons of Unknowns</h2></a>
+<P><P><P>
+To compare  unknowns with  other objects,  the operators  <code><</code>, <code><=</code>,
+<code>=</code>, <code>>=</code>,  <code>></code> and <code><></code> can be used.  The  result will  be <code>true</code> if
+the first  operand is  smaller,  smaller or equal,  equal,  larger  or
+equal, larger, or inequal, respectively, and <code>false</code> otherwise.
+<P>
+We have <code>Unknown( <var>n</var> ) >= Unknown( <var>m</var> )</code> if and only if <code><var>n</var> >= <var>m</var></code>
+holds; unknowns are larger than cyclotomics and finite field elements,
+unknowns  are  smaller than  all  objects  which are not  cyclotomics,
+finite field elements or unknowns.
+<P>
+<pre>    gap> Unknown() >= Unknown();
+    false
+    gap> Unknown(2) &lt; Unknown(3);
+    true
+    gap> Unknown() > 3;
+    true
+    gap> Unknown() > Z(8);
+    false
+    gap> Unknown() > E(3);
+    true
+    gap>  Unknown() > [];
+    false</pre>
+<P><A NAME="SECT004"><h2>17.4 Operations for Unknowns</h2></a>
+<P><P><P>
+The  operators  <code>+</code>,  <code>-</code>,  <code>*</code>  and   <code>/</code>  are  used  for  addition,
+subtraction, multiplication and division of  unknowns and cyclotomics.
+The  result  will be  a  new unknown  except  in one of  the following
+cases:
+<P>
+Multiplication  with zero yields zero, and multiplication  with one or
+addition of zero yields the old unknown.
+<P>
+<pre>    gap> Unknown() + 1; Unknown(2) + 0; last * 3; last * 1; last * 0;
+    Unknown(2010)
+    Unknown(2)
+    Unknown(2011)
+    Unknown(2011)
+    0</pre>
+<P>
+<strong>Note</strong> that division by an unknown causes  an error, since an  unknown
+might stand for zero.
+<P><a href ="chap016.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap018.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

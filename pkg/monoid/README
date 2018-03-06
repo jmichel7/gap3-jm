@@ -1,0 +1,156 @@
+#############################################################################
+##
+#A  MONOID Version 2.2, September 1997
+##
+#A  by S. Linton, G. Pfeiffer, E. Robertson and N. Ruskuc.
+##
+#Y  Copyright (C) 1997 UCG, Ireland, and  University of St Andrews, Scotland.
+##
+#A  $Id: README,v 2.7 1997/11/26 12:40:56 goetz Exp $
+##
+##  For installation instructions see point 4 below.
+##
+
+##  1. The Package.  ########################################################
+
+MONOID  is a package of GAP  functions for transformation monoids and related
+objects.  It contains functions that deal with
+
+   > (finite) transformations,
+   > transformation monoids, 
+   > finite binary relations, and
+   > actions of monoids on various sorts of sets.
+
+A *transformation* of degree $n$  is a map from  the set $\{1, \dots, n\}$ to
+itself.  In MONOID a transformation is represented by its image list.
+
+   gap> a:= Transformation( [ 8, 6, 9, 6, 5, 4, 3, 1, 11, 3, 9 ] );
+   Transformation( [ 8, 6, 9, 6, 5, 4, 3, 1, 11, 3, 9 ] )
+   gap> 1^a;
+   8
+   gap> Image(a);
+   [ 1, 3, 4, 5, 6, 8, 9, 11 ]
+   gap> Rank(a);
+   8
+   gap> Degree(a);
+   11
+   gap> a^0;
+   Transformation( [ 1 .. 11 ] )
+
+Transformations act from the right on $\{1, \dots, n\}$, their multiplication
+is defined accordingly.
+
+   gap> b:= Transformation( [ 2, 1, 11, 5, 9, 9, 9, 2, 3, 10, 11 ] );;
+   gap> a*b;
+   Transformation( [ 2, 9, 3, 9, 9, 5, 11, 2, 11, 11, 3 ] )
+
+A *transformation   monoid*  of  degree  $n$  is    a monoid   generated   by
+transformations of degree $n$.
+
+   gap> M:= Monoid(a, b);
+   Monoid( [ Transformation( [ 8, 6, 9, 6, 5, 4, 3, 1, 11, 3, 9 ] ), 
+     Transformation( [ 2, 1, 11, 5, 9, 9, 9, 2, 3, 10, 11 ] ) ] )
+   gap> Size(M);
+   137
+
+MONOID provides functions that determine the  size of a transformation monoid
+$M$, can list the elements of $M$  or decide membership of any transformation
+of  degree $n$ in  $M$.  Moreover,  the Green class  structure  of $M$ can be
+determined.
+
+   gap> Length(DClasses(M));
+   63
+
+A *finite  binary relation* of  degree $n$ is  a graph  with vertex set $\{1,
+\dots,   n\}$.   In MONOID such a   relation  is represented by  its  list of
+successors.
+
+   gap> d:= Relation( [ [ ], [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] );
+   Relation( [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] )
+
+Relations   can  be   multiplied,   checked for  properties   like reflexive,
+symmetric, transitive,  and closures can be formed.   Relations of degree $n$
+can be used to generate a monoid.
+
+The *action* of a transformation monoid on $\{1,  \dots, n\}$ induces actions
+on tuples,  subsets,   ... which can   be  used to   build new transformation
+monoids from given ones.
+
+   gap> orb:= StrongOrbit(M, [1,4,5], Size, OnSets);
+   [ [ 1, 4, 5 ], [ 5, 6, 8 ] ]
+   gap> act:= ActionWithZero(M, orb, OnSets);
+   Monoid( [ Transformation( [ 2, 1, 3 ] ), Transformation( [ 3, 3, 3 ] ) ] )
+   gap> Size(act);
+   3
+
+(For the precise meaning of the commands in the above example we refer to the
+MONOID manual.)  The  concept of monoid actions can  be used to turn a monoid
+of binary relations into a transformation monoid.
+
+##  2. Contents.  ###########################################################
+
+The MONOID 2.2 distribution contains the following files.
+
+README			this file.
+
+init.g          	the init file of the package.
+
+in the subdirectory 'lib':
+
+action.g 		the GAP library files.
+monoid.g		 
+monorela.g
+monotran.g
+transfor.g
+relation.g
+
+in the subdirectory 'doc':
+
+manual.dvi		the 'dvi' version of the MONOID manual
+monoid.bib		the bibliography.
+
+manual.tex              the chapters of the manual.
+action.tex
+monoid.tex
+transfor.tex
+relation.tex
+monotran.tex
+
+
+##  3. Where to get it.  ####################################################
+
+The MONOID  package is distributed under the  terms and conditions of the GAP
+copyright.  It is available  as 'gzip'ed 'tar' file (size  80k) via anonymous
+'ftp' from the  'incoming' directory of  GAPs 'ftp' servers, in particular at
+
+   'ftp-gap.dcs.st-and.ac.uk' (University of St Andrews, Scotland):
+	get /pub/gap/gap/deposit/gap/monoid-2.2.tgz
+
+and at
+
+   'schmidt.ucg.ie' (University College Galway, Ireland):
+	get /pub/goetz/gap/monoid-2.2.tgz
+
+(for mirror sites see GAPs home page 'http://www-gap.dcs.st-and.ac.uk/~gap'.)
+
+
+##  4. Installation.  #######################################################
+
+Move the file 'monoid-2.2.tgz' into the directory $GAPHOME/pkg where your GAP
+packages reside.  The UNIX commands 'gunzip' and 'tar'  will unpack the files
+listed in  point 3 above into a  new subdirectory 'monoid'.   For example, if
+your GAP  packages normally are stored  in the directory '/home/gap/pkg' then
+the following sequence  of  commands will  unpack MONOID into   the directory
+'/home/gap/pkg/monoid'.
+
+   goetz@schmidt:~ > mv monoid-2.2.tgz /home/gap/pkg
+   goetz@schmidt:~ > cd /home/gap/pkg
+   goetz@schmidt:pkg > gunzip < monoid-2.2.tgz | tar xvf -
+
+#############################################################################
+
+Feel free to contact us at  <Goetz.Pfeiffer@ucg.ie> if you have any problems,
+questions, comments concerning the MONOID package.
+
+Goetz Pfeiffer.
+

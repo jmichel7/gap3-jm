@@ -1,0 +1,622 @@
+<html><head><title>GAP3 Manual: 13 Cyclotomics</title></head>
+<body bgcolor="ffffff">
+<h1>13 Cyclotomics</h1>
+<P><A name = "I0"></a>
+<A name = "I1"></a>
+
+<P>
+<strong>GAP3</strong> allows computations in abelian extension fields of the rational
+field  <I>Q</I>, i.e., fields with  abelian Galois group  over <I>Q</I>.   These
+fields  are  described  in  chapter <a href="chap015.htm">Subfields of Cyclotomic  Fields</a>.
+They are subfields  of <strong>cyclotomic fields</strong> <I>Q<sub>n</sub> = Q(e<sub>n</sub>)</I> where <I>e<sub>n</sub> =
+e<sup>(2&pi; i)/(n)</sup></I>  is a primitive  <I>n</I>--th root  of  unity.  Their
+elements are called <strong>cyclotomics</strong>.
+<P>
+The  internal representation  of a  cyclotomic  does not refer  to the
+smallest number field but the smallest cyclotomic  field containing it
+(the so--called <strong>conductor</strong>).  This is because it is easy to embed two
+cyclotomic fields in a larger one that contains both, i.e., there is a
+natural way to get the sum or the product of two arbitrary cyclotomics
+as  element  of a cyclotomic field.   The  disadvantage  is  that  the
+arithmetical operations are too expensive to do arithmetics  in number
+fields, e.g.,  calculations in a matrix ring over a number field.  But
+it  suffices to deal  with irrationalities  in  character  tables (see
+<a href="chap049.htm">Character Tables</a>).  (And in fact, the comfortability of working with
+the natural embeddings is used  there in many situations which did not
+actually afford it ...)
+<P>
+All functions that take  a field  extension as ---possibly optional---
+argument, e.g., <code>Trace</code> or <code>Coefficients</code>  (see chapter <a href="chap006.htm">Fields</a>), are
+described in chapter <a href="chap015.htm">Subfields of Cyclotomic Fields</a>.
+<P>
+<DL><DT>This chapter informs about:<DD><BR> 
+    the representation of cyclotomics in <strong>GAP3</strong> (see
+       <a href="chap013.htm#SECT001">More about Cyclotomics</a>),<BR> 
+    access to the internal data (see <a href="chap013.htm#SECT007">NofCyc</a>, <a href="chap013.htm#SECT008">CoeffsCyc</a>)<BR> 
+    integral elements of number fields (see <a href="chap013.htm#SECT002">Cyclotomic Integers</a>,
+       <a href="chap013.htm#SECT003">IntCyc</a>, <a href="chap013.htm#SECT004">RoundCyc</a>),<BR> 
+    characteristic functions (see <a href="chap013.htm#SECT005">IsCyc</a>, <a href="chap013.htm#SECT006">IsCycInt</a>),<BR> 
+    comparison and arithmetical operations of cyclotomics (see
+    <a href="chap013.htm#SECT009">Comparisons of Cyclotomics</a>, <a href="chap013.htm#SECT010">Operations for Cyclotomics</a>),<BR> 
+    functions concerning Galois conjugacy of cyclotomics (see <a href="chap013.htm#SECT011">GaloisCyc</a>,
+       <a href="chap013.htm#SECT013">StarCyc</a>), or lists of them (see <a href="chap013.htm#SECT015">GaloisMat</a>, <a href="chap013.htm#SECT016">RationalizedMat</a>),<BR> 
+    some special cyclotomics, as defined in <A href="biblio.htm#CCN85"><cite>CCN85</cite></a>
+       (see <a href="chap013.htm#SECT012">ATLAS irrationalities</a>, <a href="chap013.htm#SECT014">Quadratic</a>)
+</DL><P>
+The external functions are in the file <code>LIBNAME/"cyclotom.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap013.htm#SECT001">More about Cyclotomics</a>
+<LI> <A HREF="chap013.htm#SECT002">Cyclotomic Integers</a>
+<LI> <A HREF="chap013.htm#SECT003">IntCyc</a>
+<LI> <A HREF="chap013.htm#SECT004">RoundCyc</a>
+<LI> <A HREF="chap013.htm#SECT005">IsCyc</a>
+<LI> <A HREF="chap013.htm#SECT006">IsCycInt</a>
+<LI> <A HREF="chap013.htm#SECT007">NofCyc</a>
+<LI> <A HREF="chap013.htm#SECT008">CoeffsCyc</a>
+<LI> <A HREF="chap013.htm#SECT009">Comparisons of Cyclotomics</a>
+<LI> <A HREF="chap013.htm#SECT010">Operations for Cyclotomics</a>
+<LI> <A HREF="chap013.htm#SECT011">GaloisCyc</a>
+<LI> <A HREF="chap013.htm#SECT012">ATLAS irrationalities</a>
+<LI> <A HREF="chap013.htm#SECT013">StarCyc</a>
+<LI> <A HREF="chap013.htm#SECT014">Quadratic</a>
+<LI> <A HREF="chap013.htm#SECT015">GaloisMat</a>
+<LI> <A HREF="chap013.htm#SECT016">RationalizedMat</a>
+</ol>
+<A NAME="SECT001"><h2>13.1 More about Cyclotomics</h2></a>
+<P><A name = "I2"></a>
+
+<A name = "I3"></a>
+<A name = "I4"></a>
+
+<P>
+Elements  of  number  fields  (see  chapter  <a href="chap015.htm">Subfields of  Cyclotomic
+Fields</a>),  cyclotomics  for  short,  are  arithmetical  objects   like
+rationals  and  finite  field  elements;  they are not implemented  as
+records ---like  groups--- or e.g. with respect  to a character  table
+(although  character  tables  may be the main  interest for cyclotomic
+arithmetics).
+<P>
+<code>E( <var>n</var> )</code>
+<P>
+returns  the  primitive <var>n</var>-th  root  of unity  <I>e<sub>n</sub>  =  e<sup>(2&pi;
+i)/(n)</sup></I>.   Cyclotomics  are   usually  entered   as   (and  irrational
+cyclotomics  are  always displayed  as) sums of  roots of  unity  with
+rational   coefficients.    (For  special   cyclotomics,   see  <a href="chap013.htm#SECT012">ATLAS
+irrationalities</a>.)
+<P>
+<pre>    gap> E(9); E(9)^3; E(6); E(12) / 3; 
+    -E(9)^4-E(9)^7    # the root needs not to be an element of the base
+    E(3)
+    -E(3)^2
+    -1/3*E(12)^7</pre>
+<P>
+For the  representation  of  cyclotomics  one  has  to recall that the
+cyclotomic  field  <I>Q<sub>n</sub>  =  Q(e<sub>n</sub>)</I>  is a  vector  space  of dimension
+<I>&phi;(n)</I>  over  the rationals  where  <I>&phi;</I>  denotes  Euler's
+phi-function (see <a href="chap011.htm#SECT002">Phi</a>).
+<P>
+Note that the set  of all <I>n</I>-th  roots of unity is linearly dependent
+for <I>n &gt; 1</I>, so  multiplication is not the multiplication of the group
+ring <I>Q&lang; e<sub>n</sub> &rang;</I>; given a <I>Q</I>-basis of <I>Q<sub>n</sub></I> the  result of
+the  multiplication  (computed  as  multiplication of  polynomials  in
+<I>e<sub>n</sub></I>, using <I>(e<sub>n</sub>)<sup>n</sup> = 1</I>) will be converted to the base.
+<P>
+<pre>    gap> E(5) * E(5)^2; ( E(5) + E(5)^4 ) * E(5)^2;
+    E(5)^3
+    E(5)+E(5)^3
+    gap> ( E(5) + E(5)^4 ) * E(5);
+    -E(5)-E(5)^3-E(5)^4</pre>
+<P>
+Cyclotomics  are always  represented in  the smallest cyclotomic field
+they are contained in.  Together with  the choice of a fixed base this
+means that two cyclotomics are equal if and only if  they are  equally
+represented.
+<P>
+Addition  and multiplication of  two  cyclotomics represented in <I>Q<sub>n</sub></I>
+and <I>Q<sub>m</sub></I>, respectively,  is computed in the smallest cyclotomic field
+containing  both: <I>Q<sub><code>Lcm</code>(n,m)</sub></I>.  Conversely,  if  the result  is
+contained in a smaller cyclotomic field the representation  is reduced
+to the minimal such field.
+<P>
+The  base,  the  base conversion  and the  reduction  to  the  minimal
+cyclotomic field  are  described in <A href="biblio.htm#Zum89"><cite>Zum89</cite></a>,  more about the base
+can be found in <a href="chap015.htm#SECT009">ZumbroichBase</a>.
+<P>
+Since <I>n</I>  must  be  a <code>short integer</code>,  the  maximal cyclotomic field
+implemented in <strong>GAP3</strong> is not really the  field <I>Q<sup>ab</sup></I>.  The  biggest
+allowed (though not very useful) <I>n</I> is 65535.
+<P>
+There  is  a  global  variable <code>Cyclotomics</code>  in <strong>GAP3</strong>, a record that
+stands for  the domain of  all  cyclotomics (see chapter <a href="chap015.htm">Subfields of
+Cyclotomic Fields</a>).
+<P><A NAME="SECT002"><h2>13.2 Cyclotomic Integers</h2></a>
+<P><P><P>
+A  cyclotomic is called  <strong>integral</strong>  or  <strong>cyclotomic integer</strong>  if  all
+coefficients  of its minimal  polynomial are integers. Since  the base
+used  is  an  integral  base  (see <a href="chap015.htm#SECT009">ZumbroichBase</a>),  the  subring  of
+cyclotomic  integers  in  a  cyclotomic  field  is  formed   by  those
+cyclotomics  which have not only rational but integral coefficients in
+their representation as  sums of roots of unity.   For example, square
+roots   of   integers   are   cyclotomic    integers    (see    <a href="chap013.htm#SECT012">ATLAS
+irrationalities</a>),  any  root  of  unity   is  a  cyclotomic  integer,
+character values  are always cyclotomic  integers,  but  all rationals
+which are not integers are not cyclotomic integers.  (See <a href="chap013.htm#SECT006">IsCycInt</a>)
+<P>
+<pre>    gap> ER( 5 );                # The square root of 5 is a cyclotomic
+    E(5)-E(5)^2-E(5)^3+E(5)^4    # integer, it has integral coefficients.
+    gap> 1/2 * ER( 5 );          # This is not a cyclotomic integer, ...
+    1/2*E(5)-1/2*E(5)^2-1/2*E(5)^3+1/2*E(5)^4
+    gap> 1/2 * ER( 5 ) - 1/2;    # ... but this is one.
+    E(5)+E(5)^4</pre>
+<P><A NAME="SECT003"><h2>13.3 IntCyc</h2></a>
+<P><P><P>
+<code>IntCyc( <var>z</var> )</code>
+<P>
+returns  the  cyclotomic  integer  (see  <a href="chap013.htm#SECT002">Cyclotomic  Integers</a>)  with
+Zumbroich base coefficients  (see <a href="chap015.htm#SECT009">ZumbroichBase</a>) <code>List( <var>zumb</var>, x ->
+Int( x ) )</code> where <var>zumb</var> is the  vector of Zumbroich base coefficients
+of the cyclotomic <var>z</var>; see also <a href="chap013.htm#SECT004">RoundCyc</a>.
+<P>
+<pre>    gap> IntCyc( E(5)+1/2*E(5)^2 ); IntCyc( 2/3*E(7)+3/2*E(4) );
+    E(5)
+    E(4)</pre>
+<P><A NAME="SECT004"><h2>13.4 RoundCyc</h2></a>
+<P><P><P>
+<code>RoundCyc( <var>z</var> )</code>
+<P>
+returns  the  cyclotomic  integer  (see  <a href="chap013.htm#SECT002">Cyclotomic  Integers</a>)  with
+Zumbroich base coefficients (see <a href="chap015.htm#SECT009">ZumbroichBase</a>) <code>List( <var>zumb</var>,  x ->
+Int(  x+1/2  )  )</code> where  <var>zumb</var>  is  the  vector  of  Zumbroich  base
+coefficients of the cyclotomic <var>z</var>; see also <a href="chap013.htm#SECT003">IntCyc</a>.
+<P>
+<pre>    gap> RoundCyc( E(5)+1/2*E(5)^2 ); RoundCyc( 2/3*E(7)+3/2*E(4) );
+    E(5)+E(5)^2
+    -2*E(28)^3+E(28)^4-2*E(28)^11-2*E(28)^15-2*E(28)^19-2*E(28)^23
+     -2*E(28)^27</pre>
+<P><A NAME="SECT005"><h2>13.5 IsCyc</h2></a>
+<P><A name = "I5"></a>
+
+<P>
+<code>IsCyc( <var>obj</var> )</code>
+<P>
+returns <code>true</code> if <var>obj</var> is a cyclotomic, and <code>false</code>  otherwise.  Will
+signal an error if <var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsCyc( 0 ); IsCyc( E(3) ); IsCyc( 1/2 * E(3) ); IsCyc( IsCyc );
+    true
+    true
+    true
+    false</pre>
+<P>
+<code>IsCyc</code> is an internal function.
+<P><A NAME="SECT006"><h2>13.6 IsCycInt</h2></a>
+<P><A name = "I6"></a>
+
+<P>
+<code>IsCycInt( <var>obj</var> )</code>
+<P>
+returns  <code>true</code>  if  <var>obj</var>  is a cyclotomic integer  (see  <a href="chap013.htm#SECT002">Cyclotomic
+Integers</a>), <code>false</code>  otherwise.  Will signal  an  error if <var>obj</var> is an
+unbound variable.
+<P>
+<pre>    gap> IsCycInt( 0 ); IsCycInt( E(3) ); IsCycInt( 1/2 * E(3) );
+    true
+    true
+    false</pre>
+<P>
+<code>IsCycInt</code> is an internal function.
+<P><A NAME="SECT007"><h2>13.7 NofCyc</h2></a>
+<P><P><P>
+<code>NofCyc( <var>z</var> )</code><BR> 
+<code>NofCyc( <var>list</var> )</code>
+<P>
+returns the smallest positive integer <I>n</I> for which the cyclotomic <var>z</var>
+is resp. for  which all  cyclotomics in the list <var>list</var> are contained
+in <I>Q<sub>n</sub> = Q( e<sup>(2 &pi; i)/(n)</sup> ) = Q( <code>E(<var>n</var>)</code> )</I>.
+<P>
+<pre>    gap> NofCyc( 0 ); NofCyc( E(10) ); NofCyc( E(12) );
+    1
+    5
+    12</pre>
+<P>
+<code>NofCyc</code> is an internal function.
+<P><A NAME="SECT008"><h2>13.8 CoeffsCyc</h2></a>
+<P><A name = "I7"></a>
+
+<P>
+<code>CoeffsCyc( <var>z</var>, <var>n</var> )</code>
+<P>
+If <var>z</var> is a cyclotomic which is contained in  <I>Q<sub>n</sub></I>, <code>CoeffsCyc(  <var>z</var>,
+<var>n</var> )</code> returns a list <var>cfs</var> of length  <var>n</var> where the entry at position
+<var>i</var>  is  the   coefficient   of   <I><code>E(<var>n</var>)</code><sup>i-1</sup></I>   in  the  internal
+representation  of  <var>z</var> as element  of the cyclotomic field <I>Q<sub>n</sub></I> (see
+<a href="chap013.htm#SECT001">More  about  Cyclotomics</a>,  <a href="chap015.htm#SECT009">ZumbroichBase</a>): 
+<I>&lt;z&gt; = <var>cfs</var>[1] + <var>cfs</var>[2] <code>E(<var>n</var>)</code><sup>1</sup> + ... + <var>cfs</var>[n] 
+<code>E(<var>n</var>)</code><sup>n-1</sup></I>.
+<P>
+<strong>Note</strong>  that  all  positions which do not belong to  base  elements of
+<I>Q<sub>n</sub></I> contain zeroes.
+<P>
+<pre>    gap> CoeffsCyc( E(5), 5 ); CoeffsCyc( E(5), 15 );
+    [ 0, 1, 0, 0, 0 ]
+    [ 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0 ]
+    gap> CoeffsCyc( 1+E(3), 9 ); CoeffsCyc( E(5), 7 );
+    [ 0, 0, 0, 0, 0, 0, -1, 0, 0 ]
+    Error, no representation of &lt;z> in 7th roots of unity</pre>
+<P>
+<code>CoeffsCyc</code> calls the internal function <code>COEFFSCYC</code>:
+<P>
+<code>COEFFSCYC( <var>z</var> )</code>
+<P>
+is equivalent to <code>CoeffsCyc( <var>z</var>, NofCyc( <var>z</var> ) )</code>, see <a href="chap013.htm#SECT007">NofCyc</a>.
+<P><A NAME="SECT009"><h2>13.9 Comparisons of Cyclotomics</h2></a>
+<P><A name = "I8"></a>
+
+<P>
+To compare  cyclotomics, the operators <code><</code>, <code><=</code>, <code>=</code>, <code>>=</code>, <code>></code> and
+<code><></code> can  be used, the result will be  <code>true</code> if the first operand is
+smaller, smaller or equal, equal, larger or equal, larger, or inequal,
+respectively, and <code>false</code> otherwise.
+<P>
+Cyclotomics are ordered as follows: 
+The relation between rationals is as usual,  and rationals are smaller
+than irrational cyclotomics. For two irrational cyclotomics <var>z1</var>, <var>z2</var>
+which  lie in different  minimal cyclotomic  fields,  we have <I>&lt;z1&gt; &lt;
+<var>z2</var></I>  if  and   only  if   <I><code>NofCyc(<var>z1</var>)</code>  &lt;  <code>NofCyc(<var>z2</var>)</code></I>);  if
+<I><code>NofCyc(<var>z1</var>)</code>  = <code>NofCyc(<var>z2</var>)</code></I>), that one  is smaller that has the
+smaller coefficient vector, i.e.,  <I>&lt;z1&gt;   &le; <var>z2</var></I>  if  and  only if
+<I><code>COEFFSCYC(<var>z1</var>)</code>  &le; <code>COEFFSCYC(<var>z2</var>)</code></I>.
+<P>
+You  can compare  cyclotomics with objects of other types; all objects
+which are not cyclotomics are larger than cyclotomics.
+<P>
+<pre>    gap> E(5) &lt; E(6);     # the latter value lies in <I>Q<sub>3</sub></I>
+    false
+    gap> E(3) &lt; E(3)^2;    # both lie in <I>Q<sub>3</sub></I>, so compare coefficients
+    false
+    gap> 3 &lt; E(3); E(5) &lt; E(7);
+    true
+    true
+    gap> E(728) &lt; (1,2);
+    true</pre>
+<P><A NAME="SECT010"><h2>13.10 Operations for Cyclotomics</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+The  operators <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> are used for addition, subtraction,
+multiplication and division of two cyclotomics; note that  division by
+0 causes an error.
+<P>
+<code>+</code> and <code>-</code> can also be used as unary operators;
+<P>
+<code>^</code> is used for exponentiation of a cyclotomic with an integer;
+     this is in general <strong>not</strong> equal to Galois conjugation.
+<P>
+<pre>    gap> E(5) + E(3); (E(5) + E(5)^4) ^ 2; E(5) / E(3); E(5) * E(3);
+    -E(15)^2-2*E(15)^8-E(15)^11-E(15)^13-E(15)^14
+    -2*E(5)-E(5)^2-E(5)^3-2*E(5)^4
+    E(15)^13
+    E(15)^8</pre>
+<P><A NAME="SECT011"><h2>13.11 GaloisCyc</h2></a>
+<P><A name = "I10"></a>
+<A name = "I11"></a>
+
+<P>
+<code>GaloisCyc( <var>z</var>, <var>k</var> )</code>
+<P>
+returns  the cyclotomic obtained on raising the roots  of unity in the
+representation of  the cyclotomic <var>z</var> to  the <var>k</var>-th power.  If <var>z</var> is
+represented in the  field <I>Q<sub>n</sub></I> and <var>k</var>  is  a  fixed integer relative
+prime to <var>n</var>, <code>GaloisCyc( ., <var>k</var> )</code>  acts as a  Galois automorphism of
+<I>Q<sub>n</sub></I>  (see   <a href="chap015.htm#SECT008">GaloisGroup  for   Number  Fields</a>);   to   get  Galois
+automorphisms as functions, use <a href="chap006.htm#SECT007">GaloisGroup</a> <code>GaloisGroup</code>.
+<P>
+<pre>    gap> GaloisCyc( E(5) + E(5)^4, 2 );
+    E(5)^2+E(5)^3
+    gap> GaloisCyc( E(5), -1 );           # the complex conjugate
+    E(5)^4
+    gap> GaloisCyc( E(5) + E(5)^4, -1 );  # this value is real
+    E(5)+E(5)^4
+    gap> GaloisCyc( E(15) + E(15)^4, 3 );
+    E(5)+E(5)^4</pre>
+<P>
+<code>GaloisCyc</code> is an internal function.
+<P><A NAME="SECT012"><h2>13.12 ATLAS irrationalities</h2></a>
+<P><A name = "I12"></a>
+<A name = "I13"></a>
+<A name = "I14"></a>
+
+<A name = "I15"></a>
+<A name = "I16"></a>
+<A name = "I17"></a>
+<A name = "I18"></a>
+<A name = "I19"></a>
+
+<A name = "I20"></a>
+<A name = "I21"></a>
+<A name = "I22"></a>
+<A name = "I23"></a>
+<A name = "I24"></a>
+
+<A name = "I25"></a>
+<A name = "I26"></a>
+<A name = "I27"></a>
+<A name = "I28"></a>
+<A name = "I29"></a>
+
+<A name = "I30"></a>
+<A name = "I31"></a>
+<A name = "I32"></a>
+<A name = "I33"></a>
+
+<A name = "I34"></a>
+<A name = "I35"></a>
+<A name = "I36"></a>
+<A name = "I37"></a>
+<A name = "I38"></a>
+<A name = "I39"></a>
+<A name = "I40"></a>
+
+<A name = "I41"></a>
+<A name = "I42"></a>
+<A name = "I43"></a>
+<A name = "I44"></a>
+<A name = "I45"></a>
+<A name = "I46"></a>
+<A name = "I47"></a>
+
+<A name = "I48"></a>
+<A name = "I49"></a>
+<A name = "I50"></a>
+<A name = "I51"></a>
+<A name = "I52"></a>
+<A name = "I53"></a>
+<A name = "I54"></a>
+
+<P>
+<code>EB( <var>N</var> )</code>, <code>EC( <var>N</var> )</code>, ..., <code>EH( <var>N</var> )</code>,<BR> 
+<code>EI( <var>N</var> )</code>, <code>ER( <var>N</var> )</code>,<BR> 
+<code>EJ( <var>N</var> )</code>, <code>EK( <var>N</var> )</code>, <code>EL( <var>N</var> )</code>, <code>EM( <var>N</var> )</code>,<BR> 
+<code>EJ( <var>N</var>, <var>d</var> )</code>, <code>EK( <var>N</var>, <var>d</var> )</code>, <code>EL( <var>N</var>, <var>d</var> )</code>, <code>EM( <var>N</var>, <var>d</var> )</code>,<BR> 
+<code>ES( <var>N</var> )</code>, <code>ET( <var>N</var> )</code>, ..., <code>EY( <var>N</var> )</code>,<BR> 
+<code>ES( <var>N</var>, <var>d</var> )</code>, <code>ET( <var>N</var>, <var>d</var> )</code>, ..., <code>EY( <var>N</var>, <var>d</var> )</code>,<BR> 
+<code>NK( <var>N</var>, <var>k</var>, <var>d</var> )</code>
+<P>
+For <I>N</I> a positive integer, let <I>z = <code>E(<var>N</var>)</code> = e<sup>2 &pi; i / N</sup></I>.  The
+following   so-called  atomic  irrationalities  (see <A href="biblio.htm#CCN85"><cite>CCN85</cite></a>, Chapter  7,
+Section 10) can be entered by functions (Note that the  values
+are not necessary irrational.):
+<P>
+<center><table><tr><td><I></td><td><table style="display:inline-table;"><tr><td><I>
+<code>EB(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> b<sub>N</sub> </I></td><td><I> = </I></td><td><I> 1/2&sum;<sub>j=1</sub><sup>N-1</sup>z<sup>j<sup>2</sup></sup> </I></td><td><I>
+ (N&equiv; 1</I> mod <I> 2)</I></td></tr><tr><td><I> 
+
+<code>EC(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> c<sub>N</sub> </I></td><td><I> = </I></td><td><I> 1/3&sum;<sub>j=1</sub><sup>N-1</sup>z<sup>j<sup>3</sup></sup> </I></td><td><I>
+ (N&equiv; 1</I> mod <I> 3)</I></td></tr><tr><td><I> 
+
+<code>ED(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> d<sub>N</sub> </I></td><td><I> = </I></td><td><I> 1/4&sum;<sub>j=1</sub><sup>N-1</sup>z<sup>j<sup>4</sup></sup> </I></td><td><I>
+ (N&equiv; 1</I> mod <I> 4)</I></td></tr><tr><td><I> 
+
+<code>EE(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> e<sub>N</sub> </I></td><td><I> = </I></td><td><I> 1/5&sum;<sub>j=1</sub><sup>N-1</sup>z<sup>j<sup>5</sup></sup> </I></td><td><I>
+ (N&equiv; 1</I> mod <I> 5)</I></td></tr><tr><td><I> 
+
+<code>EF(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> f<sub>N</sub> </I></td><td><I> = </I></td><td><I> 1/6&sum;<sub>j=1</sub><sup>N-1</sup>z<sup>j<sup>6</sup></sup> </I></td><td><I>
+ (N&equiv; 1</I> mod <I> 6)</I></td></tr><tr><td><I> 
+
+<code>EG(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> g<sub>N</sub> </I></td><td><I> = </I></td><td><I> 1/7&sum;<sub>j=1</sub><sup>N-1</sup>z<sup>j<sup>7</sup></sup> </I></td><td><I>
+ (N&equiv; 1</I> mod <I> 7)</I></td></tr><tr><td><I> 
+
+<code>EH(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> h<sub>N</sub> </I></td><td><I> = </I></td><td><I> 1/8&sum;<sub>j=1</sub><sup>N-1</sup>z<sup>j<sup>8</sup></sup> </I></td><td><I>
+ (N&equiv; 1</I> mod <I> 8)
+</I></td></tr></table style="display:inline-table;"></td><td></I></td></tr></table></center>
+<P>
+(Note that in <I>c<sub>N</sub>, ..., h<sub>N</sub></I>, <var>N</var> must be a prime.)
+<P>
+<center><table><tr><td><I></td><td><table style="display:inline-table;"><tr><td><I>
+<code>ER(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> &radic;N</I></td></tr><tr><td><I> 
+<code>EI(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> i &radic;N </I></td><td><I> = </I></td><td><I> &radic;-N</I></td></tr><tr><td><I> 
+</I></td></tr></table style="display:inline-table;"></td><td></I></td></tr></table></center>
+<P>
+From a theorem of Gauss we know that
+<center><table><tr><td><I> b<sub>N</sub> = { </td><td><table style="display:inline-table;"><tr><td><I>
+          1/2(-1+&radic;N) </I></td><td><I> <I> if</I> </I></td><td><I> N&equiv; 1 </I></td><td><I> </I> mod <I> 4 </I></td></tr><tr><td><I> 
+          1/2(-1+i&radic;N) </I></td><td><I> <I> if</I> </I></td><td><I> N&equiv; -1 </I></td><td><I> </I> mod <I> 4
+          </I></td></tr></table style="display:inline-table;"></td><td>. ,</I></td></tr></table></center>
+<P>
+so <I>&radic;N</I> can be (and in fact is) computed from <I>b<sub>N</sub></I>. If <var>N</var> is a
+negative integer then <code>ER(<var>N</var>) = EI(-<var>N</var>)</code>.
+<P>
+For  given  <var>N</var>,  let  <I>n<sub>k</sub>  =  n<sub>k</sub>(N)</I>  be  the  first  integer  with
+multiplicative order  exactly <var>k</var>  modulo <var>N</var>, chosen  in the order of
+preference
+<center><table><tr><td><I> 1, -1, 2, -2, 3, -3, 4, -4, ... .</I></td></tr></table></center>
+<P>
+We have
+<center><table><tr><td><I></td><td><table style="display:inline-table;"><tr><td><I>
+<code>EY(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> y<sub>n</sub> </I></td><td><I> = </I></td><td><I> z+z<sup>n</sup> </I></td><td><I>(n = n<sub>2</sub>)</I></td></tr><tr><td><I> 
+<code>EX(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> x<sub>n</sub> </I></td><td><I> = </I></td><td><I> z+z<sup>n</sup>+z<sup>n<sup>2</sup></sup> </I></td><td><I>(n=n<sub>3</sub>)</I></td></tr><tr><td><I> 
+<code>EW(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> w<sub>n</sub> </I></td><td><I> = </I></td><td><I> z+z<sup>n</sup>+z<sup>n<sup>2</sup></sup>+z<sup>n<sup>3</sup></sup> </I></td><td><I>(n=n<sub>4</sub>)</I></td></tr><tr><td><I> 
+<code>EV(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> v<sub>n</sub> </I></td><td><I> = </I></td><td><I> z+z<sup>n</sup>+z<sup>n<sup>2</sup></sup>+z<sup>n<sup>3</sup></sup>+z<sup>n<sup>4</sup></sup> </I></td><td><I>(n=n<sub>5</sub>)</I></td></tr><tr><td><I> 
+<code>EU(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> u<sub>n</sub> </I></td><td><I> = </I></td><td><I> z+z<sup>n</sup>+z<sup>n<sup>2</sup></sup>+... +z<sup>n<sup>5</sup></sup> </I></td><td><I>(n=n<sub>6</sub>)</I></td></tr><tr><td><I> 
+<code>ET(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> t<sub>n</sub> </I></td><td><I> = </I></td><td><I> z+z<sup>n</sup>+z<sup>n<sup>2</sup></sup>+... +z<sup>n<sup>6</sup></sup> </I></td><td><I>(n=n<sub>7</sub>)</I></td></tr><tr><td><I> 
+<code>ES(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> s<sub>n</sub> </I></td><td><I> = </I></td><td><I> z+z<sup>n</sup>+z<sup>n<sup>2</sup></sup>+... +z<sup>n<sup>7</sup></sup> </I></td><td><I>(n=n<sub>8</sub>)
+</I></td></tr></table style="display:inline-table;"></td><td></I></td></tr></table></center>
+<P>
+<center><table><tr><td><I></td><td><table style="display:inline-table;"><tr><td><I>
+<code>EM(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> m<sub>n</sub> </I></td><td><I> = </I></td><td><I> z-z<sup>n</sup> </I></td><td><I>(n=n<sub>2</sub>)</I></td></tr><tr><td><I> 
+<code>EL(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> l<sub>n</sub> </I></td><td><I> = </I></td><td><I> z-z<sup>n</sup>+z<sup>n<sup>2</sup></sup>-z<sup>n<sup>3</sup></sup> </I></td><td><I>(n=n<sub>4</sub>)</I></td></tr><tr><td><I> 
+<code>EK(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> k<sub>n</sub> </I></td><td><I> = </I></td><td><I> z-z<sup>n</sup>+... -z<sup>n<sup>5</sup></sup> </I></td><td><I>(n=n<sub>6</sub>)</I></td></tr><tr><td><I> 
+<code>EJ(<var>N</var>)</code> </I></td><td><I> = </I></td><td><I> j<sub>n</sub> </I></td><td><I> = </I></td><td><I> z-z<sup>n</sup>+... -z<sup>n<sup>7</sup></sup> </I></td><td><I>(n=n<sub>8</sub>)
+</I></td></tr></table style="display:inline-table;"></td><td></I></td></tr></table></center>
+<P>
+Let  <I>n<sub>k</sub><sup>(d)</sup>  =  n<sub>k</sub><sup>(d)</sup>(N)</I>  be   the   <I>d+1</I>-th  integer   with
+multiplicative order exactly <var>k</var> modulo  <var>N</var>,  chosen  in the order of
+preference          defined          above;          we          write
+<I>n<sub>k</sub>=n<sub>k</sub><sup>(0)</sup>,n<sub>k</sub><sup>&prime;</sup>=n<sub>k</sub><sup>(1)</sup>, n<sub>k</sub>'' = n<sub>k</sub><sup>(2)</sup></I>
+and  so  on.  These  values can be  computed  as <code>NK(<var>N</var>,<var>k</var>,<var>d</var>)</code><I>  =
+n<sub>k</sub><sup>(d)</sup>(N)</I>; if there is no integer with the required multiplicative
+order, <code>NK</code> will return <code>false</code>.
+<P>
+The algebraic numbers
+<center><table><tr><td><I>y<sub>N</sub><sup>&prime;</sup>=y<sub>N</sub><sup>(1)</sup>,y<sub>N</sub>''=y<sub>N</sub><sup>(2)</sup>,...,
+x<sub>N</sub><sup>&prime;</sup>,x<sub>N</sub>'',...,
+j<sub>N</sub><sup>&prime;</sup>,j<sub>N</sub>'',...</I></td></tr></table></center>
+are obtained on replacing <I>n<sub>k</sub></I> in the above
+definitions by <I>n<sub>k</sub><sup>&prime;</sup>,n<sub>k</sub>'',...</I>; they
+can be entered as
+<P>
+<center><table><tr><td><I></td><td><table style="display:inline-table;"><tr><td><I>
+<code>EY(<var>N</var>,<var>d</var>)</code> </I></td><td><I> = </I></td><td><I> y<sub>N</sub><sup>(d)</sup></I></td></tr><tr><td><I> 
+<code>EX(<var>N</var>,<var>d</var>)</code> </I></td><td><I> = </I></td><td><I> x<sub>N</sub><sup>(d)</sup></I></td></tr><tr><td><I> 
+ </I></td><td><I> &sdot; </I></td></tr><tr><td><I> 
+<code>EJ(<var>N</var>,<var>d</var>)</code> </I></td><td><I> = </I></td><td><I> j<sub>n</sub><sup>(d)</sup>
+</I></td></tr></table style="display:inline-table;"></td><td></I></td></tr></table></center>
+<P>
+<pre>    gap> EW(16,3); EW(17,2); ER(3); EI(3); EY(5); EB(9);
+    0
+    E(17)+E(17)^4+E(17)^13+E(17)^16
+    -E(12)^7+E(12)^11
+    E(3)-E(3)^2
+    E(5)+E(5)^4
+    1</pre>
+<P><A NAME="SECT013"><h2>13.13 StarCyc</h2></a>
+<P><A name = "I55"></a>
+
+<P>
+<code>StarCyc( <var>z</var> )</code>
+<P>
+If <var>z</var> is an irrational  element of a  quadratic number field (i.e. if
+<var>z</var> is a quadratic irrationality), <code>StarCyc( <var>z</var> )</code> returns the unique
+Galois  conjugate  of <var>z</var> that is different from  <var>z</var>;  this is  often
+called  <I>&lt;z&gt;*</I>   (see  <a href="chap049.htm#SECT037">DisplayCharTable</a>).  Otherwise  <code>false</code>  is
+returned.
+<P>
+<pre>    gap> StarCyc( EB(5) ); StarCyc( E(5) );
+    E(5)^2+E(5)^3
+    false</pre>
+<P><A NAME="SECT014"><h2>13.14 Quadratic</h2></a>
+<P><A name = "I56"></a>
+
+<A name = "I57"></a>
+
+<P>
+<code>Quadratic( <var>z</var> )</code>
+<P>
+If <var>z</var> is a cyclotomic integer that is contained in a quadratic number
+field over  the rationals, it can  be written as <I>&lt;z&gt; = (  a +  b
+\sqrtn )/(d)</I>  with integers  <I>a</I>, <I>b</I>, <I>n</I>  and <I>d</I>,  where  <I>d</I>  is
+either 1 or 2.  In this case <code>Quadratic( <var>z</var>  )</code> returns a record with
+fields <code>a</code>, <code>b</code>, <code>root</code>, <code>d</code> and <code>ATLAS</code> where the first four mean the
+integers mentioned above, and the last one is a string that is a  (not
+necessarily  shortest)  representation of <var>z</var> by <I>b<sub>m</sub></I>, <I>i<sub>m</sub></I> or <I>r<sub>m</sub></I>
+for <I>m = <code>\|root\|</code></I> (see <a href="chap013.htm#SECT012">ATLAS irrationalities</a>).
+<P>
+If <var>z</var>  is not a quadratic irrationality  or not a cyclotomic integer,
+<code>false</code> is returned.
+<P>
+<pre>    gap> Quadratic( EB(5) ); Quadratic( EB(27) );
+    rec(
+      a := -1,
+      b := 1,
+      root := 5,
+      d := 2,
+      ATLAS := "b5" )
+    rec(
+      a := -1,
+      b := 3,
+      root := -3,
+      d := 2,
+      ATLAS := "1+3b3" )
+    gap> Quadratic(0); Quadratic( E(5) );
+    rec( 
+      a := 0,
+      b := 0,
+      root := 1,
+      d := 1,
+      ATLAS := "0" )
+    false</pre>
+<P><A NAME="SECT015"><h2>13.15 GaloisMat</h2></a>
+<P><A name = "I58"></a>
+
+<P>
+<code>GaloisMat( <var>mat</var> )</code>
+<P>
+<var>mat</var>  must  be  a matrix of  cyclotomics (or  possibly unknowns,  see
+<a href="chap017.htm#SECT001">Unknown</a>).  The conjugate of a row in <var>mat</var> under a particular Galois
+automorphism is  defined  pointwise.  If <var>mat</var> consists of full orbits
+under this action then the Galois group of its entries acts  on  <var>mat</var>
+as a permutation group, otherwise the orbits must be completed before.
+<P>
+<code>GaloisMat( <var>mat</var> )</code> returns a record  with fields <code>mat</code>, <code>galoisfams</code>
+and <code>generators</code>:
+<P>
+<DL><DT><code>mat</code>:<DD><BR> 
+      a list with initial  segment <var>mat</var> (<strong>not</strong> a  copy of <var>mat</var>); the
+      list  consists of  full  orbits under the  action of  the Galois
+      group  of the entries of  <var>mat</var> defined above. The last  entries
+      are those rows  which had to be added to complete the orbits; so
+      if  they were already complete, <var>mat</var> and <code>mat</code>  have  identical
+      entries.
+</DL><P>
+<DL><DT><code>galoisfams</code>:<DD><BR> 
+      a list that has the same length as <code>mat</code>; its entries are either
+      1, 0, -1 or lists:<BR> <I><code>galoisfams[i]</code>  = 1</I> means that <code>mat[i]</code>
+      consists of rationals,  i.e. <I>[ <code>mat[i]</code>  ]</I>  forms  an orbit.<BR> 
+      <I><code>galoisfams[i]</code> =-1</I>  means that <code>mat[i]</code> contains unknowns; in
+      this case <I>[ <code>mat[i]</code>  ]</I> is regarded as  an orbit, too, even if
+      <code>mat[i]</code> contains irrational entries.<BR> If <I><code>galoisfams[i]</code> =  [
+      l<sub>1</sub>, l<sub>2</sub> ]</I> is  a list then <code>mat[i]</code> is the first element of its
+      orbit in  <code>mat</code>; <I>l<sub>1</sub></I>  is  the list of positions  of rows which
+      form  the orbit, and <I>l<sub>2</sub></I> is the  list of  corresponding Galois
+      automorphisms  (as  exponents,  not  as  functions); so  we have
+      <I><code>mat</code>[  l<sub>1</sub>[j] ][k]  =  <code>GaloisCyc</code>(  <code>mat</code>[i][k], l<sub>2</sub>[j] )</I>.<BR> 
+      <I><code>galoisfams[i]</code> =  0</I>  means that  <code>mat[i]</code>  is an element of a
+      nontrivial orbit but not the first element of it.
+</DL><P>
+<DL><DT><code>generators</code>:<DD><BR> 
+      a  list  of  permutations  generating  the   permutation   group
+      corresponding  to the  action of the Galois group on the rows of
+      <code>mat</code>.
+</DL><P>
+Note  that <var>mat</var> should be a set,  i.e. no  two rows should be  equal.
+Otherwise only the first row of some equal rows is  considered for the
+permutations, and a warning is printed.
+<P>
+<pre>    gap> GaloisMat( [ [ E(3), E(4) ] ] );
+    rec(
+      mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ], 
+          [ E(3)^2, -E(4) ] ],
+      galoisfams := [ [ [ 1, 2, 3, 4 ], [ 1, 7, 5, 11 ] ], 0, 0, 0 ],
+      generators := [ (1,2)(3,4), (1,3)(2,4) ] )
+    gap> GaloisMat( [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ] ] );
+    rec(
+      mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ],
+      galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ],
+      generators := [ (2,3) ] )</pre>
+<P><A NAME="SECT016"><h2>13.16 RationalizedMat</h2></a>
+<P><A name = "I59"></a>
+
+<P>
+<code>RationalizedMat( <var>mat</var> )</code>
+<P>
+returns the set  of rationalized rows of <var>mat</var>, i.e. the  set  of sums
+over  orbits under the action  of the Galois  group of the elements of
+<var>mat</var> (see <a href="chap013.htm#SECT015">GaloisMat</a>).
+<P>
+This may be viewed as a kind of trace operation for the rows.
+<P>
+Note that <var>mat</var> should be a set, i.e. no two rows should be equal.
+<P>
+<pre>    gap> mat:= CharTable( "A5" ).irreducibles;
+    [ [ 1, 1, 1, 1, 1 ], [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ], 
+      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 4, 0, 1, -1, -1 ], 
+      [ 5, 1, -1, 0, 0 ] ]
+    gap> RationalizedMat( mat );
+    [ [ 1, 1, 1, 1, 1 ], [ 6, -2, 0, 1, 1 ], [ 4, 0, 1, -1, -1 ], 
+      [ 5, 1, -1, 0, 0 ] ]</pre>
+<P><a href ="chap012.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap014.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

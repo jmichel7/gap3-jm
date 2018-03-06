@@ -1,0 +1,1014 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  ring.tex                    GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: ring.tex,v 1.1.1.1 1996/12/11 12:36:50 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file describes the polymorphic functions for rings.
+%%
+%H  $Log: ring.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:50  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.9  1993/05/04  11:39:24  fceller
+%H  fixed a spelling error
+%H
+%H  Revision 3.8  1993/03/11  10:25:17  fceller
+%H  added 'EuclideanQuotient', 'EuclideanRemainder' and 'QuotientRemainder'
+%H
+%H  Revision 3.7  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.6  1993/02/15  10:15:08  felsch
+%H  more examples fixed
+%H
+%H  Revision 3.5  1993/02/12  17:20:54  felsch
+%H  examples adjusted to line length 72
+%H
+%H  Revision 3.4  1992/04/06  15:03:15  martin
+%H  fixed some more typos
+%H
+%H  Revision 3.3  1992/04/06  00:10:10  martin
+%H  removed the chapter about polynomials
+%H
+%H  Revision 3.2  1992/03/11  16:06:31  sam
+%H  renamed chapter "Number Fields" to "Subfields of Cyclotomic Fields"
+%H
+%H  Revision 3.1  1992/03/11  09:28:07  martin
+%H  added an example of a ring record
+%H
+%H  Revision 3.0  1991/12/27  16:10:27  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Rings}
+
+Rings are important algebraic  domains.  Mathematically a *ring* is a set
+$R$ with two operations  '+' and '\*' called addition and multiplication.
+$(R,+)$ must  be an abelian group.  The  identity of this group is called
+$0_R$.   $(R-\{0_R\},\*)$  must be  a  monoid.   If  this  monoid has  an
+identity element it is called $1_R$.
+
+Important examples  of  rings   are the  integers (see "Integers"),   the
+Gaussian  integers (see "Gaussians"), the integers of  a cyclotomic field
+(see "Subfields of Cyclotomic Fields"), and matrices (see "Matrices").
+
+This chapter contains sections that describe how to test whether a domain
+is  a  ring (see "IsRing"), and how to find the smallest and  the default
+ring in which a list of elements lies (see "Ring" and "DefaultRing").
+
+The next  sections describe the  operations  applicable  to ring elements
+(see  "Comparisons of  Ring  Elements", "Operations for Ring   Elements",
+"Quotient").
+
+The  next sections describe  the functions that test whether a  ring  has
+certain      properties      ("IsCommutativeRing",      "IsIntegralRing",
+"IsUniqueFactorizationRing", and "IsEuclideanRing").
+
+The next sections describe functions that  are related to  the units of a
+ring  (see  "IsUnit", "Units",   "IsAssociated", "StandardAssociate", and
+"Associates").
+
+Then come the  sections  that describe the functions that   deal with the
+irreducible and prime elements of a ring (see "IsIrreducible", "IsPrime",
+and "Factors").
+
+Then come the sections that describe the functions that are applicable to
+elements   of   rings   (see   "EuclideanDegree",   "EuclideanRemainder",
+"EuclideanQuotient",   "QuotientRemainder",  "QuotientMod",   "PowerMod",
+"Gcd", "GcdRepresentation", "Lcm").
+
+The  last section describes  how ring records  are represented internally
+(see "Ring Records").
+
+Because  rings are  a category of  domains  all  functions  applicable to
+domains are also applicable to rings (see chapter "Domains") .
+
+All functions described in this chapter are in 'LIBNAME/\"ring.g\"'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRing}
+
+'IsRing( <domain> )'
+
+'IsRing'  returns  'true' if  the  object  <domain>   is  a ring  record,
+representing a ring (see "Ring Records"), and 'false' otherwise.
+
+More precisely  'IsRing'  tests whether <domain>  is a ring  record  (see
+"Ring Records").   So for example a  matrix group may in fact  be a ring,
+yet 'IsRing' would return 'false'.
+
+|    gap> IsRing( Integers );
+    true
+    gap> IsRing( Rationals );
+    false    # 'Rationals' is a field record not a ring record
+    gap> IsRing( rec( isDomain := true, isRing := true ) );
+    true    # it is possible to fool 'IsRing' |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ring}
+
+'Ring( <r>, <s>... )'\\
+'Ring( <list> )'
+
+In the first form 'Ring' returns the smallest ring  that contains all the
+elements <r>, <s>... etc.  In the second form 'Ring' returns the smallest
+ring that contains all the  elements in the list <list>.   If any element
+is not an element of a ring or if the elements  lie in no  common ring an
+error is raised.
+
+|    gap> Ring( 1, -1 );
+    Integers
+    gap> Ring( [10..20] );
+    Integers |
+
+'Ring' differs from 'DefaultRing' (see "DefaultRing") in  that it returns
+the  smallest  ring in which  the elements  lie, while 'DefaultRing'  may
+return a larger ring if that makes sense.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DefaultRing}
+
+'DefaultRing( <r>, <s>... )' \\
+'DefaultRing( <list> )'
+
+In the  first form 'DefaultRing' returns the  default  ring that contains
+all  the elements  <r>,  <s>...  etc.   In the  second form 'DefaultRing'
+returns  the default  ring that contains all  the elements  in  the  list
+<list>.  If any element  is not an element of a ring or  if  the elements
+lie in no common ring an error is raised.
+
+The ring returned by 'DefaultRing' need not be the smallest ring in which
+the  elements  lie.  For   example   for elements from  cyclotomic fields
+'DefaultRing' may return the ring of integers of  the smallest cyclotomic
+field  in which the elements  lie,  which need not  be  the smallest ring
+overall, because the elements may in  fact lie in  a smaller number field
+which is not a cyclotomic field.
+
+For  the  exact  definition of  the  default  ring  of a certain type  of
+elements read the chapter describing this type.
+
+'DefaultRing' is used by  the ring functions like  'Quotient', 'IsPrime',
+'Factors', or 'Gcd' if no explicit ring is given.
+
+|    gap> DefaultRing( 1, -1 );
+    Integers
+    gap> DefaultRing( [10..20] );
+    Integers |
+
+'Ring' (see "Ring") differs  from 'DefaultRing' in   that it  returns the
+smallest ring in which the elements lie, while 'DefaultRing' may return a
+larger ring if that makes sense.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Ring Elements}
+
+'<r> =   <s>' \\
+'<r> \<> <s>'
+
+The equality operator '=' evaluates to 'true' if  the  two  ring elements
+<r> and <s> are equal, and to 'false' otherwise.  The inequality operator
+'\<>' evaluates to 'true' if the two ring  elements <r> and <s>  are  not
+equal, and to 'false' otherwise.   Note that any two ring elements can be
+compared, even if they do not lie in compatible rings.  In this case they
+can, of course, never  be  equal.  For each type of rings the equality of
+those ring elements is given in the respective chapter.
+
+Ring  elements can  also be  compared with  objects of other  types.   Of
+course they are never equal.
+
+'<r> \<\ <s>' \\
+'<r> \<= <s>' \\
+'<r> >   <s>' \\
+'<r> >=  <s>'
+
+The operators '\<', '\<=', '>', and  '>=' evaluate  to 'true' if the ring
+element <r> is less than, less than or equal to, greater than, or greater
+than or equal  to the  ring  element <s>, and to  'false' otherwise.  For
+each type of rings the definition of the ordering  of those ring elements
+is given in the respective chapter.  The ordering  of ring elements is as
+follows.  Rationals  are  smallest,  next are  cyclotomics,  followed  by
+finite ring elements.
+
+Ring elements can also be compared with objects of other types.  They are
+smaller than everything else.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Ring Elements}
+
+The following  operations   are always available  for ring  elements.  Of
+course the operands must lie in compatible rings, i.e., the rings must be
+equal, or at least have a common superring.
+
+'<r> + <s>'
+
+The operator '+' evaluates to  the sum of  the two ring elements <r> and
+<s>, which must lie in compatible rings.
+
+'<r> - <s>'
+
+The operator  '-'  evaluates to the difference of  the two ring elements
+<r> and <s>, which must lie in compatible rings.
+
+'<r> \*\ <s>'
+
+The operator '\*' evaluates to the product  of the two ring elements <r>
+and <s>, which must lie in compatible rings.
+
+'<r> \^\ <n>'
+
+The operator '\^' evaluates to the <n>-th power of the ring element <r>.
+If <n> is a  positive  integer  then  '<r>\^<n>'  is  '<r>\*<r>\*..\*<r>'
+(<n> factors).  If <n> is a negative integer  '<r>\^<n>'  is  defined  as
+$1 / {<r>^{-<n>}}$.   If 0 is  raised  to  a negative power   an error is
+signalled.  Any ring element, even 0, raised to the 0-th power yields 1.
+
+For the precedence of the operators see "Operations".
+
+Note that the quotient operator '/' usually performs  the division in the
+quotient  field of the  ring.  To compute a quotient   in  a ring use the
+function 'Quotient' (see "Quotient").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Quotient}
+
+'Quotient( <r>, <s> )' \\
+'Quotient( <R>, <r>, <s> )'
+
+In  the first  form  'Quotient'  returns  the quotient  of  the  two ring
+elements <r> and <s> in  their default ring  (see "DefaultRing").  In the
+second form 'Quotient' returns the quotient of the  two ring elements <r>
+and  <s> in the  ring <R>.  It  returns 'false' if the quotient  does not
+exist.
+
+|    gap> Quotient( 4, 2 );
+    2
+    gap> Quotient( Integers, 3, 2 );
+    false |
+
+'Quotient'  calls '<R>.operations.Quotient( <R>,  <r>, <s> )' and returns
+the value.
+
+The default function called  this  way is 'RingOps.Quotient',  which just
+signals an error,  because  there is  no generic method  to  compute  the
+quotient  of two ring elements.  Thus  special categories of  rings  must
+overlay this default function with other functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsCommutativeRing}
+
+'IsCommutativeRing( <R> )'
+
+'IsCommutativeRing' returns 'true' if   the ring  <R> is  commutative and
+'false' otherwise.
+
+A ring $R$ is called *commutative* if for all elements $r$ and $s$ of $R$
+we have $r s = s r$.
+
+|    gap> IsCommutativeRing( Integers );
+    true |
+
+'IsCommutativeRing'  first tests whether the flag '<R>.isCommutativeRing'
+is  bound.  If the flag is bound,  it returns this value.   Otherwise  it
+calls '<R>.operations.IsCommutativeRing(  <R> )', remembers  the returned
+value in '<R>.isCommutativeRing', and returns it.
+
+The  default  function called  this  way is  'RingOps.IsCommutativeRing',
+which  tests  whether  all  the  generators   commute  if  the  component
+'<R>.generators'  is  bound,  and  tests  whether  all  elements  commute
+otherwise,  unless <R>  is infinite.   This function is seldom  overlaid,
+because most rings already have the flag bound.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsIntegralRing}
+
+'IsIntegralRing( <R> )'
+
+'IsIntegeralRing' returns 'true' if the ring <R>  is integral and 'false'
+otherwise.
+
+A ring $R$ is  called *integral* if it  is   commutative and if  for  all
+elements $r$ and $s$ of $R$ we have $r s = 0_R$  implies  that either $r$
+or $s$ is $0_R$.
+
+|    gap> IsIntegralRing( Integers );
+    true |
+
+'IsIntegralRing'  first tests whether  the  flag  '<R>.isIntegralRing' is
+bound.  If the flag is bound, it returns  this value.  Otherwise it calls
+'<R>.operations.IsIntegralRing( <R> )',  remembers the returned value  in
+'<R>.isIntegralRing', and returns it.
+
+The default function called this  way is  'RingOps.IsIntegralRing', which
+tests  whether the product of each pair of nonzero elements is unequal to
+zero, unless <R> is infinite.  This function is  seldom overlaid, because
+most rings already have the flag bound.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsUniqueFactorizationRing}
+
+'IsUniqueFactorizationRing( <R> )'
+
+'IsUniqueFactorizationRing'    returns   'true'   if  <R>  is  a   unique
+factorization ring and 'false' otherwise.
+
+A ring <R> is  called a *unique factorization ring* if it is an  integral
+ring,  and  every element has  a  unique  factorization into  irreducible
+elements, i.e., a  unique representation as product  of irreducibles (see
+"IsIrreducible").  Unique in this context means unique up to permutations
+of  the factors  and  up  to multiplication of the factors by units  (see
+"Units").
+
+|    gap> IsUniqueFactorizationRing( Integers );
+    true |
+
+'IsUniqueFactorizationRing' tests whether '<R>.isUniqueFactorizationRing'
+is bound.  If the flag is bound, it returns this value.  If this flag has
+no      assigned       value      it       calls       the       function
+'<R>.operations.IsUniqueFactorizationRing( <R> )', remembers the returned
+value in '<R>.isUniqueFactorizationRing', and returns it.
+
+The      default       function      called       this       way       is
+'RingOps.IsUniqueFactorizationRing', which  just signals  an error, since
+there  is  no  generic  method  to  test  whether  a  ring  is  a  unique
+factorization ring.  Special  categories of  rings thus must  either have
+the flag bound or overlay this default function.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsEuclideanRing}
+
+'IsEuclideanRing( <R> )'
+
+'IsEuclideanRing' returns 'true' if the ring  <R> is a Euclidean ring and
+'false' otherwise.
+
+A ring $R$ is called a Euclidean ring if it is an integral ring and there
+exists a function $\delta$, called the Euclidean degree, from $R-\{0_R\}$
+to the nonnegative integers,  such  that for  every pair $r \in R$ and $s
+\in  R-\{0_R\}$ there  exists an element $q$ such  that either $r - q s =
+0_R$ or $\delta(r - q s) \< \delta( s )$.  The existence of this division
+with remainder implies that  the Euclidean algorithm  can  be  applied to
+compute a greatest common divisor of two elements, which in turn  implies
+that $R$ is a unique factorization ring.
+
+|    gap> IsEuclideanRing( Integers );
+    true |
+
+'IsEuclideanRing' first  tests whether the flag '<R>.isEuclideanRing'  is
+bound.  If the flag is bound, it returns this value.   Otherwise it calls
+'<R>.operations.IsEuclideanRing(  <R> )', remembers the returned value in
+'<R>.isEuclideanRing', and returns it.
+
+The default function called  this way is 'RingOps.IsEuclideanRing', which
+just signals an  error, because there is no generic way to test whether a
+ring is a Euclidean ring.  This function is seldom overlaid because  most
+rings already have the flag bound.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsUnit}
+
+'IsUnit( <r> )'\\
+'IsUnit( <R>, <r> )'
+
+In the first form  'IsUnit'  returns 'true' if the  ring element <r> is a
+unit in  its default  ring   (see  "DefaultRing").   In  the  second form
+'IsUnit' returns 'true' if <r> is a unit in the ring <R>.
+
+An element $r$ is called a *unit* in a ring $R$, if $r$ has an inverse in
+$R$.
+
+|    gap> IsUnit( Integers, 2 );
+    false
+    gap> IsUnit( Integers, -1 );
+    true |
+
+'IsUnit' calls '<R>.operations.IsUnit( <R>, <r> )' and returns the value.
+
+The default function called this way is 'RingOps.IsUnit', which  tries to
+compute the inverse of  <r> with '<R>.operations.Quotient(  <R>, <R>.one,
+<r>  )' and returns  'true' if  the result  is not  'false',  and 'false'
+otherwise.   Special categories   of rings overlay this  default function
+with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Units}
+
+'Units( <R> )'
+
+'Units' returns the group of units of the  ring <R>.   This may either be
+returned as a   list  or as  a  group   described by a group record  (see
+"Groups").
+
+An element $r$ is called a *unit* of a ring $R$, if $r$ has an inverse in
+$R$.   It is easy  to  see that the  set of  units forms a multiplicative
+group.
+
+|    gap> Units( Integers );
+    [ -1, 1 ] |
+
+'Units' first  tests whether the component '<R>.units' is bound.   If the
+component  is  bound,  it   returns  this  value.   Otherwise  it   calls
+'<R>.operations.Units(  <R>   )',   remembers   the  returned  value   in
+'<R>.units', and returns it.
+
+The default function called this  way is 'RingOps.Units', which runs over
+all elements  of  <R> and tests for each whether it is a  unit,  provided
+that <R> is  finite.  Special  categories  of rings overlay this  default
+function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAssociated}
+
+'IsAssociated( <r>, <s> )' \\
+'IsAssociated( <R>, <r>, <s> )'
+
+In the first form 'IsAssociated' returns 'true' if the  two ring elements
+<r> and <s> are associated in their default ring  (see "DefaultRing") and
+'false' otherwise.   In the second form  'IsAssociated' returns 'true' if
+the two ring  elements <r> and <s> are   associated  in the ring <R>  and
+'false' otherwise.
+
+Two elements  $r$ and $s$ of a ring $R$  are called *associates* if there
+is a unit $u$ of $R$ such that $r u = s$.
+
+|    gap> IsAssociated( Integers, 2, 3 );
+    false
+    gap> IsAssociated( Integers, 17, -17 );
+    true |
+
+'IsAssociated' calls '<R>.operations.IsAssociated( <R>,  <r>, <s>  )' and
+returns the value.
+
+The default  function  called this  way  is 'RingOps.IsAssociated', which
+tries to compute  the quotient of  <r> and <s> and  returns 'true' if the
+quotient exists and is a unit.  Special categories of  rings overlay this
+default function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{StandardAssociate}
+
+'StandardAssociate( <r> )' \\
+'StandardAssociate( <R>, <r> )'
+
+In the first form  'StandardAssociate' returns  the standard associate of
+the ring element  <r> in  its default  ring (see  "DefaultRing").  In the
+second form  'StandardAssociate'  returns  the standard  associate of the
+ring element <r> in the ring <R>.
+
+The  *standard associate* of an ring  element $r$ of $R$ is an associated
+element of $r$ which is, in a ring dependent way, distinguished among the
+set  of  associates  of  $r$.  For example, in the ring  of integers  the
+standard associate is the absolute value.
+
+|    gap> StandardAssociate( Integers, -17 );
+    17 |
+
+'StandardAssociate' calls '<R>.operations.StandardAssociate( <R>, <r> )'
+and returns the value.
+
+The   default  function called this  way  is 'RingOps.StandardAssociate',
+which  just signals an error,  because there  is no  generic  way even to
+define the standard associate.   Thus  special categories  of rings  must
+overlay this default function with other functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Associates}
+
+'Associates( <r> )' \\
+'Associates( <R>, <r> )'
+
+In the first form 'Associates' returns the set of associates of the ring
+element <r> in its default ring (see "DefaultRing").  In the second form
+'Associates' returns the set of associates of <r> in the ring <R>.
+
+Two elements $r$ and $s$ of a ring $R$ are called *associate* if there is
+a unit  $u$ of  $R$ such  that $r u = s$.
+
+|    gap> Associates( Integers, 17 );
+    [ -17, 17 ] |
+
+'Associates' calls  '<R>.operations.Associates( <R>,  <r> )' and  returns
+the value.
+
+The  default function    called this way   is 'RingOps.Associates', which
+multiplies the set of units of <R> with the element  <r>, and returns the
+set of those elements.  Special categories of rings overlay  this default
+function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsIrreducible}
+
+'IsIrreducible( <r> )'\\
+'IsIrreducible( <R>, <r> )'
+
+In the first form 'IsIrreducible' returns  'true' if the ring element <r>
+is irreducible in  its default  ring   (see "DefaultRing")  and   'false'
+otherwise.  In the second form 'IsIrreducible' returns 'true' if the ring
+element <r> is irreducible in the ring <R> and 'false' otherwise.
+
+An element  $r$  of a ring  $R$ is called  *irreducible*  if  there is no
+nontrivial  factorization   of  $r$ in  $R$,    i.e., if  there     is no
+representation of $r$ as product $s t$ such that neither $s$ nor $t$ is a
+unit (see "IsUnit").  Each prime element (see "IsPrime") is irreducible.
+
+|    gap> IsIrreducible( Integers, 4 );
+    false
+    gap> IsIrreducible( Integers, 3 );
+    true |
+
+'IsIrreducible'   calls '<R>.operations.IsIrreducible(   <R>,  <r> )' and
+returns the value.
+
+The  default function called this  way is  'RingOps.IsIrreducible', which
+justs signals an error, because there is no  generic  way to test whether
+an element is irreducible.  Thus special categories of rings must overlay
+this default function with other functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsPrime}
+
+'IsPrime( <r> )' \\
+'IsPrime( <R>, <r> )'
+
+In the first form 'IsPrime' returns 'true'  if the ring  element <r> is a
+prime in its default ring (see "DefaultRing") and  'false' otherwise.  In
+the second form 'IsPrime'  returns 'true' if  the  ring element <r>  is a
+prime in the ring <R> and 'false' otherwise.
+
+An element $r$ of a ring $R$ is called *prime* if for  each pair  $s$ and
+$t$ such  that $r$ divides  $s t$ the element  $r$  divides either $s$ or
+$t$.  Note that there are rings where not every  irreducible element (see
+"IsIrreducible") is a prime.
+
+|    gap> IsPrime( Integers, 4 );
+    false
+    gap> IsPrime( Integers, 3 );
+    true |
+
+'IsPrime' calls   '<R>.operations.IsPrime( <R>, <r>  )' and  returns  the
+value.
+
+The  default function called this way is  'RingOps.IsPrime',  which  just
+signals an error,  because there is no generic  way  to test  whether  an
+element is  prime.  Thus special  categories  of  rings must overlay this
+default function with other functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Factors}
+
+'Factors( <r> )' \\
+'Factors( <R>, <r> )'
+
+In the first form 'Factors' returns the factorization of the ring element
+<r>  in  its default  ring  (see   "DefaultRing").   In the  second  form
+'Factors' returns the factorization of the ring element  <r> in  the ring
+<R>.  The factorization is returned as a list of primes  (see "IsPrime").
+Each  element   in   the  list     is    a   standard    associate   (see
+"StandardAssociate") except the first one,  which is multiplied by a unit
+as necessary to have 'Product( Factors( <R>, <r> )  )  = <r>'.  This list
+is usually also sorted, thus smallest prime factors come  first.   If <r>
+is a unit or zero, 'Factors( <R>, <r> ) = [ <r> ]'.
+
+|    gap> Factors( -Factorial(6) );
+    [ -2, 2, 2, 2, 3, 3, 5 ]
+    gap> Set( Factors( Factorial(13)/11 ) );
+    [ 2, 3, 5, 7, 13 ]
+    gap> Factors( 2^63 - 1 );
+    [ 7, 7, 73, 127, 337, 92737, 649657 ]
+    gap> Factors( 10^42 + 1 );
+    [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ] |
+
+'Factors' calls  '<R>.operations.Factors(  <R>, <r>  )' and   returns the
+value.
+
+The  default function called  this way is   'RingOps.Factors', which just
+signals an   error, because there    is no  generic  way to  compute  the
+factorization of ring elements.  Thus special categories of ring elements
+must overlay this default function with other functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{EuclideanDegree}
+
+'EuclideanDegree( <r> )' \\
+'EuclideanDegree( <R>, <r> )'
+
+In the first form 'EuclideanDegree'  returns the Euclidean degree of  the
+ring  element  <r>     in  its    default  ring.  In    the   second form
+'EuclideanDegree' returns the Euclidean degree of the ring element in the
+ring    <R>.    <R>   must   of course  be    an    Euclidean  ring  (see
+"IsEuclideanRing").
+
+A  ring $R$ is called a Euclidean  ring,  if it  is an integral ring, and
+there exists  a function  $\delta$,  called the  Euclidean  degree,  from
+$R-\{0_R\}$ to the nonnegative integers, such  that for every pair $r \in
+R$ and $s \in R-\{0_R\}$ there exists an element $q$ such that either  $r
+-  q s = 0_R$ or $\delta(r - q s) \< \delta( s )$.  The existence of this
+division  with remainder  implies  that  the Euclidean algorithm  can  be
+applied to compute a greatest common divisors  of  two elements, which in
+turn implies that $R$ is a unique factorization ring.
+
+|    gap> EuclideanDegree( Integers, 17 );
+    17
+    gap> EuclideanDegree( Integers, -17 );
+    17 |
+
+'EuclideanDegree' calls '<R>.operations.EuclideanDegree(  <R>, <r> )' and
+returns the value.
+
+The default function called this way is  'RingOps.EuclideanDegree', which
+justs signals an error,  because there is no default  way  to compute the
+Euclidean degree  of an element.  Thus Euclidean  rings must overlay this
+default function with other functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{EuclideanRemainder}
+
+'EuclideanRemainder( <r>, <m> )' \\
+'EuclideanRemainder( <R>, <r>, <m> )'
+
+In the first form 'EuclideanRemainder' returns the remainder of  the ring
+element <r>  modulo the ring element <m> in  their default  ring.  In the
+second  form  'EuclideanRemainder' returns  the  remainder  of  the  ring
+element <r> modulo the ring element <m> in the  ring  <R>.  The  ring <R>
+must be a Euclidean  ring (see  "IsEuclideanRing")  otherwise an error is
+signalled.
+
+A ring $R$  is called  a Euclidean ring, if it  is  an integral ring, and
+there exists  a  function $\delta$,  called  the Euclidean  degree,  from
+$R-\{0_R\}$ to  the nonnegative integers, such that for every pair $r \in
+R$ and $s \in R-\{0_R\}$ there exists an  element $q$ such that either $r
+- q s = 0_R$ or $\delta(r - q s) \< \delta( s )$.  The  existence of this
+division  with  remainder  implies that  the  Euclidean algorithm can  be
+applied to  compute a greatest  common divisors of two elements, which in
+turn    implies   that   $R$    is   a   unique    factorization    ring.
+'EuclideanRemainder' returns this remainder $r - q s$.
+
+|    gap> EuclideanRemainder( 16, 3 );          
+    1
+    gap> EuclideanRemainder( Integers, 201, 11 );
+    3 |
+
+'EuclideanRemainder' calls  '<R>.operations.EuclideanRemainder( <R>, <r>,
+<m> )' in order to compute the remainder and returns the value.
+
+The default function called this way uses 'QuotientRemainder' in order to
+compute the remainder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{EuclideanQuotient}
+
+'EuclideanQuotient( <r>, <m> )' \\
+'EuclideanQuotient( <R>, <r>, <m> )'
+
+In the first form 'EuclideanQuotient'  returns the Euclidean quotient  of
+the ring elements <r> and <m> in their default ring.  In the  second form
+'EuclideanQuotient'  returns the Euclidean quotient  of the ring elements
+<r>and <m> in  the ring  <R>.  The ring <R> must be a Euclidean ring (see
+"IsEuclideanRing") otherwise an error is signalled.
+
+A ring $R$ is  called  a  Euclidean ring, if it  is an integral ring, and
+there exists  a function  $\delta$, called  the  Euclidean  degree,  from
+$R-\{0_R\}$  to the nonnegative integers, such that for every pair $r \in
+R$ and $s \in R-\{0_R\}$ there exists an element $q$  such that either $r
+- q s = 0_R$ or $\delta(r - q s) \< \delta(  s )$.  The existence of this
+division  with remainder implies  that  the  Euclidean  algorithm can  be
+applied to compute a greatest common  divisors of two  elements, which in
+turn   implies   that    $R$    is    a   unique   factorization    ring.
+'EuclideanQuotient' returns the quotient $q$.
+
+|    gap> EuclideanQuotient( 16, 3 );             
+    5
+    gap> EuclideanQuotient( Integers, 201, 11 );
+    18 |
+
+'EuclideanQuotient'  calls  '<R>.operations.EuclideanQuotient( <R>,  <r>,
+<m> )' and returns the value.
+
+The default function called this way uses 'QuotientRemainder' in order to
+compute the quotient.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{QuotientRemainder}
+
+'QuotientRemainder( <r>, <m> )' \\
+'QuotientRemainder( <R>, <r>, <m> )'
+
+In the first form  'QuotientRemainder' returns the Euclidean quotient and
+the Euclidean remainder of the ring elements <r> and <m> in their default
+ring  as pair of ring  elements.  In the  second form 'QuotientRemainder'
+returns the Euclidean quotient and the  Euclidean  remainder of the  ring
+elements <r> and <m> in the ring <R>.   The ring <R> must be  a Euclidean
+ring (see "IsEuclideanRing") otherwise an error is signalled.
+
+A ring  $R$  is called a  Euclidean ring, if it  is an integral ring, and
+there exists a function  $\delta$,  called  the  Euclidean  degree,  from
+$R-\{0_R\}$ to the nonnegative integers, such that for every pair $r  \in
+R$ and $s \in R-\{0_R\}$ there exists an element $q$ such  that either $r
+- q s  = 0_R$ or $\delta(r - q s) \< \delta( s )$.  The existence of this
+division with  remainder  implies  that the  Euclidean  algorithm  can be
+applied to compute a greatest  common  divisors of two elements, which in
+turn   implies    that   $R$   is    a    unique   factorization    ring.
+'QuotientRemainder'  returns  this quotient $q$ and the remainder $r -  q
+s$.
+
+|    gap> qr := QuotientRemainder( 16, 3 );
+    [ 5, 1 ]
+    gap> 3 * qr[1] + qr[2]; 
+    16
+    gap> QuotientRemainder( Integers, 201, 11 );
+    [ 18, 3 ] |
+
+'QuotientRemainder' calls  '<R>.operations.QuotientRemainder(  <R>,  <r>,
+<m> )' and returns the value.
+
+The  default  function called  this way  is  'RingOps.QuotientRemainder',
+which just  signals an  error,  because  there is no default  function to
+compute the Euclidean quotient or  remainder  of one ring element  modulo
+another.  Thus Euclidean  rings must  overlay this default function  with
+other functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Mod}
+
+'Mod( <r>, <m> )' \\
+'Mod( <R>, <r>, <m> )'
+
+'Mod'  is  a  synonym  for  'EuclideanRemainder'  and  is  obsolete,  see
+"EuclideanRemainder".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{QuotientMod}
+
+'QuotientMod( <r>, <s>, <m> )' \\
+'QuotientMod( <R>, <r>, <s>, <m> )'
+
+In the first form 'QuotientMod' returns the quotient of the ring elements
+<r>  and  <s> modulo the  ring element  <m>  in  their default ring  (see
+"DefaultRing").  In the second form 'QuotientMod' returns the quotient of
+the  ring elements <r> and  <s> modulo the ring element  <m> in  the ring
+<R>.   <R>  must  be  a  Euclidean  ring (see  "IsEuclideanRing") so that
+'EuclideanRemainder' (see "EuclideanRemainder") can  be  applied.  If the
+modular quotient does not exist, 'false' is returned.
+
+The quotient $q$ of $r$ and $s$ modulo $m$ is an element of $R$ such that
+$q s = r$ modulo $m$, i.e., such that $q s - r$  is divisable  by $m$  in
+$R$ and  that  $q$  is  either  0 (if  $r$ is divisable  by $m$)  or  the
+Euclidean  degree of $q$ is strictly smaller than the Euclidean degree of
+$m$.
+
+|    gap> QuotientMod( Integers, 13, 7, 11 );
+    5
+    gap> QuotientMod( Integers, 13, 7, 21 );
+    false |
+
+'QuotientMod'  calls '<R>.operations.QuotientMod( <R>,  <r>,  <s>, <m> )'
+and returns the value.
+
+The  default function  called  this  way  is 'RingOps.QuotientMod', which
+applies the  Euclidean gcd algorithm to  compute the gcd  <g>  of <s> and
+<m>, together with  the  representation of this gcd as linear combination
+in <s> and <m>, '<g> = <a>  \*\ <s> + <b> \*\ <m>'.  The modular quotient
+exists if and only if <r> is divisible by <g>, in which case the quotient
+is '<a> \*\ Quotient( <R>, <r>, <g> )'.  This default function is  seldom
+overlaid, because there is seldom a better way to compute the quotient.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PowerMod}
+
+'PowerMod( <r>, <e>, <m> )' \\
+'PowerMod( <R>, <r>, <e>, <m> )'
+
+In the first form 'PowerMod' returns the <e>-th power of the ring element
+<r>   modulo  the   ring   element  <m>   in  their  default  ring   (see
+"DefaultRing").  In the second form 'PowerMod' returns  the <e>-th  power
+of the ring element <r> modulo the ring element <m> in the ring <R>.  <e>
+must be an integer.  <R> must be a Euclidean ring (see "IsEuclideanRing")
+so that 'EuclideanRemainder' (see "EuclideanRemainder") can be applied to
+its elements.
+
+If $e$ is  positive the  result is $r^e$ modulo $m$.  If $e$  is negative
+then 'PowerMod' first tries to find the  inverse of $r$ modulo $m$, i.e.,
+$i$ such  that $i r  =  1$  modulo $m$.  If the inverse does not exist an
+error  is  signalled.   If  the  inverse  does exist  'PowerMod'  returns
+'PowerMod( <R>, <i>, -<e>, <m> )'.
+
+'PowerMod'  reduces   the  intermediate  values  modulo   $m$,  improving
+performance drastically when <e> is large and <m>  small.
+
+|    gap> PowerMod( Integers, 2, 20, 100 );
+    76        # $2^{20} = 1048576$
+    gap> PowerMod( Integers, 3, 2^32, 2^32+1 );
+    3029026160        # which proves that $2^{32}+1$ is not a prime
+    gap> PowerMod( Integers, 3, -1, 22 );
+    15        # 3\*15 = 45 = 1 modulo 22 |
+
+'PowerMod' calls  '<R>.operations.PowerMod( <R>,  <r>, <e>, <m>    )' and
+returns the value.
+
+The  default function called this way is  'RingOps.PowerMod',  which uses
+'QuotientMod' (see "QuotientMod")  if  necessary to  invert <r>, and then
+uses a right-to-left repeated squaring, reducing the intermediate results
+modulo <m> in each step.  This function is seldom overlaid, because there
+is seldom a better way of computing the power.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Gcd}
+
+'Gcd( <r1>, <r2>... )' \\
+'Gcd( <R>, <r1>, <r2>... )'
+
+In  the  first form 'Gcd' returns the greatest common divisor of the ring
+elements <r1>, <r2>... etc.   in their default  ring (see "DefaultRing").
+In  the second form 'Gcd' returns the greatest common divisor of the ring
+elements  <r1>,  <r2>... etc.  in the ring <R>.  <R> must be  a Euclidean
+ring   (see   "IsEuclideanRing")   so   that   'QuotientRemainder'   (see
+"QuotientRemainder")  can  be applied to its elements.  'Gcd' returns the
+standard  associate  (see  "StandardAssociate")  of the  greatest  common
+divisors.
+
+A greatest common divisor of the elements  $r_1$, $r_2$...  etc.   of the
+ring   $R$   is   an   element   of   largest   Euclidean   degree   (see
+"EuclideanDegree") that is a  divisor of $r_1$,  $r_2$... etc.  We define
+$gcd( r, 0_R  ) = gcd( 0_R, r ) = StandardAssociate( r )$  and $gcd( 0_R,
+0_R ) = 0_R$.
+
+|    gap> Gcd( Integers, 123, 66 );
+    3 |
+
+'Gcd' calls '<R>.operations.Gcd' repeatedly, each time passing the result
+of the previous call and the next argument,  and returns the value of the
+last call.
+
+The default function called this way  is 'RingOps.Gcd', which applies the
+Euclidean  algorithm to  compute the  greatest  common divisor.   Special
+categories  of rings overlay this  default   function with more efficient
+functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GcdRepresentation}
+
+'GcdRepresentation( <r1>, <r2>... )' \\
+'GcdRepresentation( <R>, <r1>, <r2>... )'
+
+In the first  form 'GcdRepresentation' returns the representation  of the
+greatest common divisor of the ring elements <r1>, <r2>... etc.  in their
+default ring (see "DefaultRing").  In the second form 'GcdRepresentation'
+returns  the representation of  the greatest  common  divisor of the ring
+elements <r1>, <r2>... etc.  in  the ring <R>.  <R>  must be a  Euclidean
+ring (see "IsEuclideanRing") so that 'Gcd'  (see "Gcd") can be applied to
+its elements.  The representation is returned as a list of ring elements.
+
+The representation of the gcd  $g$ of  the elements $r_1$, $r_2$...  etc.
+of a ring $R$ is  a  list of ring  elements $s_1$,  $s_2$... etc. of $R$,
+such that $g = s_1 r_1 + s_2  r_2 ...$.  That this  representation exists
+can be shown using the  Euclidean algorithm,  which in fact  can  compute
+those coefficients.
+
+|    gap> GcdRepresentation( 123, 66 );
+    [ 7, -13 ]    # 3 = 7\*123 - 13\*66
+    gap> Gcd( 123, 66 ) = last * [ 123, 66 ];
+    true |
+
+'GcdRepresentation'  calls '<R>.operations.GcdRepresentation' repeatedly,
+each  time  passing  the gcd result  of the previous  call  and  the next
+argument, and returns the value of the last call.
+
+The default    function called  this way  is 'RingOps.GcdRepresentation',
+which applies the   Euclidean algorithm  to  compute the greatest  common
+divisor and its representation.  Special categories of rings overlay this
+default function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Lcm}
+
+'Lcm( <r1>, <r2>... )'\\
+'Lcm( <R>, <r1>, <r2>... )'
+
+In the first  form 'Lcm' returns  the  least common multiple of the  ring
+elements <r1>, <r2>...  etc.  in  their default ring (see "DefaultRing").
+In the second  form 'Lcm' returns the least  common  multiple of the ring
+elements <r1>, <r2>,... etc.  in the ring  <R>.  <R> must be a  Euclidean
+ring (see "IsEuclideanRing") so that 'Gcd' (see "Gcd") can be  applied to
+its    elements.    'Lcm'   returns    the   standard     associate  (see
+"StandardAssociate") of the least common multiples.
+
+A least common multiple of  the elements  $r_1$, $r_2$...   etc.  of  the
+ring   $R$   is   an   element   of   smallest   Euclidean   degree  (see
+"EuclideanDegree") that is a multiple of $r_1$, $r_2$...  etc.  We define
+$lcm( r,  0_R ) = lcm( 0_R, r ) =  StandardAssociate( r )$ and $Lcm( 0_R,
+0_R ) = 0_R$.
+
+'Lcm' uses the equality $lcm(m,n) = m\*n / gcd(m,n)$ (see "Gcd").
+
+|    gap> Lcm( Integers, 123, 66 );
+    2706 |
+
+'Lcm' calls '<R>.operations.Lcm' repeatedly, each time passing the result
+of the previous call and the next argument,  and returns the value of the
+last call.
+
+The  default  function called  this  way is 'RingOps.Lcm',  which  simply
+returns the  product of <r>  with the  quotient  of <s> and the  greatest
+common divisor of <r> and <s>.   Special categories of rings overlay this
+default function with more efficient functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ring Records}
+
+A ring <R> is represented by a record with the following entries.
+
+'isDomain':\\
+        is of course always the value 'true'.
+
+'isRing': \\
+        is of course always the value 'true'.
+
+'isCommutativeRing': \\
+        is 'true' if  the  multiplication  is  known to  be  commutative,
+        'false' if the multiplication is known  to be noncommutative, and
+        unbound otherwise.
+
+'isIntegralRing': \\
+        is  'true' if  <R> is  known  to be a commutative  domain  with 1
+        without zero divisor, 'false' if <R> is  known  to  lack  one  of
+        these properties, and unbound otherwise.
+
+'isUniqueFactorizationRing': \\
+        is   'true'  if <R>   is    known to be   a   domain with  unique
+        factorization into primes,  'false' if  <R> is   known to have  a
+        nonunique factorization, and unbound otherwise.
+
+'isEuclideanRing': \\
+        is 'true' if <R> is known to be a Euclidean domain, 'false' if it
+        is known not to be a Euclidean domain, and unbound otherwise.
+
+'zero': \\
+        is the additive neutral element.
+
+'units': \\
+        is the list of units of the ring if it is known.
+
+'size': \\
+        is the size  of the ring if it is  known.  If  the  ring  is  not
+        finite this is the string \"infinity\".
+
+'one': \\
+        is the  multiplicative  neutral element,  if the ring has one.
+
+'integralBase': \\
+        if the ring is,  as  additive  group, isomorphic  to  the  direct
+        product of a finite number of copies of $Z$ this contains a base.
+
+As an example of a ring record, here is the definition of the ring record
+'Integers'.
+
+|    rec(
+
+        # category components
+        isDomain                    := true,
+        isRing                      := true,
+
+        # identity components
+        generators                  := [ 1 ],
+        zero                        := 0,
+        one                         := 1,
+        name                        := "Integers",
+
+        # knowledge components
+        size                        := "infinity",
+        isFinite                    := false,
+        isCommutativeRing           := true,
+        isIntegralRing              := true,
+        isUniqueFactorizationRing   := true,
+        isEuclideanRing             := true,
+        units                       := [ -1, 1 ],
+
+        # operations record
+        operations                  := rec(
+            ...
+            IsPrime                 := function ( Integers, n )
+                return IsPrimeInt( n );
+            end,
+            ...
+            'mod'                   := function ( Integers, n, m )
+                return n mod m;
+            end,
+            ... ) ) |
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

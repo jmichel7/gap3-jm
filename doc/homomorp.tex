@@ -1,0 +1,335 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  homomorp.tex                GAP documentation            Martin Schoenert
+%%
+%A  @(#)$Id: homomorp.tex,v 1.1.1.1 1996/12/11 12:36:46 werner Exp $
+%%
+%Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This  file  describes  homomorphisms,  their  functions  and  operations.
+%%
+%H  $Log: homomorp.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:46  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.4  1993/02/19  10:48:42  gap
+%H  adjustments in line length and spelling
+%H
+%H  Revision 3.3  1993/02/09  16:26:02  felsch
+%H  examples fixed
+%H
+%H  Revision 3.2  1992/03/27  16:51:48  martin
+%H  added examples
+%H
+%H  Revision 3.1  1992/03/25  15:40:06  martin
+%H  initial revision under RCS
+%H
+%%
+\Chapter{Homomorphisms}
+
+An important special class of mappings are homomorphisms.
+
+A mapping $map$  is  a  *homomorphism*  if  the  source and the range are
+domains of the same  category, and $map$  respects their structure.   For
+example, if both source and range  are groups and  for each $x,y$  in the
+source  $(xy)^{map}   =  x^{map}   y^{map}$,  then   $map$  is  a   group
+homomorphism.
+
+{\GAP}  currently  supports  field and  group homomorphisms  (see  "Field
+Homomorphisms", "Group Homomorphisms").
+
+Homomorphism  are  created  by  *homomorphism  constructors*,  which  are
+ordinary  {\GAP}   functions   that   return   homomorphisms,   such   as
+'FrobeniusAutomorphism'      (see       "FrobeniusAutomorphism")       or
+'NaturalHomomorphism' (see "NaturalHomomorphism").
+
+The first section in  this  chapter  describes  the  function  that tests
+whether  a  mapping is a  homomorphism (see "IsHomomorphism").   The next
+sections  describe  the  functions that  test  whether a homomorphism has
+certain     properties     (see     "IsMonomorphism",    "IsEpimorphism",
+"IsIsomorphism",  "IsEndomorphism",  and  "IsAutomorphism").   The   last
+section describes the function that computes the kernel of a homomorphism
+(see "Kernel").
+
+Because homomorphisms  are just a special case of mappings all operations
+and   functions  described  in  chapter  "Mappings"  are   applicable  to
+homomorphisms.   For  example, the image  of  an  element <elm>  under  a
+homomorphism  <hom> can be computed by '<elm> \^\ <hom>' (see "Operations
+for Mappings").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsHomomorphism}
+
+'IsHomomorphism( <map> )'
+
+'IsHomomorphism'  returns 'true'  if the mapping <map> is  a homomorphism
+and 'false' otherwise.  Signals  an  error  if <map>  is  a  multi valued
+mapping.
+
+A mapping  $map$  is a *homomorphism*  if the  source and  the  range are
+sources of  the  same category, and  $map$ respects the  structure.   For
+example,  if both  source and range are groups  and for each $x,y$ in the
+source $(xy)^{map} = x^{map} y^{map}$, then $map$ is a homomorphism.
+
+|    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsHomomorphism( p4 );
+    true
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsHomomorphism( p5 );
+    true
+    gap> p6 := MappingByFunction( g, g, x -> x^6 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 6;
+    end )
+    gap> IsHomomorphism( p6 );
+    false |
+
+'IsHomomorphism' first tests if the flag '<map>.isHomomorphism' is bound.
+If  the flag  is  bound,  it  returns  its  value.   Otherwise  it  calls
+'<map>.source.operations.IsHomomorphism( <map> )', remembers the returned
+value in '<map>.isHomomorphism', and returns it.
+
+The functions  usually called this  way  are 'IsGroupHomomorphism' if the
+source  of <map> is a group  and  'IsFieldHomomorphism'  if the source of
+<map> is a field (see "IsGroupHomomorphism", "IsFieldHomomorphism").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsMonomorphism}
+
+'IsMonomorphism( <map> )'
+
+'IsMonomorphism' returns 'true' if the  mapping  <map> is a  monomorphism
+and 'false'  otherwise.  Signals  an  error  if <map> is  a  multi valued
+mapping.
+
+A mapping  is  a *monomorphism*  if it is an  injective homomorphism (see
+"IsInjective", "IsHomomorphism").
+
+|    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsMonomorphism( p4 );
+    false
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsMonomorphism( p5 );
+    true |
+
+'IsMonomorphism' first test if the flag  '<map>.isMonomorphism' is bound.
+If the  flag is  bound,  it  returns  this  value.   Otherwise  it  calls
+'<map>.operations.IsMonomorphism(  <map> )', remembers the returned value
+in '<map>.isMonomorphism', and returns it.
+
+The  default function  called  this  way  is 'MappingOps.IsMonomorphism',
+which calls the functions 'IsInjective' and 'IsHomomorphism', and returns
+the logical  *and*  of the  results.   This  function is seldom overlaid,
+because  all  the  interesting   work  is   done  in   'IsInjective'  and
+'IsHomomorphism'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsEpimorphism}
+
+'IsEpimorphism( <map> )'
+
+'IsEpimorphism' returns 'true' if the mapping <map> is an epimorphism and
+'false' otherwise.  Signals an error if <map> is a multi valued mapping.
+
+A mapping is an *epimorphism*  if  it is an surjective  homomorphism (see
+"IsSurjective", "IsHomomorphism").
+
+|    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsEpimorphism( p4 );
+    false
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsEpimorphism( p5 );
+    true |
+
+'IsEpimorphism' first test if the  flag '<map>.isEpimorphism'  is  bound.
+If  the  flag  is  bound,  it  returns this  value.  Otherwise  it  calls
+'<map>.operations.IsEpimorphism( <map> )',  remembers the  returned value
+in '<map>.isEpimorphism', and returns it.
+
+The default function called this way is 'MappingOps.IsEpimorphism', which
+calls the functions  'IsSurjective' and 'IsHomomorphism', and returns the
+logical *and* of the results.  This function is seldom  overlaid, because
+all the interesting work is done in 'IsSurjective' and 'IsHomomorphism'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsIsomorphism}
+
+'IsIsomorphism( <map> )'
+
+'IsIsomorphism' returns 'true' if the mapping <map> is an isomorphism and
+'false' otherwise.  Signals an error if <map> is a multi valued mapping.
+
+A mapping is  an *isomorphism*  if  it  is a bijective homomorphism  (see
+"IsBijection", "IsHomomorphism").
+
+|    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsIsomorphism( p4 );
+    false
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsIsomorphism( p5 );
+    true |
+
+'IsIsomorphism' first test  if the flag  '<map>.isIsomorphism'  is bound.
+If  the  flag  is bound,  it  returns this  value.   Otherwise  it  calls
+'<map>.operations.IsIsomorphism(  <map> )', remembers  the returned value
+in '<map>.isIsomorphism', and returns it.
+
+The default function called this way is 'MappingOps.IsIsomorphism', which
+calls the functions  'IsInjective', 'IsSurjective', and 'IsHomomorphism',
+and  returns the logical *and*  of the results.  This  function is seldom
+overlaid,  because  all the interesting work  is  done  in 'IsInjective',
+'IsSurjective', and 'IsHomomorphism'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsEndomorphism}
+
+'IsEndomorphism( <map> )'
+
+'IsEndomorphism'  returns  'true' if the mapping <map> is a  endomorphism
+and 'false' otherwise.   Signals an  error if  <map>  is a  multi  valued
+mapping.
+
+A   mapping   is  an  *endomorphism*  if  it   is   a  homomorphism  (see
+"IsHomomorphism") and the range is a subset of the source.
+
+|    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsEndomorphism( p4 );
+    true
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsEndomorphism( p5 );
+    true |
+
+'IsEndomorphism' first test if the flag  '<map>.isEndomorphism' is bound.
+If  the  flag  is  bound,  it  returns this  value.   Otherwise  it calls
+'<map>.operations.IsEndomorphism( <map> )', remembers  the returned value
+in '<map>.isEndomorphism', and returns it.
+
+The  default  function called  this  way is  'MappingOps.IsEndomorphism',
+which  tests   if   the   range  is  a   subset  of  the  source,   calls
+'IsHomomorphism', and  returns the  logical *and* of  the results.   This
+function is seldom overlaid,  because all the interesting work is done in
+'IsSubset' and 'IsHomomorphism'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsAutomorphism}
+
+'IsAutomorphism( <map> )'
+
+'IsAutomorphism'  returns 'true' if the mapping  <map> is an automorphism
+and 'false'  otherwise.  Signals  an  error  if <map> is  a multi  valued
+mapping.
+
+A  mapping is an *automorphism* if it is an isomorphism where  the source
+and the range are equal (see "IsIsomorphism", "IsEndomorphism").
+
+|    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> IsAutomorphism( p4 );
+    false
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> IsAutomorphism( p5 );
+    true |
+
+'IsAutomorphism' first test if  the flag '<map>.isAutomorphism' is bound.
+If the  flag  is  bound,  it  returns  this  value.   Otherwise it  calls
+'<map>.operations.IsAutomorphism( <map> )', remembers  the returned value
+in '<map>.isAutomorphism', and returns it.
+
+The  default function called  this  way  is  'MappingOps.IsAutomorphism',
+which calls the functions 'IsEndomorphism' and 'IsBijection', and returns
+the  logical *and*  of the  results.   This function  is seldom overlaid,
+because  all  the  interesting  work  is  done  in  'IsEndomorphism'  and
+'IsBijection'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Kernel}
+
+'Kernel( <hom> )'
+
+'Kernel'  returns the kernel  of the  homomorphism <hom>.   The kernel is
+usually returned as a source,  though in some cases it  might be returned
+as a proper set.
+
+The kernel is the set of elements that  are mapped  <hom> to the identity
+element of '<hom>.range',  i.e., to '<hom>.range.identity' if  <hom> is a
+group homomorphism, and to '<hom>.range.zero' if <hom> is a ring or field
+homomorphism.  The kernel is a substructure of '<hom>.source'.
+
+|    gap> g := Group( (1,2,3,4), (2,4), (5,6,7) );;  g.name := "g";;
+    gap> p4 := MappingByFunction( g, g, x -> x^4 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 4;
+    end )
+    gap> Kernel( p4 );
+    Subgroup( g, [ (1,2,3,4), (1,4)(2,3) ] )
+    gap> p5 := MappingByFunction( g, g, x -> x^5 );
+    MappingByFunction( g, g, function ( x )
+        return x ^ 5;
+    end )
+    gap> Kernel( p5 );
+    Subgroup( g, [  ] ) |
+
+'Kernel' first tests if the field  '<hom>.kernel' is bound.  If the field
+is    bound     it    returns   its  value.        Otherwise   it   calls
+'<hom>.source.operations.Kernel(  <hom> )',  remembers the returned value
+in '<hom>.kernel', and returns it.
+
+The  functions  usually  called   this  way   from  the  dispatcher   are
+'KernelGroupHomomorphism'      and     'KernelFieldHomomorphism'     (see
+"KernelGroupHomomorphism", "KernelFieldHomomorphism").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local Emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "\\\\Chapter\\|\\\\Section"
+%%  fill-column:        73
+%%  eval:               (hide-body)
+%%  End:
+%%
+
+
+

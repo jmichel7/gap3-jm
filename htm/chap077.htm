@@ -1,0 +1,344 @@
+<html><head><title>GAP3 Manual: 77 Transformations</title></head>
+<body bgcolor="ffffff">
+<h1>77 Transformations</h1>
+<P><P><P>
+A transformation of degree  <I>n</I> is a  map from the  set <I>{1,  ... , n}</I>
+into itself.   Thus a transformation <I>&alpha;</I>  of degree <I>n</I> associates a
+positive integer <I>i<sup>&alpha;</sup></I> less than or equal  to <I>n</I> to each number <I>i</I>
+between <I>1</I> and <I>n</I>.
+<P>
+The degree of a transformation may not be larger than <I>2<sup>28</sup>-1</I> which is
+(currently) the highest index that can be accessed in a list.
+<P>
+Special   cases  of    transformations   are permutations    (see chapter
+"Permutations").  However,  a   permutation must   be  converted to   a
+transformation before  most   of  the  functions   in  this  chapter  are
+applicable.
+<P>
+The product of transformations is defined via  composition of maps.  Here
+transformations are multiplied in such a way that they act from the right
+on   the set  <I>{1,    ... ,   n}</I>.   That   is,  the  product  of   the
+transformations <I>&alpha;</I> and <I>&beta;</I> of degree <I>n</I> is defined by
+<center><table><tr><td><I>
+  i\<sup>(</sup>&alpha;&beta;) = (i\<sup>&alpha;</sup>)\<sup>&beta;</sup>&emsp;</i>for all <i>i = 1, ... ,n.
+</I></td></tr></table></center>
+With respect  to this  multiplication  the set of all  transformations of
+degree <I>n</I> forms a monoid: the full transformation monoid of degree <I>n</I>
+(see chapter <a href="chap078.htm">Transformation Monoids</a>).
+<P>
+Each transformation of  degree <I>n</I> is  considered an element of  the full
+transformation  monoid  of degree  <I>n</I> although   it is  not necessary to
+construct  a   full  transformation     monoid  before   working     with
+transformations.  But you can  only multiply two transformations  if they
+have the same  degree.  You  can,  however, multiply a transformation  of
+degree <I>n</I> by a permutation of degree <I>n</I>.
+<P>
+Transformations are entered and displayed by giving their lists of images
+as an argument to the function <code>Transformation</code>.
+<P>
+<pre>    gap> Transformation( [ 3, 3, 4, 2, 5 ] );
+    Transformation( [ 3, 3, 4, 2, 5 ] )
+    gap> Transformation( [ 3, 3, 2 ] ) * Transformation( [ 1, 2, 1 ] );
+    Transformation( [ 1, 1, 2 ] )</pre>
+<P>
+This  chapter  describes functions that  deal  with transformations.  The
+first sections describe the representation  of a transformation in <strong>GAP3</strong>
+(see  <a href="chap077.htm#SECT001">More  about   Transformations</a>)   and   how a  transformation   is
+constructed as a <strong>GAP3</strong> object (see <a href="chap077.htm#SECT002">Transformation</a>).  The next sections
+describe  the comparisons and  the   operations which are available   for
+transformations (see <a href="chap077.htm#SECT004">Comparisons of Transformations</a> and <a href="chap077.htm#SECT005">Operations for
+Transformations</a>).   There are a  function  to test  whether an arbitrary
+object  is  a transformation (see <a href="chap077.htm#SECT006">IsTransformation</a>)  and  a function to
+construct  the   identity    transformation   of a   given   degree  (see
+<a href="chap077.htm#SECT003">IdentityTransformation</a>).   Then   there  are   functions   that compute
+attributes of transformations (see <a href="chap077.htm#SECT007">Degree of a Transformation</a>, <a href="chap077.htm#SECT008">Rank of
+a  Transformation</a>,   <a href="chap077.htm#SECT009">Image of a   Transformation</a>,  and  <a href="chap077.htm#SECT010">Kernel  of  a
+Transformation</a>).   Finally,   there   are a  function    that converts a
+permutation to a transformation (see <a href="chap077.htm#SECT012">TransPerm</a>) and a function that, if
+possible converts a transformation to a permutation (see <a href="chap077.htm#SECT013">PermTrans</a>).
+<P>
+The functions described here are in the file <code>"transfor.g"</code>.
+<P><P>
+<H3> Subsections</H3>
+<oL>
+<LI> <A HREF="chap077.htm#SECT001">More about Transformations</a>
+<LI> <A HREF="chap077.htm#SECT002">Transformation</a>
+<LI> <A HREF="chap077.htm#SECT003">IdentityTransformation</a>
+<LI> <A HREF="chap077.htm#SECT004">Comparisons of Transformations</a>
+<LI> <A HREF="chap077.htm#SECT005">Operations for Transformations</a>
+<LI> <A HREF="chap077.htm#SECT006">IsTransformation</a>
+<LI> <A HREF="chap077.htm#SECT007">Degree of a Transformation</a>
+<LI> <A HREF="chap077.htm#SECT008">Rank of a Transformation</a>
+<LI> <A HREF="chap077.htm#SECT009">Image of a Transformation</a>
+<LI> <A HREF="chap077.htm#SECT010">Kernel of a Transformation</a>
+<LI> <A HREF="chap077.htm#SECT011">PermLeftQuoTrans</a>
+<LI> <A HREF="chap077.htm#SECT012">TransPerm</a>
+<LI> <A HREF="chap077.htm#SECT013">PermTrans</a>
+</ol>
+<A NAME="SECT001"><h2>77.1 More about Transformations</h2></a>
+<P><P><P>
+A transformation <I>&alpha;</I> on <I>n</I> points is completely defined by its list
+of images.   It   is stored as  a  record  with   the  following category
+components.
+<P>
+<DL><DT><code>isTransformation</code>:<DD> <BR> 
+        is always set to <code>true</code>.
+</DL><P>
+<DL><DT><code>domain</code>:<DD> <BR> 
+        is always set to <code>Transformations</code>.
+</DL><P>
+Moreover it has the identification component
+<P>
+<DL><DT><code>images</code>:<DD><BR> 
+        containing  the list of  images in  such a way that  <I>i\<sup>&alpha;</sup> =
+        &alpha;.<code>images[i]</code></I> for all <I>i  &le; n</I>.
+</DL><P>
+The multiplication    of  these   transformations   can  be   efficiently
+implemented by using the sublist operator <code>{ }</code>.  The product <code><var>r</var> * 
+<var>l</var></code>  of    two  transformations  <var>l</var>   and   <var>r</var>  can  be   computed  as
+<code>Transformation( <var>r</var>.images{ <var>l</var>.images }  )</code>.  Note that the order has
+been chosen to have transformations act from the right on their domain.
+<P><A NAME="SECT002"><h2>77.2 Transformation</h2></a>
+<P><P><P>
+<code>Transformation( <var>lst</var> )</code>
+<P>
+<code>Transformation</code> returns the transformation  defined by the list <var>lst</var> of
+images.  Each entry in <var>lst</var> must be a positive integer not exceeding the
+length of <var>lst</var>.
+<P>
+<pre>    gap> Transformation( [ 1, 4, 4, 2 ] );
+    Transformation( [ 1, 4, 4, 2 ] )</pre>
+<P><A NAME="SECT003"><h2>77.3 IdentityTransformation</h2></a>
+<P><P><P>
+<code>IdentityTransformation( <var>n</var> )</code>
+<P>
+<code>IdentityTransformation</code>  returns,  for any  positive  <var>n</var>, the  identity
+transformation of degree <I>n</I>.
+<P>
+<pre>    gap> IdentityTransformation( 4 );
+    Transformation( [ 1 .. 4 ] )</pre>
+<P>
+The identity transformation  of degree <I>n</I>  acts  as the  identity in the
+full transformation monoid of degree <I>n</I> (see <a href="chap078.htm#SECT003">FullTransMonoid</a>).
+<P><A NAME="SECT004"><h2>77.4 Comparisons of Transformations</h2></a>
+<P><P>
+<A name = "I0"></a>
+
+<A name = "I1"></a>
+
+<P>
+<code><var>tr1</var> = <var>tr2</var></code><BR> 
+<code><var>tr1</var> <> <var>tr2</var></code>
+<P>
+The equality operator <code>=</code> applied to two  transformations <var>tr1</var> and <var>tr2</var>
+evaluates to <code>true</code> if the  two transformations are  equal and to <code>false</code>
+otherwise.  The inequality  operator <code><></code> applied to two transformations
+<var>tr1</var> and <var>tr2</var> evaluates to  <code>true</code> if the  two transformations are  not
+equal and to <code>false</code> otherwise.  A transformation can also be compared to
+any other object  that is not a  transformation, of course they are never
+equal.
+<P>
+Two transformations are considered equal if and only if their image lists
+are equal  as lists.  In particular,  equal transformations must have the
+same degree.
+<P>
+<pre>    gap> Transformation( [ 1, 2, 3, 4 ] ) = IdentityTransformation( 4 );
+    true
+    gap> Transformation( [ 1, 4, 4, 2 ] ) = 
+    > Transformation( [ 1, 4, 4, 2, 5 ] );
+    false</pre>
+<P>
+<P>
+<code><var>tr1</var> < <var>tr2</var></code> <BR> 
+<code><var>tr1</var> <= <var>tr2</var></code> <BR> 
+<code><var>tr1</var>  >  <var>tr2</var></code> <BR> 
+<code><var>tr1</var>  >= <var>tr2</var></code>
+<P>
+The  operators  <code><</code>, <code><=</code>,   <code>></code>, and <code>>=</code>  evaluate   to <code>true</code> if the
+transformation <var>tr1</var> is less  than, less than  or equal to, greater than,
+or  greater  than or equal  to  the transformation <var>tr2</var>, and  to <code>false</code>
+otherwise.
+<P>
+Let  <var>tr1</var>  and <var>tr2</var> be  two transformations  that  are not equal.  Then
+<var>tr1</var> is considered smaller than <var>tr2</var> if and  only if the list of images
+of <var>tr1</var> is (lexicographically) smaller than the list of images of <var>tr2</var>.
+Note that this  way the  smallest  transformation of  degree  <I>n</I> is  the
+transformation that maps every point to <I>1</I>.
+<P>
+You can also compare transformations  with objects of  other types.  Here
+any object that is  not a transformation  will be considered smaller than
+any transformation.
+<P><A NAME="SECT005"><h2>77.5 Operations for Transformations</h2></a>
+<P><P>
+<code><var>tr1</var> * <var>tr2</var></code>
+<A name = "I2"></a>
+
+<P>
+The operator <code>*</code>  evaluates to  the product  of the two  transformations
+<var>tr1</var> and <var>tr2</var>.
+<P>
+<P>
+<code><var>tr</var> * <var>perm</var></code><BR> 
+<code><var>perm</var> * <var>tr</var></code>
+<A name = "I3"></a>
+
+<P>
+The operator <code>*</code> evaluates to the product of the transformation <var>tr</var> and
+the permutation <var>perm</var> in the given order if the degree of <var>perm</var> is less
+than or equal to the degree of <var>tr</var>.
+<P>
+<P>
+<code><var>list</var> * <var>tr</var></code> <BR> 
+<code><var>tr</var> * <var>list</var></code>
+<A name = "I4"></a>
+
+<P>
+The operator <code>*</code>  evaluates to the list of  products of the  elements in
+<var>list</var> with the transformation <var>tr</var>.  That means that  the value is a new
+list <var>new</var> such that <code><var>new</var>[<var>i</var>] = <var>list</var>[<var>i</var>] * <var>tr</var></code> or <code><var>new</var>[<var>i</var>] =
+<var>tr</var> * <var>list</var>[<var>i</var>]</code>, respectively.
+<P>
+<P>
+<code><var>i</var> ^ <var>tr</var></code>
+<A name = "I5"></a>
+
+<P>
+The operator <code>^</code>  evaluates  to the image  <I>&lt;i&gt;\<sup><var>tr</var></sup> </I> of  the  positive
+integer <var>i</var> under the transformation <var>tr</var> if <var>i</var> is  less than the degree
+of <var>tr</var>.
+<P>
+<P>
+<code><var>tr</var> ^ 0</code>
+<P>
+The operator <code>^</code> evaluates to  the identity transformation on <I>n</I> points
+if <var>tr</var> is a transformation on <I>n</I> points (see <a href="chap077.htm#SECT003">IdentityTransformation</a>).
+<P>
+<P>
+<code><var>tr</var> ^ <var>i</var></code>
+<A name = "I6"></a>
+
+<P>
+For a  positive integer  <var>i</var>  the operator  <code>^</code> evaluates to  the <var>i</var>-th
+power of the transformation <var>tr</var>.
+<P>
+<P>
+<code><var>tr</var> ^ -1</code>
+<A name = "I7"></a>
+
+<P>
+The operator <code>^</code> evaluates to the  inverse mapping of the transformation
+<var>tr</var> which  is represented  as   a binary relation  (see chapter  <a href="chap076.htm">Binary
+Relations</a>).
+<P><A NAME="SECT006"><h2>77.6 IsTransformation</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<P>
+<code>IsTransformation( <var>obj</var> )</code>
+<P>
+<code>IsTransformation</code> returns  <code>true</code> if  <var>obj</var>,  which may  be an object of
+arbitrary type,  is  a  transformation  and <code>false</code> otherwise.    It will
+signal an error if <var>obj</var> is an unbound variable.
+<P>
+<pre>    gap> IsTransformation( Transformation( [ 2, 1 ] ) );
+    true
+    gap> IsTransformation( 1 );
+    false </pre>
+<P><A NAME="SECT007"><h2>77.7 Degree of a Transformation</h2></a>
+<P><P><P>
+<code>Degree( <var>trans</var> )</code>
+<P>
+<code>Degree</code> returns the degree of the transformation <var>trans</var>.
+<P>
+<pre>    gap> Degree( Transformation( [ 3, 3, 4, 2, 5 ] ) );
+    5</pre>
+<P>
+The <strong>degree</strong> of a  transformation is the number of  points it  is defined
+upon.  It can therefore be  read off as the length  of the list of images
+of the transformation.
+<P><A NAME="SECT008"><h2>77.8 Rank of a Transformation</h2></a>
+<P><P><P>
+<code>Rank( <var>trans</var> )</code>
+<P>
+<code>Rank</code> returns the rank of the transformation <var>trans</var>.
+<P>
+<pre>    gap> Rank( Transformation( [ 3, 3, 4, 2, 5 ] ) );
+    5</pre>
+<P>
+The <strong>rank</strong> of a transformation is the number of  points in its image.  It
+can  therefore be determined  as  the size of the   set of images  of the
+transformation.
+<P><A NAME="SECT009"><h2>77.9 Image of a Transformation</h2></a>
+<P><P><P>
+<code>Image( <var>trans</var> )</code>
+<P>
+<code>Image</code> returns the image of the transformation <var>trans</var>.
+<P>
+<pre>    gap> Image( Transformation( [ 3, 3, 4, 2, 5 ] ) );
+    [ 2, 3, 4, 5 ]</pre>
+<P>
+The   <strong>image</strong> of  a  transformation is  the  set  of its  images.   For a
+transformation of degree <I>n</I>  this is  always  a subset of the  set <I>{1,
+ ... , n}</I>.
+<P><A NAME="SECT010"><h2>77.10 Kernel of a Transformation</h2></a>
+<P><P><P>
+<code>Kernel( <var>trans</var> )</code>
+<P>
+<code>Kernel</code> returns the kernel of the transformation <var>trans</var>.
+<P>
+<pre>    gap> Kernel( Transformation( [ 3, 3, 4, 2, 5 ] ) );
+    [ [ 1, 2 ], [ 3 ], [ 4 ], [ 5 ] ] </pre>
+<P>
+The <strong>kernel</strong>  of a transformation is the  set of its nonempty  preimages. 
+For a transformation of degree <I>n</I> this is  always a partition of the set
+<I>{1,  ... , n}</I>.
+<P><A NAME="SECT011"><h2>77.11 PermLeftQuoTrans</h2></a>
+<P><P>
+<A name = "I9"></a>
+
+<P>
+<code>PermLeftQuoTrans( <var>tr1</var>, <var>tr2</var> )</code>
+<P>
+Given transformations <var>tr1</var> and  <var>tr2</var> with equal  kernel and  image, the
+permutation induced by <code><var>tr1</var>^-1 * <var>tr2</var></code>  on the set <code>Image( <var>tr1</var> )</code>
+is computed.
+<P>
+<pre>    gap> a:= Transformation( [ 8, 7, 5, 3, 1, 3, 8, 8 ] );;
+    gap> Image(a);  Kernel(a);
+    [ 1, 3, 5, 7, 8 ]
+    [ [ 1, 7, 8 ], [ 2 ], [ 3 ], [ 4, 6 ], [ 5 ] 
+    gap> b:= Transformation( [ 1, 3, 8, 7, 5, 7, 1, 1 ] );;
+    gap> Image(b) = Image(a);  Kernel(b) = Kernel(a);
+    true
+    true
+    gap> PermLeftQuoTrans(a, b);
+    (1,5,8)(3,7) </pre>
+<P><A NAME="SECT012"><h2>77.12 TransPerm</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<P>
+<code>TransPerm( <var>n</var>, <var>perm</var> )</code>
+<P>
+<code>TransPerm</code> returns the bijective transformation of  degree <var>n</var> that acts
+on the set <I>{1,  ... ,  n}</I> in the same way  as the permutation  <var>perm</var>
+does.
+<P>
+<pre>    gap> TransPerm( 4, (1,2,3) );
+    Transformation( [ 2, 3, 1, 4 ] )</pre>
+<P><A NAME="SECT013"><h2>77.13 PermTrans</h2></a>
+<P><P>
+<A name = "I11"></a>
+
+<P>
+<code>PermTrans( <var>trans</var> )</code>
+<P>
+<code>PermTrans</code> returns  the   permutation  defined by   the   transformation
+<var>trans</var>.  If <var>trans</var> is not bijective, an error is signaled by <code>PermList</code>
+(see "PermList").
+<P>
+<pre>    gap> PermTrans( Transformation( [ 2, 3, 1, 4 ] ) );
+    (1,2,3)</pre>
+<P><a href ="chap076.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap078.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P>
+<address>gap3-jm<br>19 Feb 2018</address></body></html>

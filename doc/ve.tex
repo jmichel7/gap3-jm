@@ -1,0 +1,435 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  ve.tex                      GAP documentation                Steve Linton 
+%%
+%A  @(#)$Id: ve.tex,v 1.1.1.1 1996/12/11 12:36:51 werner Exp $
+%%
+%Y  Copyright (C)  1993,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file contains the documentation of the Vector Enumeration share
+%%  library.
+%%
+%H  $Log: ve.tex,v $
+%H  Revision 1.1.1.1  1996/12/11 12:36:51  werner
+%H  Preparing 3.4.4 for release
+%H
+%H  Revision 3.2  1994/06/17  19:04:36  vfelsch
+%H  examples adjusted to version 3.4
+%H
+%H  Revision 3.1  1994/06/10  02:45:32  vfelsch
+%H  updated examples
+%H
+%H  Revision 3.0  1994/05/19  13:43:58  sam
+%H  Initial Revision under RCS
+%H
+%%
+\def\VE{Vector Enumeration}
+\def\MeatAxe{\sf MeatAxe}
+\Chapter{Vector Enumeration}
+
+This chapter describes the {\VE} (Version~3) share library package for
+computing matrix representations of finitely presented algebras.  See
+"Installing the Vector Enumeration Package" for the installation of the
+package, and the {\VE} manual~\cite{Lin93} for details of the
+implementation.
+
+The default application of {\VE}, namely the function 'Operation' for
+finitely presented algebras (see chapter "Finitely Presented Algebras"),
+is described in "Operation for Finitely Presented Algebras".
+
+The interface between {\GAP} and {\VE} is described in "More about Vector
+Enumeration".
+
+In "Examples of Vector Enumeration" the examples given in the {\VE} manual
+serve as examples for the use of {\VE} with {\GAP}.
+
+Finally, section "Using Vector Enumeration with the MeatAxe" shows how
+the {\MeatAxe} share library (see chapter "The MeatAxe") and {\VE} can work
+hand in hand.
+
+The functions of the package can be used after loading the package with
+
+|    gap> RequirePackage( "ve" ); |
+
+The package is also loaded *automatically* when 'Operation' is called for the
+action of a finitely presented algebra on a quotient module.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operation for Finitely Presented Algebras}
+
+'Operation( <F>, <Q> )'
+
+This is the default application of {\VE}.
+<F> is a finitely presented algebra (see chapter "Finitely Presented
+Algebras"), <Q> is a quotient of a free <F>-module,
+and the result is a matrix algebra representing a faithful action on <Q>.
+
+If <Q> is the zero module then the matrices have dimension zero, so the
+result is a null algebra (see "NullAlgebra") consisting only of a zero
+element.
+
+The algebra homomorphism, the isomorphic module for the matrix algebra,
+and the module homomorphism can be constructed as described in chapters
+"Algebras" and "Modules".
+
+|    gap> a:= FreeAlgebra( GF(2), 2 );
+    UnitalAlgebra( GF(2), [ a.1, a.2 ] )
+    gap> a:= a / [ a.1^2 - a.one, # group algebra of $V_4$ over $GF(2)$
+    >              a.2^2 - a.one,
+    >              a.1*a.2 - a.2*a.1 ];
+    UnitalAlgebra( GF(2), [ a.1, a.2 ] )
+    gap> op:= Operation( a, a^1 );
+    UnitalAlgebra( GF(2),
+    [ [ [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2), 0*Z(2),
+              Z(2)^0 ], [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ],
+          [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ] ],
+      [ [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ],
+          [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ],
+          [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ],
+          [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ] ] ] )
+    gap> Size( op );
+    16 |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about Vector Enumeration}
+\index{VEInput}
+\index{CallVE}
+\index{VEOutput}
+\index{FpAlgebraOps.OperationQuotientModule}
+
+As stated in the introduction to this chapter, {\VE} is a share library
+package.  The computations are done by standalone programs written in C.
+
+The interface between {\VE} and {\GAP} consists essentially of two parts,
+namely the global variable 'VE', and the function
+'FpAlgebraOps.OperationQuotientModule'.
+
+\vspace{5mm}
+
+*The 'VE' record*
+
+'VE' is a record with components
+
+'Path': \\ the full path name of the directory that contains the
+           executables of the standalones 'me', 'qme', 'zme',
+
+'options': \\
+  a string with command line options for {\VE};
+  it will be appended to the command string of 'CallVE' (see below),
+  so the default options chosen there can be overwritten.
+  This may be useful for example in case of the '-v' option to enable the
+  printing of comments (see section 4.3 of~\cite{Lin93}), but you should
+  *not* change the output file (using '-o') when you simply call
+  'Operation' for a finitely presented algebra.
+  'options' is defaulted to the empty string.
+
+\vspace{5mm}
+
+*FpAlgebraOps.OperationQuotientModule*
+
+This function is called automatically by 'FpAlgebraOps.Operation'
+(see "Operation for Finitely Presented Algebras"),
+it can also be called directly as follows.
+
+'FpAlgebraOps.OperationQuotientModule( <A>, <Q>, <opr> )'\\
+'FpAlgebraOps.OperationQuotientModule( <A>, <Q>, \"mtx\" )'
+
+It takes a finitely presented algebra <A> and a list of submodule
+generators <Q>, that is, the entries of <Q> are list of equal length,
+with entries in <A>, and returns the matrix representation computed by
+the {\VE} program.
+
+The third argument must be either one of the operations 'OnPoints',
+'OnRight', or the string '\"mtx\"'.  In the latter case the output will
+be an algebra of {\MeatAxe} matrices, see "Using Vector Enumeration with
+the MeatAxe" for further explanation.
+
+\vspace{5mm}
+
+*Accessible Subroutines*
+
+The following three functions are used by
+'FpAlgebraOps.OperationQuotientModule'.
+They are the real interface that allows to access {\VE} from {\GAP}.
+
+'PrintVEInput( <A>, <Q>, <names> )'
+
+takes a finitely presented algebra <A>, a list of submodule generators
+<Q>, and a list <names> of names the generators shall have in the
+presentation that is passed to {\VE}, and prints a string that represents
+the input presentation for {\VE}.
+See section 3.1 of the {\VE} manual~\cite{Lin93} for a description of
+the syntax.
+
+|    gap> PrintVEInput( a, [ [ a.zero ] ], [ "A", "B" ] );
+    2.
+    A B .
+    .
+    .
+    {1}(0).
+    A*A, B*B, :
+    A*B+B*A = 0, .  |
+
+\vspace{5mm}
+
+'CallVE( <commandstr>, <infile>, <outfile>, <options> )'
+
+calls {\VE} with command string <commandstr>, presentation file
+<infile>, and command line options <options>, and prescribes the
+output file <outfile>.
+
+If not overwritten in the string <options>, the default options
+'\"-i -P -v0 -Y VE.out -L'\#  '\"' are chosen.
+
+Of course it is not necessary that <infile> was produced using
+'PrintVEInput', and also the output is independent of {\GAP}.
+
+|    gap> PrintTo( "infile.pres",
+    >             PrintVEInput( a, [ [ a.zero ] ], [ "A", "B" ] ) );
+    gap> CallVE( "me", "infile", "outfile", " -G -vs2" ); |
+
+(The option '-G' sets the output format to {\GAP}, '-vs2' chooses a
+more verbose mode.)
+
+\vspace{5mm}
+
+'VEOutput( <A>, <Q>, <names>, <outfile> )'\\
+'VEOutput( <A>, <Q>, <names>, <outfile>, \"mtx\" )'
+
+returns the output record produced by {\VE} that was written to the file
+<outfile>.
+A component 'operation' is added that contains the information for the
+construction of the operation homomorphisms.
+
+The arguments <A>, <Q>, <names> describe the finitely presented algebra,
+the quotient module it acts on, and the chosen generators names, i.e.,
+the original structures for that {\VE} was called.
+
+|    gap> out:= VEOutput( a, [ [ a.zero ] ], [ "A", "B" ], "outfile" );;
+    gap> out.dim; out.operation.moduleinfo.preimagesBasis;
+    4
+    [ [ a.one ], [ a.2 ], [ a.1 ], [ a.1*a.2 ] ] |
+
+If the optional fifth argument '\"mtx\"' is present, the output is regarded
+as an algebra of {\MeatAxe} matrices (see section "Using Vector Enumeration
+with the MeatAxe").  For that, an appropriate command string had to be passed
+to 'CallVE'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Examples of Vector Enumeration}
+
+We consider those of the examples given in chapter 8 of the {\VE} manual
+that can be used in {\GAP}.
+
+*8.1 The natural permutation representation of $S_3$*
+
+The symmetric group $S_3$ is also the dihedral group $D_6$, and so is
+presented by two involutions with product of order 3.
+Taking the permutation action on the cosets of the cyclic group generated
+by one of the involutions we obtain the following presentation.
+
+|    gap> a:= FreeAlgebra( Rationals, 2 );;
+    gap> a:= a / [ a.1^2 - a.one, a.2^2 - a.one,
+    >              (a.1*a.2)^3 - a.one ];
+    UnitalAlgebra( Rationals, [ a.1, a.2 ] )
+    gap> a.name:= "a";; |
+    
+We choose as module 'q' the quotient of the regular module for 'a'
+by the submodule generated by 'a.1 - 1', and compute the action of 'a'
+on 'q'.
+
+|    gap> m:= a^1;;
+    gap> q:= m / [ [ a.1 - a.one ] ];
+    Module( a, [ [ a.one ] ] ) / [ [ -1*a.one+a.1 ] ]
+    gap> op:= Operation( a, q );
+    UnitalAlgebra( Rationals, 
+    [ [ [ 1, 0, 0 ], [ 0, 0, 1 ], [ 0, 1, 0 ] ], 
+      [ [ 0, 1, 0 ], [ 1, 0, 0 ], [ 0, 0, 1 ] ] ] )
+    gap> op.name:= "op";; |
+    
+\vspace{5mm}
+
+*8.2 A Quotient of a Permutation Representation*
+
+The permutation representation constructed in example 8.1 fixes the all-ones
+vector (as do all permutation representations).  This is the image of the
+module element '[ a.one + a.2 + a.2\*a.1 ]' in the corresponding module for
+the algebra 'op'.
+
+|    gap> ophom:= OperationHomomorphism( a, op );;
+    gap> opmod:= OperationModule( op );
+    Module( op, [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] )
+    gap> modhom:= OperationHomomorphism( q, opmod );;
+    gap> pre:= PreImagesRepresentative( modhom, [ 1, 1, 1 ] );;
+    gap> pre:= pre.representative;
+    [ a.one+a.2+a.2*a.1 ] |
+
+We could have computed such a preimage also by computing a matrix that maps
+the image of the submodule generator of 'q' to the all-ones vector, and
+applying a preimage to the submodule generator.  Of course the we do not
+necessarily get the same representatives.
+    
+|    gap> images:= List( Generators( q ), x -> Image( modhom, x ) );
+    [ [ 1, 0, 0 ] ]
+    gap> rep:= RepresentativeOperation( op, images[1], [ 1, 1, 1 ] );
+    [ [ 1, 1, 1 ], [ 1, 1, 1 ], [ 1, 1, 1 ] ]
+    gap> PreImagesRepresentative( ophom, rep );
+    a.one+a.1*a.2+a.2*a.1 |
+    
+Now we factor out the fixed submodule by enlarging the denominator of
+the module 'q'.  (Note that we could also compute the action of the matrix
+algebra if we were only interested in the 2-dimensional representation.)
+
+Accordingly we can write down the following presentation for the
+quotient module.
+
+|    gap> q:= m / [ [ a.1 - a.one ], pre ];;
+    gap> op:= Operation( a, q );
+    UnitalAlgebra( Rationals, 
+    [ [ [ 1, 0 ], [ -1, -1 ] ], [ [ 0, 1 ], [ 1, 0 ] ] ] ) |
+    
+\vspace{5mm}
+
+*8.3 A Non-cyclic Module*
+
+If we take the direct product of two copies of the permutation representation
+constructed in example 8.1, we can identify the fixed vectors in the two copies
+in the following presentation.
+
+|    gap> m:= a^2;;
+    gap> q:= m / [ [ a.zero, a.1 - a.one ], [ a.1 - a.one, a.zero ],
+    >              [ a.one+a.2+a.2*a.1, -a.one-a.2-a.2*a.1 ] ];
+    Module( a, [ [ a.one, a.zero ], [ a.zero, a.one ] ] ) / 
+    [ [ a.zero, -1*a.one+a.1 ], [ -1*a.one+a.1, a.zero ], 
+      [ a.one+a.2+a.2*a.1, -1*a.one+-1*a.2+-1*a.2*a.1 ] ] |
+    
+We compute the matrix representation.
+
+|    gap> op:= Operation( a, q );
+    UnitalAlgebra( Rationals, 
+    [ [ [ 1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
+          [ 0, 0, 1, 0, 0 ], [ 1, -1, 1, 1, -1 ] ], 
+      [ [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 0, 1 ], [ 1, 0, 0, 0, 0 ], 
+          [ 0, 0, 0, 1, 0 ], [ 0, 1, 0, 0, 0 ] ] ] ) |
+    
+In this case it is interesting to look at the images of the module generators
+and pre-images of the basis vectors.  Note that these preimages are elements
+of a factor module, corresponding elements of the free module are again
+found as representatives.
+
+|    gap> ophom:= OperationHomomorphism( a, op );;
+    gap> opmod:= OperationModule( op );;
+    gap> opmod.name:= "opmod";;
+    gap> modhom:= OperationHomomorphism( q, opmod );;
+    gap> List( Generators( q ), x -> Image( modhom, x ) );
+    [ [ 1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ] ]
+    gap> basis:= Basis( opmod );
+    CanonicalBasis( opmod )
+    gap> preim:= List( basis.vectors, x -> 
+    >               PreImagesRepresentative( modhom, x ) );;
+    gap> preim:= List( preim, Representative );
+    [ [ a.one, a.zero ], [ a.zero, a.one ], [ a.2, a.zero ], 
+      [ a.2*a.1, a.zero ], [ a.zero, a.2 ] ] |
+    
+\vspace{5mm}
+
+*8.4 A Monoid Representation*
+
+The Coxeter monoid of type $B_2$ has a transformation representation on four
+points.  This can be constructed as a matrix representation over GF(3), from
+the following presentation.
+
+|    gap> a:= FreeAlgebra( GF(3), 2 );;
+    gap> a:= a / [ a.1^2 - a.1, a.2^2 - a.2,
+    > (a.1*a.2)^2 - (a.2*a.1)^2 ];;
+    gap> q:= a^1 / [ [ a.1 - a.one ] ];;
+    gap> op:= Operation( a, q );
+    UnitalAlgebra( GF(3), 
+    [ [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3)^0,
+              0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ],
+          [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ],
+      [ [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ],
+          [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ],
+          [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ],
+          [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ] ] ) |
+    
+\vspace{5mm}
+
+*8.7 A Quotient of a Polynomial Ring*
+
+The quotient of a polynomial ring by the ideal generated by some polynomials
+will be finite-dimensional just when the polynomials have finitely many common
+roots in the algebraic closure of the ground ring.
+For example, three polynomials in three variables give us the following
+presentation for the quotient of their ideal.
+
+Define 'a' to be the polynomial algebra on three variables.
+
+|    gap> a:= FreeAlgebra( Rationals, 3 );;
+    gap> a:= a / [ a.1 * a.2 - a.2 * a.1,
+    >              a.1 * a.3 - a.3 * a.1,
+    >              a.2 * a.3 - a.3 * a.2 ];; |
+    
+Define the quotient module by the polynomials 'A+B+C', 'AB+BC+CA', 'ABC-1'.
+
+|    gap> q:= a^1 / [ [ a.1+a.2+a.3 ],
+    >                [ a.1*a.2+a.2*a.3+a.3*a.1 ],
+    >                [ a.1*a.2*a.3-a.one ]        ];; |
+    
+Compute the representation.
+
+|    gap> op:= Operation( a, q );
+    UnitalAlgebra( Rationals, 
+    [ [ [ 0, 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1, 0 ],
+          [ -1, 0, 0, 0, 0, -1 ], [ 0, 0, 1, 0, 0, 0 ],
+          [ 1, 0, 0, 0, 0, 0 ], [ 0, -1, 0, -1, 0, 0 ] ],
+      [ [ 0, 0, 0, 1, 0, 0 ], [ 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 1 ],
+          [ 0, 0, -1, 0, -1, 0 ], [ -1, 0, 0, 0, 0, -1 ],
+          [ 0, 1, 0, 0, 0, 0 ] ],
+      [ [ 0, -1, 0, -1, 0, 0 ], [ 0, 0, -1, 0, -1, 0 ],
+          [ 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1, 0 ],
+          [ 0, 0, 0, 0, 0, 1 ], [ 0, 0, 0, 1, 0, 0 ] ] ] ) |
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Using Vector Enumeration with the MeatAxe}
+
+One can deal with the matrix representation constructed by {\VE} also using
+the {\MeatAxe} share library.  This way the matrices are not read into {\GAP}
+but written to files and converted into internal {\MeatAxe} format.
+See chapter "The MeatAxe" for details.
+
+|    gap> a:= FreeAlgebra( GF(2), 2 );;
+    gap> a:= a / [ a.1^2 - a.one, a.2^2 - a.one,
+    >              (a.1*a.2)^3 - a.one ];;
+    gap> RequirePackage("meataxe");
+    &I  The MeatAxe share library functions are available now.
+    &I  All files will be placed in the directory
+    &I     '/var/tmp/tmp.006103'
+    &I  Use 'MeatAxe.SetDirectory( <path> )' if you want to change.
+    gap> op:= Operation( a, a^1, "mtx" );
+    UnitalAlgebra( GF(2), 
+    [ MeatAxeMat( "/var/tmp/tmp.006103/a/g.1", GF(2), [ 6, 6 ], a.1 ),
+      MeatAxeMat( "/var/tmp/tmp.006103/a/g.2", GF(2), [ 6, 6 ], a.2 ) ] )
+    gap> Display( op.1 );
+    &I  calling 'maketab' for field of size 2
+    MeatAxe.Matrix := [
+    [0,0,1,0,0,0],
+    [0,0,0,1,0,0],
+    [1,0,0,0,0,0],
+    [0,1,0,0,0,0],
+    [0,0,0,0,0,1],
+    [0,0,0,0,1,0]
+    ]*Z(2);
+    gap> MeatAxe.Unbind(); |
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  mode:               outline
+%%  outline-regexp:     "%F\\|%V\\|%E"
+%%  fill-column:        73
+%%  fill-prefix:        "%%  "
+%%  eval:               (hide-body)
+%%  End:

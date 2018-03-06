@@ -1,0 +1,47 @@
+This directory  contains programs to perform  the computations described
+by the Bessis-Michel paper "Explicit presentations for exceptional braid
+groups".
+
+To compute all needed data for a group W in the list G24, G27, G29, G31,
+G33, G34  including an equation  of the  curve whose complement  has the
+sought braid group as fundamental group, one does:
+
+ReadVK("contrib/g24"); # resp. g27, etc...
+
+After this call has been done, a record 'res' has been computed with the
+following fields:
+
+degs:     the reflection degrees of W.
+rank:     the rank of W.
+codegs:   the codegrees of W.
+invar:    a function of two arguments i,z such that invar(i,z) is the value
+          of the i-th fundamental invariant of W at the point of coordinates
+	  z (a vector of length the rank).
+hessmat:  a function of one argument z such that hessmat(z) is the Hessian
+          matrix of the first invariant at the point of coordinates z.
+jacobmat: a function of one argument z such that jacobmat(z) is the Jacobian
+          matrix of the invariants at the point of coordinates z.
+c:        a function of one argument z such that c(z) is the value at the
+          point of coordinates z of the matrix C described in the section 3.2
+	  of the Bessis-Michel paper.
+twoplane: the equations of a twoplane whose intersection with the discriminant
+          gives a Pi1-isomorphism.
+M:        The matrix of basic derivations of W 
+disc:     The determinant of M.
+curve:    The equation of the intersection of disc=0 with res.twoplane.
+
+The entries  M, disc and curve  are given as Mvp's  in rank(W) variables
+taken from  the list x,y,z,t,u,v.  For G34,  the computation of  M being
+very expensive, it is not done when  reading g34.g. To do it, one has to
+type:
+
+  res.M:=basicder(res);
+
+this takes about one hour on a pentium IV at 3Ghz.
+One can then do:
+  res.disc:=myDet(res.M);
+  res.curve:=Value(res.disc,res.twoplane);
+
+One then can compute for all the groups a presentation of the braid group
+by calling:
+  FundamentalGroup(res.curve);
