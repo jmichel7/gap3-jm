@@ -112,4 +112,4 @@ File.open("out2"){ |v| v.each {|l|
 }}
 File.delete("out2")
 outgap.close
-system "rdelta "+outman.path+" "+outgap.path
+system "gvim -d "+outman.path+" "+outgap.path
