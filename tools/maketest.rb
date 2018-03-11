@@ -35,8 +35,8 @@ p files
 File.delete("outman") if File.exists?("outman"); outman=File.open("outman","w")
 File.delete("err") if File.exists?("err"); err=File.open("err","w")
 File.delete("script") if File.exists?("script"); spt=File.open("script","w")
-spt.print "LogTo(\"out2\");SizeScreen("+SIZE_SCREEN+");\n"
-spt.print "InfoRead1:=Ignore;InfoChevie:=Ignore;InfoAlgebra:=Ignore;\n"
+spt.print "LogTo(\"out2\");SizeScreen("+SIZE_SCREEN+");;\n"
+spt.print "InfoRead1:=Ignore;;InfoChevie:=Ignore;;InfoAlgebra:=Ignore;;\n"
 #spt.print "CHEVIE.PrintSpets:=rec(GAP:=true);;\n"
 files.each do |n| s=File.read(n)
   spt.print "###   "+n+"   ###\n"
@@ -54,7 +54,7 @@ files.each do |n| s=File.read(n)
 	 l=l.split(/("(?:[^"]|\\")*")/)
 	 (0...l.length).each{|i| 
 	   if /(#|&)/=~l[i] and not /^"/=~l[i] then
-	    l[i]=l[i].sub(/(#|&).*/,"")
+	    l[i]=l[i].sub(/ *(#|&).*/,"")
 	    l=l[0..i]
 	   end
 	 }
@@ -63,7 +63,7 @@ files.each do |n| s=File.read(n)
        if /^\s*gap>/=~ l and not /quit;/=~ l
          spt.print l.sub(/\s*gap> /,""), "\n"
        elsif /^\s*>\s/=~ l
-         spt.print l.sub(/\s*>\s/," "), "\n"
+         spt.print l.sub(/\s*>\s/,""), "\n"
        end
        if /^\s*brk>/=~l
             outman.print "brk> "
@@ -106,10 +106,10 @@ end
 # out2=Tempfile.new("out2")
 File.delete("outgap") if File.exists?("outgap"); outgap=File.open("outgap","w")
 File.open("out2"){ |v| v.each {|l|
-  l=l.sub("  *$","")
+  l=l.sub(/\s*\n$/,"\n")
 # outgap.print l unless /^#I/=~l
-  outgap.print l
+  outgap.print l unless /gap> InfoRead1/=~l
 }}
 File.delete("out2")
 outgap.close
-system "gvim -d "+outman.path+" "+outgap.path
+system "gvim -d -geometry 150x50 "+outman.path+" "+outgap.path
