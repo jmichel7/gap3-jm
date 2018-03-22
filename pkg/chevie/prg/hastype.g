@@ -185,8 +185,7 @@ HasTypeOps.CharTable:=function(W)local t, l, tbl, cl, d;
 
   t:=ChevieClassInfo(W);
   if t<>false then Inherit(tbl,t);
-   tbl.classnames:=List(tbl.classnames,
-     n->String(Replace(n,"_","","\\tilde ","~")));
+    tbl.classnames:=List(tbl.classnames,TeXStrip);
   fi;
 
   if not IsSpets(W) and not IsBound(tbl.powermap) then

@@ -368,21 +368,6 @@ DecomposeTensor:=function(arg)local t,ct,c;
   return MatScalarProducts(ct,c,[t])[1]; 
 end;
 
-##############################################################################
-# 'Value' function for polynomials represented as
-#   [ vector of coefficients, valuation]
-#
-# This function is used in particular for char. tables of Hecke algebras of
-# type En, Hn. This seems to be the best "Value" function because many entries
-# are sparse polynomials:
-#
-FastValue:=function(f,x)
-  if IsPolynomial(x) and x=Indeterminate(x.baseRing) then
-      return Polynomial(x.baseRing,f[1],f[2]);
-  fi;
-  return ValuePol(f[1],x)*x^f[2];
-end;
-
 # orbit of list of functions gens on item v
 FOrbit:=function(gens,v)local res,n,new,o;
   res:=[]; new:=[v];
@@ -409,7 +394,9 @@ FOrbits:=function(gens,l)local res,o;
   return res;
 end;
 
-# minimal word w such that Composition(gens{w}) applied to e satifies cond
+# gens is a list of functions which can operate on element e
+# returns minimal word w such that Composition(gens{w}) applied to e 
+# satifies cond
 MinimalWordProperty:=function(e,gens,cond)
   local bag,new,elements,cayleyGraph,nbLength,p,res;
     if cond(e) then return [];fi;

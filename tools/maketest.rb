@@ -6,21 +6,27 @@ def help
   print <<END
   Usage:
     maketest.rb [options] [pattern]
-
-    -r, --no gaprc  pass option -r to gap to bypass .gaprc
+    test GAP3 manual files matching [pattern] --- all if no pattern
+    options:
+    -r         pass option -r to gap (that is, bypass .gaprc)
+    -d xxx     use xxx as diff tool
 END
 end
 
 $opt_r=false
+$difftool="gvim -d -geometry 150x50"
+
+begin
 GetoptLong.new(
- [ "--no gaprc", "-r", GetoptLong::NO_ARGUMENT],
- [ "--help", "-h", GetoptLong::NO_ARGUMENT],
+ [ "-r", GetoptLong::NO_ARGUMENT],
+ [ "-d", GetoptLong::REQUIRED_ARGUMENT],
 ).each {|opt,arg|
   if opt=="--no gaprc" then $opt_r=true end
-  if opt=="--help" then 
-
-  end
+  if opt=="-d" then $difftool=arg end
 }
+rescue
+  help();exit
+end
 
 SIZE_SCREEN="[72,70]" # gap manual examples should have this
 files=[]
@@ -35,8 +41,8 @@ p files
 File.delete("outman") if File.exists?("outman"); outman=File.open("outman","w")
 File.delete("err") if File.exists?("err"); err=File.open("err","w")
 File.delete("script") if File.exists?("script"); spt=File.open("script","w")
-spt.print "LogTo(\"out2\");SizeScreen("+SIZE_SCREEN+");\n"
-spt.print "InfoRead1:=Ignore;InfoChevie:=Ignore;InfoAlgebra:=Ignore;\n"
+spt.print "LogTo(\"out2\");SizeScreen("+SIZE_SCREEN+");;\n"
+spt.print "InfoRead1:=Ignore;;InfoChevie:=Ignore;;InfoAlgebra:=Ignore;;\n"
 #spt.print "CHEVIE.PrintSpets:=rec(GAP:=true);;\n"
 files.each do |n| s=File.read(n)
   spt.print "###   "+n+"   ###\n"
@@ -54,7 +60,7 @@ files.each do |n| s=File.read(n)
 	 l=l.split(/("(?:[^"]|\\")*")/)
 	 (0...l.length).each{|i| 
 	   if /(#|&)/=~l[i] and not /^"/=~l[i] then
-	    l[i]=l[i].sub(/(#|&).*/,"")
+	    l[i]=l[i].sub(/ *(#|&).*/,"")
 	    l=l[0..i]
 	   end
 	 }
@@ -63,12 +69,12 @@ files.each do |n| s=File.read(n)
        if /^\s*gap>/=~ l and not /quit;/=~ l
          spt.print l.sub(/\s*gap> /,""), "\n"
        elsif /^\s*>\s/=~ l
-         spt.print l.sub(/\s*>\s/," "), "\n"
+         spt.print l.sub(/\s*>\s/,""), "\n"
        end
        if /^\s*brk>/=~l
             outman.print "brk> "
        else
-         l=l.sub(/&/,"#"),"\n" if /^\s*&/=~l
+         l=l.sub(/&/,"#") if /^\s*&/=~l
          l=l.gsub(/\\\|/,"|")
          m=/^(\s*)gap>/.match(l)
          if m then
@@ -106,10 +112,10 @@ end
 # out2=Tempfile.new("out2")
 File.delete("outgap") if File.exists?("outgap"); outgap=File.open("outgap","w")
 File.open("out2"){ |v| v.each {|l|
-  l=l.sub("  *$","")
+  l=l.sub(/\s*\n$/,"\n")
 # outgap.print l unless /^#I/=~l
-  outgap.print l
+  outgap.print l unless /gap> InfoRead1/=~l
 }}
 File.delete("out2")
 outgap.close
-system "gvim -d "+outman.path+" "+outgap.path
+system $difftool+" "+outman.path+" "+outgap.path

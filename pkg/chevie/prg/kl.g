@@ -498,6 +498,14 @@ end;
 
 LeftCellOps:=OperationsRecord("LeftCellOps");
 
+# A left cell must have the fields
+# .reps representatives such that the left cell is the *-orbit of these.
+# .group of which group it is a Left cell
+# Optional (computed) fields are:
+# .duflo the Duflo involution of the cell
+# .character the character of the cell
+# .a the a-function of the cell
+# .elements the elements of the cell
 LeftCellOps.Size:=function(c)
   if IsBound(c.character) then return
     Sum(List(CharTable(c.group).irreducibles,x->x[1]){c.character});
@@ -538,18 +546,18 @@ LeftCellOps.Print:=function(c)local f,p,uc;
   Print(">");
 end;
 
-# st is a chain ststs of Length m_{s,t}
-# LeftDescentSet(W,w) contains st[1] and not st[2]
-# returns corresponding * operation applied to w
-LeftStarNC:=function(W,st,w)local w0,i,rst;rst:=W.reflections{st};
-  w0:=Product(rst);i:=1;
-  repeat w:=rst[i]*w;i:=i+1;w0:=w0*rst[i];
-  until not W.operations.IsLeftDescending(W,w,st[i]);
-  return w0*w;
-end;
-
 # r is one of BraidRelations(W); returns corresponding * op on w if applicable
-LeftStar:=function(W,r,w)local s;
+# otherwise returns w
+LeftStar:=function(W,r,w)local s,LeftStarNC;
+  # st is a chain ststs of Length m_{s,t}
+  # LeftDescentSet(W,w) contains st[1] and not st[2]
+  # returns corresponding * operation applied to w
+  LeftStarNC:=function(W,st,w)local w0,i,rst;rst:=W.reflections{st};
+    w0:=Product(rst);i:=1;
+    repeat w:=rst[i]*w;i:=i+1;w0:=w0*rst[i];
+    until not W.operations.IsLeftDescending(W,w,st[i]);
+    return w0*w;
+  end;
   if W.operations.IsLeftDescending(W,w,W.rootRestriction[r[1][1]]) then
     if W.operations.IsLeftDescending(W,w,W.rootRestriction[r[2][1]]) then 
          return w;
@@ -561,7 +569,7 @@ LeftStar:=function(W,r,w)local s;
   fi;
 end;
 
-# all possible left * images of w
+# List of functions giving all possible left * images of w
 LeftStars:=W->List(Filtered(BraidRelations(W),r->Length(r[1])>2),
   st->(w->LeftStar(W,st,w)));
 
@@ -599,7 +607,7 @@ LeftCellOps.Representation:=function(c,H)local v,W,u,e,mu,w,res,l,k,s,n,value;
   return WGraphToRepresentation(c.group.semisimpleRank,WGraph(c),v);
 end;
 
-# returns right star operation applied to c
+# returns right star operation st (a BraidRelation) of LeftCell c
 RightStar:=function(st,c)local res,W,n;
   res:=ShallowCopy(c);Unbind(res.elements);
   W:=c.group;
@@ -619,6 +627,7 @@ RightStar:=function(st,c)local res,W,n;
   return res;
 end;
 
+# LeftCell containing w
 LeftCell:=function(W,w)local word,v,g,sst,cell,l;
   l:=KLeftCellRepresentatives(W);
   sst:=Filtered(BraidRelations(W),r->Length(r[1])>2);
@@ -708,6 +717,7 @@ LeftCells:=function(arg)local W,ch,cc,opt,uc,st;
   return Union(List(cc,c->FOrbit(st,c)));
 end;
 
+# WGraph of LeftCell c
 LeftCellOps.WGraph:=function(c)local e,mu,n,p,l,u,w,s,k,value,nodes;
   if not IsBound(c.graph) then 
     e:=Elements(c);mu:=LeftCellOps.Mu(c);n:=Length(e);
