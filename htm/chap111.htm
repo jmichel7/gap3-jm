@@ -1,455 +1,356 @@
-<html><head><title>GAP3 Manual: 111 Multivariate polynomials and rational fractions</title></head>
+<html><head><title>GAP3 Manual: 111 The VKCURVE package</title></head>
 <body bgcolor="ffffff">
-<h1>111 Multivariate polynomials and rational fractions</h1>
+<h1>111 The VKCURVE package</h1>
 <P><P><P>
-The  functions  described  in  this  file  were  written  to  alleviate the
-deficiency of <strong>GAP3</strong> in manipulating multi-variate polynomials. In <strong>GAP3</strong> one
-can  only define  one-variable polynomials  over a  given ring; this allows
-multi-variate polynomials by taking this ring to be a polynomial ring; but,
-in  addition to providing little flexibility in the choice of coefficients,
-this  "full" representation makes  for somewhat inefficient computation.
-The  use of the  <code>Mvp</code> (MultiVariate Polynomials)  described here is faster
-than  <strong>GAP3</strong> polynomials as soon as there are two variables or more. What is
-implemented   here  is   actually  "Puiseux   polynomials",  i.e.  linear
-combinations  of monomials  of the  type <I>x<sub>1</sub><sup>a<sub>1</sub></sup>...  x<sub>n</sub><sup>a<sub>n</sub></sup></I> where
-<I>x<sub>i</sub></I> are variables and <I>a<sub>i</sub></I> are exponents which can be arbitrary rational
-numbers. Some functions described below need their argument to involve only
-variables  to integral powers;  we will refer  to such objects as "Laurent
-polynomials";  some functions  require further  that variables  are raised
-only  to positive powers: we refer then to "true polynomials". Rational
-fractions  (<code>RatFrac</code>)  have  been  added,  thanks to work of Gwena&euml;lle Genet (the main difficulty there was to write an algorithm for the
-Gcd  of multivariate polynomials, a  non-trivial task). The coefficients of
-our  polynomials  can  in  principle  be  elements  of  any  ring, but some
-algorithms like division or Gcd require the coefficients of their arguments
-to be invertible.
+The  main function of the <strong>VKCURVE</strong>  package computes the fundamental group
+of  the  complement  of  a  complex  algebraic  curve  in  <I>&#x2102;<sup>2</sup></I>, using an
+implementation  of the Van Kampen method  (see for example <A href="biblio.htm#C73"><cite>C73</cite></a> for a
+clear and modernized account of this method).
+<P>
+<pre>    gap> FundamentalGroup(x^2-y^3);
+    #I  there are 2 generators and 1 relator of total length 6
+    1: bab=aba
+    
+    gap> FundamentalGroup((x+y)*(x-y)*(x+2*y));
+    #I  there are 3 generators and 2 relators of total length 12
+    1: cab=abc
+    2: bca=abc</pre>
+<P>
+The  input is  a  polynomial in  the  two variables  <code>x</code>  and <code>y</code>,  with
+rational  coefficients.  Though  approximate calculations  are  used  at
+various places, they are controlled and the final result is exact.
+<P>
+The output is a  record which  contains lots  of information  about the
+computation, including a presentation of the computed fundamental group,
+which is what is displayed when printing the record.
+<P>
+Our  motivation   for  writing  this   package  was  to   find  explicit
+presentations for  generalized braid groups attached  to certain complex
+reflection groups. Though presentations were known for almost all cases,
+six exceptional  cases were  missing (in the  notations of  Shephard and
+Todd, these  cases are <I>G<sub>24</sub></I>, <I>G<sub>27</sub></I>,  <I>G<sub>29</sub></I>, <I>G<sub>31</sub></I>, <I>G<sub>33</sub></I>
+and <I>G<sub>34</sub></I>).  Since the a  priori existence of nice  presentations for
+braid groups was proved in <A href="biblio.htm#B01"><cite>B01</cite></a>, it was upsetting not to know them
+explicitly. In the absence of any good grip on the geometry of these six
+examples, brute force  was a way to  get an answer. Using  <strong>VKCURVE</strong> , we
+have  obtained  presentations for  all of them.
+<P>
+This package was developed thanks to computer resources of the Institut
+de Math&eacute;matiques de Jussieu in Paris. We  thank the computer
+support team,  especially Jo&euml;l Marchand, for  the stability
+and the efficiency of the working environment.
+<P>
+We have tried to design this package with the novice <strong>GAP3</strong> user in mind.
+The only steps required to use it are
+
+<P>&bull; Run <strong>GAP3</strong> 3 (the package is not compatible with <strong>GAP3</strong> 4).
+<P>&bull;  Make  sure  the  packages   <strong>CHEVIE</strong>  and  <strong>VKCURVE</strong>  are  loaded
+(beware   that  we   require   the  development   version  of   <strong>CHEVIE</strong>,
+<code>http://www.math.jussieu.fr/\~{}jmichel/chevie.html</code> and not the one in
+the <strong>GAP3</strong>.3.3.4 distribution)
+<P>
+<P>&bull; Use the function <code>FundamentalGroup</code>,  as demonstrated in the above
+examples.
+<P>
+
+If  you are  not interested  in  the details  of the  algorithm, and  if
+<code>FundamentalGroup</code> gives you satisfactory  answers in a reasonable time,
+then you do not need to read this manual any further.
+<P>
+<P>
+<P>
+We  use our  own  package  for multivariate  polynomials  which is  more
+effective, for  our purposes, than  the default  in <strong>GAP3</strong> 3  (see <code>Mvp</code>).
+When <strong>VKCURVE</strong> is  loaded, the variables <code>x</code> and <code>y</code>  are pre-defined as
+<code>Mvp</code>s; one can  also use <strong>GAP3</strong> polynomials (which will  be converted to
+<code>Mvp</code>s).
+<P>
+The  implementation uses <code>Decimal</code> numbers, <code>Complex</code> numbers and braids as
+implemented  in  the  (development  version  of  the)  package  <strong>CHEVIE</strong>, so
+<strong>VKCURVE</strong> is dependent on this package.
+<P>
+To implement  the algorithms, we  needed to write  auxiliary facilities,
+for instance find  zeros of complex polynomials, or  work with piecewise
+linear  braids,  which  may  be  useful  on  their  own.  These  various
+facilities are documented in this manual.
+<P>
+Before discussing  our actual  implementation, let  us give  an informal
+summary of the mathematical background. Our strategy is adapted from the
+one originally  described in the  1930's by Van  Kampen. Let <I>C</I>  be an
+affine  algebraic curve,  given as  the  set of  zeros in  <I>&#x2102;<sup>2</sup></I> of  a
+non-zero  reduced  polynomial <I>P(x,y)</I>.  The  problem  is to  compute  a
+presentation of the fundamental group of  <I>&#x2102;<sup>2</sup> - C</I>. Consider <I>P</I> as a
+polynomial in <I>x</I>, with coefficients in the ring of polynomials in <I>y</I>
+<center><table><tr><td><I>P= &alpha;<sub>0</sub>(y)x<sup>n</sup> +  &alpha;<sub>1</sub>(y) x<sup>n-1</sup>  + ... +  &alpha;<sub>n-1</sub>(y) x
++  &alpha;<sub>n</sub>(y),</I></td></tr></table></center>  where the  <I>&alpha;<sub>i</sub></I>  are  polynomials in  <I>y</I>.  Let
+<I>&Delta;(y)</I> be the discriminant of <I>P</I> or, in other words, the resultant
+of  <I>P</I>  and <I>(&part;  P)/(&part;  x)</I>.  Since <I>P</I>  is  reduced,
+<I>&Delta;</I> is non-zero. For a generic  value of <I>y</I>, the polynomial in <var>x</var>
+given by <I>P(x,y)</I> has <I>n</I> distinct roots.
+When <I>y=y<sub>j</sub></I>, with <I>j</I> in <I>1,...,d</I>,
+we are in exactly one of
+the following situations: either <I>P(x,y<sub>j</sub>)=0</I>
+(we then say that <I>y<sub>j</sub></I> is bad),
+or <I>P(x,y<sub>j</sub>)</I> has a number of roots in <I>x</I> strictly smaller than
+<I>n</I>.
+Fix <I>y<sub>0</sub></I>  in <I>&#x2102;  - {y<sub>1</sub>,...,y<sub>d</sub>}</I>.  Consider the  projection <I>p:
+&#x2102;<sup>2</sup>  &rarr; &#x2102;,  (x,y) &rarr;  y</I>.  It restricts  to a  locally
+trivial  fibration with  base  space <I>B=  &#x2102;  - {y<sub>1</sub>,...,y<sub>d</sub>}</I>  and
+fibers homeomorphic  to the  complex plane with  <I>n</I> points  removed. We
+denote by  <I>E</I> the  total space  <I>p<sup>-1</sup>(B)</I> and by  <I>F</I> the  fiber over
+<I>y<sub>0</sub></I>. The fundamental  group of <I>F</I> is isomorphic to  the free group on
+<I>n</I> generators.  Let <I>&gamma;<sub>1</sub>,...,&gamma;<sub>d</sub></I>  be loops in  the pointed
+space  <I>(B,y<sub>0</sub>)</I> representing  a generating  system for  <I>&pi;<sub>1</sub>(B,y<sub>0</sub>)</I>.
+By  trivializing  the pullback  of  <I>p</I>  along  <I>&gamma;<sub>i</sub></I>, one  gets  a
+(well-defined up to isotopy) homeomorphism  of <I>F</I>, and a (well-defined)
+automorphism  <I>&phi;<sub>i</sub></I>  of  the  fundamental group  of  <I>F</I>,  identified
+with  the  free  group  <I>F<sub>n</sub></I>  by the  choice  of  a  generating  system
+<I>f<sub>1</sub>,...,f<sub>n</sub></I>. An effective way of  computing <I>&phi;<sub>i</sub></I> is by following
+the solutions in <I>x</I> of <I>P(x,y)=0</I>,  when <I>y</I> moves along <I>&phi;<sub>i</sub></I>. This
+defines a loop in  the space of configuration of <I>n</I>  points in a plane,
+hence an element  <I>b<sub>i</sub></I> of the braid group <I>B<sub>n</sub></I>  (via an identification
+of <I>B<sub>n</sub></I>  with the fundamental  group of this configuration  space). Let
+<I>&phi;</I> be the Hurwitz action of <I>B<sub>n</sub></I>  on <I>F<sub>n</sub></I>. All choices can be made
+in such a way that <I>&phi;<sub>i</sub>=&phi;(b<sub>i</sub>)</I>. The theorem of Van Kampen asserts
+that, if there are no bad  roots of the discriminant, a presentation for
+the fundamental group of <I>&#x2102;<sup>2</sup> -  C</I> is <center><table><tr><td><I>&lt; f<sub>1</sub>,...,f<sub>n</sub> | &forall;
+i,j,  &phi;<sub>i</sub>(f<sub>j</sub>)=f<sub>j</sub> &gt;  </I></td></tr></table></center> A  variant  of the  above presentation  (see
+<code>VKQuotient</code>) can be used to deal with bad roots of the discriminant.
+<P>
+This algorithm is implemented in the following way.
+<P>
+
+<P>&bull; As input,  we have a polynomial <I>P</I>. The  polynomial is reduced if
+it was not.
+<P>
+<P>&bull; The discriminant <I>&Delta;</I> of <I>P</I>  with respect to <I>x</I> is computed.
+It is a polynomial in <I>y</I>.
+<P>
+<P>&bull;  The  roots  of  <I>&Delta;</I>  are  approximated,  via  the  following
+procedure. First, we reduce  <I>&Delta;</I> and get <I>&Delta;<sub>red</sub></I> (generating
+the   radical  of   the  ideal   generated  by   <I>&Delta;</I>).  The   roots
+<I>{y<sub>1</sub>,...,y<sub>d</sub>}</I> of  <I>&Delta;<sub>red</sub></I> are separated  by <code>SeparateRoots</code>
+(which implements Newton's method).
+<P>
+<P>&bull; Loops  around these roots are  computed by <code>LoopsAroundPunctures</code>.
+This function first computes some sort of honeycomb, consisting of a set
+<I>S</I>  of  affine  segments,  isolating  the <I>y<sub>i</sub></I>.  Since  it  makes  the
+computation of  the monodromy  more effective, each  inner segment  is a
+fragment of the mediatrix of two roots of <I>&Delta;</I>. Then a vertex of one
+the segments is  chosen as a basepoint, and the  function returns a list
+of lists of  oriented segments in <I>S</I>: each list  of segment encodes a
+piecewise linear loop <I>&gamma;<sub>i</sub></I> circling one of <I>y<sub>i</sub></I>.
+<P>
+<P>&bull; For each  segment in <I>S</I>, we compute the  monodromy braid obtained
+by  following  the  solutions  in  <I>x</I>  of  <I>P(x,y)=0</I>  when  <I>y</I>  moves
+along  the segment.  By default,  this  monodromy braid  is computed  by
+<code>FollowMonodromy</code>. The  strategy is to compute  a piecewise-linear braid
+approximating the  actual monodromy geometric braid.  The approximations
+are controlled. The piecewise-linear  braid is constructed step-by-step,
+by computations of linear pieces. As soon as new piece is constructed, it
+is converted into an element  of <I>B<sub>n</sub></I> and multiplied; therefore, though
+the  braid  may  consist  of  a huge  number  of  pieces,  the  function
+<code>FollowMonodromy</code> works with constant memory. The packages also contains
+a  variant  function  <code>ApproxFollowMonodromy</code>, which  runs  faster,  but
+without guarantee on the result (see below).
+<P>
+<P>&bull; The monodromy  braids <I>b<sub>i</sub></I> corresponding to  the loops <I>&gamma;<sub>i</sub></I>
+are  obtained  by  multiplying  the corresponding  monodromy  braids  of
+segments. The action of these elements  of <I>B<sub>n</sub></I> on the free group <I>F<sub>n</sub></I>
+is  computed  by <code>BnActsOnFn</code>  and  the  resulting presentation  of  the
+fundamental group is computed by <code>VKQuotient</code>. It happens for some large
+problems that  the whole fundamental  group process fails  here, because
+the braids <I>b<sub>i</sub></I> obtained are too long and the computation of the action
+on <I>F<sub>n</sub></I> requires thus too much memory.  We have been able to solve such
+problems  when they  occur by  calling on  the <I>b<sub>i</sub></I>  at this  stage our
+function <code>ShrinkBraidGeneratingSet</code>  which finds smaller  generators for
+the subgroup of <I>B<sub>n</sub></I> generated by the <I>b<sub>i</sub></I> (see the description in the
+third chapter). This  function is called automatically at  this stage if
+<code>VKCURVE.shrinkBraid</code> is set to <code>true</code> (the default for this variable is
+<code>false</code>).
+<P>
+<P>&bull; Finally,  the presentation is simplified  by <code>ShrinkPresentation</code>.
+This  function is  a heuristic  adaptation and  refinement of  the basic
+<strong>GAP3</strong> functions for simplifying presentations. It is non-deterministic.
+<P>
+
+<P>
+From the algorithmic  point of view, memory should not  be an issue, but
+the procedure may  take a lot of  CPU time (the critical  part being the
+computation of the monodromy braids by <code>FollowMonodromy</code>). For instance,
+an empirical  study with the  curves <I>x<sup>2</sup>-y<sup>n</sup></I> suggests that  the needed
+time grows  exponentially with  <I>n</I>. Two solutions  are offered  to deal
+with curves for which the computation time becomes unreasonable.
+<P>
+A   global  variable  <code>VKCURVE.monodromyApprox</code>  controls  which  monodromy
+function  is used.  The default  value of  this variable  is <code>false</code>, which
+means  that <code>FollowMonodromy</code> will be  used. If the variable  is set by the
+user  to  <code>true</code>  then  the  function  <code>ApproxFollowMonodromy</code> will be used
+instead.   This  function  runs  faster  than  <code>FollowMonodromy</code>,  but  the
+approximations  are no longer  controlled. Therefore presentations obtained
+while  <code>VKCURVE.monodromyApprox</code>  is  set  to  <code>true</code>  are  not  certified.
+However,  though  it  is  likely  that  there  exists  examples  for  which
+<code>ApproxFollowMonodromy</code>  actually returns incorrect  answers, we still have
+not seen one.
+<P>
+The second way of dealing with  difficult examples is to parallelize the
+computation. Since  the computations  of the  monodromy braids  for each
+segment  are  independent,  they  can  be  performed  simultaneously  on
+different computers. The functions <code>PrepareFundamentalGroup</code>, <code>Segments</code>
+and   <code>FinishFundamentalGroup</code>  provide   basic  support   for  parallel
+computing.
 <P><P>
 <H3> Subsections</H3>
 <oL>
-<LI> <A HREF="chap111.htm#SECT001">Mvp</a>
-<LI> <A HREF="chap111.htm#SECT002">Operations for Mvp</a>
-<LI> <A HREF="chap111.htm#SECT003">IsMvp</a>
-<LI> <A HREF="chap111.htm#SECT004">ScalMvp</a>
-<LI> <A HREF="chap111.htm#SECT005">Variables for Mvp</a>
-<LI> <A HREF="chap111.htm#SECT006">LaurentDenominator</a>
-<LI> <A HREF="chap111.htm#SECT007">OnPolynomials</a>
-<LI> <A HREF="chap111.htm#SECT008">MvpGcd</a>
-<LI> <A HREF="chap111.htm#SECT009">MvpLcm</a>
-<LI> <A HREF="chap111.htm#SECT010">RatFrac</a>
-<LI> <A HREF="chap111.htm#SECT011">Operations for RatFrac</a>
-<LI> <A HREF="chap111.htm#SECT012">IsRatFrac</a>
+<LI> <A HREF="chap111.htm#SECT001">FundamentalGroup</a>
+<LI> <A HREF="chap111.htm#SECT002">PrepareFundamentalGroup</a>
 </ol>
-<A NAME="SECT001"><h2>111.1 Mvp</h2></a>
+<A NAME="SECT001"><h2>111.1 FundamentalGroup</h2></a>
 <P><P>
 <A name = "I0"></a>
 
 <P>
-<code>Mvp( <var>string s</var> [, <var>coeffs v</var>] )</code>
+<code>FundamentalGroup(<var>curve</var> [, <var>printlevel</var>])</code>
 <P>
-Defines an indeterminate with name <var>s</var> suitable to build multivariate
-polynomials.
+<var>curve</var> should be an <code>Mvp</code> in <var>x</var>  and <var>y</var>, or a <strong>GAP3</strong> polynomial in two
+variables (which means a polynomial in a variable which is assumed to be
+<code>y</code> over the polynomial ring <I>&#x211A;[x]</I>) representing an equation <I>f(x,y)</I>
+for a curve  in <I>&#x2102;<sup>2</sup></I>. The coefficients should  be rationals, gaussian
+rationals or <code>Complex</code> rationals. The result  is a record with a certain
+number of fields which record steps in the computation described in this
+introduction:
 <P>
-<pre>    gap> x:=Mvp("x");y:=Mvp("y");(x+y)^3;
-    x
-    y
-    3xy^2+3x^2y+x^3+y^3</pre>
-<P>
-If a  second argument (a vector  of coefficients <var>v</var>) is  given, returns
-<code>Sum([1..Length(v)],i->Mvp(s)^(i-1)*v[i])</code>.
-<P>
-<pre>    gap> Mvp("a",[1,2,0,4]);
-    1+2a+4a^3</pre>
-<P>
-<code>Mvp( <var>polynomial x</var>)</code>
-<P>
-Converts  the <strong>GAP3</strong>  polynomial  <var>x</var> to  an  <code>Mvp</code>. It  is  an error  if
-<code>x.baseRing.indeterminate.name</code> is not bound; otherwise this is taken as
-the name of the <code>Mvp</code> variable.
-<P>
-<pre>    gap> q:=Indeterminate(Rationals);
+<pre>    gap> r:=FundamentalGroup(x^2-y^3);
+    #I  there are 2 generators and 1 relator of total length 6
+    1: bab=aba
+    
+    gap> RecFields(r);
+    [ "curve", "discy", "roots", "dispersal", "points", "segments", "loops",
+      "zeros", "B", "monodromy", "basepoint", "dispersal", "braids", 
+      "presentation","operations" ]
+    gap> r.curve;
+    x^2-y^3
+    gap> r.discy;
     X(Rationals)
-    gap> Mvp(q^2+q);
-    Error, X(Rationals) should have .name bound in
-    Mvp( q ^ 2 + q ) called from
-    main loop
-    brk> 
-    gap> q.name:="q";;
-    gap> Mvp(q^2+q); 
-    q+q^2</pre>
+    gap> r.roots;
+    [ 0 ]
+    gap> r.points;
+    [ -I, -1, 1, I ]
+    gap> r.segments;
+    [ [ 1, 2 ], [ 1, 3 ], [ 2, 4 ], [ 3, 4 ] ]
+    gap> r.loops;
+    [ [ 4, -3, -1, 2 ] ]
+    gap> r.zeros;
+    [ [ 707106781187/1000000000000+707106781187/1000000000000I,
+       -707106781187/1000000000000-707106781187/1000000000000I ],
+      [ I, -I ], [ 1, -1 ],
+      [ -707106781187/1000000000000+707106781187/1000000000000I,
+      707106781187/1000000000000-707106781187/1000000000000I ] ]
+    gap> r.monodromy;
+    [ (w0)^-1, w0, , w0 ]
+    gap> r.braids;
+    [ w0.w0.w0 ]
+    gap> DisplayPresentation(r.presentation);
+    1: bab=aba</pre>
 <P>
-<code>Mvp( <var>FracRat x</var>)</code>
+Here <code>r.curve</code> records the  entered equation, <code>r.discy</code> its discriminant
+with  respect  to  <var>x</var>,  <code>r.roots</code>   the  roots  of  this  discriminant,
+<code>r.points</code>,  <code>r.segments</code> and  <code>r.loops</code>  describes  loops around  these
+zeros  as  explained  in   the  documentation  of  <code>LoopsAroundPunctures</code>;
+<code>r.zeros</code>  records the  zeros of  <I>f(x,y<sub>i</sub>)</I>  when <I>y<sub>i</sub></I>  runs over  the
+various <code>r.points</code>;  <code>r.monodromy</code> records  the monodromy along  each of
+<code>r.segments</code>, and <code>r.braids</code> is the resulting monodromy along the loops.
+Finally <code>r.presentation</code>  records the  resulting presentation  (which is
+what is printed by default when <code>r</code> is printed).
 <P>
-Returns <code>false</code> if the argument rational fraction is not in fact a Laurent
-polynomial. Otherwise returns that polynomial.
+The second optional argument triggers  the display of information on the
+progress of the  computation. It is recommended to  set the <var>printlevel</var>
+at 1 or 2  when the computation seems to take a  long time without doing
+anything. <var>printlevel</var> set  at 0 is the default and  prints nothing; set
+at 1 it shows which segment is  currently active, and set at 2 it traces
+the computation inside each segment.
 <P>
-<pre>    gap> Mvp(x/y);
-    xy^-1
-    gap> Mvp(x/(y+1));
-    false</pre>
-<P>
-<code>Mvp( <var>elm</var>, <var>coeff</var>)</code>
-<P>
-Build efficiently an <code>Mvp</code> from the given list of coefficients and the list
-<var>elm</var>   describing  the  corresponding  monomials.  A  monomial  is  itself
-described  by a record with a field  <code>.elm</code> containing the list of involved
-variable  names and a  field <code>.coeff</code> containing  the list of corresponding
-exponents.
-<P>
-<pre>    gap> Mvp([rec(elm:=["y","x"],coeff:=[1,-1])],[1]);       
-    x^-1y</pre>
-<P>
-<code>Mvp( <var>scalar x</var>)</code>
-<P>
-A  scalar is  anything which  is  not one  of the  previous types  (like
-a  cyclotomic,  or a  finite-field-element,  etc).  Returns the  constant
-multivariate polynomial whose constant term is <var>x</var>.
-<P>
-<pre>    gap> Degree(Mvp(1));
-    0</pre>
-<P><A NAME="SECT002"><h2>111.2 Operations for Mvp</h2></a>
-<P><P><P>
-The arithmetic operations <code>+</code>, <code>-</code>, <code>*</code>,  <code>/</code> and <code>^</code> work for <code>Mvp</code>s.
-They also  have <code>Print</code> and  <code>String</code> methods. The operations  <code>+</code>, <code>-</code>,
-<code>*</code> work  for any inputs. <code>/</code>  works only for Laurent  polynomials, and
-may return  a rational  fraction (see  below); if one  is sure  that the
-division is exact, one should call <code>MvpOps.ExactDiv</code> (see below).
-<P>
-<pre>    gap> x:=Mvp("x");y:=Mvp("y");
-    x
-    y
-    gap> a:=x^(-1/2);
-    x^(-1/2)
-    gap> (a+y)^4;
-    x^-2+4x^(-3/2)y+6x^-1y^2+4x^(-1/2)y^3+y^4
-    gap> (x^2-y^2)/(x-y);
-    x+y
-    gap> (x-y^2)/(x-y);
-    (x-y^2)/(x-y)
-    gap> (x-y^2)/(x^(1/2)-y);
-    Error, x^(1/2)-y is not a polynomial with respect to x
-     in
-    V.operations.Coefficients( V, v ) called from
-    Coefficients( q, var ) called from
-    MvpOps.ExactDiv( x, q ) called from
-    fun( arg[1][i] ) called from
-    List( p, function ( x ) ... end ) called from
-    ...
-    brk></pre>
-<P>
-Only monomials can be raised to a non-integral power; they can be raised
-to  a fractional  power of  denominator  <code>b</code> only  if <code>GetRoot(x,b)</code>  is
-defined  where <code>x</code>  is  their  leading coefficient.  For  an <code>Mvp</code>  <var>m</var>,
-the  function  <code>GetRoot(m,n)</code> is  equivalent  to  <code>m^(1/n)</code>. Raising  a
-non-monomial Laurent polynomial  to a negative power  returns a rational
-fraction.
-<P>
-<pre>    gap> (2*x)^(1/2);
-    ER(2)x^(1/2)
-    gap> (evalf(2)*x)^(1/2);
-    1.4142135624x^(1/2)
-    gap> GetRoot(evalf(2)*x,2);
-    1.4142135624x^(1/2)</pre>
-<P>
+<pre>    gap> FundamentalGroup(x^2-y^3,1);
+    # There are 4 segments in 1 loops
+    # The following braid was computed by FollowMonodromy in 8 steps.
+    monodromy[1]:=B(-1);
+    # segment 1/4 Time=0sec
+    # The following braid was computed by FollowMonodromy in 8 steps.
+    monodromy[2]:=B(1);
+    # segment 2/4 Time=0sec
+    # The following braid was computed by FollowMonodromy in 8 steps.
+    monodromy[3]:=B();
+    # segment 3/4 Time=0sec
+    # The following braid was computed by FollowMonodromy in 8 steps.
+    monodromy[4]:=B(1);
+    # segment 4/4 Time=0sec
+    # Computing monodromy braids
+    # loop[1]=w0.w0.w0
+    #I  there are 2 generators and 1 relator of total length 6
+    1: bab=aba</pre>
+<P><A NAME="SECT002"><h2>111.2 PrepareFundamentalGroup</h2></a>
+<P><P>
 <A name = "I1"></a>
 
-The <code>Degree</code> of a monomial is the sum of  the exponent of the variables.
-The <code>Degree</code> of an <code>Mvp</code> is the largest degree of a monomial.
 <P>
-<pre>    gap> a;
-    x^(-1/2)
-    gap> Degree(a);
-    -1/2
-    gap> Degree(a+x);
-    1
-    gap> Degree(Mvp(0));
-    -1</pre>
+<code>PrepareFundamentalGroup(<var>curve</var>, <var>name</var>)</code>
 <P>
+<code>VKCURVE.Segments(<var>name</var>[,<var>range</var>])</code>
+<P>
+<code>FinishFundamentalGroup(<var>r</var>)</code>
 <A name = "I2"></a>
 
-The <code>Valuation</code> of an <code>Mvp</code> is the minimal degree of a monomial.
 <P>
-<pre>    gap> a;
-    x^(-1/2)
-    gap> Valuation(a);
-    -1/2
-    gap> Valuation(a+x);
-    -1/2
-    gap> Valuation(Mvp(0));
-    -1</pre>
+These  functions provide  a means  of distributing  a fundamental  group
+computation over  several machines.  The basic strategy  is to  write to
+a  file  the  startup-information  necessary to  compute  the  monodromy
+along  a  segment,  in  the   form  of  a  partially-filled  version  of
+the  record returned  by  <code>FundamentalGroup</code>. Then  the monodromy  along
+each  segment can  be  done in  a separate  process,  writing again  the
+result  to files.  These  results  are then  gathered  and processed  by
+<code>FinishFundamentalGroup</code>. The whole process is illustrated in an example
+below.  The  extra argument  <var>name</var>  to  <code>PrepareFundamentalGroup</code> is  a
+prefix used to name intermediate files. One does first :
 <P>
-The  <code>Format</code> routine formats  <code>Mvp</code>s in such  a way that  they can be read
-back  in by <strong>GAP3</strong> or by some other systems, by giving an appropriate option
-as  a second argument, or using the functions <code>FormatGAP</code>, <code>FormatMaple</code> or
-<code>FormatTeX</code>.  The <code>String</code>  method is  equivalent to  <code>Format</code>, and gives a
-compact display.
+<pre>    gap> PrepareFundamentalGroup(x^2-y^3,"a2");
+        ----------------------------------
+    Data saved in a2.tmp
+    You can now compute segments 1 to 4
+    in different GAP sessions by doing in each of them:
+        a2:=rec(name:="a2");
+        VKCURVE.Segments(a2,[1..4]);
+    (or some other range depending on the session)
+    Then when all files a2.xx have been computed finish by
+        a2:=rec(name:="a2");
+        FinishFundamentalGroup(a2);</pre>
 <P>
-<pre>    gap> p:=7*x^5*y^-1-2;  
-    -2+7x^5y^-1
-    gap> Format(p);        
-    "-2+7x^5y^-1"
-    gap> FormatGAP(p);  
-    "-2+7*x^5*y^-1"
-    gap> FormatMaple(p);
-    "-2+7*x^5*y^(-1)"
-    gap> FormatTeX(p);  
-    "-2+7x^5y^{-1}"</pre>
+Then  one can  compute in  separate  sessions the  monodromy along  each
+segment.  The second  argument  of <code>Segments</code>  tells  which segments  to
+compute in the current session (the  default is all). An example of such
+sessions may be:
 <P>
-<A name = "I3"></a>
-
-The <code>Value</code> method evaluates an <code>Mvp</code> by fixing simultaneously the value
-of several  variables. The  syntax is  <code>Value(x, [  <var>string1</var>, <var>value1</var>,
-<var>string2</var>, <var>value2</var>, <I>...</I> ])</code>.
+<pre>    gap> a2:=rec(name:="a2");
+    rec(
+      name := "a2" )
+    gap> VKCURVE.Segments(a2,[2]);
+    # The following braid was computed by FollowMonodromy in 8 steps.
+    a2.monodromy[2]:=a2.B(1);
+    # segment 2/4 Time=0.1sec
+    gap> a2:=rec(name:="a2");
+    rec(
+      name := "a2" )
+    gap> VKCURVE.Segments(a2,[1,3,4]);
+    # The following braid was computed by FollowMonodromy in 8 steps.
+    a2.monodromy[2]:=a2.B(1);
+    # segment 2/4 Time=0.1sec</pre>
 <P>
-<pre>    gap> p;
-    -2+7x^5y^-1
-    gap> Value(p,["x",2]);
-    -2+224y^-1
-    gap> Value(p,["y",3]);
-    -2+7/3x^5
-    gap> Value(p,["x",2,"y",3]);
-    218/3</pre>
-<P>
-One  should pay  attention to  the fact  that the  last value  is not  a
-rational  number,  but  a  constant <code>Mvp</code>  (for  consistency).  See  the
-function <code>ScalMvp</code> below for how to convert such constants to their base
-ring.
-<P>
-<pre>    gap> Value(p,["x",y]);
-    -2+7y^4
-    gap> Value(p,["x",y,"y",x]);
-    -2+7x^-1y^5</pre>
-<P>
-Evaluating an  <code>Mvp</code> which is  a Puiseux  polynomial may cause  calls to
-<code>GetRoot</code>
-<P>
-<pre>    gap> p:=x^(1/2)*y^(1/3);
-    x^(1/2)y^(1/3)
-    gap> Value(p,["x",y]);
-    y^(5/6)
-    gap>  Value(p,["x",2]);
-    ER(2)y^(1/3)
-    gap>  Value(p,["y",2]);
-    Error, : unable to compute 3-th root of 2
-     in
-    GetRoot( values[i], d[i] ) called from
-    f.operations.Value( f, x ) called from
-    Value( p, [ "y", 2 ] ) called from
-    main loop
-    brk></pre>
-<P>
-<A name = "I4"></a>
-
-The  function <code>Derivative(p,v)</code> returns the  derivative of <code>p</code> with respect
-to  the variable given by the string <code>v</code>; if <code>v</code> is not given, with respect
-to the first variable in alphabetical order.
-<P>
-<pre>    gap>  p:=7*x^5*y^-1-2;
-    -2+7x^5y^-1
-    gap> Derivative(p,"x");
-    35x^4y^-1
-    gap> Derivative(p,"y");
-    -7x^5y^-2
-    gap> Derivative(p);
-    35x^4y^-1
-    gap>  p:=x^(1/2)*y^(1/3);
-    x^(1/2)y^(1/3)
-    gap>  Derivative(p,"x");
-    1/2x^(-1/2)y^(1/3)
-    gap>  Derivative(p,"y");
-    1/3x^(1/2)y^(-2/3)
-    gap>  Derivative(p,"z");
-    0</pre>
-<P>
-<A name = "I5"></a>
-
-The function <code>Coefficients(<var>p</var>, <var>var</var>)</code> is defined only for <code>Mvp</code>s which
-are polynomials in the variable <var>var</var> . It returns as a list the list of
-coefficients of <var>p</var> with respect to <var>var</var>.
-<P>
-<pre>    gap> p:=x+y^-1;
-    y^-1+x
-    gap> Coefficients(p,"x");
-    [ y^-1, 1 ]
-    gap> Coefficients(p,"y");
-    Error, y^-1+x is not a polynomial with respect to y
-     in
-    V.operations.Coefficients( V, v ) called from
-    Coefficients( p, "y" ) called from
-    main loop
-    brk></pre>
-<P>
-The same  caveat is  applicable to <code>Coefficients</code>  as to  <code>Value</code>: the
-result  is always  a  list of  <code>Mvp</code>s.  To  get a  list  of scalars  for
-univariate polynomials represented as <code>Mvp</code>s, one should use <code>ScalMvp</code>.
-<P>
-<A name = "I6"></a>
-
-Finally we  mention the  functions <code>ComplexConjugate</code> and  <code>evalf</code> which
-are defined using  for coefficients the <code>Complex</code>  and <code>Decimal</code> numbers
-of the <strong>CHEVIE</strong> package.
-<P>
-<pre>    gap> p:=E(3)*x+E(5);
-    E5+E3x
-    gap> evalf(p);
-    0.3090169944+0.9510565163I+(-0.5+0.8660254038I)x
-    gap> p:=E(3)*x+E(5);          
-    E5+E3x
-    gap> ComplexConjugate(p);
-    E5^4+E3^2x
-    gap> evalf(p);
-    0.3090169944+0.9510565163I+(-0.5+0.8660254038I)x
-    gap> ComplexConjugate(last);
-    0.3090169944-0.9510565163I+(-0.5-0.8660254038I)x</pre>
-<P><A NAME="SECT003"><h2>111.3 IsMvp</h2></a>
-<P><P>
-<A name = "I7"></a>
-
-<P>
-<code>IsMvp( <var>p</var> )</code>
-<P>
-Returns <code>true</code> if <var>p</var> is an <code>Mvp</code> and false otherwise.
-<P>
-<pre>    gap> IsMvp(1+Mvp("x"));
-    true
-    gap> IsMvp(1);         
-    false</pre>
-<P><A NAME="SECT004"><h2>111.4 ScalMvp</h2></a>
-<P><P>
-<A name = "I8"></a>
-
-<P>
-<code>ScalMvp( <var>p</var> )</code>
-<P>
-If  <var>p</var> is  an  <code>Mvp</code> then  if  <var>p</var>  is a  scalar,  return that  scalar,
-otherwise return  <code>false</code>. Or  if <var>p</var>  is a  list, then  apply <code>ScalMvp</code>
-recursively to  it (but return false  if it contains any  <code>Mvp</code> which is
-not a scalar). Else assume <var>p</var> is already a scalar and thus return <var>p</var>.
-<P>
-<pre>    gap> v:=[Mvp("x"),Mvp("y")];        
-    [ x, y ]
-    gap> ScalMvp(v);
-    false
-    gap> w:=List(v,p->Value(p,["x",2,"y",3]));
-    [ 2, 3 ]
-    gap> Gcd(w);
-    Error, sorry, the elements of &lt;arg> lie in no common ring domain in
-    Domain( arg[1] ) called from
-    DefaultRing( ns ) called from
-    Gcd( w ) called from
-    main loop
-    brk> 
-    gap> Gcd(ScalMvp(w));
-    1</pre>
-<P><A NAME="SECT005"><h2>111.5 Variables for Mvp</h2></a>
-<P><P>
-<A name = "I9"></a>
-
-<P>
-<code>Variables for Mvp( <var>p</var> )</code>
-<P>
-Returns the list of variables of the <code>Mvp</code> <var>p</var> as a sorted list of strings.
-<P>
-<pre>    gap> Variables(x+x^4+y);
-    [ "x", "y" ]</pre>
-<P><A NAME="SECT006"><h2>111.6 LaurentDenominator</h2></a>
-<P><P>
-<A name = "I10"></a>
-
-<P>
-<code>LaurentDenominator( <var>p1</var>, <var>p2</var>, ... )</code>
-<P>
-Returns the unique monomial <code>m</code> of minimal degree such that for all the
-Laurent polynomial arguments <var>p1</var>, <var>p2</var>, etc... the product <I>m* p<sub>i</sub></I> is
-a true polynomial.
-<P>
-<pre>    gap> LaurentDenominator(x^-1,y^-2+x^4);
-    xy^2</pre>
-<P><A NAME="SECT007"><h2>111.7 OnPolynomials</h2></a>
-<P><P>
-<A name = "I11"></a>
-
-<P>
-<code>OnPolynomials( <var>m</var>, <var>p</var> [,<var>vars</var>] )</code>
-<P>
-Implements  the action of  a matrix on  <code>Mvp</code>s. <var>vars</var> should  be a list of
-strings representing variables. If <I>v</I><code>=List(vars,Mvp)</code>, the polynomial <I>p</I>
-is  changed  by  replacing  in  it  <I>v<sub>i</sub></I>  by <I>(v&times; m)<sub>i</sub></I>. If <var>vars</var> is
-omitted, it is taken to be <code>Variables(p)</code>.
-<P>
-<pre>    gap> OnPolynomials([[1,2],[3,1]],x+y);    
-    3x+4y</pre>
-<P><A NAME="SECT008"><h2>111.8 MvpGcd</h2></a>
-<P><P>
-<A name = "I12"></a>
-
-<P>
-<code>MvpGcd( <var>p1</var>, <var>p2</var>, ...)</code>
-<P>
-Returns  the Gcd  of the  <code>Mvp</code> arguments.  The arguments  must be  true
-polynomials.
-<P>
-<pre>    gap> MvpGcd(x^2-y^2,(x+y)^2);
-    x+y</pre>
-<P><A NAME="SECT009"><h2>111.9 MvpLcm</h2></a>
-<P><P>
-<A name = "I13"></a>
-
-<P>
-<code>MvpLcm( <var>p1</var>, <var>p2</var>, ...)</code>
-<P>
-Returns  the Lcm  of the  <code>Mvp</code> arguments.  The arguments  must be  true
-polynomials.
-<P>
-<pre>    gap> MvpLcm(x^2-y^2,(x+y)^2);
-    xy^2-x^2y-x^3+y^3</pre>
-<P><A NAME="SECT010"><h2>111.10 RatFrac</h2></a>
-<P><P>
-<A name = "I14"></a>
-
-<P>
-<code>RatFrac( <var>num</var> [,<var>den</var>] )</code>
-<P>
-Build the rational fraction (<code>RatFrac</code>) with numerator <var>num</var> and denominator 
-<var>den</var> (when <var>den</var> is omitted it is taken to be 1).
-<P>
-<pre>    gap> RatFrac(x,y);
-    x/y
-    gap> RatFrac(x*y^-1);
-    x/y</pre>
-<P><A NAME="SECT011"><h2>111.11 Operations for RatFrac</h2></a>
-<P><P><P>
-The arithmetic operations <code>+</code>, <code>-</code>, <code>*</code>,  <code>/</code> and <code>^</code> work for <code>RatFrac</code>s.
-They also  have <code>Print</code> and  <code>String</code> methods.
-<P>
-<pre>    gap> 1/(x+1)+y^-1;
-    (1+x+y)/(y+xy)
-    gap> 1/(x+1)*y^-1;
-    1/(y+xy)
-    gap> 1/(x+1)/y;   
-    1/(y+xy)
-    gap> 1/(x+1)^-2;
-    1+2x+x^2</pre>
-<P>
-<DL><DT>Similarly to <code>Mvp</code>s, <code>RatFrac</code>s hav <code>Format</code> and <code>Value</code> methods:<DD>
+<DL><DT>When all segments have been computed the final session looks like:<DD>
 </DL><P>
-<pre>    gap> Format(1/(x*y+1));
-    "1/(1+xy)"
-    gap> FormatGAP(1/(x*y+1));
-    "1/(1+x*y)"
-    gap> Value(1/(x*y+1),["x",2]);
-    1/(1+2y)</pre>
-<P><A NAME="SECT012"><h2>111.12 IsRatFrac</h2></a>
-<P><P>
-<A name = "I15"></a>
-
-<P>
-<code>IsRatFrac( <var>p</var> )</code>
-<P>
-Returns <code>true</code> if <var>p</var> is an <code>Mvp</code> and false otherwise.
-<P>
-<pre>    gap> IsRatFrac(1+RatFrac(x));
-    true
-    gap> IsRatFrac(x);         
-    false</pre>
+<pre>    gap> a2:=rec(name:="a2");
+    rec(
+      name := "a2" )
+    gap> FinishFundamentalGroup(a2);
+    1: bab=aba</pre>
 <P><a href ="chap110.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap112.htm">Next</a><BR><a href = "theindex.htm">Index</a>
 <P>
 <address>gap3-jm<br>19 Feb 2018</address></body></html>

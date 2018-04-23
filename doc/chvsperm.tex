@@ -1,0 +1,128 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  chvsperm.tex       CHEVIE documentation       Jean Michel
+%%
+%Y  Copyright (C) 2018 - 2018  University  Paris VII.
+%%
+%%  This  file  contains functions to deal with signed permutations.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{Signed permutations}
+
+A   *signed  permutation*  of   |[1..n]|  is  a   permutation  of  the  set
+$\{-n,\ldots,-1,1,\ldots,n\}$  which  preserves  the  pairs $[-i,i]$. It is
+represented  as the images of $[1..n]$.
+
+A  signed permutation  can be  represented in  two other  ways which may be
+convenient.  The first way is to replace the integers $\{-n,\ldots,-1\}$ by
+$\{n+1,\ldots,2n\}$   to   have   \GAP\   permutations,   which   form  the
+hyperoctaedral group (see "CoxeterGroupHyperoctaedralGroup").
+
+The  second way is to represent the signed permutation by a monomial matrix
+with  entries  '1'  or  '-1'.  If  such  a matrix <m> represents the signed
+permutation <sp>, then |l*m| is the same as 'SignPermuted(<l>,<sp>)'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SignPermuted}%
+\index{SignPermuted}%
+
+'SignPermuted( <l>, <sp>)'
+
+'SignPermuted'  returns a  new list  <n> that  contains the elements of the
+list  <l> permuted  according to  the signed  permutation <sp>.  If <sp> is
+given  as a  list, then  '<n>[AbsInt(sp[i])] = <l>[<i>]SignInt(sp[i])'. The
+signed   permutation  <sp>  can  also  be   given  as  an  element  of  the
+hyperoctaedral group (see the introduction of the chapter for definitions).
+
+|    gap> SignPermuted([20,30,40],[-2,-1,-3]);
+    [ -30, -20, -40 ]
+    gap> W:=CoxeterGroupHyperoctaedralGroup(3);
+    Group( (3,4), (2,3)(4,5), (1,2)(5,6) )
+    gap> SignPermuted([20,30,40],W.3);
+    [ 30, 20, 40 ]
+    gap> SignPermuted([20,30,40],W.2);
+    [ 20, 40, 30 ]
+    gap> SignPermuted([20,30,40],W.1);
+    [ 20, 30, -40 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SignedPermutationMat}%
+\index{SignedPermutationMat}%
+
+'SignedPermutationMat( <sp> [,<d>])'
+
+This   function  returns  the  signed  permutation  matrix  of  the  signed
+permutation  <sp>, given as a  list or as an  element of the hyperoctaedral
+group.  This is a matrix <m> such that |SignPermuted(l,sp)=l*m|. If <sp> is
+an  element of hyperoctaedral  group, the matrix  is given of dimension the
+rank  of the  smallest hyperoctaedral  group to  which <sp>  belongs. If an
+additional argument <d> is given the matrix is returned of that dimension.
+
+|    gap> m:=SignedPermutationMat([-2,-3,-1]);
+    [ [ 0, -1, 0 ], [ 0, 0, -1 ], [ -1, 0, 0 ] ]
+    gap> m=SignedPermutationMat((1,5,3,6,2,4));
+    true
+    gap> [20,30,40]*m;
+    [ -40, -20, -30 ]
+    gap> SignPermuted([20,30,40],[-2,-3,-1]);
+    [ -40, -20, -30 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SignedPerm}%
+\index{SignedPerm}%
+
+'SignedPerm( <sp> [,<d> or <sgns>])'
+
+This  function converts to a signed permutation  given as a list, either an
+element of the hyperoctaedral group, a signed permutation matrix, or a pair
+of  a  permutation  and  of  a  list  of  signs. If given an element of the
+hyperoctaedral  group,  the  rank  <d>  of  that  group  can be given as an
+argument,   otherwise  a  representation  of  <sp>   as  a  list  is  given
+corresponding to the smallest hyperoctaedral group to which it belongs.
+
+Finally, if given a signed permutation as a list, this function returns
+am element of the hyperoctaedral group.
+
+|    gap> SignedPerm([[0,-1,0],[0,0,-1],[-1,0,0]]);
+    [ -2, -3, -1 ]
+    gap> SignedPerm((1,5,3,6,2,4));
+    [ -2, -3, -1 ]
+    gap> SignedPerm((1,2,3),[-1,-1,-1]);
+    [ -2, -3, -1 ]
+    gap> SignedPerm([-2,-3,-1]);
+    (1,5,3,6,2,4)|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CyclesSignedPerm}%
+\index{CyclesSignedPerm}%
+
+'CyclesSignedPerm( <sp> )'
+
+Returns   the  list   of  cycles   of  the   signed  permutation   <sp>  on
+$\{-n,\ldots,-1,1,\ldots,n\}$,  given as  a list  or a  permutation. If one
+cycle is the negative of another, only one of the two cycles is given.
+
+|    gap> CyclesSignedPerm([-2,-3,-1]);
+    [ [ 1, -2, 3, -1, 2, -3 ] ]
+    gap> CyclesSignedPerm([-2,-1,-3]);
+    [ [ 1, -2 ], [ 3, -3 ] ]
+    gap> CyclesSignedPerm([-2,-1,3]);
+    [ [ 1, -2 ] ]
+    gap> CyclesSignedPerm((1,5,3,6,2,4));
+    [ [ 1, -2, 3, -1, 2, -3 ] ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SignedPermListList}%
+\index{SignedPermListList}%
+
+    'SignedPermListList( <list1>, <list2> )'
+
+'SignedPermListList'  returns a signed  permutation that may  be applied to
+<list1> to obtain <list2>, if there is one. Otherwise it returns 'false'.
+
+|    gap> SignedPermListList([20,30,40],[-40,-20,-30]);
+    [ -2, -3, -1 ]
+    gap> SignPermuted([20,30,40],[-2,-3,-1]);
+    [ -40, -20, -30 ]|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

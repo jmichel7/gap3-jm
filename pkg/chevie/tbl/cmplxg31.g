@@ -2062,7 +2062,7 @@ f56:=function(x,y)return dec(45,
   else return false;fi;
 end);
 
-CHEVIE.AddData("Representation","G31",function(i)local r,f,dec,LsToMat;
+CHEVIE.AddData("Representation","G31",function(i)local r,f,dec;
   r:=CHEVIE.R("HeckeRepresentation","G31")(List([1..5],i->[1,-1]),[],i);
   if r<>false then return r;fi;
   f:=i->CHEVIE.R("Representation","G31")(i);
@@ -2072,10 +2072,6 @@ CHEVIE.AddData("Representation","G31",function(i)local r,f,dec,LsToMat;
       m[QuoInt(k,d^2)+1][QuoInt(l,d)+1][(l mod d)+1]:=v[1];
     od;od;
     return m;
-  end;
-  LsToMat:=function(m)local n;n:=[1..Length(m[1])];
-   return List(m,ls->List(ls,
-     function(i)local v;v:=n*0;v[AbsInt(i)]:=SignInt(i);return v;end));
   end;
   #if i=27 then return Zip(f(3),f(7),KroneckerProduct);
   #if i=31 then return Zip(f(3),f(9),KroneckerProduct);
@@ -2092,14 +2088,15 @@ CHEVIE.AddData("Representation","G31",function(i)local r,f,dec,LsToMat;
 2736,2737,2774,2792,2806,2812,2813,2846,2864,2875]]);
   elif i=39 then return Zip(f(9),f(11),KroneckerProduct);
   elif i=40 then return -f(39);
-  elif i=41 then return LsToMat(
+  elif i=41 then return List(
 [[2,1,6,7,8,3,4,5,-14,-15,12,11,18,-9,-10,-20,-21,13,22,-16,-17,19,-25,33,-23,
 34,35,36,31,-32,29,-30,24,26,27,28],[-2,-1,-6,-5,-4,-3,8,7,10,9,13,-18,11,-15,
 -14,19,23,-12,16,22,25,20,17,26,21,24,-29,30,-27,28,-35,36,-34,-33,-31,32],[3,
 6,1,9,10,2,14,15,4,5,16,20,-19,7,8,11,21,22,-13,12,17,18,25,-28,23,30,29,-24,
 27,26,35,34,36,32,31,33],[4,8,9,1,7,15,5,2,3,14,17,20,24,10,6,21,11,27,28,12,
 16,29,26,13,30,23,18,19,22,25,36,34,35,32,33,31],[5,8,11,7,1,12,4,2,17,16,3,6,
-18,21,20,10,9,13,23,15,14,-25,19,27,-22,28,24,26,-30,-29,32,31,35,36,33,34]]);
+18,21,20,10,9,13,23,15,14,-25,19,27,-22,28,24,26,-30,-29,32,31,35,36,33,34]],
+SignedPermutationMat);
 #if i=42 then return Zip(f(3),f(13),KroneckerProduct);
   elif i=50 then return Zip(f(3),f(15),KroneckerProduct);
   elif i=51 then return -f(50);

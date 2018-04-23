@@ -71,7 +71,7 @@ AUTO(ReadChv("lib/matrix"),
   DistHelpedRepresentativeOperation, EigenvaluesMat, ExteriorPower,
   IndependentLines, IsNormalizing, MatStab, PermMatMat, 
   ProportionalityCoefficient, OnMatrices, RepresentativeDiagonalConjugation, 
-  SchurFunctor, SymmetricPower);
+  SchurFunctor, SymmetricPower, Transporter);
 
 AUTO(ReadChv("lib/format"),
   BracketIfNeeded, Format, FormatCoefficient, FormatCyclotomic, FormatGAP,
@@ -83,7 +83,8 @@ AUTO(ReadChv("lib/factschur"),
   FactorizedSchurElementsOps);
 
 AUTO(ReadChv("lib/sperm"),
-  SignedPermListList,SignedPermutationMat,SignPermuted);
+  CyclesSignedPerm, SignedPermListList, SignedPermutationMat, SignPermuted,
+  SignedPerm);
 
 AUTO(ReadChv("prg/abscox"),
   AbsCoxOps, Bruhat, BruhatSmaller, CartanMatFromCoxeterMatrix,

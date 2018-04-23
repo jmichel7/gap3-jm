@@ -1,5 +1,3 @@
-# BraidRelations(W[,t]) check that W satisfies relations of its type
-# (of type t if given)
 CHEVIE.AddTest("BraidRelations",function(arg)local W,r,gens,rel;
   W:=arg[1];
   if Length(arg)=1 then r:=BraidRelations(W);
@@ -12,10 +10,10 @@ CHEVIE.AddTest("BraidRelations",function(arg)local W,r,gens,rel;
     CheckRelation(gens,rel,ChevieErr);
   od;
 end,
-W->not IsSpets(W));
+W->not IsSpets(W),
+"(W[,t]) check that W satisfies braid relations of its type [of type t]"
+);
 
-# Check that Chevie contains a distinguished root system for W in the sense
-# of Broue-Corran-Michel
 CHEVIE.AddTest("RootSystem",
 function(W)local index,m,R,cr,rb,integrality,Coroots,try,p,replines,x;
 # Check that all elements of the list of vectors l have coefficients
@@ -54,9 +52,10 @@ function(W)local index,m,R,cr,rb,integrality,Coroots,try,p,replines,x;
   if Length(m)>0 and not ForAll(Set(Flat(p*TransposedMat(m))),x->x in R) then 
     ChevieErr("not a root system");fi;
 end,
-W->not IsSpets(W));
+W->not IsSpets(W),
+"Check that the roots of W define a distinguished root system in the sense\
+ of Broue-Corran-Michel");
 
-# check that the reflection representation is globally invariant by Gal(k_W/Q)
 CHEVIE.AddTest("GaloisAutomorphisms",
 function(W)local k,Wk,m,g,gm,p;
   k:=Field(Flat(W.matgens));
@@ -73,11 +72,9 @@ function(W)local k,Wk,m,g,gm,p;
     od;
   od;
 end,
-W->not IsSpets(W));
+W->not IsSpets(W),
+"check that W's reflection representation is globally invariant by Gal(k_W/Q)");
 
-# WFromBraidRelations(W)
-# check abstract group given by G's braid relations has same size as G
-# (thus no relation is missing)
 CHEVIE.AddTest("WFromBraidRelations",
 function(W)local n,F,r;
   n:=Length(W.generators);
@@ -87,10 +84,10 @@ function(W)local n,F,r;
   Append(r,List([1..n],i->F.(i)^OrderPerm(W.(i))));
   return Size(W)=Size(F/r);
 end,
-W->not IsSpets(W) and Size(W)<64000);
+W->not IsSpets(W) and Size(W)<64000,
+"check that the abstract group defined by the braid and order relations has\
+ the expected Size");
 
-# for Coxeter groups or cosets, check class representatives are very good
-# in the sense of Geck-Michel
 CHEVIE.AddTest("ClassRepresentatives",
 function(W)local cl,i,w,l,o,wF;
   cl:=ChevieClassInfo(W);
@@ -119,4 +116,6 @@ function(W)local cl,i,w,l,o,wF;
     fi;
   od;
 end,
-W->IsCoxeterGroup(W) or IsCoxeterCoset(W));
+W->IsCoxeterGroup(W) or IsCoxeterCoset(W),
+"check that the class representatives are very good in the sense of\
+ Geck-Michel");

@@ -420,7 +420,7 @@ j*p*r^4+j*p^2*r^3+p^3*r^2,2*p*r^2+p^2*r+j^2*p^3+r^3,0,r^2,p*r+r^2,
 end);
 
 CHEVIE.families.Y6:=rec(name:="Y_6",
-  explanation:="mystery G27",
+  explanation:="subcategory of DQ(B2).20",
   fourierMat:=
   [[  -ER(5),  -ER(5),-2*ER(5),-2*ER(5),-5,-5],
    [  -ER(5),  -ER(5),-2*ER(5),-2*ER(5), 5, 5],

@@ -261,13 +261,16 @@ end;
 # h  is a  linear form  defined by  its value  on the  simple roots  of the
 # reflection subgroup K. Induce it to W by extending by 0 on the orthogonal
 # of K, then conjugate it so it takes >=0 values on the simple roots.
-InduceRichardsonDynkin:=function(W,K,h)local v,w;
+InduceRichardsonDynkin:=function(W,K,h)local v,w,r;
+# Print("W=",W," K=",K," h=",h,"\n");
   if SemisimpleRank(K)=0 then return W.generatingReflections*0;fi;
   h:=ShallowCopy(h);Append(h,[1..K.rank-K.semisimpleRank]*0);
-  h:=CoxeterGroupOps.BaseX(W)*CoxeterGroupOps.BaseX(K)^-1*h;
-  v:=W.roots{[1..W.N]}*h;
+  h:=CoxeterGroupOps.BaseX(Parent(W))*CoxeterGroupOps.BaseX(K)^-1*h;
+  r:=Parent(W).roots{W.rootInclusion};
+  v:=r{[1..W.N]}*h;
   w:=ElementWithInversions(W,Filtered([1..W.N],i->v[i]<0));
-  return List(OnTuples(W.generatingReflections,w^-1),i->W.roots[i]*h);
+  return List(W.rootRestriction{OnTuples(
+    W.rootInclusion{W.generatingReflections},w^-1)},i->r[i]*h);
 end;
 
 DistinguishedParabolicSubgroups:=W->Filtered(Combinations(W.rootInclusion{
@@ -284,7 +287,7 @@ BalaCarterLabels:=function(W)local l;
   return List(l,function(p)local L,w,i;
     L:=ReflectionSubgroup(W,p[1]);
     w:=L.generatingReflections*0+2;
-    w{L.rootRestriction{p[2]}}:=w{L.rootRestriction{p[2]}}*0;
+    w{L.rootRestriction{p[2]}}:=p[2]*0;
     return [InduceRichardsonDynkin(W,L,w),
       List(p[1],function(i)if i in p[2] then return -i;else return i;fi;end)];
     end);
@@ -304,10 +307,10 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
   else
   ucl:=rec(classes:=List(Cartesian(List(uc,x->x.classes)),
     function(v)local u,p;
-    if Length(v)=1 then u:=Copy(v[1]);
-    else u:=rec(name:=Join(List(v,x->x.name)),Au:=Product(v,x->x.Au),
+      u:=rec(name:=Join(List(v,x->x.name)),Au:=Product(v,x->x.Au),
          dimBu:=Sum(v,x->x.dimBu), dimred:=Sum(v,x->x.dimred),
          dimunip:=Sum(v,x->x.dimunip), parameter:=List(v,x->x.parameter));
+      if Length(v)=1 then Inherit(u,v[1]);fi;
       if ForAll(v,x->IsBound(x.red)) then 
         u.red:=Product(v,x->x.red);
       fi;
@@ -324,7 +327,6 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
 	   i->List(v[i].balacarter,function(j)
 	     if j>0 then return l[i][j];else return -l[i][-j];fi;end))));
       fi;
-    fi;
     if W.rank>W.semisimpleRank and IsBound(u.red) 
     then u.red:=u.red*Torus(W.rank-W.semisimpleRank);
       if IsBound(u.AuAction) then
@@ -339,9 +341,9 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
   ucl.size:=Length(ucl.classes);
   if p=0 and not IsBound(ucl.classes[1].balacarter) then
     bc:=BalaCarterLabels(W);
-    SortBy(bc,x->PositionProperty(ucl.classes,cl->x[1]=cl.dynkin));
-    bc:=List(bc,x->x[2]);
-    for i in [1..Size(ucl)] do ucl.classes[i].balacarter:=bc[i];od;
+    for u in ucl.classes do 
+      u.balacarter:=bc[PositionProperty(bc,p->p[1]=u.dynkin)][2];
+    od;
   fi;
   ll:=List(uc,x->Length(x.classes));
   ucl.orderClasses:=List(Cartesian(List(ll,x->[1..x])),function(v)local o;

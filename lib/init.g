@@ -951,7 +951,7 @@ AUTO( ReadLib( "polystff" ),
   ApproxRational, ApproximateRoot, ApproxRootBound, RootBound, BombieriNorm,
   MinimizeBombieriNorm, BeauzamyBound, OneFactorBound, HenselBound, CoeffAbs,
   TrialQuotient, Characteristic, RandomNormedPol, PolynomialModP, ContentPol,
-  ParityPol, EvalF, CheapFactorsInt, Berwick );
+  ParityPol, EvalF, CheapFactorsInt, Berwick, InfoPoly2 );
 
 AUTO( ReadLib( "pq" ),
   PQpOps, PQp, SavePQp, InitPQp, AddGeneratorsPQp, DefineGeneratorsPQp,

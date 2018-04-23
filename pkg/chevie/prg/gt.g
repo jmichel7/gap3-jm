@@ -3,6 +3,7 @@
 # This file deals with class types for reductive grouops.
 #
 RationalUnipotentClasses:=function(WF,p)local t,u;
+# Print("WF=",WF," p=",p,"\n");
   u:=UnipotentClasses(WF,p);
   t:=GreenTable(u,rec(classes:=true));
   return List([1..Length(t.locsys)],i->
@@ -134,7 +135,7 @@ end;
 
 # See Fleischmann-Janiszczak AAECC 1996 definition 2.1
 ClassTypesOps.NrConjugacyClasses:=function(C)local HF,W,H,o,P,l,less,mu,n,i,r,b;
-  W:=Group(C.spets);b:=CoxeterGroupOps.BadPrimes(W);
+  W:=Group(C.spets);b:=Set(Factors(PermRootOps.BadNumber(W)));
   if Size(FundamentalGroup(W))>1 then
    Print("# Nr classes each type implemented only for simply connected groups");
    return;

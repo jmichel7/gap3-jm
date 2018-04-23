@@ -34,7 +34,7 @@ VKCURVE.showallnewton:=false;# for NewtonRoot
 VKCURVE.NewtonLim:=800;      # for NewtonRoot
 VKCURVE.AdaptivityFactor:=10; # for ApproxFollowMonodromy
 VKCURVE.shrinkBraid:=false;
-VKCURVE.mvp2:=false;
+VKCURVE.mvp:=1;
 
 PrintPkgInit(VKCURVE);
 
@@ -58,8 +58,8 @@ AUTO(ReadVK("util"), BigNorm, ComplexRatToGaussian, ComplexRational,
   MinPos, ResultantMat, Rho, SmallNorm);
 AUTO(ReadVK("truemono"),FollowMonodromy);
 AUTO(ReadVK("segtobrd"),ApproxFollowMonodromy);
-AUTO(ReadVK("mvp"),MvpOps,Mvp,IsMvp,ScalMvp,quadratMvp,Jacobian,Hessian,
-  MonomialGcd,OnPolynomials);
+AUTO(ReadVK("mvp"),MvpOps,Mvp,IsMvp,ScalMvp,FactorQuadraticForm,
+Jacobian,Hessian,MonomialGcd,OnPolynomials);
 AUTO(ReadVK("mvrf"),RatFrac,IsRatFrac,MvpGcd,MvpLcm,LaurentDenominator);
 
 Horner:=function(arg)

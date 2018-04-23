@@ -13,6 +13,9 @@ AUTO(ReadChv("contr/braidsup"),
   RightDivisors,
   Sliding);
 
+AUTO(ReadChv("contr/brbase"),
+  BaseBruhat);
+
 AUTO(ReadChv("contr/murphy"),
   SpechtModel);
 

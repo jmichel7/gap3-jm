@@ -10,16 +10,16 @@
 ## If not, it tells what permutation of the data is needed.
 
 if not IsBound(ChevieErr) then
-ChevieErr:=function(arg)
-  Print("****** WARNING!: CheckCharParams:");
-  ApplyFunc(Print,arg);
-end;
+  ChevieErr:=function(arg)
+    Print("****** WARNING!: CheckCharParams:");
+    ApplyFunc(Print,arg);
+  end;
 fi;
 
 # check the charparams are consistent with actual data in various ways
 CheckCharParams:=function(W) local ct,q,fd,db,n,l,nm,t,f,fd,ok,ddb,occursin,
   issign,fakdeghighterms,fakdegsmaller,isconjugate,inducedfromid,value,property,
-  rules,mintensor,lexpol,perm,DecomposeTensor,GaloisAction,isgal;
+  rules,mintensor,lexpol,perm,DecomposeTensor,Galois,isgal;
   ct:=CharTable(W).irreducibles;
   q:=X(Rationals);q.name:="q";fd:=FakeDegrees(W,q);
   db:=List(fd,x->[Value(x,1),x.valuation]);
@@ -71,8 +71,8 @@ CheckCharParams:=function(W) local ct,q,fd,db,n,l,nm,t,f,fd,ok,ddb,occursin,
     t:=List(TransposedMat(ct{arg}),Product);
     return MatScalarProducts(CharTable(W),ct,[t])[1];
   end;
-  GaloisAction:=function(x,e)
-    if IsList(x) then return List(x,y->GaloisAction(y,e));else return x^e;fi;
+  Galois:=function(x,e)
+    if IsList(x) then return List(x,y->Galois(y,e));else return x^e;fi;
   end;
   occursin:=function(arg)# arg[1] occurs in arg[2] tensor .. tensor arg[n]
    return ok(0<>ApplyFunc(DecomposeTensor,List(arg{[2..Length(arg)]},f))
@@ -93,7 +93,7 @@ CheckCharParams:=function(W) local ct,q,fd,db,n,l,nm,t,f,fd,ok,ddb,occursin,
   isconjugate:=function(a,b) return ok(ct[f(a)]=ComplexConjugate(ct[f(b)]),
        a," should be complex conjugate to ",b);
   end;
-  isgal:=function(a,b,g) return ok(ct[f(a)]=GaloisAction(ct[f(b)],g),
+  isgal:=function(a,b,g) return ok(ct[f(a)]=Galois(ct[f(b)],g),
        a," should be conjugate by ",g," to ",b);
   end;
   inducedfromid:=function(a,J)local L,t;
@@ -124,7 +124,7 @@ CheckCharParams:=function(W) local ct,q,fd,db,n,l,nm,t,f,fd,ok,ddb,occursin,
     q:=i->Number(nm[i],u->u='\'')+2*Number(nm[i],u->u='"');
     g:=Field(Flat(CartanMat(W)));
     if g<>Rationals then
-      g:=List(GaloisGroup(g).generators,x->PermListList(ct,GaloisAction(ct,x)));
+      g:=List(GaloisGroup(g).generators,x->PermListList(ct,Galois(ct,x)));
       g:=Orbits(Group(g,()),[1..Length(nm)]);
       o:=i->First(g,o->i in o);
     fi;

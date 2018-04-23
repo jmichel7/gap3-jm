@@ -1,297 +1,131 @@
-<html><head><title>GAP3 Manual: 108 CHEVIE utility functions -- Decimal and complex numbers</title></head>
+<html><head><title>GAP3 Manual: 108 Signed permutations</title></head>
 <body bgcolor="ffffff">
-<h1>108 CHEVIE utility functions -- Decimal and complex numbers</h1>
+<h1>108 Signed permutations</h1>
 <P><P><P>
-The original incentive for the functions  described in this file was to
-get the  ability to decide if  a cyclotomic number which  happens to be
-real is positive  or negative (this is  needed to tell if a  root of an
-arbitrary Coxeter group is negative  or positive). Of course, there are
-other  uses for  fixed-precision real  and complex  numbers, which  the
-functions  described here  provide. A  special feature  of the  present
-implementation  is that  to make  evaluation of  cyclotomics relatively
-fast, a  cache of primitive  roots of  unity is maintained  (the cached
-values are kept for the largest precision ever used to compute them).
+A   <strong>signed  permutation</strong>  of   <code>[1..n]</code>  is  a   permutation  of  the  set
+<I>{-n,...,-1,1,...,n}</I>  which  preserves  the  pairs <I>[-i,i]</I>. It is
+represented  as the images of <I>[1..n]</I>.
 <P>
-We first describe a general facility  to build complex numbers as pairs
-of real numbers. The real numbers in  the pairs can be of any type that
-<strong>GAP3</strong> knows  about: integers, rationals, cyclotomics,  or elements of
-any ring actually.
+A  signed permutation  can be  represented in  two other  ways which may be
+convenient.  The first way is to replace the integers <I>{-n,...,-1}</I> by
+<I>{n+1,...,2n}</I>   to   have   <strong>GAP3</strong>   permutations,   which   form  the
+hyperoctaedral group (see <a href="chap083.htm#SECT002">CoxeterGroupHyperoctaedralGroup</a>).
+<P>
+The  second way is to represent the signed permutation by a monomial matrix
+with  entries  <code>1</code>  or  <code>-1</code>.  If  such  a matrix <var>m</var> represents the signed
+permutation <var>sp</var>, then <code>l*m</code> is the same as <code>SignPermuted(<var>l</var>,<var>sp</var>)</code>.
 <P><P>
 <H3> Subsections</H3>
 <oL>
-<LI> <A HREF="chap108.htm#SECT001">Complex</a>
-<LI> <A HREF="chap108.htm#SECT002">Operations for complex numbers</a>
-<LI> <A HREF="chap108.htm#SECT003">ComplexConjugate</a>
-<LI> <A HREF="chap108.htm#SECT004">IsComplex</a>
-<LI> <A HREF="chap108.htm#SECT005">evalf</a>
-<LI> <A HREF="chap108.htm#SECT006">Rational</a>
-<LI> <A HREF="chap108.htm#SECT007">SetDecimalPrecision</a>
-<LI> <A HREF="chap108.htm#SECT008">Operations for decimal numbers</a>
-<LI> <A HREF="chap108.htm#SECT009">Pi</a>
-<LI> <A HREF="chap108.htm#SECT010">Exp</a>
-<LI> <A HREF="chap108.htm#SECT011">IsDecimal</a>
+<LI> <A HREF="chap108.htm#SECT001">SignPermuted</a>
+<LI> <A HREF="chap108.htm#SECT002">SignedPermutationMat</a>
+<LI> <A HREF="chap108.htm#SECT003">SignedPerm</a>
+<LI> <A HREF="chap108.htm#SECT004">CyclesSignedPerm</a>
+<LI> <A HREF="chap108.htm#SECT005">SignedPermListList</a>
 </ol>
-<A NAME="SECT001"><h2>108.1 Complex</h2></a>
+<A NAME="SECT001"><h2>108.1 SignPermuted</h2></a>
 <P><P>
 <A name = "I0"></a>
 
 <P>
-<code>Complex( <var>r</var>[, <var>i</var>] )</code>
+<code>SignPermuted( <var>l</var>, <var>sp</var>)</code>
 <P>
-In the first form, defines a complex  number whose real part is <var>r</var> and
-imaginary part is <var>i</var>. If omitted, <var>i</var>  is taken to be 0. There are two
-special cases  when there is only  one argument: if <var>r</var>  is already a
-complex,  it is  returned; and  if <var>r</var>  is a  cyclotomic number,  it is
-converted to the pair of its real  and imaginary part and returned as a
-complex.
+<code>SignPermuted</code>  returns a  new list  <var>n</var> that  contains the elements of the
+list  <var>l</var> permuted  according to  the signed  permutation <var>sp</var>.  If <var>sp</var> is
+given  as a  list, then  <code><var>n</var>[AbsInt(sp[i])] = <var>l</var>[<var>i</var>]SignInt(sp[i])</code>. The
+signed   permutation  <var>sp</var>  can  also  be   given  as  an  element  of  the
+hyperoctaedral group (see the introduction of the chapter for definitions).
 <P>
-<pre>    gap> Complex(0,1);
-    I
-    gap> Complex(E(3));
-    -1/2+ER(3)/2I
-    gap> Complex(E(3)^2);
-    -1/2-ER(3)/2I
-    gap> x:=X(Rationals);;x.name:="x";;Complex(0,x);
-    xI</pre>
-<P>
-The last line shows that the arguments to <code>Complex</code> can be of any ring.
-Complex numbers are  represented as a record with two  fields, <code>.r</code> and
-<code>.i</code> holding the real and imaginary part respectively.
-<P><A NAME="SECT002"><h2>108.2 Operations for complex numbers</h2></a>
-<P><P><P>
-The arithmetic operations <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> and <code>^</code> work for complex
-numbers. They also have <code>Print</code> and <code>String</code> methods.
-<P>
-<pre>    gap> Complex(0,1);
-    I
-    gap> last+1;
-    1+I
-    gap> last^2;
-    2I
-    gap> last^2;
-    -4
-    gap> last+last2;
-    -4+2I
-    gap> x:=X(Rationals);;x.name:="x";;Complex(0,x);
-    xI
-    gap> last^2;
-    -x^2</pre>
-<P>
-Finally  we  should  mention  the  <code>FormatGAP</code>  method,  which allows to print
-complex numbers in a way such that they can be read back in <strong>GAP3</strong>: 
-<P>
-<pre>    gap> a:=Complex(1/2,1/3);
-    1/2+1/3I
-    gap> FormatGAP(a);
-    "Complex(1/2,1/3)"</pre>
-<P><A NAME="SECT003"><h2>108.3 ComplexConjugate</h2></a>
+<pre>    gap> SignPermuted([20,30,40],[-2,-1,-3]);
+    [ -30, -20, -40 ]
+    gap> W:=CoxeterGroupHyperoctaedralGroup(3);
+    Group( (3,4), (2,3)(4,5), (1,2)(5,6) )
+    gap> SignPermuted([20,30,40],W.3);
+    [ 30, 20, 40 ]
+    gap> SignPermuted([20,30,40],W.2);
+    [ 20, 40, 30 ]
+    gap> SignPermuted([20,30,40],W.1);
+    [ 20, 30, -40 ]</pre>
+<P><A NAME="SECT002"><h2>108.2 SignedPermutationMat</h2></a>
 <P><P>
 <A name = "I1"></a>
 
 <P>
-<code>ComplexConjugate( <var>c</var>)</code>
+<code>SignedPermutationMat( <var>sp</var> [,<var>d</var>])</code>
 <P>
-This  function   applies  complex  conjugation  to   its  argument.  It
-knows  ho  to do  this  for  cyclotomic  numbers  (it then  just  calls
-<code>GaloisCyc(<var>c</var>,-1)</code>),  complex  numbers,   lists  (it  conjugates  each
-element of the list), polynomials (it conjugates each coefficient), and
-can  be taught  to conjugate  elements <code>x</code>  of an  arbitrary domain  by
-defining <code>x.operations.ComplexConjugate</code>.
+This   function  returns  the  signed  permutation  matrix  of  the  signed
+permutation  <var>sp</var>, given as a  list or as an  element of the hyperoctaedral
+group.  This is a matrix <var>m</var> such that <code>SignPermuted(l,sp)=l*m</code>. If <var>sp</var> is
+an  element of hyperoctaedral  group, the matrix  is given of dimension the
+rank  of the  smallest hyperoctaedral  group to  which <var>sp</var>  belongs. If an
+additional argument <var>d</var> is given the matrix is returned of that dimension.
 <P>
-<pre>    gap> ComplexConjugate(Complex(0,1));
-    -I
-    gap> ComplexConjugate(E(3));
-    E(3)^2
-    gap> x:=X(Cyclotomics);;x.name:="x";;ComplexConjugate(x+E(3));
-    x + (E(3)^2)</pre>
-<P><A NAME="SECT004"><h2>108.4 IsComplex</h2></a>
+<pre>    gap> m:=SignedPermutationMat([-2,-3,-1]);
+    [ [ 0, -1, 0 ], [ 0, 0, -1 ], [ -1, 0, 0 ] ]
+    gap> m=SignedPermutationMat((1,5,3,6,2,4));
+    true
+    gap> [20,30,40]*m;
+    [ -40, -20, -30 ]
+    gap> SignPermuted([20,30,40],[-2,-3,-1]);
+    [ -40, -20, -30 ]</pre>
+<P><A NAME="SECT003"><h2>108.3 SignedPerm</h2></a>
 <P><P>
 <A name = "I2"></a>
 
 <P>
-<code>IsComplex( <var>c</var>)</code>
+<code>SignedPerm( <var>sp</var> [,<var>d</var> or <var>sgns</var>])</code>
 <P>
-This function returns <code>true</code> iff its argument is a complex number.
+This  function converts to a signed permutation  given as a list, either an
+element of the hyperoctaedral group, a signed permutation matrix, or a pair
+of  a  permutation  and  of  a  list  of  signs. If given an element of the
+hyperoctaedral  group,  the  rank  <var>d</var>  of  that  group  can be given as an
+argument,   otherwise  a  representation  of  <var>sp</var>   as  a  list  is  given
+corresponding to the smallest hyperoctaedral group to which it belongs.
 <P>
-<pre>    gap> IsComplex(Complex(1,0));
-    true
-    gap> IsComplex(E(4));
-    false</pre>
-<P><A NAME="SECT005"><h2>108.5 evalf</h2></a>
+Finally, if given a signed permutation as a list, this function returns
+am element of the hyperoctaedral group.
+<P>
+<pre>    gap> SignedPerm([[0,-1,0],[0,0,-1],[-1,0,0]]);
+    [ -2, -3, -1 ]
+    gap> SignedPerm((1,5,3,6,2,4));
+    [ -2, -3, -1 ]
+    gap> SignedPerm((1,2,3),[-1,-1,-1]);
+    [ -2, -3, -1 ]
+    gap> SignedPerm([-2,-3,-1]);
+    (1,5,3,6,2,4)</pre>
+<P><A NAME="SECT004"><h2>108.4 CyclesSignedPerm</h2></a>
 <P><P>
 <A name = "I3"></a>
 
 <P>
-<code>evalf( <var>c</var> [, <var>prec</var>] )</code>
+<code>CyclesSignedPerm( <var>sp</var> )</code>
 <P>
-The  name  of  this  function  intentionally mimics  that  of  a  Maple
-function.  It computes  a  fixed-precision decimal  number with  <var>prec</var>
-digits  after the  decimal  point approximating  its  argument; if  not
-given, <var>prec</var> is taken  to be 10 (this can be  changed via the function
-<code>SetDecimalPrecision</code>,  see below).  Trailing zeroes  are not  shown on
-output, so the  actual precision may be more than  the number of digits
-shown.
+Returns   the  list   of  cycles   of  the   signed  permutation   <var>sp</var>  on
+<I>{-n,...,-1,1,...,n}</I>,  given as  a list  or a  permutation. If one
+cycle is the negative of another, only one of the two cycles is given.
 <P>
-<pre>    gap> evalf(1/3);
-    0.3333333333</pre>
-<P>
-As one  can see,  the resulting <code>decimal  numbers</code> have  an appropriate
-Print method (which uses the String method).
-<P>
-<pre>    gap> evalf(1/3,20);
-    0.33333333333333333333</pre>
-<P>
-<code>evalf</code> can also be applied  to cyclotomic or complex numbers, yielding
-a complex which is a pair of decimal numbers.
-<P>
-<pre>    gap> evalf(E(3));
-    -0.5+0.8660254038I</pre>
-<P>
-<code>evalf</code> works also for strings (the result is truncated if too precise)
-<P>
-<pre>    gap> evalf(".3450000000000000000001"); # precision is 10
-    0.345</pre>
-<P>
-and for lists (it is applied recursively to each element).
-<P>
-<pre>    gap> evalf([E(5),1/7]);
-    [ 0.3090169944+0.9510565163I, 0.1428571429 ]</pre>
-<P>
-Finally, an <code>evalf</code>  method can be defined for elements  of any domain.
-One has been defined in <strong>CHEVIE</strong> for complex numbers: 
-<P>
-<pre>    gap> a:=Complex(1/2,1/3);
-    1/2+1/3I
-    gap> evalf(a);
-    0.5+0.3333333333I</pre>
-<P><A NAME="SECT006"><h2>108.6 Rational</h2></a>
+<pre>    gap> CyclesSignedPerm([-2,-3,-1]);
+    [ [ 1, -2, 3, -1, 2, -3 ] ]
+    gap> CyclesSignedPerm([-2,-1,-3]);
+    [ [ 1, -2 ], [ 3, -3 ] ]
+    gap> CyclesSignedPerm([-2,-1,3]);
+    [ [ 1, -2 ] ]
+    gap> CyclesSignedPerm((1,5,3,6,2,4));
+    [ [ 1, -2, 3, -1, 2, -3 ] ]</pre>
+<P><A NAME="SECT005"><h2>108.5 SignedPermListList</h2></a>
 <P><P>
 <A name = "I4"></a>
 
 <P>
-<code>Rational(<var>d</var>)</code>
+    <code>SignedPermListList( <var>list1</var>, <var>list2</var> )</code>
 <P>
-<var>d</var>  is a  <code>decimal</code> number.  The function  returns the  rational number
-which is actually represented by <var>d</var>
+<code>SignedPermListList</code>  returns a signed  permutation that may  be applied to
+<var>list1</var> to obtain <var>list2</var>, if there is one. Otherwise it returns <code>false</code>.
 <P>
-<pre>    gap> evalf(1/3);
-    0.3333333333
-    gap> Rational(last);
-    33333333333/100000000000</pre>
-<P><A NAME="SECT007"><h2>108.7 SetDecimalPrecision</h2></a>
-<P><P>
-<A name = "I5"></a>
-
-<P>
-<code>SetDecimalPrecision( <var>prec</var> )</code>
-<P>
-This function  sets the  default precision to  be used  when converting
-numbers to decimal numbers without giving a second argument to <code>evalf</code>.
-<P>
-<pre>    gap> SetDecimalPrecision(20);
-    gap> evalf(1/3);
-    0.33333333333333333333
-    gap> SetDecimalPrecision(10);</pre>
-<P><A NAME="SECT008"><h2>108.8 Operations for decimal numbers</h2></a>
-<P><P><P>
-<A name = "I6"></a>
-
-The arithmetic operations <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> and <code>^</code> work for decimal
-numbers, as well as the function <code>GetRoot</code> and the comparison functions
-<code><</code>, <code>></code>, etc...  The precision of the result of  an operation is that
-of the  least precise number used.  They can be raised  to a fractional
-power: <code>GetRoot(d,n)</code>  is equivalent  to <code>d^(1/n)</code>.  Decimal numbers
-also have <code>Print</code> and <code>String</code> methods.
-<P>
-<pre>    gap> evalf(1/3)+1;
-    1.3333333333
-    gap> last^3;
-    2.3703703704
-    gap> evalf(E(3));
-    -0.5+0.8660254038I
-    gap> last^3;
-    1
-    gap> evalf(ER(2));
-    1.4142135624
-    gap> GetRoot(evalf(2),2);
-    1.4142135624
-    gap> evalf(2)^(1/2);
-    1.4142135624
-    gap> evalf(1/3,20);
-    0.33333333333333333333
-    gap> last+evalf(1);
-    1.3333333333
-    gap> last2+1;
-    1.33333333333333333333</pre>
-<P>
-Finally  we should mention the <code>FormatGAP</code>  method, which, given option <code>GAP</code>,
-allows  to print decimal numbers in  a way such that they  can be read back in
-<strong>GAP3</strong>: 
-<P>
-<pre>    gap> FormatGAP(evalf(1/3));
-    "evalf(33333333333/100000000000,10)"</pre>
-<P><A NAME="SECT009"><h2>108.9 Pi</h2></a>
-<P><P>
-<A name = "I7"></a>
-
-<P>
-<code>Pi( [<var>prec</var>])</code>
-<P>
-This function  returns a  decimal approximation  to <I>&pi;</I>,  with <var>prec</var>
-digits  (or if  <var>prec</var>  is omitted  with the  default  umber of  digits
-defined by <code>SetDecimalPrecision</code>, initially 10).
-<P>
-<pre>    gap> Pi();
-    3.1415926536
-    gap> Pi(34);
-    3.1415926535897932384626433832795029</pre>
-<P><A NAME="SECT010"><h2>108.10 Exp</h2></a>
-<P><P>
-<A name = "I8"></a>
-
-<P>
-<code>Exp( <var>x</var>)</code>
-<P>
-This  function returns  the complex  exponential of  <var>x</var>. The  argument
-should be a decimal or a decimal complex. The result has as many digits
-of precision as the argument.
-<P>
-<pre>    gap> Exp(evalf(1));
-    2.7182818285
-    gap> Exp(evalf(1,20));
-    2.71828182845904523536
-    gap> Exp(Pi()*evalf(E(4)));
-    -1</pre>
-<P>
-The code of <code>Exp</code> shows how easy it is to use decimal numbers.
-<P>
-<pre>    gap> Print(Exp,"\n");
-    function ( x )
-      local  res, i, p, z;
-      z := 0 * evalf( x );
-      res := z;
-      p := 1;
-      i := 1;
-      while p &lt;> z  do
-        res := p + res;
-        p := 1 / i * p * x;
-        i := i + 1;
-      od;
-      return res;
-    end</pre>
-<P><A NAME="SECT011"><h2>108.11 IsDecimal</h2></a>
-<P><P>
-<A name = "I9"></a>
-
-<P>
-<code>IsDecimal( <var>x</var>)</code>
-<P>
-returns <code>true</code> iff <var>x</var> is a decimal number.
-<P>
-<pre>    gap> IsDecimal(evalf(1));
-    true
-    gap> IsDecimal(evalf(E(3)));
-    false</pre>
+<pre>    gap> SignedPermListList([20,30,40],[-40,-20,-30]);
+    [ -2, -3, -1 ]
+    gap> SignPermuted([20,30,40],[-2,-3,-1]);
+    [ -40, -20, -30 ]</pre>
 <P><a href ="chap107.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap109.htm">Next</a><BR><a href = "theindex.htm">Index</a>
 <P>
 <address>gap3-jm<br>19 Feb 2018</address></body></html>

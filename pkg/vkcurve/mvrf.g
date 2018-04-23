@@ -24,7 +24,17 @@ IsRatFrac:=x->IsRec(x) and IsBound(x.operations) and RatFracOps=x.operations;
 # Given a list arg of Laurent polynomials, returns the unique monomial 
 # m such that m*arg is a list of true polynomials, one of them with a
 # nonzero constant term
-if VKCURVE.mvp2 then
+if VKCURVE.mvp=1 then
+LaurentDenominator := function(arg)local res, v;
+  res:=MonomialGcd(Set(Concatenation(List(arg,function(x)
+    if IsRec(x) then return x.elm;else return [];fi;end))));
+  res.coeff:=List(res.coeff,
+    function(x)if x>=0 then return x-Int(x);else return x;fi;end);
+  v:=Filtered([1..Length(res.coeff)],i->res.coeff[i]<>0);
+  return rec(elm:=[rec(coeff:=-res.coeff{v},elm:=res.elm{v})],
+             coeff:=[1],operations:=MvpOps);
+end;
+elif VKCURVE.mvp=2 then
 LaurentDenominator := function(arg)local res, f;
   res:=MonomialGcd(Set(Concatenation(List(arg,function(x)
     if IsRec(x) then return x.elm;else return [];fi;end))));
@@ -39,12 +49,11 @@ end;
 else
 LaurentDenominator := function(arg)local res, v;
   res:=MonomialGcd(Set(Concatenation(List(arg,function(x)
-    if IsRec(x) then return x.elm;else return [];fi;end))));
-  res.coeff:=List(res.coeff,
-    function(x)if x>=0 then return x-Int(x);else return x;fi;end);
-  v:=Filtered([1..Length(res.coeff)],i->res.coeff[i]<>0);
-  return rec(elm:=[rec(coeff:=-res.coeff{v},elm:=res.elm{v})],
-             coeff:=[1],operations:=MvpOps);
+    if IsRec(x) then return List(x.pairs,y->y[1]);else return [];fi;end))));
+  for p in res.pairs do if p[2]>=0 then p[2]:=Int(p[2])-p[2];
+                                   else p[2]:=-p[2];fi;od;
+  res.pairs:=Filtered(res.pairs,x->x[2]<>0);
+  return Mvp([[res,1]]);
 end;
 fi;
     
@@ -90,12 +99,7 @@ RatFrac:=function(arg) local p,n;
 #     Print("calling2 RatFrac(",arg[1],",",p,")\n");
 #     Print("ExactDiv2(",arg[1],",",p,")\n");
 #     Print("ExactDiv2b(",arg[2],",",p,")\n");
-    if VKCURVE.mvp2 then
-      if p.elm=[rec()] then return RatFracOps.RatFrac(arg[1],arg[2]);fi;
-    else
-      if p.elm=[rec(elm:=[],coeff:=[])] then 
-        return RatFracOps.RatFrac(arg[1],arg[2]);fi;
-    fi;
+    if ScalMvp(p)<>false then return RatFracOps.RatFrac(arg[1],arg[2]);fi;
     return RatFracOps.RatFrac(MvpOps.ExactDiv(arg[1],p),
       MvpOps.ExactDiv(arg[2],p));
   else Error("The number of arguments must be 1 or 2. \n");
@@ -287,3 +291,8 @@ RatFracOps.\=:=function(x,y)
 end;
 
 RatFracOps.CycPol:=p->CycPol(p.num)/CycPol(p.den);
+
+RatFracOps.Galois:=function(x,e)
+  x:=ShallowCopy(x);x.num:=Galois(x.num,e);x.den:=Galois(x.den,e);
+  return x;
+end;

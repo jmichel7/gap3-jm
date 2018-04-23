@@ -1,356 +1,289 @@
-<html><head><title>GAP3 Manual: 110 The VKCURVE package</title></head>
+<html><head><title>GAP3 Manual: 110 Posets and relations</title></head>
 <body bgcolor="ffffff">
-<h1>110 The VKCURVE package</h1>
+<h1>110 Posets and relations</h1>
 <P><P><P>
-The  main function of the <strong>VKCURVE</strong>  package computes the fundamental group
-of  the  complement  of  a  complex  algebraic  curve  in  <I>&#x2102;<sup>2</sup></I>, using an
-implementation  of the Van Kampen method  (see for example <A href="biblio.htm#C73"><cite>C73</cite></a> for a
-clear and modernized account of this method).
+Posets are represented in <strong>CHEVIE</strong> as records where at least one of the two
+following fields is present:
 <P>
-<pre>    gap> FundamentalGroup(x^2-y^3);
-    #I  there are 2 generators and 1 relator of total length 6
-    1: bab=aba
-    
-    gap> FundamentalGroup((x+y)*(x-y)*(x+2*y));
-    #I  there are 3 generators and 2 relators of total length 12
-    1: cab=abc
-    2: bca=abc</pre>
+<DL><DT>  <code>.incidence</code>:<DD>  a  boolean  matrix  such  that <code>.incidence[i][j]=true</code> iff
+  <code>i&lt;=j</code> in the poset.
+</DL><P>
+<DL><DT>  <code>.hasse</code>:<DD> a list representing the Hasse diagram of the poset: the <I>i</I>-th
+  entry  is the list of indices  of elements which are immediate successors
+  (covers)  of the <I>i</I>-th element, that is  the list of <I>j</I> such that <code>i&lt;j</code>
+  and such that there is no <I>k</I> such that <code>i&lt;k&lt;j</code>.
+</DL><P>
+If  only one field is present, the other  is computed on demand. Here is an
+example of use;
 <P>
-The  input is  a  polynomial in  the  two variables  <code>x</code>  and <code>y</code>,  with
-rational  coefficients.  Though  approximate calculations  are  used  at
-various places, they are controlled and the final result is exact.
-<P>
-The output is a  record which  contains lots  of information  about the
-computation, including a presentation of the computed fundamental group,
-which is what is displayed when printing the record.
-<P>
-Our  motivation   for  writing  this   package  was  to   find  explicit
-presentations for  generalized braid groups attached  to certain complex
-reflection groups. Though presentations were known for almost all cases,
-six exceptional  cases were  missing (in the  notations of  Shephard and
-Todd, these  cases are <I>G<sub>24</sub></I>, <I>G<sub>27</sub></I>,  <I>G<sub>29</sub></I>, <I>G<sub>31</sub></I>, <I>G<sub>33</sub></I>
-and <I>G<sub>34</sub></I>).  Since the a  priori existence of nice  presentations for
-braid groups was proved in <A href="biblio.htm#B01"><cite>B01</cite></a>, it was upsetting not to know them
-explicitly. In the absence of any good grip on the geometry of these six
-examples, brute force  was a way to  get an answer. Using  <strong>VKCURVE</strong> , we
-have  obtained  presentations for  all of them.
-<P>
-This package was developed thanks to computer resources of the Institut
-de Math&eacute;matiques de Jussieu in Paris. We  thank the computer
-support team,  especially Jo&euml;l Marchand, for  the stability
-and the efficiency of the working environment.
-<P>
-We have tried to design this package with the novice <strong>GAP3</strong> user in mind.
-The only steps required to use it are
-
-<P>&bull; Run <strong>GAP3</strong> 3 (the package is not compatible with <strong>GAP3</strong> 4).
-<P>&bull;  Make  sure  the  packages   <strong>CHEVIE</strong>  and  <strong>VKCURVE</strong>  are  loaded
-(beware   that  we   require   the  development   version  of   <strong>CHEVIE</strong>,
-<code>http://www.math.jussieu.fr/\~{}jmichel/chevie.html</code> and not the one in
-the <strong>GAP3</strong>.3.3.4 distribution)
-<P>
-<P>&bull; Use the function <code>FundamentalGroup</code>,  as demonstrated in the above
-examples.
-<P>
-
-If  you are  not interested  in  the details  of the  algorithm, and  if
-<code>FundamentalGroup</code> gives you satisfactory  answers in a reasonable time,
-then you do not need to read this manual any further.
-<P>
-<P>
-<P>
-We  use our  own  package  for multivariate  polynomials  which is  more
-effective, for  our purposes, than  the default  in <strong>GAP3</strong> 3  (see <code>Mvp</code>).
-When <strong>VKCURVE</strong> is  loaded, the variables <code>x</code> and <code>y</code>  are pre-defined as
-<code>Mvp</code>s; one can  also use <strong>GAP3</strong> polynomials (which will  be converted to
-<code>Mvp</code>s).
-<P>
-The  implementation uses <code>Decimal</code> numbers, <code>Complex</code> numbers and braids as
-implemented  in  the  (development  version  of  the)  package  <strong>CHEVIE</strong>, so
-<strong>VKCURVE</strong> is dependent on this package.
-<P>
-To implement  the algorithms, we  needed to write  auxiliary facilities,
-for instance find  zeros of complex polynomials, or  work with piecewise
-linear  braids,  which  may  be  useful  on  their  own.  These  various
-facilities are documented in this manual.
-<P>
-Before discussing  our actual  implementation, let  us give  an informal
-summary of the mathematical background. Our strategy is adapted from the
-one originally  described in the  1930's by Van  Kampen. Let <I>C</I>  be an
-affine  algebraic curve,  given as  the  set of  zeros in  <I>&#x2102;<sup>2</sup></I> of  a
-non-zero  reduced  polynomial <I>P(x,y)</I>.  The  problem  is to  compute  a
-presentation of the fundamental group of  <I>&#x2102;<sup>2</sup> - C</I>. Consider <I>P</I> as a
-polynomial in <I>x</I>, with coefficients in the ring of polynomials in <I>y</I>
-<center><table><tr><td><I>P= &alpha;<sub>0</sub>(y)x<sup>n</sup> +  &alpha;<sub>1</sub>(y) x<sup>n-1</sup>  + ... +  &alpha;<sub>n-1</sub>(y) x
-+  &alpha;<sub>n</sub>(y),</I></td></tr></table></center>  where the  <I>&alpha;<sub>i</sub></I>  are  polynomials in  <I>y</I>.  Let
-<I>&Delta;(y)</I> be the discriminant of <I>P</I> or, in other words, the resultant
-of  <I>P</I>  and <I>(&part;  P)/(&part;  x)</I>.  Since <I>P</I>  is  reduced,
-<I>&Delta;</I> is non-zero. For a generic  value of <I>y</I>, the polynomial in <var>x</var>
-given by <I>P(x,y)</I> has <I>n</I> distinct roots.
-When <I>y=y<sub>j</sub></I>, with <I>j</I> in <I>1,...,d</I>,
-we are in exactly one of
-the following situations: either <I>P(x,y<sub>j</sub>)=0</I>
-(we then say that <I>y<sub>j</sub></I> is bad),
-or <I>P(x,y<sub>j</sub>)</I> has a number of roots in <I>x</I> strictly smaller than
-<I>n</I>.
-Fix <I>y<sub>0</sub></I>  in <I>&#x2102;  - {y<sub>1</sub>,...,y<sub>d</sub>}</I>.  Consider the  projection <I>p:
-&#x2102;<sup>2</sup>  &rarr; &#x2102;,  (x,y) &rarr;  y</I>.  It restricts  to a  locally
-trivial  fibration with  base  space <I>B=  &#x2102;  - {y<sub>1</sub>,...,y<sub>d</sub>}</I>  and
-fibers homeomorphic  to the  complex plane with  <I>n</I> points  removed. We
-denote by  <I>E</I> the  total space  <I>p<sup>-1</sup>(B)</I> and by  <I>F</I> the  fiber over
-<I>y<sub>0</sub></I>. The fundamental  group of <I>F</I> is isomorphic to  the free group on
-<I>n</I> generators.  Let <I>&gamma;<sub>1</sub>,...,&gamma;<sub>d</sub></I>  be loops in  the pointed
-space  <I>(B,y<sub>0</sub>)</I> representing  a generating  system for  <I>&pi;<sub>1</sub>(B,y<sub>0</sub>)</I>.
-By  trivializing  the pullback  of  <I>p</I>  along  <I>&gamma;<sub>i</sub></I>, one  gets  a
-(well-defined up to isotopy) homeomorphism  of <I>F</I>, and a (well-defined)
-automorphism  <I>&phi;<sub>i</sub></I>  of  the  fundamental group  of  <I>F</I>,  identified
-with  the  free  group  <I>F<sub>n</sub></I>  by the  choice  of  a  generating  system
-<I>f<sub>1</sub>,...,f<sub>n</sub></I>. An effective way of  computing <I>&phi;<sub>i</sub></I> is by following
-the solutions in <I>x</I> of <I>P(x,y)=0</I>,  when <I>y</I> moves along <I>&phi;<sub>i</sub></I>. This
-defines a loop in  the space of configuration of <I>n</I>  points in a plane,
-hence an element  <I>b<sub>i</sub></I> of the braid group <I>B<sub>n</sub></I>  (via an identification
-of <I>B<sub>n</sub></I>  with the fundamental  group of this configuration  space). Let
-<I>&phi;</I> be the Hurwitz action of <I>B<sub>n</sub></I>  on <I>F<sub>n</sub></I>. All choices can be made
-in such a way that <I>&phi;<sub>i</sub>=&phi;(b<sub>i</sub>)</I>. The theorem of Van Kampen asserts
-that, if there are no bad  roots of the discriminant, a presentation for
-the fundamental group of <I>&#x2102;<sup>2</sup> -  C</I> is <center><table><tr><td><I>&lt; f<sub>1</sub>,...,f<sub>n</sub> | &forall;
-i,j,  &phi;<sub>i</sub>(f<sub>j</sub>)=f<sub>j</sub> &gt;  </I></td></tr></table></center> A  variant  of the  above presentation  (see
-<code>VKQuotient</code>) can be used to deal with bad roots of the discriminant.
-<P>
-This algorithm is implemented in the following way.
-<P>
-
-<P>&bull; As input,  we have a polynomial <I>P</I>. The  polynomial is reduced if
-it was not.
-<P>
-<P>&bull; The discriminant <I>&Delta;</I> of <I>P</I>  with respect to <I>x</I> is computed.
-It is a polynomial in <I>y</I>.
-<P>
-<P>&bull;  The  roots  of  <I>&Delta;</I>  are  approximated,  via  the  following
-procedure. First, we reduce  <I>&Delta;</I> and get <I>&Delta;<sub>red</sub></I> (generating
-the   radical  of   the  ideal   generated  by   <I>&Delta;</I>).  The   roots
-<I>{y<sub>1</sub>,...,y<sub>d</sub>}</I> of  <I>&Delta;<sub>red</sub></I> are separated  by <code>SeparateRoots</code>
-(which implements Newton's method).
-<P>
-<P>&bull; Loops  around these roots are  computed by <code>LoopsAroundPunctures</code>.
-This function first computes some sort of honeycomb, consisting of a set
-<I>S</I>  of  affine  segments,  isolating  the <I>y<sub>i</sub></I>.  Since  it  makes  the
-computation of  the monodromy  more effective, each  inner segment  is a
-fragment of the mediatrix of two roots of <I>&Delta;</I>. Then a vertex of one
-the segments is  chosen as a basepoint, and the  function returns a list
-of lists of  oriented segments in <I>S</I>: each list  of segment encodes a
-piecewise linear loop <I>&gamma;<sub>i</sub></I> circling one of <I>y<sub>i</sub></I>.
-<P>
-<P>&bull; For each  segment in <I>S</I>, we compute the  monodromy braid obtained
-by  following  the  solutions  in  <I>x</I>  of  <I>P(x,y)=0</I>  when  <I>y</I>  moves
-along  the segment.  By default,  this  monodromy braid  is computed  by
-<code>FollowMonodromy</code>. The  strategy is to compute  a piecewise-linear braid
-approximating the  actual monodromy geometric braid.  The approximations
-are controlled. The piecewise-linear  braid is constructed step-by-step,
-by computations of linear pieces. As soon as new piece is constructed, it
-is converted into an element  of <I>B<sub>n</sub></I> and multiplied; therefore, though
-the  braid  may  consist  of  a huge  number  of  pieces,  the  function
-<code>FollowMonodromy</code> works with constant memory. The packages also contains
-a  variant  function  <code>ApproxFollowMonodromy</code>, which  runs  faster,  but
-without guarantee on the result (see below).
-<P>
-<P>&bull; The monodromy  braids <I>b<sub>i</sub></I> corresponding to  the loops <I>&gamma;<sub>i</sub></I>
-are  obtained  by  multiplying  the corresponding  monodromy  braids  of
-segments. The action of these elements  of <I>B<sub>n</sub></I> on the free group <I>F<sub>n</sub></I>
-is  computed  by <code>BnActsOnFn</code>  and  the  resulting presentation  of  the
-fundamental group is computed by <code>VKQuotient</code>. It happens for some large
-problems that  the whole fundamental  group process fails  here, because
-the braids <I>b<sub>i</sub></I> obtained are too long and the computation of the action
-on <I>F<sub>n</sub></I> requires thus too much memory.  We have been able to solve such
-problems  when they  occur by  calling on  the <I>b<sub>i</sub></I>  at this  stage our
-function <code>ShrinkBraidGeneratingSet</code>  which finds smaller  generators for
-the subgroup of <I>B<sub>n</sub></I> generated by the <I>b<sub>i</sub></I> (see the description in the
-third chapter). This  function is called automatically at  this stage if
-<code>VKCURVE.shrinkBraid</code> is set to <code>true</code> (the default for this variable is
-<code>false</code>).
-<P>
-<P>&bull; Finally,  the presentation is simplified  by <code>ShrinkPresentation</code>.
-This  function is  a heuristic  adaptation and  refinement of  the basic
-<strong>GAP3</strong> functions for simplifying presentations. It is non-deterministic.
-<P>
-
-<P>
-From the algorithmic  point of view, memory should not  be an issue, but
-the procedure may  take a lot of  CPU time (the critical  part being the
-computation of the monodromy braids by <code>FollowMonodromy</code>). For instance,
-an empirical  study with the  curves <I>x<sup>2</sup>-y<sup>n</sup></I> suggests that  the needed
-time grows  exponentially with  <I>n</I>. Two solutions  are offered  to deal
-with curves for which the computation time becomes unreasonable.
-<P>
-A   global  variable  <code>VKCURVE.monodromyApprox</code>  controls  which  monodromy
-function  is used.  The default  value of  this variable  is <code>false</code>, which
-means  that <code>FollowMonodromy</code> will be  used. If the variable  is set by the
-user  to  <code>true</code>  then  the  function  <code>ApproxFollowMonodromy</code> will be used
-instead.   This  function  runs  faster  than  <code>FollowMonodromy</code>,  but  the
-approximations  are no longer  controlled. Therefore presentations obtained
-while  <code>VKCURVE.monodromyApprox</code>  is  set  to  <code>true</code>  are  not  certified.
-However,  though  it  is  likely  that  there  exists  examples  for  which
-<code>ApproxFollowMonodromy</code>  actually returns incorrect  answers, we still have
-not seen one.
-<P>
-The second way of dealing with  difficult examples is to parallelize the
-computation. Since  the computations  of the  monodromy braids  for each
-segment  are  independent,  they  can  be  performed  simultaneously  on
-different computers. The functions <code>PrepareFundamentalGroup</code>, <code>Segments</code>
-and   <code>FinishFundamentalGroup</code>  provide   basic  support   for  parallel
-computing.
+<pre>    gap> P:=BruhatPoset(CoxeterGroup("A",2));
+    Poset with 6 elements
+    gap> Display(P);
+    &lt;1,2&lt;21,12&lt;121
+    gap> Hasse(P);
+    [ [ 2, 3 ], [ 4, 5 ], [ 4, 5 ], [ 6 ], [ 6 ], [  ] ]
+    gap> Incidence(P);
+    [ [ true, true, true, true, true, true ],
+      [ false, true, false, true, true, true ],
+      [ false, false, true, true, true, true ],
+      [ false, false, false, true, false, true ],
+      [ false, false, false, false, true, true ],
+      [ false, false, false, false, false, true ] ]</pre>
 <P><P>
 <H3> Subsections</H3>
 <oL>
-<LI> <A HREF="chap110.htm#SECT001">FundamentalGroup</a>
-<LI> <A HREF="chap110.htm#SECT002">PrepareFundamentalGroup</a>
+<LI> <A HREF="chap110.htm#SECT001">TransitiveClosure of incidence matrix</a>
+<LI> <A HREF="chap110.htm#SECT002">LcmPartitions</a>
+<LI> <A HREF="chap110.htm#SECT003">GcdPartitions</a>
+<LI> <A HREF="chap110.htm#SECT004">Poset</a>
+<LI> <A HREF="chap110.htm#SECT005">Hasse</a>
+<LI> <A HREF="chap110.htm#SECT006">Incidence</a>
+<LI> <A HREF="chap110.htm#SECT007">LinearExtension</a>
+<LI> <A HREF="chap110.htm#SECT008">Functions for Posets</a>
+<LI> <A HREF="chap110.htm#SECT009">Partition for posets</a>
+<LI> <A HREF="chap110.htm#SECT010">Restricted for Posets</a>
+<LI> <A HREF="chap110.htm#SECT011">Reversed for Posets</a>
+<LI> <A HREF="chap110.htm#SECT012">IsJoinLattice</a>
+<LI> <A HREF="chap110.htm#SECT013">IsMeetLattice</a>
 </ol>
-<A NAME="SECT001"><h2>110.1 FundamentalGroup</h2></a>
+<A NAME="SECT001"><h2>110.1 TransitiveClosure of incidence matrix</h2></a>
 <P><P>
 <A name = "I0"></a>
 
 <P>
-<code>FundamentalGroup(<var>curve</var> [, <var>printlevel</var>])</code>
+<code>TransitiveClosure(<var>M</var>)</code>
 <P>
-<var>curve</var> should be an <code>Mvp</code> in <var>x</var>  and <var>y</var>, or a <strong>GAP3</strong> polynomial in two
-variables (which means a polynomial in a variable which is assumed to be
-<code>y</code> over the polynomial ring <I>&#x211A;[x]</I>) representing an equation <I>f(x,y)</I>
-for a curve  in <I>&#x2102;<sup>2</sup></I>. The coefficients should  be rationals, gaussian
-rationals or <code>Complex</code> rationals. The result  is a record with a certain
-number of fields which record steps in the computation described in this
-introduction:
+<var>M</var>  should be a  square boolean matrix  representing a relation; returns a
+boolean  matrix representing the  transitive closure of  this relation. The
+transitive  closure is computed  by the Floyd-Warshall  algorithm, which is
+quite fast even for large matrices.
 <P>
-<pre>    gap> r:=FundamentalGroup(x^2-y^3);
-    #I  there are 2 generators and 1 relator of total length 6
-    1: bab=aba
-    
-    gap> RecFields(r);
-    [ "curve", "discy", "roots", "dispersal", "points", "segments", "loops",
-      "zeros", "B", "monodromy", "basepoint", "dispersal", "braids", 
-      "presentation","operations" ]
-    gap> r.curve;
-    x^2-y^3
-    gap> r.discy;
-    X(Rationals)
-    gap> r.roots;
-    [ 0 ]
-    gap> r.points;
-    [ -I, -1, 1, I ]
-    gap> r.segments;
-    [ [ 1, 2 ], [ 1, 3 ], [ 2, 4 ], [ 3, 4 ] ]
-    gap> r.loops;
-    [ [ 4, -3, -1, 2 ] ]
-    gap> r.zeros;
-    [ [ 707106781187/1000000000000+707106781187/1000000000000I,
-       -707106781187/1000000000000-707106781187/1000000000000I ],
-      [ I, -I ], [ 1, -1 ],
-      [ -707106781187/1000000000000+707106781187/1000000000000I,
-      707106781187/1000000000000-707106781187/1000000000000I ] ]
-    gap> r.monodromy;
-    [ (w0)^-1, w0, , w0 ]
-    gap> r.braids;
-    [ w0.w0.w0 ]
-    gap> DisplayPresentation(r.presentation);
-    1: bab=aba</pre>
-<P>
-Here <code>r.curve</code> records the  entered equation, <code>r.discy</code> its discriminant
-with  respect  to  <var>x</var>,  <code>r.roots</code>   the  roots  of  this  discriminant,
-<code>r.points</code>,  <code>r.segments</code> and  <code>r.loops</code>  describes  loops around  these
-zeros  as  explained  in   the  documentation  of  <code>LoopsAroundPunctures</code>;
-<code>r.zeros</code>  records the  zeros of  <I>f(x,y<sub>i</sub>)</I>  when <I>y<sub>i</sub></I>  runs over  the
-various <code>r.points</code>;  <code>r.monodromy</code> records  the monodromy along  each of
-<code>r.segments</code>, and <code>r.braids</code> is the resulting monodromy along the loops.
-Finally <code>r.presentation</code>  records the  resulting presentation  (which is
-what is printed by default when <code>r</code> is printed).
-<P>
-The second optional argument triggers  the display of information on the
-progress of the  computation. It is recommended to  set the <var>printlevel</var>
-at 1 or 2  when the computation seems to take a  long time without doing
-anything. <var>printlevel</var> set  at 0 is the default and  prints nothing; set
-at 1 it shows which segment is  currently active, and set at 2 it traces
-the computation inside each segment.
-<P>
-<pre>    gap> FundamentalGroup(x^2-y^3,1);
-    # There are 4 segments in 1 loops
-    # The following braid was computed by FollowMonodromy in 8 steps.
-    monodromy[1]:=B(-1);
-    # segment 1/4 Time=0sec
-    # The following braid was computed by FollowMonodromy in 8 steps.
-    monodromy[2]:=B(1);
-    # segment 2/4 Time=0sec
-    # The following braid was computed by FollowMonodromy in 8 steps.
-    monodromy[3]:=B();
-    # segment 3/4 Time=0sec
-    # The following braid was computed by FollowMonodromy in 8 steps.
-    monodromy[4]:=B(1);
-    # segment 4/4 Time=0sec
-    # Computing monodromy braids
-    # loop[1]=w0.w0.w0
-    #I  there are 2 generators and 1 relator of total length 6
-    1: bab=aba</pre>
-<P><A NAME="SECT002"><h2>110.2 PrepareFundamentalGroup</h2></a>
+<pre>    gap> M:=List([1..5],i->List([1..5],j->j-i in [0,1]));
+    [ [ true, true, false, false, false ],
+      [ false, true, true, false, false ],
+      [ false, false, true, true, false ],
+      [ false, false, false, true, true ],
+      [ false, false, false, false, true ] ]
+    gap> PrintArray(TransitiveClosure(M));
+    [[ true,  true,  true,  true, true],
+     [false,  true,  true,  true, true],
+     [false, false,  true,  true, true],
+     [false, false, false,  true, true],
+     [false, false, false, false, true]]</pre>
+<P><A NAME="SECT002"><h2>110.2 LcmPartitions</h2></a>
 <P><P>
 <A name = "I1"></a>
 
 <P>
-<code>PrepareFundamentalGroup(<var>curve</var>, <var>name</var>)</code>
+<code>LcmPartitions(<var>p1</var>,...,<var>pn</var>)</code>
+Each  argument is a partition of the same set <code>S</code>, represented by a list of
+disjoint  subsets whose union is <code>S</code>. Equivalently each argument represents
+an equivalence relation on <code>S</code>.
 <P>
-<code>VKCURVE.Segments(<var>name</var>[,<var>range</var>])</code>
+The result is the finest partition of <code>S</code> such that each argument partition
+refines it. It represents the <code>or</code> of the equivalence relations represented
+by the arguments.
 <P>
-<code>FinishFundamentalGroup(<var>r</var>)</code>
+<pre>    gap> LcmPartitions([[1,2],[3,4],[5,6]],[[1],[2,5],[3],[4],[6]]);
+    [ [ 1, 2, 5, 6 ], [ 3, 4 ] ]</pre>
+<P><A NAME="SECT003"><h2>110.3 GcdPartitions</h2></a>
+<P><P>
 <A name = "I2"></a>
 
 <P>
-These  functions provide  a means  of distributing  a fundamental  group
-computation over  several machines.  The basic strategy  is to  write to
-a  file  the  startup-information  necessary to  compute  the  monodromy
-along  a  segment,  in  the   form  of  a  partially-filled  version  of
-the  record returned  by  <code>FundamentalGroup</code>. Then  the monodromy  along
-each  segment can  be  done in  a separate  process,  writing again  the
-result  to files.  These  results  are then  gathered  and processed  by
-<code>FinishFundamentalGroup</code>. The whole process is illustrated in an example
-below.  The  extra argument  <var>name</var>  to  <code>PrepareFundamentalGroup</code> is  a
-prefix used to name intermediate files. One does first :
+<code>GcdPartitions(<var>p1</var>,...,<var>pn</var>)</code>
+Each  argument is a partition of the same set <code>S</code>, represented by a list of
+disjoint  subsets whose union is <code>S</code>. Equivalently each argument represents
+an equivalence relation on <code>S</code>.
 <P>
-<pre>    gap> PrepareFundamentalGroup(x^2-y^3,"a2");
-        ----------------------------------
-    Data saved in a2.tmp
-    You can now compute segments 1 to 4
-    in different GAP sessions by doing in each of them:
-        a2:=rec(name:="a2");
-        VKCURVE.Segments(a2,[1..4]);
-    (or some other range depending on the session)
-    Then when all files a2.xx have been computed finish by
-        a2:=rec(name:="a2");
-        FinishFundamentalGroup(a2);</pre>
+The result is the coarsest partition which refines all argument partitions.
+It  represents the  <code>and</code> of  the equivalence  relations represented by the
+arguments.
 <P>
-Then  one can  compute in  separate  sessions the  monodromy along  each
-segment.  The second  argument  of <code>Segments</code>  tells  which segments  to
-compute in the current session (the  default is all). An example of such
-sessions may be:
+<pre>    gap> GcdPartitions([[1,2],[3,4],[5,6]],[[1],[2,5],[3],[4],[6]]);
+    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ] ]</pre>
+<P><A NAME="SECT004"><h2>110.4 Poset</h2></a>
+<P><P>
+<A name = "I3"></a>
+
 <P>
-<pre>    gap> a2:=rec(name:="a2");
-    rec(
-      name := "a2" )
-    gap> VKCURVE.Segments(a2,[2]);
-    # The following braid was computed by FollowMonodromy in 8 steps.
-    a2.monodromy[2]:=a2.B(1);
-    # segment 2/4 Time=0.1sec
-    gap> a2:=rec(name:="a2");
-    rec(
-      name := "a2" )
-    gap> VKCURVE.Segments(a2,[1,3,4]);
-    # The following braid was computed by FollowMonodromy in 8 steps.
-    a2.monodromy[2]:=a2.B(1);
-    # segment 2/4 Time=0.1sec</pre>
+<code>Poset(<var>M</var>)</code>
 <P>
-<DL><DT>When all segments have been computed the final session looks like:<DD>
+<code>Poset(<var>H</var>)</code>
+<P>
+Creates   a  poset   from  either   an  incidence   matrix  <var>M</var>  such  that
+<code>M[i][j]=true</code>  if and only if <code>i&lt;=j</code> in  the poset, or a Hasse diagram <var>H</var>
+given as a list whose <I>i</I>-th entry is the list of indices of elements which
+are  immediate successors (covers) of the <I>i</I>-th element, that is <code>M[i]</code> is
+the  list of <I>j</I> such that <code>i&lt;j</code> in the poset and such that there is no <I>k</I>
+such that <code>i&lt;k&lt;j</code>.
+<P>
+<code>Poset(arg)</code>
+<P>
+In  this last form <code>arg[1]</code>  should be a record  with a field <code>.operations</code>
+and the functions calls <code>ApplyFunc(arg[1].operations.Poset,arg)</code>.
+<P>
+A poset is represented as a record with the following fields.
+<P>
+<DL><DT>  <code>.incidence</code>:<DD>  the incidence matrix.
 </DL><P>
-<pre>    gap> a2:=rec(name:="a2");
-    rec(
-      name := "a2" )
-    gap> FinishFundamentalGroup(a2);
-    1: bab=aba</pre>
+<DL><DT>  <code>.hasse</code>:<DD> the Hasse diagram.
+</DL><P>
+Since the cost of computing one from the other is high, the above fields are
+optional (only one of them needs to be present) and the other is computed on
+demand.
+<P>
+<DL><DT>  <code>.size</code>:<DD> the number of elements of the poset.
+</DL><P>
+Finally,  an optional field <code>.label</code> may be given for formatting or display
+purposes.  It should be  a function <code>label(P,i,opt)</code>  which returns a label
+for the <code>i</code>-th element of the poset <code>P</code>, formatted according to the options
+(if any) given in the options record <code>opt</code>.
+<P><A NAME="SECT005"><h2>110.5 Hasse</h2></a>
+<P><P>
+<A name = "I4"></a>
+
+<P>
+<code>Hasse(<var>P</var>)</code>
+<P>
+returns the Hasse diagram of the poset <var>P</var>.
+<P>
+<pre>    gap> p:=Poset(List([1..5],i->List([1..5],j->j mod i=0)));
+    Poset with 5 elements
+    gap> Hasse(p);
+    [ [ 2, 3, 5 ], [ 4 ], [  ], [  ], [  ] ]</pre>
+<P><A NAME="SECT006"><h2>110.6 Incidence</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>Incidence(<var>P</var>)</code>
+<P>
+returns the Incidence matrix of the poset <var>P</var>.
+<P>
+<pre>    gap> p:=Poset(Concatenation(List([1..5],i->[i+1]),[[]]));
+    Poset with 6 elements
+    gap> Incidence(p);
+    [ [ true, true, true, true, true, true ],
+      [ false, true, true, true, true, true ],
+      [ false, false, true, true, true, true ],
+      [ false, false, false, true, true, true ],
+      [ false, false, false, false, true, true ],
+      [ false, false, false, false, false, true ] ]</pre>
+<P><A NAME="SECT007"><h2>110.7 LinearExtension</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>LinearExtension(<var>P</var>)</code>
+<P>
+returns  a linear extension of the poset <var>P</var>, that is a list <code>l</code> containing
+a  permutation of  the integers  <code>[1..Size(P)]</code> such  that if <code>i&lt;j</code> in <var>P</var>,
+then <code>Position(l,i)&lt;Position(l,j)</code>. This is also called a topological sort
+of <var>P</var>.
+<P>
+<pre>    gap> p:=Poset(List([1..5],i->List([1..5],j->j mod i=0)));
+    Poset with 5 elements
+    gap> Display(p);
+    1&lt;2&lt;4
+    1&lt;3,5
+    gap> LinearExtension(p);
+    [ 1, 2, 3, 5, 4 ]</pre>
+<P><A NAME="SECT008"><h2>110.8 Functions for Posets</h2></a>
+<P><P><P>
+The function <code>Size</code> returns the number of elements of the poset.
+<P>
+The functions <code>String</code> and <code>Print</code> just indicate the <code>Size</code> of the poset.
+<P>
+The  functions <code>Format</code> and <code>Display</code>  show the poset as  a list of maximal
+covering chains, with formatting depending on their record of options. They
+take  in account the  associated partition (see  <a href="chap110.htm#SECT009">Partition for posets</a>) to
+give  a  more  compact  description  where  equivalent  elements are listed
+together, separated by commas.
+<P>
+<pre>    gap> p:=Poset(UnipotentClasses(ComplexReflectionGroup(28)));
+    Poset with 16 elements
+    gap> Display(p);
+    1&lt;A1&lt;~A1&lt;A1+~A1&lt;A2&lt;A2+~A1&lt;~A2+A1&lt;C3(a1)&lt;F4(a3)&lt;C3,B3&lt;F4(a2)&lt;F4(a1)&lt;F4
+    A1+~A1&lt;~A2&lt;~A2+A1
+    A2+~A1&lt;B2&lt;C3(a1)</pre>
+<P><A NAME="SECT009"><h2>110.9 Partition for posets</h2></a>
+<P><P>
+<A name = "I7"></a>
+
+<P>
+<code>Partition(<var>P</var>)</code>
+<P>
+returns  the  partition  of  <code>[1..Size(P)]</code>  determined  by the equivalence
+relation  associated to <var>P</var>; that  is, <code>i</code> and <code>j</code>  are in the same part of
+the  partition if the relations <code>i&lt;k</code> and <code>j&lt;k</code> as well are <code>k&lt;i</code> and <code>k&lt;j</code>
+are equivalent for any <code>k</code> in the poset.
+<P>
+<pre>    gap> p:=Poset(List([1..8],i->List([1..8],j->i=j or (i mod 4)&lt;(j mod 4))));
+    Poset with 8 elements
+    gap> Display(p);
+    4,8&lt;1,5&lt;2,6&lt;3,7
+    gap> Partition(p);
+    [ [ 4, 8 ], [ 2, 6 ], [ 3, 7 ], [ 1, 5 ] ]</pre>
+<P><A NAME="SECT010"><h2>110.10 Restricted for Posets</h2></a>
+<P><P>
+<A name = "I8"></a>
+
+<A name = "I9"></a>
+
+<P>
+Restricted(<var>P</var>,<var>indices</var>)
+<P>
+returns the sub-poset of <var>P</var> determined by <var>indices</var>, which must be a sublist
+of <code>[1..Size(P)]</code>.
+<P>
+<pre>    gap> Display(p);
+    4,8&lt;1,5&lt;2,6&lt;3,7
+    gap> Display(Restricted(p,[2..6]));
+    3&lt;4&lt;1,5&lt;2</pre>
+<P><A NAME="SECT011"><h2>110.11 Reversed for Posets</h2></a>
+<P><P>
+<A name = "I10"></a>
+
+<A name = "I11"></a>
+
+<P>
+Reversed(<var>P</var>)
+<P>
+returns the opposed poset to <var>P</var>.
+<P>
+<pre>    gap> Display(p);
+    4,8&lt;1,5&lt;2,6&lt;3,7
+    gap> Display(Reversed(p));
+    3,7&lt;2,6&lt;1,5&lt;4,8</pre>
+<P><A NAME="SECT012"><h2>110.12 IsJoinLattice</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+IsJoinLattice(<var>P</var>)
+<P>
+returns  true if <var>P</var> is a join semilattice, that is any two elements of <var>P</var>
+have a unique smallest upper bound. It returns false otherwise.
+<P>
+<pre>    gap> Display(p);
+    4,8&lt;1,5&lt;2,6&lt;3,7
+    gap> IsJoinLattice(p);
+    false</pre>
+<P><A NAME="SECT013"><h2>110.13 IsMeetLattice</h2></a>
+<P><P>
+<A name = "I13"></a>
+
+<P>
+IsMeetLattice(<var>P</var>)
+<P>
+returns  true if <var>P</var> is a meet semilattice, that is any two elements of <var>P</var>
+have a unique highest lower bound. It returns false otherwise.
+<P>
+<pre>    gap> Display(p);
+    4,8&lt;1,5&lt;2,6&lt;3,7
+    gap> IsMeetLattice(p);
+    false</pre>
 <P><a href ="chap109.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap111.htm">Next</a><BR><a href = "theindex.htm">Index</a>
 <P>
 <address>gap3-jm<br>19 Feb 2018</address></body></html>

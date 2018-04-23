@@ -39,9 +39,9 @@ described in chapter <a href="chap015.htm">Subfields of Cyclotomic Fields</a>.
     comparison and arithmetical operations of cyclotomics (see
     <a href="chap013.htm#SECT009">Comparisons of Cyclotomics</a>, <a href="chap013.htm#SECT010">Operations for Cyclotomics</a>),<BR> 
     functions concerning Galois conjugacy of cyclotomics (see <a href="chap013.htm#SECT011">GaloisCyc</a>,
-       <a href="chap013.htm#SECT013">StarCyc</a>), or lists of them (see <a href="chap013.htm#SECT015">GaloisMat</a>, <a href="chap013.htm#SECT016">RationalizedMat</a>),<BR> 
+       <a href="chap013.htm#SECT014">StarCyc</a>), or lists of them (see <a href="chap013.htm#SECT016">GaloisMat</a>, <a href="chap013.htm#SECT017">RationalizedMat</a>),<BR> 
     some special cyclotomics, as defined in <A href="biblio.htm#CCN85"><cite>CCN85</cite></a>
-       (see <a href="chap013.htm#SECT012">ATLAS irrationalities</a>, <a href="chap013.htm#SECT014">Quadratic</a>)
+       (see <a href="chap013.htm#SECT013">ATLAS irrationalities</a>, <a href="chap013.htm#SECT015">Quadratic</a>)
 </DL><P>
 The external functions are in the file <code>LIBNAME/"cyclotom.g"</code>.
 <P><P>
@@ -58,11 +58,12 @@ The external functions are in the file <code>LIBNAME/"cyclotom.g"</code>.
 <LI> <A HREF="chap013.htm#SECT009">Comparisons of Cyclotomics</a>
 <LI> <A HREF="chap013.htm#SECT010">Operations for Cyclotomics</a>
 <LI> <A HREF="chap013.htm#SECT011">GaloisCyc</a>
-<LI> <A HREF="chap013.htm#SECT012">ATLAS irrationalities</a>
-<LI> <A HREF="chap013.htm#SECT013">StarCyc</a>
-<LI> <A HREF="chap013.htm#SECT014">Quadratic</a>
-<LI> <A HREF="chap013.htm#SECT015">GaloisMat</a>
-<LI> <A HREF="chap013.htm#SECT016">RationalizedMat</a>
+<LI> <A HREF="chap013.htm#SECT012">Galois</a>
+<LI> <A HREF="chap013.htm#SECT013">ATLAS irrationalities</a>
+<LI> <A HREF="chap013.htm#SECT014">StarCyc</a>
+<LI> <A HREF="chap013.htm#SECT015">Quadratic</a>
+<LI> <A HREF="chap013.htm#SECT016">GaloisMat</a>
+<LI> <A HREF="chap013.htm#SECT017">RationalizedMat</a>
 </ol>
 <A NAME="SECT001"><h2>13.1 More about Cyclotomics</h2></a>
 <P><A name = "I2"></a>
@@ -83,7 +84,7 @@ arithmetics).
 returns  the  primitive <var>n</var>-th  root  of unity  <I>e<sub>n</sub>  =  e<sup>(2&pi;
 i)/(n)</sup></I>.   Cyclotomics  are   usually  entered   as   (and  irrational
 cyclotomics  are  always displayed  as) sums of  roots of  unity  with
-rational   coefficients.    (For  special   cyclotomics,   see  <a href="chap013.htm#SECT012">ATLAS
+rational   coefficients.    (For  special   cyclotomics,   see  <a href="chap013.htm#SECT013">ATLAS
 irrationalities</a>.)
 <P>
 <pre>    gap> E(9); E(9)^3; E(6); E(12) / 3; 
@@ -139,7 +140,7 @@ used  is  an  integral  base  (see <a href="chap015.htm#SECT009">ZumbroichBase</
 cyclotomic  integers  in  a  cyclotomic  field  is  formed   by  those
 cyclotomics  which have not only rational but integral coefficients in
 their representation as  sums of roots of unity.   For example, square
-roots   of   integers   are   cyclotomic    integers    (see    <a href="chap013.htm#SECT012">ATLAS
+roots   of   integers   are   cyclotomic    integers    (see    <a href="chap013.htm#SECT013">ATLAS
 irrationalities</a>),  any  root  of  unity   is  a  cyclotomic  integer,
 character values  are always cyclotomic  integers,  but  all rationals
 which are not integers are not cyclotomic integers.  (See <a href="chap013.htm#SECT006">IsCycInt</a>)
@@ -324,57 +325,84 @@ automorphisms as functions, use <a href="chap006.htm#SECT007">GaloisGroup</a> <c
     E(5)+E(5)^4</pre>
 <P>
 <code>GaloisCyc</code> is an internal function.
-<P><A NAME="SECT012"><h2>13.12 ATLAS irrationalities</h2></a>
+<P><A NAME="SECT012"><h2>13.12 Galois</h2></a>
 <P><A name = "I12"></a>
 <A name = "I13"></a>
-<A name = "I14"></a>
 
+<P>
+<code>Galois( <var>z</var>, <var>e</var> )</code>
+<P>
+This  function is a kind of generalized version of <code>GaloisCyc</code>. If <var>z</var> is a
+list  it returns the list of <code>Galois(x,e)</code>  for each element <var>x</var> of <var>z</var>. If
+<var>z</var>   is  a  cyclotomic,  if  <var>e</var>  is   an  integer  it  is  equivalent  to
+<code>GaloisCyc(<var>z</var>,<var>e</var>)</code>  and if  <var>e</var> is  a Galois  element it is equivalent to
+<code>z^e</code>.  Finally, if <var>z</var> is a record with a <code>.operations</code> field, it returns
+<DL><DT><code><var>z</var>.operations.Galois(z,e)</code>.  One such operations is predefined:<DD> if <var>z</var> is
+a polynomial, it does <code>Galois(x,e)</code> on each coefficient of <var>z</var>.
+</DL><P>
+<pre>    gap> Galois(E(3),-1);
+    E(3)^2
+    gap> Galois(E(3),-1);
+    E(3)^2
+    gap> G:=GaloisGroup(CF(3));
+    Group( NFAutomorphism( CF(3) , 2 ) )
+    gap> E(3)^G.1;
+    E(3)^2
+    gap> Galois([E(3),E(5)],-1);
+    [ E(3)^2, E(5)^4 ]
+    gap> Galois(X(Cyclotomics)+E(3),-1);
+    X(Cyclotomics) + (E(3)^2)</pre>
+<P><A NAME="SECT013"><h2>13.13 ATLAS irrationalities</h2></a>
+<P><A name = "I14"></a>
 <A name = "I15"></a>
 <A name = "I16"></a>
+
 <A name = "I17"></a>
 <A name = "I18"></a>
 <A name = "I19"></a>
-
 <A name = "I20"></a>
 <A name = "I21"></a>
+
 <A name = "I22"></a>
 <A name = "I23"></a>
 <A name = "I24"></a>
-
 <A name = "I25"></a>
 <A name = "I26"></a>
+
 <A name = "I27"></a>
 <A name = "I28"></a>
 <A name = "I29"></a>
-
 <A name = "I30"></a>
 <A name = "I31"></a>
+
 <A name = "I32"></a>
 <A name = "I33"></a>
-
 <A name = "I34"></a>
 <A name = "I35"></a>
+
 <A name = "I36"></a>
 <A name = "I37"></a>
 <A name = "I38"></a>
 <A name = "I39"></a>
 <A name = "I40"></a>
-
 <A name = "I41"></a>
 <A name = "I42"></a>
+
 <A name = "I43"></a>
 <A name = "I44"></a>
 <A name = "I45"></a>
 <A name = "I46"></a>
 <A name = "I47"></a>
-
 <A name = "I48"></a>
 <A name = "I49"></a>
+
 <A name = "I50"></a>
 <A name = "I51"></a>
 <A name = "I52"></a>
 <A name = "I53"></a>
 <A name = "I54"></a>
+<A name = "I55"></a>
+<A name = "I56"></a>
 
 <P>
 <code>EB( <var>N</var> )</code>, <code>EC( <var>N</var> )</code>, ..., <code>EH( <var>N</var> )</code>,<BR> 
@@ -482,8 +510,8 @@ can be entered as
     E(3)-E(3)^2
     E(5)+E(5)^4
     1</pre>
-<P><A NAME="SECT013"><h2>13.13 StarCyc</h2></a>
-<P><A name = "I55"></a>
+<P><A NAME="SECT014"><h2>13.14 StarCyc</h2></a>
+<P><A name = "I57"></a>
 
 <P>
 <code>StarCyc( <var>z</var> )</code>
@@ -497,10 +525,10 @@ returned.
 <pre>    gap> StarCyc( EB(5) ); StarCyc( E(5) );
     E(5)^2+E(5)^3
     false</pre>
-<P><A NAME="SECT014"><h2>13.14 Quadratic</h2></a>
-<P><A name = "I56"></a>
+<P><A NAME="SECT015"><h2>13.15 Quadratic</h2></a>
+<P><A name = "I58"></a>
 
-<A name = "I57"></a>
+<A name = "I59"></a>
 
 <P>
 <code>Quadratic( <var>z</var> )</code>
@@ -512,7 +540,7 @@ either 1 or 2.  In this case <code>Quadratic( <var>z</var>  )</code> returns a r
 fields <code>a</code>, <code>b</code>, <code>root</code>, <code>d</code> and <code>ATLAS</code> where the first four mean the
 integers mentioned above, and the last one is a string that is a  (not
 necessarily  shortest)  representation of <var>z</var> by <I>b<sub>m</sub></I>, <I>i<sub>m</sub></I> or <I>r<sub>m</sub></I>
-for <I>m = <code>\|root\|</code></I> (see <a href="chap013.htm#SECT012">ATLAS irrationalities</a>).
+for <I>m = <code>\|root\|</code></I> (see <a href="chap013.htm#SECT013">ATLAS irrationalities</a>).
 <P>
 If <var>z</var>  is not a quadratic irrationality  or not a cyclotomic integer,
 <code>false</code> is returned.
@@ -538,8 +566,8 @@ If <var>z</var>  is not a quadratic irrationality  or not a cyclotomic integer,
       d := 1,
       ATLAS := "0" )
     false</pre>
-<P><A NAME="SECT015"><h2>13.15 GaloisMat</h2></a>
-<P><A name = "I58"></a>
+<P><A NAME="SECT016"><h2>13.16 GaloisMat</h2></a>
+<P><A name = "I60"></a>
 
 <P>
 <code>GaloisMat( <var>mat</var> )</code>
@@ -596,15 +624,15 @@ permutations, and a warning is printed.
       mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ],
       galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ],
       generators := [ (2,3) ] )</pre>
-<P><A NAME="SECT016"><h2>13.16 RationalizedMat</h2></a>
-<P><A name = "I59"></a>
+<P><A NAME="SECT017"><h2>13.17 RationalizedMat</h2></a>
+<P><A name = "I61"></a>
 
 <P>
 <code>RationalizedMat( <var>mat</var> )</code>
 <P>
 returns the set  of rationalized rows of <var>mat</var>, i.e. the  set  of sums
 over  orbits under the action  of the Galois  group of the elements of
-<var>mat</var> (see <a href="chap013.htm#SECT015">GaloisMat</a>).
+<var>mat</var> (see <a href="chap013.htm#SECT016">GaloisMat</a>).
 <P>
 This may be viewed as a kind of trace operation for the rows.
 <P>

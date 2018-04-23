@@ -829,9 +829,6 @@ CoxeterGroupOps.Hecke:=function(arg)local H;
   return H;
 end;
 
-CoxeterGroupOps.BadPrimes:=W->Set(FactorsInt(Size(W)/
-  Factorial(SemisimpleRank(W))/DeterminantMat(CartanMat(W))));
-
 # Parabolic subgroups are represented by the indices of their generating roots.
 ParabolicSubgroups:=function(W) local l;
   if IsBound(W.parabolicSubgroups) then return W.parabolicSubgroups;fi;

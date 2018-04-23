@@ -3,7 +3,7 @@
 #A  check.g           CHEVIE library                            Jean Michel
 #Y  Copyright (C) august 2017 -  University  Paris Diderot.
 #
-# This defines utility functions for testing
+# This defines utility functions for comparing various data
 # 
 CHEVIE.Check:=rec();
 
@@ -196,4 +196,21 @@ CHEVIE.Check.EqTables:=function(arg)local r,c,msg,t,p,opt,m,i;
   PrintToString(msg,Length(c),"/",Length(t[1][1]),"] of ");
   ChevieErr(msg,"\n",Join(List([1,2],i->SPrint(m[i],"\n",FormatTable(t[i],
      Inherit(opt[i],rec(rows:=r,columns:=c,screenColumns:=70)))))));
+end;
+
+CHEVIE.Check.EqCycPol:=function(arg)local a,b,na,nb,q;
+  a:=arg[1];b:=arg[2];
+  if a=b then return;fi;
+  if IsBound(arg[3]) then na:=arg[3];else na:="a";fi;
+  if IsBound(arg[4]) then nb:=arg[4];else nb:="b";fi;
+  if b.coeff=0 then 
+    if a.coeff<>0 then ChevieErr(na,"=",a," but ",nb,"=",b,"\n");fi;
+    return;
+  fi;
+  q:=a/b;
+  if Length(q.vcyc)=0 then ChevieErr(na,"=",
+ #  FormatCoefficient(q,nb,rec(GAP:=true))," where ",nb,"=",b,"\n");
+    FormatCoefficient(q,nb,rec())," where ",nb,"=",b,"\n");
+  else ChevieErr(na,"=",a," but ",nb,"=",b,"\n");
+  fi;
 end;

@@ -23,11 +23,10 @@
 #         coeff:=vector of corresponding coefficients,
 #         operations:=MvpOps)
 #  
-#  where elm monomial itself is elm rec(elm:=vector of strings (variables), 
+#  where a monomial itself is a rec(elm:=vector of strings (variables), 
 #                                   coeff:=vector of corresponding powers)
-#  in a monomial the variables are sorted.
-#  in an Mvp elm is sorted.
-VKCURVE.mvp2:=false;
+#  in a monomial or an Mvp .elm is sorted.
+VKCURVE.mvp:=1;
 
 MvpOps:=OperationsRecord("MvpOps");
 
@@ -70,7 +69,7 @@ end;
 
 x:=Mvp("x");y:=Mvp("y");
 
-# Assumes a and b normalized;  the result is then also normalized.
+# Assumes a and b have .elm=Set(.elm);  the result then also.
 MvpOps.Merge:=function(a,b)local i,j,r,c,la,lb;
   i:=1;j:=1;r:=rec(elm:=[],coeff:=[]);
   la:=Length(a.elm);lb:=Length(b.elm);
@@ -186,7 +185,9 @@ end;
 
 # usage: Value(f,[var1,value1,var2,value2,...])
 # means specialize each of var_i to value_i
-MvpOps.Value:=function(f,x)local res,i,m,elm,coeff,p,j,r,vars,values,d;
+MvpOps.Value:=function(arg)local x,f,res,i,m,elm,coeff,p,j,r,vars,values,d;
+  f:=arg[1];
+  if Length(arg)=2 then x:=arg[2];else x:=arg{[2..Length(arg)]};fi;
   res:=Mvp(0);
   vars:=x{[1,3..Length(x)-1]};values:=x{[2,4..Length(x)]};
   if Length(f.coeff)=0 then return f;fi;
@@ -407,17 +408,33 @@ ScalMvp:=function(x)
   fi;
 end;
 
-# if p is of the form ax^2+bx+c for some variable x and scalars elm,b,c
-# return [[x,sol1],[x,sol2]] where sol1, sol2 are solutions of ax^2+bx+c=0
-quadratMvp:=function(p)local x,res,delta;
-  x:=Variables(p); if Length(x)<>1 then return false;fi;
-  x:=x[1];
-  res:=Coefficients(p,x);
-  if Length(res)<>3 then return false;fi;
-  delta:=GetRoot(res[2]^2-4*res[1]*res[3],2,"no");
-  if delta=false then return false;fi;
-  if delta=0 then return [[x,-res[2]/2/res[3]]];fi;
-  return [[x,(delta-res[2])/2/res[3]],[x,-(delta+res[2])/2/res[3]]];
+# factorize a quadratic form (an Mvp of degree 2) as product of 2 linear forms
+FactorizeQuadraticForm:=function(p)local v,r,m,i,t,e,n,b,d;
+  v:=Variables(p);r:=Length(v)+1; m:=NullMat(r);
+  for i in [1..Length(p.elm)] do
+    t:=p.coeff[i];e:=p.elm[i];n:=List(e.elm,x->Position(v,x));e:=e.coeff;
+    if e=[1,1] then m[n[1]][n[2]]:=t/2;m[n[2]][n[1]]:=t/2;
+    elif e=[2] then m[n[1]][n[1]]:=t;
+    elif e=[1] then m[n[1]][r]:=t/2; m[r][n[1]]:=t/2;
+    elif e=[] then m[r][r]:=t;
+    else InfoChevie("# not a quadratic form");return false;
+    fi;
+  od;
+  if Length(m)=2 then t:=m^0;
+  else n:=Copy(m);
+    TriangulizeMat(m);m:=Filtered(m,x->x<>0*x);
+    if Length(m)>2 then return false;fi;
+    t:=List(n,x->SolutionMat(m,x));
+    m:=List(m,x->SolutionMat(TransposedMat(t),x));
+  fi;
+  v:=Concatenation(List(v,Mvp),[Mvp("x")^0])*t;
+  if Length(m)=1 then return [v[1],v[1]*m[1][1]];fi;
+  b:=m[1][2]+m[2][1];
+  if m[1][1]=0 then return [v[2],b*v[1]+m[2][2]*v[2]];fi;
+  b:=b/m[1][1];
+  d:=GetRoot(b^2-4*m[2][2]/m[1][1],2,"no");
+  if d=false then return false;fi;
+  return [v[1]+v[2]/2*(b-d),m[1][1]*(v[1]+v[2]/2*(b+d))];
 end;
 
 # by GAP's rules, called only if y is an Mvp or y a basic type and x Mvp
@@ -452,4 +469,8 @@ OnPolynomials:=function(arg)local m,p,varnames,vars;
   else varnames:=Variables(p);
   fi;
   return Value(p,Concatenation(TransposedMat([varnames,List(varnames,Mvp)*m])));
+end;
+
+MvpOps.Galois:=function(x,e)
+  x:=ShallowCopy(x);x.coeff:=Galois(x.coeff,e);return x;
 end;

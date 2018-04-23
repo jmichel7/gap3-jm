@@ -133,7 +133,7 @@ end;
 PrepareForMvp:=function(H)local q;
 # prepare to work with Mvp -- lexicographic order
 
-if VKCURVE.mvp2 then
+if VKCURVE.mvp=2 then
   for q in H.rootParameter do # need parameters positive monomials
     if not IsMvp(q) or Length(q.coeff)<>1 or q.coeff[1]<>1 or 
       Length(RecFields(q.elm[1]))=0 or 

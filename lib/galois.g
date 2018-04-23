@@ -786,6 +786,20 @@ local f,n,p,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
          7,"Blocks","2-Sequences"];
 
   f:=arg[1];
+  if IsList(f) then return
+    List(f,x->ApplyFunc(Galois,Concatenation([x],arg{[2..Length(arg)]})));
+  elif IsCyc(f) then
+    if IsInt(arg[2]) then return GaloisCyc(f,arg[2]);
+    else return f^arg[2];
+    fi;
+  elif IsRec(f) and not IsPolynomial(f) then
+    return ApplyFunc(f.operations.Galois,arg);
+  elif Length(arg)>1 and not IsList(arg[2]) then
+    f := ShallowCopy( f );
+    f.coefficients := Galois( f.coefficients, arg[2] );
+    return f;
+  fi;
+    
   if LeadingCoefficient(f)<>1 then
     f:=f/LeadingCoefficient(f);
   fi;

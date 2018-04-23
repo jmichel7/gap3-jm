@@ -33,8 +33,8 @@ DecomposedMat:=function(M)local l, i, j, k, cc, cj, nz;
 end;
 
 ############################################################################
-#F BlocksMat( <M> ) . . . . . . . . . Find if the matrix M admits a block 
-#F                                    decomposition.
+#F BlocksMat( <M> ) . . . . . . . . . .  Find if the rectangular matrix M
+#F admits a block decomposition.
 ##  
 ##  Define a bipartite graph G with vertices [1..Length(M)],
 ##  [1..Length(M[1])] and with an edge between i and j if either M[i][j] is
@@ -72,15 +72,19 @@ IsNormalizing:=function(l,M)
 end;
 
 ############################################################################
-# EigenvaluesMat: eigenvalues  of a  square matrix over  the cyclotomics
-# whose eigenvalues are roots of unity or 0. false is returned for other
-# matrices.
+# EigenvaluesMat: returns eigenvalues of a square matrix over the cyclotomics
+# which are roots of unity or 0. Other eigenvalues are not returned.
 #
-EigenvaluesMat:=function(mat)local p;
+EigenvaluesMat:=function(mat)local p,res,x;
   p:=CycPol(CharacteristicPolynomial(mat));
-  if not IsCyc(p.coeff) then return false;fi;
-  return Concatenation(List(p.vcyc,x->List([1..x[2]],i->
-    E(Denominator(x[1]))^Numerator(x[1]))));
+  res:=[1..p.valuation]*0;
+  for x in p.vcyc do 
+    Append(res,[1..x[2]]*0+E(Denominator(x[1]))^Numerator(x[1]));
+  od;
+  if IsPolynomial(p.coeff) and Degree(p.coeff)=1 then
+    Add(res,-p.coeff.coefficients[1]/p.coeff.coefficients[2]);
+  fi;
+  return res;
 end;
 
 ############################################################################
@@ -226,6 +230,32 @@ RepresentativeDiagonalConjugation:=function(M,N)local d,n,i,j,c;
   return d;
 end;
     
+#############################################################################
+# Transporter(l1, l2) . . . . . . find matrix transporter from l1 to l2
+#
+# l1 and l2 should be lists of same length of square matrices of the same size.
+# Transporter returns a basis of the vector space of matrices A
+# such that for any i we have  A*l1[i] = l2[i]*A
+# (the basis is empty if this vector space is 0)
+Transporter:=function(l1,l2)local n,M,m,at,i,j,k,v;
+  n:=Length(l1[1]);
+  at:=function(i,j)return j+(i-1)*n;end;
+  M:=[];
+  for i in [1..n] do for j in [1..n] do for m in [1..Length(l1)] do
+    v:=[1..n^2]*0;
+    for k in [1..n] do
+      v[at(i,k)]:=v[at(i,k)]+l1[m][k][j];
+      v[at(k,j)]:=v[at(k,j)]-l2[m][i][k];
+    od;
+    Add(M,v);
+  od;od;od;
+  TriangulizeMat(M);
+  M:=Filtered(M,x->x<>0*x);
+  v:=NullspaceMat(TransposedMat(M));
+  if Length(v)=0 then return false;fi;
+  return List(v,w->List([1..n],i->w{[1..n]+(i-1)*n}));
+end;
+
 #############################################################################
 ##
 #F  OnMatrices(M,p) . . . Simultaneaous action on rows and columns of a 

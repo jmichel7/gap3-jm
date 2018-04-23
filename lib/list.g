@@ -209,21 +209,22 @@ end;
 
 #############################################################################
 ##
-#F  Reversed( <list> )  . . . . . . . . . . .  reverse the elements in a list
+#F  Reversed( <obj> )  . . . . . . . . . . .  reverse the elements in a list
 ##
-##        modified at Jean Michel's suggestion
 
-Reversed := function( list )
-    local  rev,  len,  i;
-
-    len := Length( list );
-    if TYPE( list ) = "range"  then
-        rev := [ list[ len ], list[ len - 1 ] .. list[ 1 ] ];
+Reversed := function( obj ) local  len, t;
+    t:=TYPE(obj);
+    if t="range" then
+      len := Length( obj );
+      return [ obj[ len ], obj[ len - 1 ] .. obj[ 1 ] ];
+    elif t="record" then
+      if IsBound(obj.operations) and IsBound(obj.operations.Reversed) then
+        return  obj.operations.Reversed(obj);
+      fi;
     else
-        rev := list{[Length(list),Length(list)-1..1]};
+       len := Length( obj );
+       return obj{[len,len-1..1]};
     fi;
-
-    return rev;
 end;
 
 #############################################################################

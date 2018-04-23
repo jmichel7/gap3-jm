@@ -92,9 +92,11 @@ CHEVIE.TestObjs:=[ # a selection of spets to be tested
 
 CHEVIE.TestList:=[];
 
-CHEVIE.AddTest:=function(arg)local cond;
-  if Length(arg)=3 then cond:=arg[3];else cond:=x->true;fi;
-  Add(CHEVIE.TestList,rec(name:=arg[1],test:=arg[2],cond:=cond));
+CHEVIE.AddTest:=function(arg)local res;
+  res:=rec(name:=arg[1],test:=arg[2]);
+  if Length(arg)>=3 then res.cond:=arg[3];else res.cond:=x->true;fi;
+  if Length(arg)=4 then res.explanation:=arg[4];fi;
+  Add(CHEVIE.TestList,res);
 end;
 
 CHEVIE.Title:=[];
@@ -113,10 +115,10 @@ CHEVIE.Warn:=function(arg)local s,t;
   s:=ApplyFunc(SPrint,arg);
   CHEVIE.errorDiagnosed:=true;
   t:=SPrint("\n****** WARNING!:",Concatenation(CHEVIE.Title),s);
-  Cut(t,rec(after:=", ="));
+  Cut(t,rec(after:=", =",before:="+"));
   if IsBound(CHEVIE.log) then
     t:=SPrint("[",Concatenation(CHEVIE.Title),"]",s);
-    Cut(t,rec(after:=", =",file:=CHEVIE.log));
+    Cut(t,rec(after:=", =",before:="+",file:=CHEVIE.log));
   fi;
 end;
 
@@ -141,6 +143,7 @@ CHEVIE.Test:=function(arg)local a,tests,i,W,ttest;
       CHEVIE.errorDiagnosed:=false;
       CHEVIE.Title[1]:=SPrint(a.name,"(",ReflectionName(W),")");
       if Length(arg)=0 then
+        if IsBound(a.explanation) then InfoChevie2(a.explanation,"\n");fi;
         InfoChevie("Check[",CHEVIE.Title[1],"]\c");
         ttest:=Runtime();
       fi;
@@ -157,8 +160,8 @@ CHEVIE.Test:=function(arg)local a,tests,i,W,ttest;
   od;
 end;
 
-# CHEVIE.RegressionTest([tests])
-# Apply all possible tests (or tests as argument) to all TestObjs
+# CHEVIE.RegressionTest(test or [tests])
+# Apply all possible tests (or argument tests) to all TestObjs
 CHEVIE.RegressionTest:=function(arg)local W,msg,i,tstart,objs,tests;
   objs:=CHEVIE.TestObjs;
   CHEVIE.log:="all.log";ChevieErr:=CHEVIE.Warn;

@@ -165,9 +165,8 @@ Family:=function(arg)local f,ind; f:=arg[1];
   f.operations:=FamilyOps; f.size:=Length(f.eigenvalues);
   ind:=[1..f.size];
   if not IsBound(f.charLabels) then f.charLabels:=List(ind,String);fi;
-  if not IsBound(f.name) then f.name:=SPrint("?",f.size);
-    f.explanation:=f.name;
-  fi;
+  if not IsBound(f.name) then f.name:=SPrint("?",f.size);fi;
+  if not IsBound(f.explanation) then f.explanation:=f.name;fi;
   if not IsBound(f.special) then f.special:=1;fi;
   if Length(arg)=1 then return f;fi;
   f.charNumbers:=arg[2];
@@ -572,9 +571,13 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt;
   A.multiplication:=function(i,j)
     if i>=j then return A.structureconstants[i][j];
             else return A.structureconstants[j][i];fi;end;
-  A.operations.Print:=function(A)Print(A.type," dim.",d);end;
-  A.idempotents:=ComplexConjugate(DiagonalMat(S[special]))*
-     TransposedMat(S)*A.basis;
+  A.operations.Print:=function(A)Print(A.type," dim.",A.dimension);end;
+  A.idempotents:=SignPermuted(ComplexConjugate(DiagonalMat(S[special]))*
+     TransposedMat(S)*A.basis,A.involution);
+  d:=Zip(CharTable(A).irreducibles,TransposedMat(S),ProportionalityCoefficient);
+  if false in d then return A;fi;
+  A.cDim:=d[special]^2;
+  A.qDim:=List(d,x->d[special]/x);
   return A;
 end;
 

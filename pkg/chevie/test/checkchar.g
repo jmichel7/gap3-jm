@@ -285,3 +285,26 @@ function(W)local t,O,a,b,c,e,l;
 end,
 function(W)local t;t:=ReflectionType(W);
   return Length(t)=1 and IsBound(t[1].ST) and t[1].ST in [4..22];end);
+
+CHEVIE.AddTest("Opdam",
+function(W)local ct,complex,x,fd,ci,c,i,f,opdam;
+  ct:=CharTable(W).irreducibles;
+  complex:=PermListList(ct,ComplexConjugate(ct));
+  x:=Mvp("x");
+  fd:=FakeDegrees(W,x);
+  ci:=ChevieCharInfo(W);
+  if IsBound(ci.opdam) then opdam:=ci.opdam;else opdam:=();fi;
+  # c_\chi in Gordon-Griffeth
+  c:=function(W,i)local cl;
+    cl:=ChevieClassInfo(W).classes;
+    return Sum(ReflectionDegrees(W)-1)-Sum(HyperplaneOrbits(W),
+      h->Sum(h.classno,c->cl[c]*ct[i][c]/ct[i][1]));
+  end;
+  for i in [1..NrConjugacyClasses(W)] do
+    f:=fd[i^complex];
+    if fd[i^opdam]<>x^c(W,i)*Value(f,["x",x^-1]) then 
+      ChevieErr("Opdam wrong for ",i,"\n");
+    fi;
+  od;
+end,
+x->not IsSpets(x));

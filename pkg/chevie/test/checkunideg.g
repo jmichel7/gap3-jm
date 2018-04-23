@@ -300,22 +300,7 @@ W->IsSpetsial(W));
 # option: hard:=show details
 CHEVIE.AddTest("Families",
 function(arg)local W,f,inds,O,P,S,Sbar,Id,real,wreal,i,j,v,
-  check,tS,ud,opt,ps,uc,fd,special,s,p,cospecial,max,a,A,LsToPs,
-  DisplayLs,DisplayPs;
-LsToPs:=function(ls)local n;
-  n:=Length(ls);
-  ls:=List(ls,function(i)if i<0 then return -i+n;else return i;fi;end);
-  ls:=Concatenation(ls,List(ls+n,x->1+(x-1) mod (2*n)));
-  return PermList(ls)^-1;
-end;
-DisplayLs:=ls->DisplayPs(LsToPs(ls),Length(ls));
-DisplayPs:=function(ps,n)local l;
-  l:=Filtered(Cycles(ps),x->ForAny(x,x->x<=n));
-  l:=List(l,x->List(x,function(y)if y>n then return n-y;else return y;fi;end));
-  l:=l{Filtered([1..Length(l)],i->ForAny(l[i],y->not -y in
-           Concatenation(l{[1..i-1]})))};
-  return String(Concatenation(List(l,x->SPrint("(",Join(x),")"))));
-end;
+  check,tS,ud,opt,ps,uc,fd,special,s,p,cospecial,max,a,A;
   if IsGroup(arg[1]) or IsSpets(arg[1]) then 
     W:=arg[1]; uc:=UnipotentCharacters(W);
     if Length(arg)=2 and IsRec(arg[2]) then opt:=arg[2];arg:=[arg[1]];fi;
@@ -386,7 +371,8 @@ end;
     fi;
     if IsBound(opt.hard) then
       if S=Sbar then Print("\n|  S real");
-      else Print("\n|  S->S* is p=",DisplayLs(ps),"\n| ");fi;
+      else Print("\n|  S->S* is p=",Concatenation(List(CyclesSignedPerm(ps),
+        x->SPrint("(",Join(x),")"))),"\n| ");fi;
       if wreal then # check ps is a sub-permutation of perm
         if not ForAll(inds,x->ps[x]=x or ps[x]=x^f.perm) then
           ChevieErr("*** S->S* is not a sub-perm of .perm\n| ");
@@ -452,3 +438,35 @@ end;
   if IsBound(opt.hard) and Length(S)<50 then Print("\n");fi;
 end,
 W->IsSpetsial(W));
+
+CHEVIE.AddTest("UdFdImprimitive",
+function(W)local cs,ud,i,vud,uc,n,fd,vfd;
+  ud:=CycPolUnipotentDegrees(W);
+  uc:=UnipotentCharacters(W);
+  cs:=List(uc.charSymbols,x->x[1]);
+  vud:=List(cs,CycPolGenericDegreeSymbol);
+  for i in [1..Length(cs)] do cmpcycpol(vud[i],ud[i],
+     SPrint("Deg",StringSymbol(cs[i])),"ud");
+  od;
+  n:=ReflectionName(W);
+  cs:=List(uc.almostCharSymbols{uc.almostHarishChandra[1].charNumbers},x->x[1]);
+  fd:=List(FakeDegrees(W,X(Cyclotomics)),CycPol);
+  if Length(n)>1 and n{[1,2]} in ["2D","2I","2B","2G"] then 
+       vfd:=List(cs,x->CycPolFakeDegreeSymbol(x,1));
+  else vfd:=List(cs,CycPolFakeDegreeSymbol);
+  fi;
+  for i in [1..Length(cs)] do cmpcycpol(vfd[i],fd[i],
+    SPrint("Deg",StringSymbol(cs[i])),"fd");
+  od;
+end,
+function(W)local n;
+  n:=ReflectionType(W);
+  if Length(n)>1 then return false; elif Length(n)=0 then return true;fi;
+  n:=n[1];
+  if IsBound(n.series) then return n.series in ["A","B","C","D","G","I"] 
+    or n.series="ST" and IsBound(n.p);
+  elif IsBound(n.orbit) then return n.orbit[1].series in ["B","C","D","I"]
+    and OrderPerm(n.twist)<>3; # type 2A excluded for now....???
+  fi;
+end,
+"Test unipotent degrees and fake degrees of classical Spets against formulas");

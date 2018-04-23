@@ -105,9 +105,11 @@ end;
 
 # Given  a poset  p returns  the associated  equivalence relation (elements
 # with same predecessors and successors are equivalent).
+# If computed from incidence matrix this partition is in linear order
+# compatible with p.
 Partition:=function(p)local l,ind,I;
   if IsBound(p.hasse) then
-    l:=ReversedPoset(p);
+    l:=Reversed(p);
     l:=CollectBy([1..Length(p.hasse)],i->[l.hasse[i],p.hasse[i]]);
   else I:=Incidence(p);ind:=[1..Length(I)];
     l:=List(ind,i->[List(ind,j->j<>i and I[i][j]),
@@ -142,7 +144,7 @@ PosetOps.String:=x->SPrint("Poset with ",Size(x)," elements");
 
 PosetOps.Print:=function(x)Print(String(x));end;
 
-# Restricted(poset,indices)
+# Restricted(poset,indices) restriction of poset to indices
 PosetOps.Restricted:=function(a)local p,ind,res;
   p:=a[1];ind:=a[2]; 
   res:=ShallowCopy(p);
@@ -167,20 +169,8 @@ PosetOps.Restricted:=function(a)local p,ind,res;
   return res;
 end;
 
-# creates poset from m either Hasse diagram or incidence matrix
-Poset:=function(arg)local res,m; m:=arg[1];
-  if IsList(m) then
-    if IsBound(m[1]) and IsList(m[1]) and IsBound(m[1][1]) and IsBool(m[1][1]) then 
-      return rec(incidence:=m,size:=Length(m),operations:=PosetOps);
-    else  return rec(hasse:=m,size:=Length(m),operations:=PosetOps);
-    fi;
-  elif IsRec(m) and IsBound(m.operations) and IsBound(m.operations.Poset) then
-    return ApplyFunc(m.operations.Poset,arg);
-  else Error(m," has no method for Poset\n");
-  fi;
-end;
-
-ReversedPoset:=function(p)local res,i,j;
+# opposite poset
+PosetOps.Reversed:=function(p)local res,i,j;
   res:=ShallowCopy(p);
   if IsBound(p.incidence) then res.incidence:=TransposedMat(p.incidence);fi;
   if IsBound(p.hasse) then
@@ -190,4 +180,65 @@ ReversedPoset:=function(p)local res,i,j;
     od;
   fi;
   return res;
+end;
+
+# creates poset from m either Hasse diagram or incidence matrix
+Poset:=function(arg)local res,m; m:=arg[1];
+  if IsList(m) then
+    if IsBound(m[1]) and IsList(m[1]) and IsBound(m[1][1]) and IsBool(m[1][1])
+    then return rec(incidence:=m,size:=Length(m),operations:=PosetOps);
+    else return rec(hasse:=m,size:=Length(m),operations:=PosetOps);
+    fi;
+  elif IsRec(m) and IsBound(m.operations) and IsBound(m.operations.Poset) then
+    return ApplyFunc(m.operations.Poset,arg);
+  else Error(m," has no method for Poset\n");
+  fi;
+end;
+
+# checks if elements of Poset have joins (upper bounds)
+IsJoinLattice:=function(P)local subl,i,j,l,k,ll,ord;
+  ord:=Incidence(P);
+  subl:=[];
+  for i in [1..Length(ord)] do
+    for j in [1..i-1] do
+      if not ord[j][i] or ord[i][j] then
+        l:=IntersectionBlist(ord[i],ord[j]); # elts >= both i and j
+	if not l in subl then
+          if not ForAny(ListBlist(ord,l),y->l=IntersectionBlist(l,y)) then
+	    for k in ListBlist([1..Length(ord)],l) do 
+	      ll:=ShallowCopy(ord[k]);ll[k]:=false;SubtractBlist(l,ll);
+	    od;
+	    InfoChevie("# ",i," and ",j," have bounds",
+	      ListBlist([1..Length(ord)],l),"\n");
+	    return false;fi;
+          AddSet(subl,l);
+	fi;
+      fi;
+    od;
+  od;
+  return true;
+end;
+
+# checks if elements of Poset have meets (lower bounds)
+IsMeetLattice:=function(P)local subl,i,j,l,k,ll,ord;
+  ord:=TransposedMat(Incidence(P));
+  subl:=[];
+  for i in [1..Length(ord)] do
+    for j in [1..i-1] do
+      if not ord[j][i] or ord[i][j] then
+        l:=IntersectionBlist(ord[i],ord[j]); # elts >= both i and j
+	if not l in subl then
+          if not ForAny(ListBlist(ord,l),y->l=IntersectionBlist(l,y)) then
+	    for k in ListBlist([1..Length(ord)],l) do 
+	      ll:=ShallowCopy(ord[k]);ll[k]:=false;SubtractBlist(l,ll);
+	    od;
+	    InfoChevie("# ",i," and ",j," have bounds",
+	      ListBlist([1..Length(ord)],l),"\n");
+	    return false;fi;
+          AddSet(subl,l);
+	fi;
+      fi;
+    od;
+  od;
+  return true;
 end;

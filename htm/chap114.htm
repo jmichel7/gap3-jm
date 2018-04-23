@@ -1,1037 +1,234 @@
-<html><head><title>GAP3 Manual: 114 Algebra package --- finite dimensional algebras</title></head>
+<html><head><title>GAP3 Manual: 114 Some VKCURVE utility functions</title></head>
 <body bgcolor="ffffff">
-<h1>114 Algebra package --- finite dimensional algebras</h1>
+<h1>114 Some VKCURVE utility functions</h1>
 <P><P><P>
-This  package has been developped by C&eacute;dric Bonnaf&eacute;
-to  work with  finite dimensional  algebras under  <strong>GAP3</strong>; it  depends on the
-package "chevie".
-<P>
-Note  that  these  programs  have  been  mainly  developed for working with
-Solomon descent algebras.
-<P><P>
-We start with a list of utility functions which are used in various places.
+We document here various utility functions defined by <strong>VKCURVE</strong> package
+and which may be useful also in other contexts.
 <P><P>
 <H3> Subsections</H3>
 <oL>
-<LI> <A HREF="chap114.htm#SECT001">Digits</a>
-<LI> <A HREF="chap114.htm#SECT002">ByDigits</a>
-<LI> <A HREF="chap114.htm#SECT003">SignedCompositions</a>
-<LI> <A HREF="chap114.htm#SECT004">SignedPartitions</a>
-<LI> <A HREF="chap114.htm#SECT005">PiPart</a>
-<LI> <A HREF="chap114.htm#SECT006">CyclotomicModP</a>
-<LI> <A HREF="chap114.htm#SECT007">PiComponent</a>
-<LI> <A HREF="chap114.htm#SECT008">PiSections</a>
-<LI> <A HREF="chap114.htm#SECT009">PiPrimeSections</a>
-<LI> <A HREF="chap114.htm#SECT010">PRank</a>
-<LI> <A HREF="chap114.htm#SECT011">PBlocks</a>
-<LI> <A HREF="chap114.htm#SECT012">Finite-dimensional algebras over fields</a>
-<LI> <A HREF="chap114.htm#SECT013">Elements of finite dimensional algebras</a>
-<LI> <A HREF="chap114.htm#SECT014">Operations for elements of finite dimensional algebras</a>
-<LI> <A HREF="chap114.htm#SECT015">IsAlgebraElement for finite dimensional algebras</a>
-<LI> <A HREF="chap114.htm#SECT016">IsAbelian for finite dimensional algebras</a>
-<LI> <A HREF="chap114.htm#SECT017">IsAssociative for finite dimensional algebras</a>
-<LI> <A HREF="chap114.htm#SECT018">AlgebraHomomorphismByLinearity</a>
-<LI> <A HREF="chap114.htm#SECT019">SubAlgebra for finite-dimensional algebras</a>
-<LI> <A HREF="chap114.htm#SECT020">CentralizerAlgebra</a>
-<LI> <A HREF="chap114.htm#SECT021">Center for algebras</a>
-<LI> <A HREF="chap114.htm#SECT022">Ideals</a>
-<LI> <A HREF="chap114.htm#SECT023">QuotientAlgebra</a>
-<LI> <A HREF="chap114.htm#SECT024">Radical for algebras</a>
-<LI> <A HREF="chap114.htm#SECT025">RadicalPower</a>
-<LI> <A HREF="chap114.htm#SECT026">LoewyLength</a>
-<LI> <A HREF="chap114.htm#SECT027">CharTable for algebras</a>
-<LI> <A HREF="chap114.htm#SECT028">CharacterDecomposition</a>
-<LI> <A HREF="chap114.htm#SECT029">Idempotents for finite dimensional algebras</a>
-<LI> <A HREF="chap114.htm#SECT030">LeftIndecomposableProjectives</a>
-<LI> <A HREF="chap114.htm#SECT031">CartanMatrix</a>
-<LI> <A HREF="chap114.htm#SECT032">PolynomialQuotientAlgebra</a>
-<LI> <A HREF="chap114.htm#SECT033">GroupAlgebra</a>
-<LI> <A HREF="chap114.htm#SECT034">Augmentation</a>
-<LI> <A HREF="chap114.htm#SECT035">GrothendieckRing</a>
-<LI> <A HREF="chap114.htm#SECT036">Degree for elements of Grothendieck rings</a>
-<LI> <A HREF="chap114.htm#SECT037">Solomon algebras</a>
-<LI> <A HREF="chap114.htm#SECT038">SolomonAlgebra</a>
-<LI> <A HREF="chap114.htm#SECT039">Generalized Solomon algebras</a>
-<LI> <A HREF="chap114.htm#SECT040">GeneralizedSolomonAlgebra</a>
-<LI> <A HREF="chap114.htm#SECT041">SolomonHomomorphism</a>
-<LI> <A HREF="chap114.htm#SECT042">ZeroHeckeAlgebra</a>
-<LI> <A HREF="chap114.htm#SECT043">Performance</a>
+<LI> <A HREF="chap114.htm#SECT001">BigNorm</a>
+<LI> <A HREF="chap114.htm#SECT002">DecimalLog</a>
+<LI> <A HREF="chap114.htm#SECT003">ComplexRational</a>
+<LI> <A HREF="chap114.htm#SECT004">Dispersal</a>
+<LI> <A HREF="chap114.htm#SECT005">ConjugatePresentation</a>
+<LI> <A HREF="chap114.htm#SECT006">TryConjugatePresentation</a>
+<LI> <A HREF="chap114.htm#SECT007">FindRoots</a>
+<LI> <A HREF="chap114.htm#SECT008">Cut</a>
 </ol>
-<A NAME="SECT001"><h2>114.1 Digits</h2></a>
+<A NAME="SECT001"><h2>114.1 BigNorm</h2></a>
 <P><P>
 <A name = "I0"></a>
 
-<code>Digits(n [, basis])</code>
 <P>
-returns  the list of digits of the nonnegative integer <I>n</I> in basis <var>basis</var>
-(in basis 10 if no second argument is given).
+<code>BigNorm(<var>c</var>)</code>
 <P>
-<pre>    gap> Digits(0); Digits(3); Digits(123); Digits(123,16);
-    [  ]
-    [ 3 ]
-    [ 1, 2, 3 ]
-    [ 7, 11 ]</pre>
-<P><A NAME="SECT002"><h2>114.2 ByDigits</h2></a>
+Given a <code>complex</code> number <var>c</var> with  real part <var>r</var> and imaginary part <var>j</var>,
+returns a "cheap substitute" to the norm of <var>c</var> given by <I><code>r</code>+<code>j</code></I>.
+<P>
+<pre>    gap> BigNorm(Complex(-1,-1));
+    2</pre>
+<P><A NAME="SECT002"><h2>114.2 DecimalLog</h2></a>
 <P><P>
 <A name = "I1"></a>
 
-<code>ByDigits(l [, basis])</code>
 <P>
-Does  the  converse  of  <code>Digits</code>,  that  is,  computes an integer give the
-sequence  of its  digits (by  default in  basis 10;  in basis  <var>basis</var> if a
-second argument is given).
+<code>DecimalLog(<var>r</var>)</code>
 <P>
-<pre>    gap> ByDigits([2,3,4,5]);
-    2345
-    gap> ByDigits([2,3,4,5],100);
-    2030405</pre>
-<P><A NAME="SECT003"><h2>114.3 SignedCompositions</h2></a>
+Given a rational  number <var>r</var>, returns an integer <var>k</var>  such that <I>10<sup>k</sup>&lt;
+<code>r</code>  &le; 10<sup>k+1</sup></I>.
+<P>
+<pre>    gap> List([1,1/10,1/2,2,10],DecimalLog);
+    [ -1, -2, -1, 0, 1 ]</pre>
+<P><A NAME="SECT003"><h2>114.3 ComplexRational</h2></a>
 <P><P>
 <A name = "I2"></a>
 
-<code>SignedCompositions(n)</code>
 <P>
-computes  the set of signed compositions of  <I>n</I> that is, the set of tuples
-of  non-zero integers <I>[i<sub>1</sub>,...i<sub>r</sub>]</I>  such that <I>|i<sub>1</sub>|  + ... + |i<sub>r</sub>| =
-n</I>. Note that <code>Length(SignedCompositions(n)) = 2*3^(n-1)</code>.
+<code>ComplexRational(<var>c</var>)</code>
 <P>
-<pre>    gap> SignedCompositions(3);
-    [ [ -3 ], [ -2, -1 ], [ -2, 1 ], [ -1, -2 ], [ -1, -1, -1 ],
-      [ -1, -1, 1 ], [ -1, 1, -1 ], [ -1, 1, 1 ], [ -1, 2 ], [ 1, -2 ],
-      [ 1, -1, -1 ], [ 1, -1, 1 ], [ 1, 1, -1 ], [ 1, 1, 1 ], [ 1, 2 ],
-      [ 2, -1 ], [ 2, 1 ], [ 3 ] ]</pre>
+<var>c</var> is a cyclotomic or a <code>Complex</code> number with <code>Decimal</code> or real cyclotomic
+real  and imaginary parts. This function returns the corresponding rational
+complex number.
 <P>
-Note that the compositions of <var>n</var> are obtained by the function
-<code>OrderedPartitions</code> in <strong>GAP3</strong>.
-<P><A NAME="SECT004"><h2>114.4 SignedPartitions</h2></a>
+<pre>    gap> evalf(E(3)/3);
+    -0.1666666667+0.2886751346I
+    gap> ComplexRational(last);
+    -16666666667/100000000000+28867513459/100000000000I
+    gap> ComplexRational(E(3)/3);
+    -1/6+28867513457/100000000000I</pre>
+<P><A NAME="SECT004"><h2>114.4 Dispersal</h2></a>
 <P><P>
 <A name = "I3"></a>
 
-<code>SignedPartitions(<var>n</var>)</code>
 <P>
-computes  the set of signed partitions of <var>n</var> that is, the set of tuples of
-integers  <I>[i<sub>1</sub>,...,i<sub>r</sub>,j<sub>1</sub>,...,j<sub>s</sub>]</I> such  that <I>i<sub>k</sub>  &gt; 0</I>, <I>j<sub>k</sub> &lt;
-0</I>,  <I>|i<sub>1</sub>| + ... + |i<sub>r</sub>| + |j<sub>1</sub>| + ... + |j<sub>s</sub>|= n</I>, <I>i<sub>1</sub>  &ge;
-...  &ge; i<sub>r</sub></I> and <I>|j<sub>1</sub>|  &ge; ...  &ge; |j<sub>s</sub>|</I>.
+<code>Dispersal(v)</code>
 <P>
-<pre>    gap> SignedPartitions(3);
-    [ [ -3 ], [ -2, -1 ], [ -1, -1, -1 ], [ 1, -2 ], [ 1, -1, -1 ],
-      [ 1, 1, -1 ], [ 1, 1, 1 ], [ 2, -1 ], [ 2, 1 ], [ 3 ] ]</pre>
-<P><A NAME="SECT005"><h2>114.5 PiPart</h2></a>
+<var>v</var> is a list of <code>complex</code> numbers representing points in the real plane.
+The result is a pair whose first element is the minimum distance between
+two elements of <var>v</var>, and the second is a pair of indices <code>[i,j]</code> such that
+<code>v[i]</code>, <code>v[j]</code> achieves this minimum distance.
+<P>
+<pre>    gap> Dispersal([Complex(1,1),Complex(0),Complex(1)]);
+    [ 1, [ 1, 3 ] ]</pre>
+<P><A NAME="SECT005"><h2>114.5 ConjugatePresentation</h2></a>
 <P><P>
 <A name = "I4"></a>
 
-<code>PiPart(<var>n</var>,<var>pi</var>)</code>
 <P>
-Let  <var>n</var> be an integer  and <I>&pi;</I> a set  of prime numbers. Write <I>n=n<sub>1</sub>n<sub>2</sub></I>
-where  no prime factor of <I>n<sub>2</sub></I> is in  <I>&pi;</I> and all prime factors of <I>n<sub>1</sub></I>
-are  in <I>&pi;</I>.  Then <I>n<sub>1</sub></I>  is called  the <I>&pi;</I>-part  of <I>n</I> and <I>n<sub>2</sub></I> the
-<I>&pi;'</I>-part  of <I>n</I>. This function returns the <I>&pi;</I>-part of <I>n</I>. The
-set  <I>&pi;</I> may be given as a list of primes, or as an integer in which case
-the set <I>&pi;</I> is taken to be the list of prime factors of that integer.
+<code>ConjugatePresentation(<var>p</var> [,<var>conjugation</var>])</code>
 <P>
-<pre>    gap> PiPart(720,2);
-    16
-    gap> PiPart(720,3);
-    9
-    gap> PiPart(720,6);
-    144
-    gap> PiPart(720,[2,3]);
-    144</pre>
-<P><A NAME="SECT006"><h2>114.6 CyclotomicModP</h2></a>
+This  program modifies  a  presentation by  conjugating  a generator  by
+another. The conjugaction to apply is  described by a length-3 string of
+the same style  as the result of <code>DisplayPresentation</code>,  that is <code>"abA"</code>
+means replace  the second generator by  its conjugate by the  first, and
+<code>"Aba"</code> means replace it by its conjugate by the inverse of the first.
+<P>
+<pre>    gap> F:=FreeGroup(4);;
+    gap> p:=PresentationFpGroup(F/[F.4*F.1*F.2*F.3*F.4*F.1^-1*F.4^-1*
+    > F.3^-1*F.2^-1*F.1^-1,F.4*F.1*F.2*F.3*F.4*F.2*F.1^-1*F.4^-1*F.3^-1*
+    > F.2^-1*F.1^-1*F.3^-1,F.2*F.3*F.4*F.1*F.2*F.3*F.4*F.3^-1*F.2^-1*
+    > F.4^-1*F.3^-1*F.2^-1*F.1^-1*F.4^-1]);
+    gap> DisplayPresentation(p);
+    1: dabcd=abcda
+    2: dabcdb=cabcda
+    3: bcdabcd=dabcdbc
+    gap> DisplayPresentation(ConjugatePresentation(p,"cdC"));
+    #I  there are 4 generators and 3 relators of total length 36
+    1: cabdca=dcabdc
+    2: dcabdc=bdcabd
+    3: cabdca=abdcab</pre>
+<P><A NAME="SECT006"><h2>114.6 TryConjugatePresentation</h2></a>
 <P><P>
 <A name = "I5"></a>
 
-<code>CyclotomicModP(<var>z</var>,<var>p</var>)</code>
 <P>
-<var>p</var>  should be a  prime and <var>z</var>  a cyclotomic number  which is <var>p</var>-integral
-(that  is, <var>z</var> times some number prime to <var>p</var> is a cyclotomic integer). The
-function  returns  the  reduction  of  <var>z</var>  mod.  <var>p</var>,  an  element of some
-extension <I>&#x1D53D;<sub>p<sup>r</sup></sub></I> of the prime field <I>&#x1D53D;<sub>p</sub></I>.
+<code>TryConjugatePresentation(<var>p</var> [,<var>goal</var> [,<var>printlevel</var>]])</code>
 <P>
-<pre>    gap> CyclotomicModP(E(7),3);
-    Z(3^6)^104</pre>
-<P><A NAME="SECT007"><h2>114.7 PiComponent</h2></a>
+This  program   tries  to  simplify  group   presentations  by  applying
+conjugations to the generators. The algorithm depends on random numbers,
+and on  tree-searching, so is  not reproducible. By default  the program
+stops as  soon as a shorter  presentation is found. Sometimes  this does
+not  give the  desired  presentation.  One can  give  a second  argument
+<var>goal</var>, then  the program will only  stop when a presentation  of length
+less than  <var>goal</var> is found. Finally,  a third argument can  be given and
+then  all presentations  the  programs  runs over  which  are of  length
+less  than  or  equal  to  this  argument  are  displayed.  Due  to  the
+non-deterministic  nature  of the  program,  it  may  be useful  to  run
+it  several times  on  the  same input.  Upon  failure  (to improve  the
+presentation), the program returns <var>p</var>.
+<P>
+<pre>    gap> Display(p);
+    1: ba=ab
+    2: dbd=bdb
+    3: cac=aca
+    4: bcb=cbc
+    5: dAca=Acad
+    6: dcdc=cdcd
+    7: adad=dada
+    8: dcDbdc=bdcbdB
+    9: dcdadc=adcdad
+    10: adcDad=dcDadc
+    11: BcccbdcAb=dcbACdddc
+    gap> p:=TryConjugatePresentation(p); 
+    #I  there are 4 generators and 11 relators of total length 100
+    #I  there are 4 generators and 11 relators of total length 120
+    #I  there are 4 generators and 10 relators of total length 100
+    #I  there are 4 generators and 11 relators of total length 132
+    #I  there are 4 generators and 11 relators of total length 114
+    #I  there are 4 generators and 11 relators of total length 110
+    #I  there are 4 generators and 11 relators of total length 104
+    #I  there are 4 generators and 11 relators of total length 114
+    #I  there are 4 generators and 11 relators of total length 110
+    #I  there are 4 generators and 11 relators of total length 104
+    #I  there are 4 generators and 8 relators of total length 76
+    #I  there are 4 generators and 8 relators of total length 74
+    #I  there are 4 generators and 8 relators of total length 72
+    #I  there are 4 generators and 8 relators of total length 70
+    #I  there are 4 generators and 7 relators of total length 52
+    # d-<I>&gt;</I>adA gives length 52
+    &lt;&lt; presentation with 4 gens and 7 rels of total length 52 >>
+    gap> Display(p); 
+    1: ba=ab
+    2: dc=cd
+    3: aca=cac
+    4: dbd=bdb
+    5: bcb=cbc
+    6: adad=dada
+    7: aBcADbdac=dBCacbdaB
+    gap> TryConjugatePresentation(p,48);
+    #I  there are 4 generators and 7 relators of total length 54
+    #I  there are 4 generators and 7 relators of total length 54
+    #I  there are 4 generators and 7 relators of total length 60
+    #I  there are 4 generators and 7 relators of total length 60
+    #I  there are 4 generators and 7 relators of total length 48
+    # d-<I>&gt;</I>bdB gives length 48
+    &lt;&lt; presentation with 4 gens and 7 rels of total length 48 >>
+    gap> Display(last);
+    1: ba=ab
+    2: bcb=cbc
+    3: cac=aca
+    4: dbd=bdb
+    5: cdc=dcd
+    6: adad=dada
+    7: dAbcBa=bAcBad</pre>
+<P><A NAME="SECT007"><h2>114.7 FindRoots</h2></a>
 <P><P>
 <A name = "I6"></a>
 
-<code>PiComponent(<var>G</var>,<var>g</var>,<var>pi</var>)</code>
 <P>
-Let  <var>g</var> be an  element of the  finite group <var>G</var>  and <I>&pi;</I> a  set of prime
-numbers.  Write <I>g=g<sub>1</sub>g<sub>2</sub></I> where <I>g<sub>1</sub></I> and <I>g<sub>2</sub></I> are both powers of <var>g</var>, no
-prime factor of the order of <I>g<sub>2</sub></I> is in <I>&pi;</I> and all prime factors of the
-order  of <I>g<sub>1</sub></I> are in  <I>&pi;</I>. Then <I>g<sub>1</sub></I> is  called the <I>&pi;</I>-component of
-<I>g</I>  and <I>g<sub>2</sub></I> the <I>&pi;'</I>-component of <I>n</I>. This function returns the
-<I>&pi;</I>-component  of <I>g</I>. The set <I>&pi;</I> may be given as a list of primes, or
-as  an integer in which case the set <I>&pi;</I> is taken to be the list of prime
-factors of that integer.
-<P><A NAME="SECT008"><h2>114.8 PiSections</h2></a>
+<code>FindRoots(<var>p</var>, <var>approx</var>)</code>
+<P>
+<var>p</var>  should be a univariate <code>Mvp</code>  with cyclotomic or <code>Complex</code> rational or
+decimal  coefficients or  a list  of cyclotomics  or <code>Complex</code> rationals or
+decimals  which represents  the coefficients  of a  complex polynomial. The
+function  returns  <code>Complex</code>  rational  approximations  to the roots of <var>p</var>
+which  are  better  than  <var>approx</var>  (a  positive rational). Contrary to the
+functions  <code>SeparateRoots</code>, etc... described in  the previous chapter, this
+function handles quite well polynomials with multiple roots. We rely on the
+algorithms explained in detail in <A href="biblio.htm#HSS01"><cite>HSS01</cite></a>.
+<P>
+<pre>    gap> FindRoots((x-1)^5,1/100000000000);
+    [ 6249999999993/6250000000000+29/12500000000000I, 
+      12499999999993/12500000000000-39/12500000000000I, 
+      12500000000023/12500000000000+11/6250000000000I, 
+      12500000000023/12500000000000+11/6250000000000I, 
+      312499999999/312500000000-3/6250000000000I ]
+    gap> evalf(last);
+    [ 1, 1, 1, 1, 1 ]
+    gap> FindRoots(x^3-1,1/10);            
+    [ -1/2-108253175473/125000000000I, 1, -1/2+108253175473/125000000000I ]
+    gap> evalf(last);
+    [ -0.5-0.8660254038I, 1, -0.5+0.8660254038I ]
+    gap> List(last,x->x^3);
+    [ 1, 1, 1 ]</pre>
+<P><A NAME="SECT008"><h2>114.8 Cut</h2></a>
 <P><P>
 <A name = "I7"></a>
 
-<code>PiSections(<var>G</var>,<var>pi</var>)</code>
 <P>
-Let  <I>&pi;</I> be a set  of prime numbers. Two  conjugacy classes of the finite
-group   <var>G</var>  are  said   to  belong  to   the  same  <I>&pi;</I>-section  if  the
-<I>&pi;</I>-components  (see <a href="chap114.htm#SECT007">PiComponent</a>)  of elements  of the  two classes are
-conjugate.  This function  returns the  partition of  the set  of conjugacy
-classes  of <var>G</var>  in <I>&pi;</I>-sections,  represented by  the list of indices of
-conjugacy classes of <I>G</I> in each part. The set <I>&pi;</I> may be given as a list
-of  primes, or as an integer in which case the set <I>&pi;</I> is taken to be the
-list of prime factors of that integer.
-<P>
-<pre>    gap> W:=SymmetricGroup(5);
-    Group( (1,5), (2,5), (3,5), (4,5) )
-    gap> PiSections(W,2);
-    [ [ 1, 4, 7 ], [ 2, 5 ], [ 3 ], [ 6 ] ]
-    gap> PiSections(W,3);
-    [ [ 1, 2, 3, 6, 7 ], [ 4, 5 ] ]
-    gap> PiSections(W,6);
-    [ [ 1, 7 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ] ]</pre>
-<P><A NAME="SECT009"><h2>114.9 PiPrimeSections</h2></a>
-<P><P>
-<A name = "I8"></a>
-
-<code>PiPrimeSections(<var>G</var>,<var>pi</var>)</code>
-<P>
-Let  <I>&pi;</I> be a set  of prime numbers. Two  conjugacy classes of the finite
-group  <var>G</var>  are  said  to  belong  to  the same <I>&pi;'</I>-section if the
-<I>&pi;'</I>-components  (see <a href="chap114.htm#SECT007">PiComponent</a>) of elements of the two classes
-are  conjugate. This function returns the partition of the set of conjugacy
-classes of <var>G</var> in <I>&pi;'</I>-sections, represented by the list of indices
-of  conjugacy classes of <I>G</I> in each part.  The set <I>&pi;</I> may be given as a
-list of primes, or as an integer in which case the set <I>&pi;</I> is taken to be
-the list of prime factors of that integer.
-<P>
-<pre>    gap> W:=SymmetricGroup(5);
-    Group( (1,5), (2,5), (3,5), (4,5) )
-    gap> PiPrimeSections(W,2);
-    [ [ 1, 2, 3, 6 ], [ 4, 5 ], [ 7 ] ]
-    gap> PiPrimeSections(W,3);
-    [ [ 1, 4 ], [ 2, 5 ], [ 3 ], [ 6 ], [ 7 ] ]
-    gap> PiPrimeSections(W,6);
-    [ [ 1, 2, 3, 4, 5, 6 ], [ 7 ] ]</pre>
-<P><A NAME="SECT010"><h2>114.10 PRank</h2></a>
-<P><P>
-<A name = "I9"></a>
-
-<code>PRank(<var>G</var>,<var>p</var>)</code>
-<P>
-Let  <var>p</var> be a prime. This function returns the <var>p</var>-rank of the finite group
-<var>G</var>,  defined as the maximal rank  of an elementary abelian <var>p</var>-subgroup of
-<var>G</var>.
-<P>
-<pre>    gap> W:=SymmetricGroup(5);
-    Group( (1,5), (2,5), (3,5), (4,5) )
-    gap> PRank(W,2);
-    2
-    gap> PRank(W,3);
-    1
-    gap> PRank(W,7);
-    0</pre>
-<P><A NAME="SECT011"><h2>114.11 PBlocks</h2></a>
-<P><P>
-<A name = "I10"></a>
-
-<code>PBlocks(<var>G</var>,<var>p</var>)</code>
-<P>
-Let  <var>p</var> be a prime. This function returns the partition of the irreducible
-characters of <var>G</var> in <var>p</var>-blocks, represented by the list of indices of
-irreducibles characters in each part.
-<P>
-<pre>    gap> W:=SymmetricGroup(5);
-    Group( (1,5), (2,5), (3,5), (4,5) )
-    gap> PBlocks(W,2);
-    [ [ 1, 2, 5, 6, 7 ], [ 3, 4 ] ]
-    gap> PBlocks(W,3);
-    [ [ 1, 3, 6 ], [ 2, 4, 5 ], [ 7 ] ]
-    gap> PBlocks(W,7);
-    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ] ]</pre>
-<P><A NAME="SECT012"><h2>114.12 Finite-dimensional algebras over fields</h2></a>
-<P><P><P>
-Let <I>K</I> be a field and let <I>A</I> be a <I>K</I>-algebra of finite dimension <I>d</I>. In
-our implementation, <I>A</I> must be endowed with a basis <I>X = (x<sub>i</sub>)<sub>i &isin; I</sub></I>,
-where  <I>I={i<sub>1</sub>,...,i<sub>d</sub>}</I>. Then <I>A</I> is  represented by a record containing
-<DL><DT>the following fields:<DD>
-</DL><P>
-<DL><DT><code>A.field</code>:<DD> the field <I>K</I>.
-</DL><P>
-<DL><DT><code>A.dimension</code>:<DD> the dimension of <I>A</I>.
-</DL><P>
-<DL><DT><code>A.multiplication</code>:<DD>  this  is  a  function  which associates to <I>(k,l)</I> the
-coefficients  of the product  <I>x<sub>i<sub>k</sub></sub> x<sub>i<sub>l</sub></sub></I> in  the basis <I>X</I> (here, <I>1
- &le;  k, l  &le; d</I>). If the structure  constants of <I>A</I> are known, then it is
-possible   to   record   them   in   <code>A.structureconstants</code>:   the   entry
-<code>A.structureconstants[k][l]</code>  is equal to <code>A.multiplication(k,l)</code>. Once the
-function   <code>A.multiplication</code>  is   defined,  we   can  obtain   the  field
-<code>A.structureconstants</code> just by asking for
-<code>FDAlgebraOps.structureconstants(A)</code>.
-</DL><P>
-<DL><DT><code>A.zero</code>:<DD> the zero element of <I>A</I>.
-</DL><P>
-<DL><DT><code>A.one</code>:<DD> the unity of <I>A</I>.
-</DL><P>
-<DL><DT><code>A.basisname</code>:<DD> a "name" for the basis <I>X</I> (for instance,
-<code>A.basisname:="X"</code>).
-</DL><P>
-<DL><DT><code>A.parameters</code>:<DD> the parameter set <I>I</I>.
-</DL><P>
-<DL><DT><code>A.identification</code>:<DD>  something characterizing <I>A</I> (this  is used to test if
-two  algebras are equal). For instance, if <I>A=K[G]</I> is the group algebra of
-<I>G</I>, we take <code>A.identification:=["Group algebra",G,K];</code>.
-</DL><P>
-For  convenience,  the  record  <I>A</I>  is  often  endowed  with the following
-fields:
-<P>
-<DL><DT><code>A.generators</code>:<DD> a list of generators of <I>A</I>.
-</DL><P>
-<DL><DT><code>A.basis</code>:<DD>  the list of elements of <I>X</I>.
-</DL><P>
-<DL><DT><code>A.vectorspace</code>:<DD> the underlying vector space represented in <strong>GAP3</strong> as <I>K<sup>d</sup></I>.
-</DL><P>
-<DL><DT><code>A.EltToVector</code>:<DD>  the function sending an element of <I>A</I> to its image in
-<code>A.vectorspace</code> (i.e. a <I>d</I>-tuple of elements of <I>K</I>).
-</DL><P>
-<DL><DT><code>A.VectorToElt</code>:<DD> inverse function of <code>A.EltToVector</code>.
-</DL><P>
-<DL><DT><code>A.type</code>:<DD> for instance <code>"Group algebra"</code>, or <code>"Grothendieck ring"</code>...
-</DL><P>
-<DL><DT><code>A.operations</code>:<DD> This is initialized to <code>FDAlgebraOps</code> which contains
-  quite a few operations applicable to finite-dimensional algebras, like the
-  following:
-</DL><P>
-<DL><DT><code>FDAlgebraOps.underlyingspace</code>:<DD>  once <code>A.dimension</code> is defined, this function
-constructs  the underlying space of <I>A</I>. It  endows the record <I>A</I> with the
-fields <code>A.basis</code>, <code>A.vectorspace</code>, <code>A.EltToVector</code>, and <code>A.VectorToElt</code>.
-</DL><P>
-<DL><DT><code>FDAlgebraOps.structureconstants</code>:<DD>  computes the structure constants
-of <I>A</I> and gathers them in <code>A.structureconstants</code>.
-</DL><P><A NAME="SECT013"><h2>114.13 Elements of finite dimensional algebras</h2></a>
-<P><P><P>
-<DL><DT>An element <I>x</I> of <I>A</I> is implemented as a record containing three fields:<DD>
-</DL><P>
-<DL><DT><code>x.algebra</code>:<DD> the algebra <I>A</I>
-</DL><P>
-<DL><DT><code>x.coefficients</code>:<DD> the list of pairs <I>(a<sub>k</sub>,k)</I> such that <I>a<sub>k</sub></I> is a non-zero
-element of <I>K</I> and <I>x=&sum;<sub>k=1</sub><sup>d</sup> a<sub>k</sub> x<sub>i<sub>k</sub></sub></I>.
-</DL><P>
-<DL><DT><code>x.operations</code>:<DD>   the  operations   record  <code>AlgebraEltOps</code>   defining  the
-operations for finite dimensional algebra elements.
-</DL><P><A NAME="SECT014"><h2>114.14 Operations for elements of finite dimensional algebras</h2></a>
-<P><P><P>
-The  following operations are  define for elements  of a finite dimensional
-algebra <I>A</I>.
-<P>
-<DL><DT><code>Print</code>:<DD>  this  function  gives  a  way  of  printing  elements  of <I>A</I>. If
-<code>A.print</code>  is defined, it is used.  Otherwise, the element <I>x<sub>i</sub></I> is printed
-using <code>A.basisname</code> and <code>A.parameters</code>: for instance, if
-<code>A.basisname:="BASISNAME"</code>  and  <code>A.parameters:=[1..d]</code>,  then <I>x<sub>i</sub></I> is
-printed as <code>BASISNAME(i)</code>.
-</DL><P>
-<DL><DT><code>\+</code> :<DD> addition of elements of <I>A</I>.
-</DL><P>
-<DL><DT><code>\-</code> :<DD> subtraction of elements of <I>A</I>.
-</DL><P>
-<DL><DT><code>*</code> :<DD> multiplication of elements of <I>A</I>.
-</DL><P>
-<DL><DT><code>^</code> :<DD> powers of elements of <I>A</I> (negative powers are allowed
-for invertible elements).
-</DL><P>
-<DL><DT><code>Coefficients(x)</code>:<DD> the list of coefficients of <I>x</I> in <code>Basis(A)</code>.
-</DL><P><A NAME="SECT015"><h2>114.15 IsAlgebraElement for finite dimensional algebras</h2></a>
-<P><P>
-<A name = "I11"></a>
-
-<code>IsAlgebraElement(x)</code>
-<P>
-This function retuirns <code>true</code> if <var>x</var> is an element of a finite dimensional
-algebra, <code>false</code> if it is another kind of object.
-<P>
-<pre>    gap> q:=X(Rationals);; q.name:="q";;
-    gap> A:=PolynomialQuotientAlgebra(q^2-q-1);;
-    gap> IsAlgebraElement(Basis(A)[1]);
-    true
-    gap> IsAlgebraElement(1);
-    false</pre>
-<P><A NAME="SECT016"><h2>114.16 IsAbelian for finite dimensional algebras</h2></a>
-<P><P>
-<A name = "I12"></a>
-
-<code>IsAbelian(A)</code>
-<P>
-returns <code>true</code> if the algebra <I>A</I> is commutative and <code>false</code> otherwise.
-<P>
-<pre>    gap> q:=X(Rationals);; q.name:="q";;
-    gap> A:=PolynomialQuotientAlgebra(q^2-q-1);;
-    gap> IsAbelian(A);
-    true
-    gap> B:=SolomonAlgebra(CoxeterGroup("A",2));;
-    gap> IsAbelian(B);
-    false</pre>
-<P><A NAME="SECT017"><h2>114.17 IsAssociative for finite dimensional algebras</h2></a>
-<P><P>
-<A name = "I13"></a>
-
-<code>IsAssociative(A)</code>
-<P>
-returns <code>true</code> if the algebra <I>A</I> is associative and <code>false</code> otherwise.
-<P>
-<pre>    gap> q:=X(Rationals);; q.name:="q";;
-    gap> A:=PolynomialQuotientAlgebra(q^2-q-1);;
-    gap> IsAssociative(A);
-    true</pre>
-<P><A NAME="SECT018"><h2>114.18 AlgebraHomomorphismByLinearity</h2></a>
-<P><P>
-<A name = "I14"></a>
-
-<code>AlgebraHomomorphismByLinearity(A,B[,l])</code>
-<P>
-returns the linear map from <I>A</I> to <I>B</I> that sends <code>A.basis</code> to the list <I>l</I>
-(if  omitted to <code>B.basis</code>). If this is not an homomorphism of algebras, the
-function returns an error.
-<P>
-<pre>    gap> q:=X(Rationals);; q.name:="q";;
-    gap> A:=PolynomialQuotientAlgebra(q^4);;
-    gap> hom:=AlgebraHomomorphismByLinearity(A,Rationals,[1,0,0,0]);
-    function ( element ) ... end
-    gap> hom(A.class(q^4+q^3+1));
-    1
-    gap> hom2:=AlgebraHomomorphismByLinearity(A,Rationals,[1,1,1,1]);
-    Error, This is not a morphism of algebras in
-    AlgebraHomomorphismByLinearity( A, Rationals, [ 1, 1, 1, 1 ] ) called from
-    main loop</pre>
-<P><A NAME="SECT019"><h2>114.19 SubAlgebra for finite-dimensional algebras</h2></a>
-<P><P>
-<A name = "I15"></a>
-
-<code>SubAlgebra(A,l)</code>
-<P>
-returns  the sub-algebra <I>B</I> of <I>A</I> generated by the list <I>l</I>. The elements
-of <I>B</I> are written as elements of <I>A</I>.
-<pre>    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
-    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
-    gap> B:=SubAlgebra(A,[A.xbasis(23),A.xbasis(34)]);
-    SubAlgebra(SolomonAlgebra(CoxeterGroup("B",4),Rationals),
-    [ X(23), X(34) ])
-    gap> Dimension(B);
-    6
-    gap> IsAbelian(B);
-    false
-    gap> B.basis;
-    [ X(1234), X(23), X(34), X(2)-X(4), X(3)+X(4), X(0) ]</pre>
-<P><A NAME="SECT020"><h2>114.20 CentralizerAlgebra</h2></a>
-<P><P>
-<A name = "I16"></a>
-
-<code>CentralizerAlgebra(A,l)</code>
-<P>
-returns  the  sub-algebra  <I>B</I>  of  <I>A</I>  of elements commuting with all the
-elements  in the list <I>l</I>.  The elements of <I>B</I>  are written as elements of
-<I>A</I>.
-<pre>    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
-    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
-    gap> B:=CentralizerAlgebra(A,[A.xbasis(23),A.xbasis(34)]);
-    Centralizer(SolomonAlgebra(CoxeterGroup("B",4),Rationals),
-    [ X(23), X(34) ])
-    gap> Dimension(B);
-    10
-    gap> IsAbelian(B);
-    false</pre>
-<P><A NAME="SECT021"><h2>114.21 Center for algebras</h2></a>
-<P><P>
-<A name = "I17"></a>
-
-<code>Centre(A)</code>
-<P>
-returns  the center <I>B</I> of the algebra <I>A</I>. The elements of <I>B</I> are written
-as elements of <I>A</I>.
-<P>
-<pre>    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
-    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
-    gap> B:=Centre(A);
-    Centre(SolomonAlgebra(CoxeterGroup("B",4),Rationals))
-    gap> Dimension(B);
-    8
-    gap> IsAbelian(B);
-    true</pre>
-<P><A NAME="SECT022"><h2>114.22 Ideals</h2></a>
-<P><P>
-<A name = "I18"></a>
-
-<A name = "I19"></a>
-
-<A name = "I20"></a>
-
-<P>
-If  <I>l</I> is  an element,  or a  list of  elements of  the algebra  <I>A</I>, then
-<code>LeftIdeal(A,l)</code>   (resp.  <code>RightIdeal(A,l)</code>,  resp.  <code>TwoSidedIdeal(A,l)</code>)
-returns  the left (resp. right, resp.  two-sided) ideal of <I>A</I> generated by
-<I>l</I>. The result is a record containing the following fields:
-<P>
-<DL><DT><code>.parent</code>:<DD> the algebra <I>A</I>
-</DL><P>
-<DL><DT><code>.generators</code>:<DD> the list <I>l</I>
-</DL><P>
-<DL><DT><code>.basis</code>:<DD> a <I>K</I>-basis of the ideal
-</DL><P>
-<DL><DT><code>.dimension</code>:<DD> the dimension of the ideal
-</DL><P>
-<A name = "I21"></a>
-
-<A name = "I22"></a>
-
-<DL><DT><code>LeftTraces(A,I)</code>, <code>RightTraces(A,I)</code>:<DD>
-the  character afforded by the left (or right) ideal <code>I</code> (written as a
-list of traces of elements of the <code>A.basis</code>).
-</DL><P>
-<pre>    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
-    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
-    gap> I:=LeftIdeal(A,[A.xbasis(234)]);
-    LeftIdeal(SolomonAlgebra(CoxeterGroup("B",4),Rationals),[ X(234) ])
-    gap> I.basis;
-    [ X(234), X(23)+X(34), X(24), X(2)+X(4), X(3), X(0) ]
-    gap> Dimension(I);
-    6
-    gap> LeftTraces(A,I);
-    [ 6, 18, 40, 50, 42, 64, 112, 112, 100, 136, 100, 192, 224, 224, 224,
-    384 ]</pre>
-<P><A NAME="SECT023"><h2>114.23 QuotientAlgebra</h2></a>
-<P><P>
-<A name = "I23"></a>
-
-<code>QuotientAlgebra(A,I)</code>
-<P>
-<I>A</I>  is a finite dimensional algebra, and <I>I</I> a two-sided ideal of <I>A</I>. The
-function  returns the  algebra <I>A/I</I>.  It is  also allowed  than <I>I</I>  be an
-element of <I>A</I> or a list of elements of <I>A</I>, in which case it is understood
-as the two-sided ideal generated by <I>I</I>.
-<P><A NAME="SECT024"><h2>114.24 Radical for algebras</h2></a>
-<P><P>
-<A name = "I24"></a>
-
-<code>Radical(A)</code>
-<P>
-If  the record  <I>A</I> is  endowed with  the field <code>A.radical</code> (containing the
-radical of <I>A</I>) or with the field <code>A.Radical</code> (a function for computing the
-radical  of  <I>A</I>),  then  <code>Radical(A)</code>  returns  the  radical  of <I>A</I> (as a
-two-sided  ideal of <I>A</I>). At this time,  this function is available only in
-characteristic  zero:  it  works  for  group  algebras,  Grothendiek rings,
-Solomon algebras and generalized Solomon algebras.
-<P><A NAME="SECT025"><h2>114.25 RadicalPower</h2></a>
-<P><P>
-<A name = "I25"></a>
-
-<code>RadicalPower(A,n)</code>
-<P>
-returns (when possible) the <I>n</I>-th power of the two-sided ideal <code>Radical(A)</code>.
-<P><A NAME="SECT026"><h2>114.26 LoewyLength</h2></a>
-<P><P>
-<A name = "I26"></a>
-
-<code>LoewyLength(A)</code>
-<P>
-returns  (when  possible)  the  Loewy  length  of <I>A</I> that is, the smallest
-natural  number <I>n &gt;= 1</I> such that  the <I>n</I>-th power of the two-sided ideal
-<code>Radical(A)</code> vanishes.
-<P>
-<pre>    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
-    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
-    gap> R:=Radical(A);
-    TwoSidedIdeal(SolomonAlgebra(CoxeterGroup("B",4),Rationals),
-    [ X(13)-X(14), X(23)-X(34), X(2)-X(3), X(2)-X(4) ])
-    gap> Dimension(R);
-    4
-    gap> LoewyLength(A);
-    2 </pre>
-<P><A NAME="SECT027"><h2>114.27 CharTable for algebras</h2></a>
-<P><P>
-<A name = "I27"></a>
-
-<code>CharTable(A)</code>
-<P>
-For  certain algebras, the function <code>CharTable</code>  may be applied. It returns
-the  character table of  the algebra <I><span style="text-decoration: overline">K</span>  &otimes;<sub>K</sub> A</I>: different
-ways of printing are used according to the type of the algebra. If <I>A</I> is a
-group  algebra  in  characteristic  zero,  then  <code>CharTable(A)</code> returns the
-character table of <code>A.group</code>. This function is available whenever <I>K</I> is of
-characteristic   zero  for  group  algebras,  Grothendieck  rings,  Solomon
-algebras and generalized Solomon algebras.
-<P>
-<pre>    gap> A:=GrothendieckRing(SymmetricGroup(4));
-    GrothendieckRing(Group( (1,4), (2,4), (3,4) ),Rationals)
-    gap> CharTable(A);
-
-         X.1 X.2 X.3 X.4 X.5
-
-    MU.1   1   1   2   3   3
-    MU.2   1  -1   .  -1   1
-    MU.3   1   1   2  -1  -1
-    MU.4   1   1  -1   .   .
-    MU.5   1  -1   .   1  -1
-
-    gap> B:=SolomonAlgebra(CoxeterGroup("B",2));
-    SolomonAlgebra(CoxeterGroup("B",2),Rationals)
-    gap> CharTable(B);
-
-         1
-         2  1  2  0
-
-    12   1  .  .  .
-     1   1  2  .  .
-     2   1  .  2  .
-     0   1  4  4  8</pre>
-<P><A NAME="SECT028"><h2>114.28 CharacterDecomposition</h2></a>
-<P><P>
-<A name = "I28"></a>
-
-<code>CharacterDecomposition(A,char)</code>
-<P>
-Given  a  list  <I>char</I>  of  elements  of  <I>K</I>  (indexed by <code>A.basis</code>), then
-<code>CharacterDecomposition(A,char)</code> returns the decomposition of <I>char</I> into a
-sum of irreducible characters of <I>A</I>, if possible.
-<P>
-<pre>    gap> A:=SolomonAlgebra(CoxeterGroup("B",3));
-    SolomonAlgebra(CoxeterGroup("B",3),Rationals)
-    gap> I:=LeftIdeal(A,[A.xbasis(13)]);
-    LeftIdeal(SolomonAlgebra(CoxeterGroup("B",3),Rationals),[ X(13) ])
-    gap> I.basis;
-    [ X(13), X(1), X(3), X(0) ]
-    gap> LeftTraces(A,I);
-    [ 4, 12, 20, 12, 32, 28, 28, 48 ]
-    gap> CharTable(A);
-
-          1
-          2  1   1  2
-          3  2   3  3   1   2   0
-
-    123   1  .   .  .   .   .   .
-     12   1  2   .  .   .   .   .
-     13   1  .   2  .   .   .   .
-     23   1  .   .  2   .   .   .
-      1   1  4   4  .   8   .   .
-      2   1  2   2  4   .   4   .
-      0   1  6  12  8  24  24  48
-
-    gap> CharacterDecomposition(A,LeftTraces(A,I));
-    [ 0, 0, 1, 0, 1, 1, 1 ]</pre>
-<P><A NAME="SECT029"><h2>114.29 Idempotents for finite dimensional algebras</h2></a>
-<P><P>
-<A name = "I29"></a>
-
-<code>Idempotents(A)</code>
-<P>
-returns  a complete set of orthogonal primitive idempotents of <I>A</I>. This is
-defined  currently for  Solomon algebras,  quotient by polynomial algebras,
-group algebras and Grothendieck rings.
-<P>
-<pre>    gap> A:=SolomonAlgebra(CoxeterGroup("B",2));
-    SolomonAlgebra(CoxeterGroup("B",2),Rationals)
-    gap> e:=Idempotents(A);
-    [ X(12)-1/2*X(1)-1/2*X(2)+3/8*X(0), 1/2*X(1)-1/4*X(0),
-      1/2*X(2)-1/4*X(0), 1/8*X(0) ]
-    gap> Sum(e)=A.one;
-    true
-    gap> List(e, i-> i^2-i);
-    [ 0*X(12), 0*X(12), 0*X(12), 0*X(12) ]
-    gap> l:=[[1,2],[1,3],[1,4],[2,1],[2,3],[2,4],[3,1],[3,2],[3,4]];;
-    gap> Set(List(l, i-> e[i[1]]*e[i[2]]));
-    [ 0*X(12) ]</pre>
-<P><A NAME="SECT030"><h2>114.30 LeftIndecomposableProjectives</h2></a>
-<P><P>
-<A name = "I30"></a>
-
-<code>LeftIndecomposableProjectives</code>
-<P>
-returns  the  list  of  left  ideals  <I>Ae</I>,  where  <I>e</I>  runs over the list
-<code>Idempotents(A)</code>.
-<P>
-<pre>    gap> A:=SolomonAlgebra(CoxeterGroup("B",3));
-    SolomonAlgebra(CoxeterGroup("B",3),Rationals)
-    gap> proj:=LeftIndecomposableProjectives(A);;
-    gap> List(proj,Dimension);
-    [ 2, 1, 1, 1, 1, 1, 1 ]</pre>
-<P><A NAME="SECT031"><h2>114.31 CartanMatrix</h2></a>
-<P><P>
-<A name = "I31"></a>
-
-<code>CartanMatrix(A)</code>
-<P>
-returns  the Cartan matrix of <I>A</I> that  is, the matrix <I></I>dim<I> Hom(P,Q)</I>, where
-<I>P</I> and <I>Q</I> run over the list <code>LeftIndecomposableProjectives(A)</code>.
-<P>
-<pre>    gap> A:=SolomonAlgebra(CoxeterGroup("B",4));
-    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
-    gap> CartanMatrix(A);
-
-           1
-           2        1  2     1  1
-           3  1  2  2  3     2  3  1  2
-           4  3  3  3  4  2  4  4  2  4  1  0
-
-    1234   1  .  .  .  .  .  .  .  .  .  .  .
-      13   1  1  .  .  .  .  .  .  .  .  .  .
-      23   1  .  1  .  .  .  .  .  .  .  .  .
-     123   .  .  .  1  .  .  .  .  .  .  .  .
-     234   .  .  .  .  1  .  .  .  .  .  .  .
-       2   .  .  .  1  1  1  .  .  .  .  .  .
-     124   .  .  .  .  .  .  1  .  .  .  .  .
-     134   .  .  .  .  .  .  .  1  .  .  .  .
-      12   .  .  .  .  .  .  .  .  1  .  .  .
-      24   .  .  .  .  .  .  .  .  .  1  .  .
-       1   .  .  .  .  .  .  .  .  .  .  1  .
-       0   .  .  .  .  .  .  .  .  .  .  .  1</pre>
-<P><A NAME="SECT032"><h2>114.32 PolynomialQuotientAlgebra</h2></a>
-<P><P>
-<A name = "I32"></a>
-
-An example - quotient by polynomial algebras
-<P>
-<code>PolynomialQuotientAlgebra(P)</code>
-<P>
-Given a polynomial <I>P</I> with coefficients in <I>K</I>,
-<code>A:=PolynomialQuotientAlgebra(P)</code> returns the algebra <I>A=K[X]/(P(X))</I>. Note
-that the class of a polynomial <I>Q</I> is printed as <code>Class(Q)</code> and that <I>A</I> is
-endowed  with the field <code>A.class</code>: this function sends a polynomial <I>Q</I> to
-its image in <I>A</I>.
-<P>
-<pre>    gap> q:=X(Rationals);; q.name:="q";;
-    gap> P:=1+2*q+q^3;;
-    gap> A:=PolynomialQuotientAlgebra(P);
-    Rationals[q]/(q^3 + 2*q + 1)
-    gap> x:=A.basis[3];
-    Class(q^2)
-    gap> x^2;
-    Class(-2*q^2 - q)
-    gap> 3*x - A.one;
-    Class(3*q^2 - 1)
-    gap> A.class(q^6);
-    Class(4*q^2 + 4*q + 1)</pre>
-<P><A NAME="SECT033"><h2>114.33 GroupAlgebra</h2></a>
-<P><P>
-<A name = "I33"></a>
-
-<code>GroupAlgebra(G,K)</code>
-<P>
-returns  the group algebra <I>K[G]</I> of the  finite group <I>G</I> over <I>K</I>. If <I>K</I>
-is not given, then the program takes for <I>K</I> the field of rational numbers.
-The  <I>i</I>-th element in the list of elements of <I>G</I> is printed by default as
-<code>e(i)</code>. This function endows <I>G</I> with <I>G.law</I> containing the multiplication
-table of <I>G</I>.
-<P><A NAME="SECT034"><h2>114.34 Augmentation</h2></a>
-<P><P>
-<A name = "I34"></a>
-
-<code>Augmentation(x)</code>
-<P>
-returns  the  image  of  the  element  <I>x</I> of <I>K[G]</I> under the augmentation
-morphism.
-<P>
-<pre>    gap> G:=SL(3,2);;
-    gap> A:=GroupAlgebra(G);
-    GroupAlgebra(SL(3,2),Rationals)
-    gap> A.dimension;
-    168
-    gap> A.basis[5]*A.basis[123];
-    e(87)
-    gap> (A.basis[3]-A.basis[12])^2;
-    e(55) - e(59) - e(148) + e(158)
-    gap> Augmentation(last);
-    0</pre>
-<P><A NAME="SECT035"><h2>114.35 GrothendieckRing</h2></a>
-<P><P>
-<A name = "I35"></a>
-
-<code>GrothendieckRing(G,K)</code>
-<P>
-returns  the Grothendieck ring <I>K &otimes;  Z Irr G</I>. The <I>i</I>-th irreducible
-ordinary  character is  printed as  <code>X(i)</code>. This  function endows  <I>G</I> with
-<code>G.tensorproducts</code>  containing the table of  tensor products of irreducible
-ordinary characters of <I>G</I>.
-<P><A NAME="SECT036"><h2>114.36 Degree for elements of Grothendieck rings</h2></a>
-<P><P>
-<A name = "I36"></a>
-
-<code>Degree(x)</code>
-<P>
-returns  the image of the element  <I>x</I> of <code>GrothendieckRing(G,K)</code> under the
-morphism  of  algebras  sending  a  character  to  its degree (viewed as an
-element of <I>K</I>).
-<P>
-<pre>    gap> G:=SymmetricGroup(4);
-    Group( (1,4), (2,4), (3,4) )
-    gap> Display(CharTable(G));
-
-         2  3  2  3  .  2
-         3  1  .  .  1  .
-
-           1a 2a 2b 3a 4a
-        2P 1a 1a 1a 3a 2b
-        3P 1a 2a 2b 1a 4a
-
-    X.1     1  1  1  1  1
-    X.2     1 -1  1  1 -1
-    X.3     2  .  2 -1  .
-    X.4     3 -1 -1  .  1
-    X.5     3  1 -1  . -1
-
-    gap> A:=GrothendieckRing(G);
-    GrothendieckRing(Group( (1,4), (2,4), (3,4) ),Rationals)
-    gap> A.basis[4]*A.basis[5];
-    X(2) + X(3) + X(4) + X(5)
-    gap> Degree(last);
-    9</pre>
-<P><A NAME="SECT037"><h2>114.37 Solomon algebras</h2></a>
-<P><P><P>
-Let  <I>(W,S)</I> be a  finite Coxeter group.  If <I>w</I> is  an element of <I>W</I>, let
-<I>R(w)={s  &isin; S | l(ws) &gt;  l(w)}</I>. If <I>I</I> is a  subset of <I>S</I>, we set
-<I>Y<sub>I</sub>={w &isin; W | R(w)=I}</I>, <I>X<sub>I</sub>={w &isin; W | R(w) &sup; I}</I>.
-<P>
-Note  that <I>X<sub>I</sub></I> is the set of minimal length left coset representatives of
-<I>W/W<sub>I</sub></I>. Now, let <I>y<sub>I</sub>=&sum;<sub>w &isin; Y<sub>I</sub></sub> w</I>, <I>x<sub>I</sub>=&sum;<sub>w &isin; X<sub>I</sub></sub> w</I>.
-<P>
-They  are elements  of the  group algebra  <I>ZW</I> of  <I>W</I> over  <I>Z</I>. Now, let
-<center><table><tr><td><I>&Sigma;(W)  =  &oplus;<sub>I  &sub;  S</sub>  &#x2124;  y<sub>I</sub> = &oplus;<sub>I &sub; S</sub> &#x2124;
-x<sub>I</sub>.</I></td></tr></table></center> This is a sub-<I>Z</I>-module of <I>ZW</I>. In fact, Solomon proved that it is
-a  sub-algebra of <I>ZW</I>. Now, let <I>K(W)</I> be the Grothendieck ring of <I>W</I> and
-let  <I>&theta;:&Sigma;(W)&rarr;  K(W)</I>  be  the  map  defined  by <I>&theta;(x<sub>I</sub>) =
-Ind<sub>W<sub>I</sub></sub><sup>W</sup> 1</I>. Solomon proved that this is an homomorphism of algebras. We
-call it the <strong>Solomon homomorphism</strong>.
-<P><A NAME="SECT038"><h2>114.38 SolomonAlgebra</h2></a>
-<P><P>
-<A name = "I37"></a>
-
-<code>SolomonAlgebra(W,K)</code>
-<P>
-returns  the Solomon  descent algebra  of the  finite Coxeter group <I>(W,S)</I>
-over  <I>K</I>.  If  <I>S=[s<sub>1</sub>,...,s<sub>r</sub>]</I>,  the  element <I>x<sub>I</sub></I> corresponding to the
-subset   <I>I=[s<sub>1</sub>,s<sub>2</sub>,s<sub>4</sub>]</I>  of  <I>S</I>  is  printed  as  <code>X(124)</code>.  Note  that
-<code>A:=SolomonAlgebra(W,K)</code> is endowed with the following fields:
-<P>
-<DL><DT><code>A.group</code>:<DD> the group <I>W</I>
-</DL><P>
-<DL><DT><code>A.basis</code>:<DD> the basis <I>(x<sub>I</sub>)<sub>I &sub; S</sub></I>.
-</DL><P>
-<DL><DT><code>A.xbasis</code>:<DD>  the function sending the subset <I>I</I> (written as a number: for
-instance <I>124</I> for <I>[s<sub>1</sub>,s<sub>2</sub>,s<sub>4</sub>]</I>) to <I>x<sub>I</sub></I>.
-</DL><P>
-<DL><DT><code>A.ybasis</code>:<DD> the function sending the subset <I>I</I> to <I>y<sub>I</sub></I>.
-</DL><P>
-<DL><DT><code>A.injection</code>:<DD>  the injection of <I>A</I> in the group algebra of <I>W</I>, obtained
-by calling <code>SolomonAlgebraOps.injection(A)</code>.
-</DL><P>
-Note that <code>SolomonAlgebra(W,K)</code> endows <I>W</I> with the field <I>W.solomon</I> which
-is a record containing the following fields:
-<P>
-<DL><DT><code>W.solomon.subsets</code>:<DD> the set of subsets of <I>S</I>
-</DL><P>
-<DL><DT><code>W.solomon.conjugacy</code>:<DD>  conjugacy classes  of parabolic  subgroups of <I>W</I> (a
-conjugacy   class  is  represented  by  the   list  of  the  positions,  in
-<code>W.solomon.subsets</code>, of the subsets <I>I</I> of <I>S</I> such that <I>W<sub>I</sub></I> lies in this
-conjugacy class).
-</DL><P>
-<DL><DT><code>W.solomon.mackey</code>:<DD>  essentially  the  structure  constants  of  the Solomon
-algebra over the rationals.
-</DL><P>
-<pre>    gap> W:=CoxeterGroup("B",4);
-    CoxeterGroup("B",4)
-    gap> A:=SolomonAlgebra(W);
-    SolomonAlgebra(CoxeterGroup("B",4),Rationals)
-    gap> X:=A.xbasis;;
-    gap> X(123)*X(24);
-    2*X(2) + 2*X(4)
-    gap> SolomonAlgebraOps.injection(A)(X(123));
-    e(1) + e(2) + e(3) + e(8) + e(19) + e(45) + e(161) + e(361)
-    gap> W.solomon.subsets;
-    [ [ 1, 2, 3, 4 ], [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 4 ], [ 2, 3, 4 ],
-      [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ], [ 3, 4 ], [ 1 ], [ 2 ],
-      [ 3 ], [ 4 ], [  ] ]
-    gap> W.solomon.conjugacy;
-    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7, 8 ], [ 9, 11 ], [ 10 ],
-      [ 12 ], [ 13, 14, 15 ], [ 16 ] ]</pre>
-<P><A NAME="SECT039"><h2>114.39 Generalized Solomon algebras</h2></a>
-<P><P><P>
-In this subsection, we refer to the paper <A href="biblio.htm#BH05"><cite>BH05</cite></a>.
-<P>
-If  <I>n</I> is a non-zero natural number, we  denote by <I>W<sub>n</sub></I> the Weyl group of
-type  <I>B<sub>n</sub></I> and by <I>W<sub>-n</sub></I> the Weyl group of type <I>A<sub>n-1</sub></I> (isomorphic to
-the  symmetric  group  of  degree  <I>n</I>).  If <I>C=[i<sub>1</sub>,...,i<sub>r</sub>]</I> is a <strong>signed
-composition</strong> of <I>n</I>, we denote by <I>W<sub>C</sub></I> the subgroup of <I>W<sub>n</sub></I> equal to <I>W<sub>C</sub>
-= W<sub>i<sub>1</sub></sub> x ... x W<sub>i<sub>r</sub></sub></I>. This is a subgroup generated by reflections (it
-is  not in general a  parabolic subgroup of <I>W<sub>n</sub></I>).  Let <I>X<sub>C</sub> = {x &isin; W<sub>C</sub>
-|  l(xw)  &ge; l(x) &forall; w &isin;  W<sub>C</sub>}</I>. Note that <I>X<sub>C</sub></I> is the set of
-minimal   length  left   coset  representatives   of  <I>W<sub>n</sub>/W<sub>C</sub></I>.  Now,  let
-<I>x<sub>C</sub>=&sum;<sub>w &isin; X<sub>C</sub></sub> w</I>. We now define <I>&Sigma;'(W<sub>n</sub>) = &oplus;<sub>C</sub> &#x2124;
-x<sub>C</sub></I>,  where <I>C</I> runs over the  signed compositions of <I>n</I>. By <A href="biblio.htm#BH05"><cite>BH05</cite></a>,
-this  is a subalgebra of  <I>ZW<sub>n</sub></I>. Now, let <I>Y<sub>C</sub></I>  be the set of elements of
-<I>X<sub>C</sub></I>  which are not in  any other <I>X<sub>D</sub></I> and  let <I>y<sub>C</sub>=&sum;<sub>w &isin; Y<sub>C</sub></sub> w</I>.
-Then  <I>&Sigma;'(W<sub>n</sub>) =  &oplus;<sub>C</sub> &#x2124;  y<sub>C</sub></I>. Moreover,  the linear map
-<I>&theta;' :   &Sigma;'(W<sub>n</sub>)    &rarr;   K(W<sub>n</sub>)</I>    defined   by
-<I>&theta;'(x<sub>C</sub>) = Ind<sub>W<sub>C</sub></sub><sup>W<sub>n</sub></sup> 1</I> is a <strong>surjective homomorphism</strong> of
-algebras (see <A href="biblio.htm#BH05"><cite>BH05</cite></a>). We still call it the <strong>Solomon homomorphism</strong>.
-<P><A NAME="SECT040"><h2>114.40 GeneralizedSolomonAlgebra</h2></a>
-<P><P>
-<A name = "I38"></a>
-
-<code>GeneralizedSolomonAlgebra(n,K)</code>
-<P>
-returns  the  generalized  Solomon  algebra  <I>&Sigma;'(W<sub>n</sub>)</I>  defined
-above.  If <I>C</I> is a signed composition of <I>n</I>, the element <I>x<sub>C</sub></I> is printed
-as  <code>X(C)</code> Note  that <code>A:=GeneralizedSolomonAlgebra(n,K)</code>  is endowed with
-the following fields:
-<P>
-<DL><DT><code>A.group</code>:<DD> the group <code>CoxeterGroup("B",n)</code>
-</DL><P>
-<DL><DT><code>A.xbasis</code>:<DD> the function sending the signed composition <I>C</I> to <I>x<sub>C</sub></I>.
-</DL><P>
-<DL><DT><code>A.ybasis</code>:<DD> the function sending the signed composition <I>C</I> to <I>y<sub>C</sub></I>.
-</DL><P>
-<DL><DT><code>A.injection</code>:<DD> the injection of <I>A</I> in the group algebra of <I>W</I>.
-</DL><P>
-Note  that  <code>GeneralizedSolomonAlgebra(W,K)</code>  endows  <I>W</I>  with  the  field
-<code>W.generalizedsolomon</code> which is a record containing the following fields:
-<P>
-<DL><DT><code>W.generalizedsolomon.signedcompositions</code>:<DD> the set of signed compositions of
-<I>n</I>
-</DL><P>
-<DL><DT><code>W.generalizedsolomon.conjugacy</code>:<DD>  conjugacy classes of reflection subgroups
-<I>W<sub>C</sub></I>  of  <I>W</I>  (presented  as  sublists  of  <code>[1..2*3^(n-1)]</code>  as in the
-classical Solomon algebra case).
-</DL><P>
-<DL><DT><code>W.generalizedsolomon.mackey</code>:<DD>  essentially the  structure constants  of the
-generalized Solomon algebra over the rationals.
-</DL><P>
-<pre>    gap> A:=GeneralizedSolomonAlgebra(3);
-    GeneralizedSolomonAlgebra(CoxeterGroup("B",3),Rationals)
-    gap> W:=A.group;
-    CoxeterGroup("B",3)
-    gap> W.generalizedsolomon.signedcompositions;
-    [ [ 3 ], [ -3 ], [ 1, 2 ], [ 2, 1 ], [ 2, -1 ], [ -1, 2 ], [ 1, -2 ],
-      [ -2, 1 ], [ -1, -2 ], [ -2, -1 ], [ 1, 1, 1 ], [ 1, -1, 1 ], [ 1, 1, -1 ],
-      [ -1, 1, 1 ], [ 1, -1, -1 ], [ -1, 1, -1 ], [ -1, -1, 1 ], [ -1, -1, -1 ] ]
-    gap> W.generalizedsolomon.conjugacy;
-    [ [ 1 ], [ 2 ], [ 3, 4 ], [ 5, 6 ], [ 7, 8 ], [ 9, 10 ], [ 11 ],
-      [ 12, 13, 14 ], [ 15, 16, 17 ], [ 18 ] ]
-    gap> X:=A.xbasis;
-    function ( arg ) ... end
-    gap> X(2,1)*X(1,-2);
-    X(1,-2)+X(1,-1,1)+X(1,1,-1)+X(1,-1,-1)</pre>
-<P><A NAME="SECT041"><h2>114.41 SolomonHomomorphism</h2></a>
-<P><P>
-<A name = "I39"></a>
-
-<code>SolomonHomomorphism(x)</code>
-<P>
-returns  the  image  of  the  element  <I>x</I>  of  <code>A=SolomonAlgebra(W,K)</code>  or
-<code>A=GeneralizedSolomonAlgebra(n,K)</code> in <code>GrothendieckRing(W,K)</code> under Solomon
-homomorphism.
-<P>
-<pre>    gap> A:=GeneralizedSolomonAlgebra(2);
-    GeneralizedSolomonAlgebra(CoxeterGroup("B",2),Rationals)
-    gap> Display(CharTable(A.group));
-    B2
-         2   3   2   3   2   2
-
-           11. 1.1 .11  2.  .2
-        2P 11. 11. 11. 11. .11
-
-    11.      1   1   1  -1  -1
-    1.1      2   .  -2   .   .
-    .11      1  -1   1  -1   1
-    2.       1   1   1   1   1
-    .2       1  -1   1   1  -1
-
-    gap> A.basis[3]*A.basis[2];
-    -X(1,-1)+X(-1,1)+X(-1,-1)
-    gap> SolomonHomomorphism(last);
-    X(1)+2*X(2)+X(3)+X(4)+X(5)</pre>
-<P><A NAME="SECT042"><h2>114.42 ZeroHeckeAlgebra</h2></a>
-<P><P>
-<A name = "I40"></a>
-
-<code>ZeroHeckeAlgebra(<var>W</var>)</code>
-<P>
-This constructs the 0-Hecke algebra of the finite Coxeter group <var>W</var>.
-<P>
-<pre>    gap> W:=CoxeterGroup("B",2);
-    CoxeterGroup("B",2)
-    gap> A:=ZeroHeckeAlgebra(W);
-    ZeroHeckeAlgebra(CoxeterGroup("B",2))
-    gap> Radical(A);
-    TwoSidedIdeal(ZeroHeckeAlgebra(CoxeterGroup("B",2)),
-    [ T(21)-T(12), T(21)-T(212), T(21)-T(121), T(21)-T(1212) ])</pre>
-<P><A NAME="SECT043"><h2>114.43 Performance</h2></a>
-<P><P>
-We  just present here some examples of computations with the above programs
-(on a usual PC: 2 GHz, 256 Mo).
-<P>
-Constructing  the  group  algebra  of  a  Weyl  group  of  type <I>F<sub>4</sub></I> (1124
-elements): 4 seconds
-<P>
-<pre>    gap> W:=CoxeterGroup("F",4);
-    CoxeterGroup("F",4)
-    gap> A:=GroupAlgebra(W);
-    GroupAlgebra(CoxeterGroup("F",4),Rationals)
-    gap> time;
-    4080</pre>
-<P>
-Constructing the Grothendieck ring of the Weyl group of type <I>E<sub>8</sub></I> (696 729
-600 elements, 112 irreducible characters): 5 seconds
-<P>
-<pre>    gap> W:=CoxeterGroup("E",8);
-    CoxeterGroup("E",8)
-    gap> A:=GrothendieckRing(W);
-    GrothendieckRing(CoxeterGroup("E",8),Rationals)
-    gap> time;
-    5950</pre>
-<P>
-Computing with the Solomon algebra of the Weyl group of type <I>E<sub>6</sub></I>
-<DL><DT>(51 840 elements):<DD>
-</DL><P>
-
-<DL><DT><P>&bull; Constructing the algebra:<DD> less than 5 seconds
-<P>&bull; Computing the Loewy length: 1 second
-<P>&bull; Computing the Cartan Matrix: around 12 seconds
-
-</DL><P>
-<pre>    gap> W:=CoxeterGroup("E",6);
-    CoxeterGroup("E",6)
-    gap> A:=SolomonAlgebra(W);
-    SolomonAlgebra(CoxeterGroup("E",6),Rationals)
-    gap> time;
-    4610
-    gap> LoewyLength(A);
-    5
-    gap> time;
-    1060
-    gap> CartanMatrix(A);
-
-             1
-             2  1  1  1  1
-             3  2  2  2  3  1  1  1  1                    2
-             4  3  3  3  4  2  2  2  3  1  1  1           3
-             5  4  4  5  5  3  3  4  5  2  2  3  1  1     4
-             6  5  6  6  6  4  5  5  6  3  5  4  2  3  1  5  0
-
-    123456   1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
-     12345   1  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
-     12346   1  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .
-     12356   .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .
-     13456   .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  .
-      1234   1  1  .  .  1  1  .  .  .  .  .  .  .  .  .  .  .
-      1235   2  .  1  1  .  .  1  .  .  .  .  .  .  .  .  .  .
-      1245   1  .  1  .  1  .  .  1  .  .  .  .  .  .  .  .  .
-      1356   .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-       123   2  1  1  .  2  1  .  1  1  1  .  .  .  .  .  .  .
-       125   1  1  1  1  .  .  .  .  .  .  1  .  .  .  .  .  .
-       134   1  1  .  .  1  1  .  .  .  .  .  1  .  .  .  .  .
-        12   2  1  1  .  1  1  .  1  1  1  .  .  1  .  .  .  .
-        13   1  1  .  .  1  1  .  .  .  .  .  .  .  1  .  .  .
-         1   1  1  .  .  1  1  .  .  .  .  .  1  .  .  1  .  .
-      2345   .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .
-         0   .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1
-
-    gap> time;
-    12640</pre>
-<a href ="chap113.htm">Previous</a> <a href = "index.htm">Up</a> <BR><a href = "theindex.htm">Index</a>
+<code>Cut(<var>string s</var> [, opt])</code>
+<P>
+The  first argument is a string, and the second one a record of options, if
+not  given taken equal to <code>rec()</code>. This function prints its string argument
+<var>s</var> on several lines not exceeding <var>opt.width</var>; if not given <var>opt.width</var> is
+taken  to be equal  <code>SizeScreen[1]-2</code>. This is  similar to how <strong>GAP3</strong> prints
+strings, excepted no continuation line characters are printed. The user can
+specify  after which  characters to  cut the  string by  specifying a field
+<code>opt.places</code>;  the defaut is <code>opt.places=","</code>,  but some other characters
+can  be used ---  for instance a  good choice for  printing big polynomials
+could  be <code>"+-"</code>. If a field <code>opt.file</code>  is given, the result is appended
+to  that file  instead of  written to  standard output;  this may  be quite
+useful for dumping some <strong>GAP3</strong> values to a file for later re-reading.
+<P>
+<pre>    gap> Cut("an, example, with, plenty, of, commas\n",rec(width:=10));
+    an,
+    example,
+    with,
+    plenty,
+    of,
+    commas
+    gap></pre>
+<P><a href ="chap113.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap115.htm">Next</a><BR><a href = "theindex.htm">Index</a>
 <P>
 <address>gap3-jm<br>19 Feb 2018</address></body></html>

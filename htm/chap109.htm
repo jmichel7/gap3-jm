@@ -1,243 +1,300 @@
-<html><head><title>GAP3 Manual: 109 Posets and relations</title></head>
+<html><head><title>GAP3 Manual: 109 CHEVIE utility functions -- Decimal and complex numbers</title></head>
 <body bgcolor="ffffff">
-<h1>109 Posets and relations</h1>
+<h1>109 CHEVIE utility functions -- Decimal and complex numbers</h1>
 <P><P><P>
-Posets are represented in <strong>CHEVIE</strong> as records where at least one of the two
-following fields is present:
+The original incentive for the functions  described in this file was to
+get the  ability to decide if  a cyclotomic number which  happens to be
+real is positive  or negative (this is  needed to tell if a  root of an
+arbitrary Coxeter group is negative  or positive). Of course, there are
+other  uses for  fixed-precision real  and complex  numbers, which  the
+functions  described here  provide. A  special feature  of the  present
+implementation  is that  to make  evaluation of  cyclotomics relatively
+fast, a  cache of primitive  roots of  unity is maintained  (the cached
+values are kept for the largest precision ever used to compute them).
 <P>
-<DL><DT>  <code>.incidence</code>:<DD>  a  boolean  matrix  such  that <code>.incidence[i][j]=true</code> iff
-  <code>i&lt;=j</code> in the poset.
-</DL><P>
-<DL><DT>  <code>.hasse</code>:<DD> a list representing the Hasse diagram of the poset: the <I>i</I>-th
-  entry  is the list of indices  of elements which are immediate successors
-  (covers)  of the <I>i</I>-th element, that is  the list of <I>j</I> such that <code>i&lt;j</code>
-  and such that there is no <I>k</I> such that <code>i&lt;k&lt;j</code>.
-</DL><P>
-If  only one field is present, the other  is computed on demand. Here is an
-example of use;
-<P>
-<pre>    gap> P:=BruhatPoset(CoxeterGroup("A",2));
-    Poset with 6 elements
-    gap> Display(P);
-    &lt;1,2&lt;21,12&lt;121
-    gap> Hasse(P);
-    [ [ 2, 3 ], [ 4, 5 ], [ 4, 5 ], [ 6 ], [ 6 ], [  ] ]
-    gap> Incidence(P);   
-    [ [ true, true, true, true, true, true ], 
-      [ false, true, false, true, true, true ], 
-      [ false, false, true, true, true, true ], 
-      [ false, false, false, true, false, true ], 
-      [ false, false, false, false, true, true ], 
-      [ false, false, false, false, false, true ] ]</pre>
+We first describe a general facility  to build complex numbers as pairs
+of real numbers. The real numbers in  the pairs can be of any type that
+<strong>GAP3</strong> knows  about: integers, rationals, cyclotomics,  or elements of
+any ring actually.
 <P><P>
 <H3> Subsections</H3>
 <oL>
-<LI> <A HREF="chap109.htm#SECT001">TransitiveClosure of incidence matrix</a>
-<LI> <A HREF="chap109.htm#SECT002">LcmPartitions</a>
-<LI> <A HREF="chap109.htm#SECT003">GcdPartitions</a>
-<LI> <A HREF="chap109.htm#SECT004">Poset</a>
-<LI> <A HREF="chap109.htm#SECT005">Hasse</a>
-<LI> <A HREF="chap109.htm#SECT006">Incidence</a>
-<LI> <A HREF="chap109.htm#SECT007">LinearExtension</a>
-<LI> <A HREF="chap109.htm#SECT008">Functions for Posets</a>
-<LI> <A HREF="chap109.htm#SECT009">Partition for posets</a>
-<LI> <A HREF="chap109.htm#SECT010">Restricted for Posets</a>
+<LI> <A HREF="chap109.htm#SECT001">Complex</a>
+<LI> <A HREF="chap109.htm#SECT002">Operations for complex numbers</a>
+<LI> <A HREF="chap109.htm#SECT003">ComplexConjugate</a>
+<LI> <A HREF="chap109.htm#SECT004">IsComplex</a>
+<LI> <A HREF="chap109.htm#SECT005">evalf</a>
+<LI> <A HREF="chap109.htm#SECT006">Rational</a>
+<LI> <A HREF="chap109.htm#SECT007">SetDecimalPrecision</a>
+<LI> <A HREF="chap109.htm#SECT008">Operations for decimal numbers</a>
+<LI> <A HREF="chap109.htm#SECT009">Pi</a>
+<LI> <A HREF="chap109.htm#SECT010">Exp</a>
+<LI> <A HREF="chap109.htm#SECT011">IsDecimal</a>
 </ol>
-<A NAME="SECT001"><h2>109.1 TransitiveClosure of incidence matrix</h2></a>
+<A NAME="SECT001"><h2>109.1 Complex</h2></a>
 <P><P>
 <A name = "I0"></a>
 
 <P>
-<code>TransitiveClosure(<var>M</var>)</code>
+<code>Complex( <var>r</var>[, <var>i</var>] )</code>
 <P>
-<var>M</var>  should be a  square boolean matrix  representing a relation; returns a
-boolean  matrix representing the  transitive closure of  this relation. The
-transitive  closure is computed  by the Floyd-Warshall  algorithm, which is
-quite fast even for large matrices.
+In the first form, defines a complex  number whose real part is <var>r</var> and
+imaginary part is <var>i</var>. If omitted, <var>i</var>  is taken to be 0. There are two
+special cases  when there is only  one argument: if <var>r</var>  is already a
+complex,  it is  returned; and  if <var>r</var>  is a  cyclotomic number,  it is
+converted to the pair of its real  and imaginary part and returned as a
+complex.
 <P>
-<pre>    gap> M:=List([1..5],i->List([1..5],j->j-i in [0,1]));
-    [ [ true, true, false, false, false ], 
-      [ false, true, true, false, false ], 
-      [ false, false, true, true, false ], 
-      [ false, false, false, true, true ], 
-      [ false, false, false, false, true ] ]
-    gap> PrintArray(TransitiveClosure(M));
-    [[ true,  true,  true,  true,  true],
-     [false,  true,  true,  true,  true],
-     [false, false,  true,  true,  true],
-     [false, false, false,  true,  true],
-     [false, false, false, false,  true]]</pre>
-<P><A NAME="SECT002"><h2>109.2 LcmPartitions</h2></a>
+<pre>    gap> Complex(0,1);
+    I
+    gap> Complex(E(3));
+    -1/2+ER(3)/2I
+    gap> Complex(E(3)^2);
+    -1/2-ER(3)/2I
+    gap> x:=X(Rationals);;x.name:="x";;Complex(0,x);
+    xI</pre>
+<P>
+The last line shows that the arguments to <code>Complex</code> can be of any ring.
+Complex numbers are  represented as a record with two  fields, <code>.r</code> and
+<code>.i</code> holding the real and imaginary part respectively.
+<P><A NAME="SECT002"><h2>109.2 Operations for complex numbers</h2></a>
+<P><P><P>
+The arithmetic operations <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> and <code>^</code> work for complex
+numbers. They also have <code>Print</code> and <code>String</code> methods.
+<P>
+<pre>    gap> Complex(0,1);
+    I
+    gap> last+1;
+    1+I
+    gap> last^2;
+    2I
+    gap> last^2;
+    -4
+    gap> last+last2;
+    -4+2I
+    gap> x:=X(Rationals);;x.name:="x";;Complex(0,x);
+    xI
+    gap> last^2;
+    -x^2</pre>
+<P>
+Finally  we  should  mention  the  <code>FormatGAP</code>  method,  which allows to print
+complex numbers in a way such that they can be read back in <strong>GAP3</strong>: 
+<P>
+<pre>    gap> a:=Complex(1/2,1/3);
+    1/2+1/3I
+    gap> FormatGAP(a);
+    "Complex(1/2,1/3)"</pre>
+<P><A NAME="SECT003"><h2>109.3 ComplexConjugate</h2></a>
 <P><P>
 <A name = "I1"></a>
 
 <P>
-<code>LcmPartitions(<var>p1</var>,...,<var>pn</var>)</code>
-Each  argument is a partition of the same set <code>S</code>, represented by a list of
-disjoint  subsets whose union is <code>S</code>. Equivalently each argument represents
-an equivalence relation on <code>S</code>.
+<code>ComplexConjugate( <var>c</var>)</code>
 <P>
-The result is the finest partition of <code>S</code> such that each argument partition
-refines it. It represents the <code>or</code> of the equivalence relations represented
-by the arguments.
+This  function   applies  complex  conjugation  to   its  argument.  It
+knows  ho  to do  this  for  cyclotomic  numbers  (it then  just  calls
+<code>GaloisCyc(<var>c</var>,-1)</code>),  complex  numbers,   lists  (it  conjugates  each
+element of the list), polynomials (it conjugates each coefficient), and
+can  be taught  to conjugate  elements <code>x</code>  of an  arbitrary domain  by
+defining <code>x.operations.ComplexConjugate</code>.
 <P>
-<pre>    gap> LcmPartitions([[1,2],[3,4],[5,6]],[[1],[2,5],[3],[4],[6]]);
-    [ [ 1, 2, 5, 6 ], [ 3, 4 ] ]</pre>
-<P><A NAME="SECT003"><h2>109.3 GcdPartitions</h2></a>
+<pre>    gap> ComplexConjugate(Complex(0,1));
+    -I
+    gap> ComplexConjugate(E(3));
+    E(3)^2
+    gap> x:=X(Cyclotomics);;x.name:="x";;ComplexConjugate(x+E(3));
+    x + (E(3)^2)</pre>
+<P><A NAME="SECT004"><h2>109.4 IsComplex</h2></a>
 <P><P>
 <A name = "I2"></a>
 
 <P>
-<code>GcdPartitions(<var>p1</var>,...,<var>pn</var>)</code>
-Each  argument is a partition of the same set <code>S</code>, represented by a list of
-disjoint  subsets whose union is <code>S</code>. Equivalently each argument represents
-an equivalence relation on <code>S</code>.
+<code>IsComplex( <var>c</var>)</code>
 <P>
-The result is the coarsest partition which refines all argument partitions.
-It  represents the  <code>and</code> of  the equivalence  relations represented by the
-arguments.
+This function returns <code>true</code> iff its argument is a complex number.
 <P>
-<pre>    gap> GcdPartitions([[1,2],[3,4],[5,6]],[[1],[2,5],[3],[4],[6]]);
-    [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ] ]</pre>
-<P><A NAME="SECT004"><h2>109.4 Poset</h2></a>
+<pre>    gap> IsComplex(Complex(1,0));
+    true
+    gap> IsComplex(E(4));
+    false</pre>
+<P><A NAME="SECT005"><h2>109.5 evalf</h2></a>
 <P><P>
 <A name = "I3"></a>
 
 <P>
-<code>Poset(<var>M</var>)</code>
+<code>evalf( <var>c</var> [, <var>prec</var>] )</code>
 <P>
-<code>Poset(<var>H</var>)</code>
+The  name  of  this  function  intentionally mimics  that  of  a  Maple
+function.  It computes  a  fixed-precision decimal  number with  <var>prec</var>
+digits  after the  decimal  point approximating  its  argument; if  not
+given, <var>prec</var> is taken  to be 10 (this can be  changed via the function
+<code>SetDecimalPrecision</code>,  see below).  Trailing zeroes  are not  shown on
+output, so the  actual precision may be more than  the number of digits
+shown.
 <P>
-Creates   a  poset   from  either   an  incidence   matrix  <var>M</var>  such  that
-<code>M[i][j]=true</code>  if and only if <code>i&lt;=j</code> in  the poset, or a Hasse diagram <var>H</var>
-given as a list whose <I>i</I>-th entry is the list of indices of elements which
-are  immediate successors (covers) of the <I>i</I>-th element, that is <code>M[i]</code> is
-the  list of <I>j</I> such that <code>i&lt;j</code> in the poset and such that there is no <I>k</I>
-such that <code>i&lt;k&lt;j</code>.
+<pre>    gap> evalf(1/3);
+    0.3333333333</pre>
 <P>
-<code>Poset(arg)</code>
+As one  can see,  the resulting <code>decimal  numbers</code> have  an appropriate
+Print method (which uses the String method).
 <P>
-In  this last form <code>arg[1]</code>  should be a record  with a field <code>.operations</code>
-and the functions calls <code>ApplyFunc(arg[1].operations.Poset,arg)</code>.
+<pre>    gap> evalf(1/3,20);
+    0.33333333333333333333</pre>
 <P>
-A poset is represented as a record with the following fields.
+<code>evalf</code> can also be applied  to cyclotomic or complex numbers, yielding
+a complex which is a pair of decimal numbers.
 <P>
-<DL><DT>  <code>.incidence</code>:<DD>  the incidence matrix.
-</DL><P>
-<DL><DT>  <code>.hasse</code>:<DD> the Hasse diagram.
-</DL><P>
-Since the cost of computing one from the other is high, the above fields are
-optional (only one of them needs to be present) and the other is computed on
-demand.
+<pre>    gap> evalf(E(3));
+    -0.5+0.8660254038I</pre>
 <P>
-<DL><DT>  <code>.size</code>:<DD> the number of elements of the poset.
-</DL><P>
-Finally,  an optional field <code>.label</code> may be given for formatting or display
-purposes.  It should be  a function <code>label(P,i,opt)</code>  which returns a label
-for the <code>i</code>-th element of the poset <code>P</code>, formatted according to the options
-(if any) given in the options record <code>opt</code>.
-<P><A NAME="SECT005"><h2>109.5 Hasse</h2></a>
+<code>evalf</code> works also for strings (the result is truncated if too precise)
+<P>
+<pre>    gap> evalf(".3450000000000000000001"); # precision is 10
+    0.345</pre>
+<P>
+and for lists (it is applied recursively to each element).
+<P>
+<pre>    gap> evalf([E(5),1/7]);
+    [ 0.3090169944+0.9510565163I, 0.1428571429 ]</pre>
+<P>
+Finally, an <code>evalf</code>  method can be defined for elements  of any domain.
+One has been defined in <strong>CHEVIE</strong> for complex numbers: 
+<P>
+<pre>    gap> a:=Complex(1/2,1/3);
+    1/2+1/3I
+    gap> evalf(a);
+    0.5+0.3333333333I</pre>
+<P><A NAME="SECT006"><h2>109.6 Rational</h2></a>
 <P><P>
 <A name = "I4"></a>
 
 <P>
-<code>Hasse(<var>P</var>)</code>
+<code>Rational(<var>d</var>)</code>
 <P>
-returns the Hasse diagram of the poset <var>P</var>.
+<var>d</var>  is a  <code>decimal</code> number.  The function  returns the  rational number
+which is actually represented by <var>d</var>
 <P>
-<pre>    gap> p:=Poset(List([1..5],i->List([1..5],j->j mod i=0)));                  
-    Poset with 5 elements
-    gap> Hasse(p);
-    [ [ 2, 3, 5 ], [ 4 ], [  ], [  ], [  ] ]</pre>
-<P><A NAME="SECT006"><h2>109.6 Incidence</h2></a>
+<pre>    gap> evalf(1/3);
+    0.3333333333
+    gap> Rational(last);
+    33333333333/100000000000</pre>
+<P><A NAME="SECT007"><h2>109.7 SetDecimalPrecision</h2></a>
 <P><P>
 <A name = "I5"></a>
 
 <P>
-<code>Incidence(<var>P</var>)</code>
+<code>SetDecimalPrecision( <var>prec</var> )</code>
 <P>
-returns the Incidence matrix of the poset <var>P</var>.
+This function  sets the  default precision to  be used  when converting
+numbers to decimal numbers without giving a second argument to <code>evalf</code>.
 <P>
-<pre>    gap> p:=Poset(Concatenation(List([1..5],i->[i+1]),[[]]));
-    Poset with 6 elements
-    gap> Incidence(p);
-    [ [ true, true, true, true, true, true ], 
-      [ false, true, true, true, true, true ], 
-      [ false, false, true, true, true, true ], 
-      [ false, false, false, true, true, true ], 
-      [ false, false, false, false, true, true ], 
-      [ false, false, false, false, false, true ] ]</pre>
-<P><A NAME="SECT007"><h2>109.7 LinearExtension</h2></a>
-<P><P>
+<pre>    gap> SetDecimalPrecision(20);
+    gap> evalf(1/3);
+    0.33333333333333333333
+    gap> SetDecimalPrecision(10);</pre>
+<P><A NAME="SECT008"><h2>109.8 Operations for decimal numbers</h2></a>
+<P><P><P>
 <A name = "I6"></a>
 
+The arithmetic operations <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> and <code>^</code> work for decimal
+numbers, as well as the function <code>GetRoot</code> and the comparison functions
+<code><</code>, <code>></code>, etc...  The precision of the result of  an operation is that
+of the  least precise number used.  They can be raised  to a fractional
+power: <code>GetRoot(d,n)</code>  is equivalent  to <code>d^(1/n)</code>.  Decimal numbers
+also have <code>Print</code> and <code>String</code> methods.
 <P>
-<code>LinearExtension(<var>P</var>)</code>
+<pre>    gap> evalf(1/3)+1;
+    1.3333333333
+    gap> last^3;
+    2.3703703704
+    gap> evalf(E(3));
+    -0.5+0.8660254038I
+    gap> last^3;
+    1
+    gap> evalf(ER(2));
+    1.4142135624
+    gap> GetRoot(evalf(2),2);
+    1.4142135624
+    gap> evalf(2)^(1/2);
+    1.4142135624
+    gap> evalf(1/3,20);
+    0.33333333333333333333
+    gap> last+evalf(1);
+    1.3333333333
+    gap> last2+1;
+    1.33333333333333333333</pre>
 <P>
-returns  a linear extension of the poset <var>P</var>, that is a list <code>l</code> containing
-a  permutation of  the integers  <code>[1..Size(P)]</code> such  that if <code>i&lt;j</code> in <var>P</var>,
-then <code>Position(l,i)&lt;Position(l,j)</code>. This is also called a topological sort
-of <var>P</var>.
+Finally  we should mention the <code>FormatGAP</code>  method, which, given option <code>GAP</code>,
+allows  to print decimal numbers in  a way such that they  can be read back in
+<strong>GAP3</strong>: 
 <P>
-<pre>    gap> p:=Poset(List([1..5],i->List([1..5],j->j mod i=0))); 
-    Poset with 5 elements
-    gap> Display(p);
-    1&lt;2&lt;4
-    1&lt;3,5
-    gap> LinearExtension(p);
-    [ 1, 2, 3, 5, 4 ]</pre>
-<P><A NAME="SECT008"><h2>109.8 Functions for Posets</h2></a>
-<P><P><P>
-The function <code>Size</code> returns the number of elements of the poset.
-<P>
-The functions <code>String</code> and <code>Print</code> just indicate the <code>Size</code> of the poset.
-<P>
-The  functions <code>Format</code> and <code>Display</code>  show the poset as  a list of maximal
-covering chains, with formatting depending on their record of options. They
-take  in account the  associated partition (see  <a href="chap109.htm#SECT009">Partition for posets</a>) to
-give  a  more  compact  description  where  equivalent  elements are listed
-together, separated by commas.
-<P>
-<pre>    gap> p:=Poset(UnipotentClasses(ComplexReflectionGroup(28)));
-    Poset with 16 elements
-    gap> Display(p); 
-    1&lt;A1&lt;~A1&lt;A1+~A1&lt;A2&lt;A2+~A1&lt;~A2+A1&lt;C3(a1)&lt;F4(a3)&lt;C3,B3&lt;F4(a2)&lt;F4(a1)&lt;F4
-    A1+~A1&lt;~A2&lt;~A2+A1
-    A2+~A1&lt;B2&lt;C3(a1)</pre>
-<P><A NAME="SECT009"><h2>109.9 Partition for posets</h2></a>
+<pre>    gap> FormatGAP(evalf(1/3));
+    "evalf(33333333333/100000000000,10)"</pre>
+<P><A NAME="SECT009"><h2>109.9 Pi</h2></a>
 <P><P>
 <A name = "I7"></a>
 
 <P>
-<code>Partition(<var>P</var>)</code>
+<code>Pi( [<var>prec</var>])</code>
 <P>
-returns  the  partition  of  <code>[1..Size(P)]</code>  determined  by the equivalence
-relation  associated to <var>P</var>; that  is, <code>i</code> and <code>j</code>  are in the same part of
-the  partition if the relations <code>i&lt;k</code> and <code>j&lt;k</code> as well are <code>k&lt;i</code> and <code>k&lt;j</code>
-are equivalent for any <code>k</code> in the poset.
+This function  returns a  decimal approximation  to <I>&pi;</I>,  with <var>prec</var>
+digits  (or if  <var>prec</var>  is omitted  with the  default  umber of  digits
+defined by <code>SetDecimalPrecision</code>, initially 10).
 <P>
-<pre>    gap> p:=Poset(List([1..8],i->List([1..8],j->i=j or (i mod 4)&lt;(j mod 4))));
-    Poset with 8 elements
-    gap> Display(p);
-    4,8&lt;1,5&lt;2,6&lt;3,7
-    gap> Partition(p);
-    [ [ 4, 8 ], [ 2, 6 ], [ 3, 7 ], [ 1, 5 ] ]</pre>
-<P><A NAME="SECT010"><h2>109.10 Restricted for Posets</h2></a>
+<pre>    gap> Pi();
+    3.1415926536
+    gap> Pi(34);
+    3.1415926535897932384626433832795029</pre>
+<P><A NAME="SECT010"><h2>109.10 Exp</h2></a>
 <P><P>
 <A name = "I8"></a>
 
+<P>
+<code>Exp( <var>x</var>)</code>
+<P>
+This  function returns  the complex  exponential of  <var>x</var>. The  argument
+should be a decimal or a decimal complex. The result has as many digits
+of precision as the argument.
+<P>
+<pre>    gap> Exp(evalf(1));
+    2.7182818285
+    gap> Exp(evalf(1,20));
+    2.71828182845904523536
+    gap> Exp(Pi()*evalf(E(4)));
+    -1</pre>
+<P>
+The code of <code>Exp</code> shows how easy it is to use decimal numbers.
+<P>
+<pre>    gap> Print(Exp,"\n");
+    function ( x )
+        local  res, i, p, z;
+        if IsCyc( x )  then
+            x := evalf( x );
+        fi;
+        z := 0 * x;
+        res := z;
+        p := 1;
+        i := 1;
+        while p &lt;> z  do
+            res := p + res;
+            p := 1 / i * p * x;
+            i := i + 1;
+        od;
+        return res;
+    end</pre>
+<P><A NAME="SECT011"><h2>109.11 IsDecimal</h2></a>
+<P><P>
 <A name = "I9"></a>
 
 <P>
-Restricted(<var>P</var>,<var>indices</var>)
+<code>IsDecimal( <var>x</var>)</code>
 <P>
-returns the sub-poset of <var>P</var> determined by <var>indices</var>, which must be a sublist
-of <code>[1..Size(P)]</code>.
+returns <code>true</code> iff <var>x</var> is a decimal number.
 <P>
-<pre>    gap> Display(p);
-    4,8&lt;1,5&lt;2,6&lt;3,7
-    gap> Display(Restricted(p,[2..6]));
-    3&lt;4&lt;1,5&lt;2</pre>
+<pre>    gap> IsDecimal(evalf(1));
+    true
+    gap> IsDecimal(evalf(E(3)));
+    false</pre>
 <P><a href ="chap108.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap110.htm">Next</a><BR><a href = "theindex.htm">Index</a>
 <P>
 <address>gap3-jm<br>19 Feb 2018</address></body></html>
