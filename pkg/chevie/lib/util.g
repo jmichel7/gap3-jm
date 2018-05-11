@@ -287,20 +287,20 @@ end;
 
 ############################################################################
 ##
-#F  InductionTable( <u>, <g> ) . . . . . . . . . . . decomposition of induced 
-#F  characters 
+#F  InductionTable( <u>, <g> ) . . . . . . . . table of induced characters 
 ##  
-##  Let <u>  be  a subgroup of  <g>.   'InductionTable'  returns a  record
-##  describing  the  decomposition of  the  irreducible  characters of <u>
-##  induced to <g>.
+##  'InductionTable'  returns a record describing  the decomposition of the
+##  irreducible characters of the subgroup <u> induced to the group <g>.
 ##  
 ##  The result can be displayed using 'Display'.
 ##  
-##  In fact this function also works for Coxeter cosets.
+##  This function also works for Spets (Reflection Cosets)
 ##  
 InductionTableOps:=OperationsRecord("InductionTableOps");
 
-InductionTableOps.Print:=function(t)Print(t.what,"Table(",t.u,", ",t.g,")");end;
+InductionTableOps.String:=t->SPrint(t.what,"Table(",t.u,", ",t.g,")");
+
+InductionTableOps.Print:=function(t)Print(SPrint(t));end;
 
 InductionTableOps.Format:=function(t,option)
   option.rowLabels:=t.gNames(t,option);option.columnLabels:=t.uNames(t,option);

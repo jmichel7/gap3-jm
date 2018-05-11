@@ -17,7 +17,7 @@
 #####################################################################
 
 # IsSpecial(WF,c) c is an orbit of WF.phi on WF.rootInclusion
-# return true iff c is special
+# return true iff c is special in the sense of Digne-Michel
 IsSpecial:=function(WF,c)local p,W;
   if Length(c) mod 2<>0 then return false;fi;
   W:=Group(WF);

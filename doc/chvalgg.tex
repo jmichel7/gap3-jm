@@ -20,29 +20,28 @@
 Let  us fix an algebraically closed field  $K$ and let $\bG$ be a connected
 reductive  algebraic group over $K$. Let $\bT$ be a maximal torus of $\bG$,
 let  $X(\bT)$  be  the  character  group  of $\bT$ (resp. $Y(\bT)$ the dual
-lattice of one-parameter subgroups) and $\Phi$ (resp $\Phi^\vee$) the roots
-(resp. coroots) of $\bG$ with respect to $\bT$.
+lattice  of one-parameter subgroups of $\bT$) and $\Phi$ (resp $\Phi^\vee$)
+the roots (resp. coroots) of $\bG$ with respect to $\bT$.
 
 Then   $\bG$  is  determined   up  to  isomorphism   by  the  *root  datum*
 $(X(\bT),\Phi,  Y(\bT),\Phi^\vee)$.  In  algebraic  terms, this consists in
-giving  a  root  system  $\Phi  \subset  X(\bT)$,  where $X(\bT)$ is a free
-$\Z$-lattice  of dimension  the *rank*  of $\bG$,  and giving similarly the
-dual roots $\Phi^\vee\subset Y(\bT)$.
+giving  a free  $\Z$-lattice $X=X(\bT)$  of dimension  the *rank*  of $\bT$
+(which is also called the *rank* of $\bG$), and a root system $\Phi \subset
+X$, and giving similarly the dual roots $\Phi^\vee\subset Y=Y(\bT)$.
 
 This  is obtained  by a  slight generalization  of our  setup for a Coxeter
 group  $W$. This time we assume the canonical basis of the vector space $V$
-on which $W$ acts is a $\Z$-basis of $X(\bT)$, and $\Phi$ is specified by a
+on  which $W$  acts is  a $\Z$-basis  of $X$,  and $\Phi$ is specified by a
 matrix  'W.simpleRoots' whose lines are the  simple roots expressed in this
-basis   of   $V$.   Similarly   $\Phi^\vee$   is   described  by  a  matrix
-'W.simpleCoroots'  whose  lines  are  the  simple  coroots  in the basis of
-$Y(\bT)$  dual to the chosen basis of $X(\bT)$. The duality pairing between
-$X(\bT)$  and $Y(\bT)$  is the  canonical one,  that is the pairing between
-vectors  $x\in X(\bT)$ and $y\in Y(\bT)$ is given in \GAP\ by 'x\*y'. Thus,
-we must have the relation
+basis   of   $X$.   Similarly   $\Phi^\vee$   is   described  by  a  matrix
+'W.simpleCoroots'  whose lines are  the simple coroots  in the basis of $Y$
+dual to the chosen basis of $X$. The duality pairing between $X$ and $Y$ is
+the  canonical one, that is the pairing  between vectors $x\in X$ and $y\in
+Y$  is  given  in  \GAP\  by  'x\*y'.  Thus,  we  must  have  the  relation
 'W.simpleCoroots\*TransposedMat(W.simpleRoots)=CartanMat(W)'.
 
-We  get  that  by  a  new  form  of  the function 'CoxeterGroup', where the
-arguments  are  the  two  matrices  'W.simpleRoots'  and  'W.simpleCoroots'
+We get that in \CHEVIE\ by a new form of the function 'CoxeterGroup', where
+the  arguments are  the two  matrices 'W.simpleRoots' and 'W.simpleCoroots'
 described  above. The roots need not generate $V$, so the matrices need not
 be  square. For instance, the root datum of  the linear group of rank 3 can
 be specified as\:
@@ -53,44 +52,51 @@ be specified as\:
     gap> MatXPerm( W, W.1);
     [ [ 0, 1, 0 ], [ 1, 0, 0 ], [ 0, 0, 1 ] ]|
 
-here  the symmetric  group on  3 letters  acts by  permutation of the basis
-vectors  of  $V$.  The  dimension  of  $V$  (the  length  of the vectors in
-'.simpleRoots')  is called  the *rank*  and the  dimension of  the subspace
-generated  by  the  roots  (the  length of '.simpleroots') the *semi-simple
-rank*.  In the  example the  rank is  3 and  the semisimple  rank is 2; the
-integral  elements of $V$ correspond to  the characters of a maximal torus,
-and  the integral elements  of $V^\vee$ to  one-parameter subgroups of that
-torus.
+here  the symmetric group on 3 letters  acts by permutation of the basis of
+$X$.  The dimension of $X$ (the length of the vectors in '.simpleRoots') is
+the  *rank* and the dimension  of the subspace generated  by the roots (the
+length  of '.simpleroots') is called the *semi-simple rank*. In the example
+the  rank is 3 and  the semisimple rank is  2.
 
 The  default form 'W\:=CoxeterGroup(\"A\",2)' defines the adjoint algebraic
 group  (the group with a trivial center). In that case $\Phi$ is a basis of
-$X(\bT)$,  so 'W.simpleRoots' is the  identity matrix and 'W.simpleCoroots'
+$X$,  so 'W.simpleRoots' is the  identity matrix and 'W.simpleCoroots'
 is   the  Cartan  matrix  'CartanMat(W)'  of  the  root  system.  The  form
 'CoxeterGroup(\"A\",2,\"sc\")'  constructs the  semisimple simply connected
 algebraic  group, where 'W.simpleRoots' is the transposed of 'CartanMat(W)'
 and 'W.simpleCoroots' is the identity matrix.
 
-There  is also a function 'RootDatum' which understands some familiar names
-for  the algebraic groups and  gives the results that  could be obtained by
-giving the appropriate matrices 'W.simpleRoots' and 'W.simpleCoroots'\:
+There  is an extreme form  of root data which  requires another function to
+specify\:  when <W> is  the trivial |CoxeterGroup()|  and there are thus no
+roots  (in this case $\bG$ is a torus), the root datum cannot be determined
+by  the roots,  but is  entirely determined  by the  rank $r$. The function
+'Torus(<r>)' constructs such a root datum.
 
-|    gap> RootDatum("sl",3);   # same as CoxeterGroup(\"A\",2,\"sc\")
-    RootDatum("sl",3)|
+Finally,  there  is  also  a  function  'RootDatum'  which understands some
+familiar names for the algebraic groups and gives the results that could be
+obtained   by   giving   the   appropriate   matrices  'W.simpleRoots'  and
+'W.simpleCoroots'\:
 
-It is also possible to compute with finite order elements of $\bT$. Over an
-algebraically closed field, finite order elements of $\bT$ are in bijection
-with  elements of $\Q/\Z\otimes  Y(\bT)$ whose denominator  is prime to the
-characteristic  of the field. These are represented as elements of a vector
-space  of rank $r$ over $\Q$, taken  'Mod1' whenever the need arises, where
-'Mod1'  is the function which replaces the numerator of a fraction with the
-numerator  'mod' the  denominator; the  fraction $\frac{p}{q}$ represents a
-primitive  $q$-th  root  of  unity  raised  to  the  $p$-th  power. In this
-representation, multiplication of roots of unity becomes addition 'Mod1' of
-rationals  and raising to  the power $n$  becomes multiplication by $n$. We
-call this the ``additive\'\' representation of semisimple elements.
+|    gap> RootDatum("gl",3);   # same as the previous example
+    RootDatum("gl",3)|
+
+{\bf Semisimple elements}
+
+It  is also possible  to compute with  semi-simple elements. The first type
+are  finite order  elements of  $\bT$, which  over an  algebraically closed
+field  $K$  are  in  bijection  with  elements  of  $Y\otimes  \Q/\Z$ whose
+denominator is prime to the characteristic of $K$. These are represented as
+elements of a vector space of rank $r$ over $\Q$, taken 'Mod1' whenever the
+need arises, where 'Mod1' is the function which replaces the numerator of a
+fraction   with  the   numerator  'mod'   the  denominator;   the  fraction
+$\frac{p}{q}$  represents a  primitive $q$-th  root of  unity raised to the
+$p$-th  power.  In  this  representation,  multiplication of roots of unity
+becomes  addition 'Mod1' of rationals and  raising to the power $n$ becomes
+multiplication  by $n$. We  call this the  ``additive\'\' representation of
+semisimple elements.
 
 Here  is an example of computations  with semisimple-elements given as list
-in $\Q/\Z$.
+of $r$ elements of $\Q/\Z$.
 
 |    gap> G:=RootDatum("sl",4);
     RootDatum("sl",4)
@@ -125,11 +131,11 @@ Finally the semi-simple elements of order 3 in $Z^0$ are computed.
       <2/3,1/3,2/3> ]|
 
 Since  over an algebraically  closed field $K$  the points of  $\bT$ are in
-bijection  with $Y(\bT)\otimes K^\times$  it is also  possible to represent
-any  point of $\bT$  over $K$ as  a list of  'Rank(T)' non-zero elements of
-$K$.   This  is  the   ``multiplicative\'\'  representation  of  semisimple
-elements.  here is the same computation  as above performed with semisimple
-elements whose coefficients are in the finite field 'GF(4)'\:
+bijection  with $Y\otimes  K^\times$ it  is also  possible to represent any
+point  of $\bT$ over $K$ as a list of $r$ non-zero elements of $K$. This is
+the ``multiplicative\'\' representation of semisimple elements. here is the
+same   computation  as  above  performed  with  semisimple  elements  whose
+coefficients are in the finite field 'GF(4)'\:
 
 |    gap> s:=SemisimpleElement(G,List([1,2,1],i->Z(4)^i));
     <Z(2^2),Z(2^2)^2,Z(2^2)>
@@ -318,7 +324,7 @@ not if 'false'. For entries to be treated additively, they must belong to a
 domain for which the method 'Mod1' had been defined.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Operations for Semisimple elements}
+\Section{Operations for semisimple elements}
 
 The  arithmetic operations '\*', '/' and '\^' work for semisimple elements.
 They  also have 'Print' and 'String' methods. We first give an element with
@@ -445,7 +451,7 @@ that  'M\:=Concatenation(S.generators,S.complement)' is a basis of $Y(\bT)$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations for Subtori}
 
-The operation 'in' can test if a semisimple elements belongs to a subtorus\:
+The operation 'in' can test if a semisimple element belongs to a subtorus\:
 
 |    gap> W:=RootDatum("gl",4);;
     gap> r:=AlgebraicCentre(W);
@@ -501,7 +507,7 @@ generate $A(Z)$.
       AZ := Group( <0,1/2,0> ) )|
 
 Note  that in versions of \CHEVIE\ prior  to april 2017, the field 'Z0' was
-no  a  subtorus  but  what  is  now  'Z0.generators', and there was a field
+not a  subtorus  but  what  is  now  'Z0.generators', and there was a field
 'complement' which is now 'Z0.complement'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

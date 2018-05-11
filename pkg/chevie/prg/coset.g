@@ -382,7 +382,8 @@ end;
 Torus:=function(arg)local W,res,i;
   W:=arg[1];
   if IsInt(W) then 
-    res:=Copy(CoxeterGroup());Unbind(res.degrees);res.rank:=W;return res;
+    res:=Copy(CoxeterGroup());Unbind(res.degrees);res.rank:=W;
+    res.name:=SPrint("Torus(",W,")");return res;
   elif IsMat(W) then 
     res:=Copy(CoxeterGroup());Unbind(res.degrees);res.rank:=Length(W);
     return Spets(res,W);

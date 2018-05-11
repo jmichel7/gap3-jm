@@ -230,7 +230,7 @@ LusztigInductionTable:=function(arg)
 #   ChevieErr("Non-trivial parent Spets not implemented");
 #   return false;
 # fi;
-  res:=rec(u:=LF, g:=WF, what:="LusztigInductionTable",
+  res:=rec(u:=LF, g:=WF, what:="LusztigInduction",
     head:=function(t,option)local math;
       if IsBound(option.TeX) then math:=x->SPrint("$",x,"$");else math:=x->x;fi;
       return SPrint("Lusztig Induction from ",math(ReflectionName(t.u,option)),
@@ -275,6 +275,7 @@ LusztigInductionTable:=function(arg)
   scalars:=scalars[1];
   if ForAny(scalars,IsMvp) then Error();fi;
   if ForAny(scalars,x->x<>1) then
+    res.scalars:=scalars;
     if ForAll(scalars,IsInt) then p:="#I signs are ";
     else InfoChevie("#I non-sign scalars needed:",FormatGAP(scalars),"\n");
     fi;

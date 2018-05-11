@@ -543,7 +543,7 @@ ICCTable:=function(arg)local W,i,q,tbl,o,res,q,uc,ss,b,f,k,R,n;
         ReflectionName(x.relgroup,opt),"\n\n");
      fi;
      if not IsBound(opt.columns) and not IsBound(opt.rows) then 
-       opt.rows:=[1..Length(x.dimBu)];SortParallel(-x.dimBu,opt.rows);
+       opt.rows:=Permuted([1..Length(x.dimBu)],SortingPerm(x.dimBu));
        opt.columns:=opt.rows;
      fi;
      tbl:=Copy(x.scalar);

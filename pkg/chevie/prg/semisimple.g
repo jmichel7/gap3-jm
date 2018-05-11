@@ -411,6 +411,7 @@ end;
 ##
 ##   RootDatum(...)
 ##   return various known CoxeterGroups and CoxeterCosets
+##   Thanks to Jay Taylor for csp and gpin.
 ##
 RootDatum:=function(arg)local type,data,res; type:=arg[1];
   data:=rec();
@@ -432,6 +433,24 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
     R:=IdentityMat(dim/2); for i in [2..dim/2] do R[i][i-1]:=-1;od;
     R1:=Copy(R);R1[1]:=2*R1[1];
     return CoxeterGroup(R1,R);
+  end;
+  data.csp:=function(dim)local R,cR;dim:=dim/2;
+    R:=IdentityMat(dim+1);R:=R{[1..dim]}-R{[2..dim+1]}; cR:=Copy(R); 
+    R[1]{[1,2]}:=[0,-1]; cR[1]{[1,2]}:=[1,-2];
+    return CoxeterGroup(cR,R);
+  end;
+  data.gpin:=function(dim)local R,cR,d;
+    d:=QuoInt(dim,2);
+    R:=IdentityMat(d+1);R:=R{[1..d]}-R{[2..d+1]}; cR:=Copy(R);
+    if dim mod 2=1 then
+      R[1]{[1,2]}:=[0,-1]; cR[1]{[1,2]}:=[1,-2];
+    else
+      R[1]{[1..3]}:=[1,-1,-1]; cR[1]{[1..3]}:=[0,-1,-1];
+      R:=List(R,x->Concatenation([0],x));
+      cR:=List(cR,x->Concatenation([0],x));
+      cR[1][1]:=1;
+    fi;
+    return CoxeterGroup(R,cR);
   end;
   data.so:=function(dim)local R,R1,i;R:=IdentityMat(QuoInt(dim,2)); 
     for i in [2..Length(R)] do R[i][i-1]:=-1;od;

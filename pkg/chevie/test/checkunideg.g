@@ -233,11 +233,11 @@ function(arg)local J,L,WF,W,t,uh,hd,ud,index,pred,ind,j,q,h,rhs,c,m,u,f;
   WF:=arg[1];if not IsSpets(WF) then WF:=Spets(WF);fi;
   W:=Group(WF);
   if Length(arg)=1 then 
+    InfoChevie("\n");
     for J in Filtered(ParabolicRepresentatives(W),
           x->Length(x)<W.nbGeneratingReflections) do
       CHEVIE.Test("LusztigInduction",WF,J);
     od;
-    InfoChevie("\n   ");
     return;
   elif IsList(arg[2]) then J:=arg[2];
     for L in Twistings(WF,J) do CHEVIE.Test("LusztigInduction",WF,L);od;
@@ -246,9 +246,11 @@ function(arg)local J,L,WF,W,t,uh,hd,ud,index,pred,ind,j,q,h,rhs,c,m,u,f;
   L:=arg[2];
   t:=LusztigInductionTable(L,WF);
   if t=false then return;fi;
-  InfoChevie("\n   # ");if L.phi=WF.phi then InfoChevie("Split ");fi;
+  InfoChevie("   # ");if L.phi=WF.phi then InfoChevie("Split ");fi;
   InfoChevie("R^{",ReflectionName(t.g),"}_{",ReflectionName(t.u),"}");
   CHEVIE.Testing(" from ",ReflectionName(t.u));
+  if IsBound(t.scalars) then InfoChevie("************** scalars=",t.scalars);fi;
+  InfoChevie("\n");
   if L.phi=WF.phi then 
     h:=HarishChandraInductionTable(L,WF);
     if h.scalar<>t.scalar then CHEVIE.Check.EqTables(h,t);fi;
