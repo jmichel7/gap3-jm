@@ -85,6 +85,12 @@ end;
 ReflTypeOps.GeneratingRoots:=t->ShallowCopy(CHEVIE.Data("GeneratingRoots",t));
 ReflTypeOps.GeneratingCoRoots:=t->ShallowCopy(CHEVIE.Data("GeneratingCoRoots",t));
 
+ReflTypeOps.GeneratingMinusculeWeights:=function(t)local s;
+  s:=["GeneratingMinusculeWeights",t];
+  if IsBound(t.cartanType) then Add(s,t.cartanType);fi;
+  return ApplyFunc(CHEVIE.Data,s);
+end;
+
 ReflTypeOps.ParabolicRepresentatives:=function(t,s)
    return CHEVIE.Data("ParabolicRepresentatives",t,s);
 end;
@@ -111,7 +117,7 @@ ReflTypeOps.FakeDegree:=function(t,p,q)
 end;
 
 ReflTypeOps.EigenvaluesGeneratingReflections:=function(t)
-  if t.series<>"ST" then return List(CHEVIE.Data("CartanMat",t),x->1/2);
+  if t.series<>"ST" then return List(CartanMat(t),x->1/2);
   else return CHEVIE.Data("EigenvaluesGeneratingReflections",t);
   fi;
 end;
@@ -234,7 +240,7 @@ end;
 ReflTypeOps.BraidRelations:=function(t)local m,p,r;
   if IsBound(t.orbit) then Error("not for Spets");
   elif t.series<>"ST" then
-   m:=CoxeterMatrixFromCartanMat(CHEVIE.Data("CartanMat",t));
+   m:=CoxeterMatrixFromCartanMat(CartanMat(t));
    p:=function(i,j,b)return List([1..b],k->i*(k mod 2)+j*((1-k)mod 2));end;
    r:=Concatenation(List([1..Length(m)],i->List([1..i-1],
      j->[p(i,j,m[i][j]),p(j,i,m[i][j])])));
@@ -353,11 +359,7 @@ ReflTypeOps.DecompositionMatrix:=function(arg)local m,res,n;
 end;
 
 # the center of the simply connected group
-ReflTypeOps.CenterSimplyConnected:=function(t)local s,O;
-  s:=["CartanMat",t];
-  if IsBound(t.cartanType) then Add(s,t.cartanType);fi;
-  O:=Mod1(ApplyFunc(CHEVIE.Data,s)^-1);
-  s:=["GeneratingMinusculeWeights",t];
-  if IsBound(t.cartanType) then Add(s,t.cartanType);fi;
-  return O{ApplyFunc(CHEVIE.Data,s)};
+ReflTypeOps.CenterSimplyConnected:=function(t)local O;
+  O:=Mod1(CartanMat(t)^-1); # the coweights mod the coroot lattice
+  return O{ReflTypeOps.GeneratingMinusculeWeights(t)};
 end;

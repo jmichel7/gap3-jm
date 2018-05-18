@@ -579,17 +579,19 @@ HasTypeOps.DecompositionMatrix:=function(W,p)local t;
   fi;
 end;
 
+WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
+  t:=First(ReflectionType(W),t->i in t.indices);
+  l:=ShallowCopy(t.indices);
+  b:=LongestCoxeterElement(W,l)*LongestCoxeterElement(W,Difference(l,[i]));
+  Add(l,Maximum(Filtered([1..Length(W.roots)],
+    i->ForAll([1..W.semisimpleRank],j->j in t.indices or W.roots[i][j]=0))));
+  return RestrictedPerm(b,l);
+end;
+
 HasTypeOps.AdjointFundamentalGroup:=function(W)
-  return Concatenation(List(ReflectionType(W),function(t)local s,b,l;
-    s:=["GeneratingMinusculeWeights",t];
-    if IsBound(t.cartanType) then Add(s,t.cartanType);fi;
-    s:=ApplyFunc(CHEVIE.Data,s);
-    l:=ShallowCopy(t.indices);
-    b:=LongestCoxeterElement(W,l)*
-      List(s,x->LongestCoxeterElement(W,Difference(l,[l[x]])));
-    Add(l,Maximum(Filtered([1..Length(W.roots)],
-      i->ForAll([1..W.semisimpleRank],j->j in t.indices or W.roots[i][j]=0))));
-    return List(b,x->RestrictedPerm(x,l));
+  return Concatenation(List(ReflectionType(W),function(t)local s;
+    s:=t.indices{ReflTypeOps.GeneratingMinusculeWeights(t)};
+    return List(s,x->WeightToAdjointFundamentalGroupElement(W,x));
     end));
 end;
 

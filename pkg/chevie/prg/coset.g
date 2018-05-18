@@ -50,47 +50,44 @@ IsCoxeterCoset:=WF->IsRec(WF) and IsBound(WF.isCoxeterCoset)
 ##  .orbit[1].indices   is  sorted   such  that   <WF>.phi^Length(orbit)
 ##  permutes the entries 1 -> 2 -> 4 -> 1.
 ##  
-CoxeterCosetOps.ReflectionType:=function(WF)
-  local W, c, i, type, rls, hi, phifus;
-
+CoxeterCosetOps.ReflectionType:=function(WF)local W, c, type, phifus;
   W:=Group(WF);
-
   type:=ReflectionType(W);
-
   c:=List(type,a->Set(W.rootInclusion{a.indices}));
   type:=List(Cycles(Permutation(WF.phi,c,OnSets),[1..Length(type)]),x->type{x});
   phifus:=WF.phi^MappingPermListList(W.rootInclusion,[1..Length(W.roots)]);
-  for c in type do
+  type:=List(type,function(c)local i;
     for i in [2..Length(c)] do
-      c[i].indices:=OnTuples(c[i-1].indices,phifus);
+      c[i]:=ShallowCopy(c[i]);c[i].indices:=OnTuples(c[i-1].indices,phifus);
     od;
-  od;
-  type:=List(type,c->rec(orbit:=c,
+    return rec(orbit:=c,
      twist:=RestrictedPerm(phifus^Length(c),c[1].indices),
-     operations:=ReflTypeOps));
+     operations:=ReflTypeOps);
+    end);
 
   # some adjustment such that in type ^2D_4 the first two simple
   # roots are permuted by res.twist, and in type ^3D_4 the permutation 
   # of the simple roots is 1 -> 2 -> 4 -> 1:
 
-  type:=List(type,function(a) local b, rf, j,o,i;    
+  type:=List(type,function(a) local rf,o,i;    
     i:=a.orbit[1].indices;o:=OrderPerm(a.twist);
     if o=1 or a.orbit[1].series<>"D" or Length(i)<>4 then return a;fi;
-    if OrderPerm(a.twist)=2 then # ^2D_4
+    if o=2 then # ^2D_4
       rf:=Filtered([1..4],x->i[x]<>i[x]^a.twist);
       rf:=Concatenation(rf,[3],Difference([1,2,4],rf));
-      b:=Copy(a); # necessary?
-      for j in b.orbit do j.indices:=j.indices{rf};od;
-      return b;
+      a.orbit:=List(a.orbit,function(j)
+        j:=ShallowCopy(j); j.indices:=j.indices{rf};return j;end);
+      return a;
     fi;
     # triality group ^3D_4
-    if i[1]^a.twist=i[2] then return a; fi;
-    b:=Copy(a); # necessary?
-    for j in b.orbit do j.indices:=j.indices{[1,4,3,2]};od;
-    return b;
+    if i[1]^a.twist<>i[2] then 
+      a.orbit:=List(a.orbit,function(j)
+        j:=ShallowCopy(j);j.indices:=j.indices{[1,4,3,2]};return j;end);
+    fi;
+    return a;
   end);
 
-##    # some sorting: (now already done in ReflectionType(Group(WF)))
+##    some sorting: don't do it, it is for isomorphismtype
 ##    hi:=List(type,a->[a.orbit[1].rank,a.orbit[1].series]);
 ##    SortParallel(hi,type,function(a,b) 
 ##                      return a[1]>b[1] or (a[1]=b[1] and a[2]<b[2]); end);  
@@ -372,7 +369,29 @@ end;
 ## of the generating reflections.
 ## Returns  a list of  representatives, up to  <W>-conjugacy, of reflection
 ## sub-cosets whose reflection group is <L>.
-Twistings:=function(WF,J)
+Twistings:=function(arg)local WF,J,tt,t,i,gens,W;
+  WF:=arg[1];
+  if Length(arg)=1 then
+    W:=WF;
+    tt:=CollectBy(ReflectionType(W),ReflectionName);
+    gens:=[];
+    for t in tt do
+      for i in [1..Length(t)-1] do
+        Add(gens,Product(Zip(t[i].indices,t[i+1].indices,
+          function(i,j)return (i,j);end)));
+      od;
+      if t[1].series="A" then Add(gens,Product([1..QuoInt(t[1].rank,2)],i->
+           (t[1].indices[i],t[1].indices[t[1].rank+1-i])));
+      elif t[1].series="D" then Add(gens,(t[1].indices[1],t[1].indices[2]));
+        if t[1].rank=4 then Add(gens,(t[1].indices[1],t[1].indices[4]));fi;
+      elif t[1].series="E" and t[1].rank=6 then
+        Add(gens,(t[1].indices[1],t[1].indices[6]));
+        Add(gens,(t[1].indices[3],t[1].indices[5]));
+      fi;
+    od;
+    return List(Elements(Group(gens,())),x->CoxeterCoset(W,x));
+  fi;
+  J:=arg[2];
   if IsGroup(J) then J:=J.rootInclusion{J.generatingReflections};fi;
   if not IsSpets(WF) then WF:=Spets(WF);fi;
   return Filtered(List(TwistingElements(WF,J),

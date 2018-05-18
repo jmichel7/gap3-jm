@@ -74,7 +74,7 @@ CHEVIE.AddData("NrConjugacyClasses", "B", function(arg)
 end);
 
 CHEVIE.AddData("GeneratingMinusculeWeights","B",function(n,type)
-  if n mod 2=0 and type=2 then return [2];else return [1];fi;end);
+  if type=2 then return [n];else return [1];fi;end);
 #############################################################################
 ##
 #F  WordClass( <pi> )  . . . very good representative in the sense of
