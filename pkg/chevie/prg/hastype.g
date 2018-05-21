@@ -589,9 +589,12 @@ WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
 end;
 
 HasTypeOps.AdjointFundamentalGroup:=function(W)
-  return Concatenation(List(ReflectionType(W),function(t)local s;
-    s:=t.indices{ReflTypeOps.GeneratingMinusculeWeights(t)};
-    return List(s,x->WeightToAdjointFundamentalGroupElement(W,x));
+  return Concatenation(List(ReflectionType(W),function(t)local w,g;
+    w:=ReflTypeOps.WeightInfo(t);
+    g:=Filtered([1..Length(w.minusculeCoweights)],
+      i->Sum(w.decompositions[i])=1);
+    w:=t.indices{w.minusculeCoweights{g}};
+    return List(w,x->WeightToAdjointFundamentalGroupElement(W,x));
     end));
 end;
 
@@ -615,7 +618,13 @@ HasTypeOps.ParabolicRepresentatives:=function(W,s)local t,res,sols;
      fi;end)),Concatenation)));
 end;
 
-HasTypeOps.CenterSimplyConnected:=W-># centre of simply connected group
-  Concatenation(List(ReflectionType(W),t->
-    List(ReflTypeOps.CenterSimplyConnected(t),function(l)local v;
-      v:=[1..W.rank]*0;v{t.indices}:=l;return v;end))); 
+# centre of simply connected group: the generating minuscule coweights
+# mod the root lattice
+HasTypeOps.CenterSimplyConnected:=function(W)local C;
+  C:=Mod1(CartanMat(W)^-1);
+  return Concatenation(List(ReflectionType(W),function(t)local w,g;
+    w:=ReflTypeOps.WeightInfo(t);
+    g:=Filtered([1..Length(w.minusculeCoweights)],i->Sum(w.decompositions[i])=1);
+    return C{t.indices{w.minusculeCoweights{g}}};
+    end)); 
+end;

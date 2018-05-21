@@ -47,8 +47,6 @@ CHEVIE.AddData("GeneratingRoots", "G2", [ [ 1, -1, 0 ], [ -2, 1, 1 ] ]);
 
 CHEVIE.AddData("HyperplaneRepresentatives","G2",[1,2]);
 
-CHEVIE.AddData("GeneratingMinusculeWeights","G2",[]);
-
 CHEVIE.AddData("Size", "G2", 12);
 
 CHEVIE.AddData("ReflectionDegrees","G2",[2,6]);

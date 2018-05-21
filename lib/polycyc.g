@@ -12,15 +12,6 @@
 
 #############################################################################
 ##
-#F  InfoPoly1(...)  . . . . . . . . . . . infomation function for polynomials
-#F  InfoPoly2(...)  . . . . . . . . . . . . .  debug function for polynomials
-##
-if not IsBound(InfoPoly1)    then InfoPoly1   := Ignore;  fi;
-if not IsBound(InfoPoly2)    then InfoPoly2   := Ignore;  fi;
-if not IsBound(InfoPoly3)    then InfoPoly3   := Ignore;  fi;
-
-#############################################################################
-##
 #V  CyclotomicsPolynomialOps  . . . . . . . . polynomial over the cyclotomics
 ##
 CyclotomicsPolynomialOps := OperationsRecord( "CyclotomicsPolynomialOps",

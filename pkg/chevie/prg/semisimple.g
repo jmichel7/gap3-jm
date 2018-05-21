@@ -456,6 +456,16 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
     fi;
     return CoxeterGroup(R,cR);
   end;
+  data.("3gpin8"):=CoxeterCoset(data.gpin(8),[[1,1,1,0,0,0],
+   [-2,0,-1,-1,-1,-1],[-1,0,-1,0,0,-1],[-1,0,-1,0,-1,0],
+   [-1,0,-1,-1,0,0],[-1,-1,0,0,0,0]]);
+  data.("gpin-"):=function(dim)local F,d;
+    d:=dim/2;F:=IdentityMat(d+2);
+    F[1]{[1..3]}:=[1,-1,1];
+    F{[1..d+2]}[2]:=[1..d+2]*0-1;
+    F{[2,3]}{[2,3]}:=-IdentityMat(2);
+    return CoxeterCoset(data.gpin(dim),F);
+  end;
   data.so:=function(dim)local R,R1,i;R:=IdentityMat(QuoInt(dim,2)); 
     for i in [2..Length(R)] do R[i][i-1]:=-1;od;
     if dim mod 2=1 then R1:=Copy(R);R1[1][1]:=2; return CoxeterGroup(R,R1);
@@ -502,7 +512,9 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
     res.name:=SPrint("RootDatum(",Join(List(arg,FormatGAP)),")");
     return res;
   fi;
-  Error("known types are:\n",Join(List(Set(RecFields(data)),FormatGAP)),"\n");
+  Print("Unknown type \"",type,"\". Known types are:\n");
+  Cut(Join(List(Set(RecFields(data)),FormatGAP)));
+  Error("\n");
 end;
 
 #############################################################################

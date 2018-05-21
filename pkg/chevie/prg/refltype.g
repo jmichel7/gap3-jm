@@ -85,10 +85,17 @@ end;
 ReflTypeOps.GeneratingRoots:=t->ShallowCopy(CHEVIE.Data("GeneratingRoots",t));
 ReflTypeOps.GeneratingCoRoots:=t->ShallowCopy(CHEVIE.Data("GeneratingCoRoots",t));
 
-ReflTypeOps.GeneratingMinusculeWeights:=function(t)local s;
-  s:=["GeneratingMinusculeWeights",t];
+ReflTypeOps.WeightInfo:=function(t)local s;
+  s:=["WeightInfo",t];
   if IsBound(t.cartanType) then Add(s,t.cartanType);fi;
-  return ApplyFunc(CHEVIE.Data,s);
+  s:=ApplyFunc(CHEVIE.Data,s);
+  if s=false then return rec(minusculeWeights:=[],minusculeCoweights:=[],
+    decompositions:=[],moduli:=[]);
+  fi;
+  if not IsBound(s.minusculeCoweights) then 
+    s.minusculeCoweights:=s.minusculeWeights;
+  fi;
+  return s;
 end;
 
 ReflTypeOps.ParabolicRepresentatives:=function(t,s)
@@ -356,10 +363,4 @@ ReflTypeOps.DecompositionMatrix:=function(arg)local m,res,n;
   res:=ApplyFunc(DiagonalMat,List(m,x->x[2]));
   SortParallel(Concatenation(List(m,x->x[1])),res);
   return res;
-end;
-
-# the center of the simply connected group
-ReflTypeOps.CenterSimplyConnected:=function(t)local O;
-  O:=Mod1(CartanMat(t)^-1); # the coweights mod the coroot lattice
-  return O{ReflTypeOps.GeneratingMinusculeWeights(t)};
 end;

@@ -129,7 +129,7 @@
 ##
 if not IsBound(InfoPoly1)    then InfoPoly1   := Ignore;  fi;
 if not IsBound(InfoPoly2)    then InfoPoly2   := Ignore;  fi;
-
+if not IsBound(InfoPoly3)    then InfoPoly3   := Ignore;  fi;
 
 #############################################################################
 ##

@@ -55,8 +55,6 @@ function(s)local t;t:=[[[]],[[1],[3]],[[1,2],[1,3],[2,3],[3,4]],
   [[1,2,3],[1,2,4],[1,3,4],[2,3,4]],[[1..4]]];
   return t[s+1];end);
 
-CHEVIE.AddData("GeneratingMinusculeWeights","F4",[]);
-
 CHEVIE.AddData("Size", "F4", 1152);
 
 CHEVIE.AddData("ReflectionDegrees","F4",[2,6,8,12]);

@@ -73,8 +73,14 @@ CHEVIE.AddData("NrConjugacyClasses", "B", function(arg)
   return NrPartitionTuples(arg[1], 2);
 end);
 
-CHEVIE.AddData("GeneratingMinusculeWeights","B",function(n,type)
-  if type=2 then return [n];else return [1];fi;end);
+CHEVIE.AddData("WeightInfo","B",function(n,type)
+  if type=2 then return rec(minusculeWeights:=[1],minusculeCoweights:=[n],
+    decompositions:=[[1]],moduli:=[2]);
+  else           return rec(minusculeWeights:=[n],minusculeCoweights:=[1],
+    decompositions:=[[1]],moduli:=[2]);
+  fi;
+end);
+
 #############################################################################
 ##
 #F  WordClass( <pi> )  . . . very good representative in the sense of

@@ -939,7 +939,7 @@ AUTO( ReadLib( "polynom" ),
   LaurentPolynomialRingOps, Derivative, PolynomialRing, IsPolynomialRing,
   PolynomialRingOps, LaurentPolynomials, LaurentPolynomialsOps, Polynomials,
   PolynomialsOps, PolynomialOps, Degree, Valuation, LeadingCoefficient,
-  DisplayPolynomial );
+  DisplayPolynomial);
 
 AUTO( ReadLib( "polyrat" ),
   RationalsPolynomialOps, RationalsPolynomials, RationalsPolynomialsOps,
@@ -951,7 +951,7 @@ AUTO( ReadLib( "polystff" ),
   ApproxRational, ApproximateRoot, ApproxRootBound, RootBound, BombieriNorm,
   MinimizeBombieriNorm, BeauzamyBound, OneFactorBound, HenselBound, CoeffAbs,
   TrialQuotient, Characteristic, RandomNormedPol, PolynomialModP, ContentPol,
-  ParityPol, EvalF, CheapFactorsInt, Berwick, InfoPoly2 );
+  ParityPol, EvalF, CheapFactorsInt, Berwick);
 
 AUTO( ReadLib( "pq" ),
   PQpOps, PQp, SavePQp, InitPQp, AddGeneratorsPQp, DefineGeneratorsPQp,

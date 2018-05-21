@@ -73,7 +73,9 @@ end);
 
 CHEVIE.AddData("NrConjugacyClasses", "A", n-> NrPartitions(n+1));
 
-CHEVIE.AddData("GeneratingMinusculeWeights","A",n->[1]);
+CHEVIE.AddData("WeightInfo","A",n->rec(minusculeWeights:=[1..n],
+  decompositions:=List([1..n],i->[i]),
+  moduli:=[n]));
 
 #############################################################################
 ##

@@ -20,8 +20,6 @@ CHEVIE.AddData("GeneratingRoots", "E8",
   [0,0,0,0,-1,1,0,0],
   [0,0,0,0,0,-1,1,0] ]);
 
-CHEVIE.AddData("GeneratingMinusculeWeights","E8",[]);
-
 CHEVIE.AddData("NrConjugacyClasses", "E8", 112);
 
 CHEVIE.AddData("WordsClassRepresentatives","E8",List(

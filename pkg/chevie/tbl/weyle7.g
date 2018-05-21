@@ -19,7 +19,8 @@ CHEVIE.AddData("GeneratingRoots", "E7",
   [0,0,0,-1,1,0,0,0],
   [0,0,0,0,-1,1,0,0] ]);
 
-CHEVIE.AddData("GeneratingMinusculeWeights","E7",[2]);
+CHEVIE.AddData("WeightInfo","E7",
+  rec(minusculeWeights:=[7],decompositions:=[[1]],moduli:=[2]));
 
 CHEVIE.AddData("NrConjugacyClasses", "E7", 60);
 

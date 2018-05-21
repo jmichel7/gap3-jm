@@ -35,10 +35,6 @@
 #H
 ##
 
-
-if not IsBound(InfoPoly2)  then InfoPoly2:=Ignore;  fi;
-if not IsBound(InfoPoly3)  then InfoPoly3:=Ignore;  fi;
-
 #############################################################################
 ##
 #F  APolyProd(<a>,<b>,<p>)   . . . . . . . . . . polynomial product a*b mod p
