@@ -620,11 +620,13 @@ end;
 
 # centre of simply connected group: the generating minuscule coweights
 # mod the root lattice
-HasTypeOps.CenterSimplyConnected:=function(W)local C;
-  C:=Mod1(CartanMat(W)^-1);
-  return Concatenation(List(ReflectionType(W),function(t)local w,g;
-    w:=ReflTypeOps.WeightInfo(t);
-    g:=Filtered([1..Length(w.minusculeCoweights)],i->Sum(w.decompositions[i])=1);
-    return C{t.indices{w.minusculeCoweights{g}}};
-    end)); 
+HasTypeOps.CenterSimplyConnected:=function(W)
+  return List(Concatenation(List(ReflectionType(W),function(t)local w,g,v,C;
+   C:=Mod1(CartanMat(t)^-1);
+   w:=ReflTypeOps.WeightInfo(t);
+   g:=Filtered([1..Length(w.minusculeCoweights)],i->Sum(w.decompositions[i])=1);
+   v:=NullMat(Length(g),Rank(W));
+   v{[1..Length(g)]}{t.indices}:=C{g};
+   return v;
+  end))); 
 end;
