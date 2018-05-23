@@ -579,25 +579,6 @@ HasTypeOps.DecompositionMatrix:=function(W,p)local t;
   fi;
 end;
 
-WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
-  t:=First(ReflectionType(W),t->i in t.indices);
-  l:=ShallowCopy(t.indices);
-  b:=LongestCoxeterElement(W,l)*LongestCoxeterElement(W,Difference(l,[i]));
-  Add(l,Maximum(Filtered([1..Length(W.roots)],
-    i->ForAll([1..W.semisimpleRank],j->j in t.indices or W.roots[i][j]=0))));
-  return RestrictedPerm(b,l);
-end;
-
-HasTypeOps.AdjointFundamentalGroup:=function(W)
-  return Concatenation(List(ReflectionType(W),function(t)local w,g;
-    w:=ReflTypeOps.WeightInfo(t);
-    g:=Filtered([1..Length(w.minusculeCoweights)],
-      i->Sum(w.decompositions[i])=1);
-    w:=t.indices{w.minusculeCoweights{g}};
-    return List(w,x->WeightToAdjointFundamentalGroupElement(W,x));
-    end));
-end;
-
 HasTypeOps.ParabolicRepresentatives:=function(W,s)local t,res,sols;
   if IsCoxeterCoset(W) then 
     return CoxeterCosetOps.ParabolicRepresentatives(W,s);fi;
@@ -618,15 +599,46 @@ HasTypeOps.ParabolicRepresentatives:=function(W,s)local t,res,sols;
      fi;end)),Concatenation)));
 end;
 
+WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
+  t:=First(ReflectionType(W),t->i in t.indices);
+  l:=W.rootInclusion{t.indices};
+  b:=LongestCoxeterElement(W,l)*LongestCoxeterElement(W,
+     Difference(l,[W.rootInclusion[i]]));
+  Add(l,W.rootInclusion[Maximum(Filtered([1..Length(W.roots)],
+    i->ForAll([1..W.semisimpleRank],j->j in t.indices or W.roots[i][j]=0)))]);
+  return RestrictedPerm(b,l);
+end;
+
+HasTypeOps.WeightInfo:=function(W)local l,res,n;
+  l:=List(ReflectionType(W),function(t)local r,g,C;
+    r:=WeightInfo(t);
+    g:=Filtered([1..Length(r.minusculeCoweights)],
+       i->Sum(r.decompositions[i])=1);
+    r.ww:=List(t.indices{r.minusculeCoweights{g}},
+      x->WeightToAdjointFundamentalGroupElement(W,x));
+    r.minusculeWeights:=t.indices{r.minusculeWeights};
+    r.minusculeCoweights:=t.indices{r.minusculeCoweights};
+    C:=Mod1(CartanMat(t)^-1);
+    r.csi:=NullMat(Length(g),SemisimpleRank(W));
+    r.csi{[1..Length(g)]}{t.indices}:=C{g};
+    return r;
+    end);
+  res:=rec(minusculeWeights:=Cartesian(List(l,
+    x->Concatenation(x.minusculeWeights,[0]))),
+    minusculeCoweights:=Cartesian(List(l,
+      x->Concatenation(x.minusculeCoweights,[0]))),
+    decompositions:=List(Cartesian(List(l,x->Concatenation(x.decompositions,
+      [0*x.moduli]))),Concatenation),
+    moduli:=Concatenation(List(l,x->x.moduli)));
 # centre of simply connected group: the generating minuscule coweights
 # mod the root lattice
-HasTypeOps.CenterSimplyConnected:=function(W)
-  return List(Concatenation(List(ReflectionType(W),function(t)local w,g,v,C;
-   C:=Mod1(CartanMat(t)^-1);
-   w:=ReflTypeOps.WeightInfo(t);
-   g:=Filtered([1..Length(w.minusculeCoweights)],i->Sum(w.decompositions[i])=1);
-   v:=NullMat(Length(g),Rank(W));
-   v{[1..Length(g)]}{t.indices}:=C{g};
-   return v;
-  end))); 
+  res.CenterSimplyConnected:=Concatenation(List(l,r->r.csi));
+  res.AdjointFundamentalGroup:=Concatenation(List(l,r->r.ww));
+  n:=Length(res.decompositions)-1;
+  res.minusculeWeights:=List(res.minusculeWeights{[1..n]},
+    x->Filtered(x,y->y<>0));
+  res.minusculeCoweights:=List(res.minusculeCoweights{[1..n]},
+    x->Filtered(x,y->y<>0));
+  res.decompositions:=res.decompositions{[1..n]};
+  return res;
 end;

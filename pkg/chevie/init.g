@@ -139,8 +139,8 @@ AUTO(ReadChv("prg/coxeter"),
   CoxeterTypeFromArg, PermutationsSimpleReflections);
 
 AUTO(ReadChv("prg/dispatch"),
-  AdjointFundamentalGroup, AlmostCharNames, AlphaInvolution, AltInvolution, 
-  BetaInvolution, BraidRelations, BrieskornNormalForm, CenterSimplyConnected,
+  AlmostCharNames, AlphaInvolution, AltInvolution, 
+  BetaInvolution, BraidRelations, BrieskornNormalForm,
   CharName, CharNames, CharNumbers, CharParams, ChevieCharInfo, ChevieClassInfo,
   ClassName, CoxeterElements, CoxeterLength, CoxeterWord, 
   CoxeterWords, DualBraidMonoid, EltWord, 
@@ -158,7 +158,7 @@ AUTO(ReadChv("prg/dispatch"),
   ReflectionSubgroup, ReflectionType, Reflections, RelativeCoset,
   RelativeGroup, Representations, SchurElement, SchurElements, 
   SemisimpleRank, Specialization,
-  StandardParabolic, TorusOrder, Variables, WGraph);
+  StandardParabolic, TorusOrder, Variables, WeightInfo, WGraph);
 
 AUTO(ReadChv("prg/eigenspaces"),
   GetRelativeAction, GetRelativeRoot, EigenspaceProjector,

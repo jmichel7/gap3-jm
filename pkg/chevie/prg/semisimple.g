@@ -178,16 +178,14 @@ end;
 ##   Returns words in the generators of Pi which generate the kernel of the
 ##   map Pi->AZ
 ##
-AlgebraicCentre:=function(W)local Z0,res,F0s,w,r,l,toAZ,hom,AZ,m,id;
+AlgebraicCentre:=function(W)local Z0,res,F0s,w,toAZ,hom,AZ,m,id;
   if IsExtendedGroup(W) then F0s:=List(W.F0s,TransposedMat); W:=W.group;fi;
   if W.simpleRoots=[] then Z0:=IdentityMat(W.rank);
   else Z0:=NullspaceIntMat(TransposedMat(W.simpleRoots));
   fi;
-  id:=SemisimpleElement(W,[1..W.rank]*0);
-  r:=ComplementIntMat(IdentityMat(W.rank),Z0);
-  Z0:=SubTorus(W,Zip(r.sub,r.moduli,function(x,y)return x/y;end));
-  if Length(r.complement)=0 then AZ:=[];
-  else AZ:=(r.complement*TransposedMat(W.simpleRoots))^-1*r.complement;
+  Z0:=SubTorus(W,Z0);
+  if Length(Z0.complement)=0 then AZ:=[];
+  else AZ:=(Z0.complement*TransposedMat(W.simpleRoots))^-1*Z0.complement;
   fi;
   AZ:=List(AZ,x->SemisimpleElement(W,x));
   if IsBound(F0s) then # compute fixed space of F0s in Y(T)
@@ -196,9 +194,11 @@ AlgebraicCentre:=function(W)local Z0,res,F0s,w,r,l,toAZ,hom,AZ,m,id;
       if Rank(Z0)>0 then Z0:=FixedPoints(Z0,m);Append(AZ,Z0[2]);Z0:=Z0[1];fi;
     od;
   fi;
+  id:=SemisimpleElement(W,[1..W.rank]*0);
   res:=rec(Z0:=Z0,AZ:=Group(AbelianGenerators(AZ),id));
   if IsBound(F0s) and Length(F0s)>0 then return res;fi;
-  AZ:=List(CenterSimplyConnected(W),x->SemisimpleElement(W,x));
+  AZ:=List(WeightInfo(W).CenterSimplyConnected,x->SemisimpleElement(W,
+    Concatenation(x*W.simpleCoroots,List(res.Z0.generators,y->0))));
   if Length(AZ)=0 then res.descAZ:=AZ;return res;fi;
   AZ:=ApplyFunc(Group,AZ);
   toAZ:=function(s)
@@ -206,10 +206,9 @@ AlgebraicCentre:=function(W)local Z0,res,F0s,w,r,l,toAZ,hom,AZ,m,id;
     return SemisimpleElement(W,
        s{[1..Length(res.Z0.complement)]}*res.Z0.complement);
   end;
-  l:=List(AZ.generators,x->x.v);
   # map of root data Y(Wsc)->Y(W)
   hom:=GroupHomomorphismByImages(AZ,res.AZ,AZ.generators,
-    List(l*Concatenation(W.simpleCoroots,res.Z0.generators),toAZ));
+    List(AZ.generators,x->toAZ(x.v)));
   res.descAZ:=List(Kernel(hom).generators,x->GetWord(AZ,x));
   return res;
 end;

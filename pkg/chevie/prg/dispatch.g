@@ -24,7 +24,6 @@
 ##
 ##  AbsCox groups which happen to be finite inherit from HasType
 
-AdjointFundamentalGroup:=Dispatcher("AdjointFundamentalGroup");
 AlphaInvolution:=Dispatcher("AlphaInvolution");
 AltInvolution:=Dispatcher("AltInvolution");
 BetaInvolution:=Dispatcher("BetaInvolution");
@@ -81,9 +80,9 @@ Variables:=function(arg)
 end;
 
 TorusOrder:=Dispatcher("TorusOrder");
+WeightInfo:=Dispatcher("WeightInfo");
 WGraph:=Dispatcher("WGraph");
 
-CenterSimplyConnected:=AttributeDispatcher("CenterSimplyConnected");
 CharNumbers:=AttributeDispatcher("CharNumbers");
 ChevieCharInfo:=AttributeDispatcher("ChevieCharInfo","charInfo");
 ChevieClassInfo:=AttributeDispatcher("ChevieClassInfo","classInfo");
