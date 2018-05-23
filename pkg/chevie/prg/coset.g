@@ -380,8 +380,11 @@ Twistings:=function(arg)local WF,J,tt,t,i,gens,W;
         Add(gens,Product(Zip(t[i].indices,t[i+1].indices,
           function(i,j)return (i,j);end)));
       od;
-      if t[1].series="A" then Add(gens,Product([1..QuoInt(t[1].rank,2)],i->
+      if t[1].series="A" then 
+        if t[1].rank>1 then
+           Add(gens,Product([1..QuoInt(t[1].rank,2)],i->
            (t[1].indices[i],t[1].indices[t[1].rank+1-i])));
+        fi;
       elif t[1].series="D" then Add(gens,(t[1].indices[1],t[1].indices[2]));
         if t[1].rank=4 then Add(gens,(t[1].indices[1],t[1].indices[4]));fi;
       elif t[1].series="E" and t[1].rank=6 then
