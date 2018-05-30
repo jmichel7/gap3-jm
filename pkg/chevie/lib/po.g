@@ -17,7 +17,7 @@
 # Returns the finest partition refined by all argument partitions
 # It is also the 'or' of the equivalence relations.
 LcmPartitions:=function(arg)local lcm2,res,x;
-  lcm2:=function(a,b)local res; res:=[];
+  lcm2:=function(a,b)local res,p; res:=[];
   for p in b do Add(res,Union(Filtered(a,x->Intersection(x,p)<>[])));od;
   b:=[];
   for p in res do Add(b,Union(Filtered(res,x->Intersection(x,p)<>[])));od;
