@@ -611,7 +611,7 @@ def lxg349():
 ChevieData["G34"]["UnipotentCharacters"]=lxg349
 
 def lxg3410():
-    r=ComplexReflectionGroup(34)["roots"]
+    r=ReflectionGroup(34)["roots"]
     return [lxg3411,lxg3412,lxg3413,lxg3414,lxg3415,lxg3416]
 
 def lxg3411(x,y,z,t,u,v):

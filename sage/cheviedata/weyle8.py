@@ -309,7 +309,7 @@ ChevieData["E8"]["Invariants"]=eyle813
 def eyle815(p):
     if p==0 :
         p=1
-    Z=lambda n: ComplexReflectionGroup(n,1,1)
+    Z=lambda n: ReflectionGroup(n,1,1)
     class_=lambda n: First(uc["classes"],lambda x: x["name"]==n)
     uc={"classes":[{"name":"E_8",
         "succ":"",

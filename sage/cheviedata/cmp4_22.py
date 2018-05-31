@@ -101,7 +101,7 @@ def p4_223(ST,x,option):
     s+=SPrint("{",x[1-1],",",x[2-1],"}")
     if len(x)==3 :
         s+=map(lambda y: '\'',range(1,x[3-1]+1))
-    return just(s)
+    return str(s)
 
 ChevieData["G4_22"]["CharName"]=p4_223
 
@@ -400,7 +400,7 @@ def p4_2215(ST):
     return res
 
 def p4_2216(x):
-    res=just(Replace([digits[k-1] for k in x],m,"z"))
+    res=str(Replace([digits[k-1] for k in x],m,"z"))
     if len(res)==0 :
         res="."
     return res

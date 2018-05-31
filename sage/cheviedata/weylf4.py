@@ -378,7 +378,7 @@ ChevieData["F4"]["Discriminant"]=eylf419
 def eylf421(c,p):
     if p==0 :
         p=1
-    Z=lambda n: ComplexReflectionGroup(n,1,1)
+    Z=lambda n: ReflectionGroup(n,1,1)
     class_=lambda n: First(uc["classes"],lambda x: x["name"]==n)
     uc={"orderPicture":Concatenation("      \tF_4\n","        |\n","      F_4(a_1)\n","        |\n","      F_4(a_2)\n","      /      \\\n","   B_3       C_3\n","      \\     /\n","      F_4(a_3)\n","\t |\n","      C_3(a_1)\n","     /       |\n","~A_2+A_1     B_2\n","    |   \\    |\n","    |     A_2+~A_1\n","    |        |\n","  ~A_2      A_2\n","     \\       |\n","      A_1+~A_1\n","\t |\n","       ~A_1\n","\t |\n","\tA_1\n","\t |\n","\t 1"),
         "classes":[{"name":"1",

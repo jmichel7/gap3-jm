@@ -175,7 +175,7 @@ ChevieData["E6"]["Invariants"]=eyle69
 def eyle616(p):
     if p==0 :
         p=1
-    Z=lambda n: ComplexReflectionGroup(n,1,1)
+    Z=lambda n: ReflectionGroup(n,1,1)
     uc={"orderPicture":Concatenation("\tE_6\n","\t |\n","      E_6(a_1)\n","\t |\n","\tD_5\n","\t |\n","     E_6(a_3)\n","     /   |\n","  A_5    |\n","   |   D_5(a_1)\n","   |   /      \\\n","A_4+A_1        \\\n","   |           D_4\n","  A_4         /\n","     \\       /\n","      D_4(a_1)\n","\t |\n","      A_3+A_1\n","     /       \\\n","  A_3     2A_2+A_1\n","   |     /    |\n","  A_2+2A_1   2A_2\n","     \\       /\n","      A_2+A_1\n","\t |\n","\tA_2\n","\t |\n","       3A_1\n","\t |\n","       2A_1\n","\t |\n","\tA_1\n","\t |\n","\t 1\n"),
         "classes":[{"name":"E_6",
         "succ":[],

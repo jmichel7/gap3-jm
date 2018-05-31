@@ -282,7 +282,7 @@ ChevieData["G2"]["Discriminant"]=eylg214
 def eylg216(c,p):
     if p==0 :
         p=1
-    Z=lambda n: ComplexReflectionGroup(n,1,1)
+    Z=lambda n: ReflectionGroup(n,1,1)
     uc={"classes":[{"name":"1",
         "succ":["A1"],
         "dynkin":[0,0],

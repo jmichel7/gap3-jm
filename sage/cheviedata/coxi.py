@@ -26,12 +26,12 @@ def coxi2(arg):
     else:
         type_=ER(GAPMul(2,bond))+ER(GAPMul(2,bond))**-1
     if type_==ER(GAPMul(2,bond))+ER(GAPMul(2,bond))**-1 :
-        print indices[1-1]," -",just(bond),"- ",indices[2-1],"\n",
+        print indices[1-1]," -",str(bond),"- ",indices[2-1],"\n",
     else:
         if type_==1 :
-            print indices[1-1]," >",just(bond),"> ",indices[2-1],"\n",
+            print indices[1-1]," >",str(bond),"> ",indices[2-1],"\n",
         else:
-            print indices[1-1]," ?",just(bond),"? ",indices[2-1],"\n",
+            print indices[1-1]," ?",str(bond),"? ",indices[2-1],"\n",
 
 ChevieData["I"]["PrintDiagram"]=coxi2
 
@@ -122,7 +122,7 @@ def coxi7(m,x,option):
         s=SPrint(s,"{",x[1-1],",",x[2-1],"}")
         if len(x)==3 :
             s+=x[3-1]
-        return just(s)
+        return str(s)
 
 ChevieData["I"]["CharName"]=coxi7
 

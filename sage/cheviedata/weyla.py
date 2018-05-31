@@ -296,7 +296,7 @@ def weyla22(n,p):
         p=cl["parameter"]
         d=Gcd(p)
         cl["name"]=IntListToString(p)
-        cl["Au"]=ComplexReflectionGroup(d,1,1)
+        cl["Au"]=ReflectionGroup(d,1,1)
         cl["balacarter"]=Concatenation(map(lambda i: Sum([p[k-1] for k in range(1,i-1+1)])+range(1,p[i-1]-1+1),range(1,len(p)+1)))
         p=Concatenation(map(lambda x: range(1-x,x-1+1,3-x-1-x),p))
         Sort(p)

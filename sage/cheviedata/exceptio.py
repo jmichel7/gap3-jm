@@ -16,7 +16,7 @@ def eptio1(x,option):
     s+=SPrint("{",x[1-1],",",x[2-1],"}")
     if len(x)==3 :
         s+=map(lambda y: '\'',range(1,x[3-1]+1))
-    return just(s)
+    return str(s)
 
 ChevieData["IndirectAddData"]("CharName",["2E6","E6","E7","E8","2F4","F4","G2","H3","H4","2G5","G24","G25","G26","G27","G29","G31","G32","G33","G34"],lambda t: eptio1)
 
@@ -127,7 +127,7 @@ def eptio15(indices,title):
     digits="678"
     print title," ",
     r=digits.index(t[2-1])+1+5
-    l=len(just(indices[1-1]))+len(just(indices[3-1]))
+    l=len(str(indices[1-1]))+len(str(indices[3-1]))
     print just("",l-1),indices[2-1],"\n",
     print just("",len(title)+l),"|\n",
     print SPrint(just("",len(title)-2),indices[1-1]),
@@ -139,7 +139,7 @@ ChevieData["IndirectAddData"]("PrintDiagram",["E6","E7","E8"],lambda t: eptio15)
 
 def eptio16(indices,title):
     print title," ",
-    print SPrint(just("",len(just(indices[1-1]))-1),"5 \n"),
+    print SPrint(just("",len(str(indices[1-1]))-1),"5 \n"),
     print just("",len(title)-1),indices[1-1]," - ",indices[2-1]," - ",indices[3-1],
     if t=="H4" :
         print " - ",indices[4-1],
