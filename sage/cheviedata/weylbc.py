@@ -77,9 +77,9 @@ ChevieData["B"]["ReflectionName"]=eylbc3
 def eylbc4(l,type_):
     rts=map(lambda i: GAPMul(0,range(1,l+1)),range(1,l+1))
     for i in range(1,l-1+1):
-        [rts[i][k-1] for k in [i,i+1]]=[1,-1]
+        [rts[i-1][k-1] for k in [i,i+1]]=[1,-1]
     rts[l][l-1]=GAPDiv(2,type_)
-    return [rts[k-1] for k in [l,..(l-1,1)]]
+    return [rts[k-1] for k in range(l,1+1,l-1-l)]
 
 ChevieData["B"]["GeneratingRoots"]=eylbc4
 
@@ -118,12 +118,12 @@ def eylbc9(pi):
     w=[]
     i=1
     for l in Reversed(pi[2-1]):
-        w+=[i,..(i-1,2)]
+        w+=range(i,2+1,i-1-i)
         w+=range(1,i+l-1+1)
         i=i+l
     for l in pi[1-1]:
         r=l%2
-        w+=i+Concatenation([1,..(3,l-1-r)],[2,..(4,l+r-2)])
+        w+=i+Concatenation(range(1,l-1-r+1,3-1),range(2,l+r-2+1,4-2))
         i=i+l
     return w
 
@@ -174,9 +174,9 @@ ChevieData["B"]["CharName"]=eylbc12
 def eylbc13(p):
     pp=SymbolPartitionTuple(p,1)
     m=len(pp[2-1])
-    res=GAPMul(pp[1-1],[m,..(m-1,0)])
+    res=GAPMul(pp[1-1],range(m,0+1,m-1-m))
     if !=(pp[2-1],[]) :
-        res=res+GAPMul(pp[2-1],[m-1,..(m-2,0)])
+        res=res+GAPMul(pp[2-1],range(m-1,0+1,m-2-m-1))
     return GAPMul(2,res)+Sum(pp[2-1])-GAPDiv(GAPMul(m,m-1),6)
 
 ChevieData["B"]["LowestPowerFakeDegree"]=eylbc13
@@ -334,7 +334,7 @@ def CHEVIE.tmp.matrix(nq):
                         j=0
                         while j<len(gamma[i-1]) and gamma[i][j+1-1]==j:
                             j=j+1
-                        gamma[i-1]=[gamma[i][k-1] for k in range(j+1,len(gamma[i-1])+1)]-j
+                        gamma[i-1]=[gamma[i-1][k-1] for k in range(j+1,len(gamma[i-1])+1)]-j
                 new["adr"]=pm[m-ll-1].index(gamma)+1
             hks[ll-1].append(new)
         return hks
@@ -461,7 +461,7 @@ ChevieData["B"]["UnipotentCharacters"]=eylbc25
 
 def eylbc26(r,type_,char):
     def part2dynkin(part):
-        p=Concatenation(map(lambda d: [1-d,..(3-d,d-1)],part))
+        p=Concatenation(map(lambda d: range(1-d,d-1+1,3-d-1-d),part))
         Sort(p)
         p=[p[k-1] for k in range(QuoInt(3+len(p),2),len(p)+1)]
         if type_==1 :
@@ -641,14 +641,14 @@ def eylbc26(r,type_,char):
         while <=(GAPMul(4,d**2)-GAPMul(3,d),r):
             i=GAPMul(4,d**2)-GAPMul(3,d)
             if r-d%2==0 :
-                l=Concatenation(range(1,i+1),[i+2,..(i+4,r)])
+                l=Concatenation(range(1,i+1),range(i+2,r+1,i+4-i+2))
                 uc["springerSeries"].append({"relgroup":CoxeterGroup("B",GAPDiv(r-i,2)),
                     "levi":l,
                     "Z":[-1],
                     "locsys":[]})
                 i=GAPMul(4,d**2)+GAPMul(3,d)
                 if <=(i,r) and !=(d,0) :
-                    l=Concatenation(range(1,i+1),[i+2,..(i+4,r)])
+                    l=Concatenation(range(1,i+1),range(i+2,r+1,i+4-i+2))
                     uc["springerSeries"].append({"relgroup":CoxeterGroup("B",GAPDiv(r-i,2)),
                         "levi":l,
                         "Z":[-1],

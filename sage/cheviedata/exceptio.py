@@ -85,7 +85,7 @@ ChevieData["IndirectAddData"]("SemisimpleRank",["A","B","D"],lambda t: lambda r:
 
 def eptio9(phi,q):
     f=CHEVIE.R("sparseFakeDegrees", t)[ChevieData["t"]["CharInfo"]()["charparams"].index(phi)+1-1]
-    return Sum([1,..(3,len(f)-1)],lambda i: GAPMul(f[i-1],q**f[i+1-1]))
+    return Sum(range(1,len(f)-1+1,3-1),lambda i: GAPMul(f[i-1],q**f[i+1-1]))
 
 ChevieData["IndirectAddData"]("FakeDegree",["G2","F4","H3","E6","G24","G25","G26","G27","G29","G32","G33","G34"],lambda t: eptio9)
 
@@ -162,7 +162,7 @@ def eptio19(p):
     T=ChevieData["t"]["CharTable"]()
     T["name"]=T["identifier"]
     m=DecompositionMatrix(T%p)
-    return map(lambda c: [c[1-1],[m{c[1]}[k-1] for k in c[2-1]]],BlocksMat(m))
+    return map(lambda c: [c[1-1],[[m[k-1] for k in c[1-1]][k-1] for k in c[2-1]]],BlocksMat(m))
 
 ChevieData["IndirectAddData"]("DecompositionMatrix",["F4","G2","G25","G26"],lambda t: eptio19)
 
@@ -183,14 +183,14 @@ def eptio21(arg):
 ChevieData["IndirectAddData"]("FactorizedSchurElement",["G24","G27","G29","G33","G34","E6","E7","E8","H3","H4"],lambda t: eptio21)
 
 def eptio22(arg):
-    Y=Concatenation([arg[2][k-1] for k in ChevieData["t"]["HyperplaneRepresentatives"]])
+    Y=Concatenation([arg[2-1][k-1] for k in ChevieData["t"]["HyperplaneRepresentatives"]])
     ci=CHEVIE.R("SchurData", t)[ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
     return ApplyFunc(VFactorSchurElement,Concatenation([Y,ChevieData["t"]["SchurModels"][ci["name"]],ci],[arg[k-1] for k in range(3,len(arg)+1)]))
 
 ChevieData["IndirectAddData"]("FactorizedSchurElement",["G2","F4","G25","G26","G32"],lambda t: eptio22)
 
 def eptio23(arg):
-    Y=Concatenation([arg[2][k-1] for k in ChevieData["t"]["HyperplaneRepresentatives"]])
+    Y=Concatenation([arg[2-1][k-1] for k in ChevieData["t"]["HyperplaneRepresentatives"]])
     ci=CHEVIE.R("SchurData", t)[ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
     return VcycSchurElement(Y,ChevieData["t"]["SchurModels"][ci["name"]],ci)
 
@@ -200,7 +200,7 @@ def VcycSchurElement(arg):
     n=len(arg[1-1])
     if len(arg)==3 :
         data=arg[3-1]
-        para=[arg[1][k-1] for k in data["order"]]
+        para=[arg[1-1][k-1] for k in data["order"]]
     else:
         para=ShallowCopy(arg[1-1])
     monomial=lambda v: prod(range(1,len(v)+1))
@@ -233,7 +233,7 @@ def VFactorSchurElement(arg):
     n=len(arg[1-1])
     if >=(len(arg),3) :
         data=arg[3-1]
-        para=[arg[1][k-1] for k in data["order"]]
+        para=[arg[1-1][k-1] for k in data["order"]]
     else:
         para=ShallowCopy(arg[1-1])
     monomial=lambda v: prod(range(1,len(v)+1))

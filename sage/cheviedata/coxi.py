@@ -157,8 +157,8 @@ def /coxi8(m):
     res["charSymbols"]=Concatenation([v],res["charSymbols"])
     res["malleParams"]=map(lambda x: map(PartBeta,x),res["charSymbols"])
     if m%2==0 :
-        res.malleParams[2-1]=Concatenation([res.malleParams[2][k-1] for k in range(1,GAPDiv(m,2)+1)],[1])
-        res.malleParams[3-1]=Concatenation([res.malleParams[3][k-1] for k in range(1,GAPDiv(m,2)+1)],[-1])
+        res.malleParams[2-1]=Concatenation([res.malleParams[2-1][k-1] for k in range(1,GAPDiv(m,2)+1)],[1])
+        res.malleParams[3-1]=Concatenation([res.malleParams[3-1][k-1] for k in range(1,GAPDiv(m,2)+1)],[-1])
     return res
 
 def /coxi9(phi):
@@ -389,7 +389,7 @@ def /coxi24(n,p):
     T=ChevieData["I"]["CharTable"](n)
     T["name"]=T["identifier"]
     m=DecompositionMatrix(T%p)
-    return map(lambda c: [c[1-1],[m{c[1]}[k-1] for k in c[2-1]]],BlocksMat(m))
+    return map(lambda c: [c[1-1],[[m[k-1] for k in c[1-1]][k-1] for k in c[2-1]]],BlocksMat(m))
 
 ChevieData["I"]["DecompositionMatrix"]=/coxi24
 
@@ -420,7 +420,7 @@ def /coxi27(arg):
 ChevieData["I"]["Invariants"]=/coxi26
 
 def /coxi28(S):
-    if !=(S[1-1],[0,1]) or in(!([]),S) :
+    if !=(S[1-1],[0,1]) or not [] in S :
         return false
     if len(S)%2==1 :
         S=Reversed(S)

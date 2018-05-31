@@ -21,7 +21,7 @@ ChevieData["A"]["PrintDiagram"]=weyla2
 def weyla3(l):
     r=map(lambda i: GAPMul(0,range(1,l+1+1)),range(1,l+1))
     for i in range(1,l+1):
-        [r[i][k-1] for k in [i,i+1]]=[1,-1]
+        [r[i-1][k-1] for k in [i,i+1]]=[1,-1]
     return r
 
 ChevieData["A"]["GeneratingRoots"]=weyla3
@@ -36,7 +36,7 @@ def weyla5(pi):
     i=0
     for l in pi:
         r=l%2
-        w+=i+Concatenation([1,..(3,l-1-r)],[2,..(4,l+r-2)])
+        w+=i+Concatenation(range(1,l-1-r+1,3-1),range(2,l+r-2+1,4-2))
         i=i+l
     return w
 
@@ -141,7 +141,7 @@ def CHEVIE.tmp.matrix(nq):
         prs=[]
         for i in beta:
             leg=0
-            for j in [i-1,..(i-2,0)]:
+            for j in range(i-1,0+1,i-2-i-1):
                 if j in beta :
                     leg=leg+1
                 else:
@@ -237,7 +237,7 @@ def weyla14(n,param,sqrtparam,i):
 ChevieData["A"]["HeckeRepresentation"]=weyla14
 
 def weyla15(n,i):
-    return [(CHEVIE.R("Representation", "imp"))(1, 1, n + 1, i)[k-1] for k in range(2,n+1+1)]
+    return [ChevieData["imp"]["Representation"](1,1,n+1,i)[k-1] for k in range(2,n+1+1)]
 
 ChevieData["A"]["Representation"]=weyla15
 
@@ -296,7 +296,7 @@ def weyla21(n,p):
         cl["name"]=IntListToString(p)
         cl["Au"]=ComplexReflectionGroup(d,1,1)
         cl["balacarter"]=Concatenation(map(lambda i: Sum([p[k-1] for k in range(1,i-1+1)])+range(1,p[i-1]-1+1),range(1,len(p)+1)))
-        p=Concatenation(map(lambda x: [1-x,..(3-x,x-1)],p))
+        p=Concatenation(map(lambda x: range(1-x,x-1+1,3-x-1-x),p))
         Sort(p)
         cl["dynkin"]=map(lambda i: p[i+1-1]-p[i-1],range(1,len(p)-1+1))
         cl["red"]=[]

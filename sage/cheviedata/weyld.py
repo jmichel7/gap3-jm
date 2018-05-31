@@ -5,8 +5,8 @@ def weyld1(n):
     else:
         m=n
     a=ChevieData["A"]["CartanMat"](m)
-    [a{[1 .. 3]}[k-1] for k in range(1,3+1)]=[[2,0,-1],[0,2,-1],[-1,-1,2]]
-    return [a{[1 .. n]}[k-1] for k in range(1,n+1)]
+    [[a[k-1] for k in range(1,3+1)][k-1] for k in range(1,3+1)]=[[2,0,-1],[0,2,-1],[-1,-1,2]]
+    return [[a[k-1] for k in range(1,n+1)][k-1] for k in range(1,n+1)]
 
 ChevieData["D"]["CartanMat"]=weyld1
 
@@ -73,12 +73,12 @@ def weyld7(arg):
                 if i==1 :
                     w+=range(2,i+l-1+1)
                 else:
-                    w+=[i,..(i-1,3)]
+                    w+=range(i,3+1,i-1-i)
                     w+=range(1,i+l-1+1)
                 i=i+l
             for l in pi[1-1]:
                 r=l%2
-                w+=i+Concatenation([1,..(3,l-1-r)],[2,..(4,l+r-2)])
+                w+=i+Concatenation(range(1,l-1-r+1,3-1),range(2,l+r-2+1,4-2))
                 i=i+l
             if !=(w,[]) and w[1-1]==2 :
                 w[1-1]=1
@@ -150,10 +150,10 @@ def weyld12(n,w):
             tmp=CoxeterGroup("D",n)
             gens=PermCosetsSubgroup(tmp,ReflectionSubgroup(tmp,range(2,n+1)))
             tmp=ChevieData["D"]["ClassInfo"](n)
-            tmp=[tmp.classtext[k-1] for k in Filtered(range(1,len(tmp["classnames"])+1),lambda i: '+' in tmp.classnames[i-1] or '-' in tmp.classnames[i-1])]
+            tmp=[tmp["classtext"][k-1] for k in Filtered(range(1,len(tmp["classnames"])+1),lambda i: '+' in tmp.classnames[i-1] or '-' in tmp.classnames[i-1])]
             tmp=map(lambda a: CycleStructurePerm(prod([gens[k-1] for k in a])),tmp)
             CHEVIE.R("gensMODA", "D")[n-1]=[gens,[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))-1],[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))]]
-        tmp=CycleStructurePerm(prod([((CHEVIE.R("gensMODA", "D"))[n])[1][k-1] for k in w]))
+        tmp=CycleStructurePerm(prod([(CHEVIE.R("gensMODA", "D"))[n][1-1][k-1] for k in w]))
         if tmp in (CHEVIE.R("gensMODA", "D"))[n][2-1] and not tmp in (CHEVIE.R("gensMODA", "D"))[n][3-1] :
             res[2-1]='+'
         else:
@@ -332,7 +332,7 @@ def weyld23(n,char):
     
     
     def partition2DR(part):
-        p=Concatenation(map(lambda x: [1-x,..(3-x,x-1)],part))
+        p=Concatenation(map(lambda x: range(1-x,x-1+1,3-x-1-x),part))
         Sort(p)
         p=[p[k-1] for k in range(1+GAPDiv(len(p),2),len(p)+1)]
         return Concatenation([p[1-1]+p[2-1]],map(lambda i: p[i+1-1]-p[i-1],range(1,len(p)-1+1)))
@@ -425,7 +425,7 @@ def weyld23(n,char):
             cc=Copy(cc)
             cc.name[len(cc["name"])-1]='-'
             if "dynkin" in cc :
-                [cc.dynkin[k-1] for k in [1,2]]=[cc.dynkin[k-1] for k in [2,1]]
+                [cc["dynkin"][k-1] for k in [1,2]]=[cc["dynkin"][k-1] for k in [2,1]]
             uc["classes"].append(cc)
             for s in cl:
                 addSpringer(s,len(uc["classes"]))
@@ -438,7 +438,7 @@ def weyld23(n,char):
         while <=(GAPMul(4,d**2)-d,n):
             i=GAPMul(4,d**2)-d
             if n-d%2==0 :
-                l=Concatenation(range(1,i+1),[i+2,..(i+4,n)])
+                l=Concatenation(range(1,i+1),range(i+2,n+1,i+4-i+2))
                 s={"relgroup":CoxeterGroup("B",GAPDiv(n-i,2)),
                     "levi":l,
                     "locsys":[]}
@@ -448,7 +448,7 @@ def weyld23(n,char):
                     s["Z"]=[ER(4)]
                 uc["springerSeries"].append(s)
                 if d==0 :
-                    l=Concatenation([1],[4,..(6,n)])
+                    l=Concatenation([1],range(4,n+1,6-4))
                 s={"relgroup":CoxeterGroup("B",GAPDiv(n-i,2)),
                     "levi":l,
                     "locsys":[]}
@@ -459,7 +459,7 @@ def weyld23(n,char):
                 uc["springerSeries"].append(s)
                 i=GAPMul(4,d**2)+d
                 if !=(d,0) and <=(i,n) :
-                    l=Concatenation(range(1,i+1),[i+2,..(i+4,n)])
+                    l=Concatenation(range(1,i+1),range(i+2,n+1,i+4-i+2))
                     s={"relgroup":CoxeterGroup("B",GAPDiv(n-i,2)),
                         "levi":l,
                         "locsys":[]}

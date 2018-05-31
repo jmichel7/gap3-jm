@@ -232,7 +232,7 @@ def lxg314(p,para,root):
     ci=ChevieData["G31"]["CharInfo"]()["charparams"].index(p)+1
     data=CHEVIE.R("SchurData", "G31")[ci-1]
     r=ChevieData["G31"]["SchurModels"][data["name"]]
-    q=[para[1][k-1] for k in data["order"]]
+    q=[para[1-1][k-1] for k in data["order"]]
     q=GAPDiv(q[1-1],q[2-1])
     if "root" in r :
         q=GAPMul(GetRoot(q,2),-1**data["rootPower"])
@@ -248,7 +248,7 @@ def lxg315(p,para,root):
     ci=ChevieData["G31"]["CharInfo"]()["charparams"].index(p)+1
     data=CHEVIE.R("SchurData", "G31")[ci-1]
     r=ChevieData["G31"]["SchurModels"][data["name"]]
-    q=[para[1][k-1] for k in data["order"]]
+    q=[para[1-1][k-1] for k in data["order"]]
     q=GAPDiv(q[1-1],q[2-1])
     if "root" in r :
         q=GAPMul(GetRoot(q,2),-1**data["rootPower"])
@@ -418,7 +418,7 @@ def lxg318():
     res["name"]="G31"
     res["galomorphisms"]=Group(Permutation("(7,9)(8,12)(13,17)(15,16)(19,21)(20,23)(25,27)(26,28)(31,32)(35,37)(38,40)(42,45)(43,44)(46,49)(51,52)(54,55)(57,58)"))
     res["text"]="origin: mostly CharTable(H(G31))"
-    [res.irreducibles{Concatenation([35, 36], [39, 40, 41], [50 .. 53], [58, 59])}[k-1] for k in [14,19,21,35,37,41]]=[[-1,-ER(4),ER(4),ER(4),-ER(4),1],[-1,ER(4),-ER(4),-ER(4),ER(4),1],[1,ER(4),-ER(4),-ER(4),ER(4),-1],[1,-ER(4),ER(4),ER(4),-ER(4),-1],[0,0,0,0,0,0],[0,ER(4)+1,-ER(4)+1,ER(4)-1,-ER(4)-1,0],[0,-ER(4)-1,ER(4)-1,-ER(4)+1,ER(4)+1,0],[0,-ER(4)+1,ER(4)+1,-ER(4)-1,ER(4)-1,0],[0,ER(4)-1,-ER(4)-1,ER(4)+1,-ER(4)+1,0],[0,0,0,0,0,0],[0,0,0,0,0,0]]
+    [[res["irreducibles"][k-1] for k in Concatenation([35,36],[39,40,41],range(50,53+1),[58,59])][k-1] for k in [14,19,21,35,37,41]]=[[-1,-ER(4),ER(4),ER(4),-ER(4),1],[-1,ER(4),-ER(4),-ER(4),ER(4),1],[1,ER(4),-ER(4),-ER(4),ER(4),-1],[1,-ER(4),ER(4),ER(4),-ER(4),-1],[0,0,0,0,0,0],[0,ER(4)+1,-ER(4)+1,ER(4)-1,-ER(4)-1,0],[0,-ER(4)-1,ER(4)-1,-ER(4)+1,ER(4)+1,0],[0,-ER(4)+1,ER(4)+1,-ER(4)-1,ER(4)-1,0],[0,ER(4)-1,-ER(4)-1,ER(4)+1,-ER(4)+1,0],[0,0,0,0,0,0],[0,0,0,0,0,0]]
     return res
 
 ChevieData["G31"]["CharTable"]=lxg318
@@ -520,7 +520,7 @@ def lxg319(para,root,i):
     
     rep=[[f1,x],[f1,y],[f6,y,x,1],[f6,x,y,-1],[f6,y,x,-1],[f6,x,y,1],[f7,x,y],[f7,y,x],[f9,x,y],[f9,y,x],[f11,x,y,-1],[f11,x,y,1],[f14,y,x],[f14,x,y],[f16,y,x],[f16,x,y],[f19,x,y,1],[f19,y,x,1],[f19,x,y,-1],[f19,y,x,-1],[f21,x,y],[f21,y,x],[f23,x,y],[f23,y,x],[f25,x,y],[f26,x,y],[f27,x,y,-1],[f27,y,x,1],[f27,x,y,1],[f27,y,x,-1],[f31,x,y,1],[f31,y,x,1],[f31,x,y,-1],[f31,y,x,-1],None,None,[f37,x,y],[f37,y,x],None,None,None,[f42,x,y,1],[f42,y,x,1],[f42,x,y,-1],[f42,y,x,-1],[f46,x,y],[f46,y,x],[f48,x,y,-1],[f48,x,y,1],None,None,None,None,[f54,x,y],[f54,y,x],[f56,x,y],[f56,y,x]]
     if rep[i]==None :
-        return ApplyFunc(rep[i][1-1],[rep[i][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,x)
+        return ApplyFunc(rep[i][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,x)
     else:
         return false
 

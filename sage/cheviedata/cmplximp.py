@@ -281,7 +281,7 @@ def lximp13(p,q,r):
                 d=0
                 res=[]
                 def word(l,i):
-                    return map(lambda j: 1+j%2,i+[l,..(l-1,1)])
+                    return map(lambda j: 1+j%2,i+range(l,1+1,l-1-l))
                 
                 
                 def add(a):
@@ -367,7 +367,7 @@ def lximp16(S):
     l=0
     w=[]
     for d in S:
-        w+=times(d[2-1],Concatenation([l+1,..(l,2)],range(1,l+1+1)))
+        w+=times(d[2-1],Concatenation(range(l+1,2+1,l-l+1),range(1,l+1+1)))
         w+=range(l+2,l+d[1-1]+1)
         l=l+d[1-1]
     return w
@@ -467,7 +467,7 @@ def lximp21(de,e,r):
                     else:
                         if [de,e,r]==[4,4,3] :
                             res["malle"]=[[6,3],[3,6,1],[3,5],[3,6,2],[1,12],[3,2,1],[3,2,2],[3,1],[2,4],[1,0]]
-    t=map(lximp23,[r,..(r-1,0)])
+    t=map(lximp23,range(r,0+1,r-1-r))
     if e>1 :
         t=map(lambda v: Minimum(map(lambda i: Rotation(v,GAPMul(i,d)),range(1,e+1))),t)
     res["extRefl"]=map(lambda v: res["charparams"].index(v)+1,t)
@@ -626,7 +626,7 @@ def lximp30(p,q,r,phi):
                     "vcyc":[],
                     "root":GAPMul(range(1,4+GAPDiv(p,2)+1),0)}
                 res["rootCoeff"]=ER(GAPDiv(p,2))**2-phi[3-1]-phi[4-1]
-                [res.root[k-1] for k in range(1,6+1)]=GAPDiv([1,1,1,1,1,1],2)
+                [res["root"][k-1] for k in range(1,6+1)]=GAPDiv([1,1,1,1,1,1],2)
                 for i in range(3,GAPDiv(p,2)+1):
                     for j in [1,2]:
                         l=GAPMul(range(1,4+GAPDiv(p,2)+1),0)
@@ -778,7 +778,7 @@ def lximp34(p,q,r,para,root):
                 if e==0 :
                     return res
                 j=e
-                for i in [S[e-1]-1,..(S[e-1]-2,0)]:
+                for i in range(S[e-1]-1,0+1,S[e-1]-2-S[e-1]-1):
                     if not i in S :
                         while j>0 and S[j-1]>i:
                             j=j-1
@@ -912,7 +912,7 @@ def lximp34(p,q,r,para,root):
                 bp=Maximum(Concatenation(lambda))
                 i=PositionProperty(lambda,lambda x: bp in x)
                 rest=ShallowCopy(lambda)
-                rest[i-1]=[rest[i][k-1] for k in range(2,len(rest[i-1])+1)]
+                rest[i-1]=[rest[i-1][k-1] for k in range(2,len(rest[i-1])+1)]
                 res=GAPMul(-prod(para[2-1])**GAPMul(i-1,n-bp),Sum(Strips(mu,bp),lximp35))
                 if n<LIM :
                     chiCache[name]=res

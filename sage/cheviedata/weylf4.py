@@ -108,7 +108,7 @@ ChevieData["F4"]["sparseFakeDegrees"]=[[1,0],[1,12],[1,12],[1,24],[1,4,1,8],[1,1
 def eylf47(w):
     if w==[] :
         return " "
-    x=prod([CHEVIE.R("generators", "F4")[k-1] for k in w])
+    x=prod([ChevieData["F4"]["generators"][k-1] for k in w])
     return CHEVIE.R("classparams", "F4")[ChevieData["F4"]["cyclestructure"].index([CycleStructurePerm(RestrictedPerm(x,CHEVIE.R("orbits", "F4")[1-1])),CycleStructurePerm(RestrictedPerm(x,CHEVIE.R("orbits", "F4")[2-1]))])+1-1]
 
 ChevieData["F4"]["ClassParameter"]=eylf47

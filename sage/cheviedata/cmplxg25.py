@@ -163,7 +163,7 @@ def lxg256(para,root,i):
     
     
     rep=[[f1,u],[f1,w],[f1,v],[f2,v,w],[f2,u,v],[f2,u,w],[f32,u,v,w],[f31,u,v],[f31,w,u],[f31,v,w],[f31,u,w],[f31,v,u],[f31,w,v],[f6,v,u,w],[f6,u,w,v],[f6,w,v,u],[f6,w,u,v],[f6,u,v,w],[f6,v,w,u],[f8,u,v,w],[f8,w,u,v],[f8,v,w,u],[f9,u,v,w,ER(3)],[f9,u,v,w,ER(3)**2]]
-    return GAPMul(ApplyFunc(rep[i][1-1],[rep[i][k-1] for k in range(2,len(rep[i-1])+1)]),prod(para[1-1])**0)
+    return GAPMul(ApplyFunc(rep[i][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)]),prod(para[1-1])**0)
 
 ChevieData["G25"]["HeckeRepresentation"]=lxg256
 

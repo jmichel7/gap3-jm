@@ -51,7 +51,7 @@ ChevieData["E6"]["sparseFakeDegrees"]=[[1,0],[1,36],[1,9,1,13,1,15,1,16,1,17,1,1
 def eyle63(w):
     if w==[] :
         return " "
-    return CHEVIE.R("ClassNames", "E6")[ChevieData["E6"]["cyclestructure"].index(CycleStructurePerm(prod([CHEVIE.R("generators", "E6")[k-1] for k in w])))+1-1]
+    return CHEVIE.R("ClassNames", "E6")[ChevieData["E6"]["cyclestructure"].index(CycleStructurePerm(prod([ChevieData["E6"]["generators"][k-1] for k in w])))+1-1]
 
 ChevieData["E6"]["ClassParameter"]=eyle63
 
@@ -293,7 +293,7 @@ def eyle616(p):
             "relgroup":CoxeterGroup("A",2),
             "Z":[1],
             "locsys":[[8,1],[3,1],[1,4]]})
-        [uc.springerSeries[1].locsys[k-1] for k in [11,13]]=[[3,2],[8,2]]
+        [uc.springerSeries[1-1]["locsys"][k-1] for k in [11,13]]=[[3,2],[8,2]]
         uc.springerSeries[2].locsys[1-1]=[1,3]
         uc.springerSeries[3].locsys[1-1]=[1,5]
         for c in [2,6]:
@@ -303,7 +303,7 @@ def eyle616(p):
                 "locsys":[[1,c]]})
     else:
         if p==3 :
-            uc["springerSeries"]=[uc.springerSeries[k-1] for k in [1]]
+            uc["springerSeries"]=[uc["springerSeries"][k-1] for k in [1]]
             uc.springerSeries[1].locsys{[7, 15]}[2-1]=[1,2]
             for c in [2,3]:
                 uc["springerSeries"].append({"relgroup":CoxeterGroup(),

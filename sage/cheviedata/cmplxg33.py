@@ -225,7 +225,7 @@ def lxg337(para,root,i):
     
     
     rep=[[f1,r],[f1,p],[f5,p,r,ER(3)**2],[f5,r,p,ER(3)**2],[f5,p,r,ER(3)],[f5,r,p,ER(3)],[f7,p,r],[f7,r,p],[f10,r,p,ER(3)**2],[f10,p,r,ER(3)**2],[f10,r,p,ER(3)],[f10,p,r,ER(3)],[f13,r,p],[f13,p,r],[f15,r,p],[f15,p,r],[f17,r,p],[f17,p,r],[f19,r,p],[f19,p,r],[f21,r,p],[f21,p,r],[f23,r,p,ER(3)],[f23,p,r,ER(3)],[f23,r,p,ER(3)**2],[f23,p,r,ER(3)**2],[f27,r,p,ER(3)],[f27,p,r,ER(3)],[f27,r,p,ER(3)**2],[f27,p,r,ER(3)**2],[f31,r,p,ER(3)],[f31,p,r,ER(3)],[f31,r,p,ER(3)**2],[f31,p,r,ER(3)**2],[f35,r,p],[f35,p,r],[f37,r,p,-1],[f37,r,p,1],[f39,p,r],[f39,r,p]]
-    return ApplyFunc(rep[i][1-1],[rep[i][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para[1-1]))
+    return ApplyFunc(rep[i][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para[1-1]))
 
 ChevieData["G33"]["HeckeRepresentation"]=lxg337
 

@@ -50,7 +50,7 @@ ChevieData["E8"]["cycpolfakedegrees"]=[[1,0],[1,120],[1,8,7,8,8,14,15,24,30],[1,
 def eyle83(w):
     if w==[] :
         return " "
-    return CHEVIE.R("ClassNames", "E8")[ChevieData["E8"]["cyclestructure"].index(CycleStructurePerm(prod([CHEVIE.R("generators", "E8")[k-1] for k in w])))+1-1]
+    return CHEVIE.R("ClassNames", "E8")[ChevieData["E8"]["cyclestructure"].index(CycleStructurePerm(prod([ChevieData["E8"]["generators"][k-1] for k in w])))+1-1]
 
 ChevieData["E8"]["ClassParameter"]=eyle83
 
@@ -773,7 +773,7 @@ def eyle815(p):
                 "Z":[],
                 "locsys":[[4,3]]}]
             uc.springerSeries[1].locsys[72][2-1]=4
-            [uc.springerSeries[1].locsys[k-1] for k in [13,51]]=[[71,1],[18,2]]
+            [uc.springerSeries[1-1]["locsys"][k-1] for k in [13,51]]=[[71,1],[18,2]]
         else:
             if p==5 :
                 uc["springerSeries"]+=[{"relgroup":CoxeterGroup(),
