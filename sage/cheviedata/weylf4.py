@@ -488,26 +488,26 @@ def eylf421(c,p):
         c=class_("\\tilde A_2{+}A_1")
         c["red"]=Z(1)
         c["dimBu"]=6
-        Unbind(c["dynkin"])
+        del c["dynkin"]
         c=class_("B_2")
         c["red"]=Z(2)
         c["dimBu"]=6
-        Unbind(c["dynkin"])
-        Unbind(c["AuAction"])
+        del c["dynkin"]
+        del c["AuAction"]
         c=class_("C_3(a_1)")
         c["red"]=Z(1)
         c["dimBu"]=5
-        Unbind(c["dynkin"])
+        del c["dynkin"]
         c=class_("\\tilde A_2")
         c["red"]=CoxeterGroup("A",2)
         c["dimBu"]=9
-        Unbind(c["dynkin"])
+        del c["dynkin"]
         c["AuAction"]=ExtendedReflectionGroup(CoxeterGroup("A",2),Permutation("(1,2)"))
         c=class_("\\tilde A_1")
         c["red"]=CoxeterGroup("B",2)
         c["dimBu"]=13
-        Unbind(c["dynkin"])
-        Unbind(c["AuAction"])
+        del c["dynkin"]
+        del c["AuAction"]
         uc["springerSeries"]=[{"relgroup":CoxeterGroup("F",4),
             "levi":[],
             "Z":[],
@@ -530,7 +530,7 @@ def eylf421(c,p):
                 "locsys":[[16,3]]}]
     uc["orderClasses"]=map(lambda c: map(lambda n: PositionProperty(uc["classes"],lambda c: UnipotentClassOps["Name"](c)==n),c["succ"]),uc["classes"])
     for c in uc["classes"]:
-        Unbind(c["succ"])
+        del c["succ"]
         if not "red" in c :
             c["red"]=Z(1)
         if not "Au" in c :

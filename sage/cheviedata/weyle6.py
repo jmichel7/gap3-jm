@@ -313,7 +313,7 @@ def eyle616(p):
                     "locsys":[[1,c]]})
     uc["orderClasses"]=map(lambda c: map(lambda n: PositionProperty(uc["classes"],lambda c: UnipotentClassOps["Name"](c)==n),c["succ"]),uc["classes"])
     for c in uc["classes"]:
-        Unbind(c["succ"])
+        del c["succ"]
         if not "red" in c :
             c["red"]=Z(1)
         if not "Au" in c :

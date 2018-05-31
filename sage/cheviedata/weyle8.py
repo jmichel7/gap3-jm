@@ -699,28 +699,28 @@ def eyle815(p):
         c=class_("D_7(a_1)")
         c["red"]=Z(1)
         c["dimBu"]=9
-        Unbind(c["dynkin"])
-        Unbind(c["AuAction"])
+        del c["dynkin"]
+        del c["AuAction"]
         c=class_("D_5{+}A_2")
         c["red"]=Z(1)
         c["dimBu"]=13
-        Unbind(c["dynkin"])
-        Unbind(c["AuAction"])
+        del c["dynkin"]
+        del c["AuAction"]
         c=class_("A_6")
         c["red"]=GAPMul(Z(2),Torus(1))
         c["dimBu"]=15
-        Unbind(c["dynkin"])
+        del c["dynkin"]
         c["AuAction"]=ExtendedReflectionGroup(GAPMul(Z(2),Torus(1)),DiagonalMat(1,-1))
         c=class_("D_4{+}A_2")
         c["red"]=Z(2)
         c["dimBu"]=21
-        Unbind(c["dynkin"])
-        Unbind(c["AuAction"])
+        del c["dynkin"]
+        del c["AuAction"]
         c=class_("A_3{+}A_2")
         c["red"]=CoxeterGroup("B",2)
         c["dimBu"]=31
-        Unbind(c["dynkin"])
-        Unbind(c["AuAction"])
+        del c["dynkin"]
+        del c["AuAction"]
         uc["springerSeries"][1-1]["locsys"]=[[1,1],[70,1],[4,1],[66,1],[3,2],[68,1],[29,2],[9,1],[65,1],[5,1],[67,1],[73,2],[18,2],[57,1],[6,2],[64,2],[38,1],[9,2],[61,1],[13,1],[54,1],[16,2],[49,2],[8,2],[60,1],[33,1],[28,1],[46,2],[9,4],[61,2],[29,3],[72,2],[48,1],[29,4],[19,2],[74,1],[71,2],[55,1],[32,2],[12,2],[58,1],[34,1],[13,3],[54,3],[13,2],[54,2],[33,2],[23,1],[43,1],[34,2],[18,3],[51,2],[29,7],[17,2],[50,2],[29,5],[26,1],[41,1],[29,6],[30,2],[40,1],[20,1],[47,2],[22,2],[45,2],[25,1],[42,1],[2,1],[69,1],[10,2],[56,1],[4,4],[66,2],[6,1],[64,1],[31,1],[11,2],[62,1],[14,2],[59,1],[7,2],[63,1],[37,1],[18,1],[51,1],[10,4],[56,2],[36,1],[17,1],[50,1],[21,1],[52,1],[10,6],[56,3],[27,1],[35,1],[23,2],[43,2],[31,2],[15,1],[53,1],[22,1],[45,1],[31,3],[20,2],[47,1],[28,2],[39,1],[24,1],[44,1],[27,4],[35,2]]
         l=[["E8",3,"1_1"],["E8(a1)",3,"2_1"],["E8(a2)",1,"4_2"],["E7+A1",2,"8_1"],["E7+A1",3,"1_2"],["E7",3,"9_1"],["E7(a1)+A1",1,"4_3"],["E7(a1)",1,"9_2"],["D8(a1)",3,"8_3"],["D7",1,"2_3"],["E7(a2)+A1",5,"12"],["E7(a2)+A1",3,"6_2"],["E7(a2)",1,"16"],["E6+A1",1,"6_1"],["(D7(a1))2",1,"4_1"],["E6",1,"8_4"],["D6",1,"9_3"],["(D5+A2)2",1,"4_4"],["D6(a1)",2,"9_4"],["D6(a1)",3,"2_4"],["D5+A1",1,"8_2"],["D5",1,"4_5"],["(D4+A2)2",1,"1_3"],["D4+A1",1,"2_2"],["D4",1,"1_4"]]
         uc["springerSeries"].append({"relgroup":CoxeterGroup("F",4),
@@ -756,7 +756,7 @@ def eyle815(p):
             c=class_("A_7")
             c["red"]=Z(1)
             c["dimBu"]=11
-            Unbind(c["dynkin"])
+            del c["dynkin"]
             uc["springerSeries"]+=[{"relgroup":CoxeterGroup("G",2),
                 "levi":range(1,6+1),
                 "Z":[],
@@ -792,7 +792,7 @@ def eyle815(p):
                     "locsys":[[1,5]]}]
     uc["orderClasses"]=map(lambda c: map(lambda n: PositionProperty(uc["classes"],lambda c: UnipotentClassOps["Name"](c)==n),c["succ"]),uc["classes"])
     for c in uc["classes"]:
-        Unbind(c["succ"])
+        del c["succ"]
         if not "red" in c :
             c["red"]=Z(1)
         if not "Au" in c :

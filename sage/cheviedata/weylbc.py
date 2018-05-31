@@ -381,7 +381,7 @@ ChevieData["tmp"]["matrix"]=eylbc17
 
 ChevieData["B"]["Hk"]=ChevieData["tmp"]
 
-Unbind(ChevieData["tmp"])
+del ChevieData["tmp"]
 
 for t in ["B"]:
     ChevieData[t]["HeckeCharTable"]=ChevieData["compat"]["HeckeCharTableB"](t)

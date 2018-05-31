@@ -327,7 +327,7 @@ def eylg216(c,p):
                 "Au":CoxeterGroup()})
             uc["classes"][1-1]["succ"].append("(~A1)3")
             uc["classes"][3-1]["dimBu"]=2
-            Unbind(uc["classes"][3-1]["dynkin"])
+            del uc["classes"][3-1]["dynkin"]
             for i,j in zip([3,5],[[6,1],[4,2]]):
                 uc["springerSeries"][1-1]["locsys"][i-1]=j
             for c in [2,3]:
@@ -337,7 +337,7 @@ def eylg216(c,p):
                     "locsys":[[5,c]]})
     uc["orderClasses"]=map(lambda c: map(lambda n: PositionProperty(uc["classes"],lambda c: UnipotentClassOps["Name"](c)==n),c["succ"]),uc["classes"])
     for c in uc["classes"]:
-        Unbind(c["succ"])
+        del c["succ"]
         if not "red" in c :
             c["red"]=Z(1)
         if not "Au" in c :

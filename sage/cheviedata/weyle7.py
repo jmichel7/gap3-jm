@@ -447,13 +447,13 @@ def eyle712(p):
         c=class_("A_6")
         c["red"]=Torus(1)
         c["dimBu"]=6
-        Unbind(c["dynkin"])
+        del c["dynkin"]
         c["AuAction"]=ExtendedReflectionGroup(Torus(1),[[-1]])
         c=class_("A_3{+}A_2")
         c["red"]=Z(2)
         c["dimBu"]=14
-        Unbind(c["dynkin"])
-        Unbind(c["AuAction"])
+        del c["dynkin"]
+        del c["AuAction"]
         uc["springerSeries"][1-1]["locsys"]=[[1,1],[45,1],[44,1],[2,2],[39,1],[9,1],[5,1],[40,1],[41,1],[4,2],[3,2],[43,1],[29,1],[12,1],[7,2],[42,1],[40,2],[5,2],[33,1],[18,1],[22,2],[46,1],[38,1],[6,1],[9,2],[36,1],[20,1],[24,2],[6,2],[38,2],[10,2],[34,1],[15,1],[28,1],[37,1],[8,1],[32,1],[13,2],[11,2],[35,1],[19,1],[25,1],[30,1],[16,1],[29,2],[12,2],[14,1],[31,1],[29,3],[12,3],[26,1],[21,1],[27,1],[17,1],[15,2],[28,2],[21,2],[26,2],[23,1],[23,2]]
         for i,j in zip(range(2,4+1),[{"relgroup":CoxeterGroup("C",3),
             "levi":[2,3,4,5],
@@ -484,7 +484,7 @@ def eyle712(p):
                     "locsys":[[1,c]]})
     uc["orderClasses"]=map(lambda c: map(lambda n: PositionProperty(uc["classes"],lambda c: UnipotentClassOps["Name"](c)==n),c["succ"]),uc["classes"])
     for c in uc["classes"]:
-        Unbind(c["succ"])
+        del c["succ"]
         if not "red" in c :
             c["red"]=Z(1)
         if not "Au" in c :

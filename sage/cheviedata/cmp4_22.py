@@ -265,7 +265,7 @@ def p4_2214(ST):
         if res[i]==None :
             res[i-1]=map(lambda x: l.index(x)+1,[res[i-1][k-1] for k in l])
             if res[i-1]==range(1,len(l)+1) or res[i-1] in Sublist(res,range(1,i-1+1)) :
-                Unbind(res[i-1])
+                del res[i-1]
     return res
 
 ChevieData["G4_22"]["PowerMaps"]=p4_2214
