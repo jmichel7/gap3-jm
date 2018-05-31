@@ -185,7 +185,7 @@ ChevieData["IndirectAddData"]("FactorizedSchurElement",["G24","G27","G29","G33",
 def eptio22(arg):
     Y=Concatenation([arg[2-1][k-1] for k in ChevieData["t"]["HyperplaneRepresentatives"]])
     ci=ChevieData["t"]["SchurData"][ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
-    return ApplyFunc(VFactorSchurElement,Concatenation([Y,ChevieData["t"]["SchurModels"][ci["name"]],ci],[arg[k-1] for k in range(3,len(arg)+1)]))
+    return VFactorSchurElement(*Concatenation([Y,ChevieData["t"]["SchurModels"][ci["name"]],ci],[arg[k-1] for k in range(3,len(arg)+1)]))
 
 ChevieData["IndirectAddData"]("FactorizedSchurElement",["G2","F4","G25","G26","G32"],lambda t: eptio22)
 
@@ -231,7 +231,7 @@ def VcycSchurElement(arg):
 
 def VFactorSchurElement(arg):
     n=len(arg[1-1])
-    if >=(len(arg),3) :
+    if len(arg)>=3 :
         data=arg[3-1]
         para=[arg[1-1][k-1] for k in data["order"]]
     else:

@@ -16,7 +16,7 @@ def lximp1(arg):
     else:
         if p==q :
             print indices[1-1],"\n",g(0),"|\\\n",
-            if !=(p,3) :
+            if p!=3 :
                 print just(p,indent),
             else:
                 print g(0),
@@ -28,7 +28,7 @@ def lximp1(arg):
         else:
             if q==2 :
                 print indices[2-1],"\n",g(2),"/3|",
-                if >=(r,3) :
+                if r>=3 :
                     print "\\",
                 print "\n",
                 if GAPDiv(p,q)>2 :
@@ -38,15 +38,15 @@ def lximp1(arg):
                 print indices[1-1],"  | ",
                 for j in range(3,r+1):
                     print indices[j+1-1],
-                    if !=(j,r) :
+                    if j!=r :
                         print "-",
                 print "\n",g(2),"\\ |",
-                if >=(r,3) :
+                if r>=3 :
                     print "/",
                 print "\n",just(indices[3-1],indent+1),"   ",IntListToString([indices[k-1] for k in [1,2,3]]),"==",IntListToString([indices[k-1] for k in [2,3,1]]),"==",IntListToString([indices[k-1] for k in [3,1,2]]),"\n",
             else:
                 print indices[2-1],"\n",g(2),"/",q+1," ",
-                if >=(r,3) :
+                if r>=3 :
                     print "\\",
                 print "\n",
                 if GAPDiv(p,q)>2 :
@@ -54,14 +54,14 @@ def lximp1(arg):
                 else:
                     print g(3),
                 print indices[1-1],"   ",
-                if >=(r,3) :
+                if r>=3 :
                     print "==",
                 for j in range(3,r+1):
                     print indices[j+1-1],
-                    if !=(j,r) :
+                    if j!=r :
                         print "-",
                 print "\n",g(2),"\\  ",
-                if >=(r,3) :
+                if r>=3 :
                     print "/",
                 print "\n",just(indices[3-1],indent+1),
                 j=ChevieData["imp"]["BraidRelations"](p,q,r)
@@ -87,7 +87,7 @@ def lximp3(p,q,r):
     
     res=[]
     if q==1 :
-        if >=(r,2) :
+        if r>=2 :
             if p==1 :
                 res.append(b(1,2,3))
             else:
@@ -98,7 +98,7 @@ def lximp3(p,q,r):
     else:
         if p==q :
             res.append(b(1,2,p))
-            if >=(r,3) :
+            if r>=3 :
                 res+=[[[1,2,3,1,2,3],[3,1,2,3,1,2]],b(1,3,3),b(2,3,3)]
             res+=map(lambda i: b(i,i-1,3),range(4,r+1))
             for i in range(4,r+1):
@@ -107,8 +107,8 @@ def lximp3(p,q,r):
             res.append([[1,2,3],[2,3,1]])
             i=b(2,3,q-1)
             res.append([Concatenation([1,2],i[2-1]),Concatenation([3,1],i[1-1])])
-            if >=(r,3) :
-                if !=(q,2) :
+            if r>=3 :
+                if q!=2 :
                     res.append([[2,3,4,2,3,4],[4,2,3,4,2,3]])
                 res+=[b(2,4,3),b(3,4,3),b(1,4,2)]
             res+=map(lambda i: b(i,i-1,3),range(5,r+1+1))
@@ -146,7 +146,7 @@ def lximp6(p,q,r):
         v[1-1]=1
         roots=[v]
     else:
-        if !=(q,p) :
+        if q!=p :
             v=GAPMul(range(1,r+1),0)
             v[1-1]=1
             roots=[v]
@@ -172,7 +172,7 @@ def lximp7(p,q,r):
     if q==1 :
         res[1-1]=GAPDiv(1,p)
     else:
-        if !=(q,p) :
+        if q!=p :
             res=Concatenation([GAPDiv(q,p)],res)
     return res
 
@@ -195,7 +195,7 @@ ChevieData["imp"]["ReflectionDegrees"]=lximp9
 
 def lximp10(p,q,r):
     res=GAPMul(p,range(0,r-1+1))
-    if p==q and >=(p,2) and r>2 :
+    if p==q and p>=2 and r>2 :
         res[r-1]=res[r-1]-r
     return res
 
@@ -289,7 +289,7 @@ def lximp13(p,q,r):
                     if l>0 and res[l-1]==a :
                         res=[res[k-1] for k in range(1,l-1+1)]
                     else:
-                        if p==q and a in [1,2] and >=(l,q) and [res[k-1] for k in range(l-q+1,l+1)]==word(q,3-a) :
+                        if p==q and a in [1,2] and l>=q and [res[k-1] for k in range(l-q+1,l+1)]==word(q,3-a) :
                             res=Concatenation([res[k-1] for k in range(1,l-q+1)],word(q-1,3-a))
                         else:
                             res.append(a)
@@ -299,7 +299,7 @@ def lximp13(p,q,r):
                     if l==1 :
                         d=d+1
                     else:
-                        if !=(l,2) :
+                        if l!=2 :
                             add(l)
                         else:
                             d=d%p
@@ -311,13 +311,13 @@ def lximp13(p,q,r):
                                     add(2)
                                 add(1)
                 d=d%p
-                if !=(d%q,0) :
+                if d%q!=0 :
                     Error()
                 else:
-                    if !=(d,0) :
+                    if d!=0 :
                         res=Concatenation(1+res,GAPMul(range(1,GAPDiv(d,q)+1),0)+1)
                     else:
-                        if !=(p,q) :
+                        if p!=q :
                             res=1+res
                 return res
             
@@ -332,8 +332,8 @@ def lximp13(p,q,r):
                 S=I["classparams"][i-1]
                 a=Concatenation(S)
                 a.append(q)
-                a+=Filtered(range(1,p+1),lambda j: !=(len(S[j-1]),0))-1
-                a=ApplyFunc(Gcd,a)
+                a+=Filtered(range(1,p+1),lambda j: len(S[j-1])!=0)-1
+                a=Gcd(*a)
                 for j in range(0,a-1+1):
                     res["classtext"].append(trans(Concatenation(GAPMul(range(1,j+1),0)+1,I["classtext"][i-1],GAPMul(range(1,p-j+1),0)+1)))
                     if a>1 :
@@ -495,7 +495,7 @@ def lximp22(t):
             else:
                 return [1,2,2,pos[1-1]-de]
         else:
-            if <=(pos[1-1],de) :
+            if pos[1-1]<=de :
                 return [2,-1,pos[1-1],pos[2-1]-de]
             else:
                 return [2,1,pos[2-1]-de,pos[1-1]-de]
@@ -594,7 +594,7 @@ def lximp30(p,q,r,phi):
             for t in range(1,p+1):
                 for h in GenHooks(phi[s-1],phi[t-1]):
                     v=GAPMul(range(1,p+1),0)
-                    if !=(s,t) :
+                    if s!=t :
                         [v[k-1] for k in [s,t]]=[1,-1]
                         v.append(h)
                         res["vcyc"].append([v,1])
@@ -783,7 +783,7 @@ def lximp34(p,q,r,para,root):
                         while j>0 and S[j-1]>i:
                             j=j-1
                         k=j+1
-                        while <=(k,e) and <=(S[k-1]-i,s):
+                        while k<=e and S[k-1]-i<=s:
                             z=[i]
                             z+=[S[k-1] for k in range(j+1,k-1+1)]
                             zi=Filtered(range(2,len(z)+1),lambda i: z[i-1]-z[i-1-1]>1)
@@ -926,30 +926,30 @@ def lximp34(p,q,r,para,root):
                 X=para[2-1]
                 Y=para[3-1]
                 Z=para[1-1]
-                def GenericEntry(char,class):
+                def GenericEntry(char,class_):
                     char=ci["malle"][ci["charparams"].index(char)+1-1]
                     if char[1-1]==1 :
                         w=[Z[char[4-1]-1],X[char[2-1]-1],Y[char[3-1]-1]]
-                        return prod(class)
+                        return prod(class_)
                     else:
                         w=GAPMul(char[2-1],GetRoot(GAPMul(X[1-1],X[2-1]),2))
-                        class=map(lambda i: Number(class,lambda j: i==j),range(0,3+1))
-                        if class[2-1]>0 :
-                            char=Sum([Z[k-1] for k in [char[k-1] for k in [3,4]]],lambda x: x**class[2-1])
+                        class_=map(lambda i: Number(class_,lambda j: i==j),range(0,3+1))
+                        if class_[2-1]>0 :
+                            char=Sum([Z[k-1] for k in [char[k-1] for k in [3,4]]],lambda x: x**class_[2-1])
                         else:
-                            if class[3-1]>0 :
+                            if class_[3-1]>0 :
                                 char=Sum(X)
                             else:
-                                if class[4-1]>0 :
+                                if class_[4-1]>0 :
                                     char=Sum(Y)
                                 else:
                                     char=2
-                        return GAPMul(w**class[1-1],char)
+                        return GAPMul(w**class_[1-1],char)
                 
                 
                 res["classes"]=cl["classes"]
                 res["orders"]=cl["orders"]
-                res["irreducibles"]=map(lambda char: map(lambda class: GenericEntry(char,class),cl["classparams"]),ci["charparams"])
+                res["irreducibles"]=map(lambda char: map(lambda class_: GenericEntry(char,class_),cl["classparams"]),ci["charparams"])
             else:
                 cl=ChevieData["imp"]["ClassInfo"](p,q,r)
                 res["centralizers"]=cl["centralizers"]

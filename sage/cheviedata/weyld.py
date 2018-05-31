@@ -80,7 +80,7 @@ def weyld7(arg):
                 r=l%2
                 w+=i+Concatenation(range(1,l-1-r+1,3-1),range(2,l+r-2+1,4-2))
                 i=i+l
-            if !=(w,[]) and w[1-1]==2 :
+            if w!=[] and w[1-1]==2 :
                 w[1-1]=1
             if pi[2-1]==[] and ForAll(pi[1-1],lambda x: x%2==0) :
                 res.append(w)
@@ -134,7 +134,7 @@ def weyld12(n,w):
     res=[[],[]]
     mark=range(1,n+1)
     for i in range(1,n+1):
-        if !=(mark[i-1],0) :
+        if mark[i-1]!=0 :
             cyc=CyclePermInt(x,i)
             if i+n in cyc :
                 res[2-1].append(GAPDiv(len(cyc),2))
@@ -269,7 +269,7 @@ def weyld18(n):
     return map(lambda f: weyld19,ChevieData["imp"]["Invariants"](2,2,n))
 
 def weyld19(arg):
-    return ApplyFunc(f,GAPMul(arg,m))
+    return f(*GAPMul(arg,m))
 
 ChevieData["D"]["Invariants"]=weyld18
 
@@ -346,7 +346,7 @@ def weyld23(n,char):
             i=1
             part=[]
             ex=[]
-            while <=(i,len(c)):
+            while i<=len(c):
                 if i==len(c) or c[i+1-1]-c[i-1]>1 :
                     part.append(GAPMul(2,c[i-1]-GAPMul(2,i-1))+2)
                     i=i+1
@@ -361,7 +361,7 @@ def weyld23(n,char):
                         i=i+2
                         ex.append(l)
             Sort(part)
-            part=Filtered(part,lambda y: !=(y,0))
+            part=Filtered(part,lambda y: y!=0)
             return [Reversed(part),ex]
         
         
@@ -372,7 +372,7 @@ def weyld23(n,char):
             Sort(c)
             i=1
             part=[]
-            while <=(i,len(c)):
+            while i<=len(c):
                 if i==len(c) or c[i+1-1]-c[i-1]>0 :
                     part.append(GAPMul(2,c[i-1]-i-1)+1)
                     i=i+1
@@ -381,7 +381,7 @@ def weyld23(n,char):
                     part+=[l,l]
                     i=i+2
             Sort(part)
-            part=Filtered(part,lambda y: !=(y,0))
+            part=Filtered(part,lambda y: y!=0)
             return Reversed(part)
         
         
@@ -397,16 +397,16 @@ def weyld23(n,char):
         else:
             cc["dynkin"]=partition2DR(cc["parameter"])
             cc["name"]=IntListToString(cc["parameter"])
-        cc["Au"]=ApplyFunc(CoxeterGroup,Concatenation(map(lambda x: ["A",1],cl[1-1]["Au"])))
+        cc["Au"]=CoxeterGroup(*Concatenation(map(lambda x: ["A",1],cl[1-1]["Au"])))
         CharNames(cc["Au"])
-        if !=(char,2) :
+        if char!=2 :
             cc["red"]=CoxeterGroup()
             j=cc["parameter"]
             for j in Collected(j):
                 if j[1-1]%2==0 :
                     cc["red"]=GAPMul(cc["red"],CoxeterGroup("C",GAPDiv(j[2-1],2)))
                 else:
-                    if !=(j[2-1]%2,0) :
+                    if j[2-1]%2!=0 :
                         if j[2-1]>1 :
                             cc["red"]=GAPMul(cc["red"],CoxeterGroup("B",GAPDiv(j[2-1]-1,2)))
                     else:
@@ -432,10 +432,10 @@ def weyld23(n,char):
     if char==2 :
         uc["orderClasses"]=Hasse(Poset(map(lambda x: map(weyld27,uc["classes"]),uc["classes"])))
     else:
-        uc["orderClasses"]=Hasse(Poset(map(lambda i: map(lambda j: Dominates(uc["classes"][j-1]["parameter"],uc["classes"][i-1]["parameter"]) and !=(uc["classes"][j-1]["parameter"],uc["classes"][i-1]["parameter"]) or i==j,range(1,len(uc["classes"])+1)),range(1,len(uc["classes"])+1))))
-    if !=(char,2) :
+        uc["orderClasses"]=Hasse(Poset(map(lambda i: map(lambda j: Dominates(uc["classes"][j-1]["parameter"],uc["classes"][i-1]["parameter"]) and uc["classes"][j-1]["parameter"]!=uc["classes"][i-1]["parameter"] or i==j,range(1,len(uc["classes"])+1)),range(1,len(uc["classes"])+1))))
+    if char!=2 :
         d=0
-        while <=(GAPMul(4,d**2)-d,n):
+        while GAPMul(4,d**2)-d<=n:
             i=GAPMul(4,d**2)-d
             if n-d%2==0 :
                 l=Concatenation(range(1,i+1),range(i+2,n+1,i+4-i+2))
@@ -458,7 +458,7 @@ def weyld23(n,char):
                     s["Z"]=[-ER(4)]
                 uc["springerSeries"].append(s)
                 i=GAPMul(4,d**2)+d
-                if !=(d,0) and <=(i,n) :
+                if d!=0 and i<=n :
                     l=Concatenation(range(1,i+1),range(i+2,n+1,i+4-i+2))
                     s={"relgroup":CoxeterGroup("B",GAPDiv(n-i,2)),
                         "levi":l,
@@ -484,7 +484,7 @@ def weyld23(n,char):
             d=[0,1,0,-1]
             d=[d[k-1] for k in map(lambda x: 1+x%4,p)]
             i=1
-            while <=(i,len(p)):
+            while i<=len(p):
                 l=p[i-1]
                 t=Sum([d[k-1] for k in range(1,i-1+1)])
                 if 1==l%4 :
@@ -496,16 +496,16 @@ def weyld23(n,char):
                         i=i+1
                     else:
                         j=i
-                        while <=(i,len(p)) and p[i-1]==l:
+                        while i<=len(p) and p[i-1]==l:
                             i=i+1
                         j=GAPMul(range(1,GAPDiv(i-j,2)+1),0)
                         a+=j+GAPDiv(l+l%4,4)-t
                         b+=j+GAPDiv(l-l%4,4)
-            a=Filtered(a,lambda x: !=(x,0))
+            a=Filtered(a,lambda x: x!=0)
             a=Reversed(a)
-            b=Filtered(b,lambda x: !=(x,0))
+            b=Filtered(b,lambda x: x!=0)
             b=Reversed(b)
-            if >=(Sum(d),1) :
+            if Sum(d)>=1 :
                 return [a,b]
             else:
                 return [b,a]
@@ -590,7 +590,7 @@ def weyld26(x):
 
 def weyld27(y):
     m=Maximum(x["parameter"][1-1][1-1],y["parameter"][1-1][1-1])
-    f=lambda x: map(lambda i: Sum(Filtered(x,lambda z: z<i))+GAPMul(i,Number(x,lambda z: >=(z,i))),range(1,m+1))
+    f=lambda x: map(lambda i: Sum(Filtered(x,lambda z: z<i))+GAPMul(i,Number(x,lambda z: z>=i)),range(1,m+1))
     fx=f(x["parameter"][1-1])
     fy=f(y["parameter"][1-1])
     for i in range(1,m+1):
@@ -602,7 +602,7 @@ def weyld27(y):
                     return false
                 if i<m and fx[i+1-1]-fy[i+1-1]%2==1 :
                     return false
-    if x["parameter"]==y["parameter"] and !=(x,y) :
+    if x["parameter"]==y["parameter"] and x!=y :
         return false
     return true
 

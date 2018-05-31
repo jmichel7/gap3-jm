@@ -147,7 +147,7 @@ def eylbc11(n,w):
     res=[[],[]]
     mark=range(1,n+1)
     for i in range(1,n+1):
-        if !=(mark[i-1],0) :
+        if mark[i-1]!=0 :
             cyc=CyclePermInt(x,i)
             if i+n in cyc :
                 res[2-1].append(GAPDiv(len(cyc),2))
@@ -175,7 +175,7 @@ def eylbc13(p):
     pp=SymbolPartitionTuple(p,1)
     m=len(pp[2-1])
     res=GAPMul(pp[1-1],range(m,0+1,m-1-m))
-    if !=(pp[2-1],[]) :
+    if pp[2-1]!=[] :
         res=res+GAPMul(pp[2-1],range(m-1,0+1,m-2-m-1))
     return GAPMul(2,res)+Sum(pp[2-1])-GAPDiv(GAPMul(m,m-1),6)
 
@@ -223,29 +223,29 @@ def eylbc15(nq,gamma,pi):
         return q**0
     val=GAPMul(0,q)
     BHk=ChevieData["B"]["Hk"]["irreducibles"][1-1][1-1]
-    if !=(pi[1-1],[]) :
+    if pi[1-1]!=[] :
         k=pi[1-1][1-1]
         for alpha in PartitionTuples(n-k,2):
             dif=[]
             dif[1-1]=DifferencePartitions(gamma[1-1],alpha[1-1])
             dif[2-1]=DifferencePartitions(gamma[2-1],alpha[2-1])
-            if !=(dif[1-1],false) and !=(dif[2-1],false) :
+            if dif[1-1]!=false and dif[2-1]!=false :
                 dif={"cc":dif[1-1]["cc"]+dif[2-1]["cc"],
                     "ll":dif[1-1]["ll"]+dif[2-1]["ll"]}
                 val=val+GAPMul(q-1**dif["cc"]-1,-1**dif["ll"])
     else:
         k=pi[2-1][1-1]
         nn=Sum(gamma[1-1])
-        if >=(nn,k) :
+        if nn>=k :
             for alpha in Partitions(nn-k):
                 dif=DifferencePartitions(gamma[1-1],alpha)
-                if !=(dif,false) and dif["cc"]==1 :
+                if dif!=false and dif["cc"]==1 :
                     val=val+GAPMul(Q,-1**dif["ll"])
         nn=Sum(gamma[2-1])
-        if >=(nn,k) :
+        if nn>=k :
             for alpha in Partitions(nn-k):
                 dif=DifferencePartitions(gamma[2-1],alpha)
-                if !=(dif,false) and dif["cc"]==1 :
+                if dif!=false and dif["cc"]==1 :
                     val=val+GAPMul(-1**dif["ll"]+1,q**n+dif["d"])
     return val
 
@@ -501,14 +501,14 @@ def eylbc26(r,type_,char):
     SortBy(l,lambda x: [AbsInt(x[1-1]),-SignInt(x[1-1])])
     uc={"classes":[],
         "springerSeries":map(eylbc28,l)}
-    if !=(char,2) :
+    if char!=2 :
         def symbol2para(S):
             c=Concatenation(S)
             Sort(c)
             i=1
             part=[]
             d=type_%2
-            while <=(i,len(c)):
+            while i<=len(c):
                 if i==len(c) or c[i+1-1]-c[i-1]>0 :
                     part.append(GAPMul(2,c[i-1]-i-1)+1-d)
                     i=i+1
@@ -517,7 +517,7 @@ def eylbc26(r,type_,char):
                     part+=[l,l]
                     i=i+2
             Sort(part)
-            part=Filtered(part,lambda y: !=(y,0))
+            part=Filtered(part,lambda y: y!=0)
             return Reversed(part)
         
         
@@ -528,7 +528,7 @@ def eylbc26(r,type_,char):
             i=1
             part=[]
             ex=[]
-            while <=(i,len(c)):
+            while i<=len(c):
                 if i==len(c) or c[i+1-1]-c[i-1]>1 :
                     part.append(GAPMul(2,c[i-1]-GAPMul(2,i-1)))
                     i=i+1
@@ -544,7 +544,7 @@ def eylbc26(r,type_,char):
                             part+=[l,l]
                             i=i+2
             Sort(part)
-            part=Filtered(part,lambda y: !=(y,0))
+            part=Filtered(part,lambda y: y!=0)
             return [Reversed(part),ex]
         
         
@@ -552,8 +552,8 @@ def eylbc26(r,type_,char):
         type_=1
     for cl in ss:
         cc={"parameter":symbol2para(cl[1-1]["symbol"])}
-        cc["Au"]=ApplyFunc(CoxeterGroup,Concatenation(map(lambda x: ["A",1],cl[1-1]["Au"])))
-        if !=(char,2) :
+        cc["Au"]=CoxeterGroup(*Concatenation(map(lambda x: ["A",1],cl[1-1]["Au"])))
+        if char!=2 :
             cc["dynkin"]=part2dynkin(cc["parameter"])
             cc["name"]=IntListToString(cc["parameter"])
         else:
@@ -569,7 +569,7 @@ def eylbc26(r,type_,char):
             if j[1-1]%2==type_%2 :
                 cc["red"]=GAPMul(cc["red"],CoxeterGroup("C",GAPDiv(j[2-1],2)))
             else:
-                if !=(j[2-1]%2,0) :
+                if j[2-1]%2!=0 :
                     if j[2-1]>1 :
                         cc["red"]=GAPMul(cc["red"],CoxeterGroup("B",GAPDiv(j[2-1]-1,2)))
                 else:
@@ -581,7 +581,7 @@ def eylbc26(r,type_,char):
         for s in cl:
             addSpringer(s)
     uc["orderClasses"]=Hasse(Poset(map(lambda x: map(eylbc30,uc["classes"]),uc["classes"])))
-    if !=(char,2) and type_==2 :
+    if char!=2 and type_==2 :
         def LuSpin(p):
             Sort(p)
             a=[]
@@ -589,7 +589,7 @@ def eylbc26(r,type_,char):
             d=[0,1,0,-1]
             d=[d[k-1] for k in map(lambda x: 1+x%4,p)]
             i=1
-            while <=(i,len(p)):
+            while i<=len(p):
                 l=p[i-1]
                 t=Sum([d[k-1] for k in range(1,i-1+1)])
                 if 1==l%4 :
@@ -601,16 +601,16 @@ def eylbc26(r,type_,char):
                         i=i+1
                     else:
                         j=i
-                        while <=(i,len(p)) and p[i-1]==l:
+                        while i<=len(p) and p[i-1]==l:
                             i=i+1
                         j=GAPMul(range(1,GAPDiv(i-j,2)+1),0)
                         a+=j+GAPDiv(l+l%4,4)-t
                         b+=j+GAPDiv(l-l%4,4)
-            a=Filtered(a,lambda x: !=(x,0))
+            a=Filtered(a,lambda x: x!=0)
             a=Reversed(a)
-            b=Filtered(b,lambda x: !=(x,0))
+            b=Filtered(b,lambda x: x!=0)
             b=Reversed(b)
-            if >=(Sum(d),1) :
+            if Sum(d)>=1 :
                 return [a,b]
             else:
                 return [b,a]
@@ -633,12 +633,12 @@ def eylbc26(r,type_,char):
                 for c in ss["locsys"]:
                     if c[1-1]==i :
                         p=old.index(c[2-1])+1
-                        if !=(p,false) :
+                        if p!=false :
                             c[2-1]=new[p-1]
         
         
         d=0
-        while <=(GAPMul(4,d**2)-GAPMul(3,d),r):
+        while GAPMul(4,d**2)-GAPMul(3,d)<=r:
             i=GAPMul(4,d**2)-GAPMul(3,d)
             if r-d%2==0 :
                 l=Concatenation(range(1,i+1),range(i+2,r+1,i+4-i+2))
@@ -647,7 +647,7 @@ def eylbc26(r,type_,char):
                     "Z":[-1],
                     "locsys":[]})
                 i=GAPMul(4,d**2)+GAPMul(3,d)
-                if <=(i,r) and !=(d,0) :
+                if i<=r and d!=0 :
                     l=Concatenation(range(1,i+1),range(i+2,r+1,i+4-i+2))
                     uc["springerSeries"].append({"relgroup":CoxeterGroup("B",GAPDiv(r-i,2)),
                         "levi":l,
@@ -702,10 +702,10 @@ def eylbc29(x):
     return res
 
 def eylbc30(y):
-    if !=(char,2) :
+    if char!=2 :
         return Dominates(y["parameter"],x["parameter"])
     m=Maximum(x["parameter"][1-1][1-1],y["parameter"][1-1][1-1])
-    f=lambda x: map(lambda i: Sum(Filtered(x,lambda z: z<i))+GAPMul(i,Number(x,lambda z: >=(z,i))),range(1,m+1))
+    f=lambda x: map(lambda i: Sum(Filtered(x,lambda z: z<i))+GAPMul(i,Number(x,lambda z: z>=i)),range(1,m+1))
     fx=f(x["parameter"][1-1])
     fy=f(y["parameter"][1-1])
     for i in range(1,m+1):
@@ -728,6 +728,6 @@ def eylbc31(n,type_):
     return map(lambda f: eylbc32,ChevieData["imp"]["Invariants"](2,1,n))
 
 def eylbc32(arg):
-    return ApplyFunc(f,GAPMul(arg,m))
+    return f(*GAPMul(arg,m))
 
 ChevieData["B"]["Invariants"]=eylbc31

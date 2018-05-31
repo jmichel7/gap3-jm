@@ -520,7 +520,7 @@ def lxg319(para,root,i):
     
     rep=[[f1,x],[f1,y],[f6,y,x,1],[f6,x,y,-1],[f6,y,x,-1],[f6,x,y,1],[f7,x,y],[f7,y,x],[f9,x,y],[f9,y,x],[f11,x,y,-1],[f11,x,y,1],[f14,y,x],[f14,x,y],[f16,y,x],[f16,x,y],[f19,x,y,1],[f19,y,x,1],[f19,x,y,-1],[f19,y,x,-1],[f21,x,y],[f21,y,x],[f23,x,y],[f23,y,x],[f25,x,y],[f26,x,y],[f27,x,y,-1],[f27,y,x,1],[f27,x,y,1],[f27,y,x,-1],[f31,x,y,1],[f31,y,x,1],[f31,x,y,-1],[f31,y,x,-1],None,None,[f37,x,y],[f37,y,x],None,None,None,[f42,x,y,1],[f42,y,x,1],[f42,x,y,-1],[f42,y,x,-1],[f46,x,y],[f46,y,x],[f48,x,y,-1],[f48,x,y,1],None,None,None,None,[f54,x,y],[f54,y,x],[f56,x,y],[f56,y,x]]
     if rep[i]==None :
-        return ApplyFunc(rep[i-1][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,x)
+        return rep[i-1][1-1](*[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,x)
     else:
         return false
 
@@ -528,7 +528,7 @@ ChevieData["G31"]["HeckeRepresentation"]=lxg319
 
 def lxg3110(i):
     r=ChevieData["G31"]["HeckeRepresentation"](map(lambda i: [1,-1],range(1,5+1)),[],i)
-    if !=(r,false) :
+    if r!=false :
         return r
     f=lambda i: ChevieData["G31"]["Representation"](i)
     def dec(d,l):

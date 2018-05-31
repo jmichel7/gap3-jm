@@ -277,10 +277,10 @@ def p4_2215(ST):
         return c[2-1]%a==b[c[1-1]-1]
     
     
-    def f(class,z):
+    def f(class_,z):
         res=[[],[1],[2],[3],[3,3]]
-        res=res[class[1-1]-1]
-        for i in range(1,class[2-1]+1):
+        res=res[class_[1-1]-1]
+        for i in range(1,class_[2-1]+1):
             res+=z
         return res
     
@@ -751,7 +751,7 @@ def G4_22FetchIndexChars(ST,para):
         [ChevieData["G4_22CachedIndexChars"][k-1] for k in range(4,22+1)]=map(lambda i: [],range(4,22+1))
         InfoChevie2("Creating G4_22CachedIndexChars\n")
     p=PositionProperty(ChevieData["G4_22CachedIndexChars"][ST-1],lambda x: x[1-1]==para)
-    if !=(p,false) :
+    if p!=false :
         return ChevieData["G4_22CachedIndexChars"][ST-1][p-1][2-1]
         InfoChevie2("Using G4_22CachedIndexChars(",para,")\n")
     else:
@@ -881,7 +881,7 @@ def p4_2234(ST):
 ChevieData["G4_22"]["Embed"]=p4_2234
 
 def G4_22Helper(c,e,x,n,p):
-    nz=Filtered(range(1,len(c)+1),lambda i: !=(c[i-1],GAPMul(0,c[i-1])))
+    nz=Filtered(range(1,len(c)+1),lambda i: c[i-1]!=GAPMul(0,c[i-1]))
     r=Gcd(Concatenation([e[k-1] for k in nz],[n]))
     root=GAPMul(GetRoot(x,GAPDiv(n,r)),ER(n)**GAPMul(p,r))
     res=GAPMul(c,root**0)
@@ -901,11 +901,11 @@ def G4_22Test(res,rows,i):
         [ChevieData["G4_22CachedIndexChars"][k-1] for k in range(4,22+1)]=map(lambda i: [],range(4,22+1))
         InfoChevie2("Creating G4_22CachedIndexChars\n")
     p=PositionProperty(ChevieData["G4_22CachedIndexChars"][res["ST"]-1],lambda x: x[1-1]==res["parameter"])
-    if !=(p,false) :
+    if p!=false :
         InfoChevie2("Using G4_22CachedIndexChars(",res["parameter"],")\n")
         ic=ChevieData["G4_22CachedIndexChars"][res["ST"]-1][p-1][2-1]
         res["irreducibles"]=[rows[k-1] for k in ic]
-        if !=(ic,i) :
+        if ic!=i :
             print "*** WARNING: choice of character restrictions from ",T," for this specialization does  !  agree with group CharTable\n",
             if not ChevieData["CheckIndexChars"] :
                 print "Try again with CHEVIE.CheckIndexChars=true\n",
@@ -916,7 +916,7 @@ def G4_22Test(res,rows,i):
         l=i
     else:
         l=map(lambda x: rows.index(x)+1,rows)
-        if !=(len(Set(l)),len(res["classes"])) :
+        if len(Set(l))!=len(res["classes"]) :
             Error("specialization  !  semi-simple")
         l=map(lambda x: Filtered(range(1,len(l)+1),lambda i: l[i-1]==x),Set(l))
         print "*** WARNING: bad choice of character restrictions from ",T," for this specialization\n",
@@ -948,13 +948,13 @@ def p4_2235(ST,para,root):
         def GenericRow(char):
             if char[1-1]==1 :
                 l=[1,X[char[2-1]-1],Y[char[3-1]-1],Z[char[4-1]-1]]
-                return map(lambda class: GAPMul(l[class[1-1]-1],prod(l)**class[2-1]),classes)
+                return map(lambda class_: GAPMul(l[class_[1-1]-1],prod(l)**class_[2-1]),classes)
             if char[1-1]==2 :
                 l=[[2],X,Drop(Y,char[3-1]),Drop(Z,char[4-1])]
             else:
                 if char[1-1]==3 :
                     l=[[3],[X[k-1] for k in [1,2,char[3-1]]],Y,Z]
-            return G4_22Helper(map(lambda class: Sum(l[class[1-1]-1]),classes),map(lambda c: c[2-1],classes),prod([l[k-1] for k in range(2,4+1)]),char[1-1],char[2-1])
+            return G4_22Helper(map(lambda class_: Sum(l[class_[1-1]-1]),classes),map(lambda c: c[2-1],classes),prod([l[k-1] for k in range(2,4+1)]),char[1-1],char[2-1])
         
         
     else:
@@ -962,7 +962,7 @@ def p4_2235(ST,para,root):
             def GenericRow(char):
                 if char[1-1]==1 :
                     l=[1,X[char[2-1]-1],Y[char[3-1]-1],Z[char[4-1]-1],Z[char[4-1]-1]**2]
-                    return map(lambda class: GAPMul(l[class[1-1]-1],prod([l[k-1] for k in range(2,4+1)])**class[2-1]),classes)+c
+                    return map(lambda class_: GAPMul(l[class_[1-1]-1],prod([l[k-1] for k in range(2,4+1)])**class_[2-1]),classes)+c
                 if char[1-1]==2 :
                     l=[[2],X,[Y[k-1] for k in c23[char[3-1]-1]],[Z[k-1] for k in c24[char[4-1]-1]]]
                 else:
@@ -972,7 +972,7 @@ def p4_2235(ST,para,root):
                         if char[1-1]==4 :
                             l=[[4],[X[k-1] for k in [1,2,1,2]],[Y[k-1] for k in [1,2,3,char[3-1]]],Z]
                 l.append(map(lambda x: x**2,l[4-1]))
-                return G4_22Helper(map(lambda class: Sum(l[class[1-1]-1]),classes),map(lambda c: c[2-1],classes),prod([l[k-1] for k in range(2,4+1)]),char[1-1],char[2-1])+c
+                return G4_22Helper(map(lambda class_: Sum(l[class_[1-1]-1]),classes),map(lambda c: c[2-1],classes),prod([l[k-1] for k in range(2,4+1)]),char[1-1],char[2-1])+c
             
             
         else:
@@ -980,7 +980,7 @@ def p4_2235(ST,para,root):
                 def GenericRow(char):
                     if char[1-1]==1 :
                         l=[1,X[char[2-1]-1],Y[char[3-1]-1],Z[char[4-1]-1],Z[char[4-1]-1]**2]
-                        return map(lambda class: GAPMul(l[class[1-1]-1],prod([l[k-1] for k in range(2,4+1)])**class[2-1]),classes)
+                        return map(lambda class_: GAPMul(l[class_[1-1]-1],prod([l[k-1] for k in range(2,4+1)])**class_[2-1]),classes)
                     if char[1-1]==2 :
                         l=[[2],X,[Y[k-1] for k in c23[char[3-1]-1]],[Z[k-1] for k in c25[char[4-1]-1]]]
                     else:
@@ -996,7 +996,7 @@ def p4_2235(ST,para,root):
                                     if char[1-1]==6 :
                                         l=[[6],[X[k-1] for k in [1,2,1,2,1,2]],[Y[k-1] for k in [1,2,3,1,2,3]],[Z[k-1] for k in [1,2,3,4,5,char[3-1]]]]
                     l.append(map(lambda x: x**2,l[4-1]))
-                    return G4_22Helper(map(lambda class: Sum(l[class[1-1]-1]),classes),map(lambda c: c[2-1],classes),prod([l[k-1] for k in range(2,4+1)]),char[1-1],char[2-1])
+                    return G4_22Helper(map(lambda class_: Sum(l[class_[1-1]-1]),classes),map(lambda c: c[2-1],classes),prod([l[k-1] for k in range(2,4+1)]),char[1-1],char[2-1])
                 
                 
     res={"name":SPrint("H(G",ST,")"),
@@ -1017,7 +1017,7 @@ def p4_2235(ST,para,root):
         "charname":ChevieData["G4_22"]["CharName"](ST,x,{})},ci["charparams"])
     rows=map(GenericRow,ChevieData["G4_22"]["paramchars"](ST))
     ci=G4_22Test(res,GAPMul(rows,prod(para)**0),ci["indexchars"])
-    if !=(ci,true) :
+    if ci!=true :
         res["indexchars"]=ci
     return ChevieData["compat"]["MakeCharacterTable"](res)
 

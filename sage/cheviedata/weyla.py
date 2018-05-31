@@ -65,7 +65,7 @@ def weyla7(n,w):
     res=[]
     mark=range(1,n+1+1)
     for i in range(1,n+1+1):
-        if !=(mark[i-1],0) :
+        if mark[i-1]!=0 :
             cyc=CyclePermInt(x,i)
             res.append(len(cyc))
             [mark[k-1] for k in cyc]=GAPMul(cyc,0)
@@ -126,7 +126,7 @@ def weyla10(nq,gamma,pi):
     AHk=ChevieData["A"]["Hk"]["irreducibles"][1-1][1-1]
     for alpha in Partitions(n-k):
         dif=DifferencePartitions(gamma,alpha)
-        if !=(dif,false) :
+        if dif!=false :
             val=val+GAPMul(q-1**dif["cc"]-1,-1**dif["ll"])
     return val
 
@@ -286,7 +286,7 @@ def weyla21(n,p):
     uc={"classes":map(lambda p: {"parameter":p},Partitions(n+1)),
         "springerSeries":Concatenation(map(lambda d: map(lambda i: {"relgroup":CoxeterGroup("A",GAPDiv(n+1,d)-1),
         "Z":[ER(d)**i],
-        "levi":Filtered(range(1,n+1+1),lambda i: !=(i%d,0)),
+        "levi":Filtered(range(1,n+1+1),lambda i: i%d!=0),
         "locsys":[]},PrimeResidues(d)),DivisorsInt(n+1)))}
     ss=lambda z: First(uc["springerSeries"],lambda x: x["Z"]==[z])
     for i in range(1,len(uc["classes"])+1):
@@ -319,7 +319,7 @@ ChevieData["A"]["UnipotentClasses"]=weyla21
 
 def weyla22(n):
     def f(i):
-        if !=(i,Permutation("()")) :
+        if i!=Permutation("()") :
             i=prod(CoxeterWord(W,i))
         i=map(Length,RobinsonSchenstedCorrespondent(n+1,i)["P"])
         return CharParams(W).index([i])+1

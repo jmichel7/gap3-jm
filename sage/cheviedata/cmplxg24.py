@@ -126,7 +126,7 @@ def lxg247(para,root,i):
     
     
     rep=[[f1,r],[f1,p],[f3,p,r,ER(-7)],[f3,r,p,ER(-7)],[f3,p,r,-ER(-7)],[f3,r,p,-ER(-7)],[f7,p,r],[f7,r,p],[f9,p,r],[f9,r,p],[f11,p,r,1],[f11,p,r,-1]]
-    return ApplyFunc(rep[i-1][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para[1-1]))
+    return rep[i-1][1-1](*[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para[1-1]))
 
 ChevieData["G24"]["HeckeRepresentation"]=lxg247
 

@@ -232,7 +232,7 @@ def lxg267(para,root,i):
     
     rep=[[f10,x,u],[f10,y,u],[f10,y,w],[f10,y,v],[f10,x,w],[f10,x,v],[f23,y,v,w],[f23,x,v,w],[f23,y,u,v],[f23,x,u,v],[f23,y,u,w],[f23,x,u,w],[f36,x],[f36,y],[f31,x,y,u,v],[f31,y,x,u,v],[f31,x,y,w,u],[f31,y,x,w,u],[f31,x,y,v,w],[f31,y,x,v,w],[f31,x,y,u,w],[f31,y,x,u,w],[f31,x,y,v,u],[f31,y,x,v,u],[f31,x,y,w,v],[f31,y,x,w,v],[f6,x,y,v,u,w],[f6,y,x,v,u,w],[f6,x,y,u,w,v],[f6,y,x,u,w,v],[f6,x,y,w,v,u],[f6,y,x,w,v,u],[f6,x,y,w,u,v],[f6,y,x,w,u,v],[f6,x,y,u,v,w],[f6,y,x,u,v,w],[f6,x,y,v,w,u],[f6,y,x,v,w,u],[f8,x,y,u,v,w,-1],[f8,x,y,u,v,w,1],[f8,x,y,w,v,u,1],[f8,x,y,w,v,u,-1],[f8,x,y,v,u,w,-1],[f8,x,y,v,u,w,1],[f9,x,y,u,v,w,ER(3)**2],[f9,y,x,u,v,w,ER(3)**2],[f9,x,y,u,v,w,ER(3)],[f9,y,x,u,v,w,ER(3)]]
     if rep[i]==None :
-        return ApplyFunc(rep[i-1][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para))
+        return rep[i-1][1-1](*[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para))
     else:
         return false
 
