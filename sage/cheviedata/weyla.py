@@ -1,5 +1,5 @@
 
-def f297118(n):
+def eyla1(n):
   a=IdentityMat(n)
   for i in range(1,n+1):
     a[i][i-1]=2
@@ -9,40 +9,40 @@ def f297118(n):
       a[i][i-1-1]=-1
   return a
 
-ChevieData["A"]["CartanMat"]=f297118
+ChevieData["A"]["CartanMat"]=eyla1
 
 ChevieData["A"]["ReflectionDegrees"]=lambda n: range(2,n+1+1)
 
-def f229529(r,indices,title):
+def eyla2(r,indices,title):
   print title," ",Join(indices," - "),"\n",
 
-ChevieData["A"]["PrintDiagram"]=f229529
+ChevieData["A"]["PrintDiagram"]=eyla2
 
-def f491287(l):
+def eyla3(l):
   r=map(lambda i: GAPMul(0,range(1,l+1+1)),range(1,l+1))
   for i in range(1,l+1):
     [r[i][k-1] for k in [i,i+1]]=[1,-1]
   return r
 
-ChevieData["A"]["GeneratingRoots"]=f491287
+ChevieData["A"]["GeneratingRoots"]=eyla3
 
-def f562376(l,s):
+def eyla4(l,s):
   return ChevieData["imp"]["ParabolicRepresentatives"](1,1,l,s)
 
-ChevieData["A"]["ParabolicRepresentatives"]=f562376
+ChevieData["A"]["ParabolicRepresentatives"]=eyla4
 
-def f829110(pi):
+def eyla5(pi):
   w=[]
   i=0
   for l in pi:
     r=l%2
-    Append(w,i+Concatenation([1,..(3,l-1-r)],[2,..(4,l+r-2)]))
+    w.extend(i+Concatenation([1,..(3,l-1-r)],[2,..(4,l+r-2)]))
     i=i+l
   return w
 
-ChevieData["A"]["WordClass"]=f829110
+ChevieData["A"]["WordClass"]=eyla5
 
-def f18591(n):
+def eyla6(n):
   res={"classparams":Partitions(n+1)}
   res["classnames"]=map(IntListToString,res["classparams"])
   res["classtext"]=map(ChevieData["A"]["WordClass"],res["classparams"])
@@ -50,7 +50,7 @@ def f18591(n):
   res["orders"]=map(Lcm,res["classparams"])
   return res
 
-ChevieData["A"]["ClassInfo"]=f18591
+ChevieData["A"]["ClassInfo"]=eyla6
 
 ChevieData["A"]["NrConjugacyClasses"]=lambda n: NrPartitions(n+1)
 
@@ -58,7 +58,7 @@ ChevieData["A"]["WeightInfo"]=lambda n: {"minusculeWeights":range(1,n+1),
   "decompositions":map(lambda i: [i],range(1,n+1)),
   "moduli":[n+1]}
 
-def f342502(n,w):
+def eyla7(n,w):
   x=Permutation("()")
   for i in w:
     x=GAPMul(x,Permutation("(%s,%s)"%(i,i+1)))
@@ -67,12 +67,12 @@ def f342502(n,w):
   for i in range(1,n+1+1):
     if !=(mark[i-1],0) :
       cyc=CyclePermInt(x,i)
-      Add(res,len(cyc))
+      res.append(len(cyc))
       [mark[k-1] for k in cyc]=GAPMul(cyc,0)
   Sort(res)
   return Reversed(res)
 
-ChevieData["A"]["ClassParameter"]=f342502
+ChevieData["A"]["ClassParameter"]=eyla7
 
 ChevieData["A"]["CharParams"]=lambda n: Partitions(n+1)
 
@@ -80,21 +80,21 @@ ChevieData["A"]["LowestPowerFakeDegree"]=lambda p: GAPMul(p,range(0,len(p)-1+1))
 
 ChevieData["A"]["HighestPowerFakeDegree"]=lambda p: GAPDiv(GAPMul(Sum(p),Sum(p)-1),2)-ChevieData["A"]["LowestPowerFakeDegree"](AssociatedPartition(p))
 
-def f416799(arg):
+def eyla8(arg):
   return IntListToString(arg[2-1])
 
-ChevieData["A"]["CharName"]=f416799
+ChevieData["A"]["CharName"]=eyla8
 
-def f69333(n):
+def eyla9(n):
   res={"charparams":ChevieData["A"]["CharParams"](n)}
-  res["extRefl"]=map(lambda i: Position(res["charparams"],Concatenation([n+1-i],GAPMul(range(1,i+1),0)+1)),range(0,n+1))
+  res["extRefl"]=map(lambda i: res["charparams"].index(Concatenation([n+1-i],GAPMul(range(1,i+1),0)+1))+1,range(0,n+1))
   res["b"]=map(ChevieData["A"]["LowestPowerFakeDegree"],res["charparams"])
   res["B"]=map(ChevieData["A"]["HighestPowerFakeDegree"],res["charparams"])
   res["a"]=res["b"]
   res["A"]=res["B"]
   return res
 
-ChevieData["A"]["CharInfo"]=f69333
+ChevieData["A"]["CharInfo"]=eyla9
 
 ChevieData["A"]["CharTable"]=ChevieData["compat"]["CharTableA"]
 
@@ -116,7 +116,7 @@ ChevieData["tmp"]["classparam"]=[lambda nq: Partitions(nq[1-1])]
 
 ChevieData["tmp"]["charparam"]=[lambda nq: Partitions(nq[1-1])]
 
-def f101237(nq,gamma,pi):
+def eyla10(nq,gamma,pi):
   n=nq[1-1]
   q=nq[2-1]
   if n==0 :
@@ -130,7 +130,7 @@ def f101237(nq,gamma,pi):
       val=val+GAPMul(q-1**dif["cc"]-1,-1**dif["ll"])
   return val
 
-ChevieData["tmp"]["irreducibles"]=[[f101237]]
+ChevieData["tmp"]["irreducibles"]=[[eyla10]]
 
 def CHEVIE.tmp.matrix(nq):
   n=nq[1-1]
@@ -145,7 +145,7 @@ def CHEVIE.tmp.matrix(nq):
         if in(j,beta) :
           leg=leg+1
         else:
-          Add(prs,[{"from":i,
+          prs.append([{"from":i,
             "to":j,
             "leg":leg}])
     cbs=ShallowCopy(prs)
@@ -153,7 +153,7 @@ def CHEVIE.tmp.matrix(nq):
     for hk in cbs:
       for pr in prs:
         if pr[1-1]["to"]>hk[len(hk)-1]["from"] :
-          Add(cbs,Concatenation(hk,pr))
+          cbs.append(Concatenation(hk,pr))
       ll=Sum(hk,lambda x: x["from"]-x["to"])
       lg=Sum(hk,lambda x: x["leg"])
       lh=len(hk)
@@ -167,8 +167,8 @@ def CHEVIE.tmp.matrix(nq):
           while gamma[j+1-1]==j:
             j=j+1
           gamma=[gamma[k-1] for k in range(j+1,len(gamma)+1)]-j
-        new["adr"]=Position(pm[m-ll-1],gamma)
-      Add(hks[ll-1],new)
+        new["adr"]=pm[m-ll-1].index(gamma)+1
+      hks[ll-1].append(new)
     return hks
   
   
@@ -176,28 +176,28 @@ def CHEVIE.tmp.matrix(nq):
     pm[i-1]=map(BetaSet,Partitions(i))
     scheme[i-1]=[]
     for beta in pm[i-1]:
-      Add(scheme[i-1],hooks(beta,i))
+      scheme[i-1].append(hooks(beta,i))
   def charCol(n,t,k):
     col=[]
     for pi in scheme[n-1]:
       val=GAPMul(0,q)
       for hk in pi[k-1]:
         val=val+GAPMul(hk["wgt"],t[hk["adr"]-1])
-      Add(col,val)
+      col.append(val)
     return col
   
   
   pm=map(lambda x: [],range(1,n-1+1))
   for m in range(1,QuoInt(n,2)+1):
-    Add(pm[m-1],charCol(m,[1],m))
+    pm[m-1].append(charCol(m,[1],m))
     for k in range(m+1,n-m+1):
       for t in pm[k-m-1]:
-        Add(pm[k-1],charCol(k,t,m))
+        pm[k-1].append(charCol(k,t,m))
   res=[]
   for k in range(1,n-1+1):
     for t in pm[n-k-1]:
-      Add(res,charCol(n,t,k))
-  Add(res,charCol(n,[1],n))
+      res.append(charCol(n,t,k))
+  res.append(charCol(n,[1],n))
   return Matrix(res).transpose()
 
 
@@ -206,12 +206,12 @@ ChevieData["A"]["Hk"]=ShallowCopy(ChevieData["tmp"])
 
 ChevieData["A"]["HeckeCharTable"]=ChevieData["compat"]["HeckeCharTableA"]
 
-def f227941(n,param):
+def eyla11(n,param):
   return prod(range(1,n+1))
 
-ChevieData["A"]["PoincarePolynomial"]=f227941
+ChevieData["A"]["PoincarePolynomial"]=eyla11
 
-def f110529(n,alpha,param,sqrtparam):
+def eyla12(n,alpha,param,sqrtparam):
   q=GAPDiv(-param[1][1-1],param[1][2-1])
   lambda=BetaSet(alpha)
   res=q**Binomial(len(lambda),3)
@@ -223,35 +223,35 @@ def f110529(n,alpha,param,sqrtparam):
         res=GAPMul(res,Sum(range(0,i-j-1+1),lambda e: q**e))
   return res
 
-ChevieData["A"]["SchurElement"]=f110529
+ChevieData["A"]["SchurElement"]=eyla12
 
-def f812103(arg):
+def eyla13(arg):
   return ChevieData["imp"]["FactorizedSchurElement"](1,1,arg[1-1]+1,[arg[2-1]],arg[3-1],[])
 
-ChevieData["A"]["FactorizedSchurElement"]=f812103
+ChevieData["A"]["FactorizedSchurElement"]=eyla13
 
-def f913600(n,param,sqrtparam,i):
+def eyla14(n,param,sqrtparam,i):
   H=Hecke(CoxeterGroup("A",n),GAPDiv(-param[1][1-1],param[1][2-1]))
   return SpechtModel(H,Partitions(n + 1)[i-1])
 
-ChevieData["A"]["HeckeRepresentation"]=f913600
+ChevieData["A"]["HeckeRepresentation"]=eyla14
 
-def f74465(n,i):
+def eyla15(n,i):
   return [(CHEVIE.R("Representation", "imp"))(1, 1, n + 1, i)[k-1] for k in range(2,n+1+1)]
 
-ChevieData["A"]["Representation"]=f74465
+ChevieData["A"]["Representation"]=eyla15
 
-def f422080(n,p,q):
+def eyla16(n,p,q):
   return GAPDiv(ChevieData["A"]["PoincarePolynomial"](Sum(p)-1,[[q,-1]]),ChevieData["A"]["SchurElement"](Sum(p)-1,p,[[q,-1]],[]))
 
-ChevieData["A"]["FakeDegree"]=f422080
+ChevieData["A"]["FakeDegree"]=eyla16
 
-def f596183(l,p):
+def eyla17(l,p):
   return [[range(1,NrPartitions(l+1)+1),MatrixDecompositionMatrix(DecompositionMatrix(Specht(p,p),l+1))]]
 
-ChevieData["A"]["DecompositionMatrix"]=f596183
+ChevieData["A"]["DecompositionMatrix"]=eyla17
 
-def f73313(l):
+def eyla18(l):
   ci=ChevieData["A"]["CharInfo"](l)
   return {"harishChandra":[{"levi":[],
     "relativeType":{"series":"A",
@@ -267,22 +267,22 @@ def f73313(l):
     "a":ci["a"],
     "A":ci["A"]}
 
-ChevieData["A"]["UnipotentCharacters"]=f73313
+ChevieData["A"]["UnipotentCharacters"]=eyla18
 
-def f247986(n):
+def eyla19(n):
   m=ChevieData["A"]["GeneratingRoots"](n)
-  Add(m,GAPMul(range(1,n+1+1),0)+1)
-  return map(lambda i: f675256,range(2,n+1+1))
+  m.append(GAPMul(range(1,n+1+1),0)+1)
+  return map(lambda i: eyla20,range(2,n+1+1))
 
-def f675256(arg):
+def eyla20(arg):
   v=ShallowCopy(arg)
-  Add(v,GAPMul(0,v[1-1]))
+  v.append(GAPMul(0,v[1-1]))
   v=GAPMul(v,m)
   return Sum(Arrangements(range(1,n+1+1),i),lambda a: prod([v[k-1] for k in a]))
 
-ChevieData["A"]["Invariants"]=f247986
+ChevieData["A"]["Invariants"]=eyla19
 
-def f231630(n,p):
+def eyla21(n,p):
   uc={"classes":map(lambda p: {"parameter":p},Partitions(n+1)),
     "springerSeries":Concatenation(map(lambda d: map(lambda i: {"relgroup":CoxeterGroup("A",GAPDiv(n+1,d)-1),
     "Z":[ER(d)**i],
@@ -302,27 +302,27 @@ def f231630(n,p):
     cl["red"]=[]
     p=1
     for j in Collected(cl["parameter"]):
-      Append(cl["red"],range(p,p+j[2-1]-2+1))
+      cl["red"].extend(range(p,p+j[2-1]-2+1))
       p=p+j[2-1]
     cl["red"]=ReflectionSubgroup(CoxeterGroup("A",p-2),cl["red"])
     cl["AuAction"]=ExtendedReflectionGroup(cl["red"],[IdentityMat(cl["red"]["rank"])])
     if d==2 :
-      Add(ss(1)["locsys"],[i,2])
-      Add(ss(-1)["locsys"],[i,1])
+      ss(1)["locsys"].append([i,2])
+      ss(-1)["locsys"].append([i,1])
     else:
       for j in range(0,d-1+1):
-        Add(ss(ER(d)**j)["locsys"],[i,j+1])
+        ss(ER(d)**j)["locsys"].append([i,j+1])
   uc["orderClasses"]=Hasse(Poset(map(lambda x: map(lambda y: Dominates(y["parameter"],x["parameter"]),uc["classes"]),uc["classes"])))
   return uc
 
-ChevieData["A"]["UnipotentClasses"]=f231630
+ChevieData["A"]["UnipotentClasses"]=eyla21
 
-def f58629(n):
+def eyla22(n):
   def f(i):
     if !=(i,Permutation("()")) :
       i=prod(CoxeterWord(W,i))
     i=map(Length,RobinsonSchenstedCorrespondent(n+1,i)["P"])
-    return Position(CharParams(W),[i])
+    return CharParams(W).index([i])+1
   
   
   W=CoxeterGroup("A",n)
@@ -331,4 +331,4 @@ def f58629(n):
     "reps":[],
     "character":[f(x)]},l)
 
-ChevieData["A"]["KLeftCellRepresentatives"]=f58629
+ChevieData["A"]["KLeftCellRepresentatives"]=eyla22

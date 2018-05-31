@@ -1,10 +1,10 @@
 
-def f983301(indices,title):
+def xg311(indices,title):
   print title," ",
   s=just("",len(title))
   print indices[4-1]," - ",indices[2-1]," - ",indices[5-1],"\n",s,"  \\ /3\\ /\n",s,"   ",indices[1-1]," - ",indices[3-1],"     i.e. A_5 on ",IntListToString([indices[k-1] for k in [1,4,2,5,3]])," plus ",IntListToString([indices[k-1] for k in [1,2,3]]),"==",IntListToString([indices[k-1] for k in [2,3,1]]),"==",IntListToString([indices[k-1] for k in [3,1,2]]),"\n",
 
-ChevieData["G31"]["PrintDiagram"]=f983301
+ChevieData["G31"]["PrintDiagram"]=xg311
 
 ChevieData["G31"]["BraidRelations"]=[[[1,4,1],[4,1,4]],[[2,4,2],[4,2,4]],[[5,3,5],[3,5,3]],[[2,5,2],[5,2,5]],[[1,2,3],[2,3,1]],[[2,3,1],[3,1,2]],[[1,5],[5,1]],[[3,4],[4,3]],[[5,4],[4,5]]]
 
@@ -18,11 +18,11 @@ ChevieData["G31"]["ReflectionCoDegrees"]=[0,12,16,28]
 
 ChevieData["G31"]["ReflectionDegrees"]=[8,12,20,24]
 
-def f208712(s):
+def xg312(s):
   t=[[[]],[[1]],[[1,4],[1,5],range(1,3+1)],[[1,4,5],[2,4,5],range(1,4+1)],[range(1,5+1)]]
   return t[s+1-1]
 
-ChevieData["G31"]["ParabolicRepresentatives"]=f208712
+ChevieData["G31"]["ParabolicRepresentatives"]=xg312
 
 ChevieData["G31"]["NrConjugacyClasses"]=59
 
@@ -38,14 +38,14 @@ ChevieData["G31"]["ClassInfo"]={"classtext":ChevieData["G31"]["WordsClassReprese
 
 ChevieData["G31"]["PowerMaps"]=[None,[1,1,1,18,5,3,18,27,18,5,5,25,29,34,25,27,29,1,41,40,41,18,38,50,18,39,18,39,48,18,39,39,47,56,41,1,41,34,5,34,56,25,57,58,27,27,59,48,25,59,59,59,18,18,18,56,59,59,1],[1,2,3,4,1,6,9,12,7,36,2,8,17,50,16,15,13,18,54,44,55,22,43,24,27,58,25,57,29,30,52,51,33,59,9,36,7,57,59,58,18,45,44,43,42,49,47,48,46,50,52,51,53,55,54,1,58,57,59],None,[1,2,3,4,5,6,7,8,9,10,11,12,58,14,15,16,57,18,19,20,21,22,23,24,25,26,27,28,59,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,1,49,50,51,52,53,54,55,56,57,58,59],None,[1,2,3,4,5,6,9,12,7,10,11,8,17,14,16,15,13,18,21,23,19,22,20,24,27,28,25,26,29,30,32,31,33,34,37,36,35,40,39,38,41,45,44,43,42,49,47,48,46,50,52,51,53,55,54,56,58,57,59],None,None,None,[1,2,3,4,5,6,9,12,7,10,11,8,17,14,16,15,13,18,21,23,19,22,20,24,27,28,25,26,29,30,32,31,33,34,37,36,35,40,39,38,41,45,44,43,42,49,47,48,46,50,52,51,53,55,54,56,58,57,59],None,[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59],None,None,None,[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59],None,[1,2,3,4,5,6,9,12,7,10,11,8,17,14,16,15,13,18,21,23,19,22,20,24,27,28,25,26,29,30,32,31,33,34,37,36,35,40,39,38,41,45,44,43,42,49,47,48,46,50,52,51,53,55,54,56,58,57,59],None,None,None,[1,2,3,4,5,6,9,12,7,10,11,8,17,14,16,15,13,18,21,23,19,22,20,24,27,28,25,26,29,30,32,31,33,34,37,36,35,40,39,38,41,45,44,43,42,49,47,48,46,50,52,51,53,55,54,56,58,57,59]]
 
-def f218731():
+def xg313():
   res={"charparams":[[1,0],[1,60],[4,37],[4,1],[4,31],[4,7],[5,12],[5,24],[5,40],[5,4],[6,14],[6,18],[9,28],[9,8],[10,24],[10,12],[10,30],[10,6],[10,26],[10,2],[15,20,1],[15,8,2],[15,8,1],[15,20,2],[16,16],[20,14],[20,13,2],[20,13,1],[20,19],[20,7],[20,5],[20,21],[20,3],[20,23],[24,6],[24,14],[30,16],[30,4],[30,10,2],[30,10,1],[36,10],[36,5],[36,17],[36,7],[36,15],[40,6],[40,18],[40,14],[40,10],[40,9],[40,13],[40,7],[40,15],[45,12,1],[45,8,1],[45,12,2],[45,8,2],[64,9],[64,11]],
     "extRefl":[1,4,11,5,2],
     "opdam":Permutation("( 3, 5)( 4, 6)(11,12)(17,19)(18,20)(27,29)(28,30)(31,33)(32,34)(35,36)(39,40)(42,44)(43,45)(48,49)(50,52)(51,53)")}
   res["b"]=map(lambda x: x[2-1],res["charparams"])
   return res
 
-ChevieData["G31"]["CharInfo"]=f218731
+ChevieData["G31"]["CharInfo"]=xg313
 
 ChevieData["G31"]["cycpolfakedegrees"]=[[1,0],[1,60],[1,37,8,8,24],[1,1,8,24,32],[1,31,8,24,32],[1,7,8,8,24],[1,12,5,10,20,24],[1,24,5,10,20,24],[1,40,5,10,20],[1,4,5,10,20],[[1,0,1,0,0,0,0,0,2,0,0,0,0,0,1,0,1],14],[[1,0,0,0,1,0,2,0,1,0,0,0,1],18],[1,28,3,3,6,6,12,12,24],[1,8,3,3,6,6,12,12,24],[1,24,5,10,16,20],[1,12,5,10,16,20],[1,30,5,10,16,20],[1,6,5,10,16,20],[1,26,5,10,20,32],[1,2,5,10,20,32],[[1,0,1,0,-1,0,1,0,1],20,5,10,20],[[1,0,1,0,-1,0,1,0,1],8,5,10,20],[[1,0,1,0,-1,0,1,0,1],8,5,10,20],[[1,0,1,0,-1,0,1,0,1],20,5,10,20],[1,16,8,8,8,16,24],[1,14,5,8,8,10,20,24],[1,13,5,8,8,10,20,24,24],[2,13,5,8,10,20,24],[2,19,5,8,10,20,24],[1,7,5,8,8,10,20,24,24],[1,5,5,8,8,10,20,24],[1,21,5,8,10,16,20,24],[1,3,5,8,10,16,20,24],[1,23,5,8,8,10,20,24],[[1,0,0,0,1,0,2,0,3,0,3,0,4,0,3,0,3,0,2,0,1,0,0,0,1],6],[[1,0,3,0,2,0,4,0,4,0,4,0,2,0,3,0,1],14],[[1,0,0,0,1,0,2,0,1,0,0,0,1],16,5,10,20],[[1,0,0,0,1,0,2,0,1,0,0,0,1],4,5,10,20],[[1,0,1,0,-1,0,1,0,1],10,5,10,16,20],[[1,0,0,0,1,0,2,0,1,0,0,0,1],10,5,10,20],[1,10,3,3,6,6,8,8,12,12,24,24],[1,5,3,3,6,6,8,8,12,12,24,24],[1,17,3,3,6,6,8,12,12,16,24],[1,7,3,3,6,6,8,12,12,16,24],[1,15,3,3,6,6,8,8,12,12,24,24],[1,6,5,8,8,8,10,20,24],[1,18,5,8,8,8,10,20,24],[[2,0,1,0,2,0,1,0,2],14,5,10,20],[[1,0,1,0,2,0,0,0,2,0,1,0,1],10,5,10,20],[1,9,5,8,8,8,10,20,24],[1,13,5,8,8,10,16,20,24],[1,7,5,8,8,10,16,20,24],[1,15,5,8,8,8,10,20,24],[1,12,3,3,5,6,6,10,12,12,20,24],[1,8,3,3,5,6,6,10,12,12,20,24],[1,12,3,3,5,6,6,10,12,12,20,24],[1,8,3,3,5,6,6,10,12,12,20,24],[[1,0,1,0,4,0,3,0,3,0,2,0,2],9,8,8,24],[[2,0,2,0,3,0,3,0,4,0,1,0,1],11,8,8,24]]
 
@@ -228,8 +228,8 @@ ChevieData["G31"]["SchurData"]=[{"name":"f1_0",
   "order":[1,2]},{"name":"f64_9",
   "order":[1,2]}]
 
-def f86365(p,para,root):
-  ci=Position(ChevieData["G31"]["CharInfo"]()["charparams"],p)
+def xg314(p,para,root):
+  ci=ChevieData["G31"]["CharInfo"]()["charparams"].index(p)+1
   data=CHEVIE.R("SchurData", "G31")[ci-1]
   r=ChevieData["G31"]["SchurModels"][data["name"]]
   q=[para[1][k-1] for k in data["order"]]
@@ -242,10 +242,10 @@ def f86365(p,para,root):
     "operations":FactorizedSchurElementsOps}
   return FactorizedSchurElementsOps["Simplify"](res)
 
-ChevieData["G31"]["FactorizedSchurElement"]=f86365
+ChevieData["G31"]["FactorizedSchurElement"]=xg314
 
-def f556703(p,para,root):
-  ci=Position(ChevieData["G31"]["CharInfo"]()["charparams"],p)
+def xg315(p,para,root):
+  ci=ChevieData["G31"]["CharInfo"]()["charparams"].index(p)+1
   data=CHEVIE.R("SchurData", "G31")[ci-1]
   r=ChevieData["G31"]["SchurModels"][data["name"]]
   q=[para[1][k-1] for k in data["order"]]
@@ -254,9 +254,9 @@ def f556703(p,para,root):
     q=GAPMul(GetRoot(q,2),-1**data["rootPower"])
   return GAPMul(r["coeff"],q**r["factor"])
 
-ChevieData["G31"]["SchurElement"]=f556703
+ChevieData["G31"]["SchurElement"]=xg315
 
-def f72180(para,root):
+def xg316(para,root):
   x=GetRoot(GAPDiv(-para[1][1-1],para[1][2-1]),2)
   I=ER(4)
   r=para[1][1-1]
@@ -265,9 +265,9 @@ def f72180(para,root):
     "size":46080,
     "order":46080,
     "powermap":ChevieData["G31"]["PowerMaps"]}
-  Inherit(tbl,ChevieData["G31"]["ClassInfo"])
+  tbl.update(ChevieData["G31"]["ClassInfo"])
   def adj(p,x):
-    return Zip(x,map(lambda x: -p**len(x),tbl["classtext"]),f429957)
+    return Zip(x,map(lambda x: -p**len(x),tbl["classtext"]),xg317)
   
   
   def f1(r):
@@ -407,12 +407,12 @@ def f72180(para,root):
   tbl=ChevieData["compat"]["MakeCharacterTable"](tbl)
   return tbl
 
-def f429957(x,y):
+def xg317(x,y):
   return GAPMul(x,y)
 
-ChevieData["G31"]["HeckeCharTable"]=f72180
+ChevieData["G31"]["HeckeCharTable"]=xg316
 
-def f759146():
+def xg318():
   res=ChevieData["G31"]["HeckeCharTable"](map(lambda x: [1,-1],range(1,4+1)),[])
   res["identifier"]="G31"
   res["name"]="G31"
@@ -421,9 +421,9 @@ def f759146():
   [res.irreducibles{Concatenation([35, 36], [39, 40, 41], [50 .. 53], [58, 59])}[k-1] for k in [14,19,21,35,37,41]]=[[-1,-ER(4),ER(4),ER(4),-ER(4),1],[-1,ER(4),-ER(4),-ER(4),ER(4),1],[1,ER(4),-ER(4),-ER(4),ER(4),-1],[1,-ER(4),ER(4),ER(4),-ER(4),-1],[0,0,0,0,0,0],[0,ER(4)+1,-ER(4)+1,ER(4)-1,-ER(4)-1,0],[0,-ER(4)-1,ER(4)-1,-ER(4)+1,ER(4)+1,0],[0,-ER(4)+1,ER(4)+1,-ER(4)-1,ER(4)-1,0],[0,ER(4)-1,-ER(4)-1,ER(4)+1,-ER(4)+1,0],[0,0,0,0,0,0],[0,0,0,0,0,0]]
   return res
 
-ChevieData["G31"]["CharTable"]=f759146
+ChevieData["G31"]["CharTable"]=xg318
 
-def f184929(para,root,i):
+def xg319(para,root,i):
   def dec(d,l):
     m=map(lambda i: NullMat(d),range(1,5+1))
     for v in l:
@@ -524,9 +524,9 @@ def f184929(para,root,i):
   else:
     return false
 
-ChevieData["G31"]["HeckeRepresentation"]=f184929
+ChevieData["G31"]["HeckeRepresentation"]=xg319
 
-def f251701(i):
+def xg3110(i):
   r=ChevieData["G31"]["HeckeRepresentation"](map(lambda i: [1,-1],range(1,5+1)),[],i)
   if !=(r,false) :
     return r
@@ -573,34 +573,34 @@ def f251701(i):
                       if i==59 :
                         return ComplexConjugate(f(58))
 
-ChevieData["G31"]["Representation"]=f251701
+ChevieData["G31"]["Representation"]=xg3110
 
-def f442943(x,y,z,t):
+def xg3111(x,y,z,t):
   return GAPMul(168,t**2)+GAPMul(14,t**4)
 
-def f789208(x,y,z,t):
+def xg3112(x,y,z,t):
   return GAPMul(792,t**2)+GAPMul(792,t**2)-GAPMul(33,t**4)-GAPMul(33,t**4)-GAPMul(33,t**4)-GAPMul(33,x**4)-GAPMul(33,x**4)-GAPMul(33,y**4)+GAPMul(792,t**6)-GAPMul(33,t**8)-GAPMul(33,t**8)-GAPMul(33,t**8)-GAPMul(33,x**8)-GAPMul(33,x**8)-GAPMul(33,y**8)+t**12
 
-def f190392(x,y,z,t):
+def xg3113(x,y,z,t):
   return GAPMul(-t**2,x**2)+GAPMul(t**2,x**2)-GAPMul(t**2,x**2)+GAPMul(t**2,x**6)-GAPMul(t**2,x**14)-GAPMul(13,t**4)-GAPMul(13,t**4)+GAPMul(t**4,x**4)-GAPMul(13,t**4)-GAPMul(2,t**4)-GAPMul(2,t**4)-GAPMul(2,t**4)-GAPMul(2,x**4)+GAPMul(t**4,x**12)-GAPMul(13,t**8)-GAPMul(2,t**8)-GAPMul(2,t**8)-GAPMul(2,t**8)-GAPMul(2,x**8)-GAPMul(2,t**8)-GAPMul(2,t**8)-GAPMul(2,t**8)-GAPMul(2,x**8)+GAPMul(t**10,x**2)-GAPMul(t**14,x**2)
 
-def f868314(x,y,z,t):
+def xg3114(x,y,z,t):
   GAPMul(returnt**2,x**2)-GAPMul(12,t**2)+GAPMul(22,t**2)-GAPMul(12,t**2)+GAPMul(t**2,x**2)-GAPMul(12,t**2)-GAPMul(52,t**2)-GAPMul(52,t**2)-GAPMul(12,t**2)+GAPMul(22,t**2)-GAPMul(52,t**2)+GAPMul(22,t**2)-GAPMul(12,t**2)-GAPMul(12,t**2)+GAPMul(t**2,x**18)-GAPMul(2,t**4)-GAPMul(2,t**4)-GAPMul(2,t**4)-GAPMul(2,x**4)+GAPMul(76,t**4)-GAPMul(2,t**4)-GAPMul(2,t**4)-GAPMul(2,t**4)-GAPMul(2,x**4)+GAPMul(2,t**4)-GAPMul(12,t**6)-GAPMul(52,t**6)-GAPMul(52,t**6)-GAPMul(12,t**6)-GAPMul(52,t**6)-GAPMul(8,t**6)-GAPMul(52,t**6)-GAPMul(52,t**6)-GAPMul(52,t**6)-GAPMul(12,t**6)+GAPMul(36,t**8)-GAPMul(2,t**8)-GAPMul(2,t**8)-GAPMul(2,t**8)-GAPMul(2,x**8)+GAPMul(36,t**8)-GAPMul(2,t**8)-GAPMul(2,t**8)-GAPMul(2,t**8)-GAPMul(2,x**8)+GAPMul(22,t**10)-GAPMul(52,t**10)+GAPMul(22,t**10)-GAPMul(52,t**10)-GAPMul(52,t**10)+GAPMul(22,t**10)-GAPMul(2,t**12)-GAPMul(2,t**12)-GAPMul(2,t**12)-GAPMul(2,x**12)-GAPMul(2,t**12)-GAPMul(2,t**12)-GAPMul(2,t**12)-GAPMul(2,x**12)-GAPMul(12,t**14)-GAPMul(12,t**14)-GAPMul(12,t**14)+GAPMul(2,t**16)
 
-ChevieData["G31"]["Invariants"]=[f442943,f789208,f190392,f868314]
+ChevieData["G31"]["Invariants"]=[xg3111,xg3112,xg3113,xg3114]
 
-def f671028():
-  return f223102
+def xg3115():
+  return xg3116
 
-def f223102(x,y,z,t):
+def xg3116(x,y,z,t):
   return [[GAPMul(8,x),GAPMul(12,t),GAPMul(25920,z)+GAPMul(GAPDiv(88,5),x),GAPMul(24,t)-GAPMul(GAPDiv(1,135),y**2)],[GAPMul(12,y),GAPMul(18,t)-GAPMul(97200,z**2),GAPMul(-46656,t)+GAPMul(12,y**2),GAPMul(-42,x)-GAPMul(GAPDiv(1,90),x**2)],[GAPMul(25920,z)+GAPMul(20,x),GAPMul(12,t)-GAPMul(19440,x)+GAPMul(18,t)-GAPMul(46656,t**2),GAPMul(GAPDiv(-264384,5),t)+GAPMul(20736,y),GAPMul(GAPDiv(144,5),t)-GAPMul(18,x**2)-GAPMul(GAPDiv(1,135),y**3)-GAPMul(GAPDiv(1,90),x**3)],[GAPMul(24,t),GAPMul(-42,t)-GAPMul(60,y),GAPMul(GAPDiv(-48,5),x**2),GAPMul(GAPDiv(1,135),x)+GAPMul(GAPDiv(1,54),t)]]
 
-ChevieData["G31"]["BasicDerivations"]=f671028
+ChevieData["G31"]["BasicDerivations"]=xg3115
 
-def f641909():
-  return f433260
+def xg3117():
+  return xg3118
 
-def f433260(x,y,z,t):
+def xg3118(x,y,z,t):
   return GAPMul(-3,t)+GAPMul(43740000,x)-GAPMul(3,t)+GAPMul(22680,t**2)-GAPMul(34992000,t**2)+GAPMul(32400,x**2)-GAPMul(62985600,t**3)-GAPMul(15552,t**3)-GAPMul(2,t**3)+GAPMul(4,x**3)-GAPMul(7776,t**4)-GAPMul(7776,t**4)+GAPMul(15116544,t**5)-GAPMul(2,y**5)-GAPMul(1296,x**5)+GAPMul(15746400000,z**6)-GAPMul(2,x**6)
 
-ChevieData["G31"]["Discriminant"]=f641909
+ChevieData["G31"]["Discriminant"]=xg3117

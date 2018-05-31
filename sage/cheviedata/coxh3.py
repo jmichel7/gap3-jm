@@ -3,11 +3,11 @@ ChevieData["H3"]["ReflectionDegrees"]=[2,6,10]
 
 ChevieData["H3"]["Size"]=120
 
-def f919441():
+def oxh31():
   a=GAPDiv(1+ER(5),2)
   return GAPDiv([[a,-1,a-1],[-a,1,a-1],[1,a-1,-a]],2)
 
-ChevieData["H3"]["GeneratingRoots"]=f919441
+ChevieData["H3"]["GeneratingRoots"]=oxh31
 
 ChevieData["H3"]["NrConjugacyClasses"]=10
 
@@ -21,13 +21,13 @@ ChevieData["H3"]["PowerMaps"]=[None,[1,1,7,1,5,3,3,5,7,1],[1,2,7,4,1,9,3,10,6,10
 
 ChevieData["H3"]["WordsClassRepresentatives"]=[[],[1],[1,2],[1,3],[2,3],[1,2,3],[1,2,1,2],[1,2,1,2,3],[1,2,1,2,3,2,1,2,3],[1,2,1,2,1,3,2,1,2,1,3,2,1,2,3]]
 
-def f217339(s):
+def oxh32(s):
   t=[[[]],[[1]],[[1,2],[1,3],[2,3]],[range(1,3+1)]]
   return t[s+1-1]
 
-ChevieData["H3"]["ParabolicRepresentatives"]=f217339
+ChevieData["H3"]["ParabolicRepresentatives"]=oxh32
 
-def f28497():
+def oxh33():
   res={"classtext":ChevieData["H3"]["WordsClassRepresentatives"],
     "orders":[1,2,5,2,3,10,5,6,10,2],
     "classes":[1,15,12,15,20,12,12,20,12,1]}
@@ -36,9 +36,9 @@ def f28497():
   res["classparams"]=res["classnames"]
   return res
 
-ChevieData["H3"]["ClassInfo"]=f28497
+ChevieData["H3"]["ClassInfo"]=oxh33
 
-def f216669():
+def oxh34():
   res={"charparams":[[1,15],[1,0],[5,5],[5,2],[3,6],[3,8],[3,1],[3,3],[4,3],[4,4]],
     "gp":["1_r'","1_r","5_r'","5_r","3_s","overline{3}_s","3_s'","overline{3}_s'","4_r'","4_r"],
     "opdam":Permutation("(9,10)"),
@@ -46,7 +46,7 @@ def f216669():
   res["b"]=map(lambda x: x[2-1],res["charparams"])
   return res
 
-ChevieData["H3"]["CharInfo"]=f216669
+ChevieData["H3"]["CharInfo"]=oxh34
 
 ChevieData["H3"]["vpolheckeirreducibles"]=[[[[1],0],[[-1],0],[[1],0],[[1],0],[[1],0],[[-1],0],[[1],0],[[-1],0],[[-1],0],[[-1],0]],[[[1],0],[[1],1],[[1],2],[[1],2],[[1],2],[[1],3],[[1],4],[[1],5],[[1],9],[[1],15]],[[[5],0],[[-3,2],0],[[1,-1],0],[[2,-2,1],0],[[1,-2],0],[[],0],[[1,0,-1],0],[[1],2],[[],0],[[-5],6]],[[[5],0],[[-2,3],0],[[-1,1],1],[[1,-2,2],0],[[-2,1],1],[[],0],[[-1,0,1],2],[[-1],3],[[],0],[[5],9]],[[[3],0],[[-2,1],0],[[1,GAPDiv(-1+ER(5),2)],0],[[1,-2],0],[[1,-1],0],[[GAPDiv(1-ER(5),2)],1],[[1,0,GAPDiv(-1-ER(5),2)],0],[[],0],[[GAPDiv(1+ER(5),2)],3],[[3],5]],[[[3],0],[[-2,1],0],[[1,GAPDiv(-1-ER(5),2)],0],[[1,-2],0],[[1,-1],0],[[GAPDiv(1+ER(5),2)],1],[[1,0,GAPDiv(-1+ER(5),2)],0],[[],0],[[GAPDiv(1-ER(5),2)],3],[[3],5]],[[[3],0],[[-1,2],0],[[GAPDiv(-1+ER(5),2),1],1],[[-2,1],1],[[-1,1],1],[[GAPDiv(-1+ER(5),2)],2],[[GAPDiv(-1-ER(5),2),0,1],2],[[],0],[[GAPDiv(-1-ER(5),2)],6],[[-3],10]],[[[3],0],[[-1,2],0],[[GAPDiv(-1-ER(5),2),1],1],[[-2,1],1],[[-1,1],1],[[GAPDiv(-1-ER(5),2)],2],[[GAPDiv(-1+ER(5),2),0,1],2],[[],0],[[GAPDiv(-1+ER(5),2)],6],[[-3],10]],[[[4],0],[[-2,2],0],[[-1],1],[[1,-2,1],0],[[1,-1,1],0],[[1],GAPDiv(3,2)],[[-1],2],[[-1],GAPDiv(5,2)],[[1],GAPDiv(9,2)],[[-4],GAPDiv(15,2)]],[[[4],0],[[-2,2],0],[[-1],1],[[1,-2,1],0],[[1,-1,1],0],[[-1],GAPDiv(3,2)],[[-1],2],[[1],GAPDiv(5,2)],[[-1],GAPDiv(9,2)],[[4],GAPDiv(15,2)]]]
 
@@ -54,7 +54,7 @@ ChevieData["H3"]["CycPolSchurElements"]=[[1,-15,2,2,2,3,5,6,10],[1,0,2,2,2,3,5,6
 
 ChevieData["H3"]["sparseFakeDegrees"]=[[1,15],[1,0],[1,5,1,7,1,9,1,11,1,13],[1,2,1,4,1,6,1,8,1,10],[1,6,1,10,1,14],[1,8,1,10,1,12],[1,1,1,5,1,9],[1,3,1,5,1,7],[1,3,1,7,1,9,1,11],[1,4,1,6,1,8,1,12]]
 
-def f502230(param,sqrtparam):
+def oxh35(param,sqrtparam):
   a=GAPDiv(1+ER(5),2)
   q=GAPDiv(-param[1][1-1],param[1][2-1])
   if !(sqrtparam[1]==None) :
@@ -69,16 +69,16 @@ def f502230(param,sqrtparam):
     "size":120,
     "order":120,
     "powermap":ChevieData["H3"]["PowerMaps"],
-    "irreducibles":map(lambda i: map(f184441,i),ChevieData["H3"]["vpolheckeirreducibles"]),
+    "irreducibles":map(lambda i: map(oxh36,i),ChevieData["H3"]["vpolheckeirreducibles"]),
     "irredinfo":map(lambda x: {"charparam":x,
     "charname":ChevieData["H3"]["CharName"](x,{})},ChevieData["H3"]["CharInfo"]()["charparams"])}
-  Inherit(tbl,ci)
+  tbl.update(ci)
   tbl["centralizers"]=map(lambda x: GAPDiv(tbl["size"],x),tbl["classes"])
   tbl=ChevieData["compat"]["MakeCharacterTable"](tbl)
   ChevieData["compat"]["AdjustHeckeCharTable"](tbl,param)
   return tbl
 
-def f184441(j):
+def oxh36(j):
   res=ValuePol(j[1-1],q)
   if IsInt(j[2-1]) :
     res=GAPMul(res,q**j[2-1])
@@ -86,34 +86,34 @@ def f184441(j):
     res=GAPMul(res,v**GAPMul(2,j[2-1]))
   return res
 
-ChevieData["H3"]["HeckeCharTable"]=f502230
+ChevieData["H3"]["HeckeCharTable"]=oxh35
 
-def f456489(i):
+def oxh37(i):
   return ChevieData["H3"]["HeckeRepresentation"]([[1,-1],[1,-1],[1,-1]],[1,1,1],i)
 
-ChevieData["H3"]["Representation"]=f456489
+ChevieData["H3"]["Representation"]=oxh37
 
 ChevieData["H3"]["WGraphs"]=[[[[1,2,3]],[]],1,[[[2],[1,2],[1,3],[1,3],[2,3]],[[-1,[[1,3],[2,4],[3,5],[4,5]]]]],3,[[[1,2],[1,3],[2,3]],[[-1,[[1,2]]],[GAPDiv(-1-ER(5),2),[[2,3]]]]],[[[1,2],[1,3],[2,3]],[[-1,[[1,2]]],[GAPDiv(-1+ER(5),2),[[2,3]]]]],5,6,[[[1],[2],[1,3],[2,3]],[[1,[[1,2,3],[2,3,4],[3,4]]]]],9]
 
-def f607315(i):
+def oxh38(i):
   gr=ChevieData["H3"]["WGraphs"]
   if IsInt(gr[i-1]) :
     return DualWGraph(3,gr[gr[i-1]-1])
   else:
     return gr[i-1]
 
-ChevieData["H3"]["WGraph"]=f607315
+ChevieData["H3"]["WGraph"]=oxh38
 
-def f953838(param,sqrtparam,i):
+def oxh39(param,sqrtparam,i):
   if !(sqrtparam[1]==None) :
     v=GetRoot(GAPDiv(-param[1][1-1],param[1][2-1]),2,"Representation(Hecke(H3),[",i,"])")
   else:
     v=sqrtparam[1-1]
   return GAPMul(-param[1][2-1],WGraphToRepresentation(3,ChevieData["H3"]["WGraph"](i),v))
 
-ChevieData["H3"]["HeckeRepresentation"]=f953838
+ChevieData["H3"]["HeckeRepresentation"]=oxh39
 
-def f470693():
+def oxh310():
   res={"harishChandra":[{"relativeType":{"series":"H",
     "indices":range(1,3+1),
     "rank":3},
@@ -157,25 +157,25 @@ def f470693():
     "A":[15,0,13,10,14,14,9,9,12,12,14,14,9,9,12,12]}
   return res
 
-ChevieData["H3"]["UnipotentCharacters"]=f470693
+ChevieData["H3"]["UnipotentCharacters"]=oxh310
 
-def f657048():
+def oxh311():
   C=ChevieData["H3"]["CartanMat"]
   r=GAPMul(RootsCartan(C),C)
-  return map(lambda d: f833540,ChevieData["H3"]["ReflectionDegrees"])
+  return map(lambda d: oxh312,ChevieData["H3"]["ReflectionDegrees"])
 
-def f833540(arg):
+def oxh312(arg):
   return Sum(r,lambda a: GAPMul(arg,a)**d)
 
-ChevieData["H3"]["Invariants"]=f657048
+ChevieData["H3"]["Invariants"]=oxh311
 
-def f304740():
-  return f488522
+def oxh313():
+  return oxh314
 
-def f488522(a,b,c):
+def oxh314(a,b,c):
   return GAPMul(131835937500,a)-GAPMul(100195312500,a**2)+GAPMul(395507812500,c**3)-GAPMul(28369140625,a**3)+GAPMul(1371093750,a**4)-GAPMul(74250000,a**7)-GAPMul(22233750,a**9)+GAPMul(438750,a**10)-GAPMul(829,a**15)
 
-ChevieData["H3"]["Discriminant"]=f304740
+ChevieData["H3"]["Discriminant"]=oxh313
 
 ChevieData["H3"]["KLeftCellRepresentatives"]=[{"character":[2],
   "duflo":[1,2,3],

@@ -2224,7 +2224,7 @@ CHEVIE.AddData("Discriminant","G4_22",function(ST)local d;d:=rec(
   return d.(ST);
 end);
 
-#------------------------------- Now data for 2G5 ----------------------------
+#------------------------------- Now data for 2G5 and 2G7---------------------
 
 CHEVIE.AddData("PhiFactors","2G5",[1,-1]);
 
@@ -2264,4 +2264,3 @@ CHEVIE.AddData("CharTable","2G5",function()local res;
    [1,-1,-1,-1,1,-1,-1,-1,1]]);
   return CHEVIE.compat.MakeCharacterTable(res);
 end);
-#------------------------------- Now data for 2G7 ----------------------------

@@ -1,5 +1,5 @@
 
-def f758462(arg):
+def ylg21(arg):
   if len(arg)>0 :
     type_=arg[1-1]
   else:
@@ -9,9 +9,9 @@ def f758462(arg):
   a[2][1-1]=GAPDiv(3,a[1][2-1])
   return a
 
-ChevieData["G2"]["CartanMat"]=f758462
+ChevieData["G2"]["CartanMat"]=ylg21
 
-def f736458(indices,title,type_):
+def ylg22(indices,title,type_):
   print title," ",indices[1-1],
   if type_==1 :
     print " >>> ",
@@ -22,9 +22,9 @@ def f736458(indices,title,type_):
       print " ?6? ",
   print indices[2-1]," \n",
 
-ChevieData["G2"]["PrintDiagram"]=f736458
+ChevieData["G2"]["PrintDiagram"]=ylg22
 
-def f77553(arg):
+def ylg23(arg):
   if len(arg)==1 :
     return "G2(?)"
   type_=arg[1-1]
@@ -55,7 +55,7 @@ def f77553(arg):
         else:
           return SPrint("G2(",Format(GAPDiv(type_**2,3),opt),")")
 
-ChevieData["G2"]["ReflectionName"]=f77553
+ChevieData["G2"]["ReflectionName"]=ylg23
 
 ChevieData["G2"]["ParabolicRepresentatives"]=lambda s: ChevieData["imp"]["ParabolicRepresentatives"](6,6,2,s)
 
@@ -69,7 +69,7 @@ ChevieData["G2"]["ReflectionDegrees"]=[2,6]
 
 ChevieData["G2"]["NrConjugacyClasses"]=6
 
-def f239735():
+def ylg24():
   res={"charparams":[[1,0],[1,6],[1,3,1],[1,3,2],[2,1],[2,2]],
     "extRefl":[1,5,2],
     "a":[0,6,1,1,1,1],
@@ -78,7 +78,7 @@ def f239735():
   res["spaltenstein"]=["1","\\varepsilon","\\varepsilon_l","\\varepsilon_c","\\theta'","\\theta''"]
   return res
 
-ChevieData["G2"]["CharInfo"]=f239735
+ChevieData["G2"]["CharInfo"]=ylg24
 
 ChevieData["G2"]["WordsClassRepresentatives"]=[[],[2],[1],[1,2],[1,2,1,2],[1,2,1,2,1,2]]
 
@@ -96,7 +96,7 @@ ChevieData["G2"]["sparseFakeDegrees"]=[[1,0],[1,6],[1,3],[1,3],[1,1,1,5],[1,2,1,
 
 ChevieData["G2"]["ClassParameter"]=lambda w: CHEVIE.R("ClassNames", "G2")[PositionProperty([[[]],[[2],[1,2,1],[2,1,2,1,2]],[[1],[2,1,2],[1,2,1,2,1]],[[2,1],[1,2]],[[2,1,2,1],[1,2,1,2]],[[1,2,1,2,1,2]]],lambda x: in(w,x))-1]
 
-def f182571(para,sqrtpara):
+def ylg25(para,sqrtpara):
   u=prod(para[1-1])
   v=prod(para[2-1])
   if u==v :
@@ -113,9 +113,9 @@ def f182571(para,sqrtpara):
         else:
           return GetRoot(GAPMul(u,v),2,"Hecke(G2)")
 
-ChevieData["G2"]["squv"]=f182571
+ChevieData["G2"]["squv"]=ylg25
 
-def f286418(para,sqrtpara):
+def ylg26(para,sqrtpara):
   x=para[1][1-1]
   y=para[1][2-1]
   z=para[2][1-1]
@@ -137,14 +137,14 @@ def f286418(para,sqrtpara):
     "irreducibles":[f1(x,z),f1(y,t),f1(y,z),f1(x,t),f2(x,y,z,t,1),f2(x,y,z,t,-1)],
     "irredinfo":map(lambda x: {"charparam":x,
     "charname":ChevieData["G2"]["CharName"](x,{})},ChevieData["G2"]["CharInfo"]()["charparams"])}
-  Inherit(tbl,ChevieData["G2"]["ClassInfo"])
+  tbl.update(ChevieData["G2"]["ClassInfo"])
   tbl["centralizers"]=map(lambda x: GAPDiv(tbl["size"],x),tbl["classes"])
   tbl=ChevieData["compat"]["MakeCharacterTable"](tbl)
   return tbl
 
-ChevieData["G2"]["HeckeCharTable"]=f286418
+ChevieData["G2"]["HeckeCharTable"]=ylg26
 
-def f610913(para,sqrtpara,i):
+def ylg27(para,sqrtpara,i):
   one=GAPMul(prod(para[1-1])**0,prod(para[2-1])**0)
   x=para[1][1-1]
   y=para[1][2-1]
@@ -167,19 +167,19 @@ def f610913(para,sqrtpara,i):
             squv=-squv
           return GAPMul([[[y,-1],[0,x]],[[z,0],[squv+GAPMul(y,z),t]]],one)
 
-ChevieData["G2"]["HeckeRepresentation"]=f610913
+ChevieData["G2"]["HeckeRepresentation"]=ylg27
 
-def f140074(i):
+def ylg28(i):
   return ChevieData["G2"]["HeckeRepresentation"]([[1,-1],[1,-1]],[1,1],i)
 
-ChevieData["G2"]["Representation"]=f140074
+ChevieData["G2"]["Representation"]=ylg28
 
-def f309179(param):
+def ylg29(param):
   u=GAPDiv(-param[1][1-1],param[1][2-1])
   v=GAPDiv(-param[2][1-1],param[2][2-1])
   return GAPMul(1+u,v+1)
 
-ChevieData["G2"]["PoincarePolynomial"]=f309179
+ChevieData["G2"]["PoincarePolynomial"]=ylg29
 
 ChevieData["G2"]["SchurModels"]={"f1":{"vcyc":[[[1,-1,0,0],1],[[0,0,1,-1],1],[[1,-1,1,-1],3]]},
   "f2":{"coeff":-2,
@@ -197,10 +197,10 @@ ChevieData["G2"]["SchurData"]=[{"name":"f1",
   "order":[1,2,3,4],
   "rootPower":1}]
 
-def f383197(phi,para,sqrtpara):
+def ylg210(phi,para,sqrtpara):
   u=GAPDiv(-para[1][1-1],para[1][2-1])
   v=GAPDiv(-para[2][1-1],para[2][2-1])
-  p=Position(ChevieData["G2"]["CharInfo"]()["charparams"],phi)
+  p=ChevieData["G2"]["CharInfo"]()["charparams"].index(phi)+1
   if p==1 :
     return GAPMul(1+u,v+1)
   else:
@@ -217,9 +217,9 @@ def f383197(phi,para,sqrtpara):
     squv=-squv
   return GAPMul(2,GAPMul(u,v)**-1)
 
-ChevieData["G2"]["SchurElement"]=f383197
+ChevieData["G2"]["SchurElement"]=ylg210
 
-def f948524():
+def ylg211():
   return {"harishChandra":[{"relativeType":{"series":"G",
     "indices":range(1,2+1),
     "rank":2},
@@ -261,25 +261,25 @@ def f948524():
     "A":[0,6,5,5,5,5,5,5,5,5],
     "charSymbols":[[[0],[0],[0],[0],[0],[2]],[[0,1],[0,1],[0,1],[0,1],[0,1],[1,2]],[[0],[0],[1],2,0],[[0],[0],[1],2,1],[[0],[0],[0],[0],[1],[1]],[[0],[0],[0],[1],[0],[1]],[[0,1],[0],[0,1],[],[0],[]],[[0,1],[0,1],[0],[],[],[0]],[[0,1],[0],[0],[0,1],[],[]],[[0,1],[0,1],[],[0],[0],[]]]}
 
-ChevieData["G2"]["UnipotentCharacters"]=f948524
+ChevieData["G2"]["UnipotentCharacters"]=ylg211
 
-def f597199(x,y):
+def ylg212(x,y):
   return GAPMul(-3,x)+GAPMul(3,x**2)
 
-def f28933(x,y):
+def ylg213(x,y):
   return GAPMul(x**2,y**4)-GAPMul(6,x**3)+GAPMul(13,x**4)-GAPMul(12,x**5)+GAPMul(4,x**6)
 
-ChevieData["G2"]["Invariants"]=[f597199,f28933]
+ChevieData["G2"]["Invariants"]=[ylg212,ylg213]
 
-def f858375():
-  return f721714
+def ylg214():
+  return ylg215
 
-def f721714(x,y):
+def ylg215(x,y):
   return GAPMul(4,x**3)-GAPMul(27,y**2)
 
-ChevieData["G2"]["Discriminant"]=f858375
+ChevieData["G2"]["Discriminant"]=ylg214
 
-def f468699(c,p):
+def ylg216(c,p):
   if p==0 :
     p=1
   Z=lambda n: ComplexReflectionGroup(n,1,1)
@@ -314,23 +314,23 @@ def f468699(c,p):
     "parameter":[8]}]}
   if p==2 :
     uc.springerSeries[1].locsys[1-1]=[5,2]
-    Add(uc["springerSeries"],{"relgroup":CoxeterGroup(),
+    uc["springerSeries"].append({"relgroup":CoxeterGroup(),
       "levi":[1,2],
       "Z":[],
       "locsys":[[5,1]]})
   else:
     if p==3 :
-      Add(uc["classes"],{"name":"(\\tilde A_1)_3",
+      uc["classes"].append({"name":"(\\tilde A_1)_3",
         "succ":["~A1"],
         "dimBu":3,
         "red":Z(2),
         "Au":CoxeterGroup()})
-      Add(uc.classes[1-1]["succ"],"(~A1)3")
+      uc.classes[1-1]["succ"].append("(~A1)3")
       uc.classes[3-1]["dimBu"]=2
       Unbind(uc.classes[3-1]["dynkin"])
       [uc.springerSeries[1].locsys[k-1] for k in [3,5]]=[[6,1],[4,2]]
       for c in [2,3]:
-        Add(uc["springerSeries"],{"relgroup":CoxeterGroup(),
+        uc["springerSeries"].append({"relgroup":CoxeterGroup(),
           "levi":[1,2],
           "Z":[],
           "locsys":[[5,c]]})
@@ -344,7 +344,7 @@ def f468699(c,p):
     c["AuAction"]=ExtendedReflectionGroup(c["red"],map(lambda x: IdentityMat(c["red"]["rank"]),c["Au"]["generators"]))
   return uc
 
-ChevieData["G2"]["UnipotentClasses"]=f468699
+ChevieData["G2"]["UnipotentClasses"]=ylg216
 
 ChevieData["G2"]["KLeftCellRepresentatives"]=[{"character":[1],
   "duflo":[1,2],

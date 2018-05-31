@@ -1,19 +1,19 @@
 
-def f289910(indices,title):
+def xg241(indices,title):
   print title," ",indices[1-1],"\n",
   s=just("",len(title)-1)
   print s," / \\\n",s,indices[2-1],"=====",indices[3-1],"  ",IntListToString([indices[k-1] for k in [2,3,1,2,3,1,2,3,1]]),"==",IntListToString([indices[k-1] for k in [3,2,3,1,2,3,1,2,3]]),"\n",
 
-ChevieData["G24"]["PrintDiagram"]=f289910
+ChevieData["G24"]["PrintDiagram"]=xg241
 
 ChevieData["G24"]["GeneratingRoots"]=[[1,ER(-7),0],[1,-ER(-7),0],[GAPDiv(-1-ER(-7),2),GAPDiv(-7-GAPMul(3,ER(-7)),6),GAPDiv(-4,3)]]
 
 ChevieData["G24"]["GeneratingCoRoots"]=GAPDiv([[1,GAPDiv(GAPMul(-3,ER(-7)),7),0],[1,GAPDiv(GAPMul(3,ER(-7)),7),0],[GAPDiv(-1+ER(-7),2),GAPDiv(-7+GAPMul(3,ER(-7)),14),GAPDiv(-1,2)]],2)
 
-def f924046():
+def xg242():
   return GAPMul(ChevieData["G24"]["GeneratingCoRoots"],Matrix(ChevieData["G24"]["GeneratingRoots"]).transpose())
 
-ChevieData["G24"]["CartanMat"]=f924046
+ChevieData["G24"]["CartanMat"]=xg242
 
 ChevieData["G24"]["EigenvaluesGeneratingReflections"]=[GAPDiv(1,2),GAPDiv(1,2),GAPDiv(1,2)]
 
@@ -29,11 +29,11 @@ ChevieData["G24"]["Size"]=prod(ChevieData["G24"]["ReflectionDegrees"])
 
 ChevieData["G24"]["NrConjugacyClasses"]=12
 
-def f610970(s):
+def xg243(s):
   t=[[[]],[[1]],[[1,2],[2,3]],[range(1,3+1)]]
   return t[s+1-1]
 
-ChevieData["G24"]["ParabolicRepresentatives"]=f610970
+ChevieData["G24"]["ParabolicRepresentatives"]=xg243
 
 ChevieData["G24"]["WordsClassRepresentatives"]=[[],[1],[2,3],[1,3],[1,2,3,1,2,3,1,2,3],[1,2,3],[2,3,2,3],[1,2,3,1,2,3,1],[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3],[1,2,3,1,2,3],[1,2,3,1,2,3,1,2,3,1,2],[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3]]
 
@@ -47,20 +47,20 @@ ChevieData["G24"]["ClassInfo"]={"classtext":ChevieData["G24"]["WordsClassReprese
   "orders":[1,2,4,3,14,14,2,6,7,7,4,2],
   "classes":[1,21,42,56,24,24,21,56,24,24,42,1]}
 
-def f36021():
+def xg244():
   res={"charparams":[[1,0],[1,21],[3,8],[3,1],[3,10],[3,3],[6,2],[6,9],[7,6],[7,3],[8,4],[8,5]],
     "opdam":Permutation("(11,12)"),
     "extRefl":[1,4,5,2]}
   res["b"]=map(lambda x: x[2-1],res["charparams"])
   return res
 
-ChevieData["G24"]["CharInfo"]=f36021
+ChevieData["G24"]["CharInfo"]=xg244
 
 ChevieData["G24"]["CycPolSchurElements"]=[[1,0,2,2,2,3,4,6,7,14],[1,-21,2,2,2,3,4,6,7,14],[GAPMul(2,ER(-7)),-8,2,2,2,GAPDiv(1,7),GAPDiv(2,7),GAPDiv(4,7),GAPDiv(3,14),GAPDiv(5,14),GAPDiv(13,14)],[GAPMul(-2,ER(-7)),-1,2,2,2,GAPDiv(3,7),GAPDiv(5,7),GAPDiv(6,7),GAPDiv(1,14),GAPDiv(9,14),GAPDiv(11,14)],[GAPMul(-2,ER(-7)),-8,2,2,2,GAPDiv(3,7),GAPDiv(5,7),GAPDiv(6,7),GAPDiv(1,14),GAPDiv(9,14),GAPDiv(11,14)],[GAPMul(2,ER(-7)),-1,2,2,2,GAPDiv(1,7),GAPDiv(2,7),GAPDiv(4,7),GAPDiv(3,14),GAPDiv(5,14),GAPDiv(13,14)],[2,-1,2,4,7],[2,-8,2,4,7],[1,-6,2,2,2,3,4,6],[1,-3,2,2,2,3,4,6],[2,-4,3,7],[2,-4,3,7]]
 
 ChevieData["G24"]["sparseFakeDegrees"]=[[1,0],[1,21],[1,8,1,16,1,18],[1,1,1,9,1,11],[1,10,1,12,1,20],[1,3,1,5,1,13],[1,2,1,4,1,6,1,8,1,10,1,12],[1,9,1,11,1,13,1,15,1,17,1,19],[1,6,1,8,1,10,1,12,1,14,1,16,1,18],[1,3,1,5,1,7,1,9,1,11,1,13,1,15],[1,4,1,6,1,8,1,10,1,12,2,14,1,16],[1,5,2,7,1,9,1,11,1,13,1,15,1,17]]
 
-def f852146(param,root):
+def xg245(param,root):
   r=param[1][1-1]
   p=param[1][2-1]
   u=GetRoot(GAPMul(-p,r),2)
@@ -93,18 +93,18 @@ def f852146(param,root):
     "galomorphisms":Group(Permutation("( 5, 6)( 9,10)")),
     "irredinfo":map(lambda x: {"charparam":x,
     "charname":ChevieData["G24"]["CharName"](x,{})},ChevieData["G24"]["CharInfo"]()["charparams"])}
-  Inherit(tbl,ChevieData["G24"]["ClassInfo"])
+  tbl.update(ChevieData["G24"]["ClassInfo"])
   tbl["centralizers"]=map(lambda x: GAPDiv(tbl["size"],x),tbl["classes"])
   return ChevieData["compat"]["MakeCharacterTable"](tbl)
 
-ChevieData["G24"]["HeckeCharTable"]=f852146
+ChevieData["G24"]["HeckeCharTable"]=xg245
 
-def f808671():
+def xg246():
   return ChevieData["G24"]["HeckeCharTable"]([[1,-1],[1,-1],[1,-1]],[])
 
-ChevieData["G24"]["CharTable"]=f808671
+ChevieData["G24"]["CharTable"]=xg246
 
-def f406549(para,root,i):
+def xg247(para,root,i):
   p=para[1][2-1]
   r=para[1][1-1]
   f1=lambda r: map(lambda x: [[r]],range(1,3+1))
@@ -128,7 +128,7 @@ def f406549(para,root,i):
   rep=[[f1,r],[f1,p],[f3,p,r,ER(-7)],[f3,r,p,ER(-7)],[f3,p,r,-ER(-7)],[f3,r,p,-ER(-7)],[f7,p,r],[f7,r,p],[f9,p,r],[f9,r,p],[f11,p,r,1],[f11,p,r,-1]]
   return ApplyFunc(rep[i][1-1],[rep[i][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para[1-1]))
 
-ChevieData["G24"]["HeckeRepresentation"]=f406549
+ChevieData["G24"]["HeckeRepresentation"]=xg247
 
 ChevieData["families"]["X7"]={"name":"X7",
   "fourierMat":GAPDiv([[GAPDiv(-1,2),GAPDiv(1,2),GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),-1,-1,-1],[GAPDiv(1,2),GAPDiv(-1,2),GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),1,1,1],[GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),GAPDiv(-ER(-7),2),0,0,0],[GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),GAPDiv(-ER(-7),2),GAPDiv(ER(-7),2),0,0,0],[-1,1,0,0,-ER(7)**6-ER(7),-ER(7)**5-ER(7)**2,-ER(7)**4-ER(7)**3],[-1,1,0,0,-ER(7)**5-ER(7)**2,-ER(7)**4-ER(7)**3,-ER(7)**6-ER(7)],[-1,1,0,0,-ER(7)**4-ER(7)**3,-ER(7)**6-ER(7),-ER(7)**5-ER(7)**2]],ER(-7)),
@@ -137,7 +137,7 @@ ChevieData["families"]["X7"]={"name":"X7",
   "special":1,
   "cospecial":2}
 
-def f224676():
+def xg248():
   return {"harishChandra":[{"relativeType":{"series":"ST",
     "indices":range(1,3+1),
     "rank":3,
@@ -217,31 +217,31 @@ def f224676():
     "A":[0,21,20,13,20,13,13,20,18,15,17,17,13,13,13,13,17,17,20,20,20,20],
     "curtis":[2,1,6,5,4,3,8,7,10,9,12,11,19,-20,-21,-22,-18,-17,13,-14,-15,-16]}
 
-ChevieData["G24"]["UnipotentCharacters"]=f224676
+ChevieData["G24"]["UnipotentCharacters"]=xg248
 
-def f85469(x,y,z):
+def xg249(x,y,z):
   return GAPMul(-42,x**2)-GAPMul(12,x**2)+GAPMul(GAPDiv(21,2),x**2)-GAPMul(GAPDiv(9,2),y**2)-GAPMul(6,y**3)+GAPMul(14,x**4)-GAPMul(GAPDiv(21,8),z**4)
 
-def f301092(x,y,z):
+def xg2410(x,y,z):
   return GAPMul(-1960,x**2)+GAPMul(840,x**2)-GAPMul(1120,x**2)+GAPMul(1760,x**2)-GAPMul(1225,x**2)+GAPMul(525,y**2)-GAPMul(280,y**3)+GAPMul(3920,x**4)-GAPMul(980,x**4)-GAPMul(180,y**4)-GAPMul(240,y**5)+GAPMul(1568,x**6)-GAPMul(GAPDiv(416,7),y**6)-GAPMul(GAPDiv(49,2),z**6)
 
-def f106338(x,y,z):
+def xg2411(x,y,z):
   return GAPMul(GAPDiv(-857157,4),x**2)-GAPMul(GAPDiv(4847619,32),x**2)+GAPMul(GAPDiv(1596665,8),x**2)-GAPMul(440118,x**2)+GAPMul(1608075,x**2)-GAPMul(633080,x**2)+GAPMul(269760,x**2)-GAPMul(GAPDiv(1327753,128),x**2)+GAPMul(GAPDiv(569037,128),y**2)-GAPMul(GAPDiv(122451,4),y**3)-GAPMul(GAPDiv(11176655,16),x**4)+GAPMul(432180,x**4)-GAPMul(2088870,x**4)-GAPMul(2922360,x**4)-GAPMul(24696,x**4)-GAPMul(5735940,x**4)-GAPMul(4210080,x**4)+GAPMul(2688840,x**4)-GAPMul(203456,x**4)+GAPMul(GAPDiv(11311111,64),x**4)-GAPMul(16696554,x**6)+GAPMul(3755850,x**6)-GAPMul(470400,x**6)+GAPMul(2546880,x**6)-GAPMul(GAPDiv(396459,8),y**6)+GAPMul(76734,y**7)-GAPMul(3457440,x**8)-GAPMul(2511936,x**8)-GAPMul(GAPDiv(8621991,4),x**8)-GAPMul(GAPDiv(424809,4),y**8)-GAPMul(114513,y**9)+GAPMul(9008552,x**10)-GAPMul(2304960,x**10)+GAPMul(7222208,x**10)-GAPMul(8978368,x**10)+GAPMul(6537923,x**10)-GAPMul(40392,y**10)+GAPMul(14928,y**11)-GAPMul(537824,x**12)-GAPMul(153664,x**12)+GAPMul(134456,x**12)
 
-ChevieData["G24"]["Invariants"]=[f85469,f301092,f106338]
+ChevieData["G24"]["Invariants"]=[xg249,xg2410,xg2411]
 
-def f410980():
-  return f702174
+def xg2412():
+  return xg2413
 
-def f702174(x,y,z):
+def xg2413(x,y,z):
   return [[x,GAPMul(3,y**2),GAPMul(7,z)-GAPMul(9,x**2)],[GAPMul(3,y),GAPMul(1792,z),GAPMul(64,x)+GAPMul(3136,x**4)],[GAPMul(7,z),GAPMul(64,x)+GAPMul(5376,x**2),GAPMul(GAPDiv(287,2),x)-GAPMul(GAPDiv(35,4),x**3)+GAPMul(GAPDiv(21,256),y**4)-GAPMul(1568,x**6)]]
 
-ChevieData["G24"]["BasicDerivations"]=f410980
+ChevieData["G24"]["BasicDerivations"]=xg2412
 
-def f74694():
-  return f43202
+def xg2414():
+  return xg2415
 
-def f43202(x,y,z):
+def xg2415(x,y,z):
   return GAPMul(18,x)+GAPMul(5632,x**2)-GAPMul(1024,z**3)-GAPMul(67,x**3)-GAPMul(4352,x**4)-GAPMul(5504,x**6)-GAPMul(GAPDiv(27,3136),y**7)-GAPMul(229376,x**7)-GAPMul(114688,x**9)
 
-ChevieData["G24"]["Discriminant"]=f74694
+ChevieData["G24"]["Discriminant"]=xg2414

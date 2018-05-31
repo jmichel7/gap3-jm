@@ -7,21 +7,21 @@ ChevieData["G27"]["AltPres"]=[{"gens":[[2],[2,3,-2],[1]],
 
 ChevieData["G27"]["BraidRelations"]=[[[2,1,2],[1,2,1]],[[3,1,3],[1,3,1]],[[3,2,3,2],[2,3,2,3]],[[3,2,3,1,2,3,1,2,3,1,2,3],[2,3,1,2,3,1,2,3,1,2,3,2]]]
 
-def f327970(indices,title):
+def xg271(indices,title):
   print title," ",indices[1-1],"\n",
   s=just("",len(title)-1)
   print s," / \\\n",s,indices[2-1],"=====",indices[3-1],"  ",IntListToString([indices[k-1] for k in [3,2,3,1,2,3,1,2,3,1,2,3]]),"==",IntListToString([indices[k-1] for k in [2,3,1,2,3,1,2,3,1,2,3,2]]),"\n",
 
-ChevieData["G27"]["PrintDiagram"]=f327970
+ChevieData["G27"]["PrintDiagram"]=xg271
 
 ChevieData["G27"]["GeneratingRoots"]=[[GAPDiv(-ER(5),5),GAPDiv(-ER(15)**14+ER(15)**13-ER(15)**8-ER(15)**7-ER(15)**4+ER(15)**2,5),GAPDiv(GAPMul(4,ER(15)**14)-GAPMul(4,ER(15)**11)+GAPMul(2,ER(15)**4)-GAPMul(2,ER(15)),15)],[GAPDiv(GAPMul(5-ER(-15),ER(3)),10),GAPDiv(-ER(15)**13-ER(15)**8+ER(15)**7-ER(15),5),GAPDiv(GAPMul(-4,ER(15)**14)+GAPMul(4,ER(15)**11)-GAPMul(2,ER(15)**4)+GAPMul(2,ER(15)),15)],[GAPDiv(GAPMul(2,ER(5)),5),0,0]]
 
 ChevieData["G27"]["GeneratingCoRoots"]=[[GAPDiv(-ER(5),2),GAPDiv(ER(15)**14+ER(15)**13-ER(15)**11-ER(15)**8-ER(15)**7+ER(15)**4-ER(15),2),GAPDiv(-ER(15)**14+ER(15)**11-GAPMul(2,ER(15)**4)+GAPMul(2,ER(15)),2)],[GAPDiv(GAPMul(5+ER(-15),ER(3)**2),4),GAPDiv(-ER(15)**14+ER(15)**13-ER(15)**7-ER(15)**2,2),GAPDiv(ER(15)**14-ER(15)**11+GAPMul(2,ER(15)**4)-GAPMul(2,ER(15)),2)],[ER(5),0,0]]
 
-def f543100():
+def xg272():
   return GAPMul(ChevieData["G27"]["GeneratingCoRoots"],Matrix(ChevieData["G27"]["GeneratingRoots"]).transpose())
 
-ChevieData["G27"]["CartanMat"]=f543100
+ChevieData["G27"]["CartanMat"]=xg272
 
 ChevieData["G27"]["EigenvaluesGeneratingReflections"]=[GAPDiv(1,2),GAPDiv(1,2),GAPDiv(1,2)]
 
@@ -31,11 +31,11 @@ ChevieData["G27"]["ReflectionDegrees"]=[6,12,30]
 
 ChevieData["G27"]["NrConjugacyClasses"]=34
 
-def f45804(s):
+def xg273(s):
   t=[[[]],[[1]],[[1,2],[1,3],[2,3],[1,8]],[range(1,3+1)]]
   return t[s+1-1]
 
-ChevieData["G27"]["ParabolicRepresentatives"]=f45804
+ChevieData["G27"]["ParabolicRepresentatives"]=xg273
 
 ChevieData["G27"]["ClassNames"]=[".","2","12","c2","23","132","c","2c2c","13","3232","2cc","ccc","23z","132132","cc","13z","2ccc","32zzzz","cc21323","zcc","12z","1z","3232zz","2323z","1zz","zzcccc","cccc","zcccc","32zzz","z","zzzzz","zz","zzzz","zzz"]
 
@@ -49,20 +49,20 @@ ChevieData["G27"]["ClassInfo"]={"classtext":ChevieData["G27"]["WordsClassReprese
   "orders":[1,2,3,5,4,30,30,5,3,2,12,10,12,15,15,6,12,12,30,30,6,6,6,6,6,15,15,10,4,6,6,3,3,2],
   "classes":[1,45,120,72,90,72,72,72,120,45,90,72,90,72,72,120,90,90,72,72,120,45,45,45,45,72,72,72,90,1,1,1,1,1]}
 
-def f16797():
+def xg274():
   res={"charparams":[[1,0],[1,45],[3,7],[3,22],[3,1],[3,16],[3,5,1],[3,20,1],[3,5,2],[3,20,2],[5,6,2],[5,6,1],[5,15,2],[5,15,1],[6,19],[6,4],[6,17],[6,2],[8,6],[8,9,1],[8,12],[8,9,2],[9,6],[9,9],[9,13],[9,4],[9,11],[9,8],[10,12],[10,3],[15,7],[15,10],[15,5],[15,8]],
     "opdam":Permutation("(19,20)(21,22)(23,26,28)(24,27,25)"),
     "extRefl":[1,5,10,2]}
   res["b"]=map(lambda x: x[2-1],res["charparams"])
   return res
 
-ChevieData["G27"]["CharInfo"]=f16797
+ChevieData["G27"]["CharInfo"]=xg274
 
 ChevieData["G27"]["CycPolSchurElements"]=[[1,0,2,2,2,3,3,3,4,5,6,6,6,10,12,15,30],[1,-45,2,2,2,3,3,3,4,5,6,6,6,10,12,15,30],[GAPMul(-2,ER(-15)),-1,2,2,2,GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,5),GAPDiv(4,5),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(1,10),GAPDiv(9,10),GAPDiv(2,15),GAPDiv(8,15),GAPDiv(7,30),GAPDiv(13,30)],[GAPMul(2,ER(-15)),-16,2,2,2,GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,3),GAPDiv(1,5),GAPDiv(4,5),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(1,10),GAPDiv(9,10),GAPDiv(7,15),GAPDiv(13,15),GAPDiv(17,30),GAPDiv(23,30)],[GAPMul(2,ER(-15)),-1,2,2,2,GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,3),GAPDiv(2,5),GAPDiv(3,5),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(3,10),GAPDiv(7,10),GAPDiv(11,15),GAPDiv(14,15),GAPDiv(1,30),GAPDiv(19,30)],[GAPMul(-2,ER(-15)),-16,2,2,2,GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,5),GAPDiv(3,5),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(3,10),GAPDiv(7,10),GAPDiv(1,15),GAPDiv(4,15),GAPDiv(11,30),GAPDiv(29,30)],[GAPMul(2,ER(-15)),-1,2,2,2,GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,3),GAPDiv(1,5),GAPDiv(4,5),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(1,10),GAPDiv(9,10),GAPDiv(7,15),GAPDiv(13,15),GAPDiv(17,30),GAPDiv(23,30)],[GAPMul(-2,ER(-15)),-16,2,2,2,GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,5),GAPDiv(4,5),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(1,10),GAPDiv(9,10),GAPDiv(2,15),GAPDiv(8,15),GAPDiv(7,30),GAPDiv(13,30)],[GAPMul(-2,ER(-15)),-1,2,2,2,GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,5),GAPDiv(3,5),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(3,10),GAPDiv(7,10),GAPDiv(1,15),GAPDiv(4,15),GAPDiv(11,30),GAPDiv(29,30)],[GAPMul(2,ER(-15)),-16,2,2,2,GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,3),GAPDiv(2,5),GAPDiv(3,5),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(3,10),GAPDiv(7,10),GAPDiv(11,15),GAPDiv(14,15),GAPDiv(1,30),GAPDiv(19,30)],[2,-3,2,2,2,3,3,3,6,6,6],[2,-3,2,2,2,3,3,3,6,6,6],[2,-12,2,2,2,3,3,3,6,6,6],[2,-12,2,2,2,3,3,3,6,6,6],[3-ER(-3),-16,2,GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,3),4,5,GAPDiv(1,6),GAPDiv(5,12),GAPDiv(11,12),GAPDiv(1,15),GAPDiv(4,15),GAPDiv(7,15),GAPDiv(13,15)],[3+ER(-3),-1,2,GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,3),4,5,GAPDiv(5,6),GAPDiv(1,12),GAPDiv(7,12),GAPDiv(2,15),GAPDiv(8,15),GAPDiv(11,15),GAPDiv(14,15)],[3+ER(-3),-16,2,GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,3),4,5,GAPDiv(5,6),GAPDiv(1,12),GAPDiv(7,12),GAPDiv(2,15),GAPDiv(8,15),GAPDiv(11,15),GAPDiv(14,15)],[3-ER(-3),-1,2,GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,3),4,5,GAPDiv(1,6),GAPDiv(5,12),GAPDiv(11,12),GAPDiv(1,15),GAPDiv(4,15),GAPDiv(7,15),GAPDiv(13,15)],[5+ER(5),-6,3,3,3,GAPDiv(2,5),GAPDiv(3,5),GAPDiv(1,15),GAPDiv(4,15),GAPDiv(11,15),GAPDiv(14,15)],[5+ER(5),-6,3,3,3,GAPDiv(2,5),GAPDiv(3,5),GAPDiv(1,15),GAPDiv(4,15),GAPDiv(11,15),GAPDiv(14,15)],[5-ER(5),-6,3,3,3,GAPDiv(1,5),GAPDiv(4,5),GAPDiv(2,15),GAPDiv(7,15),GAPDiv(8,15),GAPDiv(13,15)],[5-ER(5),-6,3,3,3,GAPDiv(1,5),GAPDiv(4,5),GAPDiv(2,15),GAPDiv(7,15),GAPDiv(8,15),GAPDiv(13,15)],[3,-4,2,2,2,4,5,10],[3,-9,2,2,2,4,5,10],[3,-9,2,2,2,4,5,10],[3,-4,2,2,2,4,5,10],[3,-9,2,2,2,4,5,10],[3,-4,2,2,2,4,5,10],[2,-12,2,3,3,3,4,6,12],[2,-3,2,3,3,3,4,6,12],[GAPDiv(3+ER(-3),2),-5,2,2,2,GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,3),4,GAPDiv(1,6),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(5,12),GAPDiv(11,12)],[GAPDiv(3-ER(-3),2),-8,2,2,2,GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,3),4,GAPDiv(5,6),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(1,12),GAPDiv(7,12)],[GAPDiv(3-ER(-3),2),-5,2,2,2,GAPDiv(1,3),GAPDiv(1,3),GAPDiv(1,3),4,GAPDiv(5,6),GAPDiv(5,6),GAPDiv(5,6),GAPDiv(1,12),GAPDiv(7,12)],[GAPDiv(3+ER(-3),2),-8,2,2,2,GAPDiv(2,3),GAPDiv(2,3),GAPDiv(2,3),4,GAPDiv(1,6),GAPDiv(1,6),GAPDiv(1,6),GAPDiv(5,12),GAPDiv(11,12)]]
 
 ChevieData["G27"]["sparseFakeDegrees"]=[[1,0],[1,45],[1,7,1,13,1,25],[1,22,1,28,1,40],[1,1,1,19,1,25],[1,16,1,34,1,40],[1,5,1,17,1,23],[1,20,1,32,1,38],[1,5,1,11,1,29],[1,20,1,26,1,44],[1,6,1,12,1,18,1,24,1,30],[1,6,1,12,1,18,1,24,1,30],[1,15,1,21,1,27,1,33,1,39],[1,15,1,21,1,27,1,33,1,39],[1,19,2,25,1,31,1,37,1,43],[1,4,2,10,1,16,1,22,1,28],[1,17,1,23,1,29,2,35,1,41],[1,2,1,8,1,14,2,20,1,26],[1,6,1,12,1,18,2,24,2,30,1,36],[1,9,2,15,2,21,1,27,1,33,1,39],[2,12,2,18,1,24,2,30,1,36],[1,9,2,15,1,21,2,27,2,33],[1,6,2,12,2,18,2,24,1,30,1,36],[1,9,1,15,2,21,2,27,2,33,1,39],[2,13,2,19,1,25,2,31,2,37],[1,4,1,10,2,16,2,22,2,28,1,34],[1,11,2,17,2,23,2,29,1,35,1,41],[2,8,2,14,1,20,2,26,2,32],[1,12,2,18,2,24,2,30,2,36,1,42],[1,3,2,9,2,15,2,21,2,27,1,33],[2,7,3,13,3,19,3,25,3,31,1,37],[2,10,3,16,3,22,3,28,3,34,1,40],[1,5,3,11,3,17,3,23,3,29,2,35],[1,8,3,14,3,20,3,26,3,32,2,38]]
 
-def f296828(para,root):
+def xg275(para,root):
   q=GAPDiv(-para[1][1-1],para[1][2-1])
   r=para[1][1-1]
   p=para[1][2-1]
@@ -70,7 +70,7 @@ def f296828(para,root):
     "size":2160,
     "order":2160,
     "powermap":ChevieData["G27"]["PowerMaps"]}
-  Inherit(tbl,ChevieData["G27"]["ClassInfo"])
+  tbl.update(ChevieData["G27"]["ClassInfo"])
   f1=lambda r: map(lambda x: r**len(x),tbl["classtext"])
   def f3(r,p,j,d):
     return [3,p+GAPMul(2,r),GAPMul(p,r)+r**2,GAPMul(-1+GAPDiv(GAPMul(j,1-d),2),p)+GAPMul(GAPDiv(-2+GAPMul(1-d,1+j),2),p**2),r**2,GAPMul(-p,r**2)+GAPMul(GAPDiv(-1+j-d-GAPMul(j,d),2),p**2),GAPMul(GAPDiv(GAPMul(1-d,j),2),p),GAPMul(GAPDiv(3,2)-GAPMul(GAPDiv(3,2),j)+GAPMul(GAPDiv(1,2),d),p**2)+GAPMul(1-j+d,p**3),GAPMul(p,r)+r**2,GAPMul(-2,p**2)+r**4,GAPMul(-j,p**2),GAPMul(GAPDiv(1+d,2),p**3),GAPMul(j**2,p**5),GAPMul(GAPDiv(j,2)+d,r**2)+GAPMul(1-j+d,p**3),GAPMul(GAPDiv(GAPMul(1+d,j**2),2),p**2),GAPMul(j**2,p**5)+GAPMul(j**2,p**6),GAPMul(GAPDiv(1+d,2),p**3)+GAPMul(GAPDiv(1,2)+j,p**4),GAPMul(j**2,p**20),GAPMul(GAPDiv(GAPMul(-1+d,j**2),2),p**3)+GAPMul(j**2,p**5),GAPMul(GAPDiv(GAPMul(1+d,j),2),p**7),GAPMul(j**2,p**5)+GAPMul(j**2,p**6),GAPMul(2,j**2)+GAPMul(j**2,p**6),GAPMul(j,p**10)-GAPMul(2,j),GAPMul(j**2,p**5)-GAPMul(2,j**2),GAPMul(2,j)+GAPMul(j,p**11),GAPMul(GAPDiv(GAPMul(1-d,j**2),2),p**14),GAPMul(GAPDiv(GAPMul(1-d,j),2),p**4),GAPMul(GAPDiv(1-d,2),p**9),GAPMul(p**15,r**32),GAPMul(3,j**2),GAPMul(3,j),GAPMul(3,j),GAPMul(3,j**2),GAPMul(3,p**15)]
@@ -95,17 +95,17 @@ def f296828(para,root):
   
   def f23(r,p,j):
     q=GAPMul(GetRoot(GAPDiv(-r,p),3),j)
-    return Zip([9,-4+GAPMul(5,q**3),1-GAPMul(3,q**3)+GAPMul(2,q**6),q**5-GAPMul(2,q**6)-q**8+q**9,1-GAPMul(2,q**3)+GAPMul(2,q**6),-q**3-q**4+q**6,-q**5,q**10-GAPMul(2,q**11)-GAPMul(2,q**12)-GAPMul(2,q**13)+GAPMul(2,q**14),1-GAPMul(3,q**3)+GAPMul(2,q**6),1-GAPMul(2,q**6)+GAPMul(2,q**12),q**11,-q**15,q**25-GAPMul(2,q**28)+GAPMul(2,q**31),q**6+GAPMul(2,q**7)-GAPMul(2,q**9)-GAPMul(4,q**10)+GAPMul(3,q**12)-GAPMul(2,q**14)-GAPMul(2,q**15),-q**10,q**25-GAPMul(3,q**28)+GAPMul(2,q**31),q**15+q**17-q**18,q**100-GAPMul(2,q**103)+GAPMul(2,q**106),q**13-GAPMul(2,q**19),-q**35,q**25-GAPMul(3,q**28)+GAPMul(2,q**31),GAPMul(-4,q**25)+GAPMul(5,q**28),q**50-GAPMul(2,q**56)+GAPMul(2,q**62),q**25-GAPMul(2,q**31)+GAPMul(2,q**37),GAPMul(-4,q**50)+GAPMul(5,q**53),-q**70,-q**20,-q**45,q**75-GAPMul(2,q**78)+GAPMul(2,q**81),GAPMul(9,q**25),GAPMul(9,q**125),GAPMul(9,q**50),GAPMul(9,q**100),GAPMul(9,q**75)],tbl["classtext"],f668726)
+    return Zip([9,-4+GAPMul(5,q**3),1-GAPMul(3,q**3)+GAPMul(2,q**6),q**5-GAPMul(2,q**6)-q**8+q**9,1-GAPMul(2,q**3)+GAPMul(2,q**6),-q**3-q**4+q**6,-q**5,q**10-GAPMul(2,q**11)-GAPMul(2,q**12)-GAPMul(2,q**13)+GAPMul(2,q**14),1-GAPMul(3,q**3)+GAPMul(2,q**6),1-GAPMul(2,q**6)+GAPMul(2,q**12),q**11,-q**15,q**25-GAPMul(2,q**28)+GAPMul(2,q**31),q**6+GAPMul(2,q**7)-GAPMul(2,q**9)-GAPMul(4,q**10)+GAPMul(3,q**12)-GAPMul(2,q**14)-GAPMul(2,q**15),-q**10,q**25-GAPMul(3,q**28)+GAPMul(2,q**31),q**15+q**17-q**18,q**100-GAPMul(2,q**103)+GAPMul(2,q**106),q**13-GAPMul(2,q**19),-q**35,q**25-GAPMul(3,q**28)+GAPMul(2,q**31),GAPMul(-4,q**25)+GAPMul(5,q**28),q**50-GAPMul(2,q**56)+GAPMul(2,q**62),q**25-GAPMul(2,q**31)+GAPMul(2,q**37),GAPMul(-4,q**50)+GAPMul(5,q**53),-q**70,-q**20,-q**45,q**75-GAPMul(2,q**78)+GAPMul(2,q**81),GAPMul(9,q**25),GAPMul(9,q**125),GAPMul(9,q**50),GAPMul(9,q**100),GAPMul(9,q**75)],tbl["classtext"],xg276)
   
   
   def f29(r,p):
     q=GAPDiv(-r,p)
-    return Zip([10,-6+GAPMul(4,q),3-GAPMul(3,q)+q**2,GAPMul(2,q)-GAPMul(2,q**2),2-GAPMul(2,q),GAPMul(-2,q)+GAPMul(2,q**2),0,GAPMul(2,q**2)-GAPMul(2,q**4),3-GAPMul(3,q)+q**2,2-GAPMul(4,q**2),0,0,GAPMul(2,q**6)-GAPMul(2,q**7),GAPMul(-4,q)+GAPMul(8,q**2)-GAPMul(4,q**3),0,GAPMul(3,q**6)-GAPMul(3,q**7)+q**8,0,GAPMul(2,q**24)-GAPMul(2,q**25),GAPMul(-2,q**4)+GAPMul(2,q**6),0,GAPMul(3,q**6)-GAPMul(3,q**7)+q**8,GAPMul(-6,q**6)+GAPMul(4,q**7),GAPMul(2,q**12)-GAPMul(4,q**14),GAPMul(2,q**6)-GAPMul(4,q**8),GAPMul(-6,q**12)+GAPMul(4,q**13),0,0,0,GAPMul(2,q**18)-GAPMul(2,q**19),GAPMul(10,q**6),GAPMul(10,q**30),GAPMul(10,q**12),GAPMul(10,q**24),GAPMul(10,q**18)],tbl["classtext"],f672859)
+    return Zip([10,-6+GAPMul(4,q),3-GAPMul(3,q)+q**2,GAPMul(2,q)-GAPMul(2,q**2),2-GAPMul(2,q),GAPMul(-2,q)+GAPMul(2,q**2),0,GAPMul(2,q**2)-GAPMul(2,q**4),3-GAPMul(3,q)+q**2,2-GAPMul(4,q**2),0,0,GAPMul(2,q**6)-GAPMul(2,q**7),GAPMul(-4,q)+GAPMul(8,q**2)-GAPMul(4,q**3),0,GAPMul(3,q**6)-GAPMul(3,q**7)+q**8,0,GAPMul(2,q**24)-GAPMul(2,q**25),GAPMul(-2,q**4)+GAPMul(2,q**6),0,GAPMul(3,q**6)-GAPMul(3,q**7)+q**8,GAPMul(-6,q**6)+GAPMul(4,q**7),GAPMul(2,q**12)-GAPMul(4,q**14),GAPMul(2,q**6)-GAPMul(4,q**8),GAPMul(-6,q**12)+GAPMul(4,q**13),0,0,0,GAPMul(2,q**18)-GAPMul(2,q**19),GAPMul(10,q**6),GAPMul(10,q**30),GAPMul(10,q**12),GAPMul(10,q**24),GAPMul(10,q**18)],tbl["classtext"],xg277)
   
   
   def f31(p,r,j):
     q=GAPDiv(-r,p)
-    return Zip([15,-7+GAPMul(8,q),2-GAPMul(5,q)+GAPMul(3,q**2),GAPMul(2,q**3)-GAPMul(3,q**2)+q,1-GAPMul(4,q)+GAPMul(2,q**2),GAPMul(2,q**2)-GAPMul(2,q)+1-q**3,0,q**2+GAPMul(GAPMul(3,j**2)+j,q**4),2-GAPMul(5,q)+GAPMul(3,q**2),1-GAPMul(4,q**2)+GAPMul(2,q**4),GAPMul(j,q**4),0,GAPMul(-j**2,q**8)+GAPMul(4,j**2)-GAPMul(2,j**2),1-GAPMul(2,q)+GAPMul(GAPMul(-4,j**2)-GAPMul(2,j),q**2)-GAPMul(4,q**5)+q**6,0,GAPMul(-2,j**2)+GAPMul(5,j**2)-GAPMul(3,j**2),GAPMul(-j,q**5),GAPMul(j**2,q**32)-GAPMul(4,j**2)+GAPMul(2,j**2),GAPMul(-2,j**2)+GAPMul(3,j**2)-GAPMul(j**2,q**8),0,GAPMul(-2,j**2)+GAPMul(5,j**2)-GAPMul(3,j**2),GAPMul(7,j**2)-GAPMul(8,j**2),GAPMul(j,q**16)-GAPMul(4,j)+GAPMul(2,j),GAPMul(-j**2,q**8)+GAPMul(4,j**2)-GAPMul(2,j**2),GAPMul(-7,j)+GAPMul(8,j),0,0,0,-q**24+GAPMul(4,q**25)-GAPMul(2,q**26),GAPMul(-15,j**2),GAPMul(-15,j),GAPMul(15,j),GAPMul(15,j**2),GAPMul(-15,q**24)],tbl["classtext"],f261476)
+    return Zip([15,-7+GAPMul(8,q),2-GAPMul(5,q)+GAPMul(3,q**2),GAPMul(2,q**3)-GAPMul(3,q**2)+q,1-GAPMul(4,q)+GAPMul(2,q**2),GAPMul(2,q**2)-GAPMul(2,q)+1-q**3,0,q**2+GAPMul(GAPMul(3,j**2)+j,q**4),2-GAPMul(5,q)+GAPMul(3,q**2),1-GAPMul(4,q**2)+GAPMul(2,q**4),GAPMul(j,q**4),0,GAPMul(-j**2,q**8)+GAPMul(4,j**2)-GAPMul(2,j**2),1-GAPMul(2,q)+GAPMul(GAPMul(-4,j**2)-GAPMul(2,j),q**2)-GAPMul(4,q**5)+q**6,0,GAPMul(-2,j**2)+GAPMul(5,j**2)-GAPMul(3,j**2),GAPMul(-j,q**5),GAPMul(j**2,q**32)-GAPMul(4,j**2)+GAPMul(2,j**2),GAPMul(-2,j**2)+GAPMul(3,j**2)-GAPMul(j**2,q**8),0,GAPMul(-2,j**2)+GAPMul(5,j**2)-GAPMul(3,j**2),GAPMul(7,j**2)-GAPMul(8,j**2),GAPMul(j,q**16)-GAPMul(4,j)+GAPMul(2,j),GAPMul(-j**2,q**8)+GAPMul(4,j**2)-GAPMul(2,j**2),GAPMul(-7,j)+GAPMul(8,j),0,0,0,-q**24+GAPMul(4,q**25)-GAPMul(2,q**26),GAPMul(-15,j**2),GAPMul(-15,j),GAPMul(15,j),GAPMul(15,j**2),GAPMul(-15,q**24)],tbl["classtext"],xg278)
   
   
   tbl["irreducibles"]=GAPMul([f1(r),f1(p),f3(r,p,ER(3),ER(5)),f3(p,r,ER(3),ER(5)),f3(r,p,ER(3),-ER(5)),f3(p,r,ER(3),-ER(5)),f3(r,p,ER(3)**2,ER(5)),f3(p,r,ER(3)**2,ER(5)),f3(r,p,ER(3)**2,-ER(5)),f3(p,r,ER(3)**2,-ER(5)),f11(r,p),f12(r,p),f12(p,r),f11(p,r),f15(r,p,ER(3)),f15(p,r,ER(3)),f15(r,p,ER(3)**2),f15(p,r,ER(3)**2),f19(r,p,ER(5),1),f19(r,p,ER(5),-1),f19(r,p,-ER(5),1),f19(r,p,-ER(5),-1),f23(r,p,1),f23(p,r,1),f23(p,r,ER(3)**2),f23(r,p,ER(3)**2),f23(p,r,ER(3)),f23(r,p,ER(3)),f29(r,p),f29(p,r),f31(p,r,ER(3)),f31(r,p,ER(3)),f31(p,r,ER(3)**2),f31(r,p,ER(3)**2)],q**0)
@@ -116,23 +116,23 @@ def f296828(para,root):
   tbl=ChevieData["compat"]["MakeCharacterTable"](tbl)
   return tbl
 
-def f668726(x,y):
+def xg276(x,y):
   return GAPMul(x,-p**len(y))
 
-def f672859(x,y):
+def xg277(x,y):
   return GAPMul(x,-p**len(y))
 
-def f261476(x,y):
+def xg278(x,y):
   return GAPMul(x,-p**len(y))
 
-ChevieData["G27"]["HeckeCharTable"]=f296828
+ChevieData["G27"]["HeckeCharTable"]=xg275
 
-def f490154():
+def xg279():
   return ChevieData["G27"]["HeckeCharTable"]([[1,-1],[1,-1],[1,-1]],[])
 
-ChevieData["G27"]["CharTable"]=f490154
+ChevieData["G27"]["CharTable"]=xg279
 
-def f120644(para,root,i):
+def xg2710(para,root,i):
   p=para[1][2-1]
   r=para[1][1-1]
   f1=lambda r: map(lambda x: [[r]],range(1,3+1))
@@ -175,7 +175,7 @@ def f120644(para,root,i):
   rep=[[f1,r],[f1,p],[f3,p,r,ER(3)**2,ER(5)],[f3,r,p,ER(3)**2,ER(5)],[f3,p,r,ER(3)**2,-ER(5)],[f3,r,p,ER(3)**2,-ER(5)],[f3,p,r,ER(3),ER(5)],[f3,r,p,ER(3),ER(5)],[f3,p,r,ER(3),-ER(5)],[f3,r,p,ER(3),-ER(5)],[f11,p,r],[f12,p,r],[f12,r,p],[f11,r,p],[f15,r,p,ER(3)],[f15,p,r,ER(3)],[f15,r,p,ER(3)**2],[f15,p,r,ER(3)**2],[f19,r,p,ER(5),1],[f19,r,p,ER(5),-1],[f19,r,p,-ER(5),1],[f19,r,p,-ER(5),-1],[f23,p,r,1],[f23,r,p,1],[f23,r,p,ER(3)**2],[f23,p,r,ER(3)**2],[f23,r,p,ER(3)],[f23,p,r,ER(3)],[f29,p,r],[f29,r,p],[f31,r,p,ER(3)],[f31,p,r,ER(3)],[f31,r,p,ER(3)**2],[f31,p,r,ER(3)**2]]
   return ApplyFunc(rep[i][1-1],[rep[i][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para[1-1]))
 
-ChevieData["G27"]["HeckeRepresentation"]=f120644
+ChevieData["G27"]["HeckeRepresentation"]=xg2710
 
 ChevieData["families"]["Y6"]={"name":"Y_6",
   "explanation":"subcategory of DQ(B2).20",
@@ -184,7 +184,7 @@ ChevieData["families"]["Y6"]={"name":"Y_6",
   "special":1,
   "cospecial":1}
 
-def f771238():
+def xg2711():
   return {"harishChandra":[{"relativeType":{"series":"ST",
     "indices":range(1,3+1),
     "rank":3,
@@ -486,31 +486,31 @@ def f771238():
     "a":[0,45,1,16,1,16,1,16,1,16,3,3,12,12,16,1,16,1,6,6,6,6,4,9,9,4,9,4,12,3,5,8,5,8,1,1,1,1,1,1,1,1,1,1,1,1,3,4,4,4,4,4,4,5,6,6,6,6,6,6,6,6,6,6,6,6,8,9,9,9,9,9,9,12,16,16,16,16,16,16,16,16,16,16,16,16],
     "A":[0,45,29,44,29,44,29,44,29,44,33,33,42,42,44,29,44,29,39,39,39,39,36,41,41,36,41,36,42,33,37,40,37,40,29,29,29,29,29,29,29,29,29,29,29,29,33,36,36,36,36,36,36,37,39,39,39,39,39,39,39,39,39,39,39,39,40,41,41,41,41,41,41,42,44,44,44,44,44,44,44,44,44,44,44,44]}
 
-ChevieData["G27"]["UnipotentCharacters"]=f771238
+ChevieData["G27"]["UnipotentCharacters"]=xg2711
 
-def f451810(x,y,z):
+def xg2712(x,y,z):
   return GAPMul(-90,x**2)+GAPMul(180,x**2)-GAPMul(135,x**2)+GAPMul(135,y**2)-GAPMul(30,x**4)+GAPMul(45,x**4)-GAPMul(10,y**6)-GAPMul(27,z**6)
 
-def f358419(x,y,z):
+def xg2713(x,y,z):
   return GAPMul(-2430,x**2)-GAPMul(58320,x**2)+GAPMul(3240,x**2)-GAPMul(13500,x**2)-GAPMul(17280,x**2)+GAPMul(1530,x**2)-GAPMul(1260,x**2)+GAPMul(756,x**2)-GAPMul(4374,x**2)+GAPMul(4374,y**2)-GAPMul(29160,x**4)-GAPMul(3240,x**4)-GAPMul(3240,x**4)+GAPMul(20250,x**4)-GAPMul(8460,x**4)+GAPMul(3960,x**4)-GAPMul(5832,y**5)-GAPMul(3240,x**6)-GAPMul(13500,x**6)+GAPMul(900,x**6)-GAPMul(2520,x**6)+GAPMul(760,x**6)-GAPMul(1080,y**6)+GAPMul(648,y**7)-GAPMul(10800,x**8)-GAPMul(3150,x**8)-GAPMul(900,x**8)-GAPMul(2550,x**8)+GAPMul(3375,x**8)-GAPMul(2160,y**9)+GAPMul(900,x**10)-GAPMul(300,x**10)+GAPMul(450,x**10)-GAPMul(486,y**10)-GAPMul(180,y**11)-GAPMul(50,x**12)-GAPMul(26,y**12)+GAPMul(729,z**12)
 
-def f926183(x,y,z):
+def xg2714(x,y,z):
   return GAPMul(-60584274,x**2)+GAPMul(7110680580,x**2)-GAPMul(972537030,x**2)+GAPMul(18366600960,x**2)-GAPMul(23662312110,x**2)+GAPMul(33974432640,x**2)-GAPMul(1602852300,x**2)-GAPMul(79131761730,x**2)+GAPMul(23244704460,x**2)-GAPMul(843312060,x**2)+GAPMul(537689610,x**2)-GAPMul(12222900,x**2)+GAPMul(202639995,x**2)-GAPMul(26859060,x**2)+GAPMul(11022960,x**2)-GAPMul(23914845,x**2)+GAPMul(23914845,y**2)-GAPMul(10203667200,x**4)-GAPMul(11553527340,x**4)-GAPMul(6324147900,x**4)+GAPMul(91174608450,x**4)-GAPMul(79841333880,x**4)-GAPMul(130374287100,x**4)-GAPMul(164209757760,x**4)+GAPMul(12784633380,x**4)-GAPMul(186840221400,x**4)-GAPMul(136349849070,x**4)+GAPMul(178537275900,x**4)-GAPMul(47897530740,x**4)+GAPMul(91340084160,x**4)-GAPMul(17014048380,x**4)-GAPMul(14207274450,x**4)-GAPMul(6976672560,x**4)-GAPMul(1297518480,x**4)+GAPMul(772075800,x**4)-GAPMul(513320220,x**4)-GAPMul(303264000,x**4)+GAPMul(121971510,x**4)-GAPMul(10203667200,x**6)+GAPMul(7702351560,x**6)-GAPMul(364141404900,x**6)+GAPMul(511501617990,x**6)-GAPMul(11123417340,x**6)+GAPMul(76310262000,x**6)-GAPMul(122977974600,x**6)+GAPMul(74494157760,x**6)-GAPMul(37971611325,x**6)-GAPMul(5211188460,x**6)+GAPMul(40676316750,x**6)-GAPMul(4676283900,x**6)+GAPMul(927121590,x**6)-GAPMul(37902000,x**6)+GAPMul(16601900,x**6)-GAPMul(324179010,x**6)+GAPMul(324179010,y**6)-GAPMul(50961648960,x**8)-GAPMul(325540089450,x**8)-GAPMul(681614416800,x**8)+GAPMul(17328257100,x**8)-GAPMul(97421744790,x**8)-GAPMul(32091600600,x**8)+GAPMul(171333978300,x**8)-GAPMul(145036931400,x**8)-GAPMul(6063336000,x**8)+GAPMul(56405568240,x**8)-GAPMul(26667506475,x**8)+GAPMul(14669703450,x**8)-GAPMul(2415528000,x**8)+GAPMul(473133210,x**8)-GAPMul(178922700,x**8)-GAPMul(561700,x**8)-GAPMul(1925587890,x**8)-GAPMul(1925587890,y**8)+GAPMul(451724850,y**9)-GAPMul(18145757700,x**10)+GAPMul(36987309450,x**10)-GAPMul(56624054400,x**10)+GAPMul(216134922375,x**10)-GAPMul(284886099540,x**10)-GAPMul(539226829350,x**10)-GAPMul(561988359900,x**10)+GAPMul(348456860550,x**10)-GAPMul(369114570000,x**10)-GAPMul(135367042860,x**10)+GAPMul(139885574400,x**10)-GAPMul(40396615650,x**10)-GAPMul(27645478200,x**10)+GAPMul(69410938500,x**10)-GAPMul(20828602440,x**10)-GAPMul(14036532075,x**10)-GAPMul(3687846300,x**10)-GAPMul(4739024400,x**10)+GAPMul(56859000,x**10)-GAPMul(67904660,x**10)+GAPMul(6935895540,x**10)-GAPMul(5476499505,y**10)+GAPMul(3629151540,y**11)-GAPMul(18012569400,x**12)+GAPMul(150212454750,x**12)-GAPMul(436654889100,x**12)-GAPMul(308375820900,x**12)+GAPMul(67111740000,x**12)-GAPMul(48098059200,x**12)-GAPMul(63423243000,x**12)-GAPMul(77330627100,x**12)-GAPMul(59739638400,x**12)-GAPMul(146804427000,x**12)+GAPMul(24078124800,x**12)-GAPMul(2059479000,x**12)-GAPMul(8104579200,x**12)+GAPMul(1003240950,x**12)-GAPMul(208780500,x**12)+GAPMul(244927100,x**12)-GAPMul(421216200,x**12)-GAPMul(1799616690,y**12)+GAPMul(5662405440,y**13)-GAPMul(9714872700,x**14)+GAPMul(75171017250,x**14)-GAPMul(101928415500,x**14)+GAPMul(79496356500,x**14)-GAPMul(1354968000,x**14)+GAPMul(196238112750,x**14)-GAPMul(8402988600,x**14)+GAPMul(16518208500,x**14)-GAPMul(3895724970,y**14)+GAPMul(1565717040,y**15)-GAPMul(33570328500,x**16)+GAPMul(22659021000,x**16)-GAPMul(12712117500,x**16)-GAPMul(587628000,x**16)-GAPMul(742703250,x**16)+GAPMul(522877500,x**16)-GAPMul(693500,x**16)+GAPMul(2084484375,x**16)-GAPMul(1589391315,y**16)+GAPMul(1343955240,y**17)-GAPMul(10817570250,x**18)-GAPMul(12456180000,x**18)+GAPMul(6056926875,x**18)-GAPMul(8919679500,x**18)+GAPMul(30806831250,x**18)-GAPMul(2958846000,x**18)-GAPMul(229605000,x**18)+GAPMul(153548500,x**18)-GAPMul(1330486965,y**18)-GAPMul(424030140,y**19)+GAPMul(1953112500,x**20)-GAPMul(3811050000,x**20)-GAPMul(3666195000,x**20)-GAPMul(2054079000,x**20)-GAPMul(3189487500,x**20)+GAPMul(2598480000,x**20)-GAPMul(269568750,x**20)-GAPMul(240157500,x**20)+GAPMul(58590500,x**20)-GAPMul(40297500,x**22)+GAPMul(1609233750,x**22)-GAPMul(524306250,x**22)-GAPMul(342495000,x**22)+GAPMul(676740000,x**22)-GAPMul(13710000,x**22)+GAPMul(49442500,x**22)-GAPMul(36720540,y**22)-GAPMul(24685560,y**23)-GAPMul(85151250,x**24)+GAPMul(112050000,x**24)-GAPMul(3982500,x**24)-GAPMul(14607500,x**24)-GAPMul(64985625,x**24)-GAPMul(93184155,y**24)-GAPMul(17528238,y**25)-GAPMul(13162500,x**26)-GAPMul(1950000,x**26)-GAPMul(4875000,x**26)-GAPMul(3737500,x**26)+GAPMul(6946875,x**26)-GAPMul(37500,x**28)+GAPMul(12500,x**28)-GAPMul(18750,x**28)+GAPMul(341610,y**28)
 
-ChevieData["G27"]["Invariants"]=[f451810,f358419,f926183]
+ChevieData["G27"]["Invariants"]=[xg2712,xg2713,xg2714]
 
-def f224565():
-  return f593756
+def xg2715():
+  return xg2716
 
-def f593756(x,y,z):
+def xg2716(x,y,z):
   return [[GAPMul(6,x),GAPMul(12,y**2),GAPMul(30,z)+GAPMul(GAPDiv(13,3),x**3)],[GAPMul(12,y),GAPMul(-24,z),GAPMul(GAPDiv(34,3),x)-GAPMul(GAPDiv(227,9),x**2)-GAPMul(GAPDiv(26,3),y**3)-GAPMul(GAPDiv(50,9),x**4)-GAPMul(GAPDiv(5,9),x**6)],[GAPMul(30,z),GAPMul(GAPDiv(34,3),x)-GAPMul(GAPDiv(227,9),x**2)+GAPMul(GAPDiv(26,3),x**3)-GAPMul(GAPDiv(26,3),y**4)-GAPMul(GAPDiv(50,9),x**4)-GAPMul(GAPDiv(5,9),x**6),GAPMul(GAPDiv(403,27),x)-GAPMul(GAPDiv(55,3),y**2)-GAPMul(GAPDiv(3349,54),x**2)+GAPMul(GAPDiv(5909,324),x**3)-GAPMul(GAPDiv(671,54),x**4)+GAPMul(GAPDiv(395,162),x**5)-GAPMul(GAPDiv(5,324),x**7)-GAPMul(GAPDiv(5,162),x**9)]]
 
-ChevieData["G27"]["BasicDerivations"]=f224565
+ChevieData["G27"]["BasicDerivations"]=xg2715
 
-def f142757():
-  return f759623
+def xg2717():
+  return xg2718
 
-def f759623(x,y,z):
+def xg2718(x,y,z):
   GAPMul(return5832,x)-GAPMul(1404,x)-GAPMul(5508,x**2)+GAPMul(11664,z**3)-GAPMul(3078,x**3)-GAPMul(198,x**4)-GAPMul(1944,y**5)+GAPMul(648,x**5)-GAPMul(3271,x**5)+GAPMul(954,x**6)-GAPMul(1094,x**7)+GAPMul(198,x**8)-GAPMul(204,x**9)+GAPMul(18,x**10)-GAPMul(20,x**11)-GAPMul(x**13,y)
 
-ChevieData["G27"]["Discriminant"]=f142757
+ChevieData["G27"]["Discriminant"]=xg2717
