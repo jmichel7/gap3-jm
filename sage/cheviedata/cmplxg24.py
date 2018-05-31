@@ -1,12 +1,12 @@
 
 def lxg241(indices,title):
     print title," ",indices[1-1],"\n",
-    s=just("",GAPMin(len(title),1))
+    s=just("",len(title)-1)
     print s," / \\\n",s,indices[2-1],"=====",indices[3-1],"  ",IntListToString([indices[k-1] for k in [2,3,1,2,3,1,2,3,1]]),"==",IntListToString([indices[k-1] for k in [3,2,3,1,2,3,1,2,3]]),"\n",
 
 ChevieData["G24"]["PrintDiagram"]=lxg241
 
-ChevieData["G24"]["GeneratingRoots"]=[[1,ER(-7),0],[1,-ER(-7),0],[GAPDiv(GAPMin(-1,ER(-7)),2),GAPDiv(GAPMin(-7,GAPMul(3,ER(-7))),6),GAPDiv(-4,3)]]
+ChevieData["G24"]["GeneratingRoots"]=[[1,ER(-7),0],[1,-ER(-7),0],[GAPDiv(-1-ER(-7),2),GAPDiv(-7-GAPMul(3,ER(-7)),6),GAPDiv(-4,3)]]
 
 ChevieData["G24"]["GeneratingCoRoots"]=GAPDiv([[1,GAPDiv(GAPMul(-3,ER(-7)),7),0],[1,GAPDiv(GAPMul(3,ER(-7)),7),0],[GAPDiv(-1+ER(-7),2),GAPDiv(-7+GAPMul(3,ER(-7)),14),GAPDiv(-1,2)]],2)
 
@@ -69,7 +69,7 @@ def lxg245(param,root):
     
     
     def f3(p,r,a):
-        return [3,GAPMul(2,p)+r,p**2,GAPMul(p,r)+p**2,GAPMul(GAPDiv(GAPMin(-1,a),2),p**6),GAPMul(GAPDiv(-1+a,2),p**2),GAPMul(-2,p**2)+p**4,0,GAPMul(GAPDiv(GAPMin(-1,a),2),p**12),GAPMul(GAPDiv(-1+a,2),p**4),GAPMul(-p**7,r**4),GAPMul(3,p**14)]
+        return [3,GAPMul(2,p)+r,p**2,GAPMul(p,r)+p**2,GAPMul(GAPDiv(-1-a,2),p**6),GAPMul(GAPDiv(-1+a,2),p**2),GAPMul(-2,p**2)+p**4,0,GAPMul(GAPDiv(-1-a,2),p**12),GAPMul(GAPDiv(-1+a,2),p**4),GAPMul(-p**7,r**4),GAPMul(3,p**14)]
     
     
     def f6(r,p):
@@ -109,7 +109,7 @@ def lxg247(para,root,i):
     r=para[1-1][1-1]
     f1=lambda r: map(lambda x: [[r]],range(1,3+1))
     def f3(p,r,a):
-        return GAPMul(WGraph2Representation([[[2,3],[1,2],[1,3]],[[1,2,p,-r],[1,3,p,-r],[2,3,GAPDiv(GAPMul(r,GAPMin(1,a)),2),GAPDiv(GAPMul(-p,a+1),2)]]],[p,r]),p**0)
+        return GAPMul(WGraph2Representation([[[2,3],[1,2],[1,3]],[[1,2,p,-r],[1,3,p,-r],[2,3,GAPDiv(GAPMul(r,1-a),2),GAPDiv(GAPMul(-p,a+1),2)]]],[p,r]),p**0)
     
     
     def f7(p,r):
@@ -122,7 +122,7 @@ def lxg247(para,root,i):
     
     def f11(x,y,e):
         v=GAPMul(e,GetRoot(GAPMul(-x,y)))
-        return [[[0,0,0,0,0,0,0,-x],[0,x+y,0,0,y,0,0,0],[0,0,x,GAPMul(-v,y)+GAPMul(x,y),0,0,-x**2,0],[0,0,0,y,0,0,0,0],[0,-x,0,0,0,0,0,0],[0,0,0,x,0,x,GAPMin(-v,y),0],[0,0,0,0,0,0,y,0],[y,0,0,0,0,0,0,x+y]],[[x,0,0,v,0,0,0,-y],[0,x,0,v,x,0,0,0],[0,0,x+y,0,0,0,GAPMul(-x,y),0],[0,0,0,y,0,0,0,0],[0,0,0,0,y,0,0,0],[0,0,-1,x,-v,x,x,v],[0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,y]],[[y,0,0,0,0,0,0,0],[0,x,0,0,x,0,-v,0],[GAPMul(-x,y),0,x,0,GAPMul(-v,y),GAPMul(v,y),GAPMin(GAPMin(GAPMul(v,y),GAPMul(x,y)),x**2),0],[0,0,0,x,0,-y,GAPMin(-v,y),0],[0,0,0,0,y,0,0,0],[0,0,0,0,0,y,0,0],[0,0,0,0,0,0,y,0],[x,0,0,0,0,0,x,x]]]
+        return [[[0,0,0,0,0,0,0,-x],[0,x+y,0,0,y,0,0,0],[0,0,x,GAPMul(-v,y)+GAPMul(x,y),0,0,-x**2,0],[0,0,0,y,0,0,0,0],[0,-x,0,0,0,0,0,0],[0,0,0,x,0,x,-v-y,0],[0,0,0,0,0,0,y,0],[y,0,0,0,0,0,0,x+y]],[[x,0,0,v,0,0,0,-y],[0,x,0,v,x,0,0,0],[0,0,x+y,0,0,0,GAPMul(-x,y),0],[0,0,0,y,0,0,0,0],[0,0,0,0,y,0,0,0],[0,0,-1,x,-v,x,x,v],[0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,y]],[[y,0,0,0,0,0,0,0],[0,x,0,0,x,0,-v,0],[GAPMul(-x,y),0,x,0,GAPMul(-v,y),GAPMul(v,y),GAPMul(v,y)-GAPMul(x,y)-x**2,0],[0,0,0,x,0,-y,-v-y,0],[0,0,0,0,y,0,0,0],[0,0,0,0,0,y,0,0],[0,0,0,0,0,0,y,0],[x,0,0,0,0,0,x,x]]]
     
     
     rep=[[f1,r],[f1,p],[f3,p,r,ER(-7)],[f3,r,p,ER(-7)],[f3,p,r,-ER(-7)],[f3,r,p,-ER(-7)],[f7,p,r],[f7,r,p],[f9,p,r],[f9,r,p],[f11,p,r,1],[f11,p,r,-1]]
@@ -131,7 +131,7 @@ def lxg247(para,root,i):
 ChevieData["G24"]["HeckeRepresentation"]=lxg247
 
 ChevieData["families"]["X7"]={"name":"X7",
-    "fourierMat":GAPDiv([[GAPDiv(-1,2),GAPDiv(1,2),GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),-1,-1,-1],[GAPDiv(1,2),GAPDiv(-1,2),GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),1,1,1],[GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),GAPDiv(-ER(-7),2),0,0,0],[GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),GAPDiv(-ER(-7),2),GAPDiv(ER(-7),2),0,0,0],[-1,1,0,0,GAPMin(-ER(7)**6,ER(7)),GAPMin(-ER(7)**5,ER(7)**2),GAPMin(-ER(7)**4,ER(7)**3)],[-1,1,0,0,GAPMin(-ER(7)**5,ER(7)**2),GAPMin(-ER(7)**4,ER(7)**3),GAPMin(-ER(7)**6,ER(7))],[-1,1,0,0,GAPMin(-ER(7)**4,ER(7)**3),GAPMin(-ER(7)**6,ER(7)),GAPMin(-ER(7)**5,ER(7)**2)]],ER(-7)),
+    "fourierMat":GAPDiv([[GAPDiv(-1,2),GAPDiv(1,2),GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),-1,-1,-1],[GAPDiv(1,2),GAPDiv(-1,2),GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),1,1,1],[GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),GAPDiv(-ER(-7),2),0,0,0],[GAPDiv(ER(-7),2),GAPDiv(ER(-7),2),GAPDiv(-ER(-7),2),GAPDiv(ER(-7),2),0,0,0],[-1,1,0,0,-ER(7)**6-ER(7),-ER(7)**5-ER(7)**2,-ER(7)**4-ER(7)**3],[-1,1,0,0,-ER(7)**5-ER(7)**2,-ER(7)**4-ER(7)**3,-ER(7)**6-ER(7)],[-1,1,0,0,-ER(7)**4-ER(7)**3,-ER(7)**6-ER(7),-ER(7)**5-ER(7)**2]],ER(-7)),
     "eigenvalues":[1,1,1,-1,ER(7)**4,ER(7)**2,ER(7)],
     "explanation":"mystery G24",
     "special":1,
@@ -220,13 +220,13 @@ def lxg248():
 ChevieData["G24"]["UnipotentCharacters"]=lxg248
 
 def lxg249(x,y,z):
-    return GAPMin(GAPMin(GAPMin(GAPMin(GAPMul(-42,x**2),GAPMul(12,x**2))+GAPMul(GAPDiv(21,2),x**2),GAPMul(GAPDiv(9,2),y**2)),GAPMul(6,y**3))+GAPMul(14,x**4),GAPMul(GAPDiv(21,8),z**4))
+    return GAPMul(-42,x**2)-GAPMul(12,x**2)+GAPMul(GAPDiv(21,2),x**2)-GAPMul(GAPDiv(9,2),y**2)-GAPMul(6,y**3)+GAPMul(14,x**4)-GAPMul(GAPDiv(21,8),z**4)
 
 def lxg2410(x,y,z):
-    return GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMul(-1960,x**2)+GAPMul(840,x**2),GAPMul(1120,x**2))+GAPMul(1760,x**2),GAPMul(1225,x**2))+GAPMul(525,y**2),GAPMul(280,y**3))+GAPMul(3920,x**4),GAPMul(980,x**4)),GAPMul(180,y**4)),GAPMul(240,y**5))+GAPMul(1568,x**6),GAPMul(GAPDiv(416,7),y**6)),GAPMul(GAPDiv(49,2),z**6))
+    return GAPMul(-1960,x**2)+GAPMul(840,x**2)-GAPMul(1120,x**2)+GAPMul(1760,x**2)-GAPMul(1225,x**2)+GAPMul(525,y**2)-GAPMul(280,y**3)+GAPMul(3920,x**4)-GAPMul(980,x**4)-GAPMul(180,y**4)-GAPMul(240,y**5)+GAPMul(1568,x**6)-GAPMul(GAPDiv(416,7),y**6)-GAPMul(GAPDiv(49,2),z**6)
 
 def lxg2411(x,y,z):
-    return GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMul(GAPDiv(-857157,4),x**2),GAPMul(GAPDiv(4847619,32),x**2))+GAPMul(GAPDiv(1596665,8),x**2),GAPMul(440118,x**2))+GAPMul(1608075,x**2),GAPMul(633080,x**2))+GAPMul(269760,x**2),GAPMul(GAPDiv(1327753,128),x**2))+GAPMul(GAPDiv(569037,128),y**2),GAPMul(GAPDiv(122451,4),y**3)),GAPMul(GAPDiv(11176655,16),x**4))+GAPMul(432180,x**4),GAPMul(2088870,x**4)),GAPMul(2922360,x**4)),GAPMul(24696,x**4)),GAPMul(5735940,x**4)),GAPMul(4210080,x**4))+GAPMul(2688840,x**4),GAPMul(203456,x**4))+GAPMul(GAPDiv(11311111,64),x**4),GAPMul(16696554,x**6))+GAPMul(3755850,x**6),GAPMul(470400,x**6))+GAPMul(2546880,x**6),GAPMul(GAPDiv(396459,8),y**6))+GAPMul(76734,y**7),GAPMul(3457440,x**8)),GAPMul(2511936,x**8)),GAPMul(GAPDiv(8621991,4),x**8)),GAPMul(GAPDiv(424809,4),y**8)),GAPMul(114513,y**9))+GAPMul(9008552,x**10),GAPMul(2304960,x**10))+GAPMul(7222208,x**10),GAPMul(8978368,x**10))+GAPMul(6537923,x**10),GAPMul(40392,y**10))+GAPMul(14928,y**11),GAPMul(537824,x**12)),GAPMul(153664,x**12))+GAPMul(134456,x**12)
+    return GAPMul(GAPDiv(-857157,4),x**2)-GAPMul(GAPDiv(4847619,32),x**2)+GAPMul(GAPDiv(1596665,8),x**2)-GAPMul(440118,x**2)+GAPMul(1608075,x**2)-GAPMul(633080,x**2)+GAPMul(269760,x**2)-GAPMul(GAPDiv(1327753,128),x**2)+GAPMul(GAPDiv(569037,128),y**2)-GAPMul(GAPDiv(122451,4),y**3)-GAPMul(GAPDiv(11176655,16),x**4)+GAPMul(432180,x**4)-GAPMul(2088870,x**4)-GAPMul(2922360,x**4)-GAPMul(24696,x**4)-GAPMul(5735940,x**4)-GAPMul(4210080,x**4)+GAPMul(2688840,x**4)-GAPMul(203456,x**4)+GAPMul(GAPDiv(11311111,64),x**4)-GAPMul(16696554,x**6)+GAPMul(3755850,x**6)-GAPMul(470400,x**6)+GAPMul(2546880,x**6)-GAPMul(GAPDiv(396459,8),y**6)+GAPMul(76734,y**7)-GAPMul(3457440,x**8)-GAPMul(2511936,x**8)-GAPMul(GAPDiv(8621991,4),x**8)-GAPMul(GAPDiv(424809,4),y**8)-GAPMul(114513,y**9)+GAPMul(9008552,x**10)-GAPMul(2304960,x**10)+GAPMul(7222208,x**10)-GAPMul(8978368,x**10)+GAPMul(6537923,x**10)-GAPMul(40392,y**10)+GAPMul(14928,y**11)-GAPMul(537824,x**12)-GAPMul(153664,x**12)+GAPMul(134456,x**12)
 
 ChevieData["G24"]["Invariants"]=[lxg249,lxg2410,lxg2411]
 
@@ -234,7 +234,7 @@ def lxg2412():
     return lxg2413
 
 def lxg2413(x,y,z):
-    return [[x,GAPMul(3,y**2),GAPMin(GAPMul(7,z),GAPMul(9,x**2))],[GAPMul(3,y),GAPMul(1792,z),GAPMul(64,x)+GAPMul(3136,x**4)],[GAPMul(7,z),GAPMul(64,x)+GAPMul(5376,x**2),GAPMin(GAPMin(GAPMul(GAPDiv(287,2),x),GAPMul(GAPDiv(35,4),x**3))+GAPMul(GAPDiv(21,256),y**4),GAPMul(1568,x**6))]]
+    return [[x,GAPMul(3,y**2),GAPMul(7,z)-GAPMul(9,x**2)],[GAPMul(3,y),GAPMul(1792,z),GAPMul(64,x)+GAPMul(3136,x**4)],[GAPMul(7,z),GAPMul(64,x)+GAPMul(5376,x**2),GAPMul(GAPDiv(287,2),x)-GAPMul(GAPDiv(35,4),x**3)+GAPMul(GAPDiv(21,256),y**4)-GAPMul(1568,x**6)]]
 
 ChevieData["G24"]["BasicDerivations"]=lxg2412
 
@@ -242,6 +242,6 @@ def lxg2414():
     return lxg2415
 
 def lxg2415(x,y,z):
-    return GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMul(18,x)+GAPMul(5632,x**2),GAPMul(1024,z**3)),GAPMul(67,x**3)),GAPMul(4352,x**4)),GAPMul(5504,x**6)),GAPMul(GAPDiv(27,3136),y**7)),GAPMul(229376,x**7)),GAPMul(114688,x**9))
+    return GAPMul(18,x)+GAPMul(5632,x**2)-GAPMul(1024,z**3)-GAPMul(67,x**3)-GAPMul(4352,x**4)-GAPMul(5504,x**6)-GAPMul(GAPDiv(27,3136),y**7)-GAPMul(229376,x**7)-GAPMul(114688,x**9)
 
 ChevieData["G24"]["Discriminant"]=lxg2414

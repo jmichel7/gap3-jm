@@ -156,7 +156,7 @@ def eyle610(arg):
     return Sum(r,lambda a: GAPMul(arg,a)**2)
 
 def eyle611(a,b,c,d,e,f):
-    return GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMul(-a,b),GAPMul(a,c)),GAPMul(a,c))+GAPMul(b,d),GAPMul(c,d))+GAPMul(a,b),GAPMul(b,d))+GAPMul(c,d),GAPMul(a,c**2)),GAPMul(a,c**2))+GAPMul(b,d**2),GAPMul(c,d**2)),GAPMul(a,b**2))+GAPMul(a,c**2),GAPMul(b,d**2))+GAPMul(c,d**2),GAPMul(a**2,b))+GAPMul(a**2,c),GAPMul(b**2,d))+GAPMul(c**2,d),GAPMul(a**2,c)),GAPMul(a**2,c))+GAPMul(a**2,d),GAPMul(b**2,e)),GAPMul(c**2,d))+GAPMul(c**2,e),GAPMul(a**2,b**2)),GAPMul(a**2,d**2)),GAPMul(a**2,e**2))+GAPMul(b**2,e**2),GAPMul(c**2,e**2))
+    return GAPMul(-a,b)-GAPMul(a,c)-GAPMul(a,c)+GAPMul(b,d)-GAPMul(c,d)+GAPMul(a,b)-GAPMul(b,d)+GAPMul(c,d)-GAPMul(a,c**2)-GAPMul(a,c**2)+GAPMul(b,d**2)-GAPMul(c,d**2)-GAPMul(a,b**2)+GAPMul(a,c**2)-GAPMul(b,d**2)+GAPMul(c,d**2)-GAPMul(a**2,b)+GAPMul(a**2,c)-GAPMul(b**2,d)+GAPMul(c**2,d)-GAPMul(a**2,c)-GAPMul(a**2,c)+GAPMul(a**2,d)-GAPMul(b**2,e)-GAPMul(c**2,d)+GAPMul(c**2,e)-GAPMul(a**2,b**2)-GAPMul(a**2,d**2)-GAPMul(a**2,e**2)+GAPMul(b**2,e**2)-GAPMul(c**2,e**2)
 
 def eyle612(arg):
     return Sum(r,lambda a: GAPMul(arg,a)**6)
@@ -165,7 +165,7 @@ def eyle613(arg):
     return Sum(r,lambda a: GAPMul(arg,a)**8)
 
 def eyle614(a,b,c,d,e,f):
-    return GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMul(-a,b),GAPMul(a,c)),GAPMul(a,c))+GAPMul(b,d),GAPMul(c,d))+GAPMul(3,a),GAPMul(3,b))+GAPMul(3,c),GAPMul(5,a)),GAPMul(5,a)),GAPMul(5,a))+GAPMul(5,b),GAPMul(5,c))+GAPMul(5,a),GAPMul(5,b))+GAPMul(5,c),GAPMul(3,a)),GAPMul(3,a)),GAPMul(3,a))+GAPMul(3,b),GAPMul(3,c))+GAPMul(a,b),GAPMul(b,d))+GAPMul(c,d),GAPMul(3,a)),GAPMul(3,a))+GAPMul(3,b),GAPMul(3,c))+GAPMul(GAPDiv(-15,2),a),GAPMul(10,a)),GAPMul(10,a))+GAPMul(10,b),GAPMul(10,c))+GAPMul(GAPDiv(-15,2),a),GAPMul(3,a)),GAPMul(3,a))+GAPMul(3,b),GAPMul(3,c)),GAPMul(a,b**2))+GAPMul(a,c**2),GAPMul(b,d**2))+GAPMul(c,d**2),GAPMul(5,a)),GAPMul(5,a)),GAPMul(5,a))+GAPMul(5,b),GAPMul(5,c))+GAPMul(10,a),GAPMul(10,b))+GAPMul(10,c),GAPMul(10,a)),GAPMul(10,a)),GAPMul(10,a))+GAPMul(10,b),GAPMul(10,c))+GAPMul(5,a),GAPMul(5,b))+GAPMul(5,c),GAPMul(5,a)),GAPMul(5,a))+GAPMul(5,b),GAPMul(5,c))+GAPMul(GAPDiv(-15,2),a),GAPMul(5,a)),GAPMul(5,a))+GAPMul(5,b),GAPMul(5,c))+GAPMul(GAPDiv(-5,2),a),GAPMul(3,a)),GAPMul(3,a)),GAPMul(3,a))+GAPMul(3,b),GAPMul(3,c))+GAPMul(3,a),GAPMul(3,b))+GAPMul(3,c),GAPMul(a,c**6)),GAPMul(a,c**6))+GAPMul(b,d**6),GAPMul(c,d**6)),GAPMul(a,b**6))+GAPMul(a,c**6),GAPMul(b,d**6))+GAPMul(c,d**6),GAPMul(3,a**2))+GAPMul(3,a**2),GAPMul(3,b**2))+GAPMul(3,c**2),GAPMul(10,a**2))+GAPMul(10,a**2),GAPMul(10,b**2))+GAPMul(10,c**2),GAPMul(3,a**2))+GAPMul(3,a**2),GAPMul(3,b**2))+GAPMul(3,c**2),GAPMul(a**2,c)),GAPMul(a**2,c))+GAPMul(a**2,d),GAPMul(b**2,e)),GAPMul(c**2,d))+GAPMul(c**2,e),GAPMul(15,a**2)),GAPMul(15,a**2)),GAPMul(15,a**2))+GAPMul(15,b**2),GAPMul(15,c**2))+GAPMul(15,a**2),GAPMul(15,b**2))+GAPMul(15,c**2),GAPMul(3,a**2)),GAPMul(3,a**2)),GAPMul(3,a**2))+GAPMul(3,b**2),GAPMul(3,c**2)),GAPMul(10,a**2))+GAPMul(10,a**2),GAPMul(10,b**2))+GAPMul(10,c**2),GAPMul(15,a**2)),GAPMul(15,a**2))+GAPMul(15,b**2),GAPMul(15,c**2)),GAPMul(10,a**2))+GAPMul(10,a**2),GAPMul(10,b**2))+GAPMul(10,c**2),GAPMul(5,a**2)),GAPMul(5,a**2))+GAPMul(5,a**2),GAPMul(5,b**2)),GAPMul(5,c**2))+GAPMul(5,c**2),GAPMul(5,a**2)),GAPMul(5,a**2)),GAPMul(5,a**2))+GAPMul(5,b**2),GAPMul(5,c**2)),GAPMul(3,a**2))+GAPMul(3,a**2),GAPMul(3,b**2))+GAPMul(3,c**2),GAPMul(3,a**2)),GAPMul(3,a**2))+GAPMul(3,a**2),GAPMul(3,b**2)),GAPMul(3,c**2))+GAPMul(3,c**2),GAPMul(a**2,b**6)),GAPMul(a**2,d**6)),GAPMul(a**2,e**6))+GAPMul(b**2,e**6),GAPMul(c**2,e**6)),GAPMul(5,a**3)),GAPMul(5,a**3)),GAPMul(5,a**3))+GAPMul(5,b**3),GAPMul(5,c**3))+GAPMul(10,a**3),GAPMul(10,b**3))+GAPMul(10,c**3),GAPMul(10,a**3)),GAPMul(10,a**3)),GAPMul(10,a**3))+GAPMul(10,b**3),GAPMul(10,c**3))+GAPMul(5,a**3),GAPMul(5,b**3))+GAPMul(5,c**3),GAPMul(10,a**3)),GAPMul(10,a**3))+GAPMul(10,b**3),GAPMul(10,c**3)),GAPMul(15,a**3))+GAPMul(15,a**3),GAPMul(15,b**3))+GAPMul(15,c**3),GAPMul(10,a**3)),GAPMul(10,a**3))+GAPMul(10,b**3),GAPMul(10,c**3)),GAPMul(5,a**3))+GAPMul(5,a**3),GAPMul(5,b**3))+GAPMul(5,c**3),GAPMul(10,a**3)),GAPMul(10,a**3)),GAPMul(10,a**3))+GAPMul(10,b**3),GAPMul(10,c**3))+GAPMul(10,a**3),GAPMul(10,b**3))+GAPMul(10,c**3),GAPMul(5,a**3)),GAPMul(5,a**3))+GAPMul(5,b**3),GAPMul(5,c**3)),GAPMul(5,a**3))+GAPMul(5,a**3),GAPMul(5,b**3))+GAPMul(5,c**3),GAPMul(5,a**4))+GAPMul(5,a**4),GAPMul(5,b**4))+GAPMul(5,c**4),GAPMul(5,a**4))+GAPMul(5,a**4),GAPMul(5,b**4))+GAPMul(5,c**4),GAPMul(5,a**4)),GAPMul(5,a**4)),GAPMul(5,a**4))+GAPMul(5,b**4),GAPMul(5,c**4)),GAPMul(5,a**4))+GAPMul(5,a**4),GAPMul(5,b**4))+GAPMul(5,c**4),GAPMul(5,a**4)),GAPMul(5,a**4))+GAPMul(5,a**4),GAPMul(5,b**4)),GAPMul(5,c**4))+GAPMul(5,c**4),GAPMul(3,a**5)),GAPMul(3,a**5)),GAPMul(3,a**5))+GAPMul(3,b**5),GAPMul(3,c**5))+GAPMul(3,a**5),GAPMul(3,b**5))+GAPMul(3,c**5),GAPMul(3,a**5)),GAPMul(3,a**5))+GAPMul(3,b**5),GAPMul(3,c**5)),GAPMul(3,a**5))+GAPMul(3,a**5),GAPMul(3,b**5))+GAPMul(3,c**5),GAPMul(a**6,b))+GAPMul(a**6,c),GAPMul(b**6,d))+GAPMul(c**6,d),GAPMul(a**6,c)),GAPMul(a**6,c))+GAPMul(a**6,d),GAPMul(b**6,e)),GAPMul(c**6,d))+GAPMul(c**6,e),GAPMul(a**6,b**2)),GAPMul(a**6,d**2)),GAPMul(a**6,e**2))+GAPMul(b**6,e**2),GAPMul(c**6,e**2))
+    return GAPMul(-a,b)-GAPMul(a,c)-GAPMul(a,c)+GAPMul(b,d)-GAPMul(c,d)+GAPMul(3,a)-GAPMul(3,b)+GAPMul(3,c)-GAPMul(5,a)-GAPMul(5,a)-GAPMul(5,a)+GAPMul(5,b)-GAPMul(5,c)+GAPMul(5,a)-GAPMul(5,b)+GAPMul(5,c)-GAPMul(3,a)-GAPMul(3,a)-GAPMul(3,a)+GAPMul(3,b)-GAPMul(3,c)+GAPMul(a,b)-GAPMul(b,d)+GAPMul(c,d)-GAPMul(3,a)-GAPMul(3,a)+GAPMul(3,b)-GAPMul(3,c)+GAPMul(GAPDiv(-15,2),a)-GAPMul(10,a)-GAPMul(10,a)+GAPMul(10,b)-GAPMul(10,c)+GAPMul(GAPDiv(-15,2),a)-GAPMul(3,a)-GAPMul(3,a)+GAPMul(3,b)-GAPMul(3,c)-GAPMul(a,b**2)+GAPMul(a,c**2)-GAPMul(b,d**2)+GAPMul(c,d**2)-GAPMul(5,a)-GAPMul(5,a)-GAPMul(5,a)+GAPMul(5,b)-GAPMul(5,c)+GAPMul(10,a)-GAPMul(10,b)+GAPMul(10,c)-GAPMul(10,a)-GAPMul(10,a)-GAPMul(10,a)+GAPMul(10,b)-GAPMul(10,c)+GAPMul(5,a)-GAPMul(5,b)+GAPMul(5,c)-GAPMul(5,a)-GAPMul(5,a)+GAPMul(5,b)-GAPMul(5,c)+GAPMul(GAPDiv(-15,2),a)-GAPMul(5,a)-GAPMul(5,a)+GAPMul(5,b)-GAPMul(5,c)+GAPMul(GAPDiv(-5,2),a)-GAPMul(3,a)-GAPMul(3,a)-GAPMul(3,a)+GAPMul(3,b)-GAPMul(3,c)+GAPMul(3,a)-GAPMul(3,b)+GAPMul(3,c)-GAPMul(a,c**6)-GAPMul(a,c**6)+GAPMul(b,d**6)-GAPMul(c,d**6)-GAPMul(a,b**6)+GAPMul(a,c**6)-GAPMul(b,d**6)+GAPMul(c,d**6)-GAPMul(3,a**2)+GAPMul(3,a**2)-GAPMul(3,b**2)+GAPMul(3,c**2)-GAPMul(10,a**2)+GAPMul(10,a**2)-GAPMul(10,b**2)+GAPMul(10,c**2)-GAPMul(3,a**2)+GAPMul(3,a**2)-GAPMul(3,b**2)+GAPMul(3,c**2)-GAPMul(a**2,c)-GAPMul(a**2,c)+GAPMul(a**2,d)-GAPMul(b**2,e)-GAPMul(c**2,d)+GAPMul(c**2,e)-GAPMul(15,a**2)-GAPMul(15,a**2)-GAPMul(15,a**2)+GAPMul(15,b**2)-GAPMul(15,c**2)+GAPMul(15,a**2)-GAPMul(15,b**2)+GAPMul(15,c**2)-GAPMul(3,a**2)-GAPMul(3,a**2)-GAPMul(3,a**2)+GAPMul(3,b**2)-GAPMul(3,c**2)-GAPMul(10,a**2)+GAPMul(10,a**2)-GAPMul(10,b**2)+GAPMul(10,c**2)-GAPMul(15,a**2)-GAPMul(15,a**2)+GAPMul(15,b**2)-GAPMul(15,c**2)-GAPMul(10,a**2)+GAPMul(10,a**2)-GAPMul(10,b**2)+GAPMul(10,c**2)-GAPMul(5,a**2)-GAPMul(5,a**2)+GAPMul(5,a**2)-GAPMul(5,b**2)-GAPMul(5,c**2)+GAPMul(5,c**2)-GAPMul(5,a**2)-GAPMul(5,a**2)-GAPMul(5,a**2)+GAPMul(5,b**2)-GAPMul(5,c**2)-GAPMul(3,a**2)+GAPMul(3,a**2)-GAPMul(3,b**2)+GAPMul(3,c**2)-GAPMul(3,a**2)-GAPMul(3,a**2)+GAPMul(3,a**2)-GAPMul(3,b**2)-GAPMul(3,c**2)+GAPMul(3,c**2)-GAPMul(a**2,b**6)-GAPMul(a**2,d**6)-GAPMul(a**2,e**6)+GAPMul(b**2,e**6)-GAPMul(c**2,e**6)-GAPMul(5,a**3)-GAPMul(5,a**3)-GAPMul(5,a**3)+GAPMul(5,b**3)-GAPMul(5,c**3)+GAPMul(10,a**3)-GAPMul(10,b**3)+GAPMul(10,c**3)-GAPMul(10,a**3)-GAPMul(10,a**3)-GAPMul(10,a**3)+GAPMul(10,b**3)-GAPMul(10,c**3)+GAPMul(5,a**3)-GAPMul(5,b**3)+GAPMul(5,c**3)-GAPMul(10,a**3)-GAPMul(10,a**3)+GAPMul(10,b**3)-GAPMul(10,c**3)-GAPMul(15,a**3)+GAPMul(15,a**3)-GAPMul(15,b**3)+GAPMul(15,c**3)-GAPMul(10,a**3)-GAPMul(10,a**3)+GAPMul(10,b**3)-GAPMul(10,c**3)-GAPMul(5,a**3)+GAPMul(5,a**3)-GAPMul(5,b**3)+GAPMul(5,c**3)-GAPMul(10,a**3)-GAPMul(10,a**3)-GAPMul(10,a**3)+GAPMul(10,b**3)-GAPMul(10,c**3)+GAPMul(10,a**3)-GAPMul(10,b**3)+GAPMul(10,c**3)-GAPMul(5,a**3)-GAPMul(5,a**3)+GAPMul(5,b**3)-GAPMul(5,c**3)-GAPMul(5,a**3)+GAPMul(5,a**3)-GAPMul(5,b**3)+GAPMul(5,c**3)-GAPMul(5,a**4)+GAPMul(5,a**4)-GAPMul(5,b**4)+GAPMul(5,c**4)-GAPMul(5,a**4)+GAPMul(5,a**4)-GAPMul(5,b**4)+GAPMul(5,c**4)-GAPMul(5,a**4)-GAPMul(5,a**4)-GAPMul(5,a**4)+GAPMul(5,b**4)-GAPMul(5,c**4)-GAPMul(5,a**4)+GAPMul(5,a**4)-GAPMul(5,b**4)+GAPMul(5,c**4)-GAPMul(5,a**4)-GAPMul(5,a**4)+GAPMul(5,a**4)-GAPMul(5,b**4)-GAPMul(5,c**4)+GAPMul(5,c**4)-GAPMul(3,a**5)-GAPMul(3,a**5)-GAPMul(3,a**5)+GAPMul(3,b**5)-GAPMul(3,c**5)+GAPMul(3,a**5)-GAPMul(3,b**5)+GAPMul(3,c**5)-GAPMul(3,a**5)-GAPMul(3,a**5)+GAPMul(3,b**5)-GAPMul(3,c**5)-GAPMul(3,a**5)+GAPMul(3,a**5)-GAPMul(3,b**5)+GAPMul(3,c**5)-GAPMul(a**6,b)+GAPMul(a**6,c)-GAPMul(b**6,d)+GAPMul(c**6,d)-GAPMul(a**6,c)-GAPMul(a**6,c)+GAPMul(a**6,d)-GAPMul(b**6,e)-GAPMul(c**6,d)+GAPMul(c**6,e)-GAPMul(a**6,b**2)-GAPMul(a**6,d**2)-GAPMul(a**6,e**2)+GAPMul(b**6,e**2)-GAPMul(c**6,e**2)
 
 def eyle615(arg):
     return Sum(r,lambda a: GAPMul(arg,a)**12)
@@ -184,7 +184,7 @@ def eyle616(p):
         "balacarter":range(1,6+1)},{"name":"E_6(a_1)",
         "succ":["E6"],
         "dynkin":[2,2,2,0,2,2],
-        "Au":Z(Gcd(3,GAPMin(p**2,1))),
+        "Au":Z(Gcd(3,p**2-1)),
         "balacarter":[1,2,3,-4,5,6]},{"name":"D_5",
         "succ":["E6(a1)"],
         "dynkin":[2,2,0,2,0,2],
@@ -194,11 +194,11 @@ def eyle616(p):
         "mizuno":"A_5{+}A_1",
         "succ":["D5"],
         "dynkin":[2,0,0,2,0,2],
-        "Au":Z(GAPMul(Gcd(3,GAPMin(p**2,1)),2)),
+        "Au":Z(GAPMul(Gcd(3,p**2-1),2)),
         "balacarter":[1,-2,-3,4,-5,6]},{"name":"A_5",
         "succ":["E6(a3)"],
         "dynkin":[2,1,1,0,1,2],
-        "Au":Z(Gcd(3,GAPMin(p**2,1))),
+        "Au":Z(Gcd(3,p**2-1)),
         "balacarter":[1,3,4,5,6],
         "red":Z(2)},{"name":"D_5(a_1)",
         "succ":["E6(a3)"],
@@ -234,12 +234,12 @@ def eyle616(p):
         "red":GAPMul(CoxeterGroup("B",2),Torus(1))},{"name":"2A_2{+}A_1",
         "succ":["A3+A1"],
         "dynkin":[1,0,0,1,0,1],
-        "Au":Z(Gcd(3,GAPMin(p**2,1))),
+        "Au":Z(Gcd(3,p**2-1)),
         "balacarter":[1,2,3,5,6],
         "red":Z(2)},{"name":"2A_2",
         "succ":["2A2+A1"],
         "dynkin":[2,0,0,0,0,2],
-        "Au":Z(Gcd(3,GAPMin(p**2,1))),
+        "Au":Z(Gcd(3,p**2-1)),
         "balacarter":[1,3,5,6],
         "red":CoxeterGroup("G",2)},{"name":"A_2{+}2A_1",
         "succ":["A3","2A2+A1"],
@@ -300,7 +300,7 @@ def eyle616(p):
         for c in [2,6]:
             uc["springerSeries"].append({"relgroup":CoxeterGroup(),
                 "levi":range(1,6+1),
-                "Z":[ER(3)**GAPMin(1,c)],
+                "Z":[ER(3)**1-c],
                 "locsys":[[1,c]]})
     else:
         if p==3 :

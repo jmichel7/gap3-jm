@@ -6,7 +6,7 @@ def weyla1(n):
         if i<n :
             a[i-1][i+1-1]=-1
         if i>1 :
-            a[i-1][GAPMin(i,1)-1]=-1
+            a[i-1][i-1-1]=-1
     return a
 
 ChevieData["A"]["CartanMat"]=weyla1
@@ -37,7 +37,7 @@ def weyla5(pi):
     i=0
     for l in pi:
         r=l%2
-        w+=i+Concatenation(range(1,GAPMin(GAPMin(l,1),r)+1,3-1),range(2,GAPMin(l+r,2)+1,4-2))
+        w+=i+Concatenation(range(1,l-1-r+1,3-1),range(2,l+r-2+1,4-2))
         i=i+l
     return w
 
@@ -78,9 +78,9 @@ ChevieData["A"]["ClassParameter"]=weyla7
 
 ChevieData["A"]["CharParams"]=lambda n: Partitions(n+1)
 
-ChevieData["A"]["LowestPowerFakeDegree"]=lambda p: GAPMul(p,range(0,GAPMin(len(p),1)+1))
+ChevieData["A"]["LowestPowerFakeDegree"]=lambda p: GAPMul(p,range(0,len(p)-1+1))
 
-ChevieData["A"]["HighestPowerFakeDegree"]=lambda p: GAPMin(GAPDiv(GAPMul(Sum(p),GAPMin(Sum(p),1)),2),ChevieData["A"]["LowestPowerFakeDegree"](AssociatedPartition(p)))
+ChevieData["A"]["HighestPowerFakeDegree"]=lambda p: GAPDiv(GAPMul(Sum(p),Sum(p)-1),2)-ChevieData["A"]["LowestPowerFakeDegree"](AssociatedPartition(p))
 
 def weyla8(arg):
     return IntListToString(arg[2-1])
@@ -89,7 +89,7 @@ ChevieData["A"]["CharName"]=weyla8
 
 def weyla9(n):
     res={"charparams":ChevieData["A"]["CharParams"](n)}
-    res["extRefl"]=map(lambda i: res["charparams"].index(Concatenation([GAPMin(n+1,i)],GAPMul(range(1,i+1),0)+1))+1,range(0,n+1))
+    res["extRefl"]=map(lambda i: res["charparams"].index(Concatenation([n+1-i],GAPMul(range(1,i+1),0)+1))+1,range(0,n+1))
     res["b"]=map(ChevieData["A"]["LowestPowerFakeDegree"],res["charparams"])
     res["B"]=map(ChevieData["A"]["HighestPowerFakeDegree"],res["charparams"])
     res["a"]=res["b"]
@@ -104,7 +104,7 @@ ChevieData["tmp"]=copy(CharTableSymmetric)
 
 ChevieData["tmp"]["identifier"]="HeckeA"
 
-ChevieData["tmp"]["specializedname"]=lambda nq: SPrint("H(A",GAPMin(nq[1-1],1),")")
+ChevieData["tmp"]["specializedname"]=lambda nq: SPrint("H(A",nq[1-1]-1,")")
 
 ChevieData["tmp"]["order"]=lambda nq: Factorial(nq[1-1])
 
@@ -126,10 +126,10 @@ def weyla10(nq,gamma,pi):
     k=pi[1-1]
     val=GAPMul(0,q)
     AHk=ChevieData["A"]["Hk"]["irreducibles"][1-1][1-1]
-    for alpha in Partitions(GAPMin(n,k)):
+    for alpha in Partitions(n-k):
         dif=DifferencePartitions(gamma,alpha)
         if dif!=false :
-            val=val+GAPMul(GAPMin(q,1)**GAPMin(dif["cc"],1),-1**dif["ll"])
+            val=val+GAPMul(q-1**dif["cc"]-1,-1**dif["ll"])
     return val
 
 ChevieData["tmp"]["irreducibles"]=[[weyla10]]
@@ -143,7 +143,7 @@ def weyla11(nq):
         prs=[]
         for i in beta:
             leg=0
-            for j in range(GAPMin(i,1),0+1,GAPMin(i,2)-GAPMin(i,1)):
+            for j in range(i-1,0+1,i-2-i-1):
                 if j in beta :
                     leg=leg+1
                 else:
@@ -156,20 +156,20 @@ def weyla11(nq):
             for pr in prs:
                 if pr[1-1]["to"]>hk[len(hk)-1]["from"] :
                     cbs.append(Concatenation(hk,pr))
-            ll=Sum(hk,lambda x: GAPMin(x["from"],x["to"]))
+            ll=Sum(hk,lambda x: x["from"]-x["to"])
             lg=Sum(hk,lambda x: x["leg"])
             lh=len(hk)
-            new={"wgt":GAPMul(-1**lg,q**GAPMin(GAPMin(ll,lg),lh)),
+            new={"wgt":GAPMul(-1**lg,q**ll-lg-lh),
                 "adr":1}
-            if ll<GAPMin(m,1) :
+            if ll<m-1 :
                 gamma=Difference(beta,map(lambda x: x["from"],hk))
                 UniteSet(gamma,map(lambda x: x["to"],hk))
                 if 0 in gamma :
                     j=0
                     while gamma[j+1-1]==j:
                         j=j+1
-                    gamma=GAPMin([gamma[k-1] for k in range(j+1,len(gamma)+1)],j)
-                new["adr"]=pm[GAPMin(m,ll)-1].index(gamma)+1
+                    gamma=[gamma[k-1] for k in range(j+1,len(gamma)+1)]-j
+                new["adr"]=pm[m-ll-1].index(gamma)+1
             hks[ll-1].append(new)
         return hks
     
@@ -189,15 +189,15 @@ def weyla11(nq):
         return col
     
     
-    pm=map(lambda x: [],range(1,GAPMin(n,1)+1))
+    pm=map(lambda x: [],range(1,n-1+1))
     for m in range(1,QuoInt(n,2)+1):
         pm[m-1].append(charCol(m,[1],m))
-        for k in range(m+1,GAPMin(n,m)+1):
-            for t in pm[GAPMin(k,m)-1]:
+        for k in range(m+1,n-m+1):
+            for t in pm[k-m-1]:
                 pm[k-1].append(charCol(k,t,m))
     res=[]
-    for k in range(1,GAPMin(n,1)+1):
-        for t in pm[GAPMin(n,k)-1]:
+    for k in range(1,n-1+1):
+        for t in pm[n-k-1]:
             res.append(charCol(n,t,k))
     res.append(charCol(n,[1],n))
     return Matrix(res).transpose()
@@ -218,11 +218,11 @@ def weyla13(n,alpha,param,sqrtparam):
     lambda_=BetaSet(alpha)
     res=q**Binomial(len(lambda_),3)
     for i in lambda_:
-        for j in range(0,GAPMin(i,1)+1):
+        for j in range(0,i-1+1):
             if j in lambda_ :
                 res=GAPDiv(res,q**j)
             else:
-                res=GAPMul(res,Sum(range(0,GAPMin(GAPMin(i,j),1)+1),lambda e: q**e))
+                res=GAPMul(res,Sum(range(0,i-j-1+1),lambda e: q**e))
     return res
 
 ChevieData["A"]["SchurElement"]=weyla13
@@ -244,7 +244,7 @@ def weyla16(n,i):
 ChevieData["A"]["Representation"]=weyla16
 
 def weyla17(n,p,q):
-    return GAPDiv(ChevieData["A"]["PoincarePolynomial"](GAPMin(Sum(p),1),[[q,-1]]),ChevieData["A"]["SchurElement"](GAPMin(Sum(p),1),p,[[q,-1]],[]))
+    return GAPDiv(ChevieData["A"]["PoincarePolynomial"](Sum(p)-1,[[q,-1]]),ChevieData["A"]["SchurElement"](Sum(p)-1,p,[[q,-1]],[]))
 
 ChevieData["A"]["FakeDegree"]=weyla17
 
@@ -286,7 +286,7 @@ ChevieData["A"]["Invariants"]=weyla20
 
 def weyla22(n,p):
     uc={"classes":map(lambda p: {"parameter":p},Partitions(n+1)),
-        "springerSeries":Concatenation(map(lambda d: map(lambda i: {"relgroup":CoxeterGroup("A",GAPMin(GAPDiv(n+1,d),1)),
+        "springerSeries":Concatenation(map(lambda d: map(lambda i: {"relgroup":CoxeterGroup("A",GAPDiv(n+1,d)-1),
         "Z":[ER(d)**i],
         "levi":Filtered(range(1,n+1+1),lambda i: i%d!=0),
         "locsys":[]},PrimeResidues(d)),DivisorsInt(n+1)))}
@@ -297,22 +297,22 @@ def weyla22(n,p):
         d=Gcd(p)
         cl["name"]=IntListToString(p)
         cl["Au"]=ReflectionGroup(d,1,1)
-        cl["balacarter"]=Concatenation(map(lambda i: Sum([p[k-1] for k in range(1,GAPMin(i,1)+1)])+range(1,GAPMin(p[i-1],1)+1),range(1,len(p)+1)))
-        p=Concatenation(map(lambda x: range(GAPMin(1,x),GAPMin(x,1)+1,GAPMin(3,x)-GAPMin(1,x)),p))
+        cl["balacarter"]=Concatenation(map(lambda i: Sum([p[k-1] for k in range(1,i-1+1)])+range(1,p[i-1]-1+1),range(1,len(p)+1)))
+        p=Concatenation(map(lambda x: range(1-x,x-1+1,3-x-1-x),p))
         Sort(p)
-        cl["dynkin"]=map(lambda i: GAPMin(p[i+1-1],p[i-1]),range(1,GAPMin(len(p),1)+1))
+        cl["dynkin"]=map(lambda i: p[i+1-1]-p[i-1],range(1,len(p)-1+1))
         cl["red"]=[]
         p=1
         for j in Collected(cl["parameter"]):
-            cl["red"]+=range(p,GAPMin(p+j[2-1],2)+1)
+            cl["red"]+=range(p,p+j[2-1]-2+1)
             p=p+j[2-1]
-        cl["red"]=ReflectionSubgroup(CoxeterGroup("A",GAPMin(p,2)),cl["red"])
+        cl["red"]=ReflectionSubgroup(CoxeterGroup("A",p-2),cl["red"])
         cl["AuAction"]=ExtendedReflectionGroup(cl["red"],[IdentityMat(cl["red"]["rank"])])
         if d==2 :
             ss(1)["locsys"].append([i,2])
             ss(-1)["locsys"].append([i,1])
         else:
-            for j in range(0,GAPMin(d,1)+1):
+            for j in range(0,d-1+1):
                 ss(ER(d)**j)["locsys"].append([i,j+1])
     uc["orderClasses"]=Hasse(Poset(map(lambda x: map(lambda y: Dominates(y["parameter"],x["parameter"]),uc["classes"]),uc["classes"])))
     return uc

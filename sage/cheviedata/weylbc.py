@@ -76,11 +76,11 @@ ChevieData["B"]["ReflectionName"]=eylbc3
 
 def eylbc4(l,type_):
     rts=map(lambda i: GAPMul(0,range(1,l+1)),range(1,l+1))
-    for i in range(1,GAPMin(l,1)+1):
+    for i in range(1,l-1+1):
         for i,j in zip([i,i+1],[1,-1]):
             rts[i-1][i-1]=j
     rts[l-1][l-1]=GAPDiv(2,type_)
-    return [rts[k-1] for k in range(l,1+1,GAPMin(l,1)-l)]
+    return [rts[k-1] for k in range(l,1+1,l-1-l)]
 
 ChevieData["B"]["GeneratingRoots"]=eylbc4
 
@@ -119,12 +119,12 @@ def eylbc9(pi):
     w=[]
     i=1
     for l in Reversed(pi[2-1]):
-        w+=range(i,2+1,GAPMin(i,1)-i)
-        w+=range(1,GAPMin(i+l,1)+1)
+        w+=range(i,2+1,i-1-i)
+        w+=range(1,i+l-1+1)
         i=i+l
     for l in pi[1-1]:
         r=l%2
-        w+=i+Concatenation(range(1,GAPMin(GAPMin(l,1),r)+1,3-1),range(2,GAPMin(l+r,2)+1,4-2))
+        w+=i+Concatenation(range(1,l-1-r+1,3-1),range(2,l+r-2+1,4-2))
         i=i+l
     return w
 
@@ -144,7 +144,7 @@ def eylbc11(n,w):
         if i==1 :
             x=GAPMul(x,Permutation("(%s,%s)"%(1,n+1)))
         else:
-            x=GAPMul(x,Permutation("(%s,%s)"%(GAPMin(i,1),i))(GAPMin(i,1)+n,i+n))
+            x=GAPMul(x,Permutation("(%s,%s)"%(i-1,i))(i-1+n,i+n))
     res=[[],[]]
     mark=range(1,n+1)
     for i in range(1,n+1):
@@ -156,7 +156,7 @@ def eylbc11(n,w):
                 res[1-1].append(len(cyc))
             for j in cyc:
                 if j>n :
-                    mark[GAPMin(j,n)-1]=0
+                    mark[j-n-1]=0
                 else:
                     mark[j-1]=0
     Sort(res[1-1])
@@ -175,20 +175,20 @@ ChevieData["B"]["CharName"]=eylbc12
 def eylbc13(p):
     pp=SymbolPartitionTuple(p,1)
     m=len(pp[2-1])
-    res=GAPMul(pp[1-1],range(m,0+1,GAPMin(m,1)-m))
+    res=GAPMul(pp[1-1],range(m,0+1,m-1-m))
     if pp[2-1]!=[] :
-        res=res+GAPMul(pp[2-1],range(GAPMin(m,1),0+1,GAPMin(m,2)-GAPMin(m,1)))
-    return GAPMin(GAPMul(2,res)+Sum(pp[2-1]),GAPDiv(GAPMul(m,GAPMin(m,1)),6))
+        res=res+GAPMul(pp[2-1],range(m-1,0+1,m-2-m-1))
+    return GAPMul(2,res)+Sum(pp[2-1])-GAPDiv(GAPMul(m,m-1),6)
 
 ChevieData["B"]["LowestPowerFakeDegree"]=eylbc13
 
 def eylbc14(n):
     res={"charparams":ChevieData["B"]["CharParams"](n)}
-    res["extRefl"]=Concatenation(map(lambda i: res["charparams"].index([[GAPMin(n,i)],GAPMul(range(1,i+1),0)+1])+1,range(0,GAPMin(n,1)+1)),[res["charparams"].index([[],GAPMul(range(1,n+1),0)+1])+1])
+    res["extRefl"]=Concatenation(map(lambda i: res["charparams"].index([[n-i],GAPMul(range(1,i+1),0)+1])+1,range(0,n-1+1)),[res["charparams"].index([[],GAPMul(range(1,n+1),0)+1])+1])
     res["a"]=map(lambda p: LowestPowerGenericDegreeSymbol(SymbolPartitionTuple(p,1)),res["charparams"])
     res["A"]=map(lambda p: HighestPowerGenericDegreeSymbol(SymbolPartitionTuple(p,1)),res["charparams"])
     res["b"]=map(ChevieData["B"]["LowestPowerFakeDegree"],res["charparams"])
-    res["B"]=GAPMin(res["a"]+res["A"],res["b"])
+    res["B"]=res["a"]+res["A"]-res["b"]
     return res
 
 ChevieData["B"]["CharInfo"]=eylbc14
@@ -227,25 +227,25 @@ def eylbc16(nq,gamma,pi):
     BHk=ChevieData["B"]["Hk"]["irreducibles"][1-1][1-1]
     if pi[1-1]!=[] :
         k=pi[1-1][1-1]
-        for alpha in PartitionTuples(GAPMin(n,k),2):
+        for alpha in PartitionTuples(n-k,2):
             dif=[]
             dif[1-1]=DifferencePartitions(gamma[1-1],alpha[1-1])
             dif[2-1]=DifferencePartitions(gamma[2-1],alpha[2-1])
             if dif[1-1]!=false and dif[2-1]!=false :
                 dif={"cc":dif[1-1]["cc"]+dif[2-1]["cc"],
                     "ll":dif[1-1]["ll"]+dif[2-1]["ll"]}
-                val=val+GAPMul(GAPMin(q,1)**GAPMin(dif["cc"],1),-1**dif["ll"])
+                val=val+GAPMul(q-1**dif["cc"]-1,-1**dif["ll"])
     else:
         k=pi[2-1][1-1]
         nn=Sum(gamma[1-1])
         if nn>=k :
-            for alpha in Partitions(GAPMin(nn,k)):
+            for alpha in Partitions(nn-k):
                 dif=DifferencePartitions(gamma[1-1],alpha)
                 if dif!=false and dif["cc"]==1 :
                     val=val+GAPMul(Q,-1**dif["ll"])
         nn=Sum(gamma[2-1])
         if nn>=k :
-            for alpha in Partitions(GAPMin(nn,k)):
+            for alpha in Partitions(nn-k):
                 dif=DifferencePartitions(gamma[2-1],alpha)
                 if dif!=false and dif["cc"]==1 :
                     val=val+GAPMul(-1**dif["ll"]+1,q**n+dif["d"])
@@ -261,20 +261,20 @@ def eylbc17(nq):
         for m in range(1,n+1):
             pm[m-1].append([[],[m]])
             for k in range(m+1,n+1):
-                for t in pm[GAPMin(k,m)-1]:
+                for t in pm[k-m-1]:
                     s=[[],[m]]
                     s[2-1]+=t[2-1]
                     pm[k-1].append(s)
         for m in range(1,QuoInt(n,2)+1):
             pm[m-1].append([[m],[]])
-            for k in range(m+1,GAPMin(n,m)+1):
-                for t in pm[GAPMin(k,m)-1]:
+            for k in range(m+1,n-m+1):
+                for t in pm[k-m-1]:
                     s=[[m],t[2-1]]
                     s[1-1]+=t[1-1]
                     pm[k-1].append(s)
         res=[]
-        for k in range(1,GAPMin(n,1)+1):
-            for t in pm[GAPMin(n,k)-1]:
+        for k in range(1,n-1+1):
+            for t in pm[n-k-1]:
                 s=[[k],t[2-1]]
                 s[1-1]+=t[1-1]
                 res.append(s)
@@ -296,14 +296,14 @@ def eylbc17(nq):
             prs[i-1]=[]
             for j in beta[i-1]:
                 leg=0
-                for k in Reversed(range(0,GAPMin(j,1)+1)):
+                for k in Reversed(range(0,j-1+1)):
                     if k in beta[i-1] :
                         leg=leg+1
                     else:
                         prs[i-1].append({"from":j,
                             "to":k,
                             "leg":leg,
-                            "pow":GAPMin(m+k,lb[i-1])})
+                            "pow":m+k-lb[i-1]})
         cbs=map(lambda x: [[x],[]],prs[1-1])
         cbs+=map(lambda x: [[],[x]],prs[2-1])
         for hk in cbs:
@@ -317,10 +317,10 @@ def eylbc17(nq):
                     new=map(copy,hk)
                     new[2-1].append(pr)
                     cbs.append(new)
-            ll=Sum(hk[1-1],lambda x: GAPMin(x["from"],x["to"]))+Sum(hk[2-1],lambda x: GAPMin(x["from"],x["to"]))
+            ll=Sum(hk[1-1],lambda x: x["from"]-x["to"])+Sum(hk[2-1],lambda x: x["from"]-x["to"])
             lg=Sum(hk[1-1],lambda x: x["leg"])+Sum(hk[2-1],lambda x: x["leg"])
             lh=len(hk[1-1])+len(hk[2-1])
-            new={"wgt":[GAPMul(-1**lg,x**GAPMin(GAPMin(ll,lg),lh)),0],
+            new={"wgt":[GAPMul(-1**lg,x**ll-lg-lh),0],
                 "adr":1}
             if lh==1 :
                 if hk[1-1][1]==None :
@@ -336,8 +336,8 @@ def eylbc17(nq):
                         j=0
                         while j<len(gamma[i-1]) and gamma[i-1][j+1-1]==j:
                             j=j+1
-                        gamma[i-1]=GAPMin([gamma[i-1][k-1] for k in range(j+1,len(gamma[i-1])+1)],j)
-                new["adr"]=pm[GAPMin(m,ll)-1].index(gamma)+1
+                        gamma[i-1]=[gamma[i-1][k-1] for k in range(j+1,len(gamma[i-1])+1)]-j
+                new["adr"]=pm[m-ll-1].index(gamma)+1
             hks[ll-1].append(new)
         return hks
     
@@ -361,16 +361,16 @@ def eylbc17(nq):
     for m in range(1,n+1):
         pm[m-1].append(charCol(m,[1],m,2))
         for k in range(m+1,n+1):
-            for t in pm[GAPMin(k,m)-1]:
+            for t in pm[k-m-1]:
                 pm[k-1].append(charCol(k,t,m,2))
     for m in range(1,QuoInt(n,2)+1):
         pm[m-1].append(charCol(m,[1],m,1))
-        for k in range(m+1,GAPMin(n,m)+1):
-            for t in pm[GAPMin(k,m)-1]:
+        for k in range(m+1,n-m+1):
+            for t in pm[k-m-1]:
                 pm[k-1].append(charCol(k,t,m,1))
     res=[]
-    for k in range(1,GAPMin(n,1)+1):
-        for t in pm[GAPMin(n,k)-1]:
+    for k in range(1,n-1+1):
+        for t in pm[n-k-1]:
             res.append(charCol(n,t,k,1))
     res.append(charCol(n,[1],n,1))
     res+=pm[n-1]
@@ -389,7 +389,7 @@ for t in ["B"]:
 def eylbc18(n,para):
     q1=GAPDiv(-para[1-1][1-1],para[1-1][2-1])
     q2=GAPDiv(-para[2-1][1-1],para[2-1][2-1])
-    return prod(range(0,GAPMin(n,1)+1))
+    return prod(range(0,n-1+1))
 
 ChevieData["B"]["PoincarePolynomial"]=eylbc18
 
@@ -426,7 +426,7 @@ def eylbc24(l,p):
         return [[range(1,len(pt)+1),GAPMul(map(eylbc25,pt),decS(l))]]
     else:
         dd=Concatenation([[[1]],[[1]]],map(decS,range(2,l+1)))
-        return map(lambda i: [map(lambda x: pt.index(x)+1,Cartesian(pp[i+1-1],pp[GAPMin(l+1,i)-1])),map(lambda x: map(Product,Cartesian(x)),Cartesian(dd[i+1-1],dd[GAPMin(l+1,i)-1]))],range(0,l+1))
+        return map(lambda i: [map(lambda x: pt.index(x)+1,Cartesian(pp[i+1-1],pp[l+1-i-1])),map(lambda x: map(Product,Cartesian(x)),Cartesian(dd[i+1-1],dd[l+1-i-1]))],range(0,l+1))
 
 def eylbc25(p):
     p=LittlewoodRichardsonRule(p[1-1],p[2-1])
@@ -439,10 +439,10 @@ def eylbc27(arg):
     uc={"harishChandra":[],
         "charSymbols":[]}
     for d in 1+GAPMul(2,range(0,QuoInt(-1+RootInt(1+GAPMul(4,rank),2),2)+1)):
-        s=GAPDiv(GAPMin(d**2,1),4)
+        s=GAPDiv(d**2-1,4)
         s={"relativeType":{"series":"B",
             "indices":range(1+s,rank+1),
-            "rank":GAPMin(rank,s)},
+            "rank":rank-s},
             "levi":range(1,s+1),
             "eigenvalue":-1**QuoInt(d+1,4),
             "parameterExponents":Concatenation([d],GAPMul(range(2+s,rank+1),0)+1),
@@ -464,14 +464,14 @@ ChevieData["B"]["UnipotentCharacters"]=eylbc27
 
 def eylbc28(r,type_,char):
     def part2dynkin(part):
-        p=Concatenation(map(lambda d: range(GAPMin(1,d),GAPMin(d,1)+1,GAPMin(3,d)-GAPMin(1,d)),part))
+        p=Concatenation(map(lambda d: range(1-d,d-1+1,3-d-1-d),part))
         Sort(p)
         p=[p[k-1] for k in range(QuoInt(3+len(p),2),len(p)+1)]
         if type_==1 :
             res=[GAPMul(2,p[1-1])]
         else:
             res=[p[1-1]]
-        res+=GAPMin([p[k-1] for k in range(2,len(p)+1)],[p[k-1] for k in range(1,GAPMin(len(p),1)+1)])
+        res+=[p[k-1] for k in range(2,len(p)+1)]-[p[k-1] for k in range(1,len(p)-1+1)]
         return res
     
     
@@ -512,11 +512,11 @@ def eylbc28(r,type_,char):
             part=[]
             d=type_%2
             while i<=len(c):
-                if i==len(c) or GAPMin(c[i+1-1],c[i-1])>0 :
-                    part.append(GAPMin(GAPMul(2,GAPMin(c[i-1],GAPMin(i,1)))+1,d))
+                if i==len(c) or c[i+1-1]-c[i-1]>0 :
+                    part.append(GAPMul(2,c[i-1]-i-1)+1-d)
                     i=i+1
                 else:
-                    l=GAPMin(GAPMul(2,GAPMin(c[i-1],GAPMin(i,1))),d)
+                    l=GAPMul(2,c[i-1]-i-1)-d
                     part+=[l,l]
                     i=i+2
             Sort(part)
@@ -532,18 +532,18 @@ def eylbc28(r,type_,char):
             part=[]
             ex=[]
             while i<=len(c):
-                if i==len(c) or GAPMin(c[i+1-1],c[i-1])>1 :
-                    part.append(GAPMul(2,GAPMin(c[i-1],GAPMul(2,GAPMin(i,1)))))
+                if i==len(c) or c[i+1-1]-c[i-1]>1 :
+                    part.append(GAPMul(2,c[i-1]-GAPMul(2,i-1)))
                     i=i+1
                 else:
                     if c[i-1]==c[i+1-1] :
-                        l=GAPMin(GAPMul(2,GAPMin(c[i-1],GAPMul(2,GAPMin(i,1)))),2)
+                        l=GAPMul(2,c[i-1]-GAPMul(2,i-1))-2
                         part+=[l,l]
                         ex.append(l)
                         i=i+2
                     else:
                         if c[i-1]+1==c[i+1-1] :
-                            l=GAPMin(GAPMul(2,GAPMin(c[i-1],GAPMul(2,GAPMin(i,1)))),1)
+                            l=GAPMul(2,c[i-1]-GAPMul(2,i-1))-1
                             part+=[l,l]
                             i=i+2
             Sort(part)
@@ -574,7 +574,7 @@ def eylbc28(r,type_,char):
             else:
                 if j[2-1]%2!=0 :
                     if j[2-1]>1 :
-                        cc["red"]=GAPMul(cc["red"],CoxeterGroup("B",GAPDiv(GAPMin(j[2-1],1),2)))
+                        cc["red"]=GAPMul(cc["red"],CoxeterGroup("B",GAPDiv(j[2-1]-1,2)))
                 else:
                     if j[2-1]>2 :
                         cc["red"]=GAPMul(cc["red"],CoxeterGroup("D",GAPDiv(j[2-1],2)))
@@ -594,21 +594,21 @@ def eylbc28(r,type_,char):
             i=1
             while i<=len(p):
                 l=p[i-1]
-                t=Sum([d[k-1] for k in range(1,GAPMin(i,1)+1)])
+                t=Sum([d[k-1] for k in range(1,i-1+1)])
                 if 1==l%4 :
-                    a.append(GAPMin(GAPDiv(GAPMin(l,1),4),t))
+                    a.append(GAPDiv(l-1,4)-t)
                     i=i+1
                 else:
                     if 3==l%4 :
-                        b.append(GAPDiv(GAPMin(l,3),4)+t)
+                        b.append(GAPDiv(l-3,4)+t)
                         i=i+1
                     else:
                         j=i
                         while i<=len(p) and p[i-1]==l:
                             i=i+1
-                        j=GAPMul(range(1,GAPDiv(GAPMin(i,j),2)+1),0)
-                        a+=GAPMin(j+GAPDiv(l+l%4,4),t)
-                        b+=j+GAPDiv(GAPMin(l,l%4),4)
+                        j=GAPMul(range(1,GAPDiv(i-j,2)+1),0)
+                        a+=j+GAPDiv(l+l%4,4)-t
+                        b+=j+GAPDiv(l-l%4,4)
             a=Filtered(a,lambda x: x!=0)
             a=Reversed(a)
             b=Filtered(b,lambda x: x!=0)
@@ -641,18 +641,18 @@ def eylbc28(r,type_,char):
         
         
         d=0
-        while GAPMin(GAPMul(4,d**2),GAPMul(3,d))<=r:
-            i=GAPMin(GAPMul(4,d**2),GAPMul(3,d))
-            if GAPMin(r,d)%2==0 :
+        while GAPMul(4,d**2)-GAPMul(3,d)<=r:
+            i=GAPMul(4,d**2)-GAPMul(3,d)
+            if r-d%2==0 :
                 l=Concatenation(range(1,i+1),range(i+2,r+1,i+4-i+2))
-                uc["springerSeries"].append({"relgroup":CoxeterGroup("B",GAPDiv(GAPMin(r,i),2)),
+                uc["springerSeries"].append({"relgroup":CoxeterGroup("B",GAPDiv(r-i,2)),
                     "levi":l,
                     "Z":[-1],
                     "locsys":[]})
                 i=GAPMul(4,d**2)+GAPMul(3,d)
                 if i<=r and d!=0 :
                     l=Concatenation(range(1,i+1),range(i+2,r+1,i+4-i+2))
-                    uc["springerSeries"].append({"relgroup":CoxeterGroup("B",GAPDiv(GAPMin(r,i),2)),
+                    uc["springerSeries"].append({"relgroup":CoxeterGroup("B",GAPDiv(r-i,2)),
                         "levi":l,
                         "Z":[-1],
                         "locsys":[]})
@@ -685,14 +685,14 @@ def eylbc30(d):
     res={"relgroup":CoxeterGroup("C",d[2-1]),
         "defect":d[1-1],
         "locsys":[],
-        "levi":range(1,GAPMin(r,d[2-1])+1)}
+        "levi":range(1,r-d[2-1]+1)}
     if char==2 :
         res["Z"]=[1]
     else:
         if type_==1 :
-            res["Z"]=[-1**GAPMin(r,d[2-1])]
+            res["Z"]=[-1**r-d[2-1]]
         else:
-            if IsInt(ER(GAPMul(2,GAPMin(r,d[2-1]))+1)) :
+            if IsInt(ER(GAPMul(2,r-d[2-1])+1)) :
                 res["Z"]=[1]
             else:
                 res["Z"]=[-1]
@@ -718,7 +718,7 @@ def eylbc32(y):
             if fx[i-1]==fy[i-1] and i in y["parameter"][2-1] :
                 if i in Difference(x["parameter"][1-1],x["parameter"][2-1]) :
                     return false
-                if i<m and GAPMin(fx[i+1-1],fy[i+1-1])%2==1 :
+                if i<m and fx[i+1-1]-fy[i+1-1]%2==1 :
                     return false
     return true
 

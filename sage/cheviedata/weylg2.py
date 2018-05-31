@@ -267,7 +267,7 @@ def eylg212(x,y):
     return GAPMul(-3,x)+GAPMul(3,x**2)
 
 def eylg213(x,y):
-    return GAPMin(GAPMin(GAPMul(x**2,y**4),GAPMul(6,x**3))+GAPMul(13,x**4),GAPMul(12,x**5))+GAPMul(4,x**6)
+    return GAPMul(x**2,y**4)-GAPMul(6,x**3)+GAPMul(13,x**4)-GAPMul(12,x**5)+GAPMul(4,x**6)
 
 ChevieData["G2"]["Invariants"]=[eylg212,eylg213]
 
@@ -275,7 +275,7 @@ def eylg214():
     return eylg215
 
 def eylg215(x,y):
-    return GAPMin(GAPMul(4,x**3),GAPMul(27,y**2))
+    return GAPMul(4,x**3)-GAPMul(27,y**2)
 
 ChevieData["G2"]["Discriminant"]=eylg214
 
@@ -295,11 +295,11 @@ def eylg216(c,p):
         "succ":["G2(a1)"],
         "dynkin":[0,1],
         "balacarter":[2],
-        "red":Z(GAPMin(2,GAPDiv(GAPMin(Gcd(p,3),1),2)))},{"name":"G_2(a_1)",
+        "red":Z(2-GAPDiv(Gcd(p,3)-1,2))},{"name":"G_2(a_1)",
         "succ":["G2"],
         "dynkin":[2,0],
         "balacarter":[1,-2],
-        "Au":CoxeterGroup("A",GAPMin(2,GAPDiv(GAPMin(Gcd(p,3),1),2)))},{"name":"G_2",
+        "Au":CoxeterGroup("A",2-GAPDiv(Gcd(p,3)-1,2))},{"name":"G_2",
         "succ":[],
         "dynkin":[2,2],
         "Au":Z(Gcd(p,6)),
