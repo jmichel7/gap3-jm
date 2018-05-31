@@ -19,7 +19,7 @@ def eptio1(x,option):
     return str(s)
 
 for t in ["2E6","E6","E7","E8","2F4","F4","G2","H3","H4","2G5","G24","G25","G26","G27","G29","G31","G32","G33","G34"]:
-    ChevieData[t]["CharName"]=lambda t: eptio1(t)
+    ChevieData[t]["CharName"]=lambda t: eptio1
 
 def eptio2(t):
     r=ChevieData[t]["GeneratingRoots"]
@@ -30,7 +30,7 @@ def eptio2(t):
     return map(lambda x: map(lambda y: GAPMul(x,y),r),e)
 
 for t in ["G25","G26","G29","G31","G32","G34"]:
-    ChevieData[t]["CartanMat"]=eptio2(t)
+    ChevieData[t]["CartanMat"]=eptio2
 
 def eptio3(option):
     i=["G24","G25","G26","G27","G29","G31","G32","G33","G34","E6","E7","E8","2E6","2F4","3D4","H3","H4"]
@@ -41,7 +41,7 @@ def eptio3(option):
         return t
 
 for t in ["G24","G25","G26","G27","G29","G31","G32","G33","G34","E6","E7","E8","2E6","2F4","3D4","H3","H4"]:
-    ChevieData[t]["ReflectionName"]=lambda t: eptio3(t)
+    ChevieData[t]["ReflectionName"]=lambda t: eptio3
 
 def eptio4(r,option):
     i=["A","D","2A","2D"]
@@ -55,7 +55,7 @@ def eptio4(r,option):
             return SPrint(t,r)
 
 for t in ["A","D","2A","2D"]:
-    ChevieData[t]["ReflectionName"]=lambda t: eptio4(t)
+    ChevieData[t]["ReflectionName"]=lambda t: eptio4
 
 def eptio5():
     rank="12345678".index(t[len(t)-1])+1
@@ -64,13 +64,13 @@ def eptio5():
     return res
 
 for t in ["3D4","E6","2E6","E7","E8","F4","2F4","G2","H3","H4"]:
-    ChevieData[t]["CharTable"]=lambda t: eptio5(t)
+    ChevieData[t]["CharTable"]=lambda t: eptio5
 
 def eptio6(q):
     return prod(ChevieData[t]["ReflectionDegrees"])
 
 for t in ["G24","G27","G29","G33","G34","H3","H4","E6","E7","E8"]:
-    ChevieData[t]["PoincarePolynomial"]=lambda t: eptio6(t)
+    ChevieData[t]["PoincarePolynomial"]=lambda t: eptio6
 
 def eptio7(i):
     para=ChevieData[t]["EigenvaluesGeneratingReflections"]
@@ -78,7 +78,7 @@ def eptio7(i):
     return ChevieData[t]["HeckeRepresentation"](para,[],i)
 
 for t in ["G24","G25","G26","G27","G29"]:
-    ChevieData[t]["Representation"]=lambda t: eptio7(t)
+    ChevieData[t]["Representation"]=lambda t: eptio7
 
 def eptio8(t):
     r=ChevieData[t]["GeneratingRoots"]
@@ -87,17 +87,17 @@ def eptio8(t):
     return len(r[1-1])
 
 for t in ["G2","F4","H3","E6","G24","G25","G26","G27","G29","G31","G32","G33","G34"]:
-    ChevieData[t]["SemisimpleRank"]=eptio8(t)
+    ChevieData[t]["SemisimpleRank"]=eptio8
 
 for t in ["A","B","D"]:
-    ChevieData[t]["SemisimpleRank"]=lambda t: lambda r: r(t)
+    ChevieData[t]["SemisimpleRank"]=lambda t: lambda r: r
 
 def eptio9(phi,q):
     f=ChevieData[t]["sparseFakeDegrees"][ChevieData[t]["CharInfo"]()["charparams"].index(phi)+1-1]
     return Sum(range(1,len(f)-1+1,3-1),lambda i: GAPMul(f[i-1],q**f[i+1-1]))
 
 for t in ["G2","F4","H3","E6","G24","G25","G26","G27","G29","G32","G33","G34"]:
-    ChevieData[t]["FakeDegree"]=lambda t: eptio9(t)
+    ChevieData[t]["FakeDegree"]=lambda t: eptio9
 
 def eptio10(phi,q):
     f=ChevieData[t]["cycpolfakedegrees"][ChevieData[t]["CharInfo"]()["charparams"].index(phi)+1-1]
@@ -110,7 +110,7 @@ def eptio10(phi,q):
     return GAPMul(res,Value(CycPol(f),q))
 
 for t in ["H4","E7","E8","G31"]:
-    ChevieData[t]["FakeDegree"]=lambda t: eptio10(t)
+    ChevieData[t]["FakeDegree"]=lambda t: eptio10
 
 def eptio11():
     return map(eptio12,ChevieData[t]["cycpolfakedegrees"])
@@ -123,19 +123,19 @@ def eptio12(f):
     return res+Sum([f[k-1] for k in range(3,len(f)+1)],Phi)
 
 for t in ["H4","E7","E8","G31"]:
-    ChevieData[t]["HighestPowerFakeDegrees"]=lambda t: eptio11(t)
+    ChevieData[t]["HighestPowerFakeDegrees"]=lambda t: eptio11
 
 def eptio13():
     return map(lambda x: x[len(x)-1],ChevieData[t]["sparseFakeDegrees"])
 
 for t in ["E6","G32","G33","G34","G2","F4","H3","G24","G25","G26","G27","G29"]:
-    ChevieData[t]["HighestPowerFakeDegrees"]=lambda t: eptio13(t)
+    ChevieData[t]["HighestPowerFakeDegrees"]=lambda t: eptio13
 
 def eptio14():
     return map(lambda x: x[2-1],ChevieData[t]["sparseFakeDegrees"])
 
 for t in ["G2","F4","H3","H4","G24","G25","G26","G27","G29","E6","E7","E8","G31","G32","G33","G34"]:
-    ChevieData[t]["LowestPowerFakeDegrees"]=lambda t: eptio14(t)
+    ChevieData[t]["LowestPowerFakeDegrees"]=lambda t: eptio14
 
 def eptio15(indices,title):
     digits="678"
@@ -150,7 +150,7 @@ def eptio15(indices,title):
     print "\n",
 
 for t in ["E6","E7","E8"]:
-    ChevieData[t]["PrintDiagram"]=lambda t: eptio15(t)
+    ChevieData[t]["PrintDiagram"]=lambda t: eptio15
 
 def eptio16(indices,title):
     print title," ",
@@ -161,20 +161,20 @@ def eptio16(indices,title):
     print "\n",
 
 for t in ["H3","H4"]:
-    ChevieData[t]["PrintDiagram"]=lambda t: eptio16(t)
+    ChevieData[t]["PrintDiagram"]=lambda t: eptio16
 
 def eptio17():
     N=Sum(ChevieData[t]["ReflectionDegrees"],lambda x: x-1)
     return map(lambda x: N-Degree(CycPol(x)),ChevieData[t]["CycPolSchurElements"])
 
 for t in ["G24","G27","G29","G33","G34","H3","H4","E6","E7","E8"]:
-    ChevieData[t]["HighestPowerGenericDegrees"]=lambda t: eptio17(t)
+    ChevieData[t]["HighestPowerGenericDegrees"]=lambda t: eptio17
 
 def eptio18():
     return map(lambda x: -x[2-1],ChevieData[t]["CycPolSchurElements"])
 
 for t in ["G24","G27","G29","G33","G34","H3","H4","E6","E7","E8"]:
-    ChevieData[t]["LowestPowerGenericDegrees"]=lambda t: eptio18(t)
+    ChevieData[t]["LowestPowerGenericDegrees"]=lambda t: eptio18
 
 def eptio19(p):
     T=ChevieData[t]["CharTable"]()
@@ -183,13 +183,13 @@ def eptio19(p):
     return map(lambda c: [c[1-1],[[m[k-1] for k in c[1-1]][k-1] for k in c[2-1]]],BlocksMat(m))
 
 for t in ["F4","G2","G25","G26"]:
-    ChevieData[t]["DecompositionMatrix"]=lambda t: eptio19(t)
+    ChevieData[t]["DecompositionMatrix"]=lambda t: eptio19
 
 def eptio20(arg):
     return Value(CycPol(ChevieData[t]["CycPolSchurElements"][ChevieData[t]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]),GAPDiv(-arg[2-1][1-1][1-1],arg[2-1][1-1][2-1]))
 
 for t in ["G24","G27","G29","G33","G34","E6","E7","E8","H3","H4"]:
-    ChevieData[t]["SchurElement"]=lambda t: eptio20(t)
+    ChevieData[t]["SchurElement"]=lambda t: eptio20
 
 def eptio21(arg):
     c=ChevieData[t]["CycPolSchurElements"][ChevieData[t]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
@@ -201,7 +201,7 @@ def eptio21(arg):
     return FactorizedSchurElementsOps["Simplify"](res)
 
 for t in ["G24","G27","G29","G33","G34","E6","E7","E8","H3","H4"]:
-    ChevieData[t]["FactorizedSchurElement"]=lambda t: eptio21(t)
+    ChevieData[t]["FactorizedSchurElement"]=lambda t: eptio21
 
 def eptio22(arg):
     Y=Concatenation([arg[2-1][k-1] for k in ChevieData[t]["HyperplaneRepresentatives"]])
@@ -209,7 +209,7 @@ def eptio22(arg):
     return VFactorSchurElement(*Concatenation([Y,ChevieData[t]["SchurModels"][ci["name"]],ci],[arg[k-1] for k in range(3,len(arg)+1)]))
 
 for t in ["G2","F4","G25","G26","G32"]:
-    ChevieData[t]["FactorizedSchurElement"]=lambda t: eptio22(t)
+    ChevieData[t]["FactorizedSchurElement"]=lambda t: eptio22
 
 def eptio23(arg):
     Y=Concatenation([arg[2-1][k-1] for k in ChevieData[t]["HyperplaneRepresentatives"]])
@@ -217,7 +217,7 @@ def eptio23(arg):
     return VcycSchurElement(Y,ChevieData[t]["SchurModels"][ci["name"]],ci)
 
 for t in ["F4","G25","G26","G32"]:
-    ChevieData[t]["SchurElement"]=lambda t: eptio23(t)
+    ChevieData[t]["SchurElement"]=lambda t: eptio23
 
 def VcycSchurElement(arg):
     n=len(arg[1-1])
