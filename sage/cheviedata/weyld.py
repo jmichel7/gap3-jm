@@ -150,14 +150,14 @@ def weyld12(n,w):
             tmp=CoxeterGroup("D",n)
             gens=PermCosetsSubgroup(tmp,ReflectionSubgroup(tmp,range(2,n+1)))
             tmp=ChevieData["D"]["ClassInfo"](n)
-            tmp=[tmp["classtext"][k-1] for k in Filtered(range(1,len(tmp["classnames"])+1),lambda i: '+' in tmp.classnames[i-1] or '-' in tmp.classnames[i-1])]
+            tmp=[tmp["classtext"][k-1] for k in Filtered(range(1,len(tmp["classnames"])+1),lambda i: '+' in tmp["classnames"][i-1] or '-' in tmp["classnames"][i-1])]
             tmp=map(lambda a: CycleStructurePerm(prod([gens[k-1] for k in a])),tmp)
-            CHEVIE.R("gensMODA", "D")[n-1]=[gens,[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))-1],[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))]]
-        tmp=CycleStructurePerm(prod([(CHEVIE.R("gensMODA", "D"))[n][1-1][k-1] for k in w]))
-        if tmp in (CHEVIE.R("gensMODA", "D"))[n][2-1] and not tmp in (CHEVIE.R("gensMODA", "D"))[n][3-1] :
+            ChevieData["D"]["gensMODA"][n-1]=[gens,[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))-1],[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))]]
+        tmp=CycleStructurePerm(prod([ChevieData["D"]["gensMODA"][n-1][1-1][k-1] for k in w]))
+        if tmp in ChevieData["D"]["gensMODA"][n-1][2-1] and not tmp in ChevieData["D"]["gensMODA"][n-1][3-1] :
             res[2-1]='+'
         else:
-            if not tmp in (CHEVIE.R("gensMODA", "D"))[n][2-1] and tmp in (CHEVIE.R("gensMODA", "D"))[n][3-1] :
+            if not tmp in ChevieData["D"]["gensMODA"][n-1][2-1] and tmp in ChevieData["D"]["gensMODA"][n-1][3-1] :
                 res[2-1]='-'
     Sort(res[1-1])
     if IsList(res[2-1]) :
@@ -180,14 +180,14 @@ ChevieData["tmp"]["size"]=lambda nq: GAPMul(2**nq[1-1]-1,Factorial(nq[1-1]))
 
 ChevieData["tmp"]["order"]=lambda nq: GAPMul(2**nq[1-1]-1,Factorial(nq[1-1]))
 
-def CHEVIE.tmp.domain(nq):
+def ChevieData["tmp"]["domain"](nq):
     return IsList(nq) and len(nq)==2 and IsInt(nq[1-1]) and nq[1-1]>1
 
 
 
 ChevieData["tmp"]["text"]="generic character table of Hecke algebras of type_ D"
 
-ChevieData["tmp"]["classparam"]=[lambda nq: CharTableWeylD.classparam[1-1](nq[1-1])]
+ChevieData["tmp"]["classparam"]=[lambda nq: CharTableWeylD["classparam"][1-1](nq[1-1])]
 
 ChevieData["tmp"]["charparam"]=[lambda nq: ChevieData["D"]["CharInfo"](nq[1-1])["charparams"]]
 
@@ -196,9 +196,9 @@ def weyld13(nq,alpha,pi):
     q=nq[2-1]
     s="+-"
     if q==1 :
-        return CharTableWeylD.irreducibles[1][1-1](n,alpha,pi)
-    AHk=CHEVIE.R("Hk", "A").irreducibles[1][1-1]
-    BHk=CHEVIE.R("Hk", "B").irreducibles[1][1-1]
+        return CharTableWeylD["irreducibles"][1-1][1-1](n,alpha,pi)
+    AHk=ChevieData["A"]["Hk"]["irreducibles"][1-1][1-1]
+    BHk=ChevieData["B"]["Hk"]["irreducibles"][1-1][1-1]
     if not IsList(alpha[2-1]) :
         delta=[alpha[1-1],alpha[1-1]]
         if not IsList(pi[2-1]) :
@@ -235,7 +235,7 @@ ChevieData["D"]["FactorizedSchurElement"]=weyld14
 def weyld15(arg):
     i=arg[4-1]
     n=arg[1-1]
-    p=(CHEVIE.R("CharInfo", "D"))(n).charparams[i-1]
+    p=ChevieData["D"]["CharInfo"](n)["charparams"][i-1]
     if p[len(p)-1]==0 :
         i=i+1
     else:
@@ -246,7 +246,7 @@ def weyld15(arg):
 ChevieData["D"]["HeckeRepresentation"]=weyld15
 
 def weyld16(n,i):
-    p=(CHEVIE.R("CharInfo", "D"))(n).charparams[i-1]
+    p=ChevieData["D"]["CharInfo"](n)["charparams"][i-1]
     if p[len(p)-1]==0 :
         i=i+1
     else:
@@ -257,7 +257,7 @@ def weyld16(n,i):
 ChevieData["D"]["Representation"]=weyld16
 
 def weyld17(n,para):
-    q=GAPDiv(-para[1][1-1],para[1][2-1])
+    q=GAPDiv(-para[1-1][1-1],para[1-1][2-1])
     return GAPMul(Sum(range(0,n-1+1),lambda k: q**k),prod(range(1,n-1+1)))
 
 ChevieData["D"]["PoincarePolynomial"]=weyld17
@@ -276,7 +276,7 @@ ChevieData["D"]["Invariants"]=weyld18
 ChevieData["D"]["CycPolGenericDegree"]=lambda c: CycPolGenericDegreeSymbol(SymbolPartitionTuple(c,0))
 
 def weyld20(n,phi,q,sqrtparam):
-    return GAPDiv(ChevieData["D"]["PoincarePolynomial"](n,q),Value(ChevieData["D"]["CycPolGenericDegree"](phi),GAPDiv(-q[1][1-1],q[1][2-1])))
+    return GAPDiv(ChevieData["D"]["PoincarePolynomial"](n,q),Value(ChevieData["D"]["CycPolGenericDegree"](phi),GAPDiv(-q[1-1][1-1],q[1-1][2-1])))
 
 ChevieData["D"]["SchurElement"]=weyld20
 
@@ -303,7 +303,7 @@ def weyld22(rank):
         if d==0 :
             s["relativeType"]["series"]="D"
             s["cuspidalName"]=""
-            s.parameterExponents[1-1]=1
+            s["parameterExponents"][1-1]=1
         uc["harishChandra"].append(s)
         symbols=Symbols(rank,d)
         s["charNumbers"]=range(1,len(symbols)+1)+len(uc["charSymbols"])
@@ -328,7 +328,7 @@ def weyld23(n,char):
                 p=2
             else:
                 p=CharParams(ss["relgroup"]).index([s["sp"]])+1
-        ss.locsys[p-1]=[i,CharParams(cc["Au"]).index(map(weyld24,s["Au"]))+1]
+        ss["locsys"][p-1]=[i,CharParams(cc["Au"]).index(map(weyld24,s["Au"]))+1]
     
     
     def partition2DR(part):
@@ -393,7 +393,7 @@ def weyld23(n,char):
         cc={"parameter":symbol2partition(cl[1-1]["symbol"])}
         if char==2 :
             cc["dimBu"]=cl[1-1]["dimBu"]
-            cc["name"]=Join(map(weyld26,Reversed(Collected(cc.parameter[1-1]))),"")
+            cc["name"]=Join(map(weyld26,Reversed(Collected(cc["parameter"][1-1]))),"")
         else:
             cc["dynkin"]=partition2DR(cc["parameter"])
             cc["name"]=IntListToString(cc["parameter"])
@@ -414,16 +414,16 @@ def weyld23(n,char):
                             cc["red"]=GAPMul(cc["red"],CoxeterGroup("D",GAPDiv(j[2-1],2)))
                         else:
                             cc["red"]=GAPMul(cc["red"],Torus(1))
-        if not IsList(cl[1].sp[2-1]) :
-            cl[1].sp[3-1]=1-GAPDiv(n,2)%2
+        if not IsList(cl[1-1]["sp"][2-1]) :
+            cl[1-1]["sp"][3-1]=1-GAPDiv(n,2)%2
         uc["classes"].append(cc)
         for s in cl:
             addSpringer(s,len(uc["classes"]))
-        if not IsList(cl[1].sp[2-1]) :
-            cl[1].sp[3-1]=1-cl[1].sp[3-1]
+        if not IsList(cl[1-1]["sp"][2-1]) :
+            cl[1-1]["sp"][3-1]=1-cl[1-1]["sp"][3-1]
             cc["name"].append('+')
             cc=Copy(cc)
-            cc.name[len(cc["name"])-1]='-'
+            cc["name"][len(cc["name"])-1]='-'
             if "dynkin" in cc :
                 [cc["dynkin"][k-1] for k in [1,2]]=[cc["dynkin"][k-1] for k in [2,1]]
             uc["classes"].append(cc)
@@ -432,7 +432,7 @@ def weyld23(n,char):
     if char==2 :
         uc["orderClasses"]=Hasse(Poset(map(lambda x: map(weyld27,uc["classes"]),uc["classes"])))
     else:
-        uc["orderClasses"]=Hasse(Poset(map(lambda i: map(lambda j: Dominates(uc.classes[j-1]["parameter"],uc.classes[i-1]["parameter"]) and !=(uc.classes[j-1]["parameter"],uc.classes[i-1]["parameter"]) or i==j,range(1,len(uc["classes"])+1)),range(1,len(uc["classes"])+1))))
+        uc["orderClasses"]=Hasse(Poset(map(lambda i: map(lambda j: Dominates(uc["classes"][j-1]["parameter"],uc["classes"][i-1]["parameter"]) and !=(uc["classes"][j-1]["parameter"],uc["classes"][i-1]["parameter"]) or i==j,range(1,len(uc["classes"])+1)),range(1,len(uc["classes"])+1))))
     if !=(char,2) :
         d=0
         while <=(GAPMul(4,d**2)-d,n):
@@ -520,7 +520,7 @@ def weyld23(n,char):
                     p=2
                 else:
                     p=CharParams(ss["relgroup"]).index([s])+1
-            ss.locsys[p-1]=[i,k]
+            ss["locsys"][p-1]=[i,k]
         
         
         def trspringer(i,new):
@@ -530,9 +530,9 @@ def weyld23(n,char):
                         c[2-1]=new[c[2-1]-1]
         
         
-        l=Filtered(range(1,len(uc["classes"])+1),lambda i: ForAll(Collected(uc.classes[i-1]["parameter"]),lambda c: c[1-1]%2==0 or c[2-1]==1))
+        l=Filtered(range(1,len(uc["classes"])+1),lambda i: ForAll(Collected(uc["classes"][i-1]["parameter"]),lambda c: c[1-1]%2==0 or c[2-1]==1))
         for i in l:
-            cl=uc.classes[i-1]
+            cl=uc["classes"][i-1]
             s=LuSpin(cl["parameter"])
             if Size(cl["Au"])==1 :
                 cl["Au"]=CoxeterGroup("A",1)
@@ -584,21 +584,21 @@ def weyld25(d):
 
 def weyld26(x):
     res=IntListToString(GAPMul(range(1,x[2-1]+1),0)+x[1-1],"[]")
-    if x[1-1] in cc.parameter[2-1] :
+    if x[1-1] in cc["parameter"][2-1] :
         return SPrint("(",res,")")
     return res
 
 def weyld27(y):
-    m=Maximum(x.parameter[1][1-1],y.parameter[1][1-1])
+    m=Maximum(x["parameter"][1-1][1-1],y["parameter"][1-1][1-1])
     f=lambda x: map(lambda i: Sum(Filtered(x,lambda z: z<i))+GAPMul(i,Number(x,lambda z: >=(z,i))),range(1,m+1))
-    fx=f(x.parameter[1-1])
-    fy=f(y.parameter[1-1])
+    fx=f(x["parameter"][1-1])
+    fy=f(y["parameter"][1-1])
     for i in range(1,m+1):
         if fx[i-1]<fy[i-1] :
             return false
         else:
-            if fx[i-1]==fy[i-1] and i in y.parameter[2-1] :
-                if i in Difference(x.parameter[1-1],x.parameter[2-1]) :
+            if fx[i-1]==fy[i-1] and i in y["parameter"][2-1] :
+                if i in Difference(x["parameter"][1-1],x["parameter"][2-1]) :
                     return false
                 if i<m and fx[i+1-1]-fy[i+1-1]%2==1 :
                     return false

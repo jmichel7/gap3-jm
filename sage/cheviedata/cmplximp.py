@@ -66,7 +66,7 @@ def lximp1(arg):
                 print "\n",just(indices[3-1],indent+1),
                 j=ChevieData["imp"]["BraidRelations"](p,q,r)
                 for g in range(1,Minimum(3,r)+1):
-                    print "   ",IntListToString([indices[k-1] for k in j[g][1-1]]),"==",IntListToString([indices[k-1] for k in j[g][2-1]]),
+                    print "   ",IntListToString([indices[k-1] for k in j[g-1][1-1]]),"==",IntListToString([indices[k-1] for k in j[g-1][2-1]]),
                 print "\n",
 
 ChevieData["imp"]["PrintDiagram"]=lximp1
@@ -245,7 +245,7 @@ def lximp13(p,q,r):
         return Concatenation(map(lambda x: o,range(1,e+1)))
     
     
-    if [q,r]==[2,2] and not "othermethod" in CHEVIE :
+    if [q,r]==[2,2] and not "othermethod" in ChevieData :
         res={"classtext":[],
             "classparams":[],
             "classnames":[]}
@@ -328,21 +328,21 @@ def lximp13(p,q,r):
                 "classnames":[],
                 "orders":[],
                 "centralizers":[]}
-            for i in Filtered(range(1,len(I["classparams"])+1),lambda i: GAPMul(map(Length,I.classparams[i-1]),range(0,p-1+1))%q==0):
-                S=I.classparams[i-1]
+            for i in Filtered(range(1,len(I["classparams"])+1),lambda i: GAPMul(map(Length,I["classparams"][i-1]),range(0,p-1+1))%q==0):
+                S=I["classparams"][i-1]
                 a=Concatenation(S)
                 a.append(q)
                 a+=Filtered(range(1,p+1),lambda j: !=(len(S[j-1]),0))-1
                 a=ApplyFunc(Gcd,a)
                 for j in range(0,a-1+1):
-                    res["classtext"].append(trans(Concatenation(GAPMul(range(1,j+1),0)+1,I.classtext[i-1],GAPMul(range(1,p-j+1),0)+1)))
+                    res["classtext"].append(trans(Concatenation(GAPMul(range(1,j+1),0)+1,I["classtext"][i-1],GAPMul(range(1,p-j+1),0)+1)))
                     if a>1 :
                         res["classparams"].append(Concatenation(S,[GAPDiv(GAPMul(p,j),a)]))
                     else:
                         res["classparams"].append(S)
-                    res["orders"].append(I.orders[i-1])
-                    res["centralizers"].append(GAPDiv(GAPMul(I.centralizers[i-1],a),q))
-            res["classes"]=map(lambda x: GAPDiv(res.centralizers[1-1],x),res["centralizers"])
+                    res["orders"].append(I["orders"][i-1])
+                    res["centralizers"].append(GAPDiv(GAPMul(I["centralizers"][i-1],a),q))
+            res["classes"]=map(lambda x: GAPDiv(res["centralizers"][1-1],x),res["centralizers"])
             res["classnames"]=map(ChevieData["imp"]["ClassName"],res["classparams"])
             return res
 
@@ -607,7 +607,7 @@ def lximp30(p,q,r,phi):
     else:
         if [q,r]==[2,2] :
             ci=ChevieData["imp"]["CharInfo"](p,q,r)
-            phi=ci.malle[ci["charparams"].index(phi)+1-1]
+            phi=ci["malle"][ci["charparams"].index(phi)+1-1]
             if phi[1-1]==1 :
                 res={"coeff":1,
                     "factor":GAPMul(range(1,4+GAPDiv(p,2)+1),0),
@@ -632,7 +632,7 @@ def lximp30(p,q,r,phi):
                         l=GAPMul(range(1,4+GAPDiv(p,2)+1),0)
                         [l[k-1] for k in 4+[j,i]]=[1,-1]
                         res["vcyc"].append([l,1])
-                if "old" in CHEVIE :
+                if "old" in ChevieData :
                     for l in [[0,-1,0,-1,-1,0],[0,-1,-1,0,-1,0],[-1,0,-1,0,-1,0],[-1,0,0,-1,-1,0]]:
                         l+=GAPMul(range(1,GAPDiv(p,2)-2+1),0)
                         l.append(1)
@@ -651,7 +651,7 @@ ChevieData["imp"]["SchurModel"]=lximp30
 def lximp31(p,q,r,phi):
     if [q,r]==[2,2] :
         ci=ChevieData["imp"]["CharInfo"](p,q,r)
-        phi=ci.malle[ci["charparams"].index(phi)+1-1]
+        phi=ci["malle"][ci["charparams"].index(phi)+1-1]
         if phi[1-1]==1 :
             res={"order":[phi[2-1],3-phi[2-1],2+phi[3-1],5-phi[3-1],4+phi[4-1]]}
             res["order"]+=4+Difference(range(1,GAPDiv(p,2)+1),[phi[4-1]])
@@ -671,10 +671,10 @@ def lximp32(p,q,r,phi,para,root):
         return VcycSchurElement(Concatenation(para[1-1],[0]),ChevieData["imp"]["SchurModel"](p,q,r,phi))
     else:
         if p==1 :
-            return VcycSchurElement([0,GAPDiv(-para[1][1-1],para[1][2-1])],ChevieData["imp"]["SchurModel"](p,q,r,phi))
+            return VcycSchurElement([0,GAPDiv(-para[1-1][1-1],para[1-1][2-1])],ChevieData["imp"]["SchurModel"](p,q,r,phi))
         else:
             if q==1 :
-                return VcycSchurElement(Concatenation(para[1-1],[GAPDiv(-para[2][1-1],para[2][2-1])]),ChevieData["imp"]["SchurModel"](p,q,r,phi))
+                return VcycSchurElement(Concatenation(para[1-1],[GAPDiv(-para[2-1][1-1],para[2-1][2-1])]),ChevieData["imp"]["SchurModel"](p,q,r,phi))
             else:
                 if [q,r]==[2,2] :
                     return VcycSchurElement(Concatenation([para[k-1] for k in [2,3,1]]),ChevieData["imp"]["SchurModel"](p,q,r,phi),ChevieData["imp"]["SchurData"](p,q,r,phi))
@@ -709,10 +709,10 @@ def lximp33(p,q,r,phi,para,root):
         return VFactorSchurElement(Concatenation(para[1-1],[0]),ChevieData["imp"]["SchurModel"](p,q,r,phi))
     else:
         if p==1 :
-            return VFactorSchurElement([0,GAPDiv(-para[1][1-1],para[1][2-1])],ChevieData["imp"]["SchurModel"](p,q,r,phi))
+            return VFactorSchurElement([0,GAPDiv(-para[1-1][1-1],para[1-1][2-1])],ChevieData["imp"]["SchurModel"](p,q,r,phi))
         else:
             if q==1 :
-                return VFactorSchurElement(Concatenation(para[1-1],[GAPDiv(-para[2][1-1],para[2][2-1])]),ChevieData["imp"]["SchurModel"](p,q,r,phi))
+                return VFactorSchurElement(Concatenation(para[1-1],[GAPDiv(-para[2-1][1-1],para[2-1][2-1])]),ChevieData["imp"]["SchurModel"](p,q,r,phi))
             else:
                 if [q,r]==[2,2] :
                     return VFactorSchurElement(Concatenation([para[k-1] for k in [2,3,1]]),ChevieData["imp"]["SchurModel"](p,q,r,phi),ChevieData["imp"]["SchurData"](p,q,r,phi))
@@ -758,7 +758,7 @@ def lximp34(p,q,r,para,root):
     if r==1 :
         res["reflclasses"]=[2]
         res["orders"]=map(lambda i: GAPDiv(p,Gcd(i,p)),range(0,p-1+1))
-        res["irreducibles"]=map(lambda i: map(lambda j: para[1][i-1]**j,range(0,p-1+1)),range(1,p+1))
+        res["irreducibles"]=map(lambda i: map(lambda j: para[1-1][i-1]**j,range(0,p-1+1)),range(1,p+1))
         res["classes"]=GAPMul(range(1,p+1),0)+1
         res["powermap"]=ChevieData["imp"]["PowerMaps"](p,q,r)
     else:
@@ -921,13 +921,13 @@ def lximp34(p,q,r,para,root):
             
             res["irreducibles"]=map(lambda x: map(lambda y: GenericEntry(y,x),cl["classparams"]),map(lambda x: map(BetaSet,x),cl["classparams"]))
         else:
-            if [q,r]==[2,2] and not "othermethod" in CHEVIE :
+            if [q,r]==[2,2] and not "othermethod" in ChevieData :
                 cl=ChevieData["imp"]["ClassInfo"](p,q,r)
                 X=para[2-1]
                 Y=para[3-1]
                 Z=para[1-1]
                 def GenericEntry(char,class):
-                    char=ci.malle[ci["charparams"].index(char)+1-1]
+                    char=ci["malle"][ci["charparams"].index(char)+1-1]
                     if char[1-1]==1 :
                         w=[Z[char[4-1]-1],X[char[2-1]-1],Y[char[3-1]-1]]
                         return prod(class)

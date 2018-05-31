@@ -50,12 +50,12 @@ ChevieData["E8"]["cycpolfakedegrees"]=[[1,0],[1,120],[1,8,7,8,8,14,15,24,30],[1,
 def eyle83(w):
     if w==[] :
         return " "
-    return CHEVIE.R("ClassNames", "E8")[ChevieData["E8"]["cyclestructure"].index(CycleStructurePerm(prod([ChevieData["E8"]["generators"][k-1] for k in w])))+1-1]
+    return ChevieData["E8"]["ClassNames"][ChevieData["E8"]["cyclestructure"].index(CycleStructurePerm(prod([ChevieData["E8"]["generators"][k-1] for k in w])))+1-1]
 
 ChevieData["E8"]["ClassParameter"]=eyle83
 
 def eyle84(param,sqrtparam):
-    q=GAPDiv(-param[1][1-1],param[1][2-1])
+    q=GAPDiv(-param[1-1][1-1],param[1-1][2-1])
     if not sqrtparam[1]==None :
         v=GetRoot(q,2,"CharTable(Hecke(E8))")
     else:
@@ -103,14 +103,14 @@ ChevieData["E8"]["WGraph"]=eyle88
 
 def eyle89(param,sqrtparam,i):
     if not sqrtparam[1]==None :
-        v=GetRoot(GAPDiv(-param[1][1-1],param[1][2-1]),2,"Representation(Hecke(E8),[",i,"])")
+        v=GetRoot(GAPDiv(-param[1-1][1-1],param[1-1][2-1]),2,"Representation(Hecke(E8),[",i,"])")
     else:
         v=sqrtparam[1-1]
     gr=ChevieData["E8"]["WGraph"](i)
     if gr==false :
         return false
     else:
-        return GAPMul(-param[1][2-1],WGraphToRepresentation(8,gr,v))
+        return GAPMul(-param[1-1][2-1],WGraphToRepresentation(8,gr,v))
 
 ChevieData["E8"]["HeckeRepresentation"]=eyle89
 
@@ -119,7 +119,7 @@ def eyle810(i):
 
 ChevieData["E8"]["Representation"]=eyle810
 
-if not "families" in CHEVIE :
+if not "families" in ChevieData :
     ReadChv("unip/families")
 
 ChevieData["families"]["S5"]={"group":Group(Permutation("(1,5)"),Permutation("(2,5)"),Permutation("(3,5)"),Permutation("(4,5)")),
@@ -721,7 +721,7 @@ def eyle815(p):
         c["dimBu"]=31
         Unbind(c["dynkin"])
         Unbind(c["AuAction"])
-        uc.springerSeries[1-1]["locsys"]=[[1,1],[70,1],[4,1],[66,1],[3,2],[68,1],[29,2],[9,1],[65,1],[5,1],[67,1],[73,2],[18,2],[57,1],[6,2],[64,2],[38,1],[9,2],[61,1],[13,1],[54,1],[16,2],[49,2],[8,2],[60,1],[33,1],[28,1],[46,2],[9,4],[61,2],[29,3],[72,2],[48,1],[29,4],[19,2],[74,1],[71,2],[55,1],[32,2],[12,2],[58,1],[34,1],[13,3],[54,3],[13,2],[54,2],[33,2],[23,1],[43,1],[34,2],[18,3],[51,2],[29,7],[17,2],[50,2],[29,5],[26,1],[41,1],[29,6],[30,2],[40,1],[20,1],[47,2],[22,2],[45,2],[25,1],[42,1],[2,1],[69,1],[10,2],[56,1],[4,4],[66,2],[6,1],[64,1],[31,1],[11,2],[62,1],[14,2],[59,1],[7,2],[63,1],[37,1],[18,1],[51,1],[10,4],[56,2],[36,1],[17,1],[50,1],[21,1],[52,1],[10,6],[56,3],[27,1],[35,1],[23,2],[43,2],[31,2],[15,1],[53,1],[22,1],[45,1],[31,3],[20,2],[47,1],[28,2],[39,1],[24,1],[44,1],[27,4],[35,2]]
+        uc["springerSeries"][1-1]["locsys"]=[[1,1],[70,1],[4,1],[66,1],[3,2],[68,1],[29,2],[9,1],[65,1],[5,1],[67,1],[73,2],[18,2],[57,1],[6,2],[64,2],[38,1],[9,2],[61,1],[13,1],[54,1],[16,2],[49,2],[8,2],[60,1],[33,1],[28,1],[46,2],[9,4],[61,2],[29,3],[72,2],[48,1],[29,4],[19,2],[74,1],[71,2],[55,1],[32,2],[12,2],[58,1],[34,1],[13,3],[54,3],[13,2],[54,2],[33,2],[23,1],[43,1],[34,2],[18,3],[51,2],[29,7],[17,2],[50,2],[29,5],[26,1],[41,1],[29,6],[30,2],[40,1],[20,1],[47,2],[22,2],[45,2],[25,1],[42,1],[2,1],[69,1],[10,2],[56,1],[4,4],[66,2],[6,1],[64,1],[31,1],[11,2],[62,1],[14,2],[59,1],[7,2],[63,1],[37,1],[18,1],[51,1],[10,4],[56,2],[36,1],[17,1],[50,1],[21,1],[52,1],[10,6],[56,3],[27,1],[35,1],[23,2],[43,2],[31,2],[15,1],[53,1],[22,1],[45,1],[31,3],[20,2],[47,1],[28,2],[39,1],[24,1],[44,1],[27,4],[35,2]]
         l=[["E8",3,"1_1"],["E8(a1)",3,"2_1"],["E8(a2)",1,"4_2"],["E7+A1",2,"8_1"],["E7+A1",3,"1_2"],["E7",3,"9_1"],["E7(a1)+A1",1,"4_3"],["E7(a1)",1,"9_2"],["D8(a1)",3,"8_3"],["D7",1,"2_3"],["E7(a2)+A1",5,"12"],["E7(a2)+A1",3,"6_2"],["E7(a2)",1,"16"],["E6+A1",1,"6_1"],["(D7(a1))2",1,"4_1"],["E6",1,"8_4"],["D6",1,"9_3"],["(D5+A2)2",1,"4_4"],["D6(a1)",2,"9_4"],["D6(a1)",3,"2_4"],["D5+A1",1,"8_2"],["D5",1,"4_5"],["(D4+A2)2",1,"1_3"],["D4+A1",1,"2_2"],["D4",1,"1_4"]]
         uc["springerSeries"].append({"relgroup":CoxeterGroup("F",4),
             "levi":range(2,5+1),
@@ -752,7 +752,7 @@ def eyle815(p):
                 "succ":["A7"],
                 "red":Z(2),
                 "dimBu":12})
-            uc.classes[26-1]["succ"].append("(A7)3")
+            uc["classes"][26-1]["succ"].append("(A7)3")
             c=class("A_7")
             c["red"]=Z(1)
             c["dimBu"]=11
@@ -772,8 +772,8 @@ def eyle815(p):
                 "levi":range(1,8+1),
                 "Z":[],
                 "locsys":[[4,3]]}]
-            uc.springerSeries[1].locsys[72][2-1]=4
-            [uc.springerSeries[1-1]["locsys"][k-1] for k in [13,51]]=[[71,1],[18,2]]
+            uc["springerSeries"][1-1]["locsys"][72-1][2-1]=4
+            [uc["springerSeries"][1-1]["locsys"][k-1] for k in [13,51]]=[[71,1],[18,2]]
         else:
             if p==5 :
                 uc["springerSeries"]+=[{"relgroup":CoxeterGroup(),
@@ -801,8 +801,8 @@ def eyle815(p):
     return uc
 
 def eyle816(i):
-    s=PositionProperty(l,lambda x: x[3-1]==(CHEVIE.R("CharInfo", "F4"))().kondo[i-1])
-    return [PositionProperty(uc["classes"],lambda i: UnipotentClassOps["Name"](i,{"mizuno":true})==l[s][1-1]),l[s][2-1]]
+    s=PositionProperty(l,lambda x: x[3-1]==ChevieData["F4"]["CharInfo"]()["kondo"][i-1])
+    return [PositionProperty(uc["classes"],lambda i: UnipotentClassOps["Name"](i,{"mizuno":true})==l[s-1][1-1]),l[s-1][2-1]]
 
 ChevieData["E8"]["UnipotentClasses"]=eyle815
 

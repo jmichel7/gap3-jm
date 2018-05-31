@@ -61,8 +61,8 @@ ChevieData["G24"]["CycPolSchurElements"]=[[1,0,2,2,2,3,4,6,7,14],[1,-21,2,2,2,3,
 ChevieData["G24"]["sparseFakeDegrees"]=[[1,0],[1,21],[1,8,1,16,1,18],[1,1,1,9,1,11],[1,10,1,12,1,20],[1,3,1,5,1,13],[1,2,1,4,1,6,1,8,1,10,1,12],[1,9,1,11,1,13,1,15,1,17,1,19],[1,6,1,8,1,10,1,12,1,14,1,16,1,18],[1,3,1,5,1,7,1,9,1,11,1,13,1,15],[1,4,1,6,1,8,1,10,1,12,2,14,1,16],[1,5,2,7,1,9,1,11,1,13,1,15,1,17]]
 
 def lxg245(param,root):
-    r=param[1][1-1]
-    p=param[1][2-1]
+    r=param[1-1][1-1]
+    p=param[1-1][2-1]
     u=GetRoot(GAPMul(-p,r),2)
     def f1(r):
         return [1,r,r**2,r**2,r**9,r**3,r**4,r**7,r**18,r**6,r**11,r**21]
@@ -105,8 +105,8 @@ def lxg246():
 ChevieData["G24"]["CharTable"]=lxg246
 
 def lxg247(para,root,i):
-    p=para[1][2-1]
-    r=para[1][1-1]
+    p=para[1-1][2-1]
+    r=para[1-1][1-1]
     f1=lambda r: map(lambda x: [[r]],range(1,3+1))
     def f3(p,r,a):
         return GAPMul(WGraph2Representation([[[2,3],[1,2],[1,3]],[[1,2,p,-r],[1,3,p,-r],[2,3,GAPDiv(GAPMul(r,1-a),2),GAPDiv(GAPMul(-p,a+1),2)]]],[p,r]),p**0)
@@ -126,7 +126,7 @@ def lxg247(para,root,i):
     
     
     rep=[[f1,r],[f1,p],[f3,p,r,ER(-7)],[f3,r,p,ER(-7)],[f3,p,r,-ER(-7)],[f3,r,p,-ER(-7)],[f7,p,r],[f7,r,p],[f9,p,r],[f9,r,p],[f11,p,r,1],[f11,p,r,-1]]
-    return ApplyFunc(rep[i][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para[1-1]))
+    return ApplyFunc(rep[i-1][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para[1-1]))
 
 ChevieData["G24"]["HeckeRepresentation"]=lxg247
 

@@ -32,7 +32,7 @@ def coxh33():
         "orders":[1,2,5,2,3,10,5,6,10,2],
         "classes":[1,15,12,15,20,12,12,20,12,1]}
     res["classnames"]=map(IntListToString,res["classtext"])
-    res.classnames[1-1]="."
+    res["classnames"][1-1]="."
     res["classparams"]=res["classnames"]
     return res
 
@@ -56,7 +56,7 @@ ChevieData["H3"]["sparseFakeDegrees"]=[[1,15],[1,0],[1,5,1,7,1,9,1,11,1,13],[1,2
 
 def coxh35(param,sqrtparam):
     a=GAPDiv(1+ER(5),2)
-    q=GAPDiv(-param[1][1-1],param[1][2-1])
+    q=GAPDiv(-param[1-1][1-1],param[1-1][2-1])
     if not sqrtparam[1]==None :
         v=GetRoot(q,2,"CharTable(Hecke(H3))")
     else:
@@ -106,10 +106,10 @@ ChevieData["H3"]["WGraph"]=coxh38
 
 def coxh39(param,sqrtparam,i):
     if not sqrtparam[1]==None :
-        v=GetRoot(GAPDiv(-param[1][1-1],param[1][2-1]),2,"Representation(Hecke(H3),[",i,"])")
+        v=GetRoot(GAPDiv(-param[1-1][1-1],param[1-1][2-1]),2,"Representation(Hecke(H3),[",i,"])")
     else:
         v=sqrtparam[1-1]
-    return GAPMul(-param[1][2-1],WGraphToRepresentation(3,ChevieData["H3"]["WGraph"](i),v))
+    return GAPMul(-param[1-1][2-1],WGraphToRepresentation(3,ChevieData["H3"]["WGraph"](i),v))
 
 ChevieData["H3"]["HeckeRepresentation"]=coxh39
 

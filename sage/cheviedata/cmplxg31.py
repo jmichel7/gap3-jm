@@ -230,7 +230,7 @@ ChevieData["G31"]["SchurData"]=[{"name":"f1_0",
 
 def lxg314(p,para,root):
     ci=ChevieData["G31"]["CharInfo"]()["charparams"].index(p)+1
-    data=CHEVIE.R("SchurData", "G31")[ci-1]
+    data=ChevieData["G31"]["SchurData"][ci-1]
     r=ChevieData["G31"]["SchurModels"][data["name"]]
     q=[para[1-1][k-1] for k in data["order"]]
     q=GAPDiv(q[1-1],q[2-1])
@@ -246,7 +246,7 @@ ChevieData["G31"]["FactorizedSchurElement"]=lxg314
 
 def lxg315(p,para,root):
     ci=ChevieData["G31"]["CharInfo"]()["charparams"].index(p)+1
-    data=CHEVIE.R("SchurData", "G31")[ci-1]
+    data=ChevieData["G31"]["SchurData"][ci-1]
     r=ChevieData["G31"]["SchurModels"][data["name"]]
     q=[para[1-1][k-1] for k in data["order"]]
     q=GAPDiv(q[1-1],q[2-1])
@@ -257,10 +257,10 @@ def lxg315(p,para,root):
 ChevieData["G31"]["SchurElement"]=lxg315
 
 def lxg316(para,root):
-    x=GetRoot(GAPDiv(-para[1][1-1],para[1][2-1]),2)
+    x=GetRoot(GAPDiv(-para[1-1][1-1],para[1-1][2-1]),2)
     I=ER(4)
-    r=para[1][1-1]
-    p=para[1][2-1]
+    r=para[1-1][1-1]
+    p=para[1-1][2-1]
     tbl={"identifier":"H(G31)",
         "size":46080,
         "order":46080,
@@ -429,12 +429,12 @@ def lxg319(para,root,i):
         for v in l:
             for k in [v[k-1] for k in range(2,len(v)+1)]:
                 l=k%d**2
-                (m[QuoInt(k, d ^ 2) + 1])[QuoInt(l, d) + 1][l%d+1-1]=v[1-1]
+                m[QuoInt(k,d**2)+1-1][QuoInt(l,d)+1-1][l%d+1-1]=v[1-1]
         return m
     
     
-    x=para[1][1-1]
-    y=para[1][2-1]
+    x=para[1-1][1-1]
+    y=para[1-1][2-1]
     f1=lambda x: [[[x]],[[x]],[[x]],[[x]],[[x]]]
     def f6(x,y,s):
         v=GAPMul(s,GetRoot(GAPMul(x,y)))
@@ -520,7 +520,7 @@ def lxg319(para,root,i):
     
     rep=[[f1,x],[f1,y],[f6,y,x,1],[f6,x,y,-1],[f6,y,x,-1],[f6,x,y,1],[f7,x,y],[f7,y,x],[f9,x,y],[f9,y,x],[f11,x,y,-1],[f11,x,y,1],[f14,y,x],[f14,x,y],[f16,y,x],[f16,x,y],[f19,x,y,1],[f19,y,x,1],[f19,x,y,-1],[f19,y,x,-1],[f21,x,y],[f21,y,x],[f23,x,y],[f23,y,x],[f25,x,y],[f26,x,y],[f27,x,y,-1],[f27,y,x,1],[f27,x,y,1],[f27,y,x,-1],[f31,x,y,1],[f31,y,x,1],[f31,x,y,-1],[f31,y,x,-1],None,None,[f37,x,y],[f37,y,x],None,None,None,[f42,x,y,1],[f42,y,x,1],[f42,x,y,-1],[f42,y,x,-1],[f46,x,y],[f46,y,x],[f48,x,y,-1],[f48,x,y,1],None,None,None,None,[f54,x,y],[f54,y,x],[f56,x,y],[f56,y,x]]
     if rep[i]==None :
-        return ApplyFunc(rep[i][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,x)
+        return ApplyFunc(rep[i-1][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,x)
     else:
         return false
 
@@ -536,7 +536,7 @@ def lxg3110(i):
         for v in l:
             for k in [v[k-1] for k in range(2,len(v)+1)]:
                 l=k%d**2
-                (m[QuoInt(k, d ^ 2) + 1])[QuoInt(l, d) + 1][l%d+1-1]=v[1-1]
+                m[QuoInt(k,d**2)+1-1][QuoInt(l,d)+1-1][l%d+1-1]=v[1-1]
         return m
     
     

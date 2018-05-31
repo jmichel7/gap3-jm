@@ -570,7 +570,7 @@ def p4_2219(ST):
 ChevieData["G4_22"]["sparseFakeDegrees"]=p4_2219
 
 def p4_2220(ST,phi,q):
-    f=(CHEVIE.R("sparseFakeDegrees", "G4_22"))(ST)[ChevieData["G4_22"]["CharInfo"](ST)["charparams"].index(phi)+1-1]
+    f=ChevieData["G4_22"]["sparseFakeDegrees"](ST)[ChevieData["G4_22"]["CharInfo"](ST)["charparams"].index(phi)+1-1]
     return Sum(range(1,len(f)-1+1,3-1),lambda i: GAPMul(f[i-1],q**f[i+1-1]))
 
 ChevieData["G4_22"]["FakeDegree"]=p4_2220
@@ -694,7 +694,7 @@ def p4_2228(char):
     else:
         if char[1-1]==2 :
             return {"name":"f2",
-                "order":Concatenation([1,2],f(range(3,5+1),char[3-1]),5+Combinations([1 .. 4], 2)[char[4-1]-1],5+Difference(range(1,4+1),Combinations([1 .. 4], 2)[char[4-1]-1])),
+                "order":Concatenation([1,2],f(range(3,5+1),char[3-1]),5+Combinations(range(1,4+1),2)[char[4-1]-1],5+Difference(range(1,4+1),Combinations(range(1,4+1),2)[char[4-1]-1])),
                 "rootPower":-1**char[2-1]}
         else:
             if char[1-1]==3 :
@@ -718,12 +718,12 @@ def p4_2229(char):
     else:
         if char[1-1]==2 :
             return {"name":"f2",
-                "order":Concatenation([1,2],2+Drop(range(1,3+1),char[3-1]),[2+char[3-1]],5+Combinations([1 .. 5], 2)[char[4-1]-1],5+Difference(range(1,5+1),Combinations([1 .. 5], 2)[char[4-1]-1])),
+                "order":Concatenation([1,2],2+Drop(range(1,3+1),char[3-1]),[2+char[3-1]],5+Combinations(range(1,5+1),2)[char[4-1]-1],5+Difference(range(1,5+1),Combinations(range(1,5+1),2)[char[4-1]-1])),
                 "rootPower":-1**char[2-1]}
         else:
             if char[1-1]==3 :
                 return {"name":"f3",
-                    "order":Concatenation(f([1,2],char[3-1]),range(3,5+1),5+Combinations([1 .. 5], 3)[char[4-1]-1],5+Difference(range(1,5+1),Combinations([1 .. 5], 3)[char[4-1]-1])),
+                    "order":Concatenation(f([1,2],char[3-1]),range(3,5+1),5+Combinations(range(1,5+1),3)[char[4-1]-1],5+Difference(range(1,5+1),Combinations(range(1,5+1),3)[char[4-1]-1])),
                     "rootPower":ER(3)**char[2-1]}
             else:
                 if char[1-1]==4 :
@@ -746,13 +746,13 @@ ChevieData["G4_22"]["SchurData"]=p4_2226
 def G4_22FetchIndexChars(ST,para):
     if not ChevieData["CheckIndexChars"] :
         return ChevieData["G4_22"]["CharInfo"](ST)["indexchars"]
-    if not "G4_22CachedIndexChars" in CHEVIE :
+    if not "G4_22CachedIndexChars" in ChevieData :
         ChevieData["G4_22CachedIndexChars"]=[]
         [ChevieData["G4_22CachedIndexChars"][k-1] for k in range(4,22+1)]=map(lambda i: [],range(4,22+1))
         InfoChevie2("Creating G4_22CachedIndexChars\n")
-    p=PositionProperty(CHEVIE.G4_22CachedIndexChars[ST-1],lambda x: x[1-1]==para)
+    p=PositionProperty(ChevieData["G4_22CachedIndexChars"][ST-1],lambda x: x[1-1]==para)
     if !=(p,false) :
-        return (CHEVIE.G4_22CachedIndexChars[ST])[p][2-1]
+        return ChevieData["G4_22CachedIndexChars"][ST-1][p-1][2-1]
         InfoChevie2("Using G4_22CachedIndexChars(",para,")\n")
     else:
         return ChevieData["G4_22"]["HeckeCharTable"](ST,para,[])["indexchars"]
@@ -764,8 +764,8 @@ def p4_2230(ST,p,para,rootpara):
     index=GAPDiv(ChevieData["G4_22"]["Size"](g),ChevieData["G4_22"]["Size"](ST))
     Y=Concatenation(ChevieData["G4_22"]["GetParams"](ST,para))
     g=ChevieData["G4_22"]["CharInfo"](ST)
-    g=G4_22FetchIndexChars(ST, para)[g["charparams"].index(p)+1-1]
-    g=(CHEVIE.R("SchurData", "G4_22"))(ST)[g-1]
+    g=G4_22FetchIndexChars(ST,para)[g["charparams"].index(p)+1-1]
+    g=ChevieData["G4_22"]["SchurData"](ST)[g-1]
     g=VFactorSchurElement(Y,ChevieData["G4_22"]["SchurModels"](ST)[g["name"]],g)
     return GAPDiv(g,index)
 
@@ -776,8 +776,8 @@ def p4_2231(ST,p,para,rootpara):
     index=GAPDiv(ChevieData["G4_22"]["Size"](g),ChevieData["G4_22"]["Size"](ST))
     Y=Concatenation(ChevieData["G4_22"]["GetParams"](ST,para))
     g=ChevieData["G4_22"]["CharInfo"](ST)
-    g=G4_22FetchIndexChars(ST, para)[g["charparams"].index(p)+1-1]
-    g=(CHEVIE.R("SchurData", "G4_22"))(ST)[g-1]
+    g=G4_22FetchIndexChars(ST,para)[g["charparams"].index(p)+1-1]
+    g=ChevieData["G4_22"]["SchurData"](ST)[g-1]
     g=VcycSchurElement(Y,ChevieData["G4_22"]["SchurModels"](ST)[g["name"]],g)
     return GAPDiv(g,index)
 
@@ -890,20 +890,20 @@ def G4_22Helper(c,e,x,n,p):
 
 
 
-if not "CheckIndexChars" in CHEVIE :
+if not "CheckIndexChars" in ChevieData :
     ChevieData["CheckIndexChars"]=false
 
 def G4_22Test(res,rows,i):
     T=[None,None,None,7,7,7,7,11,11,11,11,11,11,11,11,19,19,19,19,19,19,19]
     T=SPrint("G",T[res["ST"]-1])
-    if not "G4_22CachedIndexChars" in CHEVIE :
+    if not "G4_22CachedIndexChars" in ChevieData :
         ChevieData["G4_22CachedIndexChars"]=[]
         [ChevieData["G4_22CachedIndexChars"][k-1] for k in range(4,22+1)]=map(lambda i: [],range(4,22+1))
         InfoChevie2("Creating G4_22CachedIndexChars\n")
-    p=PositionProperty(CHEVIE.G4_22CachedIndexChars[res["ST"]-1],lambda x: x[1-1]==res["parameter"])
+    p=PositionProperty(ChevieData["G4_22CachedIndexChars"][res["ST"]-1],lambda x: x[1-1]==res["parameter"])
     if !=(p,false) :
         InfoChevie2("Using G4_22CachedIndexChars(",res["parameter"],")\n")
-        ic=(CHEVIE.G4_22CachedIndexChars[res.ST])[p][2-1]
+        ic=ChevieData["G4_22CachedIndexChars"][res["ST"]-1][p-1][2-1]
         res["irreducibles"]=[rows[k-1] for k in ic]
         if !=(ic,i) :
             print "*** WARNING: choice of character restrictions from ",T," for this specialization does  !  agree with group CharTable\n",
@@ -928,7 +928,7 @@ def G4_22Test(res,rows,i):
         print " Choosing ",map(lambda x: x[1-1],l),"\n",
         l=map(lambda x: x[1-1],l)
         res["irreducibles"]=[rows[k-1] for k in l]
-    CHEVIE.G4_22CachedIndexChars[res["ST"]-1].append([res["parameter"],l])
+    ChevieData["G4_22CachedIndexChars"][res["ST"]-1].append([res["parameter"],l])
     return l
 
 
@@ -1111,7 +1111,7 @@ def p4_2243(ST,para,root,i):
                     else:
                         return r(X,Drop(Y,char[3-1]),Z,char[2-1])
                 else:
-                    return r(X,Drop(Y,char[3-1]),[Z[k-1] for k in Combinations([1 .. Length(Z)], 2)[char[4-1]-1]],char[2-1])
+                    return r(X,Drop(Y,char[3-1]),[Z[k-1] for k in Combinations(range(1,len(Z)+1),2)[char[4-1]-1]],char[2-1])
             else:
                 if dim==3 :
                     X=[X[k-1] for k in [char[3-1],3-char[3-1]]]
@@ -1127,7 +1127,7 @@ def p4_2243(ST,para,root,i):
                                 if ST in range(8,15+1) :
                                     return r(X,Y,Drop(Z,char[4-1]),char[2-1])
                                 else:
-                                    return r(X,Y,[Z[k-1] for k in Combinations([1 .. 5], 3)[char[4-1]-1]],char[2-1])
+                                    return r(X,Y,[Z[k-1] for k in Combinations(range(1,5+1),3)[char[4-1]-1]],char[2-1])
                 else:
                     if dim==4 :
                         Y=Concatenation(Drop(Y,char[3-1]),[Y[char[3-1]-1]])
@@ -1143,8 +1143,8 @@ def p4_2243(ST,para,root,i):
                                 return r(X,Y,Concatenation(Drop(Z,char[3-1]),[Z[char[3-1]-1]]),char[2-1])
     
     
-    ci=G4_22FetchIndexChars(ST, para)[i-1]
-    m=rep((CHEVIE.R("paramchars", "G4_22"))(ST)[ci-1])+GAPMul(0,prod(para))
+    ci=G4_22FetchIndexChars(ST,para)[i-1]
+    m=rep(ChevieData["G4_22"]["paramchars"](ST)[ci-1])+GAPMul(0,prod(para))
     return map(lambda x: ApplyWord(x,m),ChevieData["G4_22"]["Embed"](ST))
 
 ChevieData["G4_22"]["HeckeRepresentation"]=p4_2243

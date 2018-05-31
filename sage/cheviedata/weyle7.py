@@ -61,12 +61,12 @@ def eyle73(w):
     str=CycleStructurePerm(x)
     if str in exc :
         str=[str,CycleStructurePerm(GAPMul(x,ChevieData["E7"]["longestperm"]))]
-    return CHEVIE.R("ClassNames", "E7")[ChevieData["E7"]["cyclestructure"].index(str)+1-1]
+    return ChevieData["E7"]["ClassNames"][ChevieData["E7"]["cyclestructure"].index(str)+1-1]
 
 ChevieData["E7"]["ClassParameter"]=eyle73
 
 def eyle74(param,sqrtparam):
-    q=GAPDiv(-param[1][1-1],param[1][2-1])
+    q=GAPDiv(-param[1-1][1-1],param[1-1][2-1])
     if sqrtparam[1]==None :
         v=sqrtparam[1-1]
     else:
@@ -110,10 +110,10 @@ ChevieData["E7"]["WGraph"]=eyle76
 
 def eyle77(param,sqrtparam,i):
     if not sqrtparam[1]==None :
-        v=GetRoot(GAPDiv(-param[1][1-1],param[1][2-1]),2,"Representation(Hecke(E7),[",i,"])")
+        v=GetRoot(GAPDiv(-param[1-1][1-1],param[1-1][2-1]),2,"Representation(Hecke(E7),[",i,"])")
     else:
         v=sqrtparam[1-1]
-    return GAPMul(-param[1][2-1],WGraphToRepresentation(7,ChevieData["E7"]["WGraph"](i),v))
+    return GAPMul(-param[1-1][2-1],WGraphToRepresentation(7,ChevieData["E7"]["WGraph"](i),v))
 
 ChevieData["E7"]["HeckeRepresentation"]=eyle77
 
@@ -454,7 +454,7 @@ def eyle712(p):
         c["dimBu"]=14
         Unbind(c["dynkin"])
         Unbind(c["AuAction"])
-        uc.springerSeries[1-1]["locsys"]=[[1,1],[45,1],[44,1],[2,2],[39,1],[9,1],[5,1],[40,1],[41,1],[4,2],[3,2],[43,1],[29,1],[12,1],[7,2],[42,1],[40,2],[5,2],[33,1],[18,1],[22,2],[46,1],[38,1],[6,1],[9,2],[36,1],[20,1],[24,2],[6,2],[38,2],[10,2],[34,1],[15,1],[28,1],[37,1],[8,1],[32,1],[13,2],[11,2],[35,1],[19,1],[25,1],[30,1],[16,1],[29,2],[12,2],[14,1],[31,1],[29,3],[12,3],[26,1],[21,1],[27,1],[17,1],[15,2],[28,2],[21,2],[26,2],[23,1],[23,2]]
+        uc["springerSeries"][1-1]["locsys"]=[[1,1],[45,1],[44,1],[2,2],[39,1],[9,1],[5,1],[40,1],[41,1],[4,2],[3,2],[43,1],[29,1],[12,1],[7,2],[42,1],[40,2],[5,2],[33,1],[18,1],[22,2],[46,1],[38,1],[6,1],[9,2],[36,1],[20,1],[24,2],[6,2],[38,2],[10,2],[34,1],[15,1],[28,1],[37,1],[8,1],[32,1],[13,2],[11,2],[35,1],[19,1],[25,1],[30,1],[16,1],[29,2],[12,2],[14,1],[31,1],[29,3],[12,3],[26,1],[21,1],[27,1],[17,1],[15,2],[28,2],[21,2],[26,2],[23,1],[23,2]]
         [uc["springerSeries"][k-1] for k in range(2,4+1)]=[{"relgroup":CoxeterGroup("C",3),
             "levi":[2,3,4,5],
             "Z":[1],
@@ -467,8 +467,8 @@ def eyle712(p):
             "locsys":[[1,4]]}]
     else:
         if p==3 :
-            uc.springerSeries[1].locsys[1-1]=[1,1]
-            uc.springerSeries[2].locsys[1-1]=[1,4]
+            uc["springerSeries"][1-1]["locsys"][1-1]=[1,1]
+            uc["springerSeries"][2-1]["locsys"][1-1]=[1,4]
             uc["springerSeries"]+=[{"relgroup":CoxeterGroup("A",1),
                 "Z":[1],
                 "levi":range(1,6+1),

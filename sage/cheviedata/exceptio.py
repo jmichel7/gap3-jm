@@ -4,7 +4,7 @@ def eptio1(x,option):
         if f in option :
             s=ChevieData["t"]["CharInfo"]()
             if f in s :
-                s=s.(f)[s["charparams"].index(x)+1-1]
+                s=s[f][s["charparams"].index(x)+1-1]
                 if "TeX" in option :
                     return s
                 else:
@@ -84,13 +84,13 @@ ChevieData["IndirectAddData"]("SemisimpleRank",["G2","F4","H3","E6","G24","G25",
 ChevieData["IndirectAddData"]("SemisimpleRank",["A","B","D"],lambda t: lambda r: r)
 
 def eptio9(phi,q):
-    f=CHEVIE.R("sparseFakeDegrees", t)[ChevieData["t"]["CharInfo"]()["charparams"].index(phi)+1-1]
+    f=ChevieData["t"]["sparseFakeDegrees"][ChevieData["t"]["CharInfo"]()["charparams"].index(phi)+1-1]
     return Sum(range(1,len(f)-1+1,3-1),lambda i: GAPMul(f[i-1],q**f[i+1-1]))
 
 ChevieData["IndirectAddData"]("FakeDegree",["G2","F4","H3","E6","G24","G25","G26","G27","G29","G32","G33","G34"],lambda t: eptio9)
 
 def eptio10(phi,q):
-    f=CHEVIE.R("cycpolfakedegrees", t)[ChevieData["t"]["CharInfo"]()["charparams"].index(phi)+1-1]
+    f=ChevieData["t"]["cycpolfakedegrees"][ChevieData["t"]["CharInfo"]()["charparams"].index(phi)+1-1]
     if IsList(f[1-1]) :
         res=ValuePol(f[1-1],q**2)
     else:
@@ -167,13 +167,13 @@ def eptio19(p):
 ChevieData["IndirectAddData"]("DecompositionMatrix",["F4","G2","G25","G26"],lambda t: eptio19)
 
 def eptio20(arg):
-    return Value(CycPol(CHEVIE.R("CycPolSchurElements", t)[ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]),GAPDiv(-(arg[2])[1][1-1],(arg[2])[1][2-1]))
+    return Value(CycPol(ChevieData["t"]["CycPolSchurElements"][ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]),GAPDiv(-arg[2-1][1-1][1-1],arg[2-1][1-1][2-1]))
 
 ChevieData["IndirectAddData"]("SchurElement",["G24","G27","G29","G33","G34","E6","E7","E8","H3","H4"],lambda t: eptio20)
 
 def eptio21(arg):
-    c=CHEVIE.R("CycPolSchurElements", t)[ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
-    q=GAPDiv(-(arg[2])[1][1-1],(arg[2])[1][2-1])
+    c=ChevieData["t"]["CycPolSchurElements"][ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
+    q=GAPDiv(-arg[2-1][1-1][1-1],arg[2-1][1-1][2-1])
     res={"factor":Mvp(GAPMul(c[1-1],q**c[2-1])),
         "operations":FactorizedSchurElementsOps}
     res["vcyc"]=map(lambda v: {"monomial":q,
@@ -184,14 +184,14 @@ ChevieData["IndirectAddData"]("FactorizedSchurElement",["G24","G27","G29","G33",
 
 def eptio22(arg):
     Y=Concatenation([arg[2-1][k-1] for k in ChevieData["t"]["HyperplaneRepresentatives"]])
-    ci=CHEVIE.R("SchurData", t)[ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
+    ci=ChevieData["t"]["SchurData"][ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
     return ApplyFunc(VFactorSchurElement,Concatenation([Y,ChevieData["t"]["SchurModels"][ci["name"]],ci],[arg[k-1] for k in range(3,len(arg)+1)]))
 
 ChevieData["IndirectAddData"]("FactorizedSchurElement",["G2","F4","G25","G26","G32"],lambda t: eptio22)
 
 def eptio23(arg):
     Y=Concatenation([arg[2-1][k-1] for k in ChevieData["t"]["HyperplaneRepresentatives"]])
-    ci=CHEVIE.R("SchurData", t)[ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
+    ci=ChevieData["t"]["SchurData"][ChevieData["t"]["CharInfo"]()["charparams"].index(arg[1-1])+1-1]
     return VcycSchurElement(Y,ChevieData["t"]["SchurModels"][ci["name"]],ci)
 
 ChevieData["IndirectAddData"]("SchurElement",["F4","G25","G26","G32"],lambda t: eptio23)

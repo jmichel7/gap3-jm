@@ -5,8 +5,8 @@ def eylg21(arg):
     else:
         type_=1
     a=[[2,-1],[-3,2]]
-    a[1][2-1]=-type_
-    a[2][1-1]=GAPDiv(3,a[1][2-1])
+    a[1-1][2-1]=-type_
+    a[2-1][1-1]=GAPDiv(3,a[1-1][2-1])
     return a
 
 ChevieData["G2"]["CartanMat"]=eylg21
@@ -94,7 +94,7 @@ ChevieData["G2"]["PowerMaps"]=[None,[1,1,1,5,5,1],[1,2,3,6,1,6]]
 
 ChevieData["G2"]["sparseFakeDegrees"]=[[1,0],[1,6],[1,3],[1,3],[1,1,1,5],[1,2,1,4]]
 
-ChevieData["G2"]["ClassParameter"]=lambda w: CHEVIE.R("ClassNames", "G2")[PositionProperty([[[]],[[2],[1,2,1],[2,1,2,1,2]],[[1],[2,1,2],[1,2,1,2,1]],[[2,1],[1,2]],[[2,1,2,1],[1,2,1,2]],[[1,2,1,2,1,2]]],lambda x: w in x)-1]
+ChevieData["G2"]["ClassParameter"]=lambda w: ChevieData["G2"]["ClassNames"][PositionProperty([[[]],[[2],[1,2,1],[2,1,2,1,2]],[[1],[2,1,2],[1,2,1,2,1]],[[2,1],[1,2]],[[2,1,2,1],[1,2,1,2]],[[1,2,1,2,1,2]]],lambda x: w in x)-1]
 
 def eylg25(para,sqrtpara):
     u=prod(para[1-1])
@@ -116,10 +116,10 @@ def eylg25(para,sqrtpara):
 ChevieData["G2"]["squv"]=eylg25
 
 def eylg26(para,sqrtpara):
-    x=para[1][1-1]
-    y=para[1][2-1]
-    z=para[2][1-1]
-    t=para[2][2-1]
+    x=para[1-1][1-1]
+    y=para[1-1][2-1]
+    z=para[2-1][1-1]
+    t=para[2-1][2-1]
     one=GAPMul(x,y)**0
     def f1(u,v):
         return GAPMul([1,v,u,GAPMul(v,u),GAPMul(v**2,u**2),GAPMul(v**3,u**3)],one)
@@ -146,10 +146,10 @@ ChevieData["G2"]["HeckeCharTable"]=eylg26
 
 def eylg27(para,sqrtpara,i):
     one=GAPMul(prod(para[1-1])**0,prod(para[2-1])**0)
-    x=para[1][1-1]
-    y=para[1][2-1]
-    z=para[2][1-1]
-    t=para[2][2-1]
+    x=para[1-1][1-1]
+    y=para[1-1][2-1]
+    z=para[2-1][1-1]
+    t=para[2-1][2-1]
     if i==1 :
         return GAPMul([[[x]],[[z]]],one)
     else:
@@ -175,8 +175,8 @@ def eylg28(i):
 ChevieData["G2"]["Representation"]=eylg28
 
 def eylg29(param):
-    u=GAPDiv(-param[1][1-1],param[1][2-1])
-    v=GAPDiv(-param[2][1-1],param[2][2-1])
+    u=GAPDiv(-param[1-1][1-1],param[1-1][2-1])
+    v=GAPDiv(-param[2-1][1-1],param[2-1][2-1])
     return GAPMul(1+u,v+1)
 
 ChevieData["G2"]["PoincarePolynomial"]=eylg29
@@ -198,8 +198,8 @@ ChevieData["G2"]["SchurData"]=[{"name":"f1",
     "rootPower":1}]
 
 def eylg210(phi,para,sqrtpara):
-    u=GAPDiv(-para[1][1-1],para[1][2-1])
-    v=GAPDiv(-para[2][1-1],para[2][2-1])
+    u=GAPDiv(-para[1-1][1-1],para[1-1][2-1])
+    v=GAPDiv(-para[2-1][1-1],para[2-1][2-1])
     p=ChevieData["G2"]["CharInfo"]()["charparams"].index(phi)+1
     if p==1 :
         return GAPMul(1+u,v+1)
@@ -212,7 +212,7 @@ def eylg210(phi,para,sqrtpara):
             else:
                 if p==4 :
                     return GAPDiv(GAPMul(u**2+v**2,1+u),v**3)
-    squv=GAPDiv(GAPDiv(ChevieData["G2"]["squv"](para,sqrtpara),para[1][2-1]),para[2][2-1])
+    squv=GAPDiv(GAPDiv(ChevieData["G2"]["squv"](para,sqrtpara),para[1-1][2-1]),para[2-1][2-1])
     if p==6 :
         squv=-squv
     return GAPMul(2,GAPMul(u,v)**-1)
@@ -313,7 +313,7 @@ def eylg216(c,p):
         "locsys":[[4,1]],
         "parameter":[8]}]}
     if p==2 :
-        uc.springerSeries[1].locsys[1-1]=[5,2]
+        uc["springerSeries"][1-1]["locsys"][1-1]=[5,2]
         uc["springerSeries"].append({"relgroup":CoxeterGroup(),
             "levi":[1,2],
             "Z":[],
@@ -325,10 +325,10 @@ def eylg216(c,p):
                 "dimBu":3,
                 "red":Z(2),
                 "Au":CoxeterGroup()})
-            uc.classes[1-1]["succ"].append("(~A1)3")
-            uc.classes[3-1]["dimBu"]=2
-            Unbind(uc.classes[3-1]["dynkin"])
-            [uc.springerSeries[1-1]["locsys"][k-1] for k in [3,5]]=[[6,1],[4,2]]
+            uc["classes"][1-1]["succ"].append("(~A1)3")
+            uc["classes"][3-1]["dimBu"]=2
+            Unbind(uc["classes"][3-1]["dynkin"])
+            [uc["springerSeries"][1-1]["locsys"][k-1] for k in [3,5]]=[[6,1],[4,2]]
             for c in [2,3]:
                 uc["springerSeries"].append({"relgroup":CoxeterGroup(),
                     "levi":[1,2],

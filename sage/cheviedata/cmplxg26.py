@@ -105,11 +105,11 @@ def lxg265(para,root):
         return GAPMul([9,GAPMul(3,p)+GAPMul(6,r),GAPMul(-p,u)-GAPMul(p,u)-GAPMul(v,p)-GAPMul(r,u)-GAPMul(r,u)-GAPMul(v,r)+GAPMul(r,u**2),GAPMul(3,r),GAPMul(r,u),GAPMul(r,u+v),GAPMul(r,GAPMul(-2,p)-GAPMul(2,p)-GAPMul(2,v)+GAPMul(r,u**2)),GAPMul(r**2,GAPMul(2,p**2)+GAPMul(2,p**2)),GAPMul(j**2,GAPMul(-2,r)-GAPMul(2,r)-GAPMul(2,r)+GAPMul(p,u**2)),GAPMul(u**2,v**2),GAPMul(j,GAPMul(2,r**2)+GAPMul(2,r**2)),GAPMul(u**6,v**6),GAPMul(u**2,j**2),0,0,GAPMul(9,j**2),0,0,GAPMul(9,j),GAPMul(9,p**3),GAPMul(9,j**2),GAPMul(9,j),GAPMul(p+GAPMul(2,r),u+v),GAPMul(u**2,r**2),GAPMul(u**4,r**4),GAPMul(u**2+v**2,p+GAPMul(2,r)),GAPMul(u,GAPMul(2,p)+r),GAPMul(3,u)+GAPMul(3,v),GAPMul(r,GAPMul(-u,p)-GAPMul(p,u)-GAPMul(p,v)-GAPMul(p,u**2)-GAPMul(u**2,p)-GAPMul(p,v**2)+GAPMul(r,u**3)),GAPMul(-u,v),GAPMul(3,u**2),GAPMul(3,u**4),GAPMul(3,u**6),GAPMul(3,u**2)+GAPMul(3,v**2),GAPMul(3,u),GAPMul(-u,v**3)-GAPMul(u,w**3)-GAPMul(v,w**3)+GAPMul(u**2,v**2)-GAPMul(u**3,v)-GAPMul(u**3,w)-GAPMul(v**3,w),GAPMul(v,w)+GAPMul(u,v),GAPMul(u**2,j**2),GAPMul(u**4,j),GAPMul(3,u**2)-GAPMul(2,u**3)-GAPMul(2,w**3)-GAPMul(2,w**3),GAPMul(-j**2,p),GAPMul(-j,p**2),GAPMul(-u,v),GAPMul(-j**2,p),GAPMul(j,p),GAPMul(r**3,u**3),GAPMul(-j**2,p**4),GAPMul(j,r)],c)
     
     
-    r=para[1][1-1]
-    p=para[1][2-1]
-    u=para[2][1-1]
-    v=para[2][2-1]
-    w=para[2][3-1]
+    r=para[1-1][1-1]
+    p=para[1-1][2-1]
+    u=para[2-1][1-1]
+    v=para[2-1][2-1]
+    w=para[2-1][3-1]
     res["irreducibles"]=[f10(r,u),f10(p,u),f10(p,w),f10(p,v),f10(r,w),f10(r,v),f23(p,r,v,w,u),f23(r,p,v,w,u),f23(p,r,u,v,w),f23(r,p,u,v,w),f23(p,r,u,w,v),f23(r,p,u,w,v),f36(r,p,u,v,w),f36(p,r,u,v,w),f31(p,r,v,u,w),f31(r,p,v,u,w),f31(p,r,u,w,v),f31(r,p,u,w,v),f31(p,r,w,v,u),f31(r,p,w,v,u),f31(p,r,w,u,v),f31(r,p,w,u,v),f31(p,r,u,v,w),f31(r,p,u,v,w),f31(p,r,v,w,u),f31(r,p,v,w,u),f62(r,p,w,u,v),f62(p,r,w,u,v),f62(r,p,v,w,u),f62(p,r,v,w,u),f62(r,p,u,v,w),f62(p,r,u,v,w),f62(r,p,v,u,w),f62(p,r,v,u,w),f62(r,p,w,v,u),f62(p,r,w,v,u),f62(r,p,u,w,v),f62(p,r,u,w,v),f83(r,p,u,v,w,1),f83(r,p,u,v,w,-1),f83(r,p,w,v,u,-1),f83(r,p,w,v,u,1),f83(r,p,v,u,w,1),f83(r,p,v,u,w,-1),f97(p,r,u,v,w,ER(3)**2),f97(r,p,u,v,w,ER(3)**2),f97(p,r,u,v,w,ER(3)),f97(r,p,u,v,w,ER(3))]
     return ChevieData["compat"]["MakeCharacterTable"](res)
 
@@ -199,11 +199,11 @@ ChevieData["G26"]["SchurData"]=[{"name":"f1_0",
     "rootUnityPower":1}]
 
 def lxg267(para,root,i):
-    x=para[1][1-1]
-    y=para[1][2-1]
-    u=para[2][1-1]
-    v=para[2][2-1]
-    w=para[2][3-1]
+    x=para[1-1][1-1]
+    y=para[1-1][2-1]
+    u=para[2-1][1-1]
+    v=para[2-1][2-1]
+    w=para[2-1][3-1]
     def f10(x,u):
         return [[[x]],[[u]],[[u]]]
     
@@ -232,7 +232,7 @@ def lxg267(para,root,i):
     
     rep=[[f10,x,u],[f10,y,u],[f10,y,w],[f10,y,v],[f10,x,w],[f10,x,v],[f23,y,v,w],[f23,x,v,w],[f23,y,u,v],[f23,x,u,v],[f23,y,u,w],[f23,x,u,w],[f36,x],[f36,y],[f31,x,y,u,v],[f31,y,x,u,v],[f31,x,y,w,u],[f31,y,x,w,u],[f31,x,y,v,w],[f31,y,x,v,w],[f31,x,y,u,w],[f31,y,x,u,w],[f31,x,y,v,u],[f31,y,x,v,u],[f31,x,y,w,v],[f31,y,x,w,v],[f6,x,y,v,u,w],[f6,y,x,v,u,w],[f6,x,y,u,w,v],[f6,y,x,u,w,v],[f6,x,y,w,v,u],[f6,y,x,w,v,u],[f6,x,y,w,u,v],[f6,y,x,w,u,v],[f6,x,y,u,v,w],[f6,y,x,u,v,w],[f6,x,y,v,w,u],[f6,y,x,v,w,u],[f8,x,y,u,v,w,-1],[f8,x,y,u,v,w,1],[f8,x,y,w,v,u,1],[f8,x,y,w,v,u,-1],[f8,x,y,v,u,w,-1],[f8,x,y,v,u,w,1],[f9,x,y,u,v,w,ER(3)**2],[f9,y,x,u,v,w,ER(3)**2],[f9,x,y,u,v,w,ER(3)],[f9,y,x,u,v,w,ER(3)]]
     if rep[i]==None :
-        return ApplyFunc(rep[i][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para))
+        return ApplyFunc(rep[i-1][1-1],[rep[i-1][k-1] for k in range(2,len(rep[i-1])+1)])+GAPMul(0,prod(para))
     else:
         return false
 

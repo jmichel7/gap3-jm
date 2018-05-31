@@ -6,8 +6,8 @@ def eylbc1(arg):
     else:
         type_=2
     a=ChevieData["A"]["CartanMat"](n)
-    a[1][2-1]=-type_
-    a[2][1-1]=GAPDiv(2,a[1][2-1])
+    a[1-1][2-1]=-type_
+    a[2-1][1-1]=GAPDiv(2,a[1-1][2-1])
     return a
 
 ChevieData["B"]["CartanMat"]=eylbc1
@@ -78,7 +78,7 @@ def eylbc4(l,type_):
     rts=map(lambda i: GAPMul(0,range(1,l+1)),range(1,l+1))
     for i in range(1,l-1+1):
         [rts[i-1][k-1] for k in [i,i+1]]=[1,-1]
-    rts[l][l-1]=GAPDiv(2,type_)
+    rts[l-1][l-1]=GAPDiv(2,type_)
     return [rts[k-1] for k in range(l,1+1,l-1-l)]
 
 ChevieData["B"]["GeneratingRoots"]=eylbc4
@@ -132,7 +132,7 @@ ChevieData["B"]["WordClass"]=eylbc9
 def eylbc10(n):
     res=ChevieData["imp"]["ClassInfo"](2,1,n)
     res["classtext"]=map(ChevieData["B"]["WordClass"],res["classparams"])
-    res["classes"]=map(lambda x: GAPDiv(res.centralizers[1-1],x),res["centralizers"])
+    res["classes"]=map(lambda x: GAPDiv(res["centralizers"][1-1],x),res["centralizers"])
     return res
 
 ChevieData["B"]["ClassInfo"]=eylbc10
@@ -204,7 +204,7 @@ ChevieData["tmp"]["order"]=lambda nq: GAPMul(2**nq[1-1],Factorial(nq[1-1]))
 
 ChevieData["tmp"]["size"]=lambda nq: GAPMul(2**nq[1-1],Factorial(nq[1-1]))
 
-def CHEVIE.tmp.domain(nq):
+def ChevieData["tmp"]["domain"](nq):
     return IsList(nq) and len(nq)==3 and IsInt(nq[1-1]) and nq[1-1]>0
 
 
@@ -222,9 +222,9 @@ def eylbc15(nq,gamma,pi):
     if n==0 :
         return q**0
     val=GAPMul(0,q)
-    BHk=CHEVIE.R("Hk", "B").irreducibles[1][1-1]
+    BHk=ChevieData["B"]["Hk"]["irreducibles"][1-1][1-1]
     if !=(pi[1-1],[]) :
-        k=pi[1][1-1]
+        k=pi[1-1][1-1]
         for alpha in PartitionTuples(n-k,2):
             dif=[]
             dif[1-1]=DifferencePartitions(gamma[1-1],alpha[1-1])
@@ -234,7 +234,7 @@ def eylbc15(nq,gamma,pi):
                     "ll":dif[1-1]["ll"]+dif[2-1]["ll"]}
                 val=val+GAPMul(q-1**dif["cc"]-1,-1**dif["ll"])
     else:
-        k=pi[2][1-1]
+        k=pi[2-1][1-1]
         nn=Sum(gamma[1-1])
         if >=(nn,k) :
             for alpha in Partitions(nn-k):
@@ -251,7 +251,7 @@ def eylbc15(nq,gamma,pi):
 
 ChevieData["tmp"]["irreducibles"]=[[eylbc15]]
 
-def CHEVIE.tmp.matrix(nq):
+def ChevieData["tmp"]["matrix"](nq):
     def DoublePartitions(n):
         if n==0 :
             return [[[],[]]]
@@ -306,12 +306,12 @@ def CHEVIE.tmp.matrix(nq):
         cbs+=map(lambda x: [[],[x]],prs[2-1])
         for hk in cbs:
             for pr in prs[1-1]:
-                if hk[2-1]==[] and pr["to"]>hk[1][len(hk[1-1])-1]["from"] :
+                if hk[2-1]==[] and pr["to"]>hk[1-1][len(hk[1-1])-1]["from"] :
                     new=map(ShallowCopy,hk)
                     new[1-1].append(pr)
                     cbs.append(new)
             for pr in prs[2-1]:
-                if hk[2-1]==[] or pr["to"]>hk[2][len(hk[2-1])-1]["from"] :
+                if hk[2-1]==[] or pr["to"]>hk[2-1][len(hk[2-1])-1]["from"] :
                     new=map(ShallowCopy,hk)
                     new[2-1].append(pr)
                     cbs.append(new)
@@ -322,9 +322,9 @@ def CHEVIE.tmp.matrix(nq):
                 "adr":1}
             if lh==1 :
                 if hk[1-1][1]==None :
-                    new.wgt[2-1]=GAPMul(-1**lg,y)
+                    new["wgt"][2-1]=GAPMul(-1**lg,y)
                 else:
-                    new.wgt[2-1]=GAPMul(-1**lg+1,x**hk[2][1-1]["pow"])
+                    new["wgt"][2-1]=GAPMul(-1**lg+1,x**hk[2-1][1-1]["pow"])
             if ll<m :
                 gamma=[]
                 for i in [1,2]:
@@ -332,7 +332,7 @@ def CHEVIE.tmp.matrix(nq):
                     UniteSet(gamma[i-1],map(lambda x: x["to"],hk[i-1]))
                     if 0 in gamma[i-1] :
                         j=0
-                        while j<len(gamma[i-1]) and gamma[i][j+1-1]==j:
+                        while j<len(gamma[i-1]) and gamma[i-1][j+1-1]==j:
                             j=j+1
                         gamma[i-1]=[gamma[i-1][k-1] for k in range(j+1,len(gamma[i-1])+1)]-j
                 new["adr"]=pm[m-ll-1].index(gamma)+1
@@ -350,7 +350,7 @@ def CHEVIE.tmp.matrix(nq):
         for pi in scheme[n-1]:
             val=GAPMul(0,y)
             for hk in pi[k-1]:
-                val=val+GAPMul(hk.wgt[p-1],t[hk["adr"]-1])
+                val=val+GAPMul(hk["wgt"][p-1],t[hk["adr"]-1])
             col.append(val)
         return col
     
@@ -384,8 +384,8 @@ Unbind(ChevieData["tmp"])
 ChevieData["IndirectAddData"]("HeckeCharTable",["B"],ChevieData["compat"]["HeckeCharTableB"])
 
 def eylbc16(n,para):
-    q1=GAPDiv(-para[1][1-1],para[1][2-1])
-    q2=GAPDiv(-para[2][1-1],para[2][2-1])
+    q1=GAPDiv(-para[1-1][1-1],para[1-1][2-1])
+    q2=GAPDiv(-para[2-1][1-1],para[2-1][2-1])
     return prod(range(0,n-1+1))
 
 ChevieData["B"]["PoincarePolynomial"]=eylbc16
@@ -449,12 +449,12 @@ def eylbc25(arg):
         s["charNumbers"]=range(1,len(symbols)+1)+len(uc["charSymbols"])
         FixRelativeType(s)
         uc["charSymbols"]+=symbols
-    uc.harishChandra[1-1]["cuspidalName"]=""
+    uc["harishChandra"][1-1]["cuspidalName"]=""
     uc["a"]=map(LowestPowerGenericDegreeSymbol,uc["charSymbols"])
     uc["A"]=map(HighestPowerGenericDegreeSymbol,uc["charSymbols"])
     uc["families"]=FamiliesClassical(uc["charSymbols"])
     if len(arg)==2 and arg[2-1]==1 :
-        uc.harishChandra[1-1]["relativeType"]["cartanType"]=1
+        uc["harishChandra"][1-1]["relativeType"]["cartanType"]=1
     return uc
 
 ChevieData["B"]["UnipotentCharacters"]=eylbc25
@@ -484,7 +484,7 @@ def eylbc26(r,type_,char):
                     p=1
                 else:
                     p=CharParams(ss["relgroup"]).index([s["sp"]])+1
-        ss.locsys[p-1]=[len(uc["classes"]),CharParams(cc["Au"]).index(map(eylbc27,s["Au"]))+1]
+        ss["locsys"][p-1]=[len(uc["classes"]),CharParams(cc["Au"]).index(map(eylbc27,s["Au"]))+1]
     
     
     if type_==ER(2) :
@@ -559,10 +559,10 @@ def eylbc26(r,type_,char):
         else:
             type_=1
             cc["dimBu"]=cl[1-1]["dimBu"]
-            cc["name"]=Join(map(eylbc29,Reversed(Collected(cc.parameter[1-1]))),"")
+            cc["name"]=Join(map(eylbc29,Reversed(Collected(cc["parameter"][1-1]))),"")
         cc["red"]=CoxeterGroup()
         if char==2 :
-            j=cc.parameter[1-1]
+            j=cc["parameter"][1-1]
         else:
             j=cc["parameter"]
         for j in Collected(j):
@@ -625,7 +625,7 @@ def eylbc26(r,type_,char):
                     p=2
                 else:
                     p=CharParams(ss["relgroup"]).index([s])+1
-            ss.locsys[p-1]=[i,k]
+            ss["locsys"][p-1]=[i,k]
         
         
         def trspringer(i,old,new):
@@ -654,9 +654,9 @@ def eylbc26(r,type_,char):
                         "Z":[-1],
                         "locsys":[]})
             d=d+1
-        l=Filtered(range(1,len(uc["classes"])+1),lambda i: ForAll(Collected(uc.classes[i-1]["parameter"]),lambda c: c[1-1]%2==0 or c[2-1]==1))
+        l=Filtered(range(1,len(uc["classes"])+1),lambda i: ForAll(Collected(uc["classes"][i-1]["parameter"]),lambda c: c[1-1]%2==0 or c[2-1]==1))
         for i in l:
-            cl=uc.classes[i-1]
+            cl=uc["classes"][i-1]
             s=LuSpin(cl["parameter"])
             if Size(cl["Au"])==1 :
                 cl["Au"]=CoxeterGroup("A",1)
@@ -697,23 +697,23 @@ def eylbc28(d):
 
 def eylbc29(x):
     res=IntListToString(GAPMul(range(1,x[2-1]+1),0)+x[1-1],"[]")
-    if x[1-1] in cc.parameter[2-1] :
+    if x[1-1] in cc["parameter"][2-1] :
         return SPrint("(",res,")")
     return res
 
 def eylbc30(y):
     if !=(char,2) :
         return Dominates(y["parameter"],x["parameter"])
-    m=Maximum(x.parameter[1][1-1],y.parameter[1][1-1])
+    m=Maximum(x["parameter"][1-1][1-1],y["parameter"][1-1][1-1])
     f=lambda x: map(lambda i: Sum(Filtered(x,lambda z: z<i))+GAPMul(i,Number(x,lambda z: >=(z,i))),range(1,m+1))
-    fx=f(x.parameter[1-1])
-    fy=f(y.parameter[1-1])
+    fx=f(x["parameter"][1-1])
+    fy=f(y["parameter"][1-1])
     for i in range(1,m+1):
         if fx[i-1]<fy[i-1] :
             return false
         else:
-            if fx[i-1]==fy[i-1] and i in y.parameter[2-1] :
-                if i in Difference(x.parameter[1-1],x.parameter[2-1]) :
+            if fx[i-1]==fy[i-1] and i in y["parameter"][2-1] :
+                if i in Difference(x["parameter"][1-1],x["parameter"][2-1]) :
                     return false
                 if i<m and fx[i+1-1]-fy[i+1-1]%2==1 :
                     return false

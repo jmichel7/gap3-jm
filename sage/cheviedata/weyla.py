@@ -2,11 +2,11 @@
 def weyla1(n):
     a=IdentityMat(n)
     for i in range(1,n+1):
-        a[i][i-1]=2
+        a[i-1][i-1]=2
         if i<n :
-            a[i][i+1-1]=-1
+            a[i-1][i+1-1]=-1
         if i>1 :
-            a[i][i-1-1]=-1
+            a[i-1][i-1-1]=-1
     return a
 
 ChevieData["A"]["CartanMat"]=weyla1
@@ -46,7 +46,7 @@ def weyla6(n):
     res={"classparams":Partitions(n+1)}
     res["classnames"]=map(IntListToString,res["classparams"])
     res["classtext"]=map(ChevieData["A"]["WordClass"],res["classparams"])
-    res["classes"]=map(lambda pi: GAPDiv(Factorial(n+1),CharTableSymmetric.centralizers[1-1](n,pi)),res["classparams"])
+    res["classes"]=map(lambda pi: GAPDiv(Factorial(n+1),CharTableSymmetric["centralizers"][1-1](n,pi)),res["classparams"])
     res["orders"]=map(Lcm,res["classparams"])
     return res
 
@@ -123,7 +123,7 @@ def weyla10(nq,gamma,pi):
         return q**0
     k=pi[1-1]
     val=GAPMul(0,q)
-    AHk=CHEVIE.R("Hk", "A").irreducibles[1][1-1]
+    AHk=ChevieData["A"]["Hk"]["irreducibles"][1-1][1-1]
     for alpha in Partitions(n-k):
         dif=DifferencePartitions(gamma,alpha)
         if !=(dif,false) :
@@ -132,7 +132,7 @@ def weyla10(nq,gamma,pi):
 
 ChevieData["tmp"]["irreducibles"]=[[weyla10]]
 
-def CHEVIE.tmp.matrix(nq):
+def ChevieData["tmp"]["matrix"](nq):
     n=nq[1-1]
     q=nq[2-1]
     pm=[]
@@ -212,7 +212,7 @@ def weyla11(n,param):
 ChevieData["A"]["PoincarePolynomial"]=weyla11
 
 def weyla12(n,alpha,param,sqrtparam):
-    q=GAPDiv(-param[1][1-1],param[1][2-1])
+    q=GAPDiv(-param[1-1][1-1],param[1-1][2-1])
     lambda=BetaSet(alpha)
     res=q**Binomial(len(lambda),3)
     for i in lambda:
@@ -231,8 +231,8 @@ def weyla13(arg):
 ChevieData["A"]["FactorizedSchurElement"]=weyla13
 
 def weyla14(n,param,sqrtparam,i):
-    H=Hecke(CoxeterGroup("A",n),GAPDiv(-param[1][1-1],param[1][2-1]))
-    return SpechtModel(H,Partitions(n + 1)[i-1])
+    H=Hecke(CoxeterGroup("A",n),GAPDiv(-param[1-1][1-1],param[1-1][2-1]))
+    return SpechtModel(H,Partitions(n+1)[i-1])
 
 ChevieData["A"]["HeckeRepresentation"]=weyla14
 
@@ -290,7 +290,7 @@ def weyla21(n,p):
         "locsys":[]},PrimeResidues(d)),DivisorsInt(n+1)))}
     ss=lambda z: First(uc["springerSeries"],lambda x: x["Z"]==[z])
     for i in range(1,len(uc["classes"])+1):
-        cl=uc.classes[i-1]
+        cl=uc["classes"][i-1]
         p=cl["parameter"]
         d=Gcd(p)
         cl["name"]=IntListToString(p)

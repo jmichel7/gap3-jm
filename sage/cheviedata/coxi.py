@@ -11,8 +11,8 @@ def /coxi1(arg):
             type_=1
         else:
             type_=ER(GAPMul(2,bond))+ER(GAPMul(2,bond))**-1
-    m[1][2-1]=-type_
-    m[2][1-1]=GAPDiv(2+ER(bond),m[1][2-1])
+    m[1-1][2-1]=-type_
+    m[2-1][1-1]=GAPDiv(2+ER(bond),m[1-1][2-1])
     return m
 
 ChevieData["I"]["CartanMat"]=/coxi1
@@ -157,8 +157,8 @@ def /coxi8(m):
     res["charSymbols"]=Concatenation([v],res["charSymbols"])
     res["malleParams"]=map(lambda x: map(PartBeta,x),res["charSymbols"])
     if m%2==0 :
-        res.malleParams[2-1]=Concatenation([res.malleParams[2-1][k-1] for k in range(1,GAPDiv(m,2)+1)],[1])
-        res.malleParams[3-1]=Concatenation([res.malleParams[3-1][k-1] for k in range(1,GAPDiv(m,2)+1)],[-1])
+        res["malleParams"][2-1]=Concatenation([res["malleParams"][2-1][k-1] for k in range(1,GAPDiv(m,2)+1)],[1])
+        res["malleParams"][3-1]=Concatenation([res["malleParams"][3-1][k-1] for k in range(1,GAPDiv(m,2)+1)],[-1])
     return res
 
 def /coxi9(phi):
@@ -244,8 +244,8 @@ def /coxi14(m):
 ChevieData["I"]["ClassInfo"]=/coxi14
 
 def /coxi15(m,param,rootparam):
-    u=GAPDiv(-param[1][1-1],param[1][2-1])
-    v=GAPDiv(-param[2][1-1],param[2][2-1])
+    u=GAPDiv(-param[1-1][1-1],param[1-1][2-1])
+    v=GAPDiv(-param[2-1][1-1],param[2-1][2-1])
     if !=(m%2,0) :
         squv=u
     else:
@@ -300,20 +300,20 @@ ChevieData["I"]["Representation"]=/coxi17
 
 def /coxi18(m,param,rootparam,i):
     if i==1 :
-        return [[[param[1][1-1]]],[[param[2][1-1]]]]
+        return [[[param[1-1][1-1]]],[[param[2-1][1-1]]]]
     if m%2==0 :
         i=i-2
     if i==0 :
-        return [[[param[1][1-1]]],[[param[2][2-1]]]]
+        return [[[param[1-1][1-1]]],[[param[2-1][2-1]]]]
     else:
         if i==1 :
-            return [[[param[1][2-1]]],[[param[2][1-1]]]]
+            return [[[param[1-1][2-1]]],[[param[2-1][1-1]]]]
         else:
             if i==2 :
-                return [[[param[1][2-1]]],[[param[2][2-1]]]]
+                return [[[param[1-1][2-1]]],[[param[2-1][2-1]]]]
             else:
-                u=GAPDiv(-param[1][1-1],param[1][2-1])
-                v=GAPDiv(-param[2][1-1],param[2][2-1])
+                u=GAPDiv(-param[1-1][1-1],param[1-1][2-1])
+                v=GAPDiv(-param[2-1][1-1],param[2-1][2-1])
                 if !=(m%2,0) :
                     squv=u
                 else:
@@ -321,7 +321,7 @@ def /coxi18(m,param,rootparam,i):
                         squv=GAPMul(rootparam[1-1],rootparam[2-1])
                     else:
                         squv=GetRoot(GAPMul(u,v),2,"Representation(Hecke(I2(",m,")),[",i,"])")
-                return [GAPMul(-[[-u**0,u**0],[GAPMul(0,u),u]],param[1][2-1]),GAPMul(-[[v,GAPMul(0,v)],[u+v,-v**0]],param[2][2-1])]
+                return [GAPMul(-[[-u**0,u**0],[GAPMul(0,u),u]],param[1-1][2-1]),GAPMul(-[[v,GAPMul(0,v)],[u+v,-v**0]],param[2-1][2-1])]
 
 ChevieData["I"]["HeckeRepresentation"]=/coxi18
 
@@ -331,8 +331,8 @@ def /coxi19(m,sqrtu,j):
 ChevieData["I"]["Frobenius"]=/coxi19
 
 def /coxi20(m,param):
-    u=GAPDiv(-param[1][1-1],param[1][2-1])
-    v=GAPDiv(-param[2][1-1],param[2][2-1])
+    u=GAPDiv(-param[1-1][1-1],param[1-1][2-1])
+    v=GAPDiv(-param[2-1][1-1],param[2-1][2-1])
     if IsInt(GAPDiv(m,2)) :
         return GAPMul(Sum(range(1,GAPDiv(m,2)+1),lambda i: GAPMul(u,v)**i-1),u+1)
     else:
@@ -343,10 +343,10 @@ ChevieData["I"]["PoincarePolynomial"]=/coxi20
 def /coxi21(m,phi,para,rootpara):
     if m%2==1 :
         ci=ChevieData["I"]["CharInfo"](m)
-        ci=ci.malleParams[ci["charparams"].index(phi)+1-1]
+        ci=ci["malleParams"][ci["charparams"].index(phi)+1-1]
         return GAPDiv(ChevieData["imp"]["SchurElement"](m,1,2,ci,[map(lambda i: ER(m)**i,range(0,m-1+1)),para[2-1]],[]),m)
-    u=GAPDiv(-para[1][1-1],para[1][2-1])
-    v=GAPDiv(-para[2][1-1],para[2][2-1])
+    u=GAPDiv(-para[1-1][1-1],para[1-1][2-1])
+    v=GAPDiv(-para[2-1][1-1],para[2-1][2-1])
     if phi[1-1]==1 :
         if phi[2-1]==GAPDiv(m,2) :
             e=GAPDiv(GAPMul(Sum(range(0,GAPDiv(m,2)-1+1),lambda i: GAPDiv(u,v)**i),u+1),v)
@@ -394,10 +394,10 @@ def /coxi24(n,p):
 ChevieData["I"]["DecompositionMatrix"]=/coxi24
 
 def /coxi25(arg):
-    if arg[1-1]%2==0 and !=(arg[3][1-1],arg[3][2-1]) :
+    if arg[1-1]%2==0 and !=(arg[3-1][1-1],arg[3-1][2-1]) :
         Error(" !  implemented")
     ci=ChevieData["I"]["CharInfo"](arg[1-1])
-    ci=ci.malleParams[ci["charparams"].index(arg[2-1])+1-1]
+    ci=ci["malleParams"][ci["charparams"].index(arg[2-1])+1-1]
     return ChevieData["imp"]["FactorizedSchurElement"](arg[1-1],arg[1-1],2,ci,arg[3-1],1)
 
 ChevieData["I"]["FactorizedSchurElement"]=/coxi25
@@ -473,9 +473,9 @@ def /coxi30(e):
         "eigenvalue":1,
         "cuspidalName":""}]
     if !=(e%2,0) :
-        uc.harishChandra[1-1]["charNumbers"]=range(1,f+2+1)
+        uc["harishChandra"][1-1]["charNumbers"]=range(1,f+2+1)
     else:
-        uc.harishChandra[1-1]["charNumbers"]=Concatenation([1,3,4,2],4+range(1,f-1+1))
+        uc["harishChandra"][1-1]["charNumbers"]=Concatenation([1,3,4,2],4+range(1,f-1+1))
     cusp=Concatenation(map(lambda k: map(lambda l: [k,l],range(k+1,e-k-1+1)),range(1,f-1+1)))
     f=f+1-e%2
     uc["harishChandra"]+=map(lambda x: {"relativeType":{"series":"A",
@@ -487,10 +487,10 @@ def /coxi30(e):
         "cuspidalName":SPrint("I_2(",e,")",FormatGAP(cusp[x-1])),
         "charNumbers":[x+f]},range(1,len(cusp)+1))
     uc["families"]=[Family(ChevieData["families"]["Dihedral"](e),range(1,len(cusp)+f+1)+2),Family("C1",[1]),Family("C1",[2])]
-    uc["parameters"]=Concatenation([[0],[1]],uc.families[1-1]["parameters"])
+    uc["parameters"]=Concatenation([[0],[1]],uc["families"][1-1]["parameters"])
     uc["charSymbols"]=map(lambda p: ChevieData["I"]["ParameterToSymbol"](e,p),uc["parameters"])
-    uc["a"]=Concatenation([0,e],map(lambda x: 1,uc.families[1-1]["parameters"]))
-    uc["A"]=Concatenation([0,e],map(lambda x: e-1,uc.families[1-1]["parameters"]))
+    uc["a"]=Concatenation([0,e],map(lambda x: 1,uc["families"][1-1]["parameters"]))
+    uc["A"]=Concatenation([0,e],map(lambda x: e-1,uc["families"][1-1]["parameters"]))
     if e==5 :
         uc["curtis"]=[2,1,3,4,6,5]
     return uc
