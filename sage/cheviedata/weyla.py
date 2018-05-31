@@ -1,78 +1,78 @@
 
-def eyla1(n):
-  a=IdentityMat(n)
-  for i in range(1,n+1):
-    a[i][i-1]=2
-    if i<n :
-      a[i][i+1-1]=-1
-    if i>1 :
-      a[i][i-1-1]=-1
-  return a
+def weyla1(n):
+    a=IdentityMat(n)
+    for i in range(1,n+1):
+        a[i][i-1]=2
+        if i<n :
+            a[i][i+1-1]=-1
+        if i>1 :
+            a[i][i-1-1]=-1
+    return a
 
-ChevieData["A"]["CartanMat"]=eyla1
+ChevieData["A"]["CartanMat"]=weyla1
 
 ChevieData["A"]["ReflectionDegrees"]=lambda n: range(2,n+1+1)
 
-def eyla2(r,indices,title):
-  print title," ",Join(indices," - "),"\n",
+def weyla2(r,indices,title):
+    print title," ",Join(indices," - "),"\n",
 
-ChevieData["A"]["PrintDiagram"]=eyla2
+ChevieData["A"]["PrintDiagram"]=weyla2
 
-def eyla3(l):
-  r=map(lambda i: GAPMul(0,range(1,l+1+1)),range(1,l+1))
-  for i in range(1,l+1):
-    [r[i][k-1] for k in [i,i+1]]=[1,-1]
-  return r
+def weyla3(l):
+    r=map(lambda i: GAPMul(0,range(1,l+1+1)),range(1,l+1))
+    for i in range(1,l+1):
+        [r[i][k-1] for k in [i,i+1]]=[1,-1]
+    return r
 
-ChevieData["A"]["GeneratingRoots"]=eyla3
+ChevieData["A"]["GeneratingRoots"]=weyla3
 
-def eyla4(l,s):
-  return ChevieData["imp"]["ParabolicRepresentatives"](1,1,l,s)
+def weyla4(l,s):
+    return ChevieData["imp"]["ParabolicRepresentatives"](1,1,l,s)
 
-ChevieData["A"]["ParabolicRepresentatives"]=eyla4
+ChevieData["A"]["ParabolicRepresentatives"]=weyla4
 
-def eyla5(pi):
-  w=[]
-  i=0
-  for l in pi:
-    r=l%2
-    w.extend(i+Concatenation([1,..(3,l-1-r)],[2,..(4,l+r-2)]))
-    i=i+l
-  return w
+def weyla5(pi):
+    w=[]
+    i=0
+    for l in pi:
+        r=l%2
+        w+=i+Concatenation([1,..(3,l-1-r)],[2,..(4,l+r-2)])
+        i=i+l
+    return w
 
-ChevieData["A"]["WordClass"]=eyla5
+ChevieData["A"]["WordClass"]=weyla5
 
-def eyla6(n):
-  res={"classparams":Partitions(n+1)}
-  res["classnames"]=map(IntListToString,res["classparams"])
-  res["classtext"]=map(ChevieData["A"]["WordClass"],res["classparams"])
-  res["classes"]=map(lambda pi: GAPDiv(Factorial(n+1),CharTableSymmetric.centralizers[1-1](n,pi)),res["classparams"])
-  res["orders"]=map(Lcm,res["classparams"])
-  return res
+def weyla6(n):
+    res={"classparams":Partitions(n+1)}
+    res["classnames"]=map(IntListToString,res["classparams"])
+    res["classtext"]=map(ChevieData["A"]["WordClass"],res["classparams"])
+    res["classes"]=map(lambda pi: GAPDiv(Factorial(n+1),CharTableSymmetric.centralizers[1-1](n,pi)),res["classparams"])
+    res["orders"]=map(Lcm,res["classparams"])
+    return res
 
-ChevieData["A"]["ClassInfo"]=eyla6
+ChevieData["A"]["ClassInfo"]=weyla6
 
 ChevieData["A"]["NrConjugacyClasses"]=lambda n: NrPartitions(n+1)
 
 ChevieData["A"]["WeightInfo"]=lambda n: {"minusculeWeights":range(1,n+1),
-  "decompositions":map(lambda i: [i],range(1,n+1)),
-  "moduli":[n+1]}
+    "decompositions":map(lambda i: [i],range(1,n+1)),
+    "moduli":[n+1]}
 
-def eyla7(n,w):
-  x=Permutation("()")
-  for i in w:
-    x=GAPMul(x,Permutation("(%s,%s)"%(i,i+1)))
-  res=[]
-  mark=range(1,n+1+1)
-  for i in range(1,n+1+1):
-    if !=(mark[i-1],0) :
-      cyc=CyclePermInt(x,i)
-      res.append(len(cyc))
-      [mark[k-1] for k in cyc]=GAPMul(cyc,0)
-  Sort(res)
-  return Reversed(res)
+def weyla7(n,w):
+    x=Permutation("()")
+    for i in w:
+        x=GAPMul(x,Permutation("(%s,%s)"%(i,i+1)))
+    res=[]
+    mark=range(1,n+1+1)
+    for i in range(1,n+1+1):
+        if !=(mark[i-1],0) :
+            cyc=CyclePermInt(x,i)
+            res.append(len(cyc))
+            [mark[k-1] for k in cyc]=GAPMul(cyc,0)
+    Sort(res)
+    return Reversed(res)
 
-ChevieData["A"]["ClassParameter"]=eyla7
+ChevieData["A"]["ClassParameter"]=weyla7
 
 ChevieData["A"]["CharParams"]=lambda n: Partitions(n+1)
 
@@ -80,21 +80,21 @@ ChevieData["A"]["LowestPowerFakeDegree"]=lambda p: GAPMul(p,range(0,len(p)-1+1))
 
 ChevieData["A"]["HighestPowerFakeDegree"]=lambda p: GAPDiv(GAPMul(Sum(p),Sum(p)-1),2)-ChevieData["A"]["LowestPowerFakeDegree"](AssociatedPartition(p))
 
-def eyla8(arg):
-  return IntListToString(arg[2-1])
+def weyla8(arg):
+    return IntListToString(arg[2-1])
 
-ChevieData["A"]["CharName"]=eyla8
+ChevieData["A"]["CharName"]=weyla8
 
-def eyla9(n):
-  res={"charparams":ChevieData["A"]["CharParams"](n)}
-  res["extRefl"]=map(lambda i: res["charparams"].index(Concatenation([n+1-i],GAPMul(range(1,i+1),0)+1))+1,range(0,n+1))
-  res["b"]=map(ChevieData["A"]["LowestPowerFakeDegree"],res["charparams"])
-  res["B"]=map(ChevieData["A"]["HighestPowerFakeDegree"],res["charparams"])
-  res["a"]=res["b"]
-  res["A"]=res["B"]
-  return res
+def weyla9(n):
+    res={"charparams":ChevieData["A"]["CharParams"](n)}
+    res["extRefl"]=map(lambda i: res["charparams"].index(Concatenation([n+1-i],GAPMul(range(1,i+1),0)+1))+1,range(0,n+1))
+    res["b"]=map(ChevieData["A"]["LowestPowerFakeDegree"],res["charparams"])
+    res["B"]=map(ChevieData["A"]["HighestPowerFakeDegree"],res["charparams"])
+    res["a"]=res["b"]
+    res["A"]=res["B"]
+    return res
 
-ChevieData["A"]["CharInfo"]=eyla9
+ChevieData["A"]["CharInfo"]=weyla9
 
 ChevieData["A"]["CharTable"]=ChevieData["compat"]["CharTableA"]
 
@@ -116,89 +116,89 @@ ChevieData["tmp"]["classparam"]=[lambda nq: Partitions(nq[1-1])]
 
 ChevieData["tmp"]["charparam"]=[lambda nq: Partitions(nq[1-1])]
 
-def eyla10(nq,gamma,pi):
-  n=nq[1-1]
-  q=nq[2-1]
-  if n==0 :
-    return q**0
-  k=pi[1-1]
-  val=GAPMul(0,q)
-  AHk=CHEVIE.R("Hk", "A").irreducibles[1][1-1]
-  for alpha in Partitions(n-k):
-    dif=DifferencePartitions(gamma,alpha)
-    if !=(dif,false) :
-      val=val+GAPMul(q-1**dif["cc"]-1,-1**dif["ll"])
-  return val
+def weyla10(nq,gamma,pi):
+    n=nq[1-1]
+    q=nq[2-1]
+    if n==0 :
+        return q**0
+    k=pi[1-1]
+    val=GAPMul(0,q)
+    AHk=CHEVIE.R("Hk", "A").irreducibles[1][1-1]
+    for alpha in Partitions(n-k):
+        dif=DifferencePartitions(gamma,alpha)
+        if !=(dif,false) :
+            val=val+GAPMul(q-1**dif["cc"]-1,-1**dif["ll"])
+    return val
 
-ChevieData["tmp"]["irreducibles"]=[[eyla10]]
+ChevieData["tmp"]["irreducibles"]=[[weyla10]]
 
 def CHEVIE.tmp.matrix(nq):
-  n=nq[1-1]
-  q=nq[2-1]
-  pm=[]
-  scheme=[]
-  def hooks(beta,m):
-    prs=[]
-    for i in beta:
-      leg=0
-      for j in [i-1,..(i-2,0)]:
-        if in(j,beta) :
-          leg=leg+1
-        else:
-          prs.append([{"from":i,
-            "to":j,
-            "leg":leg}])
-    cbs=ShallowCopy(prs)
-    hks=map(lambda x: [],range(1,m+1))
-    for hk in cbs:
-      for pr in prs:
-        if pr[1-1]["to"]>hk[len(hk)-1]["from"] :
-          cbs.append(Concatenation(hk,pr))
-      ll=Sum(hk,lambda x: x["from"]-x["to"])
-      lg=Sum(hk,lambda x: x["leg"])
-      lh=len(hk)
-      new={"wgt":GAPMul(-1**lg,q**ll-lg-lh),
-        "adr":1}
-      if ll<m-1 :
-        gamma=Difference(beta,map(lambda x: x["from"],hk))
-        UniteSet(gamma,map(lambda x: x["to"],hk))
-        if in(0,gamma) :
-          j=0
-          while gamma[j+1-1]==j:
-            j=j+1
-          gamma=[gamma[k-1] for k in range(j+1,len(gamma)+1)]-j
-        new["adr"]=pm[m-ll-1].index(gamma)+1
-      hks[ll-1].append(new)
-    return hks
-  
-  
-  for i in range(1,n+1):
-    pm[i-1]=map(BetaSet,Partitions(i))
-    scheme[i-1]=[]
-    for beta in pm[i-1]:
-      scheme[i-1].append(hooks(beta,i))
-  def charCol(n,t,k):
-    col=[]
-    for pi in scheme[n-1]:
-      val=GAPMul(0,q)
-      for hk in pi[k-1]:
-        val=val+GAPMul(hk["wgt"],t[hk["adr"]-1])
-      col.append(val)
-    return col
-  
-  
-  pm=map(lambda x: [],range(1,n-1+1))
-  for m in range(1,QuoInt(n,2)+1):
-    pm[m-1].append(charCol(m,[1],m))
-    for k in range(m+1,n-m+1):
-      for t in pm[k-m-1]:
-        pm[k-1].append(charCol(k,t,m))
-  res=[]
-  for k in range(1,n-1+1):
-    for t in pm[n-k-1]:
-      res.append(charCol(n,t,k))
-  res.append(charCol(n,[1],n))
-  return Matrix(res).transpose()
+    n=nq[1-1]
+    q=nq[2-1]
+    pm=[]
+    scheme=[]
+    def hooks(beta,m):
+        prs=[]
+        for i in beta:
+            leg=0
+            for j in [i-1,..(i-2,0)]:
+                if in(j,beta) :
+                    leg=leg+1
+                else:
+                    prs.append([{"from":i,
+                        "to":j,
+                        "leg":leg}])
+        cbs=ShallowCopy(prs)
+        hks=map(lambda x: [],range(1,m+1))
+        for hk in cbs:
+            for pr in prs:
+                if pr[1-1]["to"]>hk[len(hk)-1]["from"] :
+                    cbs.append(Concatenation(hk,pr))
+            ll=Sum(hk,lambda x: x["from"]-x["to"])
+            lg=Sum(hk,lambda x: x["leg"])
+            lh=len(hk)
+            new={"wgt":GAPMul(-1**lg,q**ll-lg-lh),
+                "adr":1}
+            if ll<m-1 :
+                gamma=Difference(beta,map(lambda x: x["from"],hk))
+                UniteSet(gamma,map(lambda x: x["to"],hk))
+                if in(0,gamma) :
+                    j=0
+                    while gamma[j+1-1]==j:
+                        j=j+1
+                    gamma=[gamma[k-1] for k in range(j+1,len(gamma)+1)]-j
+                new["adr"]=pm[m-ll-1].index(gamma)+1
+            hks[ll-1].append(new)
+        return hks
+    
+    
+    for i in range(1,n+1):
+        pm[i-1]=map(BetaSet,Partitions(i))
+        scheme[i-1]=[]
+        for beta in pm[i-1]:
+            scheme[i-1].append(hooks(beta,i))
+    def charCol(n,t,k):
+        col=[]
+        for pi in scheme[n-1]:
+            val=GAPMul(0,q)
+            for hk in pi[k-1]:
+                val=val+GAPMul(hk["wgt"],t[hk["adr"]-1])
+            col.append(val)
+        return col
+    
+    
+    pm=map(lambda x: [],range(1,n-1+1))
+    for m in range(1,QuoInt(n,2)+1):
+        pm[m-1].append(charCol(m,[1],m))
+        for k in range(m+1,n-m+1):
+            for t in pm[k-m-1]:
+                pm[k-1].append(charCol(k,t,m))
+    res=[]
+    for k in range(1,n-1+1):
+        for t in pm[n-k-1]:
+            res.append(charCol(n,t,k))
+    res.append(charCol(n,[1],n))
+    return Matrix(res).transpose()
 
 
 
@@ -206,129 +206,129 @@ ChevieData["A"]["Hk"]=ShallowCopy(ChevieData["tmp"])
 
 ChevieData["A"]["HeckeCharTable"]=ChevieData["compat"]["HeckeCharTableA"]
 
-def eyla11(n,param):
-  return prod(range(1,n+1))
+def weyla11(n,param):
+    return prod(range(1,n+1))
 
-ChevieData["A"]["PoincarePolynomial"]=eyla11
+ChevieData["A"]["PoincarePolynomial"]=weyla11
 
-def eyla12(n,alpha,param,sqrtparam):
-  q=GAPDiv(-param[1][1-1],param[1][2-1])
-  lambda=BetaSet(alpha)
-  res=q**Binomial(len(lambda),3)
-  for i in lambda:
-    for j in range(0,i-1+1):
-      if in(j,lambda) :
-        res=GAPDiv(res,q**j)
-      else:
-        res=GAPMul(res,Sum(range(0,i-j-1+1),lambda e: q**e))
-  return res
+def weyla12(n,alpha,param,sqrtparam):
+    q=GAPDiv(-param[1][1-1],param[1][2-1])
+    lambda=BetaSet(alpha)
+    res=q**Binomial(len(lambda),3)
+    for i in lambda:
+        for j in range(0,i-1+1):
+            if in(j,lambda) :
+                res=GAPDiv(res,q**j)
+            else:
+                res=GAPMul(res,Sum(range(0,i-j-1+1),lambda e: q**e))
+    return res
 
-ChevieData["A"]["SchurElement"]=eyla12
+ChevieData["A"]["SchurElement"]=weyla12
 
-def eyla13(arg):
-  return ChevieData["imp"]["FactorizedSchurElement"](1,1,arg[1-1]+1,[arg[2-1]],arg[3-1],[])
+def weyla13(arg):
+    return ChevieData["imp"]["FactorizedSchurElement"](1,1,arg[1-1]+1,[arg[2-1]],arg[3-1],[])
 
-ChevieData["A"]["FactorizedSchurElement"]=eyla13
+ChevieData["A"]["FactorizedSchurElement"]=weyla13
 
-def eyla14(n,param,sqrtparam,i):
-  H=Hecke(CoxeterGroup("A",n),GAPDiv(-param[1][1-1],param[1][2-1]))
-  return SpechtModel(H,Partitions(n + 1)[i-1])
+def weyla14(n,param,sqrtparam,i):
+    H=Hecke(CoxeterGroup("A",n),GAPDiv(-param[1][1-1],param[1][2-1]))
+    return SpechtModel(H,Partitions(n + 1)[i-1])
 
-ChevieData["A"]["HeckeRepresentation"]=eyla14
+ChevieData["A"]["HeckeRepresentation"]=weyla14
 
-def eyla15(n,i):
-  return [(CHEVIE.R("Representation", "imp"))(1, 1, n + 1, i)[k-1] for k in range(2,n+1+1)]
+def weyla15(n,i):
+    return [(CHEVIE.R("Representation", "imp"))(1, 1, n + 1, i)[k-1] for k in range(2,n+1+1)]
 
-ChevieData["A"]["Representation"]=eyla15
+ChevieData["A"]["Representation"]=weyla15
 
-def eyla16(n,p,q):
-  return GAPDiv(ChevieData["A"]["PoincarePolynomial"](Sum(p)-1,[[q,-1]]),ChevieData["A"]["SchurElement"](Sum(p)-1,p,[[q,-1]],[]))
+def weyla16(n,p,q):
+    return GAPDiv(ChevieData["A"]["PoincarePolynomial"](Sum(p)-1,[[q,-1]]),ChevieData["A"]["SchurElement"](Sum(p)-1,p,[[q,-1]],[]))
 
-ChevieData["A"]["FakeDegree"]=eyla16
+ChevieData["A"]["FakeDegree"]=weyla16
 
-def eyla17(l,p):
-  return [[range(1,NrPartitions(l+1)+1),MatrixDecompositionMatrix(DecompositionMatrix(Specht(p,p),l+1))]]
+def weyla17(l,p):
+    return [[range(1,NrPartitions(l+1)+1),MatrixDecompositionMatrix(DecompositionMatrix(Specht(p,p),l+1))]]
 
-ChevieData["A"]["DecompositionMatrix"]=eyla17
+ChevieData["A"]["DecompositionMatrix"]=weyla17
 
-def eyla18(l):
-  ci=ChevieData["A"]["CharInfo"](l)
-  return {"harishChandra":[{"levi":[],
-    "relativeType":{"series":"A",
-    "indices":range(1,l+1),
-    "rank":l},
-    "parameterExponents":GAPMul(0,range(1,l+1))+1,
-    "cuspidalName":"",
-    "eigenvalue":1,
-    "charNumbers":range(1,len(ci["charparams"])+1)}],
-    "families":map(lambda i: Family("C1",[i]),range(1,len(ci["charparams"])+1)),
-    "charParams":ci["charparams"],
-    "charSymbols":map(lambda x: [BetaSet(x)],ci["charparams"]),
-    "a":ci["a"],
-    "A":ci["A"]}
+def weyla18(l):
+    ci=ChevieData["A"]["CharInfo"](l)
+    return {"harishChandra":[{"levi":[],
+        "relativeType":{"series":"A",
+        "indices":range(1,l+1),
+        "rank":l},
+        "parameterExponents":GAPMul(0,range(1,l+1))+1,
+        "cuspidalName":"",
+        "eigenvalue":1,
+        "charNumbers":range(1,len(ci["charparams"])+1)}],
+        "families":map(lambda i: Family("C1",[i]),range(1,len(ci["charparams"])+1)),
+        "charParams":ci["charparams"],
+        "charSymbols":map(lambda x: [BetaSet(x)],ci["charparams"]),
+        "a":ci["a"],
+        "A":ci["A"]}
 
-ChevieData["A"]["UnipotentCharacters"]=eyla18
+ChevieData["A"]["UnipotentCharacters"]=weyla18
 
-def eyla19(n):
-  m=ChevieData["A"]["GeneratingRoots"](n)
-  m.append(GAPMul(range(1,n+1+1),0)+1)
-  return map(lambda i: eyla20,range(2,n+1+1))
+def weyla19(n):
+    m=ChevieData["A"]["GeneratingRoots"](n)
+    m.append(GAPMul(range(1,n+1+1),0)+1)
+    return map(lambda i: weyla20,range(2,n+1+1))
 
-def eyla20(arg):
-  v=ShallowCopy(arg)
-  v.append(GAPMul(0,v[1-1]))
-  v=GAPMul(v,m)
-  return Sum(Arrangements(range(1,n+1+1),i),lambda a: prod([v[k-1] for k in a]))
+def weyla20(arg):
+    v=ShallowCopy(arg)
+    v.append(GAPMul(0,v[1-1]))
+    v=GAPMul(v,m)
+    return Sum(Arrangements(range(1,n+1+1),i),lambda a: prod([v[k-1] for k in a]))
 
-ChevieData["A"]["Invariants"]=eyla19
+ChevieData["A"]["Invariants"]=weyla19
 
-def eyla21(n,p):
-  uc={"classes":map(lambda p: {"parameter":p},Partitions(n+1)),
-    "springerSeries":Concatenation(map(lambda d: map(lambda i: {"relgroup":CoxeterGroup("A",GAPDiv(n+1,d)-1),
-    "Z":[ER(d)**i],
-    "levi":Filtered(range(1,n+1+1),lambda i: !=(i%d,0)),
-    "locsys":[]},PrimeResidues(d)),DivisorsInt(n+1)))}
-  ss=lambda z: First(uc["springerSeries"],lambda x: x["Z"]==[z])
-  for i in range(1,len(uc["classes"])+1):
-    cl=uc.classes[i-1]
-    p=cl["parameter"]
-    d=Gcd(p)
-    cl["name"]=IntListToString(p)
-    cl["Au"]=ComplexReflectionGroup(d,1,1)
-    cl["balacarter"]=Concatenation(map(lambda i: Sum([p[k-1] for k in range(1,i-1+1)])+range(1,p[i-1]-1+1),range(1,len(p)+1)))
-    p=Concatenation(map(lambda x: [1-x,..(3-x,x-1)],p))
-    Sort(p)
-    cl["dynkin"]=map(lambda i: p[i+1-1]-p[i-1],range(1,len(p)-1+1))
-    cl["red"]=[]
-    p=1
-    for j in Collected(cl["parameter"]):
-      cl["red"].extend(range(p,p+j[2-1]-2+1))
-      p=p+j[2-1]
-    cl["red"]=ReflectionSubgroup(CoxeterGroup("A",p-2),cl["red"])
-    cl["AuAction"]=ExtendedReflectionGroup(cl["red"],[IdentityMat(cl["red"]["rank"])])
-    if d==2 :
-      ss(1)["locsys"].append([i,2])
-      ss(-1)["locsys"].append([i,1])
-    else:
-      for j in range(0,d-1+1):
-        ss(ER(d)**j)["locsys"].append([i,j+1])
-  uc["orderClasses"]=Hasse(Poset(map(lambda x: map(lambda y: Dominates(y["parameter"],x["parameter"]),uc["classes"]),uc["classes"])))
-  return uc
+def weyla21(n,p):
+    uc={"classes":map(lambda p: {"parameter":p},Partitions(n+1)),
+        "springerSeries":Concatenation(map(lambda d: map(lambda i: {"relgroup":CoxeterGroup("A",GAPDiv(n+1,d)-1),
+        "Z":[ER(d)**i],
+        "levi":Filtered(range(1,n+1+1),lambda i: !=(i%d,0)),
+        "locsys":[]},PrimeResidues(d)),DivisorsInt(n+1)))}
+    ss=lambda z: First(uc["springerSeries"],lambda x: x["Z"]==[z])
+    for i in range(1,len(uc["classes"])+1):
+        cl=uc.classes[i-1]
+        p=cl["parameter"]
+        d=Gcd(p)
+        cl["name"]=IntListToString(p)
+        cl["Au"]=ComplexReflectionGroup(d,1,1)
+        cl["balacarter"]=Concatenation(map(lambda i: Sum([p[k-1] for k in range(1,i-1+1)])+range(1,p[i-1]-1+1),range(1,len(p)+1)))
+        p=Concatenation(map(lambda x: [1-x,..(3-x,x-1)],p))
+        Sort(p)
+        cl["dynkin"]=map(lambda i: p[i+1-1]-p[i-1],range(1,len(p)-1+1))
+        cl["red"]=[]
+        p=1
+        for j in Collected(cl["parameter"]):
+            cl["red"]+=range(p,p+j[2-1]-2+1)
+            p=p+j[2-1]
+        cl["red"]=ReflectionSubgroup(CoxeterGroup("A",p-2),cl["red"])
+        cl["AuAction"]=ExtendedReflectionGroup(cl["red"],[IdentityMat(cl["red"]["rank"])])
+        if d==2 :
+            ss(1)["locsys"].append([i,2])
+            ss(-1)["locsys"].append([i,1])
+        else:
+            for j in range(0,d-1+1):
+                ss(ER(d)**j)["locsys"].append([i,j+1])
+    uc["orderClasses"]=Hasse(Poset(map(lambda x: map(lambda y: Dominates(y["parameter"],x["parameter"]),uc["classes"]),uc["classes"])))
+    return uc
 
-ChevieData["A"]["UnipotentClasses"]=eyla21
+ChevieData["A"]["UnipotentClasses"]=weyla21
 
-def eyla22(n):
-  def f(i):
-    if !=(i,Permutation("()")) :
-      i=prod(CoxeterWord(W,i))
-    i=map(Length,RobinsonSchenstedCorrespondent(n+1,i)["P"])
-    return CharParams(W).index([i])+1
-  
-  
-  W=CoxeterGroup("A",n)
-  l=Filtered(Elements(W),lambda x: x**2==Permutation("()"))
-  return map(lambda x: {"duflo":OnTuples(range(1,n+1),x),
-    "reps":[],
-    "character":[f(x)]},l)
+def weyla22(n):
+    def f(i):
+        if !=(i,Permutation("()")) :
+            i=prod(CoxeterWord(W,i))
+        i=map(Length,RobinsonSchenstedCorrespondent(n+1,i)["P"])
+        return CharParams(W).index([i])+1
+    
+    
+    W=CoxeterGroup("A",n)
+    l=Filtered(Elements(W),lambda x: x**2==Permutation("()"))
+    return map(lambda x: {"duflo":OnTuples(range(1,n+1),x),
+        "reps":[],
+        "character":[f(x)]},l)
 
-ChevieData["A"]["KLeftCellRepresentatives"]=eyla22
+ChevieData["A"]["KLeftCellRepresentatives"]=weyla22
