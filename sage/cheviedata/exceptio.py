@@ -82,7 +82,7 @@ for t in ["G24","G25","G26","G27","G29"]:
 
 def eptio8(t):
     r=ChevieData[t]["GeneratingRoots"]
-    if IsFunc(r) :
+    if callable(r) :
         r=r()
     return len(r[1-1])
 
