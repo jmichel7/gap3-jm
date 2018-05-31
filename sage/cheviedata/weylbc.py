@@ -193,7 +193,8 @@ def eylbc14(n):
 
 ChevieData["B"]["CharInfo"]=eylbc14
 
-ChevieData["IndirectAddData"]("CharTable",["B"],ChevieData["compat"]["CharTableB"])
+for t in ["B"]:
+    ChevieData[t]["CharTable"]=ChevieData["compat"]["CharTableB"](t)
 
 ChevieData["tmp"]=copy(CharTableWeylB)
 
@@ -382,7 +383,8 @@ ChevieData["B"]["Hk"]=ChevieData["tmp"]
 
 Unbind(ChevieData["tmp"])
 
-ChevieData["IndirectAddData"]("HeckeCharTable",["B"],ChevieData["compat"]["HeckeCharTableB"])
+for t in ["B"]:
+    ChevieData[t]["HeckeCharTable"]=ChevieData["compat"]["HeckeCharTableB"](t)
 
 def eylbc18(n,para):
     q1=GAPDiv(-para[1-1][1-1],para[1-1][2-1])
