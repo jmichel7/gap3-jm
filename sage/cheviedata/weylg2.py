@@ -328,7 +328,8 @@ def eylg216(c,p):
             uc["classes"][1-1]["succ"].append("(~A1)3")
             uc["classes"][3-1]["dimBu"]=2
             Unbind(uc["classes"][3-1]["dynkin"])
-            [uc["springerSeries"][1-1]["locsys"][k-1] for k in [3,5]]=[[6,1],[4,2]]
+            for i,j in zip([3,5],[[6,1],[4,2]]):
+                uc["springerSeries"][1-1]["locsys"][i-1]=j
             for c in [2,3]:
                 uc["springerSeries"].append({"relgroup":CoxeterGroup(),
                     "levi":[1,2],

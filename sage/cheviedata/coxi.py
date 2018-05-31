@@ -446,17 +446,23 @@ def coxi29(e,p):
                 if e%2==0 :
                     S=map(lambda x: [0],range(1,e+1))
                     if p[1-1]==0 :
-                        [S[k-1] for k in [e,e-p[2-1]]]=[[1],[1]]
+                        for i,j in zip([e,e-p[2-1]],[[1],[1]]):
+                            S[i-1]=j
                     else:
-                        [S[k-1] for k in 1+[0,p[2-1]-p[1-1]%e]]=[[0,1],[0,1]]
-                        [S[k-1] for k in 1+[-p[1-1]%e,p[2-1]]]=[[],[]]
+                        for i,j in zip(1+[0,p[2-1]-p[1-1]%e],[[0,1],[0,1]]):
+                            S[i-1]=j
+                        for i,j in zip(1+[-p[1-1]%e,p[2-1]],[[],[]]):
+                            S[i-1]=j
                 else:
                     S=map(lambda i: [0],range(1,e+1))
                     if p[1-1]!=0 :
-                        [S[k-1] for k in 1+[0,-Sum(p)%e]]=[[0,1],[0,1]]
-                        [S[k-1] for k in 1+map(lambda x: x%e,-p)]=[[],[]]
+                        for i,j in zip(1+[0,-Sum(p)%e],[[0,1],[0,1]]):
+                            S[i-1]=j
+                        for i,j in zip(1+map(lambda x: x%e,-p),[[],[]]):
+                            S[i-1]=j
                     else:
-                        [S[k-1] for k in e+[-p[2-1]-p[1-1]%e,0]]=[[1],[1]]
+                        for i,j in zip(e+[-p[2-1]-p[1-1]%e,0],[[1],[1]]):
+                            S[i-1]=j
     return S
 
 ChevieData["I"]["ParameterToSymbol"]=coxi29

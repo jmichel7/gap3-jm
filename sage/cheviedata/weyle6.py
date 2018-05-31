@@ -293,7 +293,8 @@ def eyle616(p):
             "relgroup":CoxeterGroup("A",2),
             "Z":[1],
             "locsys":[[8,1],[3,1],[1,4]]})
-        [uc["springerSeries"][1-1]["locsys"][k-1] for k in [11,13]]=[[3,2],[8,2]]
+        for i,j in zip([11,13],[[3,2],[8,2]]):
+            uc["springerSeries"][1-1]["locsys"][i-1]=j
         uc["springerSeries"][2-1]["locsys"][1-1]=[1,3]
         uc["springerSeries"][3-1]["locsys"][1-1]=[1,5]
         for c in [2,6]:

@@ -511,11 +511,14 @@ def lximp24(s):
     if not IsList(s[len(s)-1]) :
         s=Copy(s)
         t=GAPDiv(len(s)-2,d)
-        [s[k-1] for k in GAPMul(range(0,t-1+1),d)+1]=Rotation([s[k-1] for k in GAPMul(range(0,t-1+1),d)+1],1)
-        [s[k-1] for k in range(1,len(s)-2+1)]=Minimum(map(lambda i: Rotation([s[k-1] for k in range(1,len(s)-2+1)],GAPMul(i,d)),range(1,t+1)))
+        for i,j in zip(GAPMul(range(0,t-1+1),d)+1,Rotation([s[k-1] for k in GAPMul(range(0,t-1+1),d)+1],1)):
+            s[i]=j
+        for i,j in zip(range(1,len(s)-2+1),Minimum(map(lambda i: Rotation([s[k-1] for k in range(1,len(s)-2+1)],GAPMul(i,d)),range(1,t+1)))):
+            s[i]=j
         return s
     s=ShallowCopy(s)
-    [s[k-1] for k in GAPMul(range(0,e-1+1),d)+1]=Rotation([s[k-1] for k in GAPMul(range(0,e-1+1),d)+1],1)
+    for i,j in zip(GAPMul(range(0,e-1+1),d)+1,Rotation([s[k-1] for k in GAPMul(range(0,e-1+1),d)+1],1)):
+        s[i]=j
     return Minimum(map(lambda i: Rotation(s,GAPMul(i,d)),range(1,e+1)))
 
 ChevieData["imp"]["CharInfo"]=lximp21
@@ -595,7 +598,8 @@ def lximp30(p,q,r,phi):
                 for h in GenHooks(phi[s-1],phi[t-1]):
                     v=GAPMul(range(1,p+1),0)
                     if s!=t :
-                        [v[k-1] for k in [s,t]]=[1,-1]
+                        for i,j in zip([s,t],[1,-1]):
+                            v[i]=j
                         v.append(h)
                         res["vcyc"].append([v,1])
                     else:
@@ -626,11 +630,13 @@ def lximp30(p,q,r,phi):
                     "vcyc":[],
                     "root":GAPMul(range(1,4+GAPDiv(p,2)+1),0)}
                 res["rootCoeff"]=ER(GAPDiv(p,2))**2-phi[3-1]-phi[4-1]
-                [res["root"][k-1] for k in range(1,6+1)]=GAPDiv([1,1,1,1,1,1],2)
+                for i,j in zip(range(1,6+1),GAPDiv([1,1,1,1,1,1],2)):
+                    res["root"][i]=j
                 for i in range(3,GAPDiv(p,2)+1):
                     for j in [1,2]:
                         l=GAPMul(range(1,4+GAPDiv(p,2)+1),0)
-                        [l[k-1] for k in 4+[j,i]]=[1,-1]
+                        for i,j in zip(4+[j,i],[1,-1]):
+                            l[i]=j
                         res["vcyc"].append([l,1])
                 if "old" in ChevieData :
                     for l in [[0,-1,0,-1,-1,0],[0,-1,-1,0,-1,0],[-1,0,-1,0,-1,0],[-1,0,0,-1,-1,0]]:
@@ -829,7 +835,8 @@ def lximp34(p,q,r,para,root):
                 def apply(S,hs):
                     S=ShallowCopy(S)
                     for h in hs:
-                        [S[k-1] for k in range(h["stoppos"],h["startpos"]+1)]=Concatenation([h["start"]-h["area"]],[S[k-1] for k in range(h["stoppos"],h["startpos"]-1+1)])
+                        for i,j in zip(range(h["stoppos"],h["startpos"]+1),Concatenation([h["start"]-h["area"]],[S[k-1] for k in range(h["stoppos"],h["startpos"]-1+1)])):
+                            S[i]=j
                     while len(S)>0 and S[1-1]==0:
                         S=[S[k-1] for k in range(2,len(S)+1)]-1
                     return S
@@ -901,17 +908,17 @@ def lximp34(p,q,r,para,root):
             
             chiCache={}
             LIM=r
-            def GenericEntry(lambda,mu):
-                n=Sum(lambda,Sum)
+            def GenericEntry(lambda_,mu):
+                n=Sum(lambda_,Sum)
                 if n==0 :
                     return 1
                 if n<LIM :
-                    name=code(lambda,mu)
+                    name=code(lambda_,mu)
                     if name in chiCache :
                         return chiCache[name]
-                bp=Maximum(Concatenation(lambda))
-                i=PositionProperty(lambda,lambda x: bp in x)
-                rest=ShallowCopy(lambda)
+                bp=Maximum(Concatenation(lambda_))
+                i=PositionProperty(lambda_,lambda x: bp in x)
+                rest=ShallowCopy(lambda_)
                 rest[i-1]=[rest[i-1][k-1] for k in range(2,len(rest[i-1])+1)]
                 res=GAPMul(-prod(para[2-1])**GAPMul(i-1,n-bp),Sum(Strips(mu,bp),lximp35))
                 if n<LIM :

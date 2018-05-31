@@ -21,7 +21,8 @@ ChevieData["A"]["PrintDiagram"]=weyla2
 def weyla3(l):
     r=map(lambda i: GAPMul(0,range(1,l+1+1)),range(1,l+1))
     for i in range(1,l+1):
-        [r[i-1][k-1] for k in [i,i+1]]=[1,-1]
+        for i,j in zip([i,i+1],[1,-1]):
+            r[i-1][i-1]=j
     return r
 
 ChevieData["A"]["GeneratingRoots"]=weyla3
@@ -68,7 +69,8 @@ def weyla7(n,w):
         if mark[i-1]!=0 :
             cyc=CyclePermInt(x,i)
             res.append(len(cyc))
-            [mark[k-1] for k in cyc]=GAPMul(cyc,0)
+            for i,j in zip(cyc,GAPMul(cyc,0)):
+                mark[i-1]=j
     Sort(res)
     return Reversed(res)
 

@@ -77,7 +77,8 @@ ChevieData["B"]["ReflectionName"]=eylbc3
 def eylbc4(l,type_):
     rts=map(lambda i: GAPMul(0,range(1,l+1)),range(1,l+1))
     for i in range(1,l-1+1):
-        [rts[i-1][k-1] for k in [i,i+1]]=[1,-1]
+        for i,j in zip([i,i+1],[1,-1]):
+            rts[i-1][i-1]=j
     rts[l-1][l-1]=GAPDiv(2,type_)
     return [rts[k-1] for k in range(l,1+1,l-1-l)]
 

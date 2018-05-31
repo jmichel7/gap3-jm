@@ -748,7 +748,8 @@ def G4_22FetchIndexChars(ST,para):
         return ChevieData["G4_22"]["CharInfo"](ST)["indexchars"]
     if not "G4_22CachedIndexChars" in ChevieData :
         ChevieData["G4_22CachedIndexChars"]=[]
-        [ChevieData["G4_22CachedIndexChars"][k-1] for k in range(4,22+1)]=map(lambda i: [],range(4,22+1))
+        for i,j in zip(range(4,22+1),map(lambda i: [],range(4,22+1))):
+            ChevieData["G4_22CachedIndexChars"][i-1]=j
         InfoChevie2("Creating G4_22CachedIndexChars\n")
     p=PositionProperty(ChevieData["G4_22CachedIndexChars"][ST-1],lambda x: x[1-1]==para)
     if p!=false :
@@ -885,7 +886,8 @@ def G4_22Helper(c,e,x,n,p):
     r=Gcd(Concatenation([e[k-1] for k in nz],[n]))
     root=GAPMul(GetRoot(x,GAPDiv(n,r)),ER(n)**GAPMul(p,r))
     res=GAPMul(c,root**0)
-    [res[k-1] for k in nz]=map(lambda i: GAPMul(c[i-1],root**GAPDiv(e[i-1],r)),nz)
+    for i,j in zip(nz,map(lambda i: GAPMul(c[i-1],root**GAPDiv(e[i-1],r)),nz)):
+        res[i-1]=j
     return res
 
 
@@ -898,7 +900,8 @@ def G4_22Test(res,rows,i):
     T=SPrint("G",T[res["ST"]-1])
     if not "G4_22CachedIndexChars" in ChevieData :
         ChevieData["G4_22CachedIndexChars"]=[]
-        [ChevieData["G4_22CachedIndexChars"][k-1] for k in range(4,22+1)]=map(lambda i: [],range(4,22+1))
+        for i,j in zip(range(4,22+1),map(lambda i: [],range(4,22+1))):
+            ChevieData["G4_22CachedIndexChars"][i-1]=j
         InfoChevie2("Creating G4_22CachedIndexChars\n")
     p=PositionProperty(ChevieData["G4_22CachedIndexChars"][res["ST"]-1],lambda x: x[1-1]==res["parameter"])
     if p!=false :

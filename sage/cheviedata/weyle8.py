@@ -773,7 +773,8 @@ def eyle815(p):
                 "Z":[],
                 "locsys":[[4,3]]}]
             uc["springerSeries"][1-1]["locsys"][72-1][2-1]=4
-            [uc["springerSeries"][1-1]["locsys"][k-1] for k in [13,51]]=[[71,1],[18,2]]
+            for i,j in zip([13,51],[[71,1],[18,2]]):
+                uc["springerSeries"][1-1]["locsys"][i-1]=j
         else:
             if p==5 :
                 uc["springerSeries"]+=[{"relgroup":CoxeterGroup(),

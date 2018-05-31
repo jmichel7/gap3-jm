@@ -5,7 +5,8 @@ def weyld1(n):
     else:
         m=n
     a=ChevieData["A"]["CartanMat"](m)
-    [[a[k-1] for k in range(1,3+1)][k-1] for k in range(1,3+1)]=[[2,0,-1],[0,2,-1],[-1,-1,2]]
+    for i,j in zip(range(1,3+1),[[2,0,-1],[0,2,-1],[-1,-1,2]]):
+        [a[k-1] for k in range(1,3+1)][i-1]=j
     return [[a[k-1] for k in range(1,n+1)][k-1] for k in range(1,n+1)]
 
 ChevieData["D"]["CartanMat"]=weyld1
@@ -30,10 +31,12 @@ def weyld4(l):
     rts=[]
     for i in range(1,l-1+1):
         r=GAPMul(0,range(1,l+1))
-        [r[k-1] for k in [i,i+1]]=[1,-1]
+        for i,j in zip([i,i+1],[1,-1]):
+            r[i-1]=j
         rts.append(r)
     r=GAPMul(0,range(1,l+1))
-    [r[k-1] for k in [l-1,l]]=[1,1]
+    for i,j in zip([l-1,l],[1,1]):
+        r[i-1]=j
     rts.append(r)
     return Reversed(rts)
 
@@ -425,7 +428,8 @@ def weyld24(n,char):
             cc=Copy(cc)
             cc["name"][len(cc["name"])-1]='-'
             if "dynkin" in cc :
-                [cc["dynkin"][k-1] for k in [1,2]]=[cc["dynkin"][k-1] for k in [2,1]]
+                for i,j in zip([1,2],[cc["dynkin"][k-1] for k in [2,1]]):
+                    cc["dynkin"][i-1]=j
             uc["classes"].append(cc)
             for s in cl:
                 addSpringer(s,len(uc["classes"]))
