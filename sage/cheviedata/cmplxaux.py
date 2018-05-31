@@ -29,12 +29,11 @@ def IntListToString(L):
 
 def GAPDiv(L,k):
     if isinstance(k,int):
-        print "hier", k
         k = Integer(k)
     try:
         return L / k
     except TypeError:
-        return [ listdiv(a,k) for a in L ]
+        return [ GAPDiv(a,k) for a in L ]
 
 def GAPMul(A,B):
     try:
@@ -169,3 +168,39 @@ def CollectBy(A,B):
             if x == i:
                 out[-1].append(A[j])
     return [ tuple(x) for x in out ]
+
+
+def Replace(*args):
+    assert len(args) % 2 == 1
+    args = list(args)
+    X    = args[0]
+    args = args[1:]
+    if isinstance(X, str):
+        X = list(X)
+    for i,Y in enumerate(args):
+        if isinstance(Y, str):
+            args[i] = list(Y)
+
+    assert isinstance(X, list)
+    assert all( isinstance(Y,list) for Y in args)
+
+    while args:
+        Y1,Y2 = args[:2]
+        args  = args[2:]
+        X = replace_sublist(X, Y1, Y2)
+    return X
+
+def replace_sublist(seq, sublist, replacement):
+    seq = copy(seq)
+    length = len(replacement)
+    index = 0
+    for start, end in iter(lambda: find_first_sublist(seq, sublist, index), None):
+        seq[start:end] = replacement
+        index = start + length
+    return seq
+
+def find_first_sublist(seq, sublist, start=0):
+    length = len(sublist)
+    for index in range(start, len(seq)):
+        if seq[index:index+length] == sublist:
+            return index, index+length
