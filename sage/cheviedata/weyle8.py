@@ -122,7 +122,7 @@ ChevieData["E8"]["Representation"]=eyle810
 if not "families" in ChevieData :
     ReadChv("unip/families")
 
-ChevieData["families"]["S5"]={"group":Group(Permutation("(1,5)"),Permutation("(2,5)"),Permutation("(3,5)"),Permutation("(4,5)")),
+ChevieData["families"]["S5"]={"group":PermutationGroup([Permutation("(1,5)"),Permutation("(2,5)"),Permutation("(3,5)"),Permutation("(4,5)")]),
     "lusztig":true,
     "charLabels":["(1,1)","(1,\\lambda^4)","(1,\\lambda^3)","(1,\\lambda)","(1,\\nu)","(1,\\nu')","(1,\\lambda^2)","(g_2,1)","(g_2,-\\varepsilon)","(g_2,-1)","(g_2,\\varepsilon)","(g_2,-\\rho)","(g_2,\\rho)","(g'_2,1)","(g'_2,\\varepsilon)","(g'_2,\\varepsilon')","(g'_2,\\varepsilon'')","(g'_2,\\rho)","(g_3,1)","(g_3,\\varepsilon)","(g_3,\\zeta_3)","(g_3,\\varepsilon\\zeta_3)","(g_3,\\zeta_3^2)","(g_3,\\varepsilon\\zeta_3^2)","(g_6,1)","(g_6,-1)","(g_6,\\zeta_3)","(g_6,-\\zeta_3)","(g_6,\\zeta_3^2)","(g_6,-\\zeta_3^2)","(g_4,1)","(g_4,-1)","(g_4,i)","(g_4,-i)","(g_5,1)","(g_5,\\zeta_5)","(g_5,\\zeta_5^2)","(g_5,\\zeta_5^3)","(g_5,\\zeta_5^4)"],
     "size":39,

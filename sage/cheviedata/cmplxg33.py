@@ -142,7 +142,7 @@ def lxg336():
     res["identifier"]="G33"
     res["name"]="G33"
     res["powermap"]=ChevieData["G33"]["PowerMaps"]
-    res["galomorphisms"]=Group(Permutation("(4,5)(6,7)(10,11)(12,13)(14,15)(16,17)(18,19)(20,21)(25,26)(28,29)"))
+    res["galomorphisms"]=PermutationGroup([Permutation("(4,5)(6,7)(10,11)(12,13)(14,15)(16,17)(18,19)(20,21)(25,26)(28,29)")])
     res["text"]="origin: HeckeCharTable"
     return res
 

@@ -90,7 +90,7 @@ def lxg245(param,root):
         "order":336,
         "powermap":ChevieData["G24"]["PowerMaps"],
         "irreducibles":GAPMul([f1(r),f1(p),f3(p,r,ER(-7)),f3(r,p,ER(-7)),f3(p,r,-ER(-7)),f3(r,p,-ER(-7)),f6(r,p),f6(p,r),f7(p,r),f7(r,p),f8(p,r,u),f8(p,r,-u)],p**0),
-        "galomorphisms":Group(Permutation("( 5, 6)( 9,10)")),
+        "galomorphisms":PermutationGroup([Permutation("( 5, 6)( 9,10)")]),
         "irredinfo":map(lambda x: {"charparam":x,
         "charname":ChevieData["G24"]["CharName"](x,{})},ChevieData["G24"]["CharInfo"]()["charparams"])}
     tbl.update(ChevieData["G24"]["ClassInfo"])

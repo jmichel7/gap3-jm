@@ -204,10 +204,10 @@ ChevieData["tmp"]["order"]=lambda nq: GAPMul(2**nq[1-1],Factorial(nq[1-1]))
 
 ChevieData["tmp"]["size"]=lambda nq: GAPMul(2**nq[1-1],Factorial(nq[1-1]))
 
-def ChevieData["tmp"]["domain"](nq):
+def eylbc15(nq):
     return IsList(nq) and len(nq)==3 and IsInt(nq[1-1]) and nq[1-1]>0
 
-
+ChevieData["tmp"]["domain"]=eylbc15
 
 ChevieData["tmp"]["text"]="generic character table of Hecke algebras of type_ B"
 
@@ -215,7 +215,7 @@ ChevieData["tmp"]["classparam"]=[lambda nq: PartitionTuples(nq[1-1],2)]
 
 ChevieData["tmp"]["charparam"]=[lambda nq: PartitionTuples(nq[1-1],2)]
 
-def eylbc15(nq,gamma,pi):
+def eylbc16(nq,gamma,pi):
     n=nq[1-1]
     q=nq[3-1]
     Q=nq[2-1]
@@ -249,9 +249,9 @@ def eylbc15(nq,gamma,pi):
                     val=val+GAPMul(-1**dif["ll"]+1,q**n+dif["d"])
     return val
 
-ChevieData["tmp"]["irreducibles"]=[[eylbc15]]
+ChevieData["tmp"]["irreducibles"]=[[eylbc16]]
 
-def ChevieData["tmp"]["matrix"](nq):
+def eylbc17(nq):
     def DoublePartitions(n):
         if n==0 :
             return [[[],[]]]
@@ -375,7 +375,7 @@ def ChevieData["tmp"]["matrix"](nq):
     res=Permuted(res,GAPDiv(Sortex(DoublePartitions(n)),Sortex(PartitionTuples(n,2))))
     return Matrix(res).transpose()
 
-
+ChevieData["tmp"]["matrix"]=eylbc17
 
 ChevieData["B"]["Hk"]=ChevieData["tmp"]
 
@@ -383,55 +383,55 @@ Unbind(ChevieData["tmp"])
 
 ChevieData["IndirectAddData"]("HeckeCharTable",["B"],ChevieData["compat"]["HeckeCharTableB"])
 
-def eylbc16(n,para):
+def eylbc18(n,para):
     q1=GAPDiv(-para[1-1][1-1],para[1-1][2-1])
     q2=GAPDiv(-para[2-1][1-1],para[2-1][2-1])
     return prod(range(0,n-1+1))
 
-ChevieData["B"]["PoincarePolynomial"]=eylbc16
-
-def eylbc17(arg):
-    return ChevieData["imp"]["SchurElement"](2,1,arg[1-1],arg[2-1],arg[3-1],[])
-
-ChevieData["B"]["SchurElement"]=eylbc17
-
-def eylbc18(arg):
-    return ChevieData["imp"]["FactorizedSchurElement"](2,1,arg[1-1],arg[2-1],arg[3-1],[])
-
-ChevieData["B"]["FactorizedSchurElement"]=eylbc18
+ChevieData["B"]["PoincarePolynomial"]=eylbc18
 
 def eylbc19(arg):
+    return ChevieData["imp"]["SchurElement"](2,1,arg[1-1],arg[2-1],arg[3-1],[])
+
+ChevieData["B"]["SchurElement"]=eylbc19
+
+def eylbc20(arg):
+    return ChevieData["imp"]["FactorizedSchurElement"](2,1,arg[1-1],arg[2-1],arg[3-1],[])
+
+ChevieData["B"]["FactorizedSchurElement"]=eylbc20
+
+def eylbc21(arg):
     return ChevieData["imp"]["HeckeRepresentation"](2,1,arg[1-1],arg[2-1],[],arg[4-1])
 
-ChevieData["B"]["HeckeRepresentation"]=eylbc19
+ChevieData["B"]["HeckeRepresentation"]=eylbc21
 
-def eylbc20(n,i):
+def eylbc22(n,i):
     return ChevieData["imp"]["Representation"](2,1,n,i)
 
-ChevieData["B"]["Representation"]=eylbc20
+ChevieData["B"]["Representation"]=eylbc22
 
-def eylbc21(n,c,q):
+def eylbc23(n,c,q):
     return Value(CycPolFakeDegreeSymbol(SymbolPartitionTuple(c,1)),q)
 
-ChevieData["B"]["FakeDegree"]=eylbc21
+ChevieData["B"]["FakeDegree"]=eylbc23
 
-def eylbc22(l,p):
+def eylbc24(l,p):
     decS=lambda i: MatrixDecompositionMatrix(DecompositionMatrix(Specht(p,p),i))
     pp=map(Partitions,range(0,l+1))
     pt=PartitionTuples(l,2)
     if p==2 :
-        return [[range(1,len(pt)+1),GAPMul(map(eylbc23,pt),decS(l))]]
+        return [[range(1,len(pt)+1),GAPMul(map(eylbc25,pt),decS(l))]]
     else:
         dd=Concatenation([[[1]],[[1]]],map(decS,range(2,l+1)))
         return map(lambda i: [map(lambda x: pt.index(x)+1,Cartesian(pp[i+1-1],pp[l+1-i-1])),map(lambda x: map(Product,Cartesian(x)),Cartesian(dd[i+1-1],dd[l+1-i-1]))],range(0,l+1))
 
-def eylbc23(p):
+def eylbc25(p):
     p=LittlewoodRichardsonRule(p[1-1],p[2-1])
-    return map(eylbc24,pp[l+1-1])
+    return map(eylbc26,pp[l+1-1])
 
-ChevieData["B"]["DecompositionMatrix"]=eylbc22
+ChevieData["B"]["DecompositionMatrix"]=eylbc24
 
-def eylbc25(arg):
+def eylbc27(arg):
     rank=arg[1-1]
     uc={"harishChandra":[],
         "charSymbols":[]}
@@ -457,9 +457,9 @@ def eylbc25(arg):
         uc["harishChandra"][1-1]["relativeType"]["cartanType"]=1
     return uc
 
-ChevieData["B"]["UnipotentCharacters"]=eylbc25
+ChevieData["B"]["UnipotentCharacters"]=eylbc27
 
-def eylbc26(r,type_,char):
+def eylbc28(r,type_,char):
     def part2dynkin(part):
         p=Concatenation(map(lambda d: range(1-d,d-1+1,3-d-1-d),part))
         Sort(p)
@@ -484,7 +484,7 @@ def eylbc26(r,type_,char):
                     p=1
                 else:
                     p=CharParams(ss["relgroup"]).index([s["sp"]])+1
-        ss["locsys"][p-1]=[len(uc["classes"]),CharParams(cc["Au"]).index(map(eylbc27,s["Au"]))+1]
+        ss["locsys"][p-1]=[len(uc["classes"]),CharParams(cc["Au"]).index(map(eylbc29,s["Au"]))+1]
     
     
     if type_==ER(2) :
@@ -500,7 +500,7 @@ def eylbc26(r,type_,char):
     l=Union(map(lambda c: map(lambda x: [DefectSymbol(x["symbol"]),Sum(x["sp"],Sum)],c),ss))
     SortBy(l,lambda x: [AbsInt(x[1-1]),-SignInt(x[1-1])])
     uc={"classes":[],
-        "springerSeries":map(eylbc28,l)}
+        "springerSeries":map(eylbc30,l)}
     if char!=2 :
         def symbol2para(S):
             c=Concatenation(S)
@@ -559,7 +559,7 @@ def eylbc26(r,type_,char):
         else:
             type_=1
             cc["dimBu"]=cl[1-1]["dimBu"]
-            cc["name"]=Join(map(eylbc29,Reversed(Collected(cc["parameter"][1-1]))),"")
+            cc["name"]=Join(map(eylbc31,Reversed(Collected(cc["parameter"][1-1]))),"")
         cc["red"]=CoxeterGroup()
         if char==2 :
             j=cc["parameter"][1-1]
@@ -580,7 +580,7 @@ def eylbc26(r,type_,char):
         uc["classes"].append(cc)
         for s in cl:
             addSpringer(s)
-    uc["orderClasses"]=Hasse(Poset(map(lambda x: map(eylbc30,uc["classes"]),uc["classes"])))
+    uc["orderClasses"]=Hasse(Poset(map(lambda x: map(eylbc32,uc["classes"]),uc["classes"])))
     if char!=2 and type_==2 :
         def LuSpin(p):
             Sort(p)
@@ -672,13 +672,13 @@ def eylbc26(r,type_,char):
             addSpringer(lambda ss: ss["Z"]==[-1] and ss["relgroup"]["rank"]==Sum(s,Sum),i,s,d)
     return uc
 
-def eylbc27(x):
+def eylbc29(x):
     if x :
         return [1,1]
     else:
         return [2]
 
-def eylbc28(d):
+def eylbc30(d):
     res={"relgroup":CoxeterGroup("C",d[2-1]),
         "defect":d[1-1],
         "locsys":[],
@@ -695,13 +695,13 @@ def eylbc28(d):
                 res["Z"]=[-1]
     return res
 
-def eylbc29(x):
+def eylbc31(x):
     res=IntListToString(GAPMul(range(1,x[2-1]+1),0)+x[1-1],"[]")
     if x[1-1] in cc["parameter"][2-1] :
         return SPrint("(",res,")")
     return res
 
-def eylbc30(y):
+def eylbc32(y):
     if char!=2 :
         return Dominates(y["parameter"],x["parameter"])
     m=Maximum(x["parameter"][1-1][1-1],y["parameter"][1-1][1-1])
@@ -719,15 +719,15 @@ def eylbc30(y):
                     return false
     return true
 
-ChevieData["B"]["UnipotentClasses"]=eylbc26
+ChevieData["B"]["UnipotentClasses"]=eylbc28
 
-def eylbc31(n,type_):
+def eylbc33(n,type_):
     m=GAPMul(range(1,n+1),0)+1
     m[1-1]=GAPDiv(2,type_)
     m=GAPMul(DiagonalMat(m),ChevieData["imp"]["GeneratingRoots"](2,1,n))
-    return map(lambda f: eylbc32,ChevieData["imp"]["Invariants"](2,1,n))
+    return map(lambda f: eylbc34,ChevieData["imp"]["Invariants"](2,1,n))
 
-def eylbc32(arg):
+def eylbc34(arg):
     return f(*GAPMul(arg,m))
 
-ChevieData["B"]["Invariants"]=eylbc31
+ChevieData["B"]["Invariants"]=eylbc33

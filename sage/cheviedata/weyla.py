@@ -132,7 +132,7 @@ def weyla10(nq,gamma,pi):
 
 ChevieData["tmp"]["irreducibles"]=[[weyla10]]
 
-def ChevieData["tmp"]["matrix"](nq):
+def weyla11(nq):
     n=nq[1-1]
     q=nq[2-1]
     pm=[]
@@ -200,58 +200,58 @@ def ChevieData["tmp"]["matrix"](nq):
     res.append(charCol(n,[1],n))
     return Matrix(res).transpose()
 
-
+ChevieData["tmp"]["matrix"]=weyla11
 
 ChevieData["A"]["Hk"]=ShallowCopy(ChevieData["tmp"])
 
 ChevieData["A"]["HeckeCharTable"]=ChevieData["compat"]["HeckeCharTableA"]
 
-def weyla11(n,param):
+def weyla12(n,param):
     return prod(range(1,n+1))
 
-ChevieData["A"]["PoincarePolynomial"]=weyla11
+ChevieData["A"]["PoincarePolynomial"]=weyla12
 
-def weyla12(n,alpha,param,sqrtparam):
+def weyla13(n,alpha,param,sqrtparam):
     q=GAPDiv(-param[1-1][1-1],param[1-1][2-1])
-    lambda=BetaSet(alpha)
-    res=q**Binomial(len(lambda),3)
-    for i in lambda:
+    lambda_=BetaSet(alpha)
+    res=q**Binomial(len(lambda_),3)
+    for i in lambda_:
         for j in range(0,i-1+1):
-            if j in lambda :
+            if j in lambda_ :
                 res=GAPDiv(res,q**j)
             else:
                 res=GAPMul(res,Sum(range(0,i-j-1+1),lambda e: q**e))
     return res
 
-ChevieData["A"]["SchurElement"]=weyla12
+ChevieData["A"]["SchurElement"]=weyla13
 
-def weyla13(arg):
+def weyla14(arg):
     return ChevieData["imp"]["FactorizedSchurElement"](1,1,arg[1-1]+1,[arg[2-1]],arg[3-1],[])
 
-ChevieData["A"]["FactorizedSchurElement"]=weyla13
+ChevieData["A"]["FactorizedSchurElement"]=weyla14
 
-def weyla14(n,param,sqrtparam,i):
+def weyla15(n,param,sqrtparam,i):
     H=Hecke(CoxeterGroup("A",n),GAPDiv(-param[1-1][1-1],param[1-1][2-1]))
     return SpechtModel(H,Partitions(n+1)[i-1])
 
-ChevieData["A"]["HeckeRepresentation"]=weyla14
+ChevieData["A"]["HeckeRepresentation"]=weyla15
 
-def weyla15(n,i):
+def weyla16(n,i):
     return [ChevieData["imp"]["Representation"](1,1,n+1,i)[k-1] for k in range(2,n+1+1)]
 
-ChevieData["A"]["Representation"]=weyla15
+ChevieData["A"]["Representation"]=weyla16
 
-def weyla16(n,p,q):
+def weyla17(n,p,q):
     return GAPDiv(ChevieData["A"]["PoincarePolynomial"](Sum(p)-1,[[q,-1]]),ChevieData["A"]["SchurElement"](Sum(p)-1,p,[[q,-1]],[]))
 
-ChevieData["A"]["FakeDegree"]=weyla16
+ChevieData["A"]["FakeDegree"]=weyla17
 
-def weyla17(l,p):
+def weyla18(l,p):
     return [[range(1,NrPartitions(l+1)+1),MatrixDecompositionMatrix(DecompositionMatrix(Specht(p,p),l+1))]]
 
-ChevieData["A"]["DecompositionMatrix"]=weyla17
+ChevieData["A"]["DecompositionMatrix"]=weyla18
 
-def weyla18(l):
+def weyla19(l):
     ci=ChevieData["A"]["CharInfo"](l)
     return {"harishChandra":[{"levi":[],
         "relativeType":{"series":"A",
@@ -267,22 +267,22 @@ def weyla18(l):
         "a":ci["a"],
         "A":ci["A"]}
 
-ChevieData["A"]["UnipotentCharacters"]=weyla18
+ChevieData["A"]["UnipotentCharacters"]=weyla19
 
-def weyla19(n):
+def weyla20(n):
     m=ChevieData["A"]["GeneratingRoots"](n)
     m.append(GAPMul(range(1,n+1+1),0)+1)
-    return map(lambda i: weyla20,range(2,n+1+1))
+    return map(lambda i: weyla21,range(2,n+1+1))
 
-def weyla20(arg):
+def weyla21(arg):
     v=ShallowCopy(arg)
     v.append(GAPMul(0,v[1-1]))
     v=GAPMul(v,m)
     return Sum(Arrangements(range(1,n+1+1),i),lambda a: prod([v[k-1] for k in a]))
 
-ChevieData["A"]["Invariants"]=weyla19
+ChevieData["A"]["Invariants"]=weyla20
 
-def weyla21(n,p):
+def weyla22(n,p):
     uc={"classes":map(lambda p: {"parameter":p},Partitions(n+1)),
         "springerSeries":Concatenation(map(lambda d: map(lambda i: {"relgroup":CoxeterGroup("A",GAPDiv(n+1,d)-1),
         "Z":[ER(d)**i],
@@ -315,9 +315,9 @@ def weyla21(n,p):
     uc["orderClasses"]=Hasse(Poset(map(lambda x: map(lambda y: Dominates(y["parameter"],x["parameter"]),uc["classes"]),uc["classes"])))
     return uc
 
-ChevieData["A"]["UnipotentClasses"]=weyla21
+ChevieData["A"]["UnipotentClasses"]=weyla22
 
-def weyla22(n):
+def weyla23(n):
     def f(i):
         if i!=Permutation("()") :
             i=prod(CoxeterWord(W,i))
@@ -331,4 +331,4 @@ def weyla22(n):
         "reps":[],
         "character":[f(x)]},l)
 
-ChevieData["A"]["KLeftCellRepresentatives"]=weyla22
+ChevieData["A"]["KLeftCellRepresentatives"]=weyla23

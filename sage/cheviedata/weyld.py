@@ -180,10 +180,10 @@ ChevieData["tmp"]["size"]=lambda nq: GAPMul(2**nq[1-1]-1,Factorial(nq[1-1]))
 
 ChevieData["tmp"]["order"]=lambda nq: GAPMul(2**nq[1-1]-1,Factorial(nq[1-1]))
 
-def ChevieData["tmp"]["domain"](nq):
+def weyld13(nq):
     return IsList(nq) and len(nq)==2 and IsInt(nq[1-1]) and nq[1-1]>1
 
-
+ChevieData["tmp"]["domain"]=weyld13
 
 ChevieData["tmp"]["text"]="generic character table of Hecke algebras of type_ D"
 
@@ -191,7 +191,7 @@ ChevieData["tmp"]["classparam"]=[lambda nq: CharTableWeylD["classparam"][1-1](nq
 
 ChevieData["tmp"]["charparam"]=[lambda nq: ChevieData["D"]["CharInfo"](nq[1-1])["charparams"]]
 
-def weyld13(nq,alpha,pi):
+def weyld14(nq,alpha,pi):
     n=nq[1-1]
     q=nq[2-1]
     s="+-"
@@ -217,22 +217,22 @@ def weyld13(nq,alpha,pi):
             val=BHk([n,1,q],alpha,pi)
     return val
 
-ChevieData["tmp"]["irreducibles"]=[[weyld13]]
+ChevieData["tmp"]["irreducibles"]=[[weyld14]]
 
 ChevieData["D"]["Hk"]=ShallowCopy(ChevieData["tmp"])
 
 ChevieData["D"]["HeckeCharTable"]=ChevieData["compat"]["HeckeCharTableD"]
 
-def weyld14(arg):
+def weyld15(arg):
     p=arg[2-1]
     n=arg[1-1]
     if p[2-1] in "+-" :
         p=[p[1-1],p[1-1]]
     return ChevieData["imp"]["FactorizedSchurElement"](2,2,n,p,arg[3-1],[])
 
-ChevieData["D"]["FactorizedSchurElement"]=weyld14
+ChevieData["D"]["FactorizedSchurElement"]=weyld15
 
-def weyld15(arg):
+def weyld16(arg):
     i=arg[4-1]
     n=arg[1-1]
     p=ChevieData["D"]["CharInfo"](n)["charparams"][i-1]
@@ -243,9 +243,9 @@ def weyld15(arg):
             i=i-1
     return ChevieData["imp"]["HeckeRepresentation"](2,2,n,arg[2-1],[],i)
 
-ChevieData["D"]["HeckeRepresentation"]=weyld15
+ChevieData["D"]["HeckeRepresentation"]=weyld16
 
-def weyld16(n,i):
+def weyld17(n,i):
     p=ChevieData["D"]["CharInfo"](n)["charparams"][i-1]
     if p[len(p)-1]==0 :
         i=i+1
@@ -254,38 +254,38 @@ def weyld16(n,i):
             i=i-1
     return ChevieData["imp"]["Representation"](2,2,n,i)
 
-ChevieData["D"]["Representation"]=weyld16
+ChevieData["D"]["Representation"]=weyld17
 
-def weyld17(n,para):
+def weyld18(n,para):
     q=GAPDiv(-para[1-1][1-1],para[1-1][2-1])
     return GAPMul(Sum(range(0,n-1+1),lambda k: q**k),prod(range(1,n-1+1)))
 
-ChevieData["D"]["PoincarePolynomial"]=weyld17
+ChevieData["D"]["PoincarePolynomial"]=weyld18
 
 ChevieData["D"]["symbolcharparam"]=lambda c: SymbolPartitionTuple(c,0)
 
-def weyld18(n):
+def weyld19(n):
     m=ChevieData["imp"]["GeneratingRoots"](2,2,n)
-    return map(lambda f: weyld19,ChevieData["imp"]["Invariants"](2,2,n))
+    return map(lambda f: weyld20,ChevieData["imp"]["Invariants"](2,2,n))
 
-def weyld19(arg):
+def weyld20(arg):
     return f(*GAPMul(arg,m))
 
-ChevieData["D"]["Invariants"]=weyld18
+ChevieData["D"]["Invariants"]=weyld19
 
 ChevieData["D"]["CycPolGenericDegree"]=lambda c: CycPolGenericDegreeSymbol(SymbolPartitionTuple(c,0))
 
-def weyld20(n,phi,q,sqrtparam):
+def weyld21(n,phi,q,sqrtparam):
     return GAPDiv(ChevieData["D"]["PoincarePolynomial"](n,q),Value(ChevieData["D"]["CycPolGenericDegree"](phi),GAPDiv(-q[1-1][1-1],q[1-1][2-1])))
 
-ChevieData["D"]["SchurElement"]=weyld20
+ChevieData["D"]["SchurElement"]=weyld21
 
-def weyld21(n,c,q):
+def weyld22(n,c,q):
     return Value(CycPolFakeDegreeSymbol(SymbolPartitionTuple(c,0)),q)
 
-ChevieData["D"]["FakeDegree"]=weyld21
+ChevieData["D"]["FakeDegree"]=weyld22
 
-def weyld22(rank):
+def weyld23(rank):
     uc={"harishChandra":[],
         "charSymbols":[]}
     for d in GAPMul(4,range(0,RootInt(QuoInt(rank,4),2)+1)):
@@ -314,11 +314,11 @@ def weyld22(rank):
     uc["families"]=FamiliesClassical(uc["charSymbols"])
     return uc
 
-ChevieData["D"]["UnipotentCharacters"]=weyld22
+ChevieData["D"]["UnipotentCharacters"]=weyld23
 
 ChevieData["D"]["ReflectionDegrees"]=lambda n: Concatenation(GAPMul(2,range(1,n-1+1)),[n])
 
-def weyld23(n,char):
+def weyld24(n,char):
     def addSpringer(s,i):
         ss=First(uc["springerSeries"],lambda x: x["defect"]==DefectSymbol(s["symbol"]))
         if s["sp"] in [[[],[1]],[[],[]]] :
@@ -328,7 +328,7 @@ def weyld23(n,char):
                 p=2
             else:
                 p=CharParams(ss["relgroup"]).index([s["sp"]])+1
-        ss["locsys"][p-1]=[i,CharParams(cc["Au"]).index(map(weyld24,s["Au"]))+1]
+        ss["locsys"][p-1]=[i,CharParams(cc["Au"]).index(map(weyld25,s["Au"]))+1]
     
     
     def partition2DR(part):
@@ -388,12 +388,12 @@ def weyld23(n,char):
     l=Union(map(lambda c: map(lambda x: [DefectSymbol(x["symbol"]),Sum(FullSymbol(x["sp"]),Sum)],c),ss))
     SortBy(l,lambda x: [AbsInt(x[1-1]),-SignInt(x[1-1])])
     uc={"classes":[],
-        "springerSeries":map(weyld25,l)}
+        "springerSeries":map(weyld26,l)}
     for cl in ss:
         cc={"parameter":symbol2partition(cl[1-1]["symbol"])}
         if char==2 :
             cc["dimBu"]=cl[1-1]["dimBu"]
-            cc["name"]=Join(map(weyld26,Reversed(Collected(cc["parameter"][1-1]))),"")
+            cc["name"]=Join(map(weyld27,Reversed(Collected(cc["parameter"][1-1]))),"")
         else:
             cc["dynkin"]=partition2DR(cc["parameter"])
             cc["name"]=IntListToString(cc["parameter"])
@@ -430,7 +430,7 @@ def weyld23(n,char):
             for s in cl:
                 addSpringer(s,len(uc["classes"]))
     if char==2 :
-        uc["orderClasses"]=Hasse(Poset(map(lambda x: map(weyld27,uc["classes"]),uc["classes"])))
+        uc["orderClasses"]=Hasse(Poset(map(lambda x: map(weyld28,uc["classes"]),uc["classes"])))
     else:
         uc["orderClasses"]=Hasse(Poset(map(lambda i: map(lambda j: Dominates(uc["classes"][j-1]["parameter"],uc["classes"][i-1]["parameter"]) and uc["classes"][j-1]["parameter"]!=uc["classes"][i-1]["parameter"] or i==j,range(1,len(uc["classes"])+1)),range(1,len(uc["classes"])+1))))
     if char!=2 :
@@ -556,13 +556,13 @@ def weyld23(n,char):
                 addSpringer(lambda ss: ss["Z"] in [[-1,1],[-ER(4)]] and ss["relgroup"]["rank"]==Sum(s,Sum),i,s,k[2-1])
     return uc
 
-def weyld24(x):
+def weyld25(x):
     if x :
         return [1,1]
     else:
         return [2]
 
-def weyld25(d):
+def weyld26(d):
     res={"defect":d[1-1],
         "locsys":[],
         "levi":range(1,n-d[2-1]+1)}
@@ -582,13 +582,13 @@ def weyld25(d):
         res["relgroup"]=CoxeterGroup("B",d[2-1])
     return res
 
-def weyld26(x):
+def weyld27(x):
     res=IntListToString(GAPMul(range(1,x[2-1]+1),0)+x[1-1],"[]")
     if x[1-1] in cc["parameter"][2-1] :
         return SPrint("(",res,")")
     return res
 
-def weyld27(y):
+def weyld28(y):
     m=Maximum(x["parameter"][1-1][1-1],y["parameter"][1-1][1-1])
     f=lambda x: map(lambda i: Sum(Filtered(x,lambda z: z<i))+GAPMul(i,Number(x,lambda z: z>=i)),range(1,m+1))
     fx=f(x["parameter"][1-1])
@@ -606,4 +606,4 @@ def weyld27(y):
         return false
     return true
 
-ChevieData["D"]["UnipotentClasses"]=weyld23
+ChevieData["D"]["UnipotentClasses"]=weyld24

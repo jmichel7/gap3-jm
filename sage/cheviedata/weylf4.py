@@ -265,7 +265,7 @@ ChevieData["F4"]["HeckeRepresentation"]=eylf413
 if not "families" in ChevieData :
     ReadChv("unip/families")
 
-ChevieData["families"]["S4"]={"group":Group(Permutation("(1,4)"),Permutation("(2,4)"),Permutation("(3,4)")),
+ChevieData["families"]["S4"]={"group":PermutationGroup([Permutation("(1,4)"),Permutation("(2,4)"),Permutation("(3,4)")]),
     "lusztig":true,
     "charLabels":["(1,1)","(1,\\lambda^{\\wedge3})","(1,\\sigma)","(1,\\lambda^{\\wedge2})","(1,\\lambda)","(g_2,1)","(g_2,\\varepsilon')","(g_2,\\varepsilon'')","(g_2,\\varepsilon)","(g'_2,1)","(g'_2,\\varepsilon)","(g'_2,\\varepsilon')","(g'_2,\\varepsilon'')","(g'_2,r)","(g_3,1)","(g_3,\\zeta_3)","(g_3,\\zeta_3^2)","(g_4,1)","(g_4,-1)","(g_4,-i)","(g_4,i)"],
     "size":21,

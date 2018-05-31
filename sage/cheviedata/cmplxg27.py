@@ -112,7 +112,7 @@ def lxg275(para,root):
     tbl["centralizers"]=map(lambda x: GAPDiv(tbl["order"],x),tbl["classes"])
     tbl["irredinfo"]=map(lambda x: {"charparam":x,
         "charname":ChevieData["G27"]["CharName"](x,{})},ChevieData["G27"]["CharInfo"]()["charparams"])
-    tbl["galomorphisms"]=Group(Permutation("(4,8)(6,19)(7,20)(12,28)(14,27)(15,26)"),Permutation("(6,7)(11,13)(14,15)(17,18)(19,20)(22,23)(24,25)(26,27)(30,31)(32,33)"))
+    tbl["galomorphisms"]=PermutationGroup([Permutation("(4,8)(6,19)(7,20)(12,28)(14,27)(15,26)"),Permutation("(6,7)(11,13)(14,15)(17,18)(19,20)(22,23)(24,25)(26,27)(30,31)(32,33)")])
     tbl=ChevieData["compat"]["MakeCharacterTable"](tbl)
     return tbl
 
