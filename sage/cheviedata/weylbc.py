@@ -195,7 +195,7 @@ ChevieData["B"]["CharInfo"]=eylbc14
 
 ChevieData["IndirectAddData"]("CharTable",["B"],ChevieData["compat"]["CharTableB"])
 
-ChevieData["tmp"]=ShallowCopy(CharTableWeylB)
+ChevieData["tmp"]=copy(CharTableWeylB)
 
 ChevieData["tmp"]["identifier"]="HeckeB"
 
@@ -308,12 +308,12 @@ def eylbc17(nq):
         for hk in cbs:
             for pr in prs[1-1]:
                 if hk[2-1]==[] and pr["to"]>hk[1-1][len(hk[1-1])-1]["from"] :
-                    new=map(ShallowCopy,hk)
+                    new=map(copy,hk)
                     new[1-1].append(pr)
                     cbs.append(new)
             for pr in prs[2-1]:
                 if hk[2-1]==[] or pr["to"]>hk[2-1][len(hk[2-1])-1]["from"] :
-                    new=map(ShallowCopy,hk)
+                    new=map(copy,hk)
                     new[2-1].append(pr)
                     cbs.append(new)
             ll=Sum(hk[1-1],lambda x: x["from"]-x["to"])+Sum(hk[2-1],lambda x: x["from"]-x["to"])

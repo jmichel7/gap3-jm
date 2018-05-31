@@ -201,7 +201,7 @@ def coxi13(m):
         r=[[],[1]]
     x=[1,2]
     for i in range(1,QuoInt(m,2)+1):
-        r.append(ShallowCopy(x))
+        r.append(copy(x))
         x+=[1,2]
     return r
 

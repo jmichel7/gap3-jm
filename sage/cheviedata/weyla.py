@@ -100,7 +100,7 @@ ChevieData["A"]["CharInfo"]=weyla9
 
 ChevieData["A"]["CharTable"]=ChevieData["compat"]["CharTableA"]
 
-ChevieData["tmp"]=ShallowCopy(CharTableSymmetric)
+ChevieData["tmp"]=copy(CharTableSymmetric)
 
 ChevieData["tmp"]["identifier"]="HeckeA"
 
@@ -150,7 +150,7 @@ def weyla11(nq):
                     prs.append([{"from":i,
                         "to":j,
                         "leg":leg}])
-        cbs=ShallowCopy(prs)
+        cbs=copy(prs)
         hks=map(lambda x: [],range(1,m+1))
         for hk in cbs:
             for pr in prs:
@@ -204,7 +204,7 @@ def weyla11(nq):
 
 ChevieData["tmp"]["matrix"]=weyla11
 
-ChevieData["A"]["Hk"]=ShallowCopy(ChevieData["tmp"])
+ChevieData["A"]["Hk"]=copy(ChevieData["tmp"])
 
 ChevieData["A"]["HeckeCharTable"]=ChevieData["compat"]["HeckeCharTableA"]
 
@@ -277,7 +277,7 @@ def weyla20(n):
     return map(lambda i: weyla21,range(2,n+1+1))
 
 def weyla21(arg):
-    v=ShallowCopy(arg)
+    v=copy(arg)
     v.append(GAPMul(0,v[1-1]))
     v=GAPMul(v,m)
     return Sum(Arrangements(range(1,n+1+1),i),lambda a: prod([v[k-1] for k in a]))

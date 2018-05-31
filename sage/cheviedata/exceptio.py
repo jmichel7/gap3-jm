@@ -95,7 +95,7 @@ def eptio10(phi,q):
         res=ValuePol(f[1-1],q**2)
     else:
         res=f[1-1]
-    f=ShallowCopy(f)
+    f=copy(f)
     f[1-1]=1
     return GAPMul(res,Value(CycPol(f),q))
 
@@ -202,7 +202,7 @@ def VcycSchurElement(arg):
         data=arg[3-1]
         para=[arg[1-1][k-1] for k in data["order"]]
     else:
-        para=ShallowCopy(arg[1-1])
+        para=copy(arg[1-1])
     monomial=lambda v: prod(range(1,len(v)+1))
     r=arg[2-1]
     if "coeff" in r :
@@ -235,7 +235,7 @@ def VFactorSchurElement(arg):
         data=arg[3-1]
         para=[arg[1-1][k-1] for k in data["order"]]
     else:
-        para=ShallowCopy(arg[1-1])
+        para=copy(arg[1-1])
     monomial=lambda v: prod(range(1,len(v)+1))
     r=arg[2-1]
     res={}

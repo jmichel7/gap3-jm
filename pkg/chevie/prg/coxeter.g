@@ -139,7 +139,7 @@ end);
 
 # IsomorphismType(W[, options])
 # returns a string describing the isomorphism type of the reflection group
-# or coset W. Options can be rec(Tex:=true).
+# or coset W. Options can be rec(TeX:=true).
 IsomorphismType:=function(arg)local W,t,opt;
   W:=arg[1];if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
   t:=Reversed(Collected(List(ReflectionType(W),x->ReflectionName(x,opt))));

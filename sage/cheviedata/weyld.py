@@ -62,7 +62,7 @@ ChevieData["D"]["ParabolicRepresentatives"]=weyld6
 def weyld7(arg):
     n=arg[1-1]
     if len(arg)==2 :
-        param=map(lambda a: map(ShallowCopy,a),arg[2-1])
+        param=map(lambda a: map(copy,a),arg[2-1])
     else:
         param=PartitionTuples(n,2)
     res=[]
@@ -87,7 +87,7 @@ def weyld7(arg):
                 w[1-1]=1
             if pi[2-1]==[] and ForAll(pi[1-1],lambda x: x%2==0) :
                 res.append(w)
-                w=ShallowCopy(w)
+                w=copy(w)
                 w[1-1]=2
             res.append(w)
     return res
@@ -173,7 +173,7 @@ ChevieData["D"]["ClassParameter"]=weyld12
 
 ChevieData["D"]["CharTable"]=ChevieData["compat"]["CharTableD"]
 
-ChevieData["tmp"]=ShallowCopy(CharTableWeylD)
+ChevieData["tmp"]=copy(CharTableWeylD)
 
 ChevieData["tmp"]["identifier"]="HeckeD"
 
@@ -222,7 +222,7 @@ def weyld14(nq,alpha,pi):
 
 ChevieData["tmp"]["irreducibles"]=[[weyld14]]
 
-ChevieData["D"]["Hk"]=ShallowCopy(ChevieData["tmp"])
+ChevieData["D"]["Hk"]=copy(ChevieData["tmp"])
 
 ChevieData["D"]["HeckeCharTable"]=ChevieData["compat"]["HeckeCharTableD"]
 
