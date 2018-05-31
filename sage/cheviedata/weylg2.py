@@ -94,7 +94,7 @@ ChevieData["G2"]["PowerMaps"]=[None,[1,1,1,5,5,1],[1,2,3,6,1,6]]
 
 ChevieData["G2"]["sparseFakeDegrees"]=[[1,0],[1,6],[1,3],[1,3],[1,1,1,5],[1,2,1,4]]
 
-ChevieData["G2"]["ClassParameter"]=lambda w: CHEVIE.R("ClassNames", "G2")[PositionProperty([[[]],[[2],[1,2,1],[2,1,2,1,2]],[[1],[2,1,2],[1,2,1,2,1]],[[2,1],[1,2]],[[2,1,2,1],[1,2,1,2]],[[1,2,1,2,1,2]]],lambda x: in(w,x))-1]
+ChevieData["G2"]["ClassParameter"]=lambda w: CHEVIE.R("ClassNames", "G2")[PositionProperty([[[]],[[2],[1,2,1],[2,1,2,1,2]],[[1],[2,1,2],[1,2,1,2,1]],[[2,1],[1,2]],[[2,1,2,1],[1,2,1,2]],[[1,2,1,2,1,2]]],lambda x: w in x)-1]
 
 def eylg25(para,sqrtpara):
     u=prod(para[1-1])
@@ -337,9 +337,9 @@ def eylg216(c,p):
     uc["orderClasses"]=map(lambda c: map(lambda n: PositionProperty(uc["classes"],lambda c: UnipotentClassOps["Name"](c)==n),c["succ"]),uc["classes"])
     for c in uc["classes"]:
         Unbind(c["succ"])
-        if !("red" in c) :
+        if not "red" in c :
             c["red"]=Z(1)
-        if !("Au" in c) :
+        if not "Au" in c :
             c["Au"]=Z(1)
         c["AuAction"]=ExtendedReflectionGroup(c["red"],map(lambda x: IdentityMat(c["red"]["rank"]),c["Au"]["generators"]))
     return uc

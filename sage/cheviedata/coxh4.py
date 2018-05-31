@@ -55,7 +55,7 @@ ChevieData["H4"]["cycpolfakedegrees"]=[[1,0],[1,60],[1,1,4,4,12,20,36],[1,31,4,4
 def coxh45(param,sqrtparam):
     a=GAPDiv(1+ER(5),2)
     q=GAPDiv(-param[1][1-1],param[1][2-1])
-    if !(sqrtparam[1]==None) :
+    if not sqrtparam[1]==None :
         v=GetRoot(q,2,"CharTable(Hecke(H4))")
     else:
         v=sqrtparam[1-1]
@@ -88,7 +88,7 @@ def coxh46(i):
 ChevieData["H4"]["WGraph"]=coxh46
 
 def coxh47(param,sqrtparam,i):
-    if !(sqrtparam[1]==None) :
+    if not sqrtparam[1]==None :
         v=GetRoot(GAPDiv(-param[1][1-1],param[1][2-1]),2,"Representation(Hecke(H4),[",i,"])")
     else:
         v=sqrtparam[1-1]
@@ -101,7 +101,7 @@ def coxh48(i):
 
 ChevieData["H4"]["Representation"]=coxh48
 
-if !("families" in CHEVIE) :
+if not "families" in CHEVIE :
     ReadChv("unip/families")
 
 ChevieData["families"]["HS4"]={"group":"SL2(5)",

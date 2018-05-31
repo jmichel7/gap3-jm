@@ -87,7 +87,7 @@ def eyle65(i):
 ChevieData["E6"]["WGraph"]=eyle65
 
 def eyle66(param,sqrtparam,i):
-    if !(sqrtparam[1]==None) :
+    if not sqrtparam[1]==None :
         v=GetRoot(GAPDiv(-param[1][1-1],param[1][2-1]),2,"Representation(Hecke(E6),[",i,"])")
     else:
         v=sqrtparam[1-1]
@@ -313,11 +313,11 @@ def eyle616(p):
     uc["orderClasses"]=map(lambda c: map(lambda n: PositionProperty(uc["classes"],lambda c: UnipotentClassOps["Name"](c)==n),c["succ"]),uc["classes"])
     for c in uc["classes"]:
         Unbind(c["succ"])
-        if !("red" in c) :
+        if not "red" in c :
             c["red"]=Z(1)
-        if !("Au" in c) :
+        if not "Au" in c :
             c["Au"]=Z(1)
-        if !("AuAction" in c) :
+        if not "AuAction" in c :
             c["AuAction"]=ExtendedReflectionGroup(c["red"],map(lambda x: IdentityMat(c["red"]["rank"]),c["Au"]["generators"]))
     return uc
 

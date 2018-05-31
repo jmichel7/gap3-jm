@@ -246,7 +246,7 @@ def lxg297(para,root,i):
 
 ChevieData["G29"]["HeckeRepresentation"]=lxg297
 
-if !("families" in CHEVIE) :
+if not "families" in CHEVIE :
     ReadChv("unip/families")
 
 ChevieData["families"]["F20"]={"name":"Q(F_{20})",

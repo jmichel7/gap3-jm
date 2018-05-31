@@ -378,7 +378,7 @@ def lxg327(i):
     cached=ChevieData["G32"]["CachedRepresentations"]
     def f(i):
         InfoChevie("calling rep(",i,")\n")
-        if !(cached[i]==None) :
+        if not cached[i]==None :
             cached[i-1]=ChevieData["G32"]["Representation"](i)
         return cached[i-1]
     
@@ -632,7 +632,7 @@ def lxg3213(a,b,c,d):
 
 ChevieData["G32"]["Discriminant"]=lxg3212
 
-if !("families" in CHEVIE) :
+if not "families" in CHEVIE :
     ReadChv("unip/families")
 
 ChevieData["families"]["G4"]={"name":"Q(G_4)",
@@ -662,7 +662,7 @@ def lxg3214():
             "charNumbers":[arg[1-1]],
             "eigenvalue":arg[2-1],
             "cuspidalName":n}
-        if len(arg)>2 and !(IsInt(arg[len(arg)-1])) :
+        if len(arg)>2 and not IsInt(arg[len(arg)-1]) :
             res["qEigen"]=arg[len(arg)-1]
         return res
     

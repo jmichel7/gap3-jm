@@ -142,7 +142,7 @@ def CHEVIE.tmp.matrix(nq):
         for i in beta:
             leg=0
             for j in [i-1,..(i-2,0)]:
-                if in(j,beta) :
+                if j in beta :
                     leg=leg+1
                 else:
                     prs.append([{"from":i,
@@ -162,7 +162,7 @@ def CHEVIE.tmp.matrix(nq):
             if ll<m-1 :
                 gamma=Difference(beta,map(lambda x: x["from"],hk))
                 UniteSet(gamma,map(lambda x: x["to"],hk))
-                if in(0,gamma) :
+                if 0 in gamma :
                     j=0
                     while gamma[j+1-1]==j:
                         j=j+1
@@ -217,7 +217,7 @@ def weyla12(n,alpha,param,sqrtparam):
     res=q**Binomial(len(lambda),3)
     for i in lambda:
         for j in range(0,i-1+1):
-            if in(j,lambda) :
+            if j in lambda :
                 res=GAPDiv(res,q**j)
             else:
                 res=GAPMul(res,Sum(range(0,i-j-1+1),lambda e: q**e))

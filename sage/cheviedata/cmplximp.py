@@ -245,7 +245,7 @@ def lximp13(p,q,r):
         return Concatenation(map(lambda x: o,range(1,e+1)))
     
     
-    if [q,r]==[2,2] and !("othermethod" in CHEVIE) :
+    if [q,r]==[2,2] and not "othermethod" in CHEVIE :
         res={"classtext":[],
             "classparams":[],
             "classnames":[]}
@@ -289,7 +289,7 @@ def lximp13(p,q,r):
                     if l>0 and res[l-1]==a :
                         res=[res[k-1] for k in range(1,l-1+1)]
                     else:
-                        if p==q and in(a,[1,2]) and >=(l,q) and [res[k-1] for k in range(l-q+1,l+1)]==word(q,3-a) :
+                        if p==q and a in [1,2] and >=(l,q) and [res[k-1] for k in range(l-q+1,l+1)]==word(q,3-a) :
                             res=Concatenation([res[k-1] for k in range(1,l-q+1)],word(q-1,3-a))
                         else:
                             res.append(a)
@@ -347,16 +347,16 @@ def lximp13(p,q,r):
             return res
 
 def lximp14(c):
-    if len(c)>0 and in(c[1-1],[2,3]) :
+    if len(c)>0 and c[1-1] in [2,3] :
         return Lcm(2,GAPDiv(p,Gcd(Number(c,lambda x: x==0),p)))
     else:
         return Lcm(GAPDiv(p,Gcd(Number(c,lambda x: x==0),p)),GAPDiv(GAPDiv(p,2),Gcd(Number(c,lambda x: x==1),GAPDiv(p,2))))
 
 def lximp15(c):
-    if len(c)>0 and in(c[1-1],[2,3]) :
+    if len(c)>0 and c[1-1] in [2,3] :
         return GAPDiv(p,q)
     else:
-        if in(1,c) :
+        if 1 in c :
             return 2
         else:
             return 1
@@ -508,7 +508,7 @@ def lximp23(i):
     return v
 
 def lximp24(s):
-    if !(IsList(s[len(s)-1])) :
+    if not IsList(s[len(s)-1]) :
         s=Copy(s)
         t=GAPDiv(len(s)-2,d)
         [s[k-1] for k in GAPMul(range(0,t-1+1),d)+1]=Rotation([s[k-1] for k in GAPMul(range(0,t-1+1),d)+1],1)
@@ -779,7 +779,7 @@ def lximp34(p,q,r,para,root):
                     return res
                 j=e
                 for i in [S[e-1]-1,..(S[e-1]-2,0)]:
-                    if in(!(i),S) :
+                    if not i in S :
                         while j>0 and S[j-1]>i:
                             j=j-1
                         k=j+1
@@ -910,7 +910,7 @@ def lximp34(p,q,r,para,root):
                     if name in chiCache :
                         return chiCache[name]
                 bp=Maximum(Concatenation(lambda))
-                i=PositionProperty(lambda,lambda x: in(bp,x))
+                i=PositionProperty(lambda,lambda x: bp in x)
                 rest=ShallowCopy(lambda)
                 rest[i-1]=[rest[i][k-1] for k in range(2,len(rest[i-1])+1)]
                 res=GAPMul(-prod(para[2-1])**GAPMul(i-1,n-bp),Sum(Strips(mu,bp),lximp35))
@@ -921,7 +921,7 @@ def lximp34(p,q,r,para,root):
             
             res["irreducibles"]=map(lambda x: map(lambda y: GenericEntry(y,x),cl["classparams"]),map(lambda x: map(BetaSet,x),cl["classparams"]))
         else:
-            if [q,r]==[2,2] and !("othermethod" in CHEVIE) :
+            if [q,r]==[2,2] and not "othermethod" in CHEVIE :
                 cl=ChevieData["imp"]["ClassInfo"](p,q,r)
                 X=para[2-1]
                 Y=para[3-1]

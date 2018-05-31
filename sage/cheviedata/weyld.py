@@ -136,7 +136,7 @@ def weyld12(n,w):
     for i in range(1,n+1):
         if !=(mark[i-1],0) :
             cyc=CyclePermInt(x,i)
-            if in(i+n,cyc) :
+            if i+n in cyc :
                 res[2-1].append(GAPDiv(len(cyc),2))
             else:
                 res[1-1].append(len(cyc))
@@ -146,18 +146,18 @@ def weyld12(n,w):
                 else:
                     mark[j-1]=0
     if res[2-1]==[] and ForAll(res[1-1],lambda i: i%2==0) :
-        if !(ChevieData["D"]["gensMODA"][n]==None) :
+        if not ChevieData["D"]["gensMODA"][n]==None :
             tmp=CoxeterGroup("D",n)
             gens=PermCosetsSubgroup(tmp,ReflectionSubgroup(tmp,range(2,n+1)))
             tmp=ChevieData["D"]["ClassInfo"](n)
-            tmp=[tmp.classtext[k-1] for k in Filtered(range(1,len(tmp["classnames"])+1),lambda i: in('+',tmp.classnames[i-1]) or in('-',tmp.classnames[i-1]))]
+            tmp=[tmp.classtext[k-1] for k in Filtered(range(1,len(tmp["classnames"])+1),lambda i: '+' in tmp.classnames[i-1] or '-' in tmp.classnames[i-1])]
             tmp=map(lambda a: CycleStructurePerm(prod([gens[k-1] for k in a])),tmp)
             CHEVIE.R("gensMODA", "D")[n-1]=[gens,[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))-1],[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))]]
         tmp=CycleStructurePerm(prod([((CHEVIE.R("gensMODA", "D"))[n])[1][k-1] for k in w]))
-        if in(tmp,(CHEVIE.R("gensMODA", "D"))[n][2-1]) and in(!(tmp),(CHEVIE.R("gensMODA", "D"))[n][3-1]) :
+        if tmp in (CHEVIE.R("gensMODA", "D"))[n][2-1] and not tmp in (CHEVIE.R("gensMODA", "D"))[n][3-1] :
             res[2-1]='+'
         else:
-            if in(!(tmp),(CHEVIE.R("gensMODA", "D"))[n][2-1]) and in(tmp,(CHEVIE.R("gensMODA", "D"))[n][3-1]) :
+            if not tmp in (CHEVIE.R("gensMODA", "D"))[n][2-1] and tmp in (CHEVIE.R("gensMODA", "D"))[n][3-1] :
                 res[2-1]='-'
     Sort(res[1-1])
     if IsList(res[2-1]) :
@@ -199,9 +199,9 @@ def weyld13(nq,alpha,pi):
         return CharTableWeylD.irreducibles[1][1-1](n,alpha,pi)
     AHk=CHEVIE.R("Hk", "A").irreducibles[1][1-1]
     BHk=CHEVIE.R("Hk", "B").irreducibles[1][1-1]
-    if !(IsList(alpha[2-1])) :
+    if not IsList(alpha[2-1]) :
         delta=[alpha[1-1],alpha[1-1]]
-        if !(IsList(pi[2-1])) :
+        if not IsList(pi[2-1]) :
             vb=GAPDiv(BHk([n,1,q],delta,[pi[1-1],[]]),2)
             va=GAPMul(GAPDiv(q+1**len(pi[1-1]),2),AHk([GAPDiv(n,2),q**2],alpha[1-1],GAPDiv(pi[1-1],2)))
             if s[alpha[3-1]+1-1]==pi[2-1] :
@@ -211,7 +211,7 @@ def weyld13(nq,alpha,pi):
         else:
             val=GAPDiv(BHk([n,1,q],delta,pi),2)
     else:
-        if !(IsList(pi[2-1])) :
+        if not IsList(pi[2-1]) :
             val=BHk([n,1,q],alpha,[pi[1-1],[]])
         else:
             val=BHk([n,1,q],alpha,pi)
@@ -226,7 +226,7 @@ ChevieData["D"]["HeckeCharTable"]=ChevieData["compat"]["HeckeCharTableD"]
 def weyld14(arg):
     p=arg[2-1]
     n=arg[1-1]
-    if in(p[2-1],"+-") :
+    if p[2-1] in "+-" :
         p=[p[1-1],p[1-1]]
     return ChevieData["imp"]["FactorizedSchurElement"](2,2,n,p,arg[3-1],[])
 
@@ -321,7 +321,7 @@ ChevieData["D"]["ReflectionDegrees"]=lambda n: Concatenation(GAPMul(2,range(1,n-
 def weyld23(n,char):
     def addSpringer(s,i):
         ss=First(uc["springerSeries"],lambda x: x["defect"]==DefectSymbol(s["symbol"]))
-        if in(s["sp"],[[[],[1]],[[],[]]]) :
+        if s["sp"] in [[[],[1]],[[],[]]] :
             p=1
         else:
             if s["sp"]==[[1],[]] :
@@ -414,12 +414,12 @@ def weyld23(n,char):
                             cc["red"]=GAPMul(cc["red"],CoxeterGroup("D",GAPDiv(j[2-1],2)))
                         else:
                             cc["red"]=GAPMul(cc["red"],Torus(1))
-        if !(IsList(cl[1].sp[2-1])) :
+        if not IsList(cl[1].sp[2-1]) :
             cl[1].sp[3-1]=1-GAPDiv(n,2)%2
         uc["classes"].append(cc)
         for s in cl:
             addSpringer(s,len(uc["classes"]))
-        if !(IsList(cl[1].sp[2-1])) :
+        if not IsList(cl[1].sp[2-1]) :
             cl[1].sp[3-1]=1-cl[1].sp[3-1]
             cc["name"].append('+')
             cc=Copy(cc)
@@ -513,7 +513,7 @@ def weyld23(n,char):
         
         def addSpringer(f,i,s,k):
             ss=First(uc["springerSeries"],f)
-            if in(s,[[[],[1]],[[],[]]]) :
+            if s in [[[],[1]],[[],[]]] :
                 p=1
             else:
                 if s==[[1],[]] :
@@ -550,10 +550,10 @@ def weyld23(n,char):
                         k=[2,7]
                     else:
                         Error("Au non-commutative of order ",GAPMul(Size(cl["Au"]),2),"  !  implemented")
-            if in(!('-'),cl["name"]) :
-                addSpringer(lambda ss: in(ss["Z"],[[1,-1],[ER(4)]]) and ss["relgroup"]["rank"]==Sum(s,Sum),i,s,k[1-1])
-            if in(!('+'),cl["name"]) :
-                addSpringer(lambda ss: in(ss["Z"],[[-1,1],[-ER(4)]]) and ss["relgroup"]["rank"]==Sum(s,Sum),i,s,k[2-1])
+            if not '-' in cl["name"] :
+                addSpringer(lambda ss: ss["Z"] in [[1,-1],[ER(4)]] and ss["relgroup"]["rank"]==Sum(s,Sum),i,s,k[1-1])
+            if not '+' in cl["name"] :
+                addSpringer(lambda ss: ss["Z"] in [[-1,1],[-ER(4)]] and ss["relgroup"]["rank"]==Sum(s,Sum),i,s,k[2-1])
     return uc
 
 def weyld24(x):
@@ -584,7 +584,7 @@ def weyld25(d):
 
 def weyld26(x):
     res=IntListToString(GAPMul(range(1,x[2-1]+1),0)+x[1-1],"[]")
-    if in(x[1-1],cc.parameter[2-1]) :
+    if x[1-1] in cc.parameter[2-1] :
         return SPrint("(",res,")")
     return res
 
@@ -597,8 +597,8 @@ def weyld27(y):
         if fx[i-1]<fy[i-1] :
             return false
         else:
-            if fx[i-1]==fy[i-1] and in(i,y.parameter[2-1]) :
-                if in(i,Difference(x.parameter[1-1],x.parameter[2-1])) :
+            if fx[i-1]==fy[i-1] and i in y.parameter[2-1] :
+                if i in Difference(x.parameter[1-1],x.parameter[2-1]) :
                     return false
                 if i<m and fx[i+1-1]-fy[i+1-1]%2==1 :
                     return false

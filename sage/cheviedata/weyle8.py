@@ -56,7 +56,7 @@ ChevieData["E8"]["ClassParameter"]=eyle83
 
 def eyle84(param,sqrtparam):
     q=GAPDiv(-param[1][1-1],param[1][2-1])
-    if !(sqrtparam[1]==None) :
+    if not sqrtparam[1]==None :
         v=GetRoot(q,2,"CharTable(Hecke(E8))")
     else:
         v=sqrtparam[1-1]
@@ -89,7 +89,7 @@ ChevieData["E8"]["WGraphs"]=[[[[]],[]],None,[[[1,2],[1,3],[1,4],[1,5],[1,6],[1,7
 
 def eyle88(i):
     gr=ChevieData["E8"]["WGraphs"]
-    if !(gr[i]==None) :
+    if not gr[i]==None :
         gr[i-1]=DualWGraph(8,ChevieData["E8"]["WGraph"](i-1))
         return gr[i-1]
     else:
@@ -102,7 +102,7 @@ def eyle88(i):
 ChevieData["E8"]["WGraph"]=eyle88
 
 def eyle89(param,sqrtparam,i):
-    if !(sqrtparam[1]==None) :
+    if not sqrtparam[1]==None :
         v=GetRoot(GAPDiv(-param[1][1-1],param[1][2-1]),2,"Representation(Hecke(E8),[",i,"])")
     else:
         v=sqrtparam[1-1]
@@ -119,7 +119,7 @@ def eyle810(i):
 
 ChevieData["E8"]["Representation"]=eyle810
 
-if !("families" in CHEVIE) :
+if not "families" in CHEVIE :
     ReadChv("unip/families")
 
 ChevieData["families"]["S5"]={"group":Group(Permutation("(1,5)"),Permutation("(2,5)"),Permutation("(3,5)"),Permutation("(4,5)")),
@@ -792,11 +792,11 @@ def eyle815(p):
     uc["orderClasses"]=map(lambda c: map(lambda n: PositionProperty(uc["classes"],lambda c: UnipotentClassOps["Name"](c)==n),c["succ"]),uc["classes"])
     for c in uc["classes"]:
         Unbind(c["succ"])
-        if !("red" in c) :
+        if not "red" in c :
             c["red"]=Z(1)
-        if !("Au" in c) :
+        if not "Au" in c :
             c["Au"]=Z(1)
-        if !("AuAction" in c) :
+        if not "AuAction" in c :
             c["AuAction"]=ExtendedReflectionGroup(c["red"],map(lambda x: IdentityMat(c["red"]["rank"]),c["Au"]["generators"]))
     return uc
 

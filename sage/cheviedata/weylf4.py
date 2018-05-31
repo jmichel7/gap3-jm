@@ -172,7 +172,7 @@ def eylf48(param,sqrtparam):
     return tbl
 
 def eylf49(a,w):
-    return GAPMul(a,-u**Number(w,lambda j: in(j,[1,2])))
+    return GAPMul(a,-u**Number(w,lambda j: j in [1,2]))
 
 ChevieData["F4"]["HeckeCharTable"]=eylf48
 
@@ -246,11 +246,11 @@ ChevieData["F4"]["WGraph"]=eylf412
 def eylf413(param,sqrtparam,i):
     u=GAPDiv(-param[1][1-1],param[1][2-1])
     v=GAPDiv(-param[3][1-1],param[3][2-1])
-    if !(sqrtparam[1]==None) :
+    if not sqrtparam[1]==None :
         u=GetRoot(u,2,"Representation(Hecke(F4),[",i,"])")
     else:
         u=sqrtparam[1-1]
-    if !(sqrtparam[3]==None) :
+    if not sqrtparam[3]==None :
         v=GetRoot(v,2,"Representation(Hecke(F4),[",i,"])")
     else:
         v=sqrtparam[3-1]
@@ -262,7 +262,7 @@ def eylf413(param,sqrtparam,i):
 
 ChevieData["F4"]["HeckeRepresentation"]=eylf413
 
-if !("families" in CHEVIE) :
+if not "families" in CHEVIE :
     ReadChv("unip/families")
 
 ChevieData["families"]["S4"]={"group":Group(Permutation("(1,4)"),Permutation("(2,4)"),Permutation("(3,4)")),
@@ -532,11 +532,11 @@ def eylf421(c,p):
     uc["orderClasses"]=map(lambda c: map(lambda n: PositionProperty(uc["classes"],lambda c: UnipotentClassOps["Name"](c)==n),c["succ"]),uc["classes"])
     for c in uc["classes"]:
         Unbind(c["succ"])
-        if !("red" in c) :
+        if not "red" in c :
             c["red"]=Z(1)
-        if !("Au" in c) :
+        if not "Au" in c :
             c["Au"]=Z(1)
-        if !("AuAction" in c) :
+        if not "AuAction" in c :
             c["AuAction"]=ExtendedReflectionGroup(c["red"],map(lambda x: IdentityMat(c["red"]["rank"]),c["Au"]["generators"]))
     return uc
 

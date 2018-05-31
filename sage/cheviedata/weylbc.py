@@ -149,7 +149,7 @@ def eylbc11(n,w):
     for i in range(1,n+1):
         if !=(mark[i-1],0) :
             cyc=CyclePermInt(x,i)
-            if in(i+n,cyc) :
+            if i+n in cyc :
                 res[2-1].append(GAPDiv(len(cyc),2))
             else:
                 res[1-1].append(len(cyc))
@@ -295,7 +295,7 @@ def CHEVIE.tmp.matrix(nq):
             for j in beta[i-1]:
                 leg=0
                 for k in Reversed(range(0,j-1+1)):
-                    if in(k,beta[i-1]) :
+                    if k in beta[i-1] :
                         leg=leg+1
                     else:
                         prs[i-1].append({"from":j,
@@ -330,7 +330,7 @@ def CHEVIE.tmp.matrix(nq):
                 for i in [1,2]:
                     gamma[i-1]=Difference(beta[i-1],map(lambda x: x["from"],hk[i-1]))
                     UniteSet(gamma[i-1],map(lambda x: x["to"],hk[i-1]))
-                    if in(0,gamma[i-1]) :
+                    if 0 in gamma[i-1] :
                         j=0
                         while j<len(gamma[i-1]) and gamma[i][j+1-1]==j:
                             j=j+1
@@ -618,7 +618,7 @@ def eylbc26(r,type_,char):
         
         def addSpringer(f,i,s,k):
             ss=First(uc["springerSeries"],f)
-            if in(s,[[[],[1]],[[],[]]]) :
+            if s in [[[],[1]],[[],[]]] :
                 p=1
             else:
                 if s==[[1],[]] :
@@ -697,7 +697,7 @@ def eylbc28(d):
 
 def eylbc29(x):
     res=IntListToString(GAPMul(range(1,x[2-1]+1),0)+x[1-1],"[]")
-    if in(x[1-1],cc.parameter[2-1]) :
+    if x[1-1] in cc.parameter[2-1] :
         return SPrint("(",res,")")
     return res
 
@@ -712,8 +712,8 @@ def eylbc30(y):
         if fx[i-1]<fy[i-1] :
             return false
         else:
-            if fx[i-1]==fy[i-1] and in(i,y.parameter[2-1]) :
-                if in(i,Difference(x.parameter[1-1],x.parameter[2-1])) :
+            if fx[i-1]==fy[i-1] and i in y.parameter[2-1] :
+                if i in Difference(x.parameter[1-1],x.parameter[2-1]) :
                     return false
                 if i<m and fx[i+1-1]-fy[i+1-1]%2==1 :
                     return false
