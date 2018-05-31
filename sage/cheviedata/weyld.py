@@ -12,7 +12,7 @@ def weyld1(n):
 ChevieData["D"]["CartanMat"]=weyld1
 
 def weyld2(arg):
-    return GAPMul(2**arg[1-1]-1,Factorial(arg[1-1]))
+    return GAPMul(2**GAPMin(arg[1-1],1),Factorial(arg[1-1]))
 
 ChevieData["D"]["Size"]=weyld2
 
@@ -29,13 +29,13 @@ ChevieData["D"]["PrintDiagram"]=weyld3
 
 def weyld4(l):
     rts=[]
-    for i in range(1,l-1+1):
+    for i in range(1,GAPMin(l,1)+1):
         r=GAPMul(0,range(1,l+1))
         for i,j in zip([i,i+1],[1,-1]):
             r[i-1]=j
         rts.append(r)
     r=GAPMul(0,range(1,l+1))
-    for i,j in zip([l-1,l],[1,1]):
+    for i,j in zip([GAPMin(l,1),l],[1,1]):
         r[i-1]=j
     rts.append(r)
     return Reversed(rts)
@@ -74,14 +74,14 @@ def weyld7(arg):
             i=1
             for l in Reversed(pi[2-1]):
                 if i==1 :
-                    w+=range(2,i+l-1+1)
+                    w+=range(2,GAPMin(i+l,1)+1)
                 else:
-                    w+=range(i,3+1,i-1-i)
-                    w+=range(1,i+l-1+1)
+                    w+=range(i,3+1,GAPMin(i,1)-i)
+                    w+=range(1,GAPMin(i+l,1)+1)
                 i=i+l
             for l in pi[1-1]:
                 r=l%2
-                w+=i+Concatenation(range(1,l-1-r+1,3-1),range(2,l+r-2+1,4-2))
+                w+=i+Concatenation(range(1,GAPMin(GAPMin(l,1),r)+1,3-1),range(2,GAPMin(l+r,2)+1,4-2))
                 i=i+l
             if w!=[] and w[1-1]==2 :
                 w[1-1]=1
@@ -133,7 +133,7 @@ def weyld12(n,w):
         if i==1 :
             x=GAPMul(x,Permutation("(%s,%s)"%(1,n+2))(2,n+1))
         else:
-            x=GAPMul(x,Permutation("(%s,%s)"%(i-1,i))(i-1+n,i+n))
+            x=GAPMul(x,Permutation("(%s,%s)"%(GAPMin(i,1),i))(GAPMin(i,1)+n,i+n))
     res=[[],[]]
     mark=range(1,n+1)
     for i in range(1,n+1):
@@ -145,7 +145,7 @@ def weyld12(n,w):
                 res[1-1].append(len(cyc))
             for j in cyc:
                 if j>n :
-                    mark[j-n-1]=0
+                    mark[GAPMin(j,n)-1]=0
                 else:
                     mark[j-1]=0
     if res[2-1]==[] and ForAll(res[1-1],lambda i: i%2==0) :
@@ -155,7 +155,7 @@ def weyld12(n,w):
             tmp=ChevieData["D"]["ClassInfo"](n)
             tmp=[tmp["classtext"][k-1] for k in Filtered(range(1,len(tmp["classnames"])+1),lambda i: '+' in tmp["classnames"][i-1] or '-' in tmp["classnames"][i-1])]
             tmp=map(lambda a: CycleStructurePerm(prod([gens[k-1] for k in a])),tmp)
-            ChevieData["D"]["gensMODA"][n-1]=[gens,[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))-1],[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))]]
+            ChevieData["D"]["gensMODA"][n-1]=[gens,[tmp[k-1] for k in GAPMin(GAPMul(2,range(1,GAPDiv(len(tmp),2)+1)),1)],[tmp[k-1] for k in GAPMul(2,range(1,GAPDiv(len(tmp),2)+1))]]
         tmp=CycleStructurePerm(prod([ChevieData["D"]["gensMODA"][n-1][1-1][k-1] for k in w]))
         if tmp in ChevieData["D"]["gensMODA"][n-1][2-1] and not tmp in ChevieData["D"]["gensMODA"][n-1][3-1] :
             res[2-1]='+'
@@ -179,9 +179,9 @@ ChevieData["tmp"]["identifier"]="HeckeD"
 
 ChevieData["tmp"]["specializedname"]=lambda nq: SPrint("H(D",nq[1-1],")")
 
-ChevieData["tmp"]["size"]=lambda nq: GAPMul(2**nq[1-1]-1,Factorial(nq[1-1]))
+ChevieData["tmp"]["size"]=lambda nq: GAPMul(2**GAPMin(nq[1-1],1),Factorial(nq[1-1]))
 
-ChevieData["tmp"]["order"]=lambda nq: GAPMul(2**nq[1-1]-1,Factorial(nq[1-1]))
+ChevieData["tmp"]["order"]=lambda nq: GAPMul(2**GAPMin(nq[1-1],1),Factorial(nq[1-1]))
 
 def weyld13(nq):
     return IsList(nq) and len(nq)==2 and IsInt(nq[1-1]) and nq[1-1]>1
@@ -210,7 +210,7 @@ def weyld14(nq,alpha,pi):
             if s[alpha[3-1]+1-1]==pi[2-1] :
                 val=vb+va
             else:
-                val=vb-va
+                val=GAPMin(vb,va)
         else:
             val=GAPDiv(BHk([n,1,q],delta,pi),2)
     else:
@@ -243,7 +243,7 @@ def weyld16(arg):
         i=i+1
     else:
         if p[len(p)-1]==1 :
-            i=i-1
+            i=GAPMin(i,1)
     return ChevieData["imp"]["HeckeRepresentation"](2,2,n,arg[2-1],[],i)
 
 ChevieData["D"]["HeckeRepresentation"]=weyld16
@@ -254,14 +254,14 @@ def weyld17(n,i):
         i=i+1
     else:
         if p[len(p)-1]==1 :
-            i=i-1
+            i=GAPMin(i,1)
     return ChevieData["imp"]["Representation"](2,2,n,i)
 
 ChevieData["D"]["Representation"]=weyld17
 
 def weyld18(n,para):
     q=GAPDiv(-para[1-1][1-1],para[1-1][2-1])
-    return GAPMul(Sum(range(0,n-1+1),lambda k: q**k),prod(range(1,n-1+1)))
+    return GAPMul(Sum(range(0,GAPMin(n,1)+1),lambda k: q**k),prod(range(1,GAPMin(n,1)+1)))
 
 ChevieData["D"]["PoincarePolynomial"]=weyld18
 
@@ -295,7 +295,7 @@ def weyld23(rank):
         r=GAPDiv(d**2,4)
         s={"relativeType":{"series":"B",
             "indices":range(1+r,rank+1),
-            "rank":rank-r},
+            "rank":GAPMin(rank,r)},
             "levi":range(1,r+1),
             "eigenvalue":-1**QuoInt(d+1,4),
             "parameterExponents":Concatenation([d],GAPMul(range(2+r,rank+1),0)+1)}
@@ -319,7 +319,7 @@ def weyld23(rank):
 
 ChevieData["D"]["UnipotentCharacters"]=weyld23
 
-ChevieData["D"]["ReflectionDegrees"]=lambda n: Concatenation(GAPMul(2,range(1,n-1+1)),[n])
+ChevieData["D"]["ReflectionDegrees"]=lambda n: Concatenation(GAPMul(2,range(1,GAPMin(n,1)+1)),[n])
 
 def weyld24(n,char):
     def addSpringer(s,i):
@@ -335,10 +335,10 @@ def weyld24(n,char):
     
     
     def partition2DR(part):
-        p=Concatenation(map(lambda x: range(1-x,x-1+1,3-x-1-x),part))
+        p=Concatenation(map(lambda x: range(GAPMin(1,x),GAPMin(x,1)+1,GAPMin(3,x)-GAPMin(1,x)),part))
         Sort(p)
         p=[p[k-1] for k in range(1+GAPDiv(len(p),2),len(p)+1)]
-        return Concatenation([p[1-1]+p[2-1]],map(lambda i: p[i+1-1]-p[i-1],range(1,len(p)-1+1)))
+        return Concatenation([p[1-1]+p[2-1]],map(lambda i: GAPMin(p[i+1-1],p[i-1]),range(1,GAPMin(len(p),1)+1)))
     
     
     if char==2 :
@@ -350,16 +350,16 @@ def weyld24(n,char):
             part=[]
             ex=[]
             while i<=len(c):
-                if i==len(c) or c[i+1-1]-c[i-1]>1 :
-                    part.append(GAPMul(2,c[i-1]-GAPMul(2,i-1))+2)
+                if i==len(c) or GAPMin(c[i+1-1],c[i-1])>1 :
+                    part.append(GAPMul(2,GAPMin(c[i-1],GAPMul(2,GAPMin(i,1))))+2)
                     i=i+1
                 else:
-                    if c[i+1-1]-c[i-1]>0 :
-                        l=GAPMul(2,c[i-1]-GAPMul(2,i-1))+1
+                    if GAPMin(c[i+1-1],c[i-1])>0 :
+                        l=GAPMul(2,GAPMin(c[i-1],GAPMul(2,GAPMin(i,1))))+1
                         part+=[l,l]
                         i=i+2
                     else:
-                        l=GAPMul(2,c[i-1]-GAPMul(2,i-1))
+                        l=GAPMul(2,GAPMin(c[i-1],GAPMul(2,GAPMin(i,1))))
                         part+=[l,l]
                         i=i+2
                         ex.append(l)
@@ -376,11 +376,11 @@ def weyld24(n,char):
             i=1
             part=[]
             while i<=len(c):
-                if i==len(c) or c[i+1-1]-c[i-1]>0 :
-                    part.append(GAPMul(2,c[i-1]-i-1)+1)
+                if i==len(c) or GAPMin(c[i+1-1],c[i-1])>0 :
+                    part.append(GAPMul(2,GAPMin(c[i-1],GAPMin(i,1)))+1)
                     i=i+1
                 else:
-                    l=GAPMul(2,c[i-1]-i-1)
+                    l=GAPMul(2,GAPMin(c[i-1],GAPMin(i,1)))
                     part+=[l,l]
                     i=i+2
             Sort(part)
@@ -411,19 +411,19 @@ def weyld24(n,char):
                 else:
                     if j[2-1]%2!=0 :
                         if j[2-1]>1 :
-                            cc["red"]=GAPMul(cc["red"],CoxeterGroup("B",GAPDiv(j[2-1]-1,2)))
+                            cc["red"]=GAPMul(cc["red"],CoxeterGroup("B",GAPDiv(GAPMin(j[2-1],1),2)))
                     else:
                         if j[2-1]>2 :
                             cc["red"]=GAPMul(cc["red"],CoxeterGroup("D",GAPDiv(j[2-1],2)))
                         else:
                             cc["red"]=GAPMul(cc["red"],Torus(1))
         if not IsList(cl[1-1]["sp"][2-1]) :
-            cl[1-1]["sp"][3-1]=1-GAPDiv(n,2)%2
+            cl[1-1]["sp"][3-1]=GAPMin(1,GAPDiv(n,2)%2)
         uc["classes"].append(cc)
         for s in cl:
             addSpringer(s,len(uc["classes"]))
         if not IsList(cl[1-1]["sp"][2-1]) :
-            cl[1-1]["sp"][3-1]=1-cl[1-1]["sp"][3-1]
+            cl[1-1]["sp"][3-1]=GAPMin(1,cl[1-1]["sp"][3-1])
             cc["name"].append('+')
             cc=Copy(cc)
             cc["name"][len(cc["name"])-1]='-'
@@ -439,11 +439,11 @@ def weyld24(n,char):
         uc["orderClasses"]=Hasse(Poset(map(lambda i: map(lambda j: Dominates(uc["classes"][j-1]["parameter"],uc["classes"][i-1]["parameter"]) and uc["classes"][j-1]["parameter"]!=uc["classes"][i-1]["parameter"] or i==j,range(1,len(uc["classes"])+1)),range(1,len(uc["classes"])+1))))
     if char!=2 :
         d=0
-        while GAPMul(4,d**2)-d<=n:
-            i=GAPMul(4,d**2)-d
-            if n-d%2==0 :
+        while GAPMin(GAPMul(4,d**2),d)<=n:
+            i=GAPMin(GAPMul(4,d**2),d)
+            if GAPMin(n,d)%2==0 :
                 l=Concatenation(range(1,i+1),range(i+2,n+1,i+4-i+2))
-                s={"relgroup":CoxeterGroup("B",GAPDiv(n-i,2)),
+                s={"relgroup":CoxeterGroup("B",GAPDiv(GAPMin(n,i),2)),
                     "levi":l,
                     "locsys":[]}
                 if n%2==0 :
@@ -453,7 +453,7 @@ def weyld24(n,char):
                 uc["springerSeries"].append(s)
                 if d==0 :
                     l=Concatenation([1],range(4,n+1,6-4))
-                s={"relgroup":CoxeterGroup("B",GAPDiv(n-i,2)),
+                s={"relgroup":CoxeterGroup("B",GAPDiv(GAPMin(n,i),2)),
                     "levi":l,
                     "locsys":[]}
                 if n%2==0 :
@@ -464,7 +464,7 @@ def weyld24(n,char):
                 i=GAPMul(4,d**2)+d
                 if d!=0 and i<=n :
                     l=Concatenation(range(1,i+1),range(i+2,n+1,i+4-i+2))
-                    s={"relgroup":CoxeterGroup("B",GAPDiv(n-i,2)),
+                    s={"relgroup":CoxeterGroup("B",GAPDiv(GAPMin(n,i),2)),
                         "levi":l,
                         "locsys":[]}
                     if n%2==0 :
@@ -472,7 +472,7 @@ def weyld24(n,char):
                     else:
                         s["Z"]=[ER(4)]
                     uc["springerSeries"].append(s)
-                    s={"relgroup":CoxeterGroup("B",GAPDiv(n-i,2)),
+                    s={"relgroup":CoxeterGroup("B",GAPDiv(GAPMin(n,i),2)),
                         "levi":l,
                         "locsys":[]}
                     if n%2==0 :
@@ -490,21 +490,21 @@ def weyld24(n,char):
             i=1
             while i<=len(p):
                 l=p[i-1]
-                t=Sum([d[k-1] for k in range(1,i-1+1)])
+                t=Sum([d[k-1] for k in range(1,GAPMin(i,1)+1)])
                 if 1==l%4 :
-                    a.append(GAPDiv(l-1,4)-t)
+                    a.append(GAPMin(GAPDiv(GAPMin(l,1),4),t))
                     i=i+1
                 else:
                     if 3==l%4 :
-                        b.append(GAPDiv(l-3,4)+t)
+                        b.append(GAPDiv(GAPMin(l,3),4)+t)
                         i=i+1
                     else:
                         j=i
                         while i<=len(p) and p[i-1]==l:
                             i=i+1
-                        j=GAPMul(range(1,GAPDiv(i-j,2)+1),0)
-                        a+=j+GAPDiv(l+l%4,4)-t
-                        b+=j+GAPDiv(l-l%4,4)
+                        j=GAPMul(range(1,GAPDiv(GAPMin(i,j),2)+1),0)
+                        a+=GAPMin(j+GAPDiv(l+l%4,4),t)
+                        b+=j+GAPDiv(GAPMin(l,l%4),4)
             a=Filtered(a,lambda x: x!=0)
             a=Reversed(a)
             b=Filtered(b,lambda x: x!=0)
@@ -569,8 +569,8 @@ def weyld25(x):
 def weyld26(d):
     res={"defect":d[1-1],
         "locsys":[],
-        "levi":range(1,n-d[2-1]+1)}
-    if n-d[2-1]%4==0 or char==2 :
+        "levi":range(1,GAPMin(n,d[2-1])+1)}
+    if GAPMin(n,d[2-1])%4==0 or char==2 :
         if n%2==0 :
             res["Z"]=[1,1]
         else:
@@ -604,7 +604,7 @@ def weyld28(y):
             if fx[i-1]==fy[i-1] and i in y["parameter"][2-1] :
                 if i in Difference(x["parameter"][1-1],x["parameter"][2-1]) :
                     return false
-                if i<m and fx[i+1-1]-fy[i+1-1]%2==1 :
+                if i<m and GAPMin(fx[i+1-1],fy[i+1-1])%2==1 :
                     return false
     if x["parameter"]==y["parameter"] and x!=y :
         return false

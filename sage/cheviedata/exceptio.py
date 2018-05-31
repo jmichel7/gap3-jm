@@ -25,7 +25,7 @@ def eptio2(t):
     r=ChevieData[t]["GeneratingRoots"]
     rbar=ComplexConjugate(r)
     e=ChevieData[t]["EigenvaluesGeneratingReflections"]
-    e=1-map(lambda x: ER(Denominator(x))**Numerator(x),e)
+    e=GAPMin(1,map(lambda x: ER(Denominator(x))**Numerator(x),e))
     e=map(lambda i: GAPDiv(GAPMul(e[i-1],rbar[i-1]),GAPMul(rbar[i-1],r[i-1])),range(1,len(e)+1))
     return map(lambda x: map(lambda y: GAPMul(x,y),r),e)
 
@@ -74,7 +74,7 @@ for t in ["G24","G27","G29","G33","G34","H3","H4","E6","E7","E8"]:
 
 def eptio7(i):
     para=ChevieData[t]["EigenvaluesGeneratingReflections"]
-    para=map(lambda x: map(lambda j: ER(GAPDiv(1,x))**j,range(0,GAPDiv(1,x)-1+1)),para)
+    para=map(lambda x: map(lambda j: ER(GAPDiv(1,x))**j,range(0,GAPMin(GAPDiv(1,x),1)+1)),para)
     return ChevieData[t]["HeckeRepresentation"](para,[],i)
 
 for t in ["G24","G25","G26","G27","G29"]:
@@ -94,7 +94,7 @@ for t in ["A","B","D"]:
 
 def eptio9(phi,q):
     f=ChevieData[t]["sparseFakeDegrees"][ChevieData[t]["CharInfo"]()["charparams"].index(phi)+1-1]
-    return Sum(range(1,len(f)-1+1,3-1),lambda i: GAPMul(f[i-1],q**f[i+1-1]))
+    return Sum(range(1,GAPMin(len(f),1)+1,3-1),lambda i: GAPMul(f[i-1],q**f[i+1-1]))
 
 for t in ["G2","F4","H3","E6","G24","G25","G26","G27","G29","G32","G33","G34"]:
     ChevieData[t]["FakeDegree"]=lambda t: eptio9(t)
@@ -117,7 +117,7 @@ def eptio11():
 
 def eptio12(f):
     if IsList(f[1-1]) :
-        res=GAPMul(2,len(f[1-1]))+f[2-1]-2
+        res=GAPMin(GAPMul(2,len(f[1-1]))+f[2-1],2)
     else:
         res=f[2-1]
     return res+Sum([f[k-1] for k in range(3,len(f)+1)],Phi)
@@ -142,9 +142,9 @@ def eptio15(indices,title):
     print title," ",
     r=digits.index(t[2-1])+1+5
     l=len(str(indices[1-1]))+len(str(indices[3-1]))
-    print just("",l-1),indices[2-1],"\n",
+    print just("",GAPMin(l,1)),indices[2-1],"\n",
     print just("",len(title)+l),"|\n",
-    print SPrint(just("",len(title)-2),indices[1-1]),
+    print SPrint(just("",GAPMin(len(title),2)),indices[1-1]),
     for i in range(3,r+1):
         print " - ",indices[i-1],
     print "\n",
@@ -154,8 +154,8 @@ for t in ["E6","E7","E8"]:
 
 def eptio16(indices,title):
     print title," ",
-    print SPrint(just("",len(str(indices[1-1]))-1),"5 \n"),
-    print just("",len(title)-1),indices[1-1]," - ",indices[2-1]," - ",indices[3-1],
+    print SPrint(just("",GAPMin(len(str(indices[1-1])),1)),"5 \n"),
+    print just("",GAPMin(len(title),1)),indices[1-1]," - ",indices[2-1]," - ",indices[3-1],
     if t=="H4" :
         print " - ",indices[4-1],
     print "\n",
@@ -164,8 +164,8 @@ for t in ["H3","H4"]:
     ChevieData[t]["PrintDiagram"]=lambda t: eptio16(t)
 
 def eptio17():
-    N=Sum(ChevieData[t]["ReflectionDegrees"],lambda x: x-1)
-    return map(lambda x: N-Degree(CycPol(x)),ChevieData[t]["CycPolSchurElements"])
+    N=Sum(ChevieData[t]["ReflectionDegrees"],lambda x: GAPMin(x,1))
+    return map(lambda x: GAPMin(N,Degree(CycPol(x))),ChevieData[t]["CycPolSchurElements"])
 
 for t in ["G24","G27","G29","G33","G34","H3","H4","E6","E7","E8"]:
     ChevieData[t]["HighestPowerGenericDegrees"]=lambda t: eptio17(t)

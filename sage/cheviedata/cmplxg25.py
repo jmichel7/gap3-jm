@@ -62,23 +62,23 @@ def lxg254(para,root):
         "charname":ChevieData["G25"]["CharName"](x,{})},ChevieData["G25"]["CharInfo"]()["charparams"])}
     f10=lambda y: map(lambda w: y**len(w),res["classtext"])
     def f23(u,v,w):
-        return [2,GAPMul(-2,GAPMul(u,v)**3),u**2+v**2,u**4+v**4,GAPMul(GAPMul(u,v)**2,u**4+v**4),GAPMul(-u,v),GAPMul(-u**2,v**2),GAPMul(-u**4,v**4),GAPMul(2,u**6),GAPMul(2,u**12),GAPMul(-v**3,u**3),GAPMul(-v**2,u**2),u+v,GAPMul(u+v,u**2-GAPMul(u,v)+v**2),GAPMul(u**4,v**4),u**2+v**2,GAPMul(-u,v),GAPMul(u,v),GAPMul(u**7,v**7),GAPMul(-u**3,v**3),GAPMul(-2,u**3),0,0,0]
+        return [2,GAPMul(-2,GAPMul(u,v)**3),u**2+v**2,u**4+v**4,GAPMul(GAPMul(u,v)**2,u**4+v**4),GAPMul(-u,v),GAPMul(-u**2,v**2),GAPMul(-u**4,v**4),GAPMul(2,u**6),GAPMul(2,u**12),GAPMul(-v**3,u**3),GAPMul(-v**2,u**2),u+v,GAPMul(u+v,GAPMin(u**2,GAPMul(u,v))+v**2),GAPMul(u**4,v**4),u**2+v**2,GAPMul(-u,v),GAPMul(u,v),GAPMul(u**7,v**7),GAPMul(-u**3,v**3),GAPMul(-2,u**3),0,0,0]
     
     
     def f31(u,v,w):
-        return [3,GAPMul(-u**4,v**2),GAPMul(2,u)+u**2,GAPMul(2,u**2)+u**4,GAPMul(u**4,v**4)+GAPMul(2,u**6),GAPMul(-u**2,v**2),0,0,GAPMul(3,u**8),GAPMul(3,u**16),GAPMul(-u**4,v**3),GAPMul(-u**4,v),GAPMul(2,u)+v,GAPMul(u,v**2)+GAPMul(u**2,v),GAPMul(2,u**6)+GAPMul(u**8,v**2),GAPMul(2,u**2)+v**2,GAPMul(-u,v**3)-GAPMul(u**3,v)+u**4,GAPMul(u,v)+u**2,GAPMul(u**9,v**5)+GAPMul(u**10,v**4),GAPMul(-u**6,v**6),GAPMul(u**2,v**4)-GAPMul(2,u**5),u**3,GAPMul(u**2,v),GAPMul(u**10,v**5)]
+        return [3,GAPMul(-u**4,v**2),GAPMul(2,u)+u**2,GAPMul(2,u**2)+u**4,GAPMul(u**4,v**4)+GAPMul(2,u**6),GAPMul(-u**2,v**2),0,0,GAPMul(3,u**8),GAPMul(3,u**16),GAPMul(-u**4,v**3),GAPMul(-u**4,v),GAPMul(2,u)+v,GAPMul(u,v**2)+GAPMul(u**2,v),GAPMul(2,u**6)+GAPMul(u**8,v**2),GAPMul(2,u**2)+v**2,GAPMin(GAPMul(-u,v**3),GAPMul(u**3,v))+u**4,GAPMul(u,v)+u**2,GAPMul(u**9,v**5)+GAPMul(u**10,v**4),GAPMul(-u**6,v**6),GAPMin(GAPMul(u**2,v**4),GAPMul(2,u**5)),u**3,GAPMul(u**2,v),GAPMul(u**10,v**5)]
     
     
     def f62(u,v,w):
-        return [6,GAPMul(2,u**3),GAPMul(2,u)+GAPMul(2,u),GAPMul(2,u**2)+GAPMul(2,u**2),GAPMul(u**2,GAPMul(v**4,w**2)+GAPMul(2,u**2)),GAPMul(u,w),0,0,GAPMul(6,u**6),GAPMul(6,u**12),GAPMul(u**3,v**2),GAPMul(u**2,v**2),GAPMul(3,u)+GAPMul(2,v),GAPMul(v**2,u)+GAPMul(u,w**2),GAPMul(v**2,u**4),GAPMul(3,u**2)+GAPMul(2,v**2),GAPMul(-u**2+v**2,GAPMul(u,v)-w**2-u**2),GAPMul(u,u+v),GAPMul(v**4,u**7),GAPMul(u**3,w**3),GAPMul(v,GAPMul(-2,u**3)+GAPMul(3,u**4)),GAPMul(-u,-u**2+GAPMul(v,w)),0,0]
+        return [6,GAPMul(2,u**3),GAPMul(2,u)+GAPMul(2,u),GAPMul(2,u**2)+GAPMul(2,u**2),GAPMul(u**2,GAPMul(v**4,w**2)+GAPMul(2,u**2)),GAPMul(u,w),0,0,GAPMul(6,u**6),GAPMul(6,u**12),GAPMul(u**3,v**2),GAPMul(u**2,v**2),GAPMul(3,u)+GAPMul(2,v),GAPMul(v**2,u)+GAPMul(u,w**2),GAPMul(v**2,u**4),GAPMul(3,u**2)+GAPMul(2,v**2),GAPMul(-u**2+v**2,GAPMin(GAPMin(GAPMul(u,v),w**2),u**2)),GAPMul(u,u+v),GAPMul(v**4,u**7),GAPMul(u**3,w**3),GAPMul(v,GAPMul(-2,u**3)+GAPMul(3,u**4)),GAPMul(-u,-u**2+GAPMul(v,w)),0,0]
     
     
     def f83(u,v,w):
-        return [8,0,GAPMul(2,w+u),GAPMul(2,w**2+u**2),GAPMul(2,u**2),0,GAPMul(-u**2,v),GAPMul(-u**4,v**2),GAPMul(8,u**6),GAPMul(8,u**12),0,0,GAPMul(4,u)+GAPMul(2,v),GAPMul(v**2,u)+GAPMul(u,w**2),GAPMul(2,u**4),GAPMul(4,u**2)+GAPMul(2,v**2),GAPMul(-u,v**3)-GAPMul(u,w**3)+GAPMul(u**2,v**2)-GAPMul(u**3,v)-GAPMul(u**3,w)+u**4,GAPMul(u,u+v),GAPMul(v**3,u**7),0,GAPMul(-2,u**3)-GAPMul(2,u**3)+GAPMul(v**3,w**3),GAPMul(-u,-u**2+GAPMul(v,w)),0,0]
+        return [8,0,GAPMul(2,w+u),GAPMul(2,w**2+u**2),GAPMul(2,u**2),0,GAPMul(-u**2,v),GAPMul(-u**4,v**2),GAPMul(8,u**6),GAPMul(8,u**12),0,0,GAPMul(4,u)+GAPMul(2,v),GAPMul(v**2,u)+GAPMul(u,w**2),GAPMul(2,u**4),GAPMul(4,u**2)+GAPMul(2,v**2),GAPMin(GAPMin(GAPMin(GAPMul(-u,v**3),GAPMul(u,w**3))+GAPMul(u**2,v**2),GAPMul(u**3,v)),GAPMul(u**3,w))+u**4,GAPMul(u,u+v),GAPMul(v**3,u**7),0,GAPMin(GAPMul(-2,u**3),GAPMul(2,u**3))+GAPMul(v**3,w**3),GAPMul(-u,-u**2+GAPMul(v,w)),0,0]
     
     
     def f97(u,v,w,J):
-        return [9,GAPMul(-3,J**2),u+v**2,u**2+w**2**2,GAPMul(J,GAPMul(u**2,v**2)+GAPMul(u**2,w**2)**2),GAPMul(-J**2,GAPMul(u**2,v**2)+GAPMul(u**2,w**2)),0,0,GAPMul(9,J),GAPMul(9,J**2),GAPMul(-v**2,J**2),GAPMul(-v,u),GAPMul(3,u)+GAPMul(3,v),GAPMul(u+v,u**2+w**2),GAPMul(3,J),GAPMul(3,u**2)+GAPMul(3,v**2),GAPMul(-u,v**3)-GAPMul(u,w**3)-GAPMul(v,w**3)+GAPMul(u**2,v**2)-GAPMul(u**3,v)-GAPMul(u**3,w)-GAPMul(v**3,w),GAPMul(u,v)+GAPMul(u,w),GAPMul(v**4,J),GAPMul(-u**6,v**6)-GAPMul(u**6,w**6)-GAPMul(v**6,w**6),GAPMul(-J,u),GAPMul(-u,v),GAPMul(-J,u),GAPMul(-J**2,u**5)]
+        return [9,GAPMul(-3,J**2),u+v**2,u**2+w**2**2,GAPMul(J,GAPMul(u**2,v**2)+GAPMul(u**2,w**2)**2),GAPMul(-J**2,GAPMul(u**2,v**2)+GAPMul(u**2,w**2)),0,0,GAPMul(9,J),GAPMul(9,J**2),GAPMul(-v**2,J**2),GAPMul(-v,u),GAPMul(3,u)+GAPMul(3,v),GAPMul(u+v,u**2+w**2),GAPMul(3,J),GAPMul(3,u**2)+GAPMul(3,v**2),GAPMin(GAPMin(GAPMin(GAPMin(GAPMin(GAPMul(-u,v**3),GAPMul(u,w**3)),GAPMul(v,w**3))+GAPMul(u**2,v**2),GAPMul(u**3,v)),GAPMul(u**3,w)),GAPMul(v**3,w)),GAPMul(u,v)+GAPMul(u,w),GAPMul(v**4,J),GAPMin(GAPMin(GAPMul(-u**6,v**6),GAPMul(u**6,w**6)),GAPMul(v**6,w**6)),GAPMul(-J,u),GAPMul(-u,v),GAPMul(-J,u),GAPMul(-J**2,u**5)]
     
     
     res.update(ChevieData["G25"]["ClassInfo"])
@@ -147,19 +147,19 @@ def lxg256(para,root,i):
     
     
     def f32(u,v,w):
-        return WGraph2Representation([[[[2],[]],[[],[1,2,3]],[[1,3],[]]],[[1,2,-1,GAPMul(u,w)+v**2],[1,3,v,v],[2,3,GAPMul(-u,w)-v**2,1]]],[u,v,w])
+        return WGraph2Representation([[[[2],[]],[[],[1,2,3]],[[1,3],[]]],[[1,2,-1,GAPMul(u,w)+v**2],[1,3,v,v],[2,3,GAPMin(GAPMul(-u,w),v**2),1]]],[u,v,w])
     
     
     def f6(v,u,w):
-        return WGraph2Representation([[[[2],[]],[[],[1,2]],[[1],[]],[[],[2,3]],[[3],[]],[[],[1,3]]],[[1,2,-1,GAPMul(v,w)+u**2],[1,3,u,u],[1,4,-1,GAPMul(v,w)+u**2],[1,5,-u,-u],[1,6,w,0],[2,3,GAPMul(-v,w)-u**2,1],[2,6,GAPMul(-u,w),1],[4,5,GAPMul(v,w)+u**2,-1],[4,6,GAPMul(-u,w),1]]],[v,u,w])
+        return WGraph2Representation([[[[2],[]],[[],[1,2]],[[1],[]],[[],[2,3]],[[3],[]],[[],[1,3]]],[[1,2,-1,GAPMul(v,w)+u**2],[1,3,u,u],[1,4,-1,GAPMul(v,w)+u**2],[1,5,-u,-u],[1,6,w,0],[2,3,GAPMin(GAPMul(-v,w),u**2),1],[2,6,GAPMul(-u,w),1],[4,5,GAPMul(v,w)+u**2,-1],[4,6,GAPMul(-u,w),1]]],[v,u,w])
     
     
     def f8(u,w,v):
-        return WGraph2Representation([[[[2,3],[]],[[3],[1,2]],[[1,3],[]],[[2],[3]],[[1,3],[]],[[2],[1]],[[1],[2,3]],[[1,2],[]]],[[1,2,GAPMul(-u,v)-w**2,1],[1,3,w,w],[1,4,GAPMul(v,w)-w**2,0],[1,5,0,-1],[2,3,-1,GAPMul(u,v)+w**2],[2,4,[1,0,3,w],-u],[2,5,0,-w],[2,6,-1,0],[3,6,[1,0,3,v-w],-u],[3,7,GAPMul(u,w)+w**2,-1],[3,8,-w,-w],[4,5,-u,[1,v,3,0]],[4,7,0,v],[5,6,[1,0,3,1],GAPMul(-u,w)],[5,7,-u,v-w],[5,8,0,GAPMul(v,w)-w**2],[6,7,GAPMul(u,w),[1,-1,3,0]],[6,8,0,v-w],[7,8,-1,GAPMul(u,v)+w**2]]],[u,w,v])
+        return WGraph2Representation([[[[2,3],[]],[[3],[1,2]],[[1,3],[]],[[2],[3]],[[1,3],[]],[[2],[1]],[[1],[2,3]],[[1,2],[]]],[[1,2,GAPMin(GAPMul(-u,v),w**2),1],[1,3,w,w],[1,4,GAPMin(GAPMul(v,w),w**2),0],[1,5,0,-1],[2,3,-1,GAPMul(u,v)+w**2],[2,4,[1,0,3,w],-u],[2,5,0,-w],[2,6,-1,0],[3,6,[1,0,3,GAPMin(v,w)],-u],[3,7,GAPMul(u,w)+w**2,-1],[3,8,-w,-w],[4,5,-u,[1,v,3,0]],[4,7,0,v],[5,6,[1,0,3,1],GAPMul(-u,w)],[5,7,-u,GAPMin(v,w)],[5,8,0,GAPMin(GAPMul(v,w),w**2)],[6,7,GAPMul(u,w),[1,-1,3,0]],[6,8,0,GAPMin(v,w)],[7,8,-1,GAPMul(u,v)+w**2]]],[u,w,v])
     
     
     def f9(u,v,w,a):
-        return WGraph2Representation([[[[2],[]],[[],[1,2,3]],[[1],[3]],[[1,3],[]],[[2],[1]],[[1],[2]],[[2],[3]],[[3],[2]],[[3],[1]]],[[1,2,-1,GAPMul(u,w)+v**2],[1,3,v,[1,v,3,0]],[1,4,GAPMul(-a,v),0],[1,5,0,GAPMul(a**2,u)-v],[1,6,0,GAPMul(a**2,u)],[1,7,0,GAPMul(a**2,u)-v],[1,8,0,GAPMul(-a**2,u)],[1,9,v,[1,0,3,v]],[2,3,GAPMul(-u,w)-v**2,1],[2,4,GAPMul(-u,w)+GAPMul(a,v**2),0],[2,5,GAPMul(-a**2,v),0],[2,7,GAPMul(-a**2,v),0],[2,9,GAPMul(-u,w)-v**2,1],[3,4,0,u+GAPMul(a**2,v)],[3,5,0,u],[3,6,GAPMul(-a**2,w),GAPMul(a,v)],[3,7,w,0],[4,5,[1,0,3,-w],u],[4,6,GAPMul(-a,w),0],[4,7,[1,-w,3,0],u],[4,8,GAPMul(a,w),0],[4,9,u+GAPMul(a**2,v),0],[5,6,-u,v],[5,9,0,w],[7,8,u,-v],[7,9,u,0],[8,9,GAPMul(-a,v),GAPMul(a**2,w)]]],[u,v,w])
+        return WGraph2Representation([[[[2],[]],[[],[1,2,3]],[[1],[3]],[[1,3],[]],[[2],[1]],[[1],[2]],[[2],[3]],[[3],[2]],[[3],[1]]],[[1,2,-1,GAPMul(u,w)+v**2],[1,3,v,[1,v,3,0]],[1,4,GAPMul(-a,v),0],[1,5,0,GAPMin(GAPMul(a**2,u),v)],[1,6,0,GAPMul(a**2,u)],[1,7,0,GAPMin(GAPMul(a**2,u),v)],[1,8,0,GAPMul(-a**2,u)],[1,9,v,[1,0,3,v]],[2,3,GAPMin(GAPMul(-u,w),v**2),1],[2,4,GAPMul(-u,w)+GAPMul(a,v**2),0],[2,5,GAPMul(-a**2,v),0],[2,7,GAPMul(-a**2,v),0],[2,9,GAPMin(GAPMul(-u,w),v**2),1],[3,4,0,u+GAPMul(a**2,v)],[3,5,0,u],[3,6,GAPMul(-a**2,w),GAPMul(a,v)],[3,7,w,0],[4,5,[1,0,3,-w],u],[4,6,GAPMul(-a,w),0],[4,7,[1,-w,3,0],u],[4,8,GAPMul(a,w),0],[4,9,u+GAPMul(a**2,v),0],[5,6,-u,v],[5,9,0,w],[7,8,u,-v],[7,9,u,0],[8,9,GAPMul(-a,v),GAPMul(a**2,w)]]],[u,v,w])
     
     
     rep=[[f1,u],[f1,w],[f1,v],[f2,v,w],[f2,u,v],[f2,u,w],[f32,u,v,w],[f31,u,v],[f31,w,u],[f31,v,w],[f31,u,w],[f31,v,u],[f31,w,v],[f6,v,u,w],[f6,u,w,v],[f6,w,v,u],[f6,w,u,v],[f6,u,v,w],[f6,v,w,u],[f8,u,v,w],[f8,w,u,v],[f8,v,w,u],[f9,u,v,w,ER(3)],[f9,u,v,w,ER(3)**2]]
@@ -229,13 +229,13 @@ def lxg257():
 ChevieData["G25"]["UnipotentCharacters"]=lxg257
 
 def lxg258(x1,x2,x3):
-    return GAPMul(-10,x1**3)-GAPMul(10,x1**3)-GAPMul(10,x2**3)+x1**6
+    return GAPMin(GAPMin(GAPMul(-10,x1**3),GAPMul(10,x1**3)),GAPMul(10,x2**3))+x1**6
 
 def lxg259(x1,x2,x3):
-    return GAPMul(-x1**3,x2**6)+GAPMul(x1**3,x3**6)-GAPMul(x2**3,x3**6)+GAPMul(x1**6,x2**3)-GAPMul(x1**6,x3**3)+GAPMul(x2**6,x3**3)
+    return GAPMin(GAPMin(GAPMul(-x1**3,x2**6)+GAPMul(x1**3,x3**6),GAPMul(x2**3,x3**6))+GAPMul(x1**6,x2**3),GAPMul(x1**6,x3**3))+GAPMul(x2**6,x3**3)
 
 def lxg2510(x1,x2,x3):
-    return GAPMul(2,x1**3)+GAPMul(2,x1**3)-GAPMul(4,x1**6)-GAPMul(4,x1**6)-GAPMul(4,x2**6)+GAPMul(x1**9,x2**3)
+    return GAPMin(GAPMin(GAPMin(GAPMul(2,x1**3)+GAPMul(2,x1**3),GAPMul(4,x1**6)),GAPMul(4,x1**6)),GAPMul(4,x2**6))+GAPMul(x1**9,x2**3)
 
 ChevieData["G25"]["Invariants"]=[lxg258,lxg259,lxg2510]
 
@@ -243,6 +243,6 @@ def lxg2511():
     return lxg2512
 
 def lxg2512(t1,t2,t3):
-    return GAPMul(36,t1)-GAPMul(t1**2,t3**2)-GAPMul(32,t3**3)+GAPMul(t1**3,t2**2)
+    return GAPMin(GAPMin(GAPMul(36,t1),GAPMul(t1**2,t3**2)),GAPMul(32,t3**3))+GAPMul(t1**3,t2**2)
 
 ChevieData["G25"]["Discriminant"]=lxg2511
