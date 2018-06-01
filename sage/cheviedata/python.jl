@@ -2,11 +2,13 @@
 This  file is an attempt to automatic  translate the GAP3 Chevie data files
 to Python.
 
-It  currently fails through limitations of  python. For example, because it
-is  impossible to  generate a  multi-line anonymous  function in  Python (a
-lambda?),  the parser treats the anonymous  functions by putting on a stack
-function  definitions  encountered  and  generating  the functions from the
-stack afterwards. Thus,
+It  currently fails through limitations of  python. 
+
+For  example, because it  is impossible to  generate a multi-line anonymous
+function in Python, the parser treats the anonymous functions by putting on
+a  stack function definitions encountered and generating the functions from
+the  stack afterwards;  the exception  is the  -> form  which has  the same
+limitations as Python's lambda, so is translated to a lambda. Thus,
 
 f=t->function(a)return a+t;end;
 
@@ -15,8 +17,7 @@ is currently translated as
 def xxx1(a):
   a+t
 
-def f(t):
-  xxx1
+f=lambda t: xxx1
 
 while it should be translated as
 
@@ -24,6 +25,9 @@ def f(t):
   def xxx1(a):
     a+t
   return xxx1
+
+but  it is  very hard  to imagine  a general  scheme where this would occur
+naturally.
 
 Another  problem is to translate the operators * + - / which in GAP can act
 on  lists as well as numbers.  A scheme which works well  for * and / is to
@@ -341,8 +345,9 @@ end
 
 function to_py(n)
   global function_prefix, function_counter
-  l=myparse("$(homedir())/gap3-dev/pkg/chevie/"*n*".g")
-  function_prefix=replace(n[max(1,end-4):end],r"/","")
+  l=myparse("$(homedir())/gap3-dev/pkg/chevie/tbl/"*n*".g")
+  n=replace(n,r".*/","")
+  function_prefix=n[max(1,end-4):end]
   function_counter=0
   open(n*".py","w")do f
     for e in l 
@@ -355,3 +360,5 @@ ChevieTbl=["cmp4_22", "cmplxg24", "cmplxg25", "cmplxg26", "cmplxg27",
 "cmplxg29", "cmplxg31", "cmplxg32", "cmplxg33", "cmplxg34", "coxh3", "coxh4", 
 "coxi", "exceptio", "weyla", "weylbc", "weyld", "weyle6", "weyle7", "weyle8", 
 "weylf4", "weylg2"]
+
+# cmplximp currently triggers parser error
