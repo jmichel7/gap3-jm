@@ -197,18 +197,18 @@ AlgebraicCentre:=function(W)local Z0,res,F0s,w,toAZ,hom,AZ,m,id;
   id:=SemisimpleElement(W,[1..W.rank]*0);
   res:=rec(Z0:=Z0,AZ:=Group(AbelianGenerators(AZ),id));
   if IsBound(F0s) and Length(F0s)>0 then return res;fi;
-  AZ:=List(WeightInfo(W).CenterSimplyConnected,x->SemisimpleElement(W,
-    Concatenation(x*W.simpleCoroots,List(res.Z0.generators,y->0))));
+  AZ:=List(WeightInfo(W).CenterSimplyConnected,x->SemisimpleElement(W,x));
   if Length(AZ)=0 then res.descAZ:=AZ;return res;fi;
   AZ:=ApplyFunc(Group,AZ);
   toAZ:=function(s)
-    s:=SolutionMat(Concatenation(res.Z0.complement,res.Z0.generators),s);
-    return SemisimpleElement(W,
-       s{[1..Length(res.Z0.complement)]}*res.Z0.complement);
+    s:=s.v*W.simpleCoroots;
+    s:=SolutionMat(Concatenation(res.Z0.complement,res.Z0.generators),
+       Concatenation(s,[1..Length(res.Z0.generators)]*0));
+    return SemisimpleElement(W,s{[1..W.semisimpleRank]}*res.Z0.complement);
   end;
   # map of root data Y(Wsc)->Y(W)
   hom:=GroupHomomorphismByImages(AZ,res.AZ,AZ.generators,
-    List(AZ.generators,x->toAZ(x.v)));
+    List(AZ.generators,toAZ));
   res.descAZ:=List(Kernel(hom).generators,x->GetWord(AZ,x));
   return res;
 end;
