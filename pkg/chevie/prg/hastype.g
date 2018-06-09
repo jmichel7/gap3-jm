@@ -518,7 +518,7 @@ HasTypeOps.Invariants:=function(W)local V,i,N;
   V:=Parent(W);
   i:=List(ReflectionType(W),function(t)local H,ir,i;
     H:=ReflectionGroup(t);
-    if CartanMat(V,t.indices)<>CartanMat(H) then
+    if CartanMat(V,W.rootInclusion{t.indices})<>CartanMat(H) then
       Error("not standard Cartan matrix: invariants not implemented");
     fi;
     ir:=PermRootOps.IndependentRoots(H);
@@ -541,6 +541,14 @@ HasTypeOps.Invariants:=function(W)local V,i,N;
   return i;
 end;
 
+HasTypeOps.Discriminant:=function(W)local t;
+  t:=W.type;
+  if Length(t)=0 then return function()return Mvp(1);end;
+  elif Length(t)=1 then return Discriminant(t[1]);
+  else Error("not implemented for non-irreducible");
+  fi;
+end;
+  
 # Fo an irreducible type, reps contain:
 # .duflo,  .reps: elements of W represented as images of simple roots
 # .character: decomposition of left cell in irreducibles

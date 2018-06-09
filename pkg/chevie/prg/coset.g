@@ -188,7 +188,7 @@ CoxeterCoset:=function(arg)local W, PW, perm, tmp, WF, i;
   if Length(arg)>0 then
     if IsPerm(arg[1]) then 
       if Set(W.rootInclusion)<>OnSets(Set(W.rootInclusion),arg[1]) then
-	Error("#I permutation for F0 must normalize set of roots.\n");
+	InfoChevie("#I permutation for F0 must normalize set of roots.\n");
 	return false;
       fi;
       if IsSubset(W.rootInclusion,MovedPoints(arg[1])) then
@@ -204,7 +204,7 @@ CoxeterCoset:=function(arg)local W, PW, perm, tmp, WF, i;
 
       if WF.F0Mat<>[] then perm:=PermMatX(W,WF.F0Mat);else perm:=();fi;
       if perm=false then
-	Error("#I matrix for F0 must normalize set of roots.\n");
+	InfoChevie("#I matrix for F0 must normalize set of roots.\n");
 	return false;
       fi;
     fi;
@@ -215,9 +215,9 @@ CoxeterCoset:=function(arg)local W, PW, perm, tmp, WF, i;
   # checking if coroots of parent are normalized:
   if IsCoxeterGroup(PW) and PW.semisimpleRank>0 and  # parent may be Spets
     not IsNormalizing(PW.coroots*PW.simpleCoroots,TransposedMat(WF.F0Mat)) then
-    Error("#I transposed of matrix for F0 must normalize set of coroots",
-	  " of parent.\n");
-	return false;
+    InfoChevie("#I transposed of matrix for F0 must normalize set of",
+      " coroots of parent.\n");
+    return false;
   fi;
 
   WF.phi:=ReducedInRightCoset(W,perm);
@@ -377,21 +377,24 @@ Twistings:=function(arg)local WF,J,tt,t,i,gens,W;
     gens:=[];
     for t in tt do
       for i in [1..Length(t)-1] do
-        Add(gens,Product(Zip(t[i].indices,t[i+1].indices,
+        Add(gens,Product(Zip(W.rootInclusion{t[i].indices},
+                             W.rootInclusion{t[i+1].indices},
           function(i,j)return (i,j);end)));
       od;
+      J:=W.rootInclusion{t[1].indices};
       if t[1].series="A" then 
-        if t[1].rank>1 then
-           Add(gens,Product([1..QuoInt(t[1].rank,2)],i->
-           (t[1].indices[i],t[1].indices[t[1].rank+1-i])));
+        if t[1].rank>1 then Add(gens,
+          Product([1..QuoInt(t[1].rank,2)],i->(J[i],J[t[1].rank+1-i])));
         fi;
-      elif t[1].series="D" then Add(gens,(t[1].indices[1],t[1].indices[2]));
-        if t[1].rank=4 then Add(gens,(t[1].indices[1],t[1].indices[4]));fi;
+      elif t[1].series="D" then Add(gens,(J[1],J[2]));
+        if t[1].rank=4 then Add(gens,(J[1],J[4]));fi;
       elif t[1].series="E" and t[1].rank=6 then
-        Add(gens,(t[1].indices[1],t[1].indices[6]));
-        Add(gens,(t[1].indices[3],t[1].indices[5]));
+        Add(gens,(J[1],J[6])(J[3],J[5]));
       fi;
     od;
+    if W<>Parent(W) then
+      Error(W," must not be a proper subgroup of another reflection group");
+    fi;
     return List(Elements(Group(gens,())),x->CoxeterCoset(W,x));
   fi;
   J:=arg[2];

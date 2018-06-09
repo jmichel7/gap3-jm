@@ -506,6 +506,17 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
   data.2E6sc:=CoxeterCoset(CoxeterGroup("E",6,"sc"),(1,6)(3,5));
   data.2F4:=CoxeterCoset(CoxeterGroup("Fsym",4),(1,4)(2,3));
   data.F4:=CoxeterGroup("F",4);
+# the following is Galois-stable for Aut(H3,[[1,2,1,2,3,2,1,2,1],[3],[2]])
+  data.H3stable:=CoxeterGroup([[(5-ER(5))/2,-ER(5),-1+ER(5)],[-2*ER(5),1,0],
+    [2*ER(5),1,0]],[[(5+ER(5))/40,(-1-ER(5))/4,(-3+ER(5))/16],
+    [(-3*ER(5))/20,1/2,(2-ER(5))/8],[(3*ER(5))/20,1/2,(2+ER(5))/8]]);
+# the following model is Galois-stable for Aut(H4,[[1,2,1,2,3,2,1,2,1],
+#  [3],[2],[1,2,3,4,3,2,1,2,1,3,2,1,2,3,4,3,2,1,2,3,1,2,1,2,3,4,3,2,1]]);
+  data.H4stable:=CoxeterGroup([[(5-ER(5))/2,-ER(5),-1+ER(5),0],[-2*ER(5),1,0,0],
+    [2*ER(5),1,0,0],[(5-ER(5))/4,(-1+ER(5))/4,(-3-ER(5))/2,(60-12*ER(5))/25]],
+    [[(5+ER(5))/40,(-1-ER(5))/4,(-3+ER(5))/16,0],[(-3*ER(5))/20,1/2,
+      (2-ER(5))/8,0],[(3*ER(5))/20,1/2,(2+ER(5))/8,0],[-ER(5)/20,-1/2,
+      (-4-ER(5))/8,(25-5*ER(5))/96]]);
   if IsBound(data.(type)) then res:=data.(type);
     if IsFunc(res) then res:=ApplyFunc(res,arg{[2..Length(arg)]});fi;
     res.name:=SPrint("RootDatum(",Join(List(arg,FormatGAP)),")");

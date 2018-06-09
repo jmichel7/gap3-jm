@@ -108,6 +108,13 @@ ReflTypeOps.Invariants:=function(t)
   fi;
 end;
 
+ReflTypeOps.Discriminant:=function(t)
+# if IsBound(t.cartanType) then return CHEVIE.Data("Discriminant",t,t.cartanType);
+# else 
+    return CHEVIE.Data("Discriminant",t);
+# fi;
+end;
+
 ReflTypeOps.PoincarePolynomial:=function(t,param)
   return CHEVIE.Data("PoincarePolynomial",t,param);
 end;

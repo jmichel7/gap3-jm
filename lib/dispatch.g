@@ -78,8 +78,10 @@ end;
 AddGenerator:=Dispatcher("AddGenerator");
 AddGenerators:=Dispatcher("AddGenerators");
 Coefficient:=Dispatcher("Coefficient");
+Degree:=Dispatcher("Degree");
 Dual:=Dispatcher("Dual");
 Expand:=Dispatcher("Expand");
+LeadingCoefficient:=Dispatcher("LeadingCoefficient");
 Representation:=Dispatcher("Representation");
 SylowSystem:=Dispatcher("SylowSystem");
 
@@ -105,6 +107,7 @@ Constituents:=AttributeDispatcher("Constituents");
 DerivedSeries:=AttributeDispatcher("DerivedSeries");
 DerivedSubgroup:=AttributeDispatcher("DerivedSubgroup");
 Dimension:=AttributeDispatcher("Dimension");
+Discriminant:=AttributeDispatcher("Discriminant");
 Exponent:=AttributeDispatcher("Exponent");
 FittingSubgroup:=AttributeDispatcher("FittingSubgroup");
 FpGroup:=AttributeDispatcher("FpGroup");
@@ -155,12 +158,14 @@ RationalClasses:=AttributeDispatcher("RationalClasses");
 Representative:=AttributeDispatcher("Representative");
 RepresentativesPerfectSubgroups:=
   AttributeDispatcher("RepresentativesPerfectSubgroups");
+Resultant:=AttributeDispatcher("Resultant");
 SizesConjugacyClasses:=AttributeDispatcher("SizesConjugacyClasses");
 SmallestGenerators:=AttributeDispatcher("SmallestGenerators");
 SupersolvableResiduum:=AttributeDispatcher("SupersolvableResiduum");
 SylowComplements:=AttributeDispatcher("SylowComplements");
 TrivialSubgroup:=AttributeDispatcher("TrivialSubgroup");
 UpperCentralSeries:=AttributeDispatcher("UpperCentralSeries");
+Valuation:=Dispatcher("Valuation");
 Zero:=AttributeDispatcher("Zero");
 
 ##############################################################################

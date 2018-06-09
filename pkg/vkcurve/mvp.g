@@ -232,14 +232,24 @@ MvpOps.ComplexConjugate:=function(x)
   x:=ShallowCopy(x);x.coeff:=ComplexConjugate(x.coeff);return x;
 end;
 
-MvpOps.Degree:=function(x)
-  if Length(x.elm)=0 then return -1;fi;
-  return Maximum(List(x.elm,y->Sum(y.coeff)));
+MvpOps.Degree:=function(arg)local p;
+  p:=arg[1];
+  if Length(p.elm)=0 then return -1;fi;
+  if Length(arg)=1 then return Maximum(List(p.elm,y->Sum(y.coeff)));fi;
+  return Maximum(List(p.elm,function(e)local pv;
+    pv:=Position(e.elm,arg[2]);
+    if pv=false then return 0;
+    else return e.coeff[pv];fi;end));
 end;
 
-MvpOps.Valuation:=function(x)
-  if Length(x.elm)=0 then return -1;fi;
-  return Minimum(List(x.elm,y->Sum(y.coeff)));
+MvpOps.Valuation:=function(arg)local p;
+  p:=arg[1];
+  if Length(p.elm)=0 then return -1;fi;
+  if Length(arg)=1 then return Minimum(List(p.elm,y->Sum(y.coeff)));fi;
+  return Minimum(List(p.elm,function(e)local pv;
+    pv:=Position(e.elm,arg[2]);
+    if pv=false then return 0;
+    else return e.coeff[pv];fi;end));
 end;
 
 MvpOps.Derivative:=function(arg)local x,variable,res,i,p,elm;
@@ -301,6 +311,11 @@ MvpOps.Coefficients:=function(x,var)local res,i,p,elm,d;
     fi;
   od;
   return res;
+end;
+
+MvpOps.LeadingCoefficient:=function(x,var)local c;
+  c:=Coefficients(x,var);
+  return c[Length(c)];
 end;
 
 MvpOps.Variables:=p->Union(List(p.elm,x->x.elm));
