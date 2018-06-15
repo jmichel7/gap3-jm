@@ -749,3 +749,71 @@ IntersectionLatticeSubspace:=function(m)local r,i;
   od;
   return r.rowtrans^-1*r.normal*r.coltrans;
 end;
+
+#############################################################################
+##
+#F  DiaconisGraham(m,moduli)
+#
+# m  should be  an integral  matrix with  n columns where n=Length(moduli),
+# such  that each  line (with  the i-th  element taken  mod moduli[i]) of m
+# represents an element of the group A=Z/moduli[1] x ... x Z/moduli[n], and
+# such  that the set of  lines of m generates  A. The moduli should be such
+# that moduli[i+1] divides moduli[i] for all i.
+#
+# The function returns  a record  r with fields
+# r.normal          the Diaconis-Graham normal form, a matrix of same shape
+#    as  m where either the  first n lines are  the identity matrix and the
+#    remaining  lines are  0, or  Length(m)=n and  .normal differs from the
+#    identity  matrix only  in the  entry .normal[n][n],  which is prime to
+#    moduli[n]
+# r.rowtrans        a unimodular matrix such that  
+#   r.normal=List(r.rowtrans*m,v->Zip(v,moduli,function(x,y)return x mod y;end))
+#
+DiaconisGraham:=function(m,moduli)local r,res,i,l,l1,e,n,ZipMod;
+  if moduli=[] then return rec(rowtrans:=[],normal:=m);fi;
+  if ForAny([1..Length(moduli)-1],i->moduli[i] mod moduli[i+1]<>0) then
+    Error("DiaconisGraham(m,moduli): moduli[i+1] should divide moduli[i] for all i");
+  fi;
+  r:=HermiteNormalFormIntegerMatTransform(m);
+  res:=r.rowtrans;
+  m:=r.normal;
+  n:=Length(moduli);
+  if Length(m)>0 and n<>Length(m[1]) then
+    Error("DiaconisGraham(m,moduli): moduli and m[1] should have same length");
+  fi;
+  ZipMod := function(m, moduli)
+      return List(m,v->Zip(v,moduli,function(x,y)return x mod y;end));
+  end;
+  for i in [1..Minimum(n,Length(m)-1)] do
+    l:=m[i][i];
+    if m[i][i]<>1 then
+      if Gcd(m[i][i],moduli[i])<>1 then return false;fi;
+      l1:=InverseMod(l,moduli[i]);
+      e:=IdentityMat(Length(m));
+      e{[i,i+1]}{[i,i+1]}:=[[l1,l1-1],[1-l*l1,l+1-l*l1]];
+      res:=e*res;
+      m:=ZipMod(e*m,moduli);
+    fi;
+  od;
+  r:=HermiteNormalFormIntegerMatTransform(m);
+  m:=ZipMod(r.normal,moduli);
+  res:=r.rowtrans*res;
+  if Length(m)=n then
+    if m[n][n] > QuoInt(moduli[n], 2) then
+      m[n][n] := -m[n][n] mod moduli[n];
+      res[n] := res[n]*-1;
+    fi;
+    l:=m[n][n];
+    if Gcd(l,moduli[n])<>1 then return false;fi;
+    l1:=InverseMod(l,moduli[n]);
+    for i in [1..n-1] do
+      if m[i][n]<>0 then
+        e:=IdentityMat(Length(m));
+        e{[i,n]}{[i,n]}:=[[1,-m[i][n]*l1],[0,1]];
+        res:=e*res;
+        m:=ZipMod(e*m,moduli);
+      fi;
+    od;
+  fi;
+  return rec(rowtrans:=res,normal:=m);
+end;

@@ -809,7 +809,7 @@ AUTO( ReadLib( "matrix" ),
 
 AUTO( ReadLib( "matint" ),
   BaseIntMat, BaseIntersectionIntMats, ComplementIntMat, DeterminantIntMat,
-  DiagonalizeIntMat, HermiteNormalFormIntegerMat,
+  DiagonalizeIntMat, DiaconisGraham, HermiteNormalFormIntegerMat,
   HermiteNormalFormIntegerMatTransform, IntersectionLatticeSubspace,
   NormalFormIntMat, NullspaceIntMat, SmithNormalFormIntegerMat,
   SmithNormalFormIntegerMatTransforms, SolutionIntMat, SolutionNullspaceIntMat,

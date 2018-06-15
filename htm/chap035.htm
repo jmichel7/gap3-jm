@@ -24,6 +24,7 @@ used by CHEVIE.
 <LI> <A HREF="chap035.htm#SECT015">NormalFormIntMat</a>
 <LI> <A HREF="chap035.htm#SECT016">AbelianInvariantsOfList</a>
 <LI> <A HREF="chap035.htm#SECT017">Determinant of an integer matrix</a>
+<LI> <A HREF="chap035.htm#SECT018">Diaconis-Graham normal form</a>
 </ol>
 <A NAME="SECT001"><h2>35.1 NullspaceIntMat</h2></a>
 <P><P>
@@ -308,6 +309,41 @@ Computes  the determinant of  an integer matrix  using the same strategy as
 than  <I>20  &times;  20</I>  but  quite  a  lot  slower for smaller matrices. It
 therefore   passes   the   work   to   the  more  general  <code>DeterminantMat</code>
 (see <a href="chap034.htm#SECT015">DeterminantMat</a>) for these smaller matrices.
-<P><a href ="chap034.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap036.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+<P><A NAME="SECT018"><h2>35.18 Diaconis-Graham normal form</h2></a>
+<P><P>
+<A name = "I1"></a>
+
+<P>
+<code>DiaconisGraham( <var>mat</var>, <var>moduli</var>)</code>
+<P>
+Diaconis  and Graham (see <A href="biblio.htm#dg99"><cite>dg99</cite></a>) defined a normal form for generating
+sets of abelian groups. Here <var>moduli</var> should be a list of positive integers
+such  that <code>moduli[i+1]</code> divides <code>moduli[i]</code>  for all <code>i</code>, representing the
+abelian  group <I>A=&#x2124;/moduli[1]&times;...&times;&#x2124;/moduli[n]</I>. The integral
+matrix  <var>m</var> should have <var>n</var> columns where <code>n=Length(moduli)</code>, and each line
+(with  the <var>i</var>-th element  taken <code>mod moduli[i]</code>)  represents an element of
+the group <I>A</I>.
+<P>
+The  function returns <code>false</code> if the set  of elements of <I>A</I> represented by
+the  lines of <I>m</I> does not generate  <I>A</I>. Otherwise it returns a record <code>r</code>
+with fields
+<P>
+<DL><DT><code>r.normal</code>:<DD>         the Diaconis-Graham normal form, a matrix of same shape
+    as <code>m</code> where either the first <code>n</code> lines are the identity matrix and the
+    remaining  lines are <code>0</code>,  or <code>Length(m)=n</code> and  <code>.normal</code> differs from
+    the  identity matrix only in the  entry <code>.normal[n][n]</code>, which is prime
+    to <code>moduli[n]</code>.
+</DL><P>
+<DL><DT><code>r.rowtrans</code>:<DD>        a unimodular matrix such that  
+    <code>r.normal=List(r.rowtrans*m,v->Zip(v,moduli,
+                                       function(x,y)return x mod y;end))</code>
+</DL><P>
+Here is an example:
+<P>
+<pre>    gap> DiaconisGraham([[3,0],[4,1]],[10,5]);
+    rec(
+      rowtrans := [ [ -13, 10 ], [ 4, -3 ] ],
+      normal := [ [ 1, 0 ], [ 0, 2 ] ] )</pre>
+<a href ="chap034.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap036.htm">Next</a><BR><a href = "theindex.htm">Index</a>
 <P>
 <address>gap3-jm<br>19 Feb 2018</address></body></html>

@@ -315,3 +315,36 @@ therefore   passes   the   work   to   the  more  general  'DeterminantMat'
 (see~"DeterminantMat") for these smaller matrices.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Diaconis-Graham normal form}
+\index{Diaconis-Graham normal form}
+
+'DiaconisGraham( <mat>, <moduli>)'
+
+Diaconis  and Graham (see \cite{dg99}) defined a normal form for generating
+sets of abelian groups. Here <moduli> should be a list of positive integers
+such  that 'moduli[i+1]' divides 'moduli[i]'  for all 'i', representing the
+abelian  group $A=\Z/moduli[1]\times\ldots\times\Z/moduli[n]$. The integral
+matrix  <m> should have <n> columns where 'n=Length(moduli)', and each line
+(with  the <i>-th element  taken 'mod moduli[i]')  represents an element of
+the group $A$.
+
+The  function returns 'false' if the set  of elements of $A$ represented by
+the  lines of $m$ does not generate  $A$. Otherwise it returns a record 'r'
+with fields
+
+'r.normal':         the Diaconis-Graham normal form, a matrix of same shape
+    as 'm' where either the first 'n' lines are the identity matrix and the
+    remaining  lines are '0',  or 'Length(m)=n' and  '.normal' differs from
+    the  identity matrix only in the  entry '.normal[n][n]', which is prime
+    to 'moduli[n]'.
+
+'r.rowtrans':        a unimodular matrix such that  
+    'r.normal=List(r.rowtrans\*m,v->Zip(v,moduli,
+                                       function(x,y)return x mod y;end))'
+
+Here is an example\:
+
+|    gap> DiaconisGraham([[3,0],[4,1]],[10,5]);
+    rec(
+      rowtrans := [ [ -13, 10 ], [ 4, -3 ] ],
+      normal := [ [ 1, 0 ], [ 0, 2 ] ] )|

@@ -614,7 +614,7 @@ local K,a,i,j,k,m,p,d,mm,mmf,nm,dm,kp,w,al,gut,u,M,
         #M:=Concatenation(M.irreducibles,M.remainders);
 
         w:=OrthogonalityDefect(EuclideanLattice,M);
-        InfoAlg1("#I Orthogonality defect: ",EvalF(w),"\n");
+        InfoAlg1("#I Orthogonality defect: ",evalf(w),"\n");
         if w>ordef then
           Error("OD war zu klein angesetzt!");
           ordef:=Maximum(w,ordef+1);
