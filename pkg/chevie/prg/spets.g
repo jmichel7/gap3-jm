@@ -93,9 +93,9 @@ end;
 
 #############################################################################
 #F  SpetsOps.String( <WF> ) . . . . . . . . . . 'String' function for Spets
-SpetsOps.String:=function(WF)return FormatGAP(WF);end;
+SpetsOps.String:=function(WF)return Format(WF,CHEVIE.PrintSpets);end;
 
-SpetsOps.Display:=function(WF)Print(Format(WF),"\n");end;
+SpetsOps.Display:=function(WF,opt)Print(Format(WF,opt),"\n");end;
 
 SpetsOps.Print:=function(WF)Print(Format(WF,CHEVIE.PrintSpets));end;
 

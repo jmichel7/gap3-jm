@@ -326,10 +326,10 @@ ReflTypeOps.ChevieCharInfo:=function(t)local res,f,get,uc;
     fi;
   end;
   res:=CHEVIE.Data("CharInfo",t);
-  if not IsBound(res.charnames) then
-    res.charnames:=List(res.charparams,
-           x->ApplyFunc(CHEVIE.Data,["CharName",t,x,rec()]));
-  fi;
+# if not IsBound(res.charnames) then
+#   res.charnames:=List(res.charparams,
+#          x->ApplyFunc(CHEVIE.Data,["CharName",t,x,rec()]));
+# fi;
   res.positionId:=res.extRefl[1];
   res.positionDet:=res.extRefl[Length(res.extRefl)];
   get("b","LowestPowerFakeDegrees");

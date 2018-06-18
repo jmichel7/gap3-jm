@@ -300,7 +300,7 @@ InductionTableOps:=OperationsRecord("InductionTableOps");
 
 InductionTableOps.String:=t->SPrint(t.what,"Table(",t.u,", ",t.g,")");
 
-InductionTableOps.Print:=function(t)Print(SPrint(t));end;
+InductionTableOps.Print:=function(t)Print(String(t));end;
 
 InductionTableOps.Format:=function(t,option)
   option.rowLabels:=t.gNames(t,option);option.columnLabels:=t.uNames(t,option);

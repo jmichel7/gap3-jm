@@ -184,7 +184,7 @@
 InfoRead1:=Ignore;
 Revision:=rec();  # used by tbl/*.tbl
 
-VERLIB := "14 Feb 2018";
+VERLIB := "18 Jun 2018";
 if not IsBound( VERSRC ) then  VERSRC := "unknown";  fi;
 if not IsBound( VERSYS ) then  VERSYS := "unknwon";  fi;
 
@@ -202,7 +202,7 @@ PR("            ##  V.Felsch, E.Horvath,  A.Hulpke  # A.Kaup,     J.Meier");
 PR("           ###  J.Mnich,  W.Nickel,   A.Niemeyer# G.Pfeiffer, U.Polis");
 PR("          ## #  A.Seress  H.Theissen, A.Wegner  #");
 PR("         ##  #                                  #");
-PR("        ##   #  Distribution: gap3-jm23nov17");
+PR("        ##   #  Distribution: gap3-jm 18 jun 18");
 PR("       ##    #    see http://webusers.imj-prg.fr/~jean.michel/gap3");
 Print("          ##    ##    lib:",VERLIB,", src:",VERSRC,", sys:",VERSYS,"\n");
 PR("       ######                                 For help enter: ?<return>");
@@ -500,7 +500,7 @@ AUTO( ReadLib( "combinat" ),
   NrOrderedPartitions, RestrictedPartitionsA, RestrictedPartitionsK,
   RestrictedPartitions, NrRestrictedPartitionsK, NrRestrictedPartitions,
   SignPartition, AssociatedPartition, Dominates, PowerPartition, 
-  PartitionTuples, Lucas, Fibonacci, Bernoulli2, Bernoulli );
+  PartitionTuples, NrPartitionTuples, Lucas, Fibonacci, Bernoulli2, Bernoulli );
 
 AUTO( ReadLib( "ctautoms" ),
   FamiliesOfRows, MatAutomorphismsFamily, MatAutomorphisms,
@@ -596,21 +596,23 @@ AUTO( ReadLib( "dispatch" ),
   ClassInvariants,
   CommutatorFactorGroup, CompositionFactors, CompositionSeries, 
   ConjugacyClasses, ConjugacyClassesPerfectSubgroups, 
-  ConjugacyClassesSubgroups, Constituents, DerivedSeries, DerivedSubgroup, 
-  Dimension, Dual, Endomorphisms, Expand, Exponent, 
-  FittingSubgroup, FpGroup, FrattiniSubgroup, GaloisGroup, Generators, 
+  ConjugacyClassesSubgroups, Constituents, Degree, DerivedSeries, 
+  DerivedSubgroup, Dimension, Discriminant, Dual, Endomorphisms, Expand, 
+  Exponent, FittingSubgroup, FpGroup, FrattiniSubgroup, GaloisGroup, Generators,
   Identity, Idempotents, IdentityMapping, InvariantSubspace, InverseMapping,
   IrreducibilityTest, IsAbelian, IsAutomorphism, IsBijection, IsBijective,
   IsCyclic, IsElementaryAbelian, IsEndomorphism, IsEpimorphism, IsFaithful,
   IsHomomorphism, IsInjective, IsIsomorphism, IsMonomorphism, IsNilpotent,
   IsNormalized, IsParent, IsPerfect, IsSimple, IsSolvable, IsSurjective,
   IsTrivial, KernelGroupHomomorphism, Lattice, LatticeSubgroups,
+  LeadingCoefficient,
   LowerCentralSeries, MaximalNormalSubgroups, MaximalElement,
   MinimalGeneratingSet, NormalSubgroups, Normalized, Omega, One, Radical,
   RationalClasses, Representative, Representation,
-  RepresentativesPerfectSubgroups,
+  RepresentativesPerfectSubgroups, Resultant,
   SizesConjugacyClasses, SmallestGenerators, SupersolvableResiduum,
-  SylowComplements, SylowSystem, TrivialSubgroup, UpperCentralSeries, Zero,
+  SylowComplements, SylowSystem, TrivialSubgroup, UpperCentralSeries, 
+  Valuation, Zero,
   Determinant, Dimensions, Rank, Transposed, IsMonomial, Components, Basis,
   StandardBasis, Display, IsIrreducible, IsEquivalent, Kernel,
   FusionConjugacyClasses, KroneckerProduct, Closure, TransitiveClosure,
@@ -807,7 +809,7 @@ AUTO( ReadLib( "matrix" ),
 
 AUTO( ReadLib( "matint" ),
   BaseIntMat, BaseIntersectionIntMats, ComplementIntMat, DeterminantIntMat,
-  DiagonalizeIntMat, HermiteNormalFormIntegerMat,
+  DiagonalizeIntMat, DiaconisGraham, HermiteNormalFormIntegerMat,
   HermiteNormalFormIntegerMatTransform, IntersectionLatticeSubspace,
   NormalFormIntMat, NullspaceIntMat, SmithNormalFormIntegerMat,
   SmithNormalFormIntegerMatTransforms, SolutionIntMat, SolutionNullspaceIntMat,
@@ -938,8 +940,7 @@ AUTO( ReadLib( "polynom" ),
   InterpolatedPolynomial, LaurentPolynomialRing, IsLaurentPolynomialRing,
   LaurentPolynomialRingOps, Derivative, PolynomialRing, IsPolynomialRing,
   PolynomialRingOps, LaurentPolynomials, LaurentPolynomialsOps, Polynomials,
-  PolynomialsOps, PolynomialOps, Degree, Valuation, LeadingCoefficient,
-  DisplayPolynomial );
+  PolynomialsOps, PolynomialOps, DisplayPolynomial);
 
 AUTO( ReadLib( "polyrat" ),
   RationalsPolynomialOps, RationalsPolynomials, RationalsPolynomialsOps,
@@ -947,11 +948,11 @@ AUTO( ReadLib( "polyrat" ),
 
 AUTO( ReadLib( "polystff" ),
   APolyProd, APolyMod, BPolyProd, ProductMod, RootRat, PseudoRemainder,
-  RingElDegZeroPol, Resultant, Discriminant, MonicIntegerPolynomial,
-  ApproxRational, ApproximateRoot, ApproxRootBound, RootBound, BombieriNorm,
-  MinimizeBombieriNorm, BeauzamyBound, OneFactorBound, HenselBound, CoeffAbs,
-  TrialQuotient, Characteristic, RandomNormedPol, PolynomialModP, ContentPol,
-  ParityPol, EvalF, CheapFactorsInt, Berwick );
+  RingElDegZeroPol, MonicIntegerPolynomial, ApproxRational, ApproximateRoot, 
+  ApproxRootBound, RootBound, BombieriNorm, MinimizeBombieriNorm, 
+  BeauzamyBound, OneFactorBound, HenselBound, CoeffAbs, TrialQuotient, 
+  Characteristic, RandomNormedPol, PolynomialModP, ContentPol,
+  ParityPol, CheapFactorsInt, Berwick);
 
 AUTO( ReadLib( "pq" ),
   PQpOps, PQp, SavePQp, InitPQp, AddGeneratorsPQp, DefineGeneratorsPQp,

@@ -454,15 +454,17 @@ HasTypeOps.ChevieCharInfo:=function(W)local res,t,p,f,n,i,gt;
   then res:=ShallowCopy(p[1]);
     # keep extra fields when irreducible
     res.charparams:=List(res.charparams,x->[x]);
+    res.charnames:=List(res.charparams,x->CharName(W,x,rec()));
     return res;
   else res:=rec();
   fi; 
   if ForAll(p,x->IsBound(x.charparams)) then 
     res.charparams:=Cartesian(List(p,x->x.charparams));
   fi;
-  if ForAll(p,x->IsBound(x.charnames)) then 
-    res.charnames:=List(Cartesian(List(p,x->x.charnames)),Join);
-  fi;
+# if ForAll(p,x->IsBound(x.charnames)) then 
+#   res.charnames:=List(Cartesian(List(p,x->x.charnames)),Join);
+# fi;
+  res.charnames:=List(res.charparams,x->CharName(W,x,rec()));
   for f in ["positionId","positionDet"] do
     if ForAll(p,x->IsBound(x.(f))) then 
       res.(f):=PositionCartesian(List(p,x->Length(x.charparams)),
@@ -475,13 +477,11 @@ HasTypeOps.ChevieCharInfo:=function(W)local res,t,p,f,n,i,gt;
     fi;
   od;
   if ForAny(p,x->IsBound(x.opdam)) then
-    if Length(p)=1 then res.opdam:=p[1].opdam;
-    else res.opdam:=List(p,function(x)if IsBound(x.opdam) then return x.opdam;
+    res.opdam:=List(p,function(x)if IsBound(x.opdam) then return x.opdam;
       else return ();fi;end);
-      gt:=Cartesian(List(p,x->[1..Length(x.charparams)]));
-      res.opdam:=PermListList(gt,
-        List(gt,t->Zip(t,res.opdam,function(x,i)return x^i;end)));
-    fi;
+    gt:=Cartesian(List(p,x->[1..Length(x.charparams)]));
+    res.opdam:=PermListList(gt,
+      List(gt,t->Zip(t,res.opdam,function(x,i)return x^i;end)));
   fi;
   if IsSpets(W) then 
     gt:=List(ReflectionType(Group(W)),x->Set(x.indices));

@@ -202,7 +202,7 @@ CHEVIE.AddData("ClassInfo","imp",function(p,q,r)local res,times,trans,I,i,j,a,S;
     res:=rec(classparams:=PartitionTuples(r,p));
     res.classtext:=List(res.classparams,function(S)local l,w,d;
       S:=Concatenation(List([1..p], i->List(S[i],t->[t,i-1])));
-      Sort(S,function(a,b)return a[1]<b[1] or a[1]=b[1] and a[2]>b[2];end);
+      SortBy(S,a->[a[1],-a[2]]);
       l:=0;w:=[];
       for d in S do
         Append(w,times(d[2],Concatenation([l+1,l..2],[1..l+1])));
