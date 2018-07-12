@@ -628,7 +628,7 @@ HasTypeOps.WeightInfo:=function(W)local l,res,n;
     r.minusculeCoweights:=t.indices{r.minusculeCoweights};
     C:=Mod1(CartanMat(t)^-1);
     r.csi:=NullMat(Length(g),SemisimpleRank(W));
-    r.csi{[1..Length(g)]}{t.indices}:=C{g};
+    r.csi{[1..Length(g)]}{t.indices}:=C{r.minusculeCoweights{g}};
     return r;
     end);
   res:=rec(minusculeWeights:=Cartesian(List(l,

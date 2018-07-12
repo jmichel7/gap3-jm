@@ -64,7 +64,7 @@ AUTO(ReadChv("lib/util"),
 
 AUTO(ReadChv("lib/po"),
   Chains, GcdPartitions, Hasse, Incidence, LcmPartitions, LinearExtension, 
-  Partition, Poset, PosetOps, ReversedPoset);
+  Partition, Poset, PosetOps, ReversedPoset, IsJoinLattice, IsMeetLattice);
 
 AUTO(ReadChv("lib/matrix"),
   BigCellDecomposition, BlocksMat, CoFactors, DecomposedMat,
