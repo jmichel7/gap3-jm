@@ -604,25 +604,16 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
   local X,Y,Z,res,cl,GenericEntry,pow,d,I,LIM,HooksBeta,StripsBeta,Strips,
                                 Delta,StripsCache,chiCache,code,j,ci;
   res:=rec();
-  res.name:=SPrint("H(G(",p,",",q,",",r,"))");
-  res.identifier:=res.name;
+  res.name:=SPrint("H(G(",p,",",q,",",r,"))"); res.identifier:=res.name;
   res.degrees:=CHEVIE.R("ReflectionDegrees","imp")(p,q,r);
-  res.size:=Product(res.degrees);
-  res.order:=Product(res.degrees);
+  res.size:=Product(res.degrees); res.order:=res.size;
   res.dim:=r;
-  ci:=CHEVIE.R("CharInfo","imp")(p,q,r);
+  cl:=CHEVIE.R("ClassInfo","imp")(p,q,r);
   if r=1 then
-    res.reflclasses:=[2];
-    res.orders:=List([0..p-1],i->p/Gcd(i,p));
+    Inherit(res,cl,["classes","orders"]);
     res.irreducibles:=List([1..p],i->List([0..p-1],j->para[1][i]^j));
-    res.classes:=[1..p]*0+1;
     res.powermap:=CHEVIE.R("PowerMaps","imp")(p,q,r);
   elif q=1 then
-    cl:=CHEVIE.R("ClassInfo","imp")(p,q,r);
-    d:=List([1..p],x->[]);d[1]:=[p-1,1];
-    res.reflclasses:=[Position(cl.classparams,d)];
-    d[1]:=[1..p-1]*0+1;d[2]:=[1];
-    Add(res.reflclasses,Position(cl.classparams,d));
     Inherit(res,cl);
     res.powermap:=CHEVIE.R("PowerMaps","imp")(p,q,r);
 
@@ -798,34 +789,31 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
     res.irreducibles:=List(List(cl.classparams,x->List(x,BetaSet)),
         x->List(cl.classparams,y->GenericEntry(y,x)));
   elif [q,r]=[2,2] and not IsBound(CHEVIE.othermethod) then
-   cl:=CHEVIE.R("ClassInfo","imp")(p,q,r);
-   X:=para[2];Y:=para[3];Z:=para[1];
-   GenericEntry:=function(char,class)local w;
-    char:=ci.malle[Position(ci.charparams,char)];
-    if char[1]=1 then
-      w:=[Z[char[4]],X[char[2]],Y[char[3]]];
-      return Product(class,function(i)
-       if i=0 then return Product(w); else return w[i]; fi;end);
-    else
-      w:=char[2]*GetRoot(X[1]*X[2]*Y[1]*Y[2]*Z[char[3]]*Z[char[4]]*
-	E(p/q)^(2-char[3]-char[4]),2)*E(p)^(char[3]+char[4]-2);
-      class:=List([0..3],i->Number(class,j->i=j));
-      if class[2]>0 then char:=Sum(Z{char{[3,4]}},x->x^class[2]);
-      elif class[3]>0 then char:=Sum(X);
-      elif class[4]>0 then char:=Sum(Y);
-      else char:=2;
+    Inherit(res,cl,["classes","orders"]);
+    X:=para[2];Y:=para[3];Z:=para[1];
+    ci:=CHEVIE.R("CharInfo","imp")(p,q,r);
+    GenericEntry:=function(char,class)local w;
+      char:=ci.malle[Position(ci.charparams,char)];
+      if char[1]=1 then
+        w:=[Z[char[4]],X[char[2]],Y[char[3]]];
+        return Product(class,function(i)
+         if i=0 then return Product(w); else return w[i]; fi;end);
+      else
+        w:=char[2]*GetRoot(X[1]*X[2]*Y[1]*Y[2]*Z[char[3]]*Z[char[4]]*
+          E(p/q)^(2-char[3]-char[4]),2)*E(p)^(char[3]+char[4]-2);
+        class:=List([0..3],i->Number(class,j->i=j));
+        if class[2]>0 then char:=Sum(Z{char{[3,4]}},x->x^class[2]);
+        elif class[3]>0 then char:=Sum(X);
+        elif class[4]>0 then char:=Sum(Y);
+        else char:=2;
+        fi;
+        return w^class[1]*char;
       fi;
-      return w^class[1]*char;
-    fi;
-   end;
-   res.classes:=cl.classes;
-   res.orders:=cl.orders;
-   res.irreducibles:=List(ci.charparams,
+    end;
+    res.irreducibles:=List(ci.charparams,
       char->List(cl.classparams,class->GenericEntry(char,class)));
   else 
-    cl:=CHEVIE.R("ClassInfo","imp")(p,q,r);
-    res.centralizers:=cl.centralizers;
-    res.orders:=cl.orders;
+    Inherit(res,cl,["centralizers","orders"]);
     res.classes:=List(res.centralizers,x->res.size/x);
     res.irreducibles:=List([1..Length(res.classes)],i->CharRepresentationWords(
       CHEVIE.R("HeckeRepresentation","imp")(p,q,r,para,[],i),cl.classtext));
