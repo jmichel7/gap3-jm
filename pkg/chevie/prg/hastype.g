@@ -438,7 +438,7 @@ HasTypeOps.ReflectionName:=function(W,option)local res,t,i,total,l;
       if res<>"" then Append(res,".");fi;
       Append(res,"(q-1)"); 
       if t>1 then 
-        if IsBound(option.TeX) then PrintToString(res,"^{",t,"}");
+        if t>=10 and IsBound(option.TeX) then PrintToString(res,"^{",t,"}");
         else PrintToString(res,"^",t);fi;
       fi;
     fi;

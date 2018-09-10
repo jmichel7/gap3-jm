@@ -41,15 +41,18 @@ UnipotentClassOps.Print:=function(cl)Print(String(cl));end;
 
 UnipotentClassOps.FormatCentralizer:=function(u,opt)local c,AuName,n;
   c:="";
-  AuName:=function()local res;
+  AuName:=function(u)local res,au;
     if Size(u.Au)=1 then return "";fi;
     if IsBound(u.AuAction) or (IsBound(u.dimred) and u.dimred=0) then res:=".";
     else res:="?";fi;
-    Append(res,ReflectionName(u.Au,opt));
-    if IsBound(opt.TeX) then return
-      Replace(res,"A_1","Z_2","A_2","S_3","A_3","S_4","A_4","S_5","B_2","D_8");
-    else return Replace(res,"A1","Z2","A2","S3","A3","S4","A4","S5","B2","D8");
+    au:=ReflectionName(u.Au,opt);
+    au:=Replace(au,".(q-1)","",".(q-1)^2","");
+    if IsBound(opt.TeX) then au:=
+      Replace(au,"A_1","Z_2","A_2","S_3","A_3","S_4","A_4","S_5","B_2","D_8");
+    else au:=Replace(au,"A1","Z2","A2","S3","A3","S4","A4","S5","B2","D8");
     fi;
+    Append(res,au);
+    return res;
   end;
   if IsBound(u.dimunip) then
     if u.dimunip>0 then PrintToString(c,Format(Mvp("q")^u.dimunip,opt));fi;
@@ -60,23 +63,23 @@ UnipotentClassOps.FormatCentralizer:=function(u,opt)local c,AuName,n;
       if Size(u.Au)=1 or Size(u.Au)=Size(ApplyFunc(Group,u.AuAction.F0s)) then
 	PrintToString(c,ReflectionName(u.AuAction,opt));
       elif ForAll(u.AuAction.F0s,x->x=x^0) then
-	PrintToString(c,ReflectionName(u.AuAction.group,opt),AuName());
+	PrintToString(c,ReflectionName(u.AuAction.group,opt),AuName(u));
       else
-	PrintToString(c,ReflectionName(u.AuAction,opt),AuName());
+	PrintToString(c,ReflectionName(u.AuAction,opt),AuName(u));
       fi;
     else
-      PrintToString(c,AuName());
+      PrintToString(c,AuName(u));
     fi;
   elif IsBound(u.red) then 
     n:=ReflectionName(u.red,opt);
     if n<>"." then PrintToString(c,".",n);fi;
-    PrintToString(c,AuName());
+    PrintToString(c,AuName(u));
   else
     if IsBound(u.dimred) then
       if u.dimred>0 then PrintToString(c,"[red dim ",u.dimred,"]");fi;
     else PrintToString(c,"[red??]");
     fi;
-    PrintToString(c,AuName());
+    PrintToString(c,AuName(u));
   fi;
   if Length(c)>1 and c[1]='.' then c:=c{[2..Length(c)]};fi;
   if Length(c)>1 and c[Length(c)]='.' then c:=c{[1..Length(c)-1]};fi;
