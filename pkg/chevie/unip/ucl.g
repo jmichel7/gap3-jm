@@ -45,8 +45,7 @@ UnipotentClassOps.FormatCentralizer:=function(u,opt)local c,AuName,n;
     if Size(u.Au)=1 then return "";fi;
     if IsBound(u.AuAction) or (IsBound(u.dimred) and u.dimred=0) then res:=".";
     else res:="?";fi;
-    au:=ReflectionName(u.Au,opt);
-    au:=Replace(au,".(q-1)","",".(q-1)^2","");
+    au:=ReflectionName(ReflectionType(u.Au),opt);
     if IsBound(opt.TeX) then au:=
       Replace(au,"A_1","Z_2","A_2","S_3","A_3","S_4","A_4","S_5","B_2","D_8");
     else au:=Replace(au,"A1","Z2","A2","S3","A3","S4","A4","S5","B2","D8");
