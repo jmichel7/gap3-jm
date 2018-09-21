@@ -2254,6 +2254,10 @@ CHEVIE.AddData("UnipotentCharacters","imp",function(p,q,r)
       function(S)local p;p:=Position(S,[]);if p=false then return 1;
                                            else return (-1)^p;fi;end);
       uc.families[2].fourierMat:=uc.families[2].fourierMat^DiagonalMat(l);
+      uc.naiveparam:=List(uc.charSymbols,function(s)
+        if Number(Flat(s),x->x=1)=1 then return [1];
+        else s:=Copy(s);l:=PositionProperty(s,p->1 in p);s[l]:=[];
+          return [PositionProperty(s,p->1 in p)-1,l-1];fi;end);
     elif r=2 and p=3 then
       uc.families[4].fourierMat:=uc.families[4].fourierMat^DiagonalMat(-1,1,1);
       uc.families[1].fourierMat:=uc.families[1].fourierMat^

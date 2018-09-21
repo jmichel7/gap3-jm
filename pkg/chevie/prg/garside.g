@@ -393,6 +393,7 @@ CompleteGarsideRecord:=function(M,opt)local eltops;
     end;
   fi;
   if IsBound(opt.interval) then
+    M.interval:=true;
     M.LeftQuotient:=function(a,b)return a^-1*b;end;
     M.RightQuotient:=function(a,b)return a/b;end;
     M.Product:=function(a,b)return a*b;end;
@@ -779,6 +780,9 @@ Braid:=W->BraidMonoid(W).B;
 ##
 EltBraid:=function(x)local res,M;
   M:=x.monoid;
+  if not IsBound(M.interval) then 
+    Error(x," should be an element of an interval monoid"); 
+  fi;
   if IsBound(x.pd) then res:=M.delta^x.pd;
   else res:=M.identity;
   fi;
