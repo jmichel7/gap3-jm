@@ -104,7 +104,7 @@ AbsCoxOps.CompleteCoxeterGroupRecord:=function(W)local i,j,ord;
     ord:=DecomposedMat(List(CoxeterMatrix(W),x->List(x,y->y mod 2)));
     W.orbitRepresentative:=[];
     for i in [1..Length(ord)] do
-      W.orbitRepresentative{ord[i]}:=ord[i]*0+W.rootInclusion[i];
+      W.orbitRepresentative{ord[i]}:=ord[i]*0+W.rootInclusion[Minimum(ord[i])];
     od;
   fi;
   if not IsBound(W.OrdersGeneratingReflections) then
