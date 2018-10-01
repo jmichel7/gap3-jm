@@ -15,6 +15,7 @@ CHEVIE.PrintUniChars:=rec(short:=1);
 
 UnipCharOps.Format:=function(r,option)local m,c,i,s,n,res;
   res:="";
+  option:=Inherit(ShallowCopy(CHEVIE.PrintUniChars),option);
   s:=CharNames(UnipotentCharacters(r.group),option);
   m:=Maximum(List(s,Length))+3;
   for i in [1..Length(r.v)] do
@@ -44,6 +45,10 @@ UnipCharOps.Format:=function(r,option)local m,c,i,s,n,res;
     res:=SPrint("[",ReflectionName(r.group),"]=",res);
   fi;
   return String(res);
+end;
+
+UnipCharOps.Display:=function(r,opt)
+  Print(Format(r,opt),"\n");
 end;
 
 UnipCharOps.String:=r->Format(r,CHEVIE.PrintUniChars);
