@@ -5269,8 +5269,7 @@ Unknown(),24*q^63-90*q^64+130*q^65-90*q^66+24*q^67,1280*q^84,Unknown(),
  adj(f162,x,y,E(3)),adj(f162,y,x,E(3)),adj(f162,x,y,E(3)^2),adj(f162,y,x,E(3)^2),
  adj(f166,x,y,E(3)),adj(f166,x,y,E(3)^2),adj(f168,x,y),adj(f169,x,y)];
   tbl.centralizers:=List(tbl.classes,x->tbl.order/x);
-  tbl.irredinfo:=List(CHEVIE.R("CharInfo","G33")().charparams,x->
-     rec(charparam:=x,charname:=CHEVIE.R("CharName","G33")(x,rec())));
+  tbl.irredinfo:=CHEVIE.R("IrredInfo","G34");
   return CHEVIE.compat.MakeCharacterTable(tbl);
 end);
 

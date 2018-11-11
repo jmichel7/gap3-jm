@@ -846,6 +846,7 @@ DisplayCharTable := function( arg )
           stringEntry,   # local function
           cc,            # column number
           charnames,     # list of character names
+          opt,           # options
           charvals;      # matrix of strings of character values
 
     # compute the width of column 'col'
@@ -978,63 +979,69 @@ DisplayCharTable := function( arg )
     else
       powermap:= [];
     fi;
-    centralizers:= true;
-    cletter:= "X";
-    cnr:= [ 1 .. Length( chars ) ];
-    indicator:= [];
 
     # options
     if IsBound(arg[2]) then
+      opt:=arg[2];
+    else
+      opt:=rec(centralizers:= true);
+    fi;
 
-       if IsList( arg[2] ) then
-         arg[2]:= rec( chars:= arg[2] );
+    if IsList( opt ) then
+      opt:= rec( chars:= opt );
+    fi;
+    if IsBound(opt.chars) then
+       if IsMat(opt.chars) then
+          chars:= opt.chars;
+          cletter:= "Y";
+          cnr:= [1..Length(chars)];
+       elif IsVector(opt.chars) then
+          cnr:= opt.chars;
+          chars:= chars{cnr};
+       elif IsInt(opt.chars) then
+          chars:= [chars[opt.chars]];
+          cnr:= [opt.chars];
+       else
+          chars:= [];
+          cnr:= [1..Length(chars)];
        fi;
-
-       if IsBound(arg[2].chars) then
-          if IsMat(arg[2].chars) then
-             chars:= arg[2].chars;
-             cletter:= "Y";
-             cnr:= [1..Length(chars)];
-          elif IsVector(arg[2].chars) then
-             cnr:= arg[2].chars;
-             chars:= Sublist(chars, cnr);
-          elif IsInt(arg[2].chars) then
-             chars:= [chars[arg[2].chars]];
-             cnr:= [arg[2].chars];
-          else
-             chars:= [];
-          fi;
+    else
+      cnr:= [1..Length(chars)];
+    fi;
+    if IsBound(opt.letter) and opt.letter in letters then
+       cletter:= opt.letter;
+    else
+       cletter:="X";
+    fi;
+    if IsBound( opt.classes ) then
+      if IsInt( opt.classes ) then
+        classes:= [ opt.classes ];
+      else
+        classes:= opt.classes;
+      fi;
+    fi;
+    if IsBound(opt.powermap) then
+       if IsInt(opt.powermap) then
+          powermap:= [opt.powermap];
+       elif IsList(opt.powermap) then
+          powermap:= opt.powermap;
+       elif opt.powermap = false then
+          powermap:= [];
        fi;
-       if IsBound(arg[2].letter) and arg[2].letter in letters then
-          cletter:= arg[2].letter;
+    fi;
+    if IsBound(opt.centralizers) and opt.centralizers = false then
+       centralizers:= false;
+    else centralizers:=true;
+    fi;
+    if IsBound(opt.indicator) and not (IsBound(opt.chars) and
+                            IsMat(opt.chars)) then
+       if opt.indicator = true then
+          indicator:= [2];
+       elif IsVector(opt.indicator) then
+          indicator:= Set(Filtered(opt.indicator,x->IsInt(x) and x>0));
        fi;
-       if IsBound( arg[2].classes ) then
-         if IsInt( arg[2].classes ) then
-           classes:= [ arg[2].classes ];
-         else
-           classes:= arg[2].classes;
-         fi;
-       fi;
-       if IsBound(arg[2].powermap) then
-          if IsInt(arg[2].powermap) then
-             powermap:= [arg[2].powermap];
-          elif IsList(arg[2].powermap) then
-             powermap:= arg[2].powermap;
-          elif arg[2].powermap = false then
-             powermap:= [];
-          fi;
-       fi;
-       if IsBound(arg[2].centralizers) and arg[2].centralizers = false then
-          centralizers:= false;
-       fi;
-       if IsBound(arg[2].indicator) and not (IsBound(arg[2].chars) and
-                               IsMat(arg[2].chars)) then
-          if arg[2].indicator = true then
-             indicator:= [2];
-          elif IsVector(arg[2].indicator) then
-             indicator:= Set(Filtered(arg[2].indicator,x->IsInt(x) and x>0));
-          fi;
-       fi;
+    else
+       indicator:=[];
     fi;
 
     # line length
@@ -1067,20 +1074,28 @@ DisplayCharTable := function( arg )
 #T change function 'ClassNames' ...
 
     # prepare character names
-    charnames:= [];
-    if IsBound( tbl.irredinfo ) then
-      for i in [ 1 .. Length( cnr ) ] do
-        if IsBound( tbl.irredinfo[ cnr[i] ].charname ) then
-          charnames[i]:= tbl.irredinfo[ cnr[i] ].charname;
-        else
-          charnames[i]:= Concatenation( cletter, ".", String( cnr[i] ) );
-        fi;
-      od;
+    if IsBound(tbl.irredinfo) and ForAll(tbl.irredinfo,x->IsBound(x.charname)) 
+    then
+      charnames:=List(tbl.irredinfo{cnr},x->TeXStrip(x.charname,opt));
+    elif IsBound(opt.TeX) then 
+      charnames:=List(cnr,i->SPrint("\chi_{",i,"}"));
     else
-      for i in [ 1 .. Length( cnr ) ] do
-        charnames[i]:= Concatenation( cletter, ".", String( cnr[i] ) );
-      od;
+      charnames:=List(cnr,i->SPrint(cletter,".",i));
     fi;
+#   charnames:= [];
+#    if IsBound( tbl.irredinfo ) then
+#      for i in [ 1 .. Length( cnr ) ] do
+#        if IsBound( tbl.irredinfo[ cnr[i] ].charname ) then
+#          charnames[i]:= tbl.irredinfo[ cnr[i] ].charname;
+#        else
+#          charnames[i]:= Concatenation( cletter, ".", String( cnr[i] ) );
+#        fi;
+#      od;
+#    else
+#      for i in [ 1 .. Length( cnr ) ] do
+#        charnames[i]:= Concatenation( cletter, ".", String( cnr[i] ) );
+#      od;
+#    fi;
 
     # prepare indicator
     iw:= [0];

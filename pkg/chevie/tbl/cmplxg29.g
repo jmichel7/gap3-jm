@@ -328,8 +328,7 @@ q-q^2,-1+4*q-4*q^2+q^3,3-8*q^2+3*q^4,0,0,-q^10+4*q^11-4*q^12+q^13,-q+
   f30(r,p,E(4)),f30(p,r,E(4)),f30(r,p,-E(4)),f30(p,r,-E(4)),
   f34(r,p),f35(r,p,E(4)),f35(r,p,-E(4)),f37(r,p)]*q^0;
   tbl.centralizers:=List(tbl.classes,x->tbl.order/x);
-  tbl.irredinfo:=List(CHEVIE.R("CharInfo","G29")().charparams,x->
-     rec(charparam:=x,charname:=CHEVIE.R("CharName","G29")(x,rec())));
+  tbl.irredinfo:=CHEVIE.R("IrredInfo","G29");
   return CHEVIE.compat.MakeCharacterTable(tbl);
 end);
 

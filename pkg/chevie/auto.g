@@ -111,7 +111,7 @@ CHEVIE.AutoLoad(["ReflectionDegrees","Size","GeneratingRoots","CartanMat",
   "ClassParameter","PowerMaps","ClassInfo","CharInfo","vpolheckeirreducibles",
   "CycPolSchurElements","cycpolfakedegrees","HeckeCharTable","WGraphs",
   "WGraph","HeckeRepresentation","Representation","UnipotentCharacters",
-  "Invariants","KLeftCellRepresentatives"],["H4"],"tbl/coxh4");
+  "Invariants","Discriminant","KLeftCellRepresentatives"],["H4"],"tbl/coxh4");
 CHEVIE.AutoLoad(["CartanMat","PrintDiagram","ReflectionName","SemisimpleRank",
   "GeneratingRoots","EigenvaluesGeneratingReflections","Size",
   "ReflectionDegrees","NrConjugacyClasses","ParabolicRepresentatives",
@@ -123,6 +123,8 @@ CHEVIE.AutoLoad(["CartanMat","PrintDiagram","ReflectionName","SemisimpleRank",
   "tbl/coxi");
 CHEVIE.AutoLoad(["CharName"],["2E6","2F4","2G5","E6","E7","E8","F4","G2","G24",
   "G25","G26","G27","G29","G31","G32","G33","G34","H3","H4"],"tbl/exceptio");
+CHEVIE.AutoLoad(["IrredInfo"],["2E6","3D4","E6","E7","E8","G2","G24","G25",
+  "G27","G29","G31","G32","G33","G34","H3","H4"],"tbl/exceptio");
 CHEVIE.AutoLoad(["CartanMat"],["G25","G26","G29","G31","G32","G34"],
   "tbl/exceptio");
 CHEVIE.AutoLoad(["ReflectionName"],["2A","2D","2E6","2F4","3D4","A","D","E6",

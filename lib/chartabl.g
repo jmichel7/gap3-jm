@@ -1194,7 +1194,7 @@ CharTableOps.Display := DisplayCharTable;
 ##  JM 2015/02/25 ported from chevie
 CharTableOps.CharNames:=function(t,option)local res,dims,a,letters,p,x,n;
   if IsBound(t.irredinfo) and IsBound(t.irredinfo[1].charname) then
-    return List(t.irredinfo,x->x.charname);
+    return List(t.irredinfo,x->TeXStrip(x.charname,option));
   elif IsBound(option.TeX) then 
     return List([1..Length(t.irreducibles)],i->SPrint("\chi_{",i,"}"));
   else

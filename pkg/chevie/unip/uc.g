@@ -90,7 +90,13 @@ UnipotentCharactersOps.ParamsAndNames:=function(sers)local res,ser,t,n,params;
 end;
 
 UnipotentCharactersOps.CharNames:=function(uc,opt)
-  return List(uc.TeXCharNames,x->TeXStrip(x,opt));
+  if IsBound(opt.cyclicparam) and IsBound(uc.cyclicparam) then
+    return List(uc.cyclicparam,function(x)
+     if Length(x[1])=1 then return "Id";
+     else return TeXStrip(SPrint("\\rho_{",x[1][1],",",x[1][2],"}"),opt);
+     fi;end);
+  else return List(uc.TeXCharNames,x->TeXStrip(x,opt));
+  fi;
 end;
 
 FixRelativeType:=function(t)
@@ -404,6 +410,42 @@ UnipotentCharactersOps.items:=
      ["Name","Degree","FakeDegree","Eigenvalue","Family"];
 #  ["n0","Name","Symbol","Degree","FakeDegree","Eigenvalue","Family","Signs"];
 
+UnipotentCharactersOps.possitems:=rec(
+  n0:=function(uc,opt)return ["n^0",[1..Size(uc)]];end,
+  Degree:=function(uc,opt)
+    return ["Deg($\\gamma$)",CycPolUnipotentDegrees(uc.group)];end,
+  FakeDegree:=function(uc,opt)local q;
+    if IsBound(opt.vname) then q:=opt.vname;else q:="q";fi;
+    return ["FakeDegree",
+    List(FakeDegrees(uc,X(Cyclotomics)),function(p)
+	p:=CycPol(p);p.vname:=q;return p;end)];end,
+  Eigenvalue:=function(uc,opt)local q;
+    if IsBound(opt.vname) then q:=opt.vname;else q:="q";fi;
+    return ["Fr($\\gamma$)", Zip(Eigenvalues(uc,[1..Size(uc)]),
+	  uc.operations.qEigen(uc),function(x,y)return x*Mvp(q)^y;end)];end,
+  Name:=function(uc,opt)return["$\\gamma$",ShallowCopy(CharNames(uc,opt))];end,
+  Family:=function(uc,opt)local n,l,f;
+    n:="Label";l:=[];
+    for f in uc.families do
+      if IsBound(opt.TeX) then l{f.charNumbers}:=f.charLabels;
+      else l{f.charNumbers}:=List(f.charLabels,TeXStrip);fi;
+    od;
+    return [n,l];end,
+  Symbol:=function(uc,opt)local l;
+    if uc.charSymbols=uc.charParams then l:=false;
+    else l:=List(uc.charSymbols,x->Join(List(x,StringSymbol)));
+    fi;
+    return ["Symbol",l];end,
+  Signs:=function(uc,opt)local l,f,n;
+    if IsBound(opt.TeX) then n:="$\\varepsilon$";fi;
+    l:=[];
+    for f in uc.families do
+      if IsBound(f.signs) then l{f.charNumbers}:=f.signs;
+      else  l{f.charNumbers}:=f.charNumbers*0+1;
+      fi;
+    od;
+    return [n,l];end);
+
 UnipotentCharactersOps.Format:=function(uc,opt)local items,fields,p,i,W,q,res,
   l,n,f,TeX,LaTeX,head,tbl,start,center,fams;
   TeX:=IsBound(opt.TeX); LaTeX:=IsBound(opt.LaTeX);
@@ -423,46 +465,19 @@ UnipotentCharactersOps.Format:=function(uc,opt)local items,fields,p,i,W,q,res,
   res:=SPrint(center(SPrint("Unipotent characters for ",n)),"\n");
   head:=[];tbl:=[];
   for n in items do
-    if n="n0" then l:=[1..Size(uc)];
-    elif n="Degree" then if TeX then n:="Deg($\\gamma$)";fi;
-      l:=CycPolUnipotentDegrees(W);
-    elif n="FakeDegree" then 
-      l:=List(FakeDegrees(uc,X(Cyclotomics)),function(p)
-	p:=CycPol(p);p.vname:=q;return p;end);
-    elif n="Eigenvalue" then if TeX then n:="Fr($\\gamma$)";fi;
-       l:=Zip(Eigenvalues(uc,[1..Size(uc)]),
-	  uc.operations.qEigen(uc),function(x,y)return x*Mvp(q)^y;end);
-    elif n="Name" then
-      l:=ShallowCopy(CharNames(uc,opt));
-      if TeX then n:="$\\gamma$";fi;
-    elif n="Family" then
-     n:="Label";l:=[];
-     for f in uc.families do
-       if TeX then l{f.charNumbers}:=f.charLabels;
-       else l{f.charNumbers}:=List(f.charLabels,TeXStrip);fi;
-     od;
-    elif n="Symbol" then 
-      if uc.charSymbols=uc.charParams then l:=false;
-      else l:=List(uc.charSymbols,x->Join(List(x,StringSymbol)));
+    if IsBound(UnipotentCharactersOps.possitems.(n)) then
+      l:=UnipotentCharactersOps.possitems.(n)(uc,opt);
+      if l[2]<>false then
+        if not ForAll(l[2],IsString) then l[2]:=List(l[2],x->Format(x,opt));fi;
+        Add(tbl,l[2]);
+        if LaTeX then l[1]:=SPrint("\\mbox{",l[1],"}");
+        elif TeX then l[1]:=SPrint("\\hbox{",l[1],"}");
+        else l[1]:=TeXStrip(l[1]);
+        fi;
+        Add(head,l[1]);
       fi;
-    elif n="Signs" then if TeX then n:="$\\varepsilon$";fi;
-      l:=[];
-      for f in uc.families do
-	if IsBound(f.signs) then l{f.charNumbers}:=f.signs;
-	else  l{f.charNumbers}:=f.charNumbers*0+1;
-	fi;
-      od;
-    else Error("unknown item: ",n,"        Possibilities are:\n",
-      "\"n0\",\"Name\",\"Symbol\",\"Degree\",\"FakeDegree\",",
-      "\"Eigenvalue\",\"Family\",\"Signs\"\n");
-    fi;
-    if l<>false then
-      if not ForAll(l,IsString) then l:=List(l,x->Format(x,opt));fi;
-      Add(tbl,l);
-      if LaTeX then n:=SPrint("\\mbox{",n,"}");
-      elif TeX then n:=SPrint("\\hbox{",n,"}");
-      fi;
-      Add(head,n);
+    else Error("unknown item:",n,"\tPossibilities are:\n",
+      Join(RecFields(UnipotentCharactersOps.possitems)));
     fi;
   od;
   if IsBound(opt.byFamily) then 
@@ -485,7 +500,7 @@ UnipotentCharactersOps.Format:=function(uc,opt)local items,fields,p,i,W,q,res,
       fi;
       f:=List(f,g->g.charNumbers[1]);
       l:=List(f,x->PositionProperty(uc.families,g->x in g.charNumbers));
-      opt.rowLabels:=List(tbl{f},x->x[1]);
+      opt.rowLabels:=tbl[1]{f};
       opt.columnLabels:=Concatenation(head{fields},[n]);
       Append(res,FormatTable(TransposedMat(Concatenation(tbl{fields}{f},[l])),
         opt));

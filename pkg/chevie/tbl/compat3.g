@@ -60,7 +60,7 @@ CHEVIE.compat.CharTableA := function(n)local tbl;
   tbl.cartan:=CartanMat("A",n);
   Inherit(tbl,CHEVIE.R("ClassInfo","A")(n));
   tbl.irredinfo:=List(CHEVIE.R("CharParams","A")(n),
-  x->rec(charparam:=x, charname:=CHEVIE.R("CharName","A")(n,x)));
+  x->rec(charparam:=x, charname:=CHEVIE.R("CharName","A")(n,x,rec(TeX:=true))));
   return tbl;
 end;
 CHEVIE.compat.HeckeCharTableA := function(n, param,sqrtparam)local tbl,q;
@@ -70,7 +70,7 @@ CHEVIE.compat.HeckeCharTableA := function(n, param,sqrtparam)local tbl,q;
   tbl.parameter:= List([1..n], x-> q);
   Inherit(tbl,CHEVIE.R("ClassInfo","A")(n));
   tbl.irredinfo:=List(CHEVIE.R("CharParams","A")(n),x->
-    rec(charparam:=x,charname:=CHEVIE.R("CharName","A")(n,x)));
+    rec(charparam:=x,charname:=CHEVIE.R("CharName","A")(n,x,rec(TeX:=true))));
   CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
   return tbl;
 end;
@@ -121,7 +121,8 @@ CHEVIE.compat.CharTableB := function(tname)
     tbl.cartan:=CartanMat(tname,rank);
     Inherit(tbl,CHEVIE.R("ClassInfo","B")(rank));
     tbl.irredinfo:=List(CHEVIE.R("CharParams","B")(rank),
-      x->rec(charparam:=x, charname:=CHEVIE.R("CharName","B")(rank,x)));
+      x->rec(charparam:=x,
+charname:=CHEVIE.R("CharName","B")(rank,x,rec(TeX:=true))));
     return tbl;
   end;
 end;
@@ -136,7 +137,7 @@ CHEVIE.compat.HeckeCharTableB := function(tname)
     tbl.classparams:= List(tbl.classparam, x-> x[2]);
     tbl.classnames:= List(tbl.classparams, PartitionTupleToString);
     tbl.irredinfo:=List(CHEVIE.R("CharParams",tname)(n),x->
-             rec(charparam:=x,charname:=CHEVIE.R("CharName","B")(n,x)));
+             rec(charparam:=x,charname:=CHEVIE.R("CharName","B")(n,x,rec(TeX:=true))));
     CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
     return tbl;
   end;

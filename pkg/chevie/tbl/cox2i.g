@@ -104,7 +104,7 @@ CHEVIE.AddData("HeckeCharTable","2I",function(m,param,sqrtparam)
      parameter:=[q,q],  sqrtparameter:=[v,v],
      irreducibles:=ct*v^0,
      irredinfo:=List(CHEVIE.R("CharInfo","2I")(m).charparams,x->rec(
-      charparam:=x,charname:=CHEVIE.R("CharName","2I")(m,x,rec()))));
+      charparam:=x,charname:=CHEVIE.R("CharName","2I")(m,x,rec(TeX:=true)))));
   Inherit(tbl,cl);
   tbl.centralizers:=List(cl.classes,i->tbl.size/i);
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);

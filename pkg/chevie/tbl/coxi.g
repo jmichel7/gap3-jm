@@ -194,7 +194,7 @@ CHEVIE.AddData("HeckeCharTable","I",function(m,param,rootparam)
   tbl:=rec(identifier:=SPrint("H(I2(",m,"))"),cartan:=CartanMat("I",2,m), 
     size:=2*m,
     irredinfo:=List(CHEVIE.R("CharInfo","I")(m).charparams,x->rec(
-       charparam:=x,charname:=CHEVIE.R("CharName","I")(m,x,rec()))),
+       charparam:=x,charname:=CHEVIE.R("CharName","I")(m,x,rec(TeX:=true)))),
     parameter:=[u,v], powermap:=[], irreducibles:=ct*v^0);
   Inherit(tbl,cl);
   tbl.centralizers:=List(tbl.classes,i->tbl.size/i);

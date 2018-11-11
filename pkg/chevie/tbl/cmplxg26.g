@@ -103,8 +103,7 @@ CHEVIE.AddData("HeckeCharTable","G26",function(para,root)
   res:=rec(size:=1296,order:=1296,identifier:="G26",name:="G26",
    powermap:=CHEVIE.R("PowerMaps","G26"),
    parameter:=para{[1,2]}, dim:=3,
-   irredinfo:=List(CHEVIE.R("CharInfo","G26")().charparams,x->
-     rec(charparam:=x,charname:=CHEVIE.R("CharName","G26")(x,rec()))));
+   irredinfo:=CHEVIE.R("IrredInfo","G26"));
   Inherit(res,CHEVIE.R("ClassInfo","G26"));
   res.centralizers:=List(res.classes,x->res.order/x);
   f10:=function(r,u) return [1,r,r*u^2,r^2*u^6,r^3*u^9,r*u,r^2*u^2,r^4*u^4,

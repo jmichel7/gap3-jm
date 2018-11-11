@@ -821,8 +821,7 @@ f58:=function(r,p,I)local q;q:=-r/p;return adj(p,
  f50(r,p,1), f50(p,r,1), f50(r,p,-1), f50(p,r,-1), 
  f54(r,p), f54(p,r), f56(r,p), f56(p,r), f58(r,p,E(4)), f58(r,p,-E(4))];
   tbl.centralizers:=List(tbl.classes,x->tbl.order/x);
-  tbl.irredinfo:=List(CHEVIE.R("CharInfo","G31")().charparams,x->
-     rec(charparam:=x,charname:=CHEVIE.R("CharName","G31")(x,rec())));
+  tbl.irredinfo:=CHEVIE.R("IrredInfo","G31");
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);
 # CHEVIE.compat.AdjustHeckeCharTable(tbl,para);
   return tbl;

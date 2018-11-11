@@ -2364,8 +2364,7 @@ CHEVIE.AddData("HeckeCharTable","E8",function(param,sqrtparam)local q,v,tbl,p;
   cartan:=CHEVIE.R("CartanMat","E8"),
   parameter:=param,rootparameter:=sqrtparam, size := 696729600,
   powermap:=CHEVIE.R("PowerMaps","E8"),
-  irredinfo:=List(CHEVIE.R("CharInfo","E8")().charparams,x->
-    rec(charparam:=x,charname:=CHEVIE.R("CharName","E8")(x,rec()))));
+  irredinfo:=CHEVIE.R("IrredInfo","E8"));
   Inherit(tbl,CHEVIE.R("ClassInfo","E8"));
   p:=CHEVIE.R("vpolheckeirreducibles","E8");
   tbl.irreducibles:=List([1..Length(tbl.irredinfo)],function(i)

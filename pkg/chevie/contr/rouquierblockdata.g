@@ -16,7 +16,7 @@
 # A  1-cyclotomic Hecke algebra H is  an Hecke algebra whose j_th parameter
 # for  the i-th reflection (of order e) is of the form E(e)^j x^m_{i,j} for
 # some  rational numbers m_{i,j};  thus such an  algebra specializes to the
-# group algebra for x->1.
+# group algebra for x->1. Here in CHEVIE x must be Mvp("x").
 # 
 # A  tool  to  determine  the  Rouquier  blocks  of  H  are  the "essential
 # hyperplanes"  which are linear  forms in the  $m_{i,j}$ determined by the

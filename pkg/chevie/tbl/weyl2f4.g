@@ -106,8 +106,7 @@ CHEVIE.AddData("HeckeCharTable","2F4",function(param,sqrtparam)local v,q,tbl;
        2*ER(2)*v^9, -2*ER(2)*v^3 ],
    [ 0, 0, 0, ER(2)*v^10, -ER(2)*v^2, 0, ER(2)*(v^10-2*v^8+v^6), 0,
        0, -4*ER(2)*v^18, 4*ER(2)*v^6 ] ]*v^0,
-  irredinfo:=List(CHEVIE.R("CharInfo","2F4")().charparams,
-    x->rec(charparam:=x,charname:=CHEVIE.R("CharName","2F4")(x,rec()))));
+  irredinfo:=CHEVIE.R("IrredInfo","2F4"));
   Inherit(tbl,CHEVIE.R("ClassInfo","2F4")());
   tbl.centralizers:=List(tbl.classes,x->tbl.size/x);
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);

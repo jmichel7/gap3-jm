@@ -604,10 +604,10 @@ CHEVIE.AddData("ClassInfo","G4_22",function(ST)local res,p,g,m,f,digits;
   p:=CHEVIE.R("paramclasses","G4_22")(ST);
   res:=rec();
   g:=function(c,a,b)return c[2] mod a=b[c[1]];end;
-  f:=function(class,z)local res,i;
-    res:=[[],[1],[2],[3],[3,3]];res:=res[class[1]];
-    for i in [1..class[2]] do Append(res,z);od;
-    return res;
+  f:=function(class,z)local r,i;
+    r:=[[],[1],[2],[3],[3,3]];r:=r[class[1]];
+    for i in [1..class[2]] do Append(r,z);od;
+    return r;
   end;
   if ST=4 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],6,[0,3,2,0]));
@@ -708,9 +708,8 @@ CHEVIE.AddData("ClassInfo","G4_22",function(ST)local res,p,g,m,f,digits;
   fi;
   digits:="123"; 
   res.classnames:=List(res.classtext,function(x)local res;
-    res := String(Replace(digits{x},m,"z"));
-    if Length(res) = 0 then res := "."; fi;
-    return res;
+    if Length(x)=0 then return "."; fi;
+    return String(Replace(digits{x},m,"z"));
   end);
   if ST in [4..7] then
   m:=[1,6,4,4];res.classes:=List(p{res.indexclasses},x->m[x[1]]);
@@ -1654,7 +1653,7 @@ CHEVIE.AddData("HeckeCharTable","G4_22",function(ST,para,root)
   res.centralizers:=List(res.classes,x->res.size/x);
   ci:=CHEVIE.R("CharInfo","G4_22")(ST);
   res.irredinfo:=List(ci.charparams,x->rec(charparam:=x,
-    charname:=CHEVIE.R("CharName","G4_22")(ST,x,rec())));
+    charname:=CHEVIE.R("CharName","G4_22")(ST,x,rec(TeX:=true))));
   rows:=List(CHEVIE.R("paramchars","G4_22")(ST),GenericRow);
   ci:=G4_22Test(res,rows*Product(para,Product)^0,ci.indexchars);
   if ci<>true then res.indexchars:=ci;fi;

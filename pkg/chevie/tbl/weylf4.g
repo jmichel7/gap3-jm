@@ -237,8 +237,7 @@ CHEVIE.AddData("HeckeCharTable","F4",function(param,sqrtparam)
    v^2*(u-1)*(2*u^2*v-3*u-3*u*v^2+2*u*v+2*v),u*v^2-3*u*v-v^2+3*v-1+u,v-u*v,
    2*u*v-2*u^2*v,-8+8*v,-u^2*(v-1)*(-2*u*v^2+3*u^2*v+3*v-2*u*v-2*u),
    (u^2-3*u+1)*(v-1),-u*v+u,-2*u*v*(v-1),4*(v-1)*(u-1),2*(v-1)*(u-1),0,0]]*u^0*v^0;
-  tbl.irredinfo:=List(CHEVIE.R("CharInfo","F4")().charparams,x->
-    rec(charparam:=x,charname:=CHEVIE.R("CharName","F4")(x,rec())));
+  tbl.irredinfo:=CHEVIE.R("IrredInfo","F4");
   tbl:=CHEVIE.compat.MakeCharacterTable(tbl);
   CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
   return tbl;

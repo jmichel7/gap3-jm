@@ -122,7 +122,7 @@ HeckeAlgebraOps.CharTable:=function(H)local W,t,l,tbl;
   tbl.parameter:=H.parameter; tbl.rootParameter:=H.rootParameter;
   if IsBound(W.cartan) then tbl.cartan:=W.cartan;fi;
   tbl.irredinfo:=List(CharParams(W),x->rec(charparam:=x,
-                                           charname:=CharName(W,x)));
+                                       charname:=CharName(W,x,rec(TeX:=true))));
   Inherit(tbl,ChevieClassInfo(W));
   tbl.classnames:=List(tbl.classnames,
      n->String(Replace(n,"_","","\\tilde ","~")));

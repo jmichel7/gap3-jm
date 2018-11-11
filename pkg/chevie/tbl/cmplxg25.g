@@ -81,8 +81,7 @@ CHEVIE.AddData("HeckeCharTable","G25",function(para,root)
    parameter:=para, size:=648,order:=648,
   dim:=3, degrees:=[6,9,12], reflclasses:=[13],
   powermap:=CHEVIE.R("PowerMaps","G25"),
-  irredinfo:=List(CHEVIE.R("CharInfo","G25")().charparams,x->
-       rec(charparam:=x,charname:=CHEVIE.R("CharName","G25")(x,rec()))));
+  irredinfo:=CHEVIE.R("IrredInfo","G25"));
   f10:=y->List(res.classtext,w->y^Length(w));
   f23:=function(u,v,w)return [2,-2*(u*v)^3,u^2+v^2,u^4+v^4,(u*v)^2*(u^4+v^4),
   -u*v*(u^2+v^2),-u^2*v^2,-u^4*v^4,2*u^6*v^6,2*u^12*v^12,-v^3*u^3*(u+v),

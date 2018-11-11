@@ -26,6 +26,11 @@ CHEVIE.IndirectAddData("CharName",["2E6","E6","E7","E8","2F4","F4","G2",
     return String(s);
 end);
 
+CHEVIE.IndirectAddData("IrredInfo",["G24","G25","G26","G27","G29","G31","G32",
+  "G33","G34","H3","H4","2E6","2F4","3D4","E6","E7","E8","F4","G2"],
+  t->List(CHEVIE.R("CharInfo",t)().charparams,x->
+    rec(charparam:=x,charname:=CHEVIE.R("CharName",t)(x,rec(TeX:=true)))));
+
 #CHEVIE.AddData("ClassName",["H3","H4","G4_22",
 #  "G24","G25","G26","G27","G29","G31","G32","G33","G34"],x->x);
 

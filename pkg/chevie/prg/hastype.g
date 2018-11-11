@@ -176,7 +176,7 @@ HasTypeOps.CharTable:=function(W)local t, l, tbl, cl, d;
   fi;
   
   tbl.irredinfo:=List(ChevieCharInfo(W).charparams,
-                      x->rec(charparam:=x,charname:=CharName(W,x)));
+              x->rec(charparam:=x,charname:=CharName(W,x,rec(TeX:=true))));
 
   # for a coset, InitClassesCharTable which is called from
   # CharTableDirectProduct uses a wrong value of size (centralizers[1])
@@ -617,18 +617,20 @@ WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
   return RestrictedPerm(b,l);
 end;
 
+# returns a record containing minuscule coweights, decompositions
+# (in terms of generators of the fundamental group)
 HasTypeOps.WeightInfo:=function(W)local l,res,n;
   l:=List(ReflectionType(W),function(t)local r,g,C;
     r:=WeightInfo(t);
     g:=Filtered([1..Length(r.minusculeCoweights)],
-       i->Sum(r.decompositions[i])=1);
+       i->Sum(r.decompositions[i])=1); # generators of fundamental group
     r.ww:=List(t.indices{r.minusculeCoweights{g}},
       x->WeightToAdjointFundamentalGroupElement(W,x));
-    r.minusculeWeights:=t.indices{r.minusculeWeights};
-    r.minusculeCoweights:=t.indices{r.minusculeCoweights};
     C:=Mod1(CartanMat(t)^-1);
     r.csi:=NullMat(Length(g),SemisimpleRank(W));
     r.csi{[1..Length(g)]}{t.indices}:=C{r.minusculeCoweights{g}};
+    r.minusculeWeights:=t.indices{r.minusculeWeights};
+    r.minusculeCoweights:=t.indices{r.minusculeCoweights};
     return r;
     end);
   res:=rec(minusculeWeights:=Cartesian(List(l,

@@ -2052,8 +2052,7 @@ u^20*v^20*w^20*(v^3-4*w*v*u+u^3+w^3), 27*r*u^33*v^33*w^33*(w^2+v^2+u^2), 9*r*u^1
    parameter:=para, size:=155520,order:=155520,
   dim:=4, degrees:=[12,18,24,30], reflclasses:=[2],
   powermap:=CHEVIE.R("PowerMaps","G32"),
-  irredinfo:=List(CHEVIE.R("CharInfo","G32")().charparams,x->
-     rec(charparam:=x,charname:=CHEVIE.R("CharName","G32")(x,rec()))),
+  irredinfo:=CHEVIE.R("IrredInfo","G32"),
   text:="origin: J.Michel, 2008/2012");
   Inherit(res,CHEVIE.R("ClassInfo","G32"));
   res.centralizers:=List(res.classes,x->res.order/x);

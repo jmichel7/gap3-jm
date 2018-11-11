@@ -461,8 +461,7 @@ CHEVIE.AddData("HeckeCharTable","H4",function(param,sqrtparam)
   powermap:=CHEVIE.R("PowerMaps","H4"),
   irreducibles:=List(CHEVIE.R("vpolheckeirreducibles","H4"),
                      i->List(i,j->ValuePol(j[1],v)*v^j[2])),
-  irredinfo:=List(CHEVIE.R("CharInfo","H4")().charparams,x->
-    rec(charparam:=x,charname:=CHEVIE.R("CharName","H4")(x,rec()))));
+  irredinfo:=CHEVIE.R("IrredInfo","H4"));
   Inherit(tbl,CHEVIE.R("ClassInfo","H4")());
   tbl.centralizers:=List(tbl.classes,x->tbl.size/x);
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);

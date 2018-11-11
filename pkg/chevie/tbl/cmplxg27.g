@@ -293,8 +293,7 @@ function(x,y)return x*(-p)^Length(y);end);
   f29(r,p),f29(p,r),
   f31(p,r,E(3)),f31(r,p,E(3)),f31(p,r,E(3)^2),f31(r,p,E(3)^2)]*q^0;
   tbl.centralizers:=List(tbl.classes,x->tbl.order/x);
-  tbl.irredinfo:=List(CHEVIE.R("CharInfo","G27")().charparams,x->
-     rec(charparam:=x,charname:=CHEVIE.R("CharName","G27")(x,rec())));
+  tbl.irredinfo:=CHEVIE.R("IrredInfo","G27");
   tbl.galomorphisms:=Group((4,8)(6,19)(7,20)(12,28)(14,27)(15,26),(6,7)
    (11,13)(14,15)(17,18)(19,20)(22,23)(24,25)(26,27)(30,31)(32,33));
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);

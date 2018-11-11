@@ -165,6 +165,7 @@ TeXStrip:=function(arg)local s,opt,f;
   if not IsBound(opt.TeX) then
     s:=Replace(s,
       "_","",
+      "$","",
       "\\tilde ","~",
       "{","",
       "}","",
@@ -173,6 +174,7 @@ TeXStrip:=function(arg)local s,opt,f;
       "\\cdot","",
       "\\zeta","E",
       "\\varepsilon","eps",
+      "\\gamma","gamma",
       "\\lambda","lambda",
       "\\theta","theta",
       "\\nu","nu",

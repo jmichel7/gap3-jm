@@ -256,8 +256,7 @@ CHEVIE.AddData("HeckeCharTable","2E6",function(param,rootparam)local q,v,tbl;
   cartan:=CHEVIE.R("CartanMat","2E6"),
   irreducibles:=List(CHEVIE.R("vpolheckeirreducibles","2E6"),
                      i->List(i,j->ValuePol(j[1],v)*v^j[2])),
-  irredinfo:=List(CHEVIE.R("CharInfo","2E6")().charparams,x->
-    rec(charparam:=x,charname:=CHEVIE.R("CharName","2E6")(x,rec()))));
+  irredinfo:=CHEVIE.R("IrredInfo","2E6"));
   Inherit(tbl,CHEVIE.R("ClassInfo","2E6")());
   tbl.centralizers:=List(tbl.classes,x->tbl.size/x);
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);
