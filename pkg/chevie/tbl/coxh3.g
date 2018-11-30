@@ -177,12 +177,12 @@ CHEVIE.AddData("UnipotentCharacters","H3",function()local res;
       charNumbers:=[ 16 ])],
   families:=[
     Family("C1",[ 2 ]),
-    Family(CHEVIE.families.Dihedral(5),[ 7, 8, 14, 13 ]),
+    Family(CHEVIE.families.Dihedral(5),[ 7, 8, 14, 13 ],rec(ennola:=-1)),
     Family("C1",[ 4 ]),
-    Family("C'\"2",[ 9, 10, 15, 16 ]),
-    Family("C1",[ 3 ]),
-    Family(CHEVIE.families.Dihedral(5),[ 5, 6, 12, 11 ]),
-    Family("C1",[ 1 ])],
+    Family("C'\"2",[ 9, 10, 15, 16 ],rec(ennola:=3)),
+    Family("C1",[ 3 ],rec(ennola:=-1)),
+    Family(CHEVIE.families.Dihedral(5),[ 5, 6, 12, 11 ],rec(ennola:=1)),
+    Family("C1",[ 1 ],rec(ennola:=-1))],
   a:=[ 15, 0, 5, 2, 6, 6, 1, 1, 3, 3, 6, 6, 1, 1, 3, 3 ],
   A:=[ 15, 0, 13, 10, 14, 14, 9, 9, 12, 12, 14, 14, 9, 9, 12, 12 ]);
   return res;

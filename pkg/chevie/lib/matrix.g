@@ -368,6 +368,12 @@ PermMatMat:=function(arg)local ind,l,I,J,r,p,e,g,s,h,sg,M,N,m,n;
   M:=arg[1];N:=arg[2];
   if Length(arg)>2 then m:=arg[3];n:=arg[4];
   elif M=N then return ();fi;
+  if Length(M)<>Length(N) then 
+    InfoChevie("# matrices do not have same dimensions");return false;
+  fi;
+  if Length(M[1])<>Length(M) or Length(N[1])<>Length(N) then 
+    Error("matrices are not square");return false;
+  fi;
   sg:=n->Group(Concatenation(List([1..n-1],i->List([i+1..n],j->(i,j)))),());
   ind:=function(I,J)local iM,iN,p;
     iM:=List(I,i->[Collected(M[i]{I}),Collected(M{I}[i]),M[i][i]]);
@@ -468,6 +474,87 @@ PermMatMat2:=function(m1,m2)local mm,rg,rg1,iv,inv,i,g,p,perm,best,s,dist;
   if mm[1]<>mm[2] then Error("PermMatMat failed");fi;
   p:=perm[1]/perm[2];
   if OnMatrices(m1,p)<>m2 then Error("theory");fi;
+  return p;
+end;
+
+############################################################################
+# PermutedByCols(m) . . Operation of a permutation on the columns of a  matrix
+#
+PermutedByCols:=function(m,p)return List(m,x->Permuted(x,p));end;
+
+############################################################################
+# RepresentativeRowColPermutation(m1,m2) . . . . . . . . . . . . whether
+#  matrix m1 is conjugate to matrix m2 by row/col permutations
+#
+#  m1 and m2 should be rectangular matrices of the same dimensions.
+#  The function returns a pair of permutations [p1,p2] such that
+#  PermutedByCols(Permuted(m1,p[1]),p[2])=Permuted(PermutedByCols(m1,p2),p1)=m2
+#  if such permutations exist, and false otherwise.
+#
+RepresentativeRowColPermutation:=function(m1,m2)
+  local mm,rg,rg1,cg,cg1,inv,i,g,p,nr,nc,rperm,cperm,best,s,dist;
+  nr:=Length(m1);nc:=Length(m1[1]);
+  if nr<>Length(m2) then Error("not same dimensions");fi;
+  if nr=0 then return [(),()];fi;
+  if nc<>Length(m2[1]) then Error("not same dimensions");fi;
+  dist:=function(arg)
+    if Length(arg)=2 then 
+        return Sum([1..nr],i->Number([1..nc],j->arg[1][i][j]<>arg[2][i][j]));
+    elif arg[3]=Permuted then 
+         return Sum(arg[4],i->Number([1..nc],j->arg[1][i][j]<>arg[2][i][j]));
+    else return Sum(arg[4],j->Number([1..nr],i->arg[1][i][j]<>arg[2][i][j]));
+    fi;
+  end;
+  mm:=[m1,m2];
+  InfoChevie("# ",dist(m1,m2),"\c");
+  rperm:=[(),()];cperm:=[(),()];
+  rg1:=[[1..nr]];cg1:=[[1..nc]];
+  repeat
+    rg:=rg1;rg1:=[]; cg:=cg1;cg1:=[]; inv:=[];
+    for g in rg do
+      for i in [1,2] do
+        inv[i]:=List(mm[i]{g},x->List(cg,g->Collected(x{g})));
+	p:=MappingPermListList(Flat(CollectBy(g,inv[i])),g);
+	rperm[i]:=rperm[i]*p; mm[i]:=Permuted(mm[i],p);
+        Sort(inv[i]);
+      od;
+      if inv[1]<>inv[2] then return false;fi;
+      Append(rg1,CollectBy(g,inv[1]));
+    od;
+    for g in cg do
+      for i in [1,2] do
+        inv[i]:=List(TransposedMat(mm[i]){g},x->List(rg,g->Collected(x{g})));
+	p:=MappingPermListList(Flat(CollectBy(g,inv[i])),g);
+	cperm[i]:=cperm[i]*p; mm[i]:=PermutedByCols(mm[i],p);
+        Sort(inv[i]);
+      od;
+      if inv[1]<>inv[2] then return false;fi;
+      Append(cg1,CollectBy(g,inv[1]));
+    od;
+    InfoChevie("=>",dist(mm[1],mm[2]),"\c");
+  until rg=rg1 and cg=cg1;
+  best:=function(l,opr)local d,G,m,e;
+    if Length(l)=1 then return false;fi;
+    d:=dist(mm[1],mm[2],opr,l);
+    G:=Elements(Group(List([1..Length(l)-1],i->(l[i],l[i+1])),()));
+    for e in G do
+      m:=dist(opr(mm[1],e),mm[2],opr,l);
+      if m<d then
+	InfoChevie(m-d,"\c");
+	if opr=Permuted then rperm[1]:=rperm[1]*e;else cperm[1]:=cperm[1]*e;fi;
+	mm[1]:=opr(mm[1],e);return true;
+      fi;
+    od;
+    return false;
+  end;
+  repeat s:=false;
+    for g in rg do s:=s or best(g,Permuted); od;
+    for g in cg do s:=s or best(g,PermutedByCols); od;
+  until not s;
+  InfoChevie("\n");
+  if mm[1]<>mm[2] then Error("RepresentativeRowColOperation failed");fi;
+  p:=[rperm[1]/rperm[2],cperm[1]/cperm[2]];
+# if PermutedByCols(Permuted(m1,p[1]),p[2])<>m2 then Error("theory");fi;
   return p;
 end;
 

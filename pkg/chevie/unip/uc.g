@@ -128,31 +128,30 @@ end;
 #
 #   harishChandra: the Harish-Chandra series
 #    each is a record with fields
-#     levi: The indices in the diagram of W of the Levi L^F where is the
-#           cuspidal (Given in terms of W's parent)
+#     levi:  The indices in the  diagram of W of  the Levi L^F where is the
+#        cuspidal (Given in terms of W's parent)
 #     cuspidalName: The name of that cuspidal
 #     eigenvalue:   Its Frobenius Eigenvalue
-#     relativeType: A record describing  W_G^F(L). In addition to series
-#        and  rank, indices  is the  index in  W's parent  of reflexions
-#        whose F-orbits generate W_G^F(L)
-#     parameterExponents: In the same order as relativeType.indices, the
-#        exponents of  the powers of q  which are the parameters  of the
+#     relativeType: A record describing W_G^F(L). In addition to series and
+#        rank,  indices  is  the  index  in  W's parent of reflexions whose
+#        F-orbits generate W_G^F(L)
+#     parameterExponents:  In the  same order  as relativeType.indices, the
+#        exponents  of  the  powers  of  q  which are the parameters of the
 #        relative Hecke algebra.
-#     charNumbers: the  numbers of the  characters in the HC  series, in
-#        the same order as the characters of W_G^F(L)
+#     charNumbers:  the  numbers  of  the  unipotent  characters  in the HC
+#        series, in the same order as the characters of W_G^F(L)
 #
 #   almostHarishChandra: the almost Harish-Chandra series
 #    each is a record with fields
-#     levi: The indices in the diagram of W of the Levi L where is the
-#           cuspidal character sheaf (Given in terms of W's parent)
+#     levi:  The indices  in the  diagram of  W of  the Levi L where is the
+#        cuspidal character sheaf (Given in terms of W's parent)
 #     cuspidalName: The name of that cuspidal
 #     eigenvalue:   Its Frobenius Eigenvalue
-#     relativeType:  A  record  describing (W_G(L),F).  In  addition  to
-#        series  and  rank,  indices  is  the index  in  W's  parent  of
-#        reflexions which  generate W_G(L), and the  action of Frobenius
-#        is described.
-#     charNumbers:  the  numbers of  the  characters  in the  almost  HC
-#        series, in the same order as the characters of W_G(L)
+#     relativeType:  A record describing (W_G(L),F).  In addition to series
+#        and  rank, indices is the index  in W's parent of reflexions which
+#        generate W_G(L), and the action of Frobenius is described.
+#     charNumbers:  the numbers of the characters  in the almost HC series,
+#        in the same order as the characters of W_G(L)
 #
 #   The argument must be the reflectiontype  of a Spets
 

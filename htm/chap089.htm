@@ -182,7 +182,7 @@ right  divisors coincide,  is a  lattice (where  upper and lower bounds are
 lcms and gcds) and generates <I>W</I>. Then we have:
 <P>
 suppose <I>w</I> is balanced and let <I>[1,w]</I> be its set of divisors (an interval
-for  the  partial  order  defined  by  divisibility).  Then the monoid with
+for  the partial order  defined by divisibility).  Then the monoid <I>M</I> with
 generators  <I>[1,w]</I> and relations  <I>xy=z</I> whenever <I>xy=z</I>  holds in <I>W</I> and
 <I>l(x)+l(y)=l(z)</I> is Garside, with simples <I>[1,w]</I> and atoms <I>S</I>.
 <P>
@@ -196,8 +196,11 @@ then  <I>l</I> is the  <code>ReflectionLength</code>, see <a href="chap084.htm#S
 Coxeter  groups; for well-generated complex reflection groups <I>S</I> has to be
 restricted  to only those  reflections which divide  <I>w</I> for the reflection
 length);  the simples  are in  bijection with  <I>[1,w]</I>, a  subset of <I>W</I> of
-cardinality the generalized Catalan numbers. Monoids constructed this way
-from an interval in a group, are called <strong>interval monoids</strong>.
+cardinality  the generalized Catalan numbers.  Monoids <I>M</I> constructed this
+way from an interval in a group, are called <strong>interval monoids</strong>. An interval
+monoid has naturally an inverse morphism from <I>M</I> to <I>W</I>, called <code>EltBraid</code>
+which  is the quotient map from the interval monoid to <I>W</I> which sends back
+simple braids to <I>[1,w]</I>.
 <P>
 A  last notable notion is <strong>reversible</strong>  monoids. Since in <strong>CHEVIE</strong> we store
 only  left normal forms, it is easy to compute left lcms and gcds, but hard
@@ -310,10 +313,10 @@ in a Garside monoid:
 <LI> <A HREF="chap089.htm#SECT013">RightLcm</a>
 <LI> <A HREF="chap089.htm#SECT014">AsFraction</a>
 <LI> <A HREF="chap089.htm#SECT015">LeftDivisorsSimple</a>
-<LI> <A HREF="chap089.htm#SECT016">The Artin-Tits braid monoids and groups</a>
-<LI> <A HREF="chap089.htm#SECT017">Construction of braids</a>
-<LI> <A HREF="chap089.htm#SECT018">Operations for braids</a>
-<LI> <A HREF="chap089.htm#SECT019">EltBraid</a>
+<LI> <A HREF="chap089.htm#SECT016">EltBraid</a>
+<LI> <A HREF="chap089.htm#SECT017">The Artin-Tits braid monoids and groups</a>
+<LI> <A HREF="chap089.htm#SECT018">Construction of braids</a>
+<LI> <A HREF="chap089.htm#SECT019">Operations for braids</a>
 <LI> <A HREF="chap089.htm#SECT020">GoodCoxeterWord</a>
 <LI> <A HREF="chap089.htm#SECT021">BipartiteDecomposition</a>
 <LI> <A HREF="chap089.htm#SECT022">DualBraidMonoid</a>
@@ -769,19 +772,38 @@ returns only the list of divisors of length <var>i</var>.
 <P>
 <code>Concatenation(LeftDivisorsSimple(M,M.delta))</code>  returns all  simples of the
 monoid <var>M</var>.
-<P><A NAME="SECT016"><h2>89.16 The Artin-Tits braid monoids and groups</h2></a>
+<P><A NAME="SECT016"><h2>89.16 EltBraid</h2></a>
+<P><P>
+<A name = "I12"></a>
+
+<P>
+<code>EltBraid( <var>b</var> )</code>
+<P>
+This  function is defined only if <var>b</var>  is an element of an interval monoid,
+for instance a braid. It returns the image of <var>b</var> in the group of which the
+monoid  is an interval  monoid. For instance  it gives the  projection of a
+braid in an Artin monoid back to the Coxeter group.
+<P>
+<pre>    gap>  W := CoxeterGroupSymmetricGroup( 4 );;
+    gap>  b := Braid( W )(2, 1, 2, 1, 1);
+    121.1.1
+    gap> p := EltBraid( b );
+    (1,3)
+    gap> CoxeterWord( W, p );
+    [ 1, 2, 1 ]</pre>
+<P><A NAME="SECT017"><h2>89.17 The Artin-Tits braid monoids and groups</h2></a>
 <P><P><P>
 <code>BraidMonoid(<var>W</var>)</code>
-<A name = "I12"></a>
+<A name = "I13"></a>
 
 <P>
 Returns (as a  Garside or locally Garside monoid  record) the Artin-Tits
 braid monoid of the Coxeter group <var>W</var>. The monoid is Garside if and only
 if <var>W</var> is finite; in which case  elements of the resulting monoid can be
 used as elements of a group.
-<P><A NAME="SECT017"><h2>89.17 Construction of braids</h2></a>
+<P><A NAME="SECT018"><h2>89.18 Construction of braids</h2></a>
 <P><P>
-<A name = "I13"></a>
+<A name = "I14"></a>
 
 <P>
 <code>Braid( <var>W</var> )( <var>s1</var>, .., <var>sn</var> )</code>
@@ -819,9 +841,9 @@ taken as representing the inverse of a generator.
 <pre>    gap> CHEVIE.PrintGarside:=rec();;
     gap> B( -1, -2, -3, 1, 1 );
     (321)^-1.1.1</pre>
-<P><A NAME="SECT018"><h2>89.18 Operations for braids</h2></a>
+<P><A NAME="SECT019"><h2>89.19 Operations for braids</h2></a>
 <P><P><P>
-<A name = "I14"></a>
+<A name = "I15"></a>
 
 <DL><DT><code>Frobenius(  <var>WF</var> )(<var>b</var>)</code>:<DD><BR> If  <code>WF</code> is a  Coxeter coset associated to the
 Coxeter  group  <I>W</I>,  the  function  <code>Frobenius(WF)</code> returns the associated
@@ -837,30 +859,13 @@ automorphism of the braid monoid of <I>W</I>.
     gap> Frobenius(WF)(b,-1);
     23</pre>
 <P>
-<A name = "I15"></a>
+<A name = "I16"></a>
 
 <DL><DT><code>BrieskornNormalForm( <var>b</var> )</code>:<DD><BR> If <I>b</I> is an element of the braid monoid of
 the  Coxeter group <code>W</code>, this function  returns the Brieskorn normal form of
 <I>b</I>, which is defined as the concatenation of the Brieskorn normal form for
 the terms of the normal form of <I>b</I> (see <a href="chap083.htm#SECT016">BrieskornNormalForm</a>).
-</DL><P><A NAME="SECT019"><h2>89.19 EltBraid</h2></a>
-<P><P>
-<A name = "I16"></a>
-
-<P>
-<code>EltBraid( <var>b</var> )</code>
-<P>
-Returns  the image of the braid element <var>b</var>  in the group of which <var>b</var> is a
-braid element.
-<P>
-<pre>    gap>  W := CoxeterGroup( "A", 3 );;
-    gap>  b := Braid( W )(2, 1, 2, 1, 1);
-    121.1.1
-    gap> p := EltBraid( b );
-    ( 1, 8)( 2, 7)( 3, 6)( 4,10)( 9,12)
-    gap> CoxeterWord( W, p );
-    [ 1, 2, 1 ]</pre>
-<P><A NAME="SECT020"><h2>89.20 GoodCoxeterWord</h2></a>
+</DL><P><A NAME="SECT020"><h2>89.20 GoodCoxeterWord</h2></a>
 <P><P>
 <A name = "I17"></a>
 
@@ -1114,4 +1119,4 @@ Then <var>F</var>-conjugacy is used for the computations.
     32.23.34</pre>
 <P><a href ="chap088.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap090.htm">Next</a><BR><a href = "theindex.htm">Index</a>
 <P>
-<address>gap3-jm<br>18 Jun 2018</address></body></html>
+<address>gap3-jm<br>30 Nov 2018</address></body></html>

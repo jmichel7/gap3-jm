@@ -209,7 +209,7 @@ levi:=[1..2], parameterExponents:=[],
 levi:=[1..2], parameterExponents:=[],
 	charNumbers:=[8], eigenvalue:=1, cuspidalName:="G_2[1]")],
   families:=[
-    Family("S3",[5,6,4,3,8,7,9,10]),
+    Family("S3",[5,6,4,3,8,7,9,10],rec(ennola:=-5)),
     Family("C1",[1]),
     Family("C1",[2])],
   a:=[0,6,1,1,1,1,1,1,1,1],

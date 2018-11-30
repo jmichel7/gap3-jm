@@ -1897,9 +1897,9 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
         cuspidalName:="G_4")],
   families:=[
     Family("C1",[1]),
-    Family(CHEVIE.families.X(3),[6,5,8],rec(signs:=[1,1,-1])),
+    Family(CHEVIE.families.X(3),[6,5,8],rec(signs:=[1,1,-1],ennola:=-1)),
     Family("C1",[7]),
-    Family("X5",[2,4,10,9,3],rec(signs:=[1,1,-1,-1,1]))],
+    Family("X5",[2,4,10,9,3],rec(signs:=[1,1,-1,-1,1],ennola:=-5))],
     a:=[ 0, 4, 4, 4, 1, 1, 2, 1, 4, 4 ],
     A:=[ 0, 8, 8, 8, 5, 5, 6, 5, 8, 8 ]);
  elif ST=6 then
@@ -1965,10 +1965,10 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
       SubFamilyij(CHEVIE.families.X(12),1,3,(3+ER(-3))/2)),
 	 [7,13,8,2,27,21,24,18,15,19,10,25,22,3,9,17,28,20,4,26,16,23],
 	 rec(signs:=[1,1,1,1,1,1,1,1,1,1,1,1,1,-1,-1,1,-1,1,-1,-1,-1,1],
-	 cospecial:=11)),
+	 cospecial:=11,ennola:=18)),
       Family("C1",[14]),
-      Family("Z4",[29,12,30,11],rec(signs:=[-1,1,1,-1])),
-      Family(CHEVIE.families.X(3),[5,6,31],rec(signs:=[1,1,-1]))],
+      Family("Z4",[29,12,30,11],rec(signs:=[-1,1,1,-1],ennola:=1)),
+      Family(CHEVIE.families.X(3),[5,6,31],rec(signs:=[1,1,-1],ennola:=1))],
       a:=[0,1,1,1,10,10,1,1,1,1,5,5,1,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,10],
       A:=[0,11,11,11,14,14,11,11,11,11,13,13,11,12,11,11,11,11,11,11,11,11,
           11,11,11,11,11,11,13,13,14]);
@@ -2014,9 +2014,11 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
       charNumbers:=[35], eigenvalue:=J^2,  cuspidalName:="G_8[\\zeta_3^2]")],
     families:=[
       Family("C1",[1]),
-      Family(CHEVIE.families.X(4),[5,6,7,17,18,19],rec(signs:=[1,1,1,-1,-1,-1])),
-      Family(CHEVIE.families.X(4),[11,12,13,20,21,22],rec(signs:=[1,1,1,-1,-1,-1])),
-      Family("Z4",[23,15,24,16],rec(signs:=[-1,1,1,-1])),
+      Family(CHEVIE.families.X(4),[5,6,7,17,18,19],
+        rec(signs:=[1,1,1,-1,-1,-1],ennola:=3)),
+      Family(CHEVIE.families.X(4),[11,12,13,20,21,22],
+        rec(signs:=[1,1,1,-1,-1,-1],ennola:=1)),
+      Family("Z4",[23,15,24,16],rec(signs:=[-1,1,1,-1],ennola:=1)),
       Family(rec( fourierMat:=
 	[[-1,-1,3,-3*I,3*I,1,3,-3*I,-3*I,-3,3,3*I,3*I,1,-3*I,-3*I,4,4],
 	 [-1,-1,3,3*I,-3*I,1,3,3*I,3*I,-3,3,-3*I,-3*I,1,3*I,3*I,4,4],
@@ -2037,7 +2039,8 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
 	 [4,4,0,0,0,-4,0,0,0,0,0,0,0,-4,0,0,-4,8],
 	 [4,4,0,0,0,-4,0,0,0,0,0,0,0,-4,0,0,8,-4]]/12,
      eigenvalues:=[1,1,1,1,1,1,1,-1,-1,-1,-1,-I,-I,1,I,I,J,J^2],
-     name:="?18", explanation:="mystery G8", special:=1, cospecial:=2),
+     name:="?18", explanation:="mystery G8", special:=1, cospecial:=2,
+     ennola:=2),
      [2,4,3,8,10,9,14,25,26,27,28,29,30,31,32,33,34,35],
      rec(signs:=[1,1,1,1,1,1,1,1,1,1,1,-1,-1,1,-1,1,-1,-1]))],
    a:=[0,6,6,6,1,1,1,6,6,6,2,2,2,6,3,3,1,1,1,2,2,2,3,3,6,6,6,6,6,6,6,6,6,6,6],
@@ -2087,10 +2090,10 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
 	 41,40,43,42,44,45,51,50,53,52,64,65,62,63],
        rec(signs:=[-1,1,-1,1,-1,1,1,1,-1,-1,-1,-1,-1,1,-1,1,-1,1,-1,-1,-1,-1,
    -1,1,-1,-1,-1,-1,1,1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,1,1,1,1,1,1,-1,1,1,1,1],
-       comment:="everything to explain"
-	)),
-      Family(CHEVIE.families.X(3),[23,24,66],rec(signs:=[1,1,-1])),
-      Family("Z9",[19,70,67,20,72,71,21,68,69],rec(cospecial:=4)),
+       comment:="everything to explain",
+       ennola:=14)),
+      Family(CHEVIE.families.X(3),[23,24,66],rec(signs:=[1,1,-1],ennola:=2)),
+      Family("Z9",[19,70,67,20,72,71,21,68,69],rec(cospecial:=4,ennola:=2)),
       Family(rec( fourierMat:=
         OnMatrices(
 	[[      1,     1, 2,      1,      1,-ER(-2),-ER(-2),-ER(-2),-ER(-2)],
@@ -2106,9 +2109,9 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
        comment:="everything to explain",
        eigenvalues:=[1,1,1,-1,-1,E(16)^5,E(16)^7,-E(16)^5,-E(16)^7],
        qEigen:=[0,0,0,0,0,1/2,1/2,1/2,1/2],
-       special:=2),
+       special:=2, ennola:=2),
            [8,9,7,73,74,75,76,77,78]),
-      Family(CHEVIE.families.X(3),[5,6,79],rec(signs:=[1,1,-1]))],
+      Family(CHEVIE.families.X(3),[5,6,79],rec(signs:=[1,1,-1],ennola:=1))],
       a:=[0,1,1,1,20,20,9,9,9,1,1,1,1,1,1,1,1,1,6,6,6,1,5,5,1,1,1,1,1,1,1,1,1,
        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,6,6,
        6,6,6,6,9,9,9,9,9,9,20],
