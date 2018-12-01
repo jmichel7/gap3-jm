@@ -260,6 +260,11 @@ ReflTypeOpsUnipotentClasses:=function(t,p)local s,uc,u,weights;
   return uc;
 end;
 
+UnipotentClassesOps.ClassName:=function(arg)local opt;
+  if Length(arg)=2 then opt:=rec();else opt:=arg[3];fi;
+  return Name(arg[1].classes[arg[2]],opt);
+end;
+
 # h  is a  linear form  defined by  its value  on the  simple roots  of the
 # reflection subgroup K. Induce it to W by extending by 0 on the orthogonal
 # of K, then conjugate it so it takes >=0 values on the simple roots.
