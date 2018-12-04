@@ -1,12 +1,24 @@
 # Check various consistencies for UnipotentClasses(W[,p])
 CHEVIE.AddTest("UnipotentClasses",
 function(arg)
-  local W,uc,b,u,a,ad,bu,s,nid,du,i,j,k,pl,cl,order,t,l,p,L,w,bc,name;
+  local W,uc,b,u,a,ad,bu,s,nid,du,i,j,k,pl,cl,order,t,l,p,L,w,bc,name,
+    PosetFromICC;
   pl:=function(u,i)return SPrint(Position(uc.classes,u),".",i,"=",u.name,".",
        CharNames(u.Au)[i]);end;
+  PosetFromICC:=function(t)local l,o,notzero;
+    notzero:=x->x<>0*x;
+    l:=uc.springerSeries[1].locsys;
+    o:=List([1..Length(uc.classes)],i->List([1..Length(uc.classes)],
+      j->ForAny(PositionsProperty(l,x->x[1]=i),a->
+         ForAny(PositionsProperty(l,x->x[1]=j),b->notzero(t.scalar[a][b])))));
+    return Poset(o);
+  end;
   W:=arg[1];
-  if Length(arg)=1 then uc:=UnipotentClasses(W);
-  else uc:=UnipotentClasses(W,arg[2]);fi;
+  if Length(arg)=1 then l:=[0];Append(l,BadPrimes(W));
+    for p in l do CHEVIE.Test("UnipotentClasses",W,p);od;
+    return;
+  fi;
+  uc:=UnipotentClasses(W,arg[2]);
   s:=uc.springerSeries[1];
   b:=LowestPowerFakeDegrees(W);du:=[];
   for u in uc.classes do
@@ -48,6 +60,7 @@ function(arg)
       fi;
     od;
   od;
+  # improve test
   for s in uc.springerSeries do
     cl:=List(s.locsys,x->x[1]);
     order:=Incidence(Poset(uc)){cl}{cl};
@@ -58,8 +71,13 @@ function(arg)
 	uc.classes[cl[i]].name,"<",uc.classes[cl[j]].name,"\n");
       fi;
     od;od;
+    if s=uc.springerSeries[1] then
+      if Incidence(Poset(uc))<>Incidence(PosetFromICC(t)) then 
+        ChevieErr("order bad\n");
+      fi;
+    fi;
   od;
-  Print("\n");
+# Print("\n");
   bc:=BalaCarterLabels(W);
   if ForAll(uc.classes,cl->IsBound(cl.dynkin)) then
   SortBy(bc,x->PositionProperty(uc.classes,cl->x[1]=cl.dynkin));

@@ -205,6 +205,20 @@ HighestShortRoot:=function(W)
     W.rootRestriction[W.orbitRepresentative[i]]]=1);
 end;
 
+########################################################################
+##
+#F  BadPrimes( <W> ) . . . . . . . . . . . . . bad primes
+##
+##
+BadPrimes:=function(W)local l;
+  if IsList(W) then 
+    l:=Set(Flat(W)); l:=Filtered(l,x->x>1);
+    l:=Set(Concatenation(List(l,Factors)));
+    return l;
+  else return BadPrimes(W.roots);
+  fi;
+end;
+
 #############################################################################
 ##
 #F  SimpleRootsSubsystem( <W>, <l> ) . . . . . . . simple roots for subsystem

@@ -447,7 +447,7 @@ function(W)local cs,ud,i,vud,uc,n,fd,vfd;
   uc:=UnipotentCharacters(W);
   cs:=List(uc.charSymbols,x->x[1]);
   vud:=List(cs,CycPolGenericDegreeSymbol);
-  for i in [1..Length(cs)] do cmpcycpol(vud[i],ud[i],
+  for i in [1..Length(cs)] do CHEVIE.Check.EqCycPol(vud[i],ud[i],
      SPrint("Deg",StringSymbol(cs[i])),"ud");
   od;
   n:=ReflectionName(W);
@@ -457,7 +457,7 @@ function(W)local cs,ud,i,vud,uc,n,fd,vfd;
        vfd:=List(cs,x->CycPolFakeDegreeSymbol(x,1));
   else vfd:=List(cs,CycPolFakeDegreeSymbol);
   fi;
-  for i in [1..Length(cs)] do cmpcycpol(vfd[i],fd[i],
+  for i in [1..Length(cs)] do CHEVIE.Check.EqCycPol(vfd[i],fd[i],
     SPrint("Deg",StringSymbol(cs[i])),"fd");
   od;
 end,

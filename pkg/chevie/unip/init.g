@@ -8,12 +8,12 @@ AUTO(ReadChv("unip/uc"),
    UnipotentDegrees);
 
 AUTO(ReadChv("unip/ucl"),
-   DistinguishedParabolicSubgroups, InduceRichardsonDynkin,
+   DistinguishedParabolicSubgroups, InducedLinearForm,
    BalaCarterLabels,
    HasTypeOpsUnipotentClasses, DimUnipotentClass, GreenTable,
    ICCTable, MellinValues, OrderClassesClassical, QuotientAu,
-   ReflTypeOpsUnipotentClasses, SpringerSeries, UnipotentClasses,
-   UnipotentClassesOps, UnipotentValues);
+   ReflTypeOpsUnipotentClasses, SpecialPieces, SpringerSeries, 
+   UnipotentClasses, UnipotentClassesOps, UnipotentValues);
 
 AUTO(ReadChv("unip/families"),
    DrinfeldDouble,

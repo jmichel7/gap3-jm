@@ -130,9 +130,9 @@ AUTO(ReadChv("prg/coset"),
   Torus,TwistedPower, TwistingElements, Twistings);
 
 AUTO(ReadChv("prg/coxeter"),
-  AddComponentsCoxeterGroup , CartanMat, CoxeterGroup, CoxeterGroupOps,
-  DescribeInvolution, ElementWithInversions, ExtendedReflectionGroup, 
-  ExtendedGroupOps, ParabolicSubgroups,
+  AddComponentsCoxeterGroup , BadPrimes, CartanMat, CoxeterGroup, 
+  CoxeterGroupOps, DescribeInvolution, ElementWithInversions, 
+  ExtendedReflectionGroup, ExtendedGroupOps, ParabolicSubgroups,
   FiniteCoxeterTypeFromCartanMat, HighestShortRoot, IsExtendedGroup,
   IsomorphismType, Inversions, ParseTypeFromArg,
   PermMatXCoxeterElement, PermMatY, RootsCartan, SimpleRootsSubsystem,

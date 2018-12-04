@@ -268,7 +268,7 @@ end;
 # h  is a  linear form  defined by  its value  on the  simple roots  of the
 # reflection subgroup K. Induce it to W by extending by 0 on the orthogonal
 # of K, then conjugate it so it takes >=0 values on the simple roots.
-InduceRichardsonDynkin:=function(W,K,h)local v,w,r;
+InducedLinearForm:=function(W,K,h)local v,w,r;
 # Print("W=",W," K=",K," h=",h,"\n");
   if SemisimpleRank(K)=0 then return W.generatingReflections*0;fi;
   h:=ShallowCopy(h);Append(h,[1..K.rank-K.semisimpleRank]*0);
@@ -295,7 +295,7 @@ BalaCarterLabels:=function(W)local l;
     L:=ReflectionSubgroup(W,p[1]);
     w:=L.generatingReflections*0+2;
     w{L.rootRestriction{p[2]}}:=p[2]*0;
-    return [InduceRichardsonDynkin(W,L,w),
+    return [InducedLinearForm(W,L,w),
       List(p[1],function(i)if i in p[2] then return -i;else return i;fi;end)];
     end);
 end;
@@ -315,9 +315,14 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
   ucl:=rec(classes:=List(Cartesian(List(uc,x->x.classes)),
     function(v)local u,p;
       u:=rec(name:=Join(List(v,x->x.name)),Au:=Product(v,x->x.Au),
-         dimBu:=Sum(v,x->x.dimBu), dimred:=Sum(v,x->x.dimred),
-         dimunip:=Sum(v,x->x.dimunip), parameter:=List(v,x->x.parameter));
+         dimBu:=Sum(v,x->x.dimBu), parameter:=List(v,x->x.parameter));
       if Length(v)=1 then Inherit(u,v[1]);fi;
+      if ForAll(v,x->IsBound(x.dimred)) then 
+        u.dimred:=Sum(v,x->x.dimred);
+      fi;
+      if ForAll(v,x->IsBound(x.dimunip)) then 
+        u.dimunip:=Sum(v,x->x.dimunip);
+      fi;
       if ForAll(v,x->IsBound(x.red)) then 
         u.red:=Product(v,x->x.red);
       fi;
@@ -550,7 +555,8 @@ ICCTable:=function(arg)local W,i,q,tbl,o,res,q,uc,ss,b,f,k,R,n;
         ReflectionName(x.relgroup,opt),"\n\n");
      fi;
      if not IsBound(opt.columns) and not IsBound(opt.rows) then 
-       opt.rows:=Permuted([1..Length(x.dimBu)],SortingPerm(x.dimBu));
+       opt.rows:=[1..Length(x.dimBu)];
+       SortBy(opt.rows,i->[x.dimBu[i],x.locsys[i]]);
        opt.columns:=opt.rows;
      fi;
      tbl:=Copy(x.scalar);
@@ -714,4 +720,27 @@ MellinValues:=function(arg)local uc,q,res,b,tbl,f,labels,W;
     return Concatenation(s,FormatTable(tbl,opt));
   end;
   return res;
+end;
+
+# returns the Special pieces of the nilpotent cone as a list of 
+# lists of class numbers.
+# The list is sorted by increasing piece dimension.
+# Each piece is sorted by decreasing class dimension.
+# The argument is a unipotent classes record for some Weyl group W.
+# The special pieces were first defined in
+# Spaltenstein "Classes unipotentes et sous-sgroupes de Borel" as the
+# fibers of d^2 where d is the "duality map" of chapter III
+SpecialPieces:=function(uc)local W,specialc,m,ch,specialch;
+  W:=Group(Spets(uc));
+  ch:=ChevieCharInfo(W);
+  specialch:=Positions(ch.a-ch.b,0); # special characters of W
+  specialc:=List(uc.springerSeries[1].locsys{specialch},x->x[1]);
+  SortBy(specialc,c->-uc.classes[c].dimBu);
+  m:=TransposedMat(Incidence(Poset(uc)));
+  return List([1..Length(specialc)],function(i)local p,j;
+    p:=m[specialc[i]];
+    for j in [1..i-1] do SubtractBlist(p,m[specialc[j]]);od;
+    p:=ListBlist([1..Length(p)],p);SortBy(p,c->uc.classes[c].dimBu);
+    return p;
+  end);
 end;
