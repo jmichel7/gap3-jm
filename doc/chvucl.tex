@@ -482,7 +482,11 @@ The function 'ICCTable' returns a record with various pieces of information
 which can help further computations.
 
 .scalar:\\ this contains the table of multiplicities $P_{\psi,\chi}$ of the
-$X_\psi$ on the $Y_\chi$.
+$X_\psi$  on the  $Y_\chi$. One  should pay  attention that by default, the
+table  is not displayed in the same order as the stored |.scalar|, which is
+in  order  of  the  characters  in  the  relative  Weyl group; the table is
+transposed,  then lines  and rows  are sorted  by |dimBu,class  no,index of
+character in A(u)| while displayed.
 
 .group:\\ The group <W>.
 
@@ -499,6 +503,64 @@ $\sum_{g\in\bG(\F_q)}  Y_\phi(g)  \overline{Y_\psi(g)}$.  This  is  thus  a
 symmetric,  block-diagonal matrix  where the  diagonal blocks correspond to
 geometric  unipotent  conjugacy  classes.  This  matrix  is  obtained  as a
 by-product of Lusztig\'s algorithm to compute $P_{\psi,\chi}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SpecialPieces}
+\index{SpecialPieces}
+
+'SpecialPieces(<uc>)'
+
+The  special  pieces  forme  a  partition  of  the  unipotent  variety of a
+reductive  group  $\bG$  which  was  defined  the first time in \cite[chap.
+III]{spalt82} as the fibers of $d^2$, where $d$ is a "duality map". Another
+definition  is as the  set of classes  in the Zariski  closure of a special
+class  and not in the Zariski closure of any smaller special class, where a
+special  class in the  support of the  image of a  special character by the
+Springer correspondence.
+
+Each  piece is a union of unipotent  conjugacy classes so is represented in
+\CHEVIE\  as a list  of class numbers.  Thus the list  of special pieces is
+returned  as  a  list  of  lists  of  class  numbers. The list is sorted by
+increasing  piece dimension, while each piece is sorted by decreasing class
+dimension, so the special class is listed first.
+
+|    gap> W:=CoxeterGroup("G",2);
+    CoxeterGroup("G",2)
+    gap> SpecialPieces(UnipotentClasses(W));
+    [ [ 1 ], [ 4, 3, 2 ], [ 5 ] ]
+    gap> SpecialPieces(UnipotentClasses(W,3));
+    [ [ 1 ], [ 4, 3, 2, 6 ], [ 5 ] ]|
+
+The   example  above  shows  that  the  special  pieces  are  different  in
+characteristic 3.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{InducedLinearForm}
+\index{InducedLinearForm}
+
+'InducedLinearForm(<W>, <K>, h)'
+
+This routine can be used to find the Richardson-Dynkin diagram of the class
+in  the algebraic group $\bG$  which contains a given  unipotent class of a
+reductive subgroup of maximum rank $\bS$ of $\bG$.
+
+What  it does is  take a linear  form on the  roots of <K>,  defined by its
+value  on the  simple roots  (these values  can define  a Dynkin-Richardson
+diagram),  then extend this linear form to the roots of $\bG$ by $0$ on the
+orthogonal of the roots of <K>, and finally conjugate the resulting form by
+a  element of  the Weyl  group so  it takes  positive values  on the simple
+roots.
+
+|    gap> W:=CoxeterGroup("F",4);;
+    gap> H:=ReflectionSubgroup(W,[1,3]);;
+    gap> InducedLinearForm(W,H,[2,2]);
+    [ 0, 1, 0, 0 ]
+    gap> uc:=UnipotentClasses(W);;
+    gap> Display(uc.classes[4]);
+    A1+~A1: D-R0100 C=q^18.A1xA1|
+
+The  example above shows that the class containing the regular class of the
+Levi subgroup of type $A_1\times \tilde A_1$ is the class |A1+~A1|.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\Section{GreenTable}
