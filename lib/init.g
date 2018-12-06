@@ -1158,3 +1158,4 @@ RequirePackage("matrix","monoid","xmod");
 RequirePackage("algebra","specht");
 RequirePackage("chevie"); # requires vkcurve, specht, algebra
 RequirePackage("vkcurve");
+ReadChv("prg/coxeter"); # to fix the limit on number of recursive calls to Read

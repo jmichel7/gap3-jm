@@ -60,7 +60,6 @@ function(arg)
       fi;
     od;
   od;
-  # improve test
   for s in uc.springerSeries do
     cl:=List(s.locsys,x->x[1]);
     order:=Incidence(Poset(uc)){cl}{cl};
@@ -77,7 +76,6 @@ function(arg)
       fi;
     fi;
   od;
-# Print("\n");
   bc:=BalaCarterLabels(W);
   if ForAll(uc.classes,cl->IsBound(cl.dynkin)) then
   SortBy(bc,x->PositionProperty(uc.classes,cl->x[1]=cl.dynkin));
