@@ -1,3 +1,10 @@
+AUTO(ReadChv("contr/affa"),
+  PPerm, PPermOps, AtildeGroupOps, CoxeterGroupAtildeGroup,
+  Atilde, AtildeBraid);
+
+AUTO(ReadChv("contr/cp"),
+  CorranPicantinMonoid);
+
 AUTO(ReadChv("contr/braidsup"),
   AllWords,
   AlphaI,
@@ -24,9 +31,6 @@ AUTO(ReadChv("contr/rouquierblockdata"),
   RouquierBlockData,
   RouquierBlocks);
 
-AUTO(ReadChv("contr/affa"),
-  PPerm, PPermOps, AtildeGroupOps, CoxeterGroupAtildeGroup,
-  Atilde, AtildeBraid);
-
-AUTO(ReadChv("contr/cp"),
-  CorranPicantinMonoid);
+AUTO(ReadChv("contr/spherical"),
+  DisplaySphericalCriterion,
+  SpericalCriterion);

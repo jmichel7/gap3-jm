@@ -430,9 +430,8 @@ CHEVIE.AddData("ReflectionDegrees","D",n->Concatenation(2*[1..n-1],[n]));
 # irreducible  characters of  a finite  group of  Lie type,  Trans. AMS 352
 # (1999) 429--456
 # 
-# [S]   N.Spaltenstein,  Classes  unipotentes  et  sous-groupes  de
-# Borel,ucl.springerSeries[1].relgroup:=WF;
-# Springer LNM 946 (1982)
+# [S]  N.Spaltenstein,  Classes  unipotentes  et  sous-groupes  de
+# Borel, Springer LNM 946 (1982)
 # 
 CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
   d,i,symbol2partition,addSpringer,partition2DR,trspringer,LuSpin,j;

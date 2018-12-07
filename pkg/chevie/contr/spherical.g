@@ -75,25 +75,20 @@ SphericalCriterion := function( W )
 end;
 
 DisplaySphericalCriterion := function( W )
-  local pols, maxpar, i;
+  local pols, maxpar, i, rowLabels, rowsLabel, columnLabels;
   
-  PrintDiagram( W ); Print( "\n" );
+  maxpar := MaximalParabolicRepresentatives( W );
 
   pols := SphericalCriterion( W );
   for i in pols do
     i.factor := 1;
   od;
-  
-  Print( "Hyperplane orbits\n\n" );
-  for i in HyperplaneOrbits( W ) do
-    Print( i, "\n\n" );
-  od;
-  
-  Print( "MaximalParabolicSubgroups\n\n" );
-  maxpar := MaximalParabolicRepresentatives( W );
-  for i in [ 1 .. Length( maxpar ) ] do
-    Print( ReflectionName( ReflectionType( 
-      ReflectionSubgroup( W, maxpar[i] ) ) ), " ", maxpar[i], "\n" );
-    Print( pols[i], "\n\n" );
-  od;
+ 
+  rowLabels := List( maxpar, l -> SPrint( ReflectionName( ReflectionType( ReflectionSubgroup( W, l ) ) ), " ", String( l ) ) ); 
+ 
+  rowsLabel := "Maximal parabolic subgroups";
+
+  columnLabels := [ "q-index" ];
+
+  Print( FormatTable( TransposedMat( [ pols ] ), rec( rowLabels := rowLabels, columnLabels := columnLabels, rowsLabel := rowsLabel ) ) ); 
 end;
