@@ -108,7 +108,7 @@ CHEVIE.AddData("squv","G2",function(para,sqrtpara)
   elif u=v^3 then return -v^2;
   elif v=u^3 then return -u^2;
   elif IsBound(sqrtpara[1]) and IsBound(sqrtpara[2]) then
-       return sqrtpara[1]*sqrtpara[2]*para[1][2]*para[2][2];
+       return sqrtpara[1]*sqrtpara[2];
   else return GetRoot(u*v,2,"Hecke(G2)");
   fi;
 end);

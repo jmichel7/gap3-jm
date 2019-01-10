@@ -36,9 +36,11 @@ CreateHeckeBasis("T",rec(T:=x->x,     # method to convert to T
 
 # RootParameter(H[,i][,msg])
 # i is an integer in W.generatingReflections or an element of W.
-# for a generator s, if (T_s-p1)(T_s-p2)=0 then H.rootParameter is sqrt(-p1/p2)
+# for a generator s, if (T_s-p1)(T_s-p2)=0 then H.rootParameter is sqrt(-p1p2)
 # so for (T_s-q)(T_s+1)=0 it is sqrt(q) 
-# and for (T_s-v)(T_s+v^-1)=0 it is v
+# and for (T_s-v)(T_s+v^-1)=0 it is 1
+# Anyway the 2 parameters of T_s/RootParameter(W,s) satisfy p1*p2=-1
+# For w \in W returns the product of RootParameter along a reduced expression.
 RootParameter:=function(arg)local H,W,i,j,l;
   H:=arg[1]; W:=Group(H);
   if Length(arg)=1 then
@@ -54,7 +56,7 @@ RootParameter:=function(arg)local H,W,i,j,l;
       if Product(H.parameter[j])=-1 then 
         H.rootParameter[j]:=H.parameter[j][1];
       else
-        l:=[-H.parameter[j][1]/H.parameter[j][2],2];
+        l:=[-H.parameter[j][1]*H.parameter[j][2],2];
         if Length(arg)=3 then Add(l,arg[3]);fi;
         H.rootParameter[j]:=ApplyFunc(GetRoot,l);
       fi;
@@ -68,20 +70,6 @@ RootParameter:=function(arg)local H,W,i,j,l;
     return H.rootParameter[1]^CoxeterLength(W,i);
   else return Product(CoxeterWord(W,i),
     y->H.rootParameter[Position(W.reflectionsLabels,y)]);
-  fi;
-end;
-
-# next routine computes q_x^(1/2)
-# for a generator s, if (T_s-p1)(T_s-p2)=0 then returns -p2*rootParameter[s]
-# so for (T_s-q)(T_s+1)=0 returns sqrt(q)
-# and for (T_s-v)(T_s+v^-1)=0 returns 1
-# Anyway the 2 parameters of T_s/QXHalf(W,s) satisfy p1*p2=-1
-QXHalf:=function(H,x)local W;
-  W:=Group(H);
-  if H.equal then 
-    return (-H.rootParameter[1]*H.parameter[1][2])^CoxeterLength(W,x);
-  else return Product(List(CoxeterWord(W,x),y->Position(W.reflectionsLabels,y)),
-    i->-H.rootParameter[i]*H.parameter[i][2]);
   fi;
 end;
 
@@ -200,7 +188,7 @@ CoxeterHeckeAlgebraOps.InitD:=function(H,msg)
 end;
 
 ##  Alt is The involution of H defined by v -> v^-1 and
-##  T_w -> (-1)^{l(w)} QXHalf(w)^-2 T_w.
+##  T_w -> (-1)^{l(w)} RootParameter(w)^-2 T_w.
 ##  It swaps C_w and C'_w, and D_w and D'_w.
 ##  Essentially it corresponds to tensoring with the sign representation.
 
@@ -228,7 +216,7 @@ end;
 CoxeterHeckeAlgebraOps.T.AltInvolution:= function(h)local H;H:=Hecke(h); 
   H.operations.InitKL(H,"alt involution");
   return HeckeElt(H,"T",h.elm, Zip(h.elm,h.coeff,function(e,c)
-      return QXHalf(H,e)^-2*(-1)^CoxeterLength(Group(H),e)*H.Bar(c);end));
+      return RootParameter(H,e)^-2*(-1)^CoxeterLength(Group(H),e)*H.Bar(c);end));
 end;
 
 # The complete Beta for T basis
@@ -239,7 +227,7 @@ CoxeterHeckeAlgebraOps.T.BetaInvolution:=function(h)local H,W,w0;H:=Hecke(h);
     Error("BetaInvolution only for finite Coxeter groups");
   fi;
   w0:=LongestCoxeterElement(W);
-  return HeckeElt(H,"T",w0*h.elm,QXHalf(H,w0)^-1*List(h.coeff,H.Bar));
+  return HeckeElt(H,"T",w0*h.elm,RootParameter(H,w0)^-1*List(h.coeff,H.Bar));
 end;
 
 #############################################################################
@@ -278,7 +266,7 @@ CoxeterHeckeAlgebraOps.getCp:=function(H,w)local W,iw,i,qx,x,z,s,res;
 # InfoChevie("# computed ",Length(H.("C'->T").keys)," C':",Stime());
   elif H.equal then
     if w in W.reflections{W.generatingReflections} then return
-      HeckeElt(H,"T",[W.identity,w],[1/H.rootParameter[1],QXHalf(H,w)^-1]);
+      HeckeElt(H,"T",[W.identity,w],[1/H.rootParameter[1],RootParameter(H,w)^-1]);
     fi;
     i:=FirstLeftDescending(W,w);
     s:=W.reflections[i];
@@ -300,7 +288,7 @@ CoxeterHeckeAlgebraOps.getCp:=function(H,w)local W,iw,i,qx,x,z,s,res;
     
     res:=res-Sum([1..Length(res.elm)],function(i)local c,e;
 	e:=res.elm[i];if e=w then return 0;fi;
-	c:=H.PositivePart(res.coeff[i]*QXHalf(H,e));
+	c:=H.PositivePart(res.coeff[i]*RootParameter(H,e));
 	if c<>0*c then return c*H.operations.getCp(H,e); else return 0; fi;
       end);
   else
@@ -312,12 +300,12 @@ CoxeterHeckeAlgebraOps.getCp:=function(H,w)local W,iw,i,qx,x,z,s,res;
     #
     # thus we compute P_{x,w} by induction on l(w)-l(x) by
     # P_{x,w}=\neg \sum_{x<y\le w} R_{x,y} P_{y,w}
-    res:=HeckeElt(H,"T",[w],[QXHalf(H,w)^-1]);
+    res:=HeckeElt(H,"T",[w],[RootParameter(H,w)^-1]);
     res.elm:=Concatenation(Reversed(BruhatSmaller(W,w)));
     for i in [2..Length(res.elm)] do
-      x:=res.elm[i];qx:=QXHalf(H,x);z:=CriticalPair(W,x,w);
-      if x<>z then res.coeff[i]:=QXHalf(H,z)*RootParameter(H,x)*
-        res.coeff[Position(res.elm,z)]/qx/RootParameter(H,z);
+      x:=res.elm[i];qx:=RootParameter(H,x);z:=CriticalPair(W,x,w);
+      if x<>z then res.coeff[i]:=RootParameter(H,x)*
+        res.coeff[Position(res.elm,z)]/qx;
       else res.coeff[i]:=-H.NegativePart(Sum([1..i-1],y->H.Bar(Coefficient(
         HeckeElt(H,"T",[res.elm[y]^-1],[1])^-1,x))*res.coeff[y])/qx)/qx;
       fi;
@@ -333,14 +321,14 @@ CoxeterHeckeAlgebraOps.ToKL:=function(h,target,index)local x,res,lens,H,coeff;
 
 # To convert from "T", we use the fact that the transition matrix M from
 # any  KL  bases to  the  standard  basis  is triangular  with  diagonal
-# coefficient on  T_w equal  to QXHalf(w)^-1.  The transition  matrix is
+# coefficient on  T_w equal  to RootParameter(w)^-1.  The transition  matrix is
 # lower triangular for the C and  C' bases, and upper triangular for the
 # D and D' bases which is what index(maximum or minimum) is for.
 
   while h.elm <> [] do
     lens:=List(h.elm,w->CoxeterLength(Group(H),w));
     x:=index(lens); lens:=Filtered([1..Length(h.elm)],i->lens[i]=x);
-    coeff:=List(lens,i->h.coeff[i]*QXHalf(H,h.elm[i]));
+    coeff:=List(lens,i->h.coeff[i]*RootParameter(H,h.elm[i]));
     x:=HeckeElt(H,target,h.elm{lens},coeff);
     res:=res+x; h:=h-Basis(H,"T")(x);
   od;
@@ -801,8 +789,8 @@ WGraphToRepresentation:=function(arg)local l,x,y,i,j,n,S,V,mu,H,rk,gr,v;
     return S;
   fi;
   H:=arg[1];
-  S:=-H.parameter[1][2]*
-    WGraphToRepresentation(Length(H.parameter),gr,RootParameter(H));
+  S:=-H.parameter[1][2]*WGraphToRepresentation(Length(H.parameter),gr,
+     RootParameter(H)/H.parameter[1][2]);
   CheckHeckeDefiningRelations(H,S);
   return S;
 end;

@@ -551,7 +551,7 @@ end);
 CHEVIE.AddData("HeckeRepresentation","E6",function(param,sqrtparam,i)local v;
  if not IsBound(sqrtparam[1]) then 
      v:=GetRoot(-param[1][1]/param[1][2],2,"Representation(Hecke(E6),[",i,"])");
- else v:=sqrtparam[1];
+ else v:=-sqrtparam[1]/param[1][2];
  fi;
  return -param[1][2]*WGraphToRepresentation(6,CHEVIE.R("WGraph","E6")(i),v);
 end);

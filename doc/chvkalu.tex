@@ -17,14 +17,15 @@
 
 Let  $\cH$ be the  Iwahori-Hecke algebra of  a Coxeter system $(W,S)$, with
 quadratic   relations  $(T_s-u_{s,0})(T_s-u_{s,1})=0$  for   $s\in  S$.  If
-$-u_{s,0}/u_{s,1}$ has a square root $v_s$, we can scale the basis $T_s$ to
-get   a  new   basis  $t_s=T_s/(-v_s u_{s,1})$  with   quadratic  relations
-$(t_s-v_s)(t_s+v_s^{-1})=0$.  The  most  general  case when Kazhdan-Lusztig
-bases and polynomials can be defined is when the parameters $v_s$ belong to
-a   totally  ordered  abelian  group  $\Gamma$  (where  the  group  law  is
-multiplication   of  parameters),  see   \cite{Lus83}.  We  set  $\Gamma^+=
-\{\gamma\in\Gamma\mid    \gamma\>0\}$    and    $\Gamma^-=    \{\gamma^{-1}
-\mid\gamma\in\Gamma^+\} =\{\gamma\in\Gamma\mid \gamma\<0\}$.
+$-u_{s,0}u_{s,1}$  has  a  square  root,  we  can  scale the basis $T_s$ to
+$-T_s/\sqrt{-u_{s,0}u_{s,1}}$  to  get  a  new  basis  $t_s$ with quadratic
+relations $(t_s-v_s) (t_s+v_s^{-1})=0$ where $v_s=\sqrt{-u_{s,0}/u_{s,1}}$.
+The  most general  case when  Kazhdan-Lusztig bases  and polynomials can be
+defined  is when the  parameters $v_s$ belong  to a totally ordered abelian
+group  $\Gamma$ (where the group law  is multiplication of parameters), see
+\cite{Lus83}.  We  set  $\Gamma^+=  \{\gamma\in\Gamma\mid  \gamma\>0\}$ and
+$\Gamma^-=   \{\gamma^{-1}  \mid\gamma\in\Gamma^+\}  =\{\gamma\in\Gamma\mid
+\gamma\<0\}$.
 
 Thus  we assume $\cH$ defined over the ring $\Z[\Gamma]$, the group algebra
 of  $\Gamma$ over $\Z$,  and the quadratic  relations of $\cH$ associate to
@@ -58,26 +59,24 @@ various  Kazhdan-Lusztig bases of Iwahori-Hecke algebras (see \cite{KL79}).
 More  facilities are implemented for the  one-parameter case when all $v_s$
 have a common value $v$.
 
-From a computational point of view, Kazhdan-Lusztig polynomials are quite a
-challenge,  even in the one-parameter case. For this case it seems that the
-best  approach  still  is  by  using  the recursion formula in the original
-article  \cite{KL79} (which  deals with  the one-parameter  case, where the
-above  recursion simplifies). One can first run a number of standard checks
-on  a given pair of elements to see if the computation of the corresponding
-polynomial  can be reduced to a similar computation for elements of smaller
-length,  for example. One such check  involves the notion of critical pairs
-(cf.\  \cite{Alv87})\: We say that a pair of elements $w_1, w_2 \in W$ such
-that  $w_1 \le w_2$ is critical  if ${\cal L}(w_2) \subseteq {\cal L}(w_1)$
-and  ${\cal R}(w_2) \subseteq  {\cal R}(w_1)$, where  ${\cal L}$ and ${\cal
-R}$ denote the left and right descent set, respectively. Now if $y,w \in W$
-are  arbitrary elements with $y \le w$  then there always exists a critical
-pair  $(z,w)$ with $y\le z\le w$  such that the Kazhdan-Lusztig polynomials
-$P_{y,w}$  and $P_{z,w}$ are equal. Given two  elements $y$ and $w$, such a
-critical  pair  is  found  by  the  function  'CriticalPair'. The {\CHEVIE}
-programs  for computing Kazhdan-Lusztig polynomials are organized in such a
-way  that  whenever  the  polynomial  corresponding  to  a critical pair is
-computed  then this  pair and  the polynomial  are stored  in the component
-'criticalPairs' of the record of the underlying Coxeter group.
+There  is  a  separate  function  to  compute one-parameter kazhdan-Lusztig
+polynomials.  From a computational point of view, even this case is quite a
+challenge.  It seems that the best approach still is by using the recursion
+formula   in  the  original  article  \cite{KL79}  (which  deals  with  the
+one-parameter  case, where the  above recursion simplifies).  One can first
+run  a number of standard checks on a  given pair of elements to see if the
+computation  of the  corresponding polynomial  can be  reduced to a similar
+computation  for elements  of smaller  length, for  example. One such check
+involves  the notion of critical pairs  (cf.\ \cite{Alv87})\: We say that a
+pair of elements $w_1\le w_2 \in W$ is critical if ${\cal L}(w_2) \subseteq
+{\cal  L}(w_1)$ and ${\cal  R}(w_2) \subseteq {\cal  R}(w_1)$, where ${\cal
+L}$ and ${\cal R}$ denote the left and right descent set, respectively. Now
+if  $y\le  w  \in  W$  are  arbitrary  elements  then there always exists a
+critical  pair $(z,w)$ with $y\le z\le w$ and then $P_{y,w}=P_{z,w}$. Given
+two  elements $y$ and  $w$, such a  critical pair is  found by the function
+'CriticalPair'. Whenever the polynomial corresponding to a critical pair is
+computed then this pair and the polynomial are stored in the field '.klpol'
+of the record of the underlying Coxeter group.
 
 A  good example to see how long  the programs will take for computations in
 big Coxeter groups is the following\:
@@ -103,12 +102,12 @@ to  use a  special purpose  program like  the one  provided by  F.\ DuCloux
 \cite{DuC91}.
 
 The  code for the Kazhdan-Lusztig bases  'C', 'D' and their primed versions
-has  been written  by Andrew  Mathas, who  also contributed  to the initial
-implementation   and   to   the   design   of  the  programs  dealing  with
+has  been written by Andrew Mathas around 1994, who also contributed to the
+initial  implementation  and  to  the  design  of the programs dealing with
 Kazhdan-Lusztig  bases. He also  implemented some other  bases, such as the
 Murphy  basis which can  be found in  the contributions directory (see also
 his  'Specht' package).  The extension  to the  unequal parameters case has
-been written by F.Digne and J.Michel.
+been written by F.Digne and J.Michel around 1999.
 
 The  other Kazhdan-Lusztig bases  are computed in  \CHEVIE\ in terms of the
 $C^\prime$ basis.

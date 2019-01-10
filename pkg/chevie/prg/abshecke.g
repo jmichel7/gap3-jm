@@ -165,7 +165,7 @@ Error("parameters should be defined for at least one reflection in each orbit");
     if not IsBound(H.rootParameter[i]) and IsBound(H.rootParameter[j]) then 
       H.rootParameter[i]:=H.rootParameter[j];
     fi;
-    if IsCoxeterGroup(W) and IsBound(H.rootParameter[i]) and 
+    if IsBound(H.rootParameter[i]) and W.OrdersGeneratingReflections[i]=2 and 
       H.rootParameter[i]^2<>-Product(H.parameter[i])
     then Error("rootParameter[",i,"]^2 is not equal to ",-Product(H.parameter[i]));
     fi;

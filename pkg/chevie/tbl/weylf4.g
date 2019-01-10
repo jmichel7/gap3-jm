@@ -333,15 +333,15 @@ CHEVIE.AddData("WGraph","F4",function(i)local gr;
 end);
 
 CHEVIE.AddData("HeckeRepresentation","F4",function(param,sqrtparam,i)
-  local u,v,r;
+  local u,v,r,res;
   u:=-param[1][1]/param[1][2];v:=-param[3][1]/param[3][2];
   if not IsBound(sqrtparam[1]) then 
        u:=GetRoot(u,2,"Representation(Hecke(F4),[",i,"])");
-  else u:=sqrtparam[1];
+  else u:=-sqrtparam[1]/param[1][2];
   fi;
   if not IsBound(sqrtparam[3]) then 
        v:=GetRoot(v,2,"Representation(Hecke(F4),[",i,"])");
-  else v:=sqrtparam[3];
+  else v:=-sqrtparam[3]/param[3][2];
   fi;
   if u=v then 
     return -param[1][2]*WGraphToRepresentation(4,
@@ -662,7 +662,9 @@ r:=[
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, v, 0, v^2, 0, 0],
   [0, 0, 0, 0, 0, 0, (-u^2-1/u^2)*v, 0, 0, 0, 0, v, 0, 0, v^2, 0],
   [0, 0, 0, 0, 0, 0, 0, (-u^2-1/u^2)*v,0,0,0,(-u-1/u)*v,0,0,0,v^2]]]];
-  return r[i]*u^0*v^0;
+  res:=r[i];
+  for i in [1..4] do res[i]:=-res[i]*param[i][2]; od;
+  return res*u^0*v^0;
 fi;
 end);
 

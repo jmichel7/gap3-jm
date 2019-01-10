@@ -109,7 +109,7 @@ CHEVIE.AddData("HeckeRepresentation","3D4",
   q:=-param[1][1]/param[1][2];
   if not IsBound(sqrtparam[1]) then
     v:=GetRoot(q,2,"Representation(Hecke(3D4)[",i,"])");
-  else v:=sqrtparam[1];
+  else v:=-sqrtparam[1]/param[1][2];
   fi;
   res:=[ rec(gens:=[[[ v^2 ]],[[ v^2 ]],[[ v^2 ]],[[ v^2 ]]],F :=[[ 1 ]]),
   rec(gens:=[[[ -1 ] ],[[ -1 ] ],[[ -1 ] ],[[ -1 ] ] ],F :=[[ 1 ] ] ),

@@ -450,7 +450,7 @@ CHEVIE.AddData("HeckeCharTable","H4",function(param,sqrtparam)
  local a,v,q,tbl; a:=(1+ER(5))/2;
  q:=-param[1][1]/param[1][2];
  if not IsBound(sqrtparam[1]) then v:=GetRoot(q,2,"CharTable(Hecke(H4))");
- else v:=sqrtparam[1];
+ else v:=-sqrtparam[1]/param[1][2];
  fi;
  tbl:=rec(
   identifier:="H(H4)",
@@ -595,7 +595,7 @@ end);
 CHEVIE.AddData("HeckeRepresentation","H4",function(param,sqrtparam,i)local v;
  if not IsBound(sqrtparam[1]) then 
      v:=GetRoot(-param[1][1]/param[1][2],2,"Representation(Hecke(H4),[",i,"])");
- else v:=sqrtparam[1];
+ else v:=-sqrtparam[1]/param[1][2];
  fi;
  return -param[1][2]*WGraphToRepresentation(4,CHEVIE.R("WGraph","H4")(i),v);
 end);
