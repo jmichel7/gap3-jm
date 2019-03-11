@@ -745,10 +745,10 @@ PermRootOps.ReflectionName:=function(W,opts)return
 # reflections. TypeIrred classifies W (returns a type record) using:
 #  1- r:=rank
 #  2- s:=Size(W)/Factorial(r)
-#  3- o:=the set of divisors of the orders of distinguished reflections
+#  3- o:=the maximum order of a reflection
 #  4- h:=Coxeter number=Sum(Degrees(W)+CoDegrees(W))/r=Sum_H|C_W(H)|
 #
-# G(de,e,r) has s=(de)^r/e, o={2}\cup divisors(d), h=ed(r-1)+d-\delta_{d,1}
+# G(de,e,r) has s=(de)^r/e, o=max(2,d), h=ed(r-1)+d-\delta_{d,1}
 #
 # (r,s,o)  are sufficient to  determine a G(de,e,r)  excepted for ambiguity
 # between  G(4e,4e,2)  and  G(2e,e,2),  which  can  be  then resolved by h
@@ -766,40 +766,40 @@ PermRootOps.ReflectionName:=function(W,opts)return
 # They are resolved by h.
 PermRootOps.TypeIrred:=function(W)local s,prim,r,o,de,ST,h,H;
   prim:=
-[ rec(ST:=4,       r:=2, s:=12,    o:=[3],     h:=6 ), 
-  rec(ST:=5,       r:=2, s:=36,    o:=[3],     h:=12), 
-  rec(ST:=6,       r:=2, s:=24,    o:=[2,3],   h:=12), 
-  rec(ST:=7,       r:=2, s:=72,    o:=[2,3],   h:=18), 
-  rec(ST:=8,       r:=2, s:=48,    o:=[2,4],   h:=12), 
-  rec(ST:=9,       r:=2, s:=96,    o:=[2,4],   h:=24), 
-  rec(ST:=10,      r:=2, s:=144,   o:=[2,3,4], h:=24), 
-  rec(ST:=11,      r:=2, s:=288,   o:=[2,3,4], h:=36), 
-  rec(ST:=12,      r:=2, s:=24,    o:=[2],     h:=12), 
-  rec(ST:=13,      r:=2, s:=48,    o:=[2],     h:=18), 
-  rec(ST:=14,      r:=2, s:=72,    o:=[2,3],   h:=24), 
-  rec(ST:=15,      r:=2, s:=144,   o:=[2,3],   h:=30), 
-  rec(ST:=16,      r:=2, s:=300,   o:=[5],     h:=30), 
-  rec(ST:=17,      r:=2, s:=600,   o:=[2,5],   h:=60), 
-  rec(ST:=18,      r:=2, s:=900,   o:=[3,5],   h:=60), 
-  rec(ST:=19,      r:=2, s:=1800,  o:=[2,3,5], h:=90), 
-  rec(ST:=20,      r:=2, s:=180,   o:=[3],     h:=30), 
-  rec(ST:=21,      r:=2, s:=360,   o:=[2,3],   h:=60), 
-  rec(ST:=22,      r:=2, s:=120,   o:=[2],     h:=30), 
-  rec(series:="H", r:=3, s:=20,    o:=[2],     h:=10), 
-  rec(ST:=24,      r:=3, s:=56,    o:=[2],     h:=14), 
-  rec(ST:=25,      r:=3, s:=108,   o:=[3],     h:=12),
-  rec(ST:=26,      r:=3, s:=216,   o:=[2,3],   h:=18), 
-  rec(ST:=27,      r:=3, s:=360,   o:=[2],     h:=30), 
-  rec(series:="F", r:=4, s:=48,    o:=[2],     h:=12), 
-  rec(ST:=29,      r:=4, s:=320,   o:=[2],     h:=20), 
-  rec(series:="H", r:=4, s:=600,   o:=[2],     h:=30), 
-  rec(ST:=31,      r:=4, s:=1920,  o:=[2],     h:=30), 
-  rec(ST:=32,      r:=4, s:=6480,  o:=[3],     h:=30), 
-  rec(ST:=33,      r:=5, s:=432,   o:=[2],     h:=18), 
-  rec(ST:=34,      r:=6, s:=54432, o:=[2],     h:=42), 
-  rec(series:="E", r:=6, s:=72,    o:=[2],     h:=12), 
-  rec(series:="E", r:=7, s:=576,   o:=[2],     h:=18), 
-  rec(series:="E", r:=8, s:=17280, o:=[2],     h:=30) ];
+[ rec(ST:=4,       r:=2, s:=12,    o:=3, h:=6 ), 
+  rec(ST:=5,       r:=2, s:=36,    o:=3, h:=12), 
+  rec(ST:=6,       r:=2, s:=24,    o:=3, h:=12), 
+  rec(ST:=7,       r:=2, s:=72,    o:=3, h:=18), 
+  rec(ST:=8,       r:=2, s:=48,    o:=4, h:=12), 
+  rec(ST:=9,       r:=2, s:=96,    o:=4, h:=24), 
+  rec(ST:=10,      r:=2, s:=144,   o:=4, h:=24), 
+  rec(ST:=11,      r:=2, s:=288,   o:=4, h:=36), 
+  rec(ST:=12,      r:=2, s:=24,    o:=2, h:=12), 
+  rec(ST:=13,      r:=2, s:=48,    o:=2, h:=18), 
+  rec(ST:=14,      r:=2, s:=72,    o:=3, h:=24), 
+  rec(ST:=15,      r:=2, s:=144,   o:=3, h:=30), 
+  rec(ST:=16,      r:=2, s:=300,   o:=5, h:=30), 
+  rec(ST:=17,      r:=2, s:=600,   o:=5, h:=60), 
+  rec(ST:=18,      r:=2, s:=900,   o:=5, h:=60), 
+  rec(ST:=19,      r:=2, s:=1800,  o:=5, h:=90), 
+  rec(ST:=20,      r:=2, s:=180,   o:=3, h:=30), 
+  rec(ST:=21,      r:=2, s:=360,   o:=3, h:=60), 
+  rec(ST:=22,      r:=2, s:=120,   o:=2, h:=30), 
+  rec(series:="H", r:=3, s:=20,    o:=2, h:=10), 
+  rec(ST:=24,      r:=3, s:=56,    o:=2, h:=14), 
+  rec(ST:=25,      r:=3, s:=108,   o:=3, h:=12),
+  rec(ST:=26,      r:=3, s:=216,   o:=3, h:=18), 
+  rec(ST:=27,      r:=3, s:=360,   o:=2, h:=30), 
+  rec(series:="F", r:=4, s:=48,    o:=2, h:=12), 
+  rec(ST:=29,      r:=4, s:=320,   o:=2, h:=20), 
+  rec(series:="H", r:=4, s:=600,   o:=2, h:=30), 
+  rec(ST:=31,      r:=4, s:=1920,  o:=2, h:=30), 
+  rec(ST:=32,      r:=4, s:=6480,  o:=3, h:=30), 
+  rec(ST:=33,      r:=5, s:=432,   o:=2, h:=18), 
+  rec(ST:=34,      r:=6, s:=54432, o:=2, h:=42), 
+  rec(series:="E", r:=6, s:=72,    o:=2, h:=12), 
+  rec(series:="E", r:=7, s:=576,   o:=2, h:=18), 
+  rec(series:="E", r:=8, s:=17280, o:=2, h:=30) ];
   r:=RankMat(W.roots{W.generatingReflections});
   H:=W->Sum(Reflections(W),s->Order(W,s))/r;
   s:=Size(W)/Factorial(r);
@@ -814,9 +814,8 @@ PermRootOps.TypeIrred:=function(W)local s,prim,r,o,de,ST,h,H;
       a->[x[1]^(a+x[2]-a*r),x[1]^(a*r-x[2])]))),
       p->rec(d:=Product(p,x->x[1]),e:=Product(p,x->x[2])));
   fi;
-  o:=Union(List(W.OrdersGeneratingReflections,DivisorsInt)); # now use o
-  de:=Filtered(de,x->o=Union([2],DivisorsInt(x.d)));
-  o:=o{[2..Length(o)]};
+  o:=Maximum(W.OrdersGeneratingReflections); # now use o
+  de:=Filtered(de,x->o=Maximum(2,x.d));
   ST:=Filtered(prim,f->r=f.r and s=f.s and o=f.o);
   if Length(de)>1 then # G(2e,e,2),G(4e,4e,2) (or G12,G13,G22)
     if Length(de)<>2 then Error("theory");fi;

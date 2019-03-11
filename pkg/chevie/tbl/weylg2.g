@@ -24,7 +24,7 @@ end);
 
 CHEVIE.AddData("ReflectionName","G2",function(arg)local i,opt,type;
   if Length(arg)=1 then return "G2(?)"; fi;
-  type:=arg[1]; opt:=arg[2];
+  type:=arg[2]; opt:=arg[1];
   if type=1 then 
     if IsBound(opt.TeX) then return "G_2";
     elif IsBound(opt.arg) then return "\"G\",2";
@@ -59,6 +59,7 @@ CHEVIE.AddData("CharInfo","G2",function()local res;
   a:=[0,6,1,1,1,1],
   A:=[0,6,5,5,5,5]);
   res.b:=List(res.charparams,x->x[2]);
+  res.B:=[0,6,3,3,5,4];
   # charnames in Spaltenstein's "Sous-groupes de Borel et classes unipotentes"
   res.spaltenstein:=["1","\\varepsilon","\\varepsilon_l","\\varepsilon_c",
                      "\\theta'","\\theta''"];
@@ -66,14 +67,11 @@ CHEVIE.AddData("CharInfo","G2",function()local res;
   end
 );
 
-CHEVIE.AddData("WordsClassRepresentatives","G2",
-  [[],[2],[1],[1,2],[1,2,1,2],[1,2,1,2,1,2]]);
-
 CHEVIE.AddData("ClassNames","G2",
   ["A_0","\\tilde A_1","A_1","G_2","A_2","A_1+\\tilde A_1"]);
 
 CHEVIE.AddData("ClassInfo","G2",
-  rec(classtext:=CHEVIE.R("WordsClassRepresentatives","G2"),
+  rec(classtext:=[[],[2],[1],[1,2],[1,2,1,2],[1,2,1,2,1,2]],
     classnames:=CHEVIE.R("ClassNames","G2"),
     classparams:=CHEVIE.R("ClassNames","G2"),
     orders:=[1,2,2,6,3,2],
@@ -229,7 +227,7 @@ CHEVIE.AddData("Discriminant","G2",function()return
   function(x,y)return 4*x^3*y-27*y^2;end;end);
 
 # c is CartanType -- does not matter
-CHEVIE.AddData("UnipotentClasses","G2",function(c,p)local uc,Z,c;
+CHEVIE.AddData("UnipotentClasses","G2",function(c,p)local uc,Z;
   if p=0 then p:=1;fi; Z:=n->ComplexReflectionGroup(n,1,1);
   uc:=rec(classes:=[
    rec(name:="1",succ:=["A1"],dynkin:=[0,0],balacarter:=[],

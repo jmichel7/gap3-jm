@@ -345,7 +345,7 @@ getchar:=function(ind,H)local eig,W,M,values,e,ti,w,d;
   end;
 
   W:=Group(H);
-  w:=WordsClassRepresentatives(W)[ind];
+  w:=ChevieClassInfo(W).classtext[ind];
   d:=OrderPerm(EltWord(W,w));
   eig:=List(HeckeCharValuesGood(H,w),x->poltocouple(x)[1]/(2*d));
   eig:=reduce(eig,H.galoisperm);
@@ -363,8 +363,8 @@ getchar:=function(ind,H)local eig,W,M,values,e,ti,w,d;
 end;
 
 # return indices of the cuspidal classes in the list of classes of W 
-CuspidalClasses:=function(W) local cl;
-  cl:=WordsClassRepresentatives(W);
+CuspidalClasses:=function(W)local cl;
+  cl:=ChevieClassInfo(W).classtext;
   return Filtered([1..Length(cl)],i->Set(cl[i])=[1..W.semisimpleRank]);
 end;
 

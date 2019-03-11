@@ -846,7 +846,7 @@ end);
 CHEVIE.AddData("HeckeRepresentation","G31",function(para,root,i)
   local x,y,rep,dec,f1,f6,f7,f9,f11,f14,f16,f19,f21,f23,f25,f26,f27,f31,f37,
     f42,f46,f48,f54,f56;
-  dec:=function(d,l)local m,v,k,l; #decompress sparse matrix
+  dec:=function(d,l)local m,v,k; #decompress sparse matrix
     m:=List([1..5],i->NullMat(d));
     for v in l do for k in v{[2..Length(v)]} do l:=k mod d^2;
       m[QuoInt(k,d^2)+1][QuoInt(l,d)+1][(l mod d)+1]:=v[1];
@@ -2062,10 +2062,10 @@ f56:=function(x,y)return dec(45,
 end);
 
 CHEVIE.AddData("Representation","G31",function(i)local r,f,dec;
-  r:=CHEVIE.R("HeckeRepresentation","G31")(List([1..5],i->[1,-1]),[],i);
+  r:=CHEVIE.R("HeckeRepresentation","G31")(List([1..5],j->[1,-1]),[],i);
   if r<>false then return r;fi;
-  f:=i->CHEVIE.R("Representation","G31")(i);
-  dec:=function(d,l)local m,v,k,l; #decompress sparse matrix
+  f:=j->CHEVIE.R("Representation","G31")(j);
+  dec:=function(d,l)local m,v,k; #decompress sparse matrix
     m:=List([1..5],i->NullMat(d));
     for v in l do for k in v{[2..Length(v)]} do l:=k mod d^2;
       m[QuoInt(k,d^2)+1][QuoInt(l,d)+1][(l mod d)+1]:=v[1];

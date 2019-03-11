@@ -91,7 +91,7 @@ end);
 CHEVIE.AddData("Size","imp",function(p,q,r)return p^r*Factorial(r)/q;end);
 
 CHEVIE.AddData("ReflectionName","imp",function(arg)local n,option;
-  option:=arg[Length(arg)];
+  option:=arg[4];
   if arg[3]=1 and arg[2]=1 then 
     if IsBound(option.TeX) then return SPrint("Z_{",arg[1],"}");
     else return SPrint("Z",arg[1]);fi;
@@ -103,14 +103,13 @@ CHEVIE.AddData("ReflectionName","imp",function(arg)local n,option;
 end);
 
 CHEVIE.AddData("GeneratingRoots","imp",function(p,q,r)local roots,v,i;
-  if q=1 then v:=[1..r]*0;v[1]:=1;roots:=[v];
+  if q=1 then roots:=[Concatenation([1],[2..r]*0)];
   else
-    if q<>p then v:=[1..r]*0;v[1]:=1;roots:=[v];
-    else roots:=[];
+    if q<>p then roots:=[Concatenation([1],[2..r]*0)];
     fi;
-    v:=[1..r]*0;v[1]:=-E(p);v[2]:=1;
+    v:=Concatenation([-E(p),1],[3..r]*0);
     if r=2 and q>1 and q mod 2=1 then v:=v*E(p);fi; # so only 2 orbits
-    Add(roots,v);
+    if q=p then roots:=[v];else Add(roots,v);fi;
   fi;
   for i in [2..r] do v:=[1..r]*0;v[i]:=1;v[i-1]:=-1;Add(roots,v);od;
   return roots;
@@ -294,17 +293,15 @@ CHEVIE.AddData("ClassInfo","imp",function(p,q,r)local res,times,trans,I,i,j,a,S;
   fi;
 end);
 
-CHEVIE.AddData("ClassName", "imp", function(p)local j;
+CHEVIE.AddData("ClassName", "imp", function(p)local j,p1;
   if IsList(p) and ForAll(p, IsList) then 
     if Sum(p,Sum)=1 then return Format(E(Length(p))^(Position(p,[1])-1));
     else return PartitionTupleToString(p);
     fi;
   elif IsList(p) and ForAll(p, IsInt) then return IntListToString(p);
   elif IsList(p) and ForAll(p{[1..Length(p)-1]},IsList) and IsInt(p[Length(p)])
-  then j:=p[Length(p)]/(Length(p)-1);
-    j:=Format(E(Denominator(j))^Numerator(j));
-    if j="1" then j:="+";elif j="-1" then j:="-";fi;
-    return SPrint(PartitionTupleToString(p{[1..Length(p)-1]}),j);
+  then p1:=p{[1..Length(p)-1]};Append(p1,[Length(p1),p[Length(p)]]);
+    return PartitionTupleToString(p1);
   else Error(); # should not happen
   fi;
 end);
@@ -317,7 +314,7 @@ CHEVIE.AddData("PowerMaps","imp",function(p,q,r)local pow,pp,pw,res;
       for k in [1..e] do
        for l in p[k] do
 	 g:=Gcd(n,l);
-	 for j in [1..g] do Add(res[1+((n*(k-1)/g)mod e)],l/g);od;
+	 for j in [1..g] do Add(res[1+(QuoInt(n*(k-1),g)mod e)],l/g);od;
        od;
       od;
       for k in [1..e] do
@@ -338,8 +335,8 @@ CHEVIE.AddData("PowerMaps","imp",function(p,q,r)local pow,pp,pw,res;
   fi;
 end);
 
-CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,r,s,fd;
-  res:=rec();d:=de/e;
+CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,s,fd;
+  res:=rec();d:=QuoInt(de,e);
   if e=1 then res.charparams:=PartitionTuples(r,de); s:=[1..d]*0;s[1]:=1;
     res.charSymbols:=List(res.charparams,x->SymbolPartitionTuple(x,s));
   else
@@ -636,7 +633,7 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
       if e=0 then return res;fi;
       j:=e;
       for i in [S[e]-1,S[e]-2..0] do
-	if not i in S then
+	if not(i in S) then
 	while j>0 and S[j]>i do j:=j-1;od;
 	k:=j+1;
 	while k<=e and S[k]-i<=s do
@@ -813,7 +810,7 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
     res.irreducibles:=List(ci.charparams,
       char->List(cl.classparams,class->GenericEntry(char,class)));
   else 
-    Inherit(res,cl,["centralizers","orders"]);
+    Inherit(res,cl,["centralizers","orders","classnames"]);
     res.classes:=List(res.centralizers,x->res.size/x);
     res.irreducibles:=List([1..Length(res.classes)],i->CharRepresentationWords(
       CHEVIE.R("HeckeRepresentation","imp")(p,q,r,para,[],i),cl.classtext));
@@ -825,7 +822,7 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
 end);
 
 CHEVIE.AddData("HeckeRepresentation","imp",function(p,q,r,para,root,i)
-  local X,Y,t,p,x,a,v,d,T,S,m,extra,l,m1,p1rRep,f;
+  local X,Y,t,x,a,v,d,T,S,m,extra,l,m1,p1rRep,f;
   if not IsList(para) then para:=[para];fi;
   if [q,r]=[1,2] then X:=para[2];Y:=para[1];#integral matrices in this case
     t:=PartitionTuples(2,p)[i];
@@ -2084,7 +2081,7 @@ FamilyImprimitive:=function(S)# fourier for family of symbol S
 # To  compute this reasonably  fast, it can  be decomposed as  a product of
 # sums, each relative to a set of consecutive equal entries in ct.
   d:=Length(ct) mod e;
-  if not d in [0,1] then
+  if not(d in [0,1]) then
     Error("Length(",IntListToString(ct),") should be 0 or 1 mod ",e," !\n");
   fi;
   m:=(Length(ct)-d)/e; 
@@ -2214,7 +2211,7 @@ end;
 
 CHEVIE.AddData("UnipotentCharacters","imp",function(p,q,r)
  local uc,cusp,f,l,ci,seteig,s,extra,addextra;
- if not q in [1,p] then return false;fi;
+ if not (q in [1,p]) then return false;fi;
  uc:=rec(charSymbols:=CHEVIE.R("CharSymbols","imp")(p,q,r));
  uc.a:=List(uc.charSymbols,LowestPowerGenericDegreeSymbol);
  uc.A:=List(uc.charSymbols,HighestPowerGenericDegreeSymbol);

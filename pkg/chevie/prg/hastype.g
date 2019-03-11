@@ -130,13 +130,6 @@ end;
 
 #############################################################################
 ##
-#F  WordsClassRepresentatives( <W> ) . . . . representatives of conjugacy 
-#F  classes of <W> as Words.
-##  
-WordsClassRepresentatives:=W->ChevieClassInfo(W).classtext;
-
-#############################################################################
-##
 #F  HasTypeOps.BraidRelations( <W> ) . . . see corresponding dispatcher 
 #F  function
 ##
@@ -447,24 +440,19 @@ HasTypeOps.ReflectionName:=function(W,option)local res,t,i,total,l;
   return String(res);
 end;
 
-HasTypeOps.ChevieCharInfo:=function(W)local res,t,p,f,n,i,gt;
+HasTypeOps.ChevieCharInfo:=function(W)local res,t,p,f,n,i,gt,keep;
   t:=ReflectionType(W);
   p:=List(t,ChevieCharInfo);
-  if Length(t)=1 and (not IsBound(t[1].orbit) or Length(t[1].orbit)=1)
-  then res:=ShallowCopy(p[1]);
-    # keep extra fields when irreducible
-    res.charparams:=List(res.charparams,x->[x]);
-    res.charnames:=List(res.charparams,x->CharName(W,x,rec()));
-    return res;
+  keep:=Length(t)=1 and (not IsBound(t[1].orbit) or Length(t[1].orbit)=1);
+  if keep then res:=ShallowCopy(p[1]); # keep extra fields when irreducible
   else res:=rec();
   fi; 
-  if ForAll(p,x->IsBound(x.charparams)) then 
-    res.charparams:=Cartesian(List(p,x->x.charparams));
-  fi;
+  res.charparams:=Cartesian(List(p,x->x.charparams));
+  res.charnames:=List(res.charparams,x->CharName(W,x,rec()));
+  if keep then return res;fi;
 # if ForAll(p,x->IsBound(x.charnames)) then 
 #   res.charnames:=List(Cartesian(List(p,x->x.charnames)),Join);
 # fi;
-  res.charnames:=List(res.charparams,x->CharName(W,x,rec()));
   for f in ["positionId","positionDet"] do
     if ForAll(p,x->IsBound(x.(f))) then 
       res.(f):=PositionCartesian(List(p,x->Length(x.charparams)),

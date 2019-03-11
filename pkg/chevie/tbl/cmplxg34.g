@@ -9258,7 +9258,7 @@ f37:=function(x,y)return dec(90,
   else return false;fi;
 end);
 
-CHEVIE.AddData("Representation","G34",function(i)local r,f,v,i,j,l,r1;
+CHEVIE.AddData("Representation","G34",function(i)local r,f,v,j,l,r1;
   r:=CHEVIE.R("HeckeRepresentation","G34")(List([1..6],x->[1,-1]),[],i);
   if r<>false then return r;fi;
   f:=function(i)

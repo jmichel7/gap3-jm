@@ -1200,7 +1200,7 @@ end;
 #F  NullspaceMat( <mat> ) . . . . . . basis of solutions of <vec> * <mat> = 0
 ##
 NullspaceMat := function ( mat )
-    local   nullspace, m, n, min, empty, i, k, row, tmp, zero, one;
+    local   nullspace, m, n, empty, i, k, row, tmp, zero, one;
 
     # triangulize the transposed of the matrix
     mat := TransposedMat( Reversed( mat ) );
@@ -1209,7 +1209,6 @@ NullspaceMat := function ( mat )
     n := Length(mat[1]);
     zero := 0*mat[1][1];
     one  := mat[1][1]^0;
-    min := Minimum( m, n );
 
     # insert empty rows to bring the leading term of each row on the diagonal
     empty := 0*mat[1];
@@ -1231,7 +1230,7 @@ NullspaceMat := function ( mat )
     # and the solutions can be read in those columns with a 0 on the diagonal
     # by replacing this 0 by a -1, in  this  example  [2,-1,0,0], [2,0,3,-1].
     nullspace := [];
-    for k  in Reversed([1..n]) do
+    for k  in [n,n-1..1] do
         if mat[k][k] = zero  then
             row := [];
             for i  in [1..k-1]  do row[n-i+1] := -mat[i][k];  od;

@@ -298,7 +298,7 @@ ReflTypeOps.ReflectionName:=function(arg)local t,option,res;
       else Append(res,"~");fi;
     fi;
     if IsBound(t.cartanType) then 
-         Append(res,CHEVIE.Data("ReflectionName",t,t.cartanType,option));
+         Append(res,CHEVIE.Data("ReflectionName",t,option,t.cartanType));
     else Append(res,CHEVIE.Data("ReflectionName",t,option));
     fi;
   fi;

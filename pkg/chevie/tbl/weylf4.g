@@ -29,7 +29,7 @@ end);
 
 CHEVIE.AddData("ReflectionName","F4",function(arg)local i,opt,type;
   if Length(arg)=1 then return "F4(?)"; fi;
-  type:=arg[1]; opt:=arg[2];
+  type:=arg[2]; opt:=arg[1];
   if type=1 then 
     if IsBound(opt.TeX) then return "F_4";
     elif IsBound(opt.arg) then return "\"F\",4";

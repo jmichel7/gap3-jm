@@ -23,7 +23,7 @@ function(W)local ct,ci,extRefl,v,n,ref,checkfield;
   v:=List(v*X(Cyclotomics)^0,x->x.coefficients);
   extRefl:=Reversed(List(TransposedMat(v),x->Position(ct.irreducibles,x)));
   # check ReflectionEigenvalues using AntiSymmetricParts
-  ref:=Position(ct.irreducibles,List(WordsClassRepresentatives(W),
+  ref:=Position(ct.irreducibles,List(ChevieClassInfo(W).classtext,
 		  w->ReflectionCharValue(W,EltWord (W,w))));
   if ref<>false then #irreducible group
     ref:=List([1..W.semisimpleRank],
@@ -244,7 +244,7 @@ function(3D4)local F4,WF,T,v,m,3D4bis,q,ct,D4;
   q:=Mvp("q");
   T:=Basis(Hecke(F4,[q,q,1,1]),"T");
   v:=[T(2),T(3,2,3),T(1),T(4,3,2,3,4)]; # embedding of Hecke(3D4,q)
-  m:=TransposedMat(List(WordsClassRepresentatives(3D4),
+  m:=TransposedMat(List(ChevieClassInfo(3D4).classtext,
               x->HeckeCharValues(Product(v{x})*T(4,3))));
   WF:=Spets(F4);
   3D4bis:=CoxeterSubCoset(WF,[2,9,1,16],EltWord(F4,[4,3])); # inside F4

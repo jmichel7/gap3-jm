@@ -11,7 +11,7 @@ if not IsBound(CHEVIE) then
 fi;
 
 CHEVIE.name:="chevie";
-CHEVIE.date:=[2018,11,30];
+CHEVIE.date:=[2019,03,11];
 CHEVIE.homepage:="http://webusers.imj-prg.fr/~jean.michel/chevie";
 CHEVIE.copyright:=
 ["If you use CHEVIE in your work please cite the authors as follows:",
@@ -182,7 +182,7 @@ AUTO(ReadChv("prg/gencox"),
   GenCoxOps);
 
 AUTO(ReadChv("prg/hastype"),
-  FakeDegree, HasTypeOps, ReflectionGroup, WordsClassRepresentatives);
+  FakeDegree, HasTypeOps, ReflectionGroup);
 
 AUTO(ReadChv("prg/hecke"),
   HeckeAlgebraOps, HeckeReflectionRepresentation, 

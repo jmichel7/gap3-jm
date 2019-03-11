@@ -21,8 +21,8 @@ CHEVIE.AddData("BraidRelations","G26",[[[1,2,1,2],[2,1,2,1]],
   [[1,3],[3,1]],[[2,3,2],[3,2,3]]]);
 
 CHEVIE.AddData("ReflectionName","G26",function(arg)local i,TeX,type;
-  if Length(arg)=1 then return "G26"; fi;
-  type:=arg[1]; TeX:=IsBound(arg[2].TeX);
+# if Length(arg)=1 then return "G26"; fi;
+  type:=arg[2]; TeX:=IsBound(arg[1].TeX);
   if type=1 then if TeX then return "G_{26}";else return "G26";fi;
   elif TeX then return SPrint("G(",Format(type),")_{26}");
   else return SPrint("G(",Format(type),")26");

@@ -96,9 +96,9 @@ CHEVIE.AddData("CharName","G4_22",function(ST,x,option)local s,f;
 end);
 
 CHEVIE.AddData("ReflectionName","G4_22",function(arg)local ST,n,option;
-  option:=arg[Length(arg)];ST:=arg[1];
+  option:=arg[2];ST:=arg[1];
   if IsBound(option.TeX) then n:=SPrint("G_{",ST,"}");else n:=SPrint("G",ST);fi;
-  if Length(arg)=3 then PrintToString(n,"(",Format(arg[2],option),")");fi;
+  if Length(arg)=3 then PrintToString(n,"(",Format(arg[3],option),")");fi;
   return n;
 end);
 
@@ -1542,11 +1542,10 @@ if not IsBound(CHEVIE.CheckIndexChars) then CHEVIE.CheckIndexChars:=false;fi;
 # Cheks that indexchars picks different rows. Otherwise picks
 # different rows and sets indexchars appropriately.
 G4_22Test:=function(res,rows,i)local l,o,p,ic,T;
- T:=[,,,7,7,7,7,11,11,11,11,11,11,11,11,19,19,19,19,19,19,19];
- T:=SPrint("G",T[res.ST]);
- if not IsBound(CHEVIE.G4_22CachedIndexChars) then
-    CHEVIE.G4_22CachedIndexChars:=[];
-    CHEVIE.G4_22CachedIndexChars{[4..22]}:=List([4..22],i->[]);
+  T:=[,,,7,7,7,7,11,11,11,11,11,11,11,11,19,19,19,19,19,19,19];
+  T:=SPrint("G",T[res.ST]);
+  if not IsBound(CHEVIE.G4_22CachedIndexChars) then
+    CHEVIE.G4_22CachedIndexChars:=List([1..22],i->[]);
     InfoChevie2("Creating G4_22CachedIndexChars\n");
   fi;
   p:=PositionProperty(CHEVIE.G4_22CachedIndexChars[res.ST],
@@ -2187,15 +2186,10 @@ CHEVIE.AddData("Invariants","G4_22",function(ST)local d;d:=rec(
   21:=[function(x,y)return 
       34375*x^3*y^9-4125*x^6*y^6-275*x^9*y^3+x^12+15625*y^12;end,
     function(x,y)return 
-      3814697265625000000000*x^3*y^57-16307830810546875000000*x^6*y^54+
-      20629405975341796875000*x^9*y^51-4732668399810791015625*x^12*y^48-
-      1460203170776367187500*x^15*y^45-2688672065734863281250*x^18*y^42-
-      632378311157226562500*x^21*y^39-210152492523193359375*x^24*y^36-
-      18950356933593750000*x^27*y^33-3147430249023437500*x^30*y^30+
-      151602855468750000*x^33*y^27-13449759521484375*x^36*y^24+
-      323777695312500*x^39*y^21-11012800781250*x^42*y^18+
-      47847937500*x^45*y^15-1240640625*x^48*y^12-43263000*x^51*y^9-
-      273600*x^54*y^6-512*x^57*y^3;end],
+      -x^3*y^3*(5*y^2-5*x*y+2*x^2)^3*
+      (25*y^4+25*y^3*x+15*y^2*x^2+10*y*x^3+4*x^4)^3*(-5*y^2+5*x*y+x^2)^3*
+      (25*y^4+25*y^3*x+30*y^2*x^2-5*y*x^3+x^4)^3*(10*y^2+5*x*y+x^2)^3*
+      (100*y^4-50*y^3*x+15*y^2*x^2-5*y*x^3+x^4)^3;end],
    22:=[function(x,y) return -x*y^11+11*x^6*y^6+x^11*y;end,
      function(x,y) return 228*x^5*y^15+494*x^10*y^10-228*x^15*y^5+x^20+y^20;end]
    );

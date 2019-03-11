@@ -27,9 +27,9 @@ CharHeckeRepresentation:=function(arg)
   return ApplyFunc(CharRepresentationWords,arg);
 end;
 
-CoxeterConjugacyClasses:=function(arg)
-  Print("#W CoxeterConjugacyClasses is obsolete; use WordsClassRepresentatives\n");
-  return ApplyFunc(WordsClassRepresentatives,arg);
+CoxeterConjugacyClasses:=function(W)
+  Print("#W CoxeterConjugacyClasses is obsolete; use ChevieClassInfo(W).classtext\n");
+  return ChevieClassInfo(W).classtext;
 end;
 
 CoxeterElementsLength:=function(arg)
@@ -173,9 +173,9 @@ WeylClassPolynomials:=function(arg)
   Error("#W WeylClassPolynomials is obsolete, use 'HeckeClassPolynomials'\n");
 end;
 
-WeylConjugacyClasses:=function(arg)
-  Print("#W WeylConjugacyClasses is obsolete; use WordsClassRepresentatives\n");
-  return ApplyFunc(WordsClassRepresentatives,arg);
+WeylConjugacyClasses:=function(W)
+  Print("#W WeylConjugacyClasses is obsolete; use ChevieClassInfo(W).classtext\n");
+  return ChevieClassInfo(W).classtext;
 end;
 
 WeylCosetPermRepresentation:=function(W,I)

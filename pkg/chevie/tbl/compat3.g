@@ -13,7 +13,7 @@ if not IsBound(CHEVIE.Revision) then
 fi;
 
 ## just another name in GAP 4
-CallFuncList := ApplyFunc;
+#CallFuncList := ApplyFunc;
 
 #############################################################################
 ##

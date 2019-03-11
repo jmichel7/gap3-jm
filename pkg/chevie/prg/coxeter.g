@@ -90,16 +90,16 @@ FiniteCoxeterTypeFromCartanMat:=C->List(DecomposedMat(C),
 	elif co(1)=2 then t.series:="B"; 
           if m1[1][2]=-1 or (m1[1][2]<>-2 and m1[2][1]>m1[1][2]) then rev();fi;
              #B2 preferred to C2
-	  t.cartanType:=m1[1][2]/-1;
+	  t.cartanType:=-m1[1][2];
 	elif co(1)=3 then t.series:="G"; 
           if m1[1][2]<>-1 and m1[2][1]>m1[1][2] then rev();fi;
-          t.cartanType:=m1[1][2]/-1;
+          t.cartanType:=-m1[1][2];
 	else x:=NofCyc(co(1));
           if m1[2][1]=-1 or (m1[1][2]<>-1 and m1[2][1]>m1[1][2])then rev();fi;
 	  if co(1)=2+E(x)+E(x)^-1 then t.bond:=x; else t.bond:=2*x; fi;
 	  if t.bond=1 then return false;fi;
 	  t.series:="I";
-	  if t.bond mod 2=0 then t.cartanType:=m1[1][2]/-1;fi;
+	  if t.bond mod 2=0 then t.cartanType:=-m1[1][2];fi;
 	fi;
       else
         if co(r-1)<>1 then rev();fi;
@@ -108,9 +108,9 @@ FiniteCoxeterTypeFromCartanMat:=C->List(DecomposedMat(C),
 	  elif r<>4 then return false;
 	  else
 	    if m1[2][3]<m1[3][2] then rev();fi;
-	    t.series:="F"; t.cartanType:=m1[2][3]/-1;
+	    t.series:="F"; t.cartanType:=-m1[2][3];
 	  fi;
-	elif co(1)=2 then t.series:="B"; t.cartanType:=m1[1][2]/-1;
+	elif co(1)=2 then t.series:="B"; t.cartanType:=-m1[1][2];
 	elif not r in [3,4] then return false;
 	elif co(1)=(3+ER(5))/2 then t.series:="H";
 	else return false;

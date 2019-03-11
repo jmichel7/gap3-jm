@@ -609,6 +609,7 @@ GreenTable:=function(arg)
       res.cardClass{b}:=Zip(res.cardClass{b},ChevieClassInfo(Au).classes,
         function(x,y)return x*y/Size(Au);end);
     od;
+    res.classes:=true;
   fi;
   res.operations:=rec();
   res.operations.String:=x->SPrint("GreenTable(",W,",rec(variable:=",q,"))");
@@ -618,7 +619,7 @@ GreenTable:=function(arg)
       List(CharNames(g,opt),n->SPrint("Q^{",ReflectionName(g),"}_{",n,"}"))));
     opt.rowsLabel:="Q";
     tbl:=Copy(x.scalar);
-    if IsBound(opt.classes) then
+    if IsBound(x.classes) then
       PrintToString(res," unipotent classes\n");
       opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],
 	  Inherit(rec(class:=p[2]),opt)));
@@ -656,13 +657,8 @@ UnipotentValues:=function(arg)local uc,opt,res,q,W;
     else PrintToString(s,ReflectionName(W,opt));
     fi;
     tbl:=Copy(x.scalar);
-    if IsBound(opt.classes) then
+    if IsBound(x.classes) then
       PrintToString(s," on unipotent classes\n");
-      for i in [1..Length(x.uc.classes)] do
-	b:=Filtered([1..Length(x.locsys)],j->x.locsys[j][1]=i);
-	tbl{[1..Length(tbl)]}{b}:=tbl{[1..Length(tbl)]}{b}*
-	   CharTable(x.uc.classes[i].Au).irreducibles;
-      od;
       opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],
 	  Inherit(rec(class:=p[2]),opt)));
     else opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],

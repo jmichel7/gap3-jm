@@ -115,7 +115,10 @@ ComplexOps.\/:=function(a,b)
 end;
 
 ComplexOps.\^:=function(h,n)local p,N;
-   if h=0*h then  return h;fi;
+   if h=0*h then
+     if n=0 then return Complex(h.r^0,h.i);
+     else return h;fi;
+   fi;
    p:=1;
    if n<0 then h:=1/h; n:=-n; fi;
    if n=1 then return h;fi;

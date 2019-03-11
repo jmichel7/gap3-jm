@@ -36,8 +36,8 @@ CHEVIE.AddData("PrintDiagram","I",function(arg)local bond,indices,type;
 end);
 
 CHEVIE.AddData("ReflectionName","I",function(arg)local bond,type,opt;
-  bond:=arg[1];opt:=arg[Length(arg)];
-  if Length(arg)=3 then type:=arg[2];
+  bond:=arg[1];opt:=arg[2];
+  if Length(arg)=3 then type:=arg[3];
   elif bond mod 2=0 then type:=1;
   else type:=E(2*bond)+E(2*bond)^-1;
   fi;

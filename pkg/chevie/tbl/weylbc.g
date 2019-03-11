@@ -34,8 +34,8 @@ CHEVIE.AddData("PrintDiagram","B",function(r,indices,title,type)local i;
 end);
 
 CHEVIE.AddData("ReflectionName","B",function(arg)local i,r,type,option;
-  r:=arg[1];option:=arg[Length(arg)];
-  if Length(arg)=3 then type:=arg[2];else type:=2;fi;
+  r:=arg[1];option:=arg[2];
+  if Length(arg)=3 then type:=arg[3];else type:=2;fi;
   if type=2 then 
     if IsBound(option.TeX) then return SPrint("B_",TeXBracket(r));
     elif IsBound(option.arg) then return SPrint("\"B\",",r);

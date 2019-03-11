@@ -54,7 +54,7 @@ CHEVIE.AddData("ClassParameter","2I",function(m,w)local l;
 end);
 
 #how to make a .charname from a .charparam
-CHEVIE.AddData("CharName","2I",function(m,x,option)local s,x;
+CHEVIE.AddData("CharName","2I",function(m,x,option)local s;
   if IsList(x[1]) then return PartitionTupleToString(x);
   else
     if IsBound(option.TeX) then s:="phi";else s:="\\phi_";fi;

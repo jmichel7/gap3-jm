@@ -89,8 +89,7 @@ CHEVIE.compat.HeckeCharTableA := function(n, param, sqrtparam)
   tbl:= CharacterTableSpecialized(CHEVIE.R("Hk","A"), [n+1, q]);
   Setter(CartanMatAttr)(tbl, CartanMat("A", n));
   Setter(Parameters)(tbl, List([1..n], x-> q));
-  tbl!.WordsClassRepresentatives :=
-                        CHEVIE.R("WordsClassRepresentatives","A")(n);
+  tbl!.WordsClassRepresentatives:=CHEVIE.R("ClassInfo","A")(n).classtext;
   tbl!.ClassParameters := List(tbl!.ClassParameters, x->x[2]);
   Setter(ClassNames)(tbl, List(tbl!.ClassParameters, IntListToString));
   tbl!.CharacterParameters := CHEVIE.Data("CharParams", "A", n);

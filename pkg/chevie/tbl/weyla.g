@@ -322,7 +322,7 @@ CHEVIE.AddData("UnipotentCharacters","A",function(l)local ci;
   return rec(harishChandra:=[rec(
     levi:=[],
     relativeType:=rec(series:="A",indices:=[1..l],rank:=l),
-    parameterExponents:=0*[1..l]+1,
+    parameterExponents:=[1..l]*0+1,
     cuspidalName:="",
     eigenvalue:=1,
     charNumbers:=[1..Length(ci.charparams)])],
@@ -340,7 +340,7 @@ CHEVIE.AddData("Invariants","A",function(n)local m;
     return Sum(Arrangements([1..n+1],i),a->Product(v{a}));end);
   end);
 
-CHEVIE.AddData("UnipotentClasses","A",function(n,p)local uc,i,j,p,cl,d,ss;
+CHEVIE.AddData("UnipotentClasses","A",function(n,p)local uc,i,j,cl,d,ss;
   uc:=rec(classes:=List(Partitions(n+1),p->rec(parameter:=p)),
     springerSeries:=Concatenation(List(DivisorsInt(n+1),d->
    List(PrimeResidues(d),i->rec(relgroup:=CoxeterGroup("A",(n+1)/d-1),

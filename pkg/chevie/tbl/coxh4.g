@@ -59,7 +59,7 @@ function(s)local t;t:=[[[]],[[1]],[[1,2],[1,3],[2,3]],
   [[1,2,3],[1,2,4],[1,3,4],[2,3,4]],[[1..4]]];
   return t[s+1];end);
 
-CHEVIE.AddData("ClassParameter","H4",CHEVIE.H4.WordsClassRepresentatives);
+CHEVIE.AddData("ClassParameter","H4",CHEVIE.R("WordsClassRepresentatives","H4"));
 
 CHEVIE.AddData("PowerMaps","H4",
 [,[1,1,10,1,5,3,10,5,4,3,15,5,3,18,22,10,24,26,27, 1, 3,
@@ -1167,8 +1167,8 @@ CHEVIE.AddData("Invariants","H4",function()local r,C;
    d-> function(arg) return Sum(r,a->(arg*a)^d);end);
 end);
 
-CHEVIE.AddData("Discriminant","H4",function()return function(x1,x2,x3,x4)return
-356653503212267529442883791160074481878819871789501462448439296000000000000000\
+CHEVIE.AddData("Discriminant","H4",function()return function(x1,x2,x3,x4)
+return 356653503212267529442883791160074481878819871789501462448439296000000000000000\
 000000000000000000000000000000000000000*x1*x2^4*x3^2*x4-1502822026355964889020\
 014607195869398002206810189950606727184384000000000000000000000000000000000000\
 00000000000000000*x1^2*x2^3*x3*x4^2-106081348040315201047086901453149119568342\
