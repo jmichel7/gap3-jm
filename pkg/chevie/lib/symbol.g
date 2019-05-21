@@ -90,8 +90,11 @@ FullSymbol:=function(S)local m;
   fi;
 end;
 
-# defect of a symbol with 2 lines
-DefectSymbol:=function(s)s:=FullSymbol(s);return Length(s[1])-Length(s[2]);end;
+# defect of a symbol with <=2 lines
+DefectSymbol:=function(s)
+  if Length(s)=1 or not IsList(s[Length(s)]) then return 0;fi;
+  return Length(s[1])-Length(s[2]);
+end;
 
 # rank of a symbol
 RankSymbol:=function(s)local ss,e;s:=FullSymbol(s);
@@ -121,9 +124,9 @@ CycPolFakeDegreeSymbol:=function(arg)local s,p,res,delta,theta,r,d,e,q,rot;
   if Length(arg)=2 then p:=E(e)^arg[2];else p:=1;fi;
 
   delta:=S->Product(Combinations(S,2),x->CycPol(q^(e*x[2])-q^(e*x[1])));
-  theta:=S->Product(Filtered(S,x->x>0),l->Product([1..l],h->CycPol(q^(e*h)-1)));
+  theta:=S->Product(S,l->Product([1..l],h->CycPol(q^(e*h)-1)));
 
-  if Length(s)=1 then d:=0; else d:=DefectSymbol(s); fi;
+  d:=DefectSymbol(s);
 
   if   d=1 then res:=theta([r]);
   elif d=0 then res:=theta([r-1])*CycPol(q^r-p);
@@ -150,7 +153,7 @@ end;
 # works for same cases as CycPolFakeDegreeSymbol
 LowestPowerFakeDegreeSymbol:=function(s)local res,gamma,d,e;
   s:=FullSymbol(s);
-  if Length(s)=1 then d:=0; else d:=DefectSymbol(s); fi;
+  d:=DefectSymbol(s);
   if not d in [0,1] then return -1;fi;
   e:=Length(s);
   res:=e*Sum(Filtered(s,x->x<>[]),S->S*[Length(S)-1,Length(S)-2..0]);
@@ -164,7 +167,7 @@ end;
 # works for same cases as CycPolFakeDegreeSymbol
 HighestPowerFakeDegreeSymbol:=function(arg)local s,p,res,gamma,r,d,e;
   s:=FullSymbol(arg[1]); e:=Length(s);
-  if Length(s)=1 then d:=0; else d:=DefectSymbol(s); fi;
+  d:=DefectSymbol(s);
   if Length(arg)=2 then p:=arg[2];else p:=e;fi;
   if not d in [0,1] then return -1;fi;
   r:=RankSymbol(s); 

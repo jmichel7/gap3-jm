@@ -95,6 +95,8 @@ Rational:=function(a)
   fi;
 end;
 
+StringToDigits:=s->List(s,x->Position("0123456789",x))-1;
+  
 # evalf(x [,precision])
 evalf:=function(arg)local x,p,q,res,N,v,i,sign;
   x:=arg[1];
@@ -130,7 +132,7 @@ evalf:=function(arg)local x,p,q,res,N,v,i,sign;
     if i=false then v:=1;
     else x:=Filtered(x,y->y<>'.');v:=10^(1+Length(x)-i);
     fi;
-    x:=sign*ValuePol(List(Reversed(x),y->Position("0123456789",y))-1,10);
+    x:=sign*ValuePol(StringToDigits(Reversed(x)),10);
     if v<=q then return Decimal(x/v,q);
     else return rec(mantissa:=QuoInt(x,v/q),guard:=q,operations:=DecimalOps);
     fi;

@@ -21,7 +21,7 @@ CHEVIE.IndirectAddData("CharName",["2E6","E6","E7","E8","2F4","F4","G2",
       fi;
     od;
     if IsBound(option.TeX) then s:="\\phi_";else s:="phi";fi;
-    Append(s,SPrint("{",x[1],",",x[2],"}"));
+    PrintToString(s,"{",x[1],",",x[2],"}");
     if Length(x)=3 then Append(s,List([1..x[3]],y->'\''));fi;
     return String(s);
 end);
@@ -132,7 +132,7 @@ CHEVIE.IndirectAddData("PrintDiagram",["E6","E7","E8"],
   l:=Length(String(indices[1]))+Length(String(indices[3]))+4;
   Print(String("",l-1),indices[2],"\n");
   Print(String("",Length(title)+l),"|\n");
-  Print(String(String("",Length(title)-2)),indices[1]);
+  Print(SPrint(String("",Length(title)-2),indices[1]));
   for i in [3..r] do Print(" - ",indices[i]);od;
   Print("\n");
 end);

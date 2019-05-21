@@ -72,16 +72,12 @@ function(s)local t;t:=[[[]],[[1]],[[1,2],[1,3],[2,3],[1,8]],[[1..3]]];
 
 CHEVIE.AddData("ClassNames","G27",
  [".","2","12","c2","23","132","c","2c2c","13","3232",#10
-  "2cc","ccc","23z","132132","cc",#15
-  "13z","2ccc","32zzzz","cc21323","zcc",#20
-  "12z","1z","3232zz","2323z","1zz",#25
-  "zzcccc","cccc","zcccc","32zzz","z",#30
+  "2cc","ccc","23z","132132","cc","13z","2ccc","32zzzz","cc21323","zcc",#20
+  "12z","1z","3232zz","2323z","1zz","zzcccc","cccc","zcccc","32zzz","z",#30
   "zzzzz","zz","zzzz","zzz"]);
 
-CHEVIE.AddData("WordsClassRepresentatives","G27",
-List(CHEVIE.R("ClassNames","G27"),
- x->Replace(x,".",[],"1",[1],"2",[2],"3",[3],"c",[1,2,3],"z",
- [1,2,3,1,2,3,1,2,3,1,2,3,1,2,3])));
+CHEVIE.AddData("WordsClassRepresentatives","G27",List(CHEVIE.R("ClassNames","G27"),
+  x->StringToDigits(Replace(x,".","","z","ccccc","c","123"))));
 
 CHEVIE.AddData("PowerMaps","G27",
  [,[1,1,3,8,10,14,15,4,9,1,22,4,23,26,27,9,22,23,

@@ -106,7 +106,7 @@ TryConjugatePresentation:=function(arg)
   end;
 # s: "Cac" means take a->Cac
 
-  Tally:=p->Sum( p.tietze[6], Length);
+  Tally:=p->[Length(p.tietze[6]),Sum( p.tietze[6], Length)];
 
   applicable:=function(p)local res,v,i,r;
    res:=[];
@@ -137,14 +137,14 @@ TryConjugatePresentation:=function(arg)
     Print(c);
     n:=ConjugatePresentation(p,c);
     if Length(arg)=3 and Tally(n)<=arg[3] then
-      InfoChevie2("# ",[c[2]],"->",c," gives length ",Tally(n),"\n");
+      InfoChevie2("# ",[c[2]],"->",c," gives rels/len ",Tally(n),"\n");
       DisplayPresentation(n);
     fi;
     if Tally(n)<tp then
-      InfoChevie("# ",[c[2]],"->",c," gives length ",Tally(n),"\n");
+      InfoChevie("# ",[c[2]],"->",c," gives rels/len ",Tally(n),"\n");
       return n;
     fi;
-    if Tally(n)<tp+10 then Add(p1,[c,n]);fi;
+#   if Tally(n)<tp+10 then Add(p1,[c,n]);fi;
   od;
   SortParallel(List(p1,x->Tally(x[2])),p1);
   for p2 in p1 do 
@@ -153,12 +153,12 @@ TryConjugatePresentation:=function(arg)
       Print(p2[1],",",c);
       if Length(arg)=3 and Tally(n)<=arg[3] then
 	InfoChevie2("# ",[p2[1][2]],"->",p2[1]," then ",[c[2]],"->",c,
-	  " gives length ",Tally(n),"\n");
+	  " gives rels/len ",Tally(n),"\n");
 	DisplayPresentation(n);
       fi;
       if Tally(n)<tp then
         InfoChevie("# ",[p2[1][2]],"->",p2[1]," then ",[c[2]],"->",c,
-         " gives length ",Tally(n),"\n");
+         " gives rels/len ",Tally(n),"\n");
         return n;
       fi;
     od;

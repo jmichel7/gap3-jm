@@ -51,9 +51,8 @@ CHEVIE.AddData("ClassNames","G29",[".","1","12","23","31","234","341","123",
   "12zz","234zz","234z","cccc","31z",
   "3232z","1z","323123121z","432432z","z","zzz","zz"]);
 
-CHEVIE.AddData("WordsClassRepresentatives","G29",
- List(CHEVIE.R("ClassNames","G29"),x->Replace(x,".",[],"1",[1],
-   "2",[2],"3",[3],"4",[4],"z","ccccc","c",[1,2,4,3])));
+CHEVIE.AddData("WordsClassRepresentatives","G29",List(CHEVIE.R("ClassNames","G29"),
+  x->StringToDigits(Replace(x,".","","z","ccccc","c","1243"))));
 
 CHEVIE.AddData("PowerMaps","G29",[,[1,1,3,11,1,21,3,3,22,5,1,19,19,5,11,
   11,26,31,29,26,11,11,26,26,1,3,21,22,29,37,37,37,37,11,37,37,1],
@@ -1117,7 +1116,7 @@ CHEVIE.AddData("UnipotentCharacters","G29",function()
   harishChandra:=[
     rec(relativeType:=rec(series:="ST",indices:=[1..4],rank:=4,ST:=29),
  levi:=[], parameterExponents:=[1,1,1,1],
-        charNumbers:=OnTuples([1..37],()),
+        charNumbers:=[1..37],
 	eigenvalue:=1, cuspidalName:=""),
    rec(relativeType:=rec(series:="ST",indices:=[4,1],rank:=2,p:=4,q:=1),
 levi:=[2..3],

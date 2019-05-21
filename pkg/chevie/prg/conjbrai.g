@@ -128,7 +128,7 @@ ShowMaps:=function(maps)local new,m,p,f,l,l1,l2,i,a,composed;
 end;
 
 ############# End of category code ##############################
-
+# PreferredPrefix(b[,F])
 # faster than the naive code:
 # 
 # InitialFactor:=function(b)local M;M:=b.monoid;
@@ -255,20 +255,15 @@ MinConjugating.SC:=function(a,x,F)local M,ggF,f,p,l;M:=a.monoid;
   fi;
 end;
 
-AtomicMaps:=function(arg)local a,F,type,res,i,M,minc,pos,tgt;
-  a:=arg[1];arg:=arg{[2..Length(arg)]};
-  if Length(arg)>0 and IsFunc(arg[1])then F:=arg[1];arg:=arg{[2..Length(arg)]};
-  else F:=function(arg)return arg[1];end;
-  fi;
-  if Length(arg)=1 then type:=arg[1];else type:="SC";fi;
+AtomicMaps:=function(a,F,type)local res,i,M,minc,pos,tgt;
   M:=a.monoid;res:=[];
   if not IsBound(MinConjugating.(type)) then
     Error(type," should be one of ",RecFields(MinConjugating),"\n");
   fi;
   for i in [1..M.nrAtoms] do
     minc:=MinConjugating.(type)(a,M.atoms[i],F);
-    if minc<>false and not 
-      ForAny([i+1..M.nrAtoms],k->M.IsLeftDescending(minc,k)) then
+    if minc<>false and not ForAny([i+1..M.nrAtoms],
+        k->M.IsLeftDescending(minc,k)) then
       if not type in ["Pos","Cyc"] then # inf does not decrease
            tgt:=PositiveSimpleConjugation(a,minc,F); 
       else tgt:=M.Elt([minc])^-1*a*M.Elt([F(minc)]);

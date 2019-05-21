@@ -513,12 +513,12 @@ CHEVIE.AddData("UnipotentCharacters","B",function(arg)
   rank:=arg[1];
   uc:=rec(harishChandra:=[],charSymbols:=[]);
   for d in 1+2*[0..QuoInt(-1+RootInt(1+4*rank,2),2)] do
-    s:=(d^2-1)/4;
+    s:=QuoInt(d^2-1,4);
     s:=rec(relativeType:=rec(series:="B",indices:=[1+s..rank],rank:=rank-s),
 	   levi:=[1..s],
 	   eigenvalue:=(-1)^QuoInt(d+1,4),
 	   parameterExponents:=Concatenation([d],[2+s..rank]*0+1),
-	   cuspidalName:=SPrint("B_",TeXBracket(s)));
+	   cuspidalName:=SPrint("B_{",s,"}"));
     Add(uc.harishChandra,s);
     symbols:=Symbols(rank,d);
     s.charNumbers:=[1..Length(symbols)]+Length(uc.charSymbols);

@@ -95,7 +95,7 @@ function(arg)
       l:=Number(bc[i],x->x<0);
       if l<>0 then
         if '+' in name then name:=Replace(name,"+",SPrint("(a_",l,")+"));
-        else Append(name,SPrint("(a_",l,")"));fi;
+        else PrintToString(name,"(a_",l,")");fi;
       fi;
       name:=String(Replace(name,"+","{+}"));
       cl:=uc.classes[i];

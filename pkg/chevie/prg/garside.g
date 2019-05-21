@@ -194,14 +194,16 @@ GarsideEltOps.GetRoot:=function(b0,n)local b,conj,M,tM,inner,a,l,k;
     cst:=b->ForAll(b.elm,x->Length(Set(x.v))=1);
     sc:=RepresentativeSC(b); conj:=[sc.conj]; class:=[sc.circuit[1]];
     if cst(class[1]) then return conj[1];fi;
-    for a in class do for m in AtomicMaps(a) do
-      if not m.tgt in class then
-        e:=conj[Position(class,a)]*m.map;
-#       Print(".\c");
-        if cst(m.tgt) then return e;fi;
-        Add(class,m.tgt); Add(conj,e);
-      fi;
-    od; od;
+    for a in class do 
+      for m in AtomicMaps(a,function(arg)return arg[1];end,"SC") do
+        if not m.tgt in class then
+          e:=conj[Position(class,a)]*m.map;
+  #       Print(".\c");
+          if cst(m.tgt) then return e;fi;
+          Add(class,m.tgt); Add(conj,e);
+        fi;
+      od; 
+    od;
     return false;
   end;
   conj:=inner(b);if conj=false then return false;fi;
@@ -394,7 +396,7 @@ CompleteGarsideRecord:=function(M,opt)local eltops;
   fi;
   if IsBound(opt.interval) then
     M.interval:=true;
-    M.LeftQuotient:=function(a,b)return a^-1*b;end;
+    M.LeftQuotient:=function(a,b)return LeftQuotient(a,b);end;
     M.RightQuotient:=function(a,b)return a/b;end;
     M.Product:=function(a,b)return a*b;end;
     if IsBound(M.delta) then

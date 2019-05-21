@@ -148,7 +148,7 @@ CHEVIE.AddData("ParabolicRepresentatives","imp",function(p,q,r,s)local t;
       return List(Concatenation(List([1..r+1-s],i->Partitions(s,i))),j->
         Concatenation(List([1..Length(j)],k->Sum(j{[1..k-1]})+k-1+[1..j[k]])));
     else return Concatenation(List([0..s],i->List(
-            CHEVIE.imp.ParabolicRepresentatives(1,1,r-i-1,s-i),j->
+            CHEVIE.R("ParabolicRepresentatives","imp")(1,1,r-i-1,s-i),j->
           Concatenation([1..i],i+1+j))));
     fi;
   elif r=2 then 
@@ -295,7 +295,7 @@ end);
 
 CHEVIE.AddData("ClassName", "imp", function(p)local j,p1;
   if IsList(p) and ForAll(p, IsList) then 
-    if Sum(p,Sum)=1 then return Format(E(Length(p))^(Position(p,[1])-1));
+    if Sum(p,Sum)=1 then return FormatTeX(E(Length(p))^(Position(p,[1])-1));
     else return PartitionTupleToString(p);
     fi;
   elif IsList(p) and ForAll(p, IsInt) then return IntListToString(p);
@@ -407,7 +407,7 @@ CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,s,fd;
     res.opdam:=PermListList(res.charparams,List(res.charparams,
       function(s)
         if not IsList(s[Length(s)]) then
-          s:=Copy(s);t:=(Length(s)-2)/d;
+          s:=Copy(s);t:=QuoInt(Length(s)-2,d);
           s{[0..t-1]*d+1}:=Rotation(s{[0..t-1]*d+1},1);
           s{[1..Length(s)-2]}:=Minimum(List([1..t],
               i->Rotation(s{[1..Length(s)-2]},i*d)));
@@ -477,7 +477,7 @@ CHEVIE.AddData("SchurModel","imp",function(p,q,r,phi)
     od;od;od;
     return res;
   elif [q,r]=[2,2] then
-    ci:=CHEVIE.imp.CharInfo(p,q,r);
+    ci:=CHEVIE.R("CharInfo","imp")(p,q,r);
     phi:=ci.malle[Position(ci.charparams,phi)];
     if phi[1]=1 then
       res:=rec(coeff:=1,factor:=[1..4+p/2]*0, vcyc:=[]);
@@ -513,7 +513,7 @@ end);
 
 CHEVIE.AddData("SchurData","imp",function(p,q,r,phi)local ci,res;
   if [q,r]=[2,2] then 
-    ci:=CHEVIE.imp.CharInfo(p,q,r);
+    ci:=CHEVIE.R("CharInfo","imp")(p,q,r);
     phi:=ci.malle[Position(ci.charparams,phi)];
     if phi[1]=1 then
       res:=rec(order:=[phi[2],3-phi[2],2+phi[3],5-phi[3],4+phi[4]]);
@@ -1963,7 +1963,7 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
 -1]]],[[[-1,0],[-1,x]],[[-1,0],[-1,x]],[[x,-x],[0,-1]]],[[[x]],[[x]],[[x]]]];
     return r[i];
   else
-    S:=CHEVIE.imp.CharInfo(p,q,r).charparams[i];
+    S:=CHEVIE.R("CharInfo","imp")(p,q,r).charparams[i];
     # S is a p-tuple of partitions of area r
     p1rRep:=function()local Q,pos,ct;
     # Model of Ariki,  Halverson-Ram for reps of G(p,1,r): 
@@ -1996,7 +1996,7 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
     else
       if para[2]<>para[3] then
         if q mod 2=0 and r=2 then
-          S:=CHEVIE.imp.CharInfo(p,q,r).malle[i];
+          S:=CHEVIE.R("CharInfo","imp")(p,q,r).malle[i];
 	  if S[1]=1 then 
 	    return [[[para[1][1+((S[4]-1) mod (p/q))]]],
 	     [[para[2][S[2]]]],[[para[3][S[3]]]]];
@@ -2238,12 +2238,9 @@ CHEVIE.AddData("UnipotentCharacters","imp",function(p,q,r)
          x->Position(uc.charSymbols,SymbolPartitionTuple(x,List(c,Length))));
     res.cuspidalName:=ImprimitiveCuspidalName(c);
     return res;end);
-    uc.b:=[];uc.B:=[];
+    uc.b:=uc.a*0;uc.B:=uc.a*0;
     uc.b{uc.harishChandra[1].charNumbers}:=ci.b;
     uc.B{uc.harishChandra[1].charNumbers}:=ci.B;
-    for f in uc.harishChandra{[2..Length(uc.harishChandra)]} do
-     uc.b{f.charNumbers}:=f.charNumbers*0; uc.B{f.charNumbers}:=f.charNumbers*0;
-    od;
     uc.families:=List(CollectBy(uc.charSymbols,x->Collected(Concatenation(x))),
       y->MakeFamilyImprimitive(y,uc));
     SortBy(uc.families,x->x.charNumbers);
@@ -2276,7 +2273,7 @@ CHEVIE.AddData("UnipotentCharacters","imp",function(p,q,r)
      s:=FullSymbol(uc.charSymbols[i]);l:=List(s,Length);
      return [Sum(s,x->Sum(PartBeta(x))),l-Minimum(l)];end),
      l->rec(charNumbers:=l));
-   Sort(uc.harishChandra);
+   SortBy(uc.harishChandra,x->x.charNumbers);
    extra:=[];
    for f in uc.harishChandra do
      addextra:=false;
@@ -2294,7 +2291,7 @@ CHEVIE.AddData("UnipotentCharacters","imp",function(p,q,r)
      else 
        f.relativeType:=rec(series:="ST",indices:=[l+1..r],
 	 rank:=r-l,p:=p,q:=1);
-       f.parameterExponents:=[1..r-l]*0+1;f.parameterExponents[1]:=s;
+       f.parameterExponents:=Concatenation([s],[1..r-l-1]*0+1);
      fi;
      s:=List(s,x->[0..x-1]);
      f.cuspidalName:=ImprimitiveCuspidalName(s);
@@ -2309,12 +2306,10 @@ CHEVIE.AddData("UnipotentCharacters","imp",function(p,q,r)
    for f in uc.families do f.eigenvalues:=List(f.charNumbers,i->
      First(uc.harishChandra,s->i in s.charNumbers).eigenvalue);
    od;
-   uc.b:=[];uc.B:=[];
+   uc.b:=[1..Length(uc.charSymbols)]*0;
+   uc.B:=[1..Length(uc.charSymbols)]*0;
    uc.b{uc.harishChandra[1].charNumbers}:=ci.b;
    uc.B{uc.harishChandra[1].charNumbers}:=ci.B;
-   for f in uc.harishChandra{[2..Length(uc.harishChandra)]} do
-    uc.b{f.charNumbers}:=f.charNumbers*0; uc.B{f.charNumbers}:=f.charNumbers*0;
-   od;
    if [p,q,r]=[3,3,3] then
      uc.families[6]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[8,7,11],
        rec(signs:=[1,1,-1]));

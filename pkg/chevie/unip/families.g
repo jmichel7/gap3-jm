@@ -94,9 +94,6 @@ FamilyOps.\*:=function(arg)local res,a;
   if ForAll(arg,f->IsBound(f.charNumbers)) then 
     res.charNumbers:=Cartesian(List(arg,x->x.charNumbers));
   fi;
-  if ForAll(arg,f->IsBound(f.charLabels)) then 
-    res.charLabels:=List(Cartesian(List(arg,x->x.charLabels)),Join);
-  fi;
   if ForAll(arg,f->IsBound(f.special)) then 
     res.special:=PositionCartesian(List(arg,Size),List(arg,f->f.special));
     res.cospecial:=PositionCartesian(List(arg,Size),
@@ -516,7 +513,7 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu;
     x->List(x.names,y->SPrint("(",x.name,",",y,")"))));
   res.xy:=Concatenation(List(res.classinfo,r->List(r.centelms,y->[r.elt,y])));
   p:=Concatenation(List(res.classinfo,r->List(r.centelms,
-    function(y)local p,r1;r1:=res.classinfo[PositionClass(g,y^-1)];
+    function(y)local r1;r1:=res.classinfo[PositionClass(g,y^-1)];
       return Position(res.xy,[r1.elt,r1.centelms[PositionClass(r1.centralizer,
         r.elt^RepresentativeOperation(g,y^-1,r1.elt))]]);
       end))); # Fourier permutation of the Mellin basis

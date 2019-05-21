@@ -396,7 +396,7 @@ end);
 CHEVIE.AddData("UnipotentCharacters","D",function(rank)local uc,symbols,r,d,s;
   uc:=rec(harishChandra:=[],charSymbols:=[]);
   for d in 4*[0..RootInt(QuoInt(rank,4),2)] do
-    r:=d^2/4;
+    r:=QuoInt(d^2,4);
     s:=rec(relativeType:=rec(series:="B",indices:=[1+r..rank],rank:=rank-r),
       levi:=[1..r], eigenvalue:=(-1)^QuoInt(d+1,4),
       parameterExponents:=Concatenation([d],[2+r..rank]*0+1));

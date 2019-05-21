@@ -90,7 +90,7 @@ end);
 
 CHEVIE.AddData("CharName","G4_22",function(ST,x,option)local s,f;
   if IsBound(option.TeX) then s:="\\phi_";else s:="phi";fi;
-  Append(s,SPrint("{",x[1],",",x[2],"}"));
+  PrintToString(s,"{",x[1],",",x[2],"}");
   if Length(x)=3 then Append(s,List([1..x[3]],y->'\''));fi;
   return String(s);
 end);
@@ -112,17 +112,12 @@ CHEVIE.AddData("NrConjugacyClasses","G4_22",function(ST)local l;
   l:=[7,21,14,42,16,32,48,96,8,16,24,48,45,90,135,270,27,54,18];return l[ST-3];
 end);
 
-CHEVIE.AddData("paramclasses","G4_22",function(ST)
-  if ST in [4..7] then return
-    Concatenation(List([[1,12],[2,6],[3,12],[4,12]],
-                     i->List([1..i[2]]-1,j->[i[1],j])));
-  elif ST in [8..15] then return
-    Concatenation(List([[1,24],[2,12],[3,24],[4,24],[5,12]],
-	i->List([1..i[2]]-1,j->[i[1],j])));
-  elif ST in [16..22] then return
-    Concatenation(List([[1,60],[2,30],[3,60],[4,60],[5,60]],
-	i->List([1..i[2]]-1,j->[i[1],j])));
+CHEVIE.AddData("paramclasses","G4_22",function(ST)local p;
+  if ST in [4..7] then p:=[[1,12],[2,6],[3,12],[4,12]];
+  elif ST in [8..15] then p:=[[1,24],[2,12],[3,24],[4,24],[5,12]];
+  elif ST in [16..22] then p:=[[1,60],[2,30],[3,60],[4,60],[5,60]];
   fi;
+  return Concatenation(List(p,i->List([0..i[2]-1],j->[i[1],j])));
 end);
 
 CHEVIE.AddData("GeneratingRoots","G4_22",function(ST)local d;d:=rec(
@@ -600,7 +595,7 @@ CHEVIE.AddData("PowerMaps","G4_22",function(ST)local l,res,i;
   return res;
 end);
 
-CHEVIE.AddData("ClassInfo","G4_22",function(ST)local res,p,g,m,f,digits;
+CHEVIE.AddData("ClassInfo","G4_22",function(ST)local res,p,g,z,f,digits;
   p:=CHEVIE.R("paramclasses","G4_22")(ST);
   res:=rec();
   g:=function(c,a,b)return c[2] mod a=b[c[1]];end;
@@ -613,117 +608,117 @@ CHEVIE.AddData("ClassInfo","G4_22",function(ST)local res,p,g,m,f,digits;
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],6,[0,3,2,0]));
     res.classtext:=List(p{res.indexclasses},
                   x->Replace(f(x,[3,1]),[2],[],[1,3,1],[2],[3],[1]));
-    m:="121212";
+    z:="121212";
   elif ST=5 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],2,[0,1,0,0]));
     res.classtext:=List(p{res.indexclasses},
                   x->Replace(f(x,[2,3]),[1],[],[2],[1],[3],[2]));
-    m:="1212";
+    z:="1212";
   elif ST=6 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],3,[0,0,2,0]));
     res.classtext:=List(p{res.indexclasses},
                   x->Replace(f(x,[3,1]),[2],[],[3],[2]));
-    m:="212121";
+    z:="212121";
   elif ST=7 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],1,[0,0,0,0]));
     res.classtext:=List(p{res.indexclasses},x->f(x,[1,2,3]));
-    m:="123";
+    z:="123";
   elif ST=8 then
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],6,[0,3,2,0,0]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[3,1]),[2],[],[1,3,1],[2],[3],[1]));
-    m:="121212";
+    z:="121212";
   elif ST=9 then
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],3,[0,0,2,0,0]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[3,1]),[2],[],[3],[2]));
-    m:="212121";
+    z:="212121";
   elif ST=10 then
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],2,[0,1,0,0,0]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[2,3]),[1],[],[2],[1],[3],[2]));
-    m:="1212";
+    z:="1212";
   elif ST=11 then
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],1,[0,0,0,0,0]));
     res.classtext:=List(p{res.indexclasses},x->f(x,[1,2,3]));
-    m:="123";
+    z:="123";
   elif ST=12 then
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],12,[0,0,8,3,6]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[1,2]),[3],[],[2,1,2,1,2],[2,3]));
-    m:="123123123123";
+    z:="123123123123";
   elif ST=13 then
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],6,[0,0,2,3,0]));
-    res.classtext:=List([[],"z","zz","zzz",[2],[2,'z'],[3,1,2],[3,1,2,'z'],
-    [3,1,2,'z','z'],[3,1,2,'z','z','z'],[2,3,1,2,1],[2,3,1,2,1,'z'],
-    [2,3,1,2,1,'z','z'],[2,3,1,2,1,'z','z','z'],[1],[1,'z']],x->Replace(x,
-      "z",[1,2,3,1,2,3,1,2,3]));
+    res.classtext:=List([[],[0],[0,0],[0,0,0],[2],[2,0],[3,1,2],[3,1,2,0],
+    [3,1,2,0,0],[3,1,2,0,0,0],[2,3,1,2,1],[2,3,1,2,1,0],
+    [2,3,1,2,1,0,0],[2,3,1,2,1,0,0,0],[1],[1,0]],x->Replace(x,
+      [0],[1,2,3,1,2,3,1,2,3]));
   # The above only correct in the group
-    m:="123123123";
+    z:="123123123";
   elif ST=14 then
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],4,[0,0,0,3,2]));
     res.classtext:=List(p{res.indexclasses},x->Replace(f(x,[1,2]),[3],[]));
-    m:="12121212";
+    z:="12121212";
   elif ST=15 then
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],2,[0,0,0,1,0]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[1,2,3]),[3,3],[4],[3,1,2,3],[4,1,2],[4],[3]));
-    m:="12312";
+    z:="12312";
   elif ST=16 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],6,[0,3,2,0,0]));
     res.classtext:=List(p{res.indexclasses},
       c->Replace(f(c,[3,1]),[2],[],[1,3,1],[2],[3],[1]));
-    m:="121212";
+    z:="121212";
   elif ST=17 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],3,[0,0,2,0,0]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[3,1]),[2],[],[3],[2]));
-    m:="212121";
+    z:="212121";
   elif ST=18 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],2,[0,1,0,0,0]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[2,3]),[1],[],[2],[1],[3],[2]));
-    m:="1212";
+    z:="1212";
   elif ST=19 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],1,[0,0,0,0,0]));
     res.classtext:=List(p{res.indexclasses},
       x->f(x,[1,2,3]));
-    m:="123";
+    z:="123";
   elif ST=20 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],10,[0,5,0,4,8]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[1,2]),[3],[],[1,1],[],
                                       [1,2,1],[3],[2],[1],[3],[2]));
-    m:="2121212121";
+    z:="2121212121";
   elif ST=21 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],5,[0,0,0,4,3]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[1,2]),[3],[]));
-    m:="1212121212";
+    z:="1212121212";
   elif ST=22 then 
     res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],15,[0,0,5,9,3]));
     res.classtext:=List(p{res.indexclasses},
       x->Replace(f(x,[1,2]),[3],[],[2,1,2,1,2],[2,3]));
-    m:="123123123123123";
+    z:="123123123123123";
   fi;
   digits:="123"; 
   res.classnames:=List(res.classtext,function(x)local res;
     if Length(x)=0 then return "."; fi;
-    return String(Replace(digits{x},m,"z"));
+    return String(Replace(digits{x},z,"z"));
   end);
   if ST in [4..7] then
-  m:=[1,6,4,4];res.classes:=List(p{res.indexclasses},x->m[x[1]]);
-  m:=[1,12,6,4,3,12,2,12,3,4,6,12,2,12,6,4,6,12,3,12,6,12,3,12,6,12,3,12,6,
+  z:=[1,6,4,4];res.classes:=List(p{res.indexclasses},x->z[x[1]]);
+  z:=[1,12,6,4,3,12,2,12,3,4,6,12,2,12,6,4,6,12,3,12,6,12,3,12,6,12,3,12,6,
       12,3,12,6,12,3,12,6,12,3,12,6,12];
   elif ST in [8..15] then
-  m:=[1,12,8,6,6];res.classes:=List(p{res.indexclasses},x->m[x[1]]);
-  m:=[1,24,12,8,6,24,4,24,3,8,12,24,2,24,12,8,3,24,4,24,6,8,12,24,2,24,12,8,6,
+  z:=[1,12,8,6,6];res.classes:=List(p{res.indexclasses},x->z[x[1]]);
+  z:=[1,24,12,8,6,24,4,24,3,8,12,24,2,24,12,8,3,24,4,24,6,8,12,24,2,24,12,8,6,
       24,4,24,6,8,12,24,3,24,12,24,6,24,12,24,3,24,12,24,6,24,12,24,3,24,12,24,
       6,24,12,24,4,24,12,8,12,24,4,24,12,8,12,24,4,24,12,8,12,24,4,24,12,8,12,
       24,2,24,12,8,6,24,4,24,6,8,12,24];
   elif ST in [16..22] then
-  m:=[1,30,20,12,12];res.classes:=List(p{res.indexclasses},x->m[x[1]]);
-  m:=[1,60,30,20,15,12,10,60,15,20,6,60,5,60,30,4,15,60,10,60,3,20,30,60,5,12,
+  z:=[1,30,20,12,12];res.classes:=List(p{res.indexclasses},x->z[x[1]]);
+  z:=[1,60,30,20,15,12,10,60,15,20,6,60,5,60,30,4,15,60,10,60,3,20,30,60,5,12,
     30,20,15,60,2,60,15,20,30,12,5,60,30,20,3,60,10,60,15,4,30,60,5,60,6,20,15,
     60,10,12,15,20,30,60,2,60,30,20,30,12,10,60,30,20,6,60,10,60,30,4,30,60,10,
     60,6,20,30,60,10,12,30,20,30,60,3,60,30,60,15,12,30,60,15,60,6,60,15,60,30,
@@ -735,7 +730,7 @@ CHEVIE.AddData("ClassInfo","G4_22",function(ST)local res,p,g,m,f,digits;
     20,30,60,5,60,30,20,15,60,10,60,15,20,30,60,5,60,30,20,15,60,10,60,15,20,30,
     60,5,60,30,20,15,60,10,60,15,20,30,60];
   fi;
-  res.orders:=m{res.indexclasses};
+  res.orders:=z{res.indexclasses};
   res.classparams:=res.classnames;
   return res;
 end);
@@ -1958,7 +1953,7 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
     rec(relativeType:=rec(series:="A",indices:=[],rank:=0),
         levi:=[1..2], parameterExponents:=[],
 	charNumbers:=[30], eigenvalue:=E(8)^7, qEigen:=1/2, 
-        cuspidalName:="G_6[\\zeta_8^7]"),
+        cuspidalName:="G_6[\\zeta_8^7]")
 	],
     families:=[ Family("C1",[1]),Family(ComplexConjugate(
       SubFamilyij(CHEVIE.families.X(12),1,3,(3+ER(-3))/2)),

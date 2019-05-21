@@ -259,8 +259,8 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("G",2),levi:="",Z:=[],
   for c in uc.classes do Unbind(c.succ);
     if not IsBound(c.red) then c.red:=Z(1);fi;
     if not IsBound(c.Au) then c.Au:=Z(1);fi;
-    c.AuAction:=ExtendedReflectionGroup(c.red,List(c.Au.generators,
-        x->IdentityMat(c.red.rank)));
+    c.AuAction:=ExtendedReflectionGroup(c.red,List([1..SemisimpleRank(c.Au)],
+        x->IdentityMat(Rank(c.red))));
   od;
   return uc;
 end);

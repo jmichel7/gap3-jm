@@ -107,7 +107,7 @@ CoxeterGroupSymmetricGroup:=function(n)local W;
     while true do
       s:=();for i in [1..n-1] do try(i);od;
       if s=() then return Concatenation([res],arg);fi;
-      res:=res*s;arg:=s^-1*arg;
+      res:=res*s;arg:=LeftQuotient(s,arg);
     od;
   end;
   W.operations.DualBraidMonoid:=PermRootOps.DualBraidMonoid;

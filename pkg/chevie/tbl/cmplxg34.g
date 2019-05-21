@@ -75,9 +75,8 @@ CHEVIE.AddData("ClassNames","G34",
 "5342312432zzzzz","31zzzzz","1zzzzz","12zzzzz","53242312454231241zz",
 "123zzzzz"]);
 
-CHEVIE.AddData("WordsClassRepresentatives","G34",
- List(CHEVIE.R("ClassNames","G34"),x->Replace(x,".",[],"1",[1],
-   "2",[2],"3",[3],"4",[4],"5",[5],"6",[6],"z","ccccccc","c",[6,5,3,4,2,1])));
+CHEVIE.AddData("WordsClassRepresentatives","G34",List(CHEVIE.R("ClassNames","G34"),
+  x->StringToDigits(Replace(x,".","","z","ccccccc","c","653421"))));
 
 CHEVIE.AddData("PowerMaps","G34",
   [,[1,1,3,1,3,4,27,1,32,32,11,12,14,13,4,27,3,12,

@@ -40,7 +40,8 @@ AUTO(ReadChv("lib/cycpol"),
   IsCycPol, LcmCycPol);
 
 AUTO(ReadChv("lib/decimal"),
-  DecimalOps, Exp, IsDecimal, Log, Pi, Rational, SetDecimalPrecision, evalf);
+  DecimalOps, Exp, IsDecimal, Log, Pi, Rational, SetDecimalPrecision, 
+  StringToDigits, evalf);
 
 AUTO(ReadChv("lib/symbol"),
   Compositions,

@@ -68,9 +68,8 @@ CHEVIE.AddData("ClassNames","G31",
   "1z","1zzz", "12zz","123z", "123zz", #55
   "zcc","z","zzz","zz"]);
 
-CHEVIE.AddData("WordsClassRepresentatives","G31",
- List(CHEVIE.R("ClassNames","G31"),x->Replace(x,".",[],"1",[1],"2",
-  [2],"3",[3],"4",[4],"5",[5],"z","cccccc","c",[1,2,3,4,5])));
+CHEVIE.AddData("WordsClassRepresentatives","G31",List(CHEVIE.R("ClassNames","G31"),
+  x->StringToDigits(Replace(x,".","","z","cccccc","c","12345"))));
 
 CHEVIE.AddData("ClassInfo","G31",
   rec(classtext:=CHEVIE.R("WordsClassRepresentatives","G31"),

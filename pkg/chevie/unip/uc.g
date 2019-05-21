@@ -514,7 +514,7 @@ UnipotentCharactersOps.Format:=function(uc,opt)local items,fields,p,i,W,q,res,
 	       "$. of type $",f.name,"$")),"\n");
 	  if IsBound(f.comment) then 
 	    PrintToString(res,center(SPrint("\\it ",f.comment)),"\n");fi;
-	else Append(res,SPrint("\nFamily ",TeXStrip(f.name),"\n"));
+	else PrintToString(res,"\nFamily ",TeXStrip(f.name),"\n");
 	fi;
       fi;
       p:=f.charNumbers[f.special];

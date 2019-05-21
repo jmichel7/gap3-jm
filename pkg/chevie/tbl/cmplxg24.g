@@ -54,14 +54,12 @@ CHEVIE.AddData("ParabolicRepresentatives","G24",# repr. of conj. classes
 function(s)local t;t:=[[[]],[[1]],[[1,2],[2,3]],[[1..3]]];
   return t[s+1];end);
 
-CHEVIE.AddData("WordsClassRepresentatives","G24",
-  [[],[1],[2,3],[1,3],[1,2,3,1,2,3,1,2,3],[1,2,3],[2,3,2,3],[1,2,3,1,2,3,1],
-  [1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3],[1,2,3,1,2,3],[1,2,3,1,2,3,1,2,3,1,2],
-  [1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3]]);
-
 CHEVIE.AddData("ClassNames","G24",
 [".","1","23","13","ccc","c","2323","cc1","cccccc","cc","ccc12","z"]);
 # z=c^7 where c=123 is coxeter --- in the braid group (cc1)^6=zz
+
+CHEVIE.AddData("WordsClassRepresentatives","G24",List(CHEVIE.R("ClassNames","G24"),
+    x->StringToDigits(Replace(x,".","","z","ccccccc","c","123"))));
 
 CHEVIE.AddData("PowerMaps","G24",
  [ , [ 1, 1, 7, 4, 9, 10, 1, 4, 9, 10, 7, 1 ],

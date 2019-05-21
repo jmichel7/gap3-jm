@@ -95,10 +95,10 @@ CHEVIE.AddData("CharName","I",function(m,x,option)local s;
   fi;
 end);
 
-CHEVIE.AddData("CharInfo","I",function(m)local res,applyf,v;
+CHEVIE.AddData("CharInfo","I",function(m)local res,applyf,v,m1;
   res:=rec(charparams:=[[1,0]]);
-  if m mod 2=0 then res.extRefl:=[1,5,4]; 
-     Append(res.charparams,[[1,m/2,"'"],[1,m/2,"''"]]);
+  if m mod 2=0 then res.extRefl:=[1,5,4];m1:=QuoInt(m,2);
+     Append(res.charparams,[[1,m1,"'"],[1,m1,"''"]]);
   else res.extRefl:=[1,3,2];fi;
   Add(res.charparams,[1,m]);
   Append(res.charparams,List([1..QuoInt(m-1,2)],i->[2,i]));
@@ -121,17 +121,17 @@ CHEVIE.AddData("CharInfo","I",function(m)local res,applyf,v;
   v:=List([1..m],x->[0]);v[m]:=[1,2];
   res.charSymbols:=Concatenation([v],res.charSymbols);
   if m mod 2=0 then
-    v:=List([1..m],x->[0]);v[m]:=[1];v[m/2]:=[1];
+    v:=List([1..m],x->[0]);v[m]:=[1];v[m1]:=[1];
     res.charSymbols:=Concatenation([v],res.charSymbols);
-    v:=List([1..m],x->[0]);v[m]:=[1];v[m/2]:=[1];
+    v:=List([1..m],x->[0]);v[m]:=[1];v[m1]:=[1];
     res.charSymbols:=Concatenation([v],res.charSymbols);
   fi;
   v:=List([1..m],x->[0,1]);v[m]:=[2];
   res.charSymbols:=Concatenation([v],res.charSymbols);
   res.malleParams:=List(res.charSymbols,x->List(x,PartBeta));
   if m mod 2=0 then
-    res.malleParams[2]:=Concatenation(res.malleParams[2]{[1..m/2]},[1]);
-    res.malleParams[3]:=Concatenation(res.malleParams[3]{[1..m/2]},[-1]);
+    res.malleParams[2]:=Concatenation(res.malleParams[2]{[1..m1]},[1]);
+    res.malleParams[3]:=Concatenation(res.malleParams[3]{[1..m1]},[-1]);
   fi;
   return res;
 end);
@@ -147,7 +147,7 @@ end);
 ##
 #F  CHEVIE.R("ClassInfo","I")( <m> ) . .. conjugacy classes for type I.
 ##
-CHEVIE.AddData("ClassInfo","I",function(m)local r,i,clnp,cl,g1,g2,gen,perm;
+CHEVIE.AddData("ClassInfo","I",function(m)local r,i,clnp,cl,g1,g2,gen,perm,m1;
   r := CHEVIE.R("WordsClassRepresentatives", "I")(m);
   clnp := List(r,IntListToString);
   g1:=();i:=2; while 2*i<=m+1 do g1:=g1*(i,m-i+2); i:=i+1;od;
@@ -155,8 +155,9 @@ CHEVIE.AddData("ClassInfo","I",function(m)local r,i,clnp,cl,g1,g2,gen,perm;
   gen := [g1,g2];
   perm := function(l) if Length(l)=0 then return ();else return
                       Product(gen{l});fi;end;
-  if m mod 2=0 then cl:=[1,m/2,m/2]; Append(cl,[1..m/2-1]*0+2);Add(cl,1);
-  else cl:=[1,m];Append(cl,[1..(m-1)/2]*0+2);
+  m1:=QuoInt(m,2);
+  if m mod 2=0 then cl:=[1,m1,m1]; Append(cl,[1..m1-1]*0+2);Add(cl,1);
+  else cl:=[1,m];Append(cl,[1..m1]*0+2);
   fi;
   return rec(classtext:=r, classnames:=clnp, classparams:=clnp,
     orders:=List(r,i->OrderPerm(perm(i))), classes:=cl);
@@ -180,17 +181,14 @@ CHEVIE.AddData("HeckeCharTable","I",function(m,param,rootparam)
   Add(ct,[-v^0,-v^0]);
   cl:=CHEVIE.R("ClassInfo","I")(m); r:=cl.classtext;
   ct:=List(ct,i->List(r,x->Product(i{x})));
-  Append(ct,List([1..QuoInt(m-1,2)],function(j)local l,i,k;
-    l:=[];
-    for i in [1..Length(r)] do
+  Append(ct,List([1..QuoInt(m-1,2)],j->List([1..Length(r)],function(i)local k;
       k:=Length(r[i])/2;
-      if r[i]=[] then l[i]:=2*v^0;
-      elif r[i]=[1] then l[i]:=u-1;
-      elif r[i]=[2] then l[i]:=v-1;
-      else l[i]:=squv^k*(E(m)^(k*j)+E(m)^(-k*j));
+      if r[i]=[] then return 2*v^0;
+      elif r[i]=[1] then return u-1;
+      elif r[i]=[2] then return v-1;
+      else return squv^k*(E(m)^(k*j)+E(m)^(-k*j));
       fi;
-    od;
-  return l;end));
+    end)));
   tbl:=rec(identifier:=SPrint("H(I2(",m,"))"),cartan:=CartanMat("I",2,m), 
     size:=2*m,
     irredinfo:=List(CHEVIE.R("CharInfo","I")(m).charparams,x->rec(
@@ -360,7 +358,7 @@ CHEVIE.AddData("UnipotentCharacters","I",function(e)local cusp,uc,f;
   uc.families:=[Family(CHEVIE.families.Dihedral(e),[1..Length(cusp)+f]+2),
      Family("C1",[1]),Family("C1",[2])];
   uc.parameters:=Concatenation([[0],[1]],uc.families[1].parameters);
-  uc.charSymbols:=List(uc.parameters,p->CHEVIE.I.ParameterToSymbol(e,p));
+  uc.charSymbols:=List(uc.parameters,p->CHEVIE.R("ParameterToSymbol","I")(e,p));
 # for S(k,l) the b is min(k+l,e-k-l)
   uc.a:=Concatenation([0,e],List(uc.families[1].parameters,x->1));
   uc.A:=Concatenation([0,e],List(uc.families[1].parameters,x->e-1));
