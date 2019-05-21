@@ -132,7 +132,7 @@ CHEVIE.IndirectAddData("PrintDiagram",["E6","E7","E8"],
   l:=Length(String(indices[1]))+Length(String(indices[3]))+4;
   Print(String("",l-1),indices[2],"\n");
   Print(String("",Length(title)+l),"|\n");
-  Print(SPrint(String("",Length(title)-2),indices[1]));
+  Print(String(String("",Length(title)-2)),indices[1]);
   for i in [3..r] do Print(" - ",indices[i]);od;
   Print("\n");
 end);

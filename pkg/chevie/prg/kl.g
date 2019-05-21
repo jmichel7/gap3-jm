@@ -44,8 +44,9 @@ CreateHeckeBasis("T",rec(T:=x->x,     # method to convert to T
 RootParameter:=function(arg)local H,W,i,j,l;
   H:=arg[1]; W:=Group(H);
   if Length(arg)=1 then
-    H.equal:=Length(Set(List([1..Length(H.parameter)],
-                      i->RootParameter(H,i))))<=1;
+#   H.equal:=Length(Set(List([1..Length(H.parameter)],
+#                     i->RootParameter(H,i))))<=1;
+    H.equal:=Length(Set(H.parameter))<=1;
     if not H.equal then Error("H should have equal parameters");fi;
     return RootParameter(H,1);
   fi;
@@ -53,8 +54,8 @@ RootParameter:=function(arg)local H,W,i,j,l;
   if IsInt(i) then
     if not IsBound(H.rootParameter[i]) then
       j:=W.rootRestriction[W.orbitRepresentative[i]];
-      if Product(H.parameter[j])=-1 then 
-        H.rootParameter[j]:=H.parameter[j][1];
+      if Product(H.parameter[j])=-H.unit then 
+        H.rootParameter[j]:=H.unit;
       else
         l:=[-H.parameter[j][1]*H.parameter[j][2],2];
         if Length(arg)=3 then Add(l,arg[3]);fi;
@@ -95,7 +96,7 @@ PrepareForPolynomials:=function(H)local q;
 
   for q in H.rootParameter do # need parameters positive monomials
     if not IsPolynomial(q) or Length(q.coefficients)<>1 or
-      q.coefficients[1]<>1 or Degree(q)<=0 then 
+      q.coefficients[1]<>1 or Degree(q)<0 then 
       return false;
     fi;
   od;
@@ -124,8 +125,8 @@ PrepareForMvp:=function(H)local q;
 if VKCURVE.mvp=2 then
   for q in H.rootParameter do # need parameters positive monomials
     if not IsMvp(q) or Length(q.coeff)<>1 or q.coeff[1]<>1 or 
-      Length(RecFields(q.elm[1]))=0 or 
-      q.elm[1].(RecFields(q.elm[1])[1])<0 then return false;
+      (Length(RecFields(q.elm[1]))>0 and
+      q.elm[1].(RecFields(q.elm[1])[1])<0) then return false;
     fi;
   od;
 
@@ -146,7 +147,7 @@ if VKCURVE.mvp=2 then
 else
   for q in H.rootParameter do # need parameters positive monomials
     if not IsMvp(q) or Length(q.coeff)<>1 or q.coeff[1]<>1 or 
-      Length(q.elm[1].elm)=0 or q.elm[1].coeff[1]<0 then 
+      (Length(q.elm[1].elm)>0 and q.elm[1].coeff[1]<0) then 
       return false;
     fi;
   od;
@@ -167,11 +168,13 @@ fi;
   return true;
 end;
 
-CoxeterHeckeAlgebraOps.InitKL:=function(H,msg)
+CoxeterHeckeAlgebraOps.InitKL:=function(H,msg)local i;
   if IsBound(H.Bar) then return;fi; # assume already called
   if not IsCoxeterGroup(Group(H))then Error(msg,": only for Coxeter groups");fi;
-  H.equal:=Length(Set(List([1..Length(H.parameter)],
-                      i->RootParameter(H,i,msg))))<=1;
+# H.equal:=Length(Set(List([1..Length(H.parameter)],
+#                     i->RootParameter(H,i,msg))))<=1;
+  H.equal:=Length(Set(H.parameter))<=1;
+  for i in [1..Length(H.parameter)] do RootParameter(H,i,msg);od;
   # this takes care rootParameter is filled
   if not IsBound(H.Bar) and not PrepareForPolynomials(H) 
     and not PrepareForMvp(H) then
@@ -265,8 +268,9 @@ CoxeterHeckeAlgebraOps.getCp:=function(H,w)local W,iw,i,qx,x,z,s,res;
   if w=W.identity then res:=HeckeElt(H,"T",[W.identity],[H.unit]); # C'_1=1
 # InfoChevie("# computed ",Length(H.("C'->T").keys)," C':",Stime());
   elif H.equal then
-    if w in W.reflections{W.generatingReflections} then return
-      HeckeElt(H,"T",[W.identity,w],[1/H.rootParameter[1],RootParameter(H,w)^-1]);
+    if w in W.reflections{W.generatingReflections} then 
+      i:=Position(W.reflections{W.generatingReflections},w);
+      return HeckeElt(H,"T",[W.identity,w],[-H.parameter[i][2],1]/H.rootParameter[i]);
     fi;
     i:=FirstLeftDescending(W,w);
     s:=W.reflections[i];
@@ -297,18 +301,23 @@ CoxeterHeckeAlgebraOps.getCp:=function(H,w)local W,iw,i,qx,x,z,s,res;
     # \bar P_{x,w}-P_{x,w}=\sum_{x<y\le w} R_{x,y} P_{y,w}
     #
     #  where R_{x,y}=\bar(T_{y^-1}^{-1}|T_x)
+    #  where T is the basis with parameters q_s,-q_s^-1
     #
     # thus we compute P_{x,w} by induction on l(w)-l(x) by
     # P_{x,w}=\neg \sum_{x<y\le w} R_{x,y} P_{y,w}
-    res:=HeckeElt(H,"T",[w],[RootParameter(H,w)^-1]);
+    res:=HeckeElt(H,"T",[w],[RootParameter(H,w)^-1]); # Lusztig \tilde T basis
     res.elm:=Concatenation(Reversed(BruhatSmaller(W,w)));
     for i in [2..Length(res.elm)] do
-      x:=res.elm[i];qx:=RootParameter(H,x);z:=CriticalPair(W,x,w);
-      if x<>z then res.coeff[i]:=RootParameter(H,x)*
-        res.coeff[Position(res.elm,z)]/qx;
-      else res.coeff[i]:=-H.NegativePart(Sum([1..i-1],y->H.Bar(Coefficient(
-        HeckeElt(H,"T",[res.elm[y]^-1],[1])^-1,x))*res.coeff[y])/qx)/qx;
-      fi;
+      x:=res.elm[i];qx:=RootParameter(H,x);
+#     z:=CriticalPair(W,x,w); # works only for params (x,-1) : fix that!
+#     if x<>z then res.coeff[i]:=res.coeff[Position(res.elm,z)];
+#     else 
+        res.coeff[i]:=-H.NegativePart(Sum([1..i-1],function(j)local y,a,b;
+          y:=res.elm[j];
+          return 
+          H.Bar(qx*Coefficient(HeckeElt(H,"T",[y^-1],[1])^-1,x))*res.coeff[j];
+          end))/qx;
+#     fi;
     od;
     CollectCoefficients(res);
   fi;
