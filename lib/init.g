@@ -187,6 +187,9 @@ Revision:=rec();  # used by tbl/*.tbl
 VERLIB := "14 Jan 2019";
 if not IsBound( VERSRC ) then  VERSRC := "unknown";  fi;
 if not IsBound( VERSYS ) then  VERSYS := "unknwon";  fi;
+VERSION:="lib:";Append(VERSION,VERLIB);
+Append(VERSION,", src:");Append(VERSION,VERSRC);
+Append(VERSION,", sys:");Append(VERSION,VERSYS);
 
 if not QUIET and BANNER then
 PR:=function(str)Print("    ",str,"\n"); end;
@@ -204,7 +207,7 @@ PR("          ## #  A.Seress  H.Theissen, A.Wegner  #");
 PR("         ##  #                                  #");
 PR("        ##   #  Distribution: gap3-jm 11 mar 19");
 PR("       ##    #    see http://webusers.imj-prg.fr/~jean.michel/gap3");
-Print("          ##    ##    lib:",VERLIB,", src:",VERSRC,", sys:",VERSYS,"\n");
+Print("          ##    ##    ",VERSION,"\n");
 PR("       ######                                 For help enter: ?<return>");
 fi;
 ReadIndent := "";

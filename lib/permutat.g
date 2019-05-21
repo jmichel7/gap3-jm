@@ -269,6 +269,7 @@ end;
 #############################################################################
 ##
 #F  CycleStructurePerm( <perm> )  . . . . . . . . .  length of cycles of perm
+##  returns a list l where l[i] is the number of cycles of length i+1
 ##
 CycleStructurePerm := function ( perm )
     local   cys,    # collected cycle lengths, result
