@@ -70,7 +70,7 @@ FactorizedSchurElementsOps.\/:=function(a,b)local t,p;
         else a.vcyc[p].pol:=a.vcyc[p].pol/t.pol;
         fi;
       od;
-      a.vcyc:=Filtered(a.vcyc,x->Degree(x.pol)>0);
+      a.vcyc:=Filtered(a.vcyc,x->Degree(x.pol)<>0);
       a.factor:=a.factor/b.factor;
     else a.factor:=a.factor/b;
     fi;

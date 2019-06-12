@@ -260,7 +260,7 @@ CriticalPair:=function(W,y,w)local cr,Rw,Lw,IL;
 end;
 
 # The function below is made member of CoxeterHeckeAlgebraOps just to hide it
-CoxeterHeckeAlgebraOps.getCp:=function(H,w)local W,iw,i,qx,x,z,s,res;
+CoxeterHeckeAlgebraOps.getCp:=function(H,w)local W,iw,i,qx,x,z,s,res,f;
   if not IsBound(H.("C'->T")) then H.("C'->T"):=Dictionary();fi;
   res:=H.("C'->T").Get(w);
   if res<>false then return ShallowCopy(res);fi;
@@ -307,17 +307,19 @@ CoxeterHeckeAlgebraOps.getCp:=function(H,w)local W,iw,i,qx,x,z,s,res;
     # P_{x,w}=\neg \sum_{x<y\le w} R_{x,y} P_{y,w}
     res:=HeckeElt(H,"T",[w],[RootParameter(H,w)^-1]); # Lusztig \tilde T basis
     res.elm:=Concatenation(Reversed(BruhatSmaller(W,w)));
+    f:=w->Product(CoxeterWord(W,w),
+                 y->-H.parameter[Position(W.reflectionsLabels,y)][2]);
     for i in [2..Length(res.elm)] do
       x:=res.elm[i];qx:=RootParameter(H,x);
-#     z:=CriticalPair(W,x,w); # works only for params (x,-1) : fix that!
-#     if x<>z then res.coeff[i]:=res.coeff[Position(res.elm,z)];
-#     else 
+      z:=CriticalPair(W,x,w); 
+      if x<>z then res.coeff[i]:=f(z)/f(x)*res.coeff[Position(res.elm,z)];
+      else 
         res.coeff[i]:=-H.NegativePart(Sum([1..i-1],function(j)local y,a,b;
           y:=res.elm[j];
           return 
           H.Bar(qx*Coefficient(HeckeElt(H,"T",[y^-1],[1])^-1,x))*res.coeff[j];
           end))/qx;
-#     fi;
+      fi;
     od;
     CollectCoefficients(res);
   fi;
