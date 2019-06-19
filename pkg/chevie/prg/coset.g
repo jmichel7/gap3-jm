@@ -2,7 +2,7 @@
 ##
 #A  coset.g                  CHEVIE library        Frank Luebeck, Jean Michel
 ##
-#Y  Copyright (C) 1992 - 2016  Lehrstuhl D fur Mathematik, RWTH Aachen, IWR
+#Y  Copyright (C) 1992 - 2019  Lehrstuhl D fur Mathematik, RWTH Aachen, IWR
 #Y  der Universitat Heidelberg, and   University Paris VII.
 ##
 ##  This file contains  functions for Coxeter cosets.
@@ -15,8 +15,7 @@
 ##  overwrite some of them by more efficient ones.
 ##  
 CoxeterCosetOps:=OperationsRecord("CoxeterCosetOps",SpetsOps);
-# we can always classify them
-Inherit(CoxeterCosetOps,HasTypeOps); 
+Inherit(CoxeterCosetOps,HasTypeOps); # we can always classify them
 
 CoxeterCosetOps.CoxeterGroup:=CoxeterCosetOps.Group;
 # for compatibility with previous versions of CHEVIE
@@ -26,89 +25,67 @@ IsCoxeterCoset:=WF->IsRec(WF) and IsBound(WF.isCoxeterCoset)
 
 #############################################################################
 ##
-#F CoxeterCosetOps.ReflectionType(  <WF> ) .  . .  . . .  the reflection
-#F                                                 type of a CoxeterCoset
+#F CoxeterCosetOps.ReflectionType(<WF>) . . reflection type of a CoxeterCoset
 ##  
-##  Gives  a list which describes  WF.  The list  has one element for each
-##  orbit of <WF>.phi on the irreducible components of  W. This element is
-##  a record with two components:
+##  Returns  a  list  of  one  record  for  each  orbit  of <WF>.phi on the
+##  irreducible components of W. This record t has two fields:
 ##  
-##    .orbit  The ReflectionType of the orbit (see HasTypeOps.ReflectionType)
-##    .twist  A permutation  of  .orbit[1].indices  which describes  the
+##   t.orbit  The ReflectionType of the orbit (see HasTypeOps.ReflectionType)
+##   t.twist  A permutation  of t.orbit[1].indices  which describes  the
 ##            effect of <WF>.phi^Length(orbit) on it.
 ##  
-##  The indices in .orbit are given such that
-##      .orbit([2].indices)=OnTuples(.orbit[1].indices,<WF>.phi), etc...
+##  The indices in t.orbit are given such that
+##    t.orbit([i+1].indices)=OnTuples(t.orbit[i].indices,<WF>.phi)
 ##  
-##  If   the    components   in   .orbit    are   of   type    D_4   and
-##  <WF>.phi^Length(orbit)  has   order  2  on   .orbit[1].indices  then
-##  .orbit[1].indices   is  sorted   such  that   <WF>.phi^Length(orbit)
-##  permutes the first two entries.
-##  
-##  If   the    components   in   .orbit    are   of   type    D_4   and
-##  <WF>.phi^Length(orbit)  has   order  3  on   .orbit[1].indices  then
-##  .orbit[1].indices   is  sorted   such  that   <WF>.phi^Length(orbit)
-##  permutes the entries 1 -> 2 -> 4 -> 1.
+##  If the components in t.orbit are of type D_4 and <WF>.phi^Length(orbit) 
+##  has order 2 or 3 the indices are normalized as explained below.
 ##  
 CoxeterCosetOps.ReflectionType:=function(WF)local W, c, type, phifus;
-  W:=Group(WF);
-  type:=ReflectionType(W);
+  W:=Group(WF); type:=ReflectionType(W);
   c:=List(type,a->Set(W.rootInclusion{a.indices}));
   type:=List(Cycles(Permutation(WF.phi,c,OnSets),[1..Length(type)]),x->type{x});
   phifus:=WF.phi^MappingPermListList(W.rootInclusion,[1..Length(W.roots)]);
-  type:=List(type,function(c)local i;
+  return List(type,function(c)local J,twist,o,i;
+    J:=c[1].indices;twist:=RestrictedPerm(phifus^Length(c),J);
+    if c[1].series="D" and Length(J)=4 then
+    # some adjustment such that in type ^2D_4 the permutation of J 
+    # is (1,2), and in type ^3D_4 the permutation of J is (1,2,4)
+      o:=OrderPerm(twist);
+      if o=2 then 
+        i:=First([1,2,4],x->J[x]=J[x]^twist);
+        c[1]:=ShallowCopy(c[1]);
+        c[1].indices:=J{Concatenation(Difference([1,2,4],[i]),[3,i])};
+      elif o=3 and J[1]^twist<>J[2] then
+        c[1]:=ShallowCopy(c[1]);c[1].indices:=J{[1,4,3,2]};
+      fi;
+    fi;
     for i in [2..Length(c)] do
       c[i]:=ShallowCopy(c[i]);c[i].indices:=OnTuples(c[i-1].indices,phifus);
     od;
-    return rec(orbit:=c,
-     twist:=RestrictedPerm(phifus^Length(c),c[1].indices),
-     operations:=ReflTypeOps);
-    end);
-
-  # some adjustment such that in type ^2D_4 the first two simple
-  # roots are permuted by res.twist, and in type ^3D_4 the permutation 
-  # of the simple roots is 1 -> 2 -> 4 -> 1:
-
-  type:=List(type,function(a) local rf,o,i;    
-    i:=a.orbit[1].indices;o:=OrderPerm(a.twist);
-    if o=1 or a.orbit[1].series<>"D" or Length(i)<>4 then return a;fi;
-    if o=2 then # ^2D_4
-      rf:=Filtered([1..4],x->i[x]<>i[x]^a.twist);
-      rf:=Concatenation(rf,[3],Difference([1,2,4],rf));
-      a.orbit:=List(a.orbit,function(j)
-        j:=ShallowCopy(j); j.indices:=j.indices{rf};return j;end);
-      return a;
-    fi;
-    # triality group ^3D_4
-    if i[1]^a.twist<>i[2] then 
-      a.orbit:=List(a.orbit,function(j)
-        j:=ShallowCopy(j);j.indices:=j.indices{[1,4,3,2]};return j;end);
-    fi;
-    return a;
+    return rec(orbit:=c, twist:=twist, operations:=ReflTypeOps);
   end);
 
-##    some sorting: don't do it, it is for isomorphismtype
+##    some sorting: 
+##    JM: don't do it, only do it for isomorphismtype
 ##    hi:=List(type,a->[a.orbit[1].rank,a.orbit[1].series]);
 ##    SortParallel(hi,type,function(a,b) 
 ##                      return a[1]>b[1] or (a[1]=b[1] and a[2]<b[2]); end);  
-  return type;
 end;
 
-CoxeterCosetOps.CoxeterWord:=function(W,w)return CoxeterWord(Group(W),w); end;
+CoxeterCosetOps.CoxeterWord:=function(W,w)
+  return CoxeterWord(Group(W),w); end;
 
-CoxeterCosetOps.CoxeterLength:=function(W,w)return CoxeterLength(Group(W),w);
-end;
+CoxeterCosetOps.CoxeterLength:=function(W,w)
+  return CoxeterLength(Group(W),w); end;
 
-CoxeterCosetOps.LeftDescentSet:=function(W,w)return LeftDescentSet(Group(W),w);
-end;
+CoxeterCosetOps.LeftDescentSet:=function(W,w)
+  return LeftDescentSet(Group(W),w); end;
 
-CoxeterCosetOps.FirstLeftDescending:=function(W,w)return
-  FirstLeftDescending(Group(W),w);
-end;
+CoxeterCosetOps.FirstLeftDescending:=function(W,w)
+  return FirstLeftDescending(Group(W),w); end;
 
-CoxeterCosetOps.IsLeftDescending:=function(W,w,i)return
-  IsLeftDescending(Group(W),w,i);
-end;
+CoxeterCosetOps.IsLeftDescending:=function(W,w,i)
+  return IsLeftDescending(Group(W),w,i); end;
 
 CoxeterCosetOps.CoxeterElements:=function(arg)local W;
   W:=arg[1];arg[1]:=Group(W);
@@ -136,16 +113,14 @@ end;
 
 #############################################################################
 ##
-#F  CoxeterCoset( <W>[, <F0Mat> or  <perm>] ) . . . .  create a CoxeterGroup
-#F  coset record
-#F  CoxeterCoset( <rec> ) . . . . . . . . . return component <rec>.coxeterCoset
+#F  CoxeterCoset( <W>[, <F0Mat> or  <perm>]) . . create a CoxeterCoset record
+#F  CoxeterCoset( <rec> ) . . . . . . . . . . return field <rec>.coxeterCoset
 ##  
 ##  In the first form <W> must be a CoxeterGroup record.
 ##  <F0Mat> must be a square  matrix of rank <W>.rank such that:
-##    - <F0Mat> is invertible
-##    - <F0Mat> has finite order
-##    - <F0Mat>: X->X lets invariant the set of roots of <W> and of Parent(<W>)
-##    - TransposedMat(<F0Mat>): Y->Y lets invariant the set of coroots
+##    - F0Mat is invertible of finite order
+##    - X->X*F0Mat lets invariant the set of roots of <W> and of Parent(<W>)
+##    - TransposedMat(F0Mat): Y->Y lets invariant the set of coroots
 ##        of <W> and of Parent(<W>)
 ##  
 ##  If <W>.semisimpleRank  = <W>.rank it   is allowed to give an  argument
