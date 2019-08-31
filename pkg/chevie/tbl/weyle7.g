@@ -3079,8 +3079,8 @@ rec(relgroup:=Z(1),levi:=[1,2,3,4,5,6,7],Z:=[-1],locsys:=[[12,1]])]);
     if not IsBound(c.red) then c.red:=Z(1);fi;
     if not IsBound(c.Au) then c.Au:=Z(1);fi;
     if not IsBound(c.AuAction) then
-      c.AuAction:=ExtendedReflectionGroup(c.red,List(c.Au.generators,
-        x->IdentityMat(c.red.rank)));
+      c.AuAction:=ExtendedReflectionGroup(c.red,List([1..SemisimpleRank(c.Au)],
+        x->IdentityMat(Rank(c.red))));
     fi;
   od;
   return uc;end);

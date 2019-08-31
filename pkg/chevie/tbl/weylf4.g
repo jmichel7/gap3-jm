@@ -925,7 +925,7 @@ return 364500*x1*x2^3*x3^2*x4+54158625*x1*x2^5*x3^2-189324*x1^2*x3*x4^3-
 30031354080*x1^14*x2^2*x3+10362106560*x1^15*x2^3;
 end;end);
 
-CHEVIE.AddData("UnipotentClasses","F4",function(c,p)local uc,Z,class;
+CHEVIE.AddData("UnipotentClasses","F4",function(p,type)local uc,Z,class,c;
   if p=0 then p:=1;fi; Z:=n->ComplexReflectionGroup(n,1,1);
   class:=n->First(uc.classes,x->x.name=n);
   uc:=rec(orderPicture:=Concatenation(
@@ -1032,8 +1032,8 @@ rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[11,1]],
     if not IsBound(c.red) then c.red:=Z(1);fi;
     if not IsBound(c.Au) then c.Au:=Z(1);fi;
     if not IsBound(c.AuAction) then
-      c.AuAction:=ExtendedReflectionGroup(c.red,List(c.Au.generators,
-        x->IdentityMat(c.red.rank)));
+      c.AuAction:=ExtendedReflectionGroup(c.red,List([1..SemisimpleRank(c.Au)],
+        x->IdentityMat(Rank(c.red))));
     fi;
   od;
   return uc;end);

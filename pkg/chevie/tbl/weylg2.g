@@ -226,8 +226,8 @@ CHEVIE.AddData("Invariants","G2",
 CHEVIE.AddData("Discriminant","G2",function()return
   function(x,y)return 4*x^3*y-27*y^2;end;end);
 
-# c is CartanType -- does not matter
-CHEVIE.AddData("UnipotentClasses","G2",function(c,p)local uc,Z;
+# type is CartanType -- does not matter
+CHEVIE.AddData("UnipotentClasses","G2",function(p,type)local uc,Z,c;
   if p=0 then p:=1;fi; Z:=n->ComplexReflectionGroup(n,1,1);
   uc:=rec(classes:=[
    rec(name:="1",succ:=["A1"],dynkin:=[0,0],balacarter:=[],

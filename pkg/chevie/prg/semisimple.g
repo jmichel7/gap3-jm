@@ -202,8 +202,9 @@ AlgebraicCentre:=function(W)local Z0,res,F0s,w,toAZ,hom,AZ,m,id;
   AZ:=ApplyFunc(Group,AZ);
   toAZ:=function(s)
     s:=s.v*W.simpleCoroots;
-    s:=SolutionMat(Concatenation(res.Z0.complement,res.Z0.generators),
-       Concatenation(s,[1..Length(res.Z0.generators)]*0));
+#   s:=SolutionMat(Concatenation(res.Z0.complement,res.Z0.generators),
+#      Concatenation(s,[1..Length(res.Z0.generators)]*0));
+    s:=SolutionMat(Concatenation(res.Z0.complement,res.Z0.generators),s);
     return SemisimpleElement(W,s{[1..W.semisimpleRank]}*res.Z0.complement);
   end;
   # map of root data Y(Wsc)->Y(W)

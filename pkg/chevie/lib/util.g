@@ -119,7 +119,8 @@ CollectCoefficients:=function(t)local i,j;
   SortParallel(t.elm,t.coeff);j:=1;
   for i in [2..Length(t.elm)] do
     if t.elm[i]=t.elm[j] then t.coeff[j]:=t.coeff[j]+t.coeff[i];
-    else if t.coeff[j]<>0*t.coeff[j] then j:=j+1;fi;
+    else 
+      if t.coeff[j]<>0*t.coeff[j] then j:=j+1;fi;
       t.coeff[j]:=t.coeff[i];t.elm[j]:=t.elm[i];
     fi;  
   od;

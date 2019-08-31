@@ -548,7 +548,7 @@ end);
 #
 #  The function is called with type=1 for type C and type=2 for type B
 #
-CHEVIE.AddData("UnipotentClasses","B",function(r,type,char)local cl,uc,
+CHEVIE.AddData("UnipotentClasses","B",function(r,char,type)local cl,uc,
   i,l,s,cc,ss,symbol2para,part2dynkin,addSpringer,d,LuSpin,trspringer,j;
   part2dynkin:=function(part)local p,res; #partition->Dynkin-Richardson diagram
     p:=Concatenation(List(part,d->[1-d,3-d..d-1]));
@@ -575,8 +575,8 @@ CHEVIE.AddData("UnipotentClasses","B",function(r,type,char)local cl,uc,
   l:=Union(List(ss,c->List(c,x->[DefectSymbol(x.symbol),Sum(x.sp,Sum)])));
   SortBy(l,x->[AbsInt(x[1]),-SignInt(x[1])]);
   uc:=rec(classes:=[],springerSeries:=List(l,function(d)local res;
-   res:=rec(relgroup:=CoxeterGroup("C",d[2]),defect:=d[1],locsys:=[],
-     levi:=[1..r-d[2]]);
+   res:=rec(relgroup:=CoxeterGroup("C",d[2]),defect:=d[1],levi:=[1..r-d[2]]);
+   res.locsys:=List([1..NrConjugacyClasses(res.relgroup)],x->[0,0]);
    if char=2 then res.Z:=[1];
    elif type=1 then res.Z:=[(-1)^(r-d[2])];
    elif IsInt(ER(2*(r-d[2])+1)) then res.Z:=[1];else res.Z:=[-1];fi;
@@ -654,10 +654,12 @@ CHEVIE.AddData("UnipotentClasses","B",function(r,type,char)local cl,uc,
       Sort(p);a:=[];b:=[];d:=[0,1,0,-1];d:=d{List(p,x->1+x mod 4)};
       i:=1;
       while i<=Length(p) do l:=p[i];t:=Sum(d{[1..i-1]});
-	if 1=l mod 4 then Add(a,(l-1)/4-t);i:=i+1;
-	elif 3=l mod 4 then Add(b,(l-3)/4+t);i:=i+1;
-	else j:=i;while i<=Length(p) and p[i]=l do i:=i+1;od;j:=[1..(i-j)/2]*0;
-	  Append(a,j+(l+l mod 4)/4-t);Append(b,j+(l-l mod 4)/4+t);
+	if 1=l mod 4 then Add(a,QuoInt(l-1,4)-t);i:=i+1;
+	elif 3=l mod 4 then Add(b,QuoInt(l-3,4)+t);i:=i+1;
+	else j:=i;while i<=Length(p) and p[i]=l do i:=i+1;od;
+          j:=[1..QuoInt(i-j,2)]*0;
+	  Append(a,j+QuoInt(l+l mod 4,4)-t);
+          Append(b,j+QuoInt(l-l mod 4,4)+t);
 	fi;
       od;
       a:=Filtered(a,x->x<>0);a:=Reversed(a);
@@ -702,7 +704,7 @@ CHEVIE.AddData("UnipotentClasses","B",function(r,type,char)local cl,uc,
         trspringer(i,[1,2,3,4],[1,3,5,4]);d:=2;
       else Error("Au non-commutative of order ",Size(cl.Au)*2," not implemented");
       fi;
-      addSpringer(ss->ss.Z=[-1] and ss.relgroup.rank=Sum(s,Sum),i,s,d);
+      addSpringer(ss->ss.Z=[-1] and Rank(ss.relgroup)=Sum(s,Sum),i,s,d);
     od;
   fi;
   return uc;

@@ -234,8 +234,8 @@ end;
 ReflTypeOpsUnipotentClasses:=function(t,p)local s,uc,u,weights;
   s:=["UnipotentClasses",t];
   if IsBound(t.orbit) then t:=t.orbit[1];fi;
-  if IsBound(t.cartanType) then Add(s,t.cartanType);fi;
   Add(s,p);
+  if IsBound(t.cartanType) then Add(s,t.cartanType);fi;
   uc:=ApplyFunc(CHEVIE.Data,s);
   if uc=false then return false;fi;
   for u in uc.classes do # fill omitted fields
@@ -335,9 +335,9 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
 	for i in [1..Length(l)] do u.dynkin{l[i]}:=v[i].dynkin;od;
       fi;
       if ForAll(v,x->IsBound(x.balacarter)) then
-        u.balacarter:=Concatenation(List(List([1..Length(l)],
+        u.balacarter:=Concatenation(List([1..Length(l)],
 	   i->List(v[i].balacarter,function(j)
-	     if j>0 then return l[i][j];else return -l[i][-j];fi;end))));
+	     if j>0 then return l[i][j];else return -l[i][-j];fi;end)));
       fi;
     if W.rank>W.semisimpleRank and IsBound(u.red) 
     then u.red:=u.red*Torus(W.rank-W.semisimpleRank);

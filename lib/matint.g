@@ -232,24 +232,23 @@ local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
 
 end;
 
-BITLISTS_NFIM:=
-  [ [ false, false, false, false, false ], [ true, false, false, false, false ],
-    [ false, true, false, false, false ], [ true, true, false, false, false ], 
-    [ false, false, true, false, false ], [ true, false, true, false, false ], 
-    [ false, true, true, false, false ], [ true, true, true, false, false ], 
-    [ false, false, false, true, false ], [ true, false, false, true, false ], 
-    [ false, true, false, true, false ], [ true, true, false, true, false ], 
-    [ false, false, true, true, false ], [ true, false, true, true, false ], 
-    [ false, true, true, true, false ], [ true, true, true, true, false ], 
-    [ false, false, false, false, true ], [ true, false, false, false, true ], 
-    [ false, true, false, false, true ], [ true, true, false, false, true ], 
-    [ false, false, true, false, true ], [ true, false, true, false, true ], 
-    [ false, true, true, false, true ], [ true, true, true, false, true ], 
-    [ false, false, false, true, true ], [ true, false, false, true, true ], 
-    [ false, true, false, true, true ], [ true, true, false, true, true ], 
-    [ false, false, true, true, true ], [ true, false, true, true, true ], 
-    [ false, true, true, true, true ], [ true, true, true, true, true ] ];
-
+BITLISTS_NFIM:=[
+[ false, false, false, false, false ], [ true, false, false, false, false ],#0
+[ false, true, false, false, false ], [ true, true, false, false, false ],  #2
+[ false, false, true, false, false ], [ true, false, true, false, false ],  #4
+[ false, true, true, false, false ], [ true, true, true, false, false ],    #6
+[ false, false, false, true, false ], [ true, false, false, true, false ],  #8
+[ false, true, false, true, false ], [ true, true, false, true, false ],    #10
+[ false, false, true, true, false ], [ true, false, true, true, false ],    #12
+[ false, true, true, true, false ], [ true, true, true, true, false ],      #14
+[ false, false, false, false, true ], [ true, false, false, false, true ],  #16
+[ false, true, false, false, true ], [ true, true, false, false, true ],    #18
+[ false, false, true, false, true ], [ true, false, true, false, true ],    #20
+[ false, true, true, false, true ], [ true, true, true, false, true ],      #22
+[ false, false, false, true, true ], [ true, false, false, true, true ],    #24
+[ false, true, false, true, true ], [ true, true, false, true, true ],      #26
+[ false, false, true, true, true ], [ true, false, true, true, true ],      #28
+[ false, true, true, true, true ], [ true, true, true, true, true ] ];      #30
 
 ###########################################################
 #
@@ -288,7 +287,8 @@ BITLISTS_NFIM:=
 #
 DoNFIM:=function(mat,opt)
 local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
-      t, tmp, i, q, R, rank, signdet;
+      t, tmp, i, q, R, rank, signdet, TRIANG, REDDIAG, ROWTRANS, COLTRANS,
+      INPLACE;
 
   if mat=[] then mat:=[[]];fi;
   if not (IsMatrix(mat) or (IsList(mat) and Length(mat)=1 
@@ -296,15 +296,19 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     Error("syntax is DoNFIM(<matrix>,<options>)"); 
   fi;
 
-  opt := BITLISTS_NFIM[opt+1];
+  opt:=BITLISTS_NFIM[opt+1];
+  TRIANG:=opt[1];
+  REDDIAG:=opt[2];
+  ROWTRANS:=opt[3];
+  COLTRANS:=opt[4];
+  INPLACE:=opt[5];
   sig:=1;
 
   #Embed mat in 2 larger "id" matrix
   n := Length(mat)+2;
   m := Length(mat[1])+2;
   k:=[1..m]*0;
-  if opt[5] then
-    # change the matrix
+  if INPLACE then # change the matrix
     A:=mat;
     for i in [n-1,n-2..2] do
       A[i]:=ShallowCopy(k);
@@ -325,13 +329,13 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
   A[1][1] := 1;
   A[n][m] := 1;
 
-  if opt[3] then 
+  if ROWTRANS then 
     C := IdentityMat(n); 
     Q := NullMat(n,n);
     Q[1][1] := 1; 
   fi;
 
-  if opt[1] and opt[4] then 
+  if TRIANG and COLTRANS then 
     B := IdentityMat(m);
     P := IdentityMat(m);
   fi;
@@ -343,7 +347,7 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     r := r+1;
     c1 := c2;
     rp[r] := c1;
-    if opt[3] then Q[r+1][r+1] := 1; fi;
+    if ROWTRANS then Q[r+1][r+1] := 1; fi;
 
     j := c1+1;
     while j<=m do
@@ -353,7 +357,7 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
       j := j+1;
     od;
     #Smith with some transforms..
-    if opt[1] and (opt[4] or opt[3]) and c2<m then
+    if TRIANG and (COLTRANS or ROWTRANS) and c2<m then
       N := Gcd(Flat(A{[r..n]}[c2]));
       L := [c1+1..c2-1];
       Append(L,[c2+1..m-1]);
@@ -384,12 +388,12 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
 	fi;
 	if t>0 then
 	  for i in [1..n] do A[i][c1] := A[i][c1]+t*A[i][j]; od;
-	  if opt[4] then B[j][c1] := B[j][c1]+t; fi;
+	  if COLTRANS then B[j][c1] := B[j][c1]+t; fi;
 	fi;
       od;
       if A[r][c1]*A[k][c1+1]=A[k][c1]*A[r][c1+1] then
 	for i in [1..n] do A[i][c1+1] := A[i][c1+1]+A[i][c2]; od;
-	if opt[4] then B[c2][c1+1] := 1; fi; 
+	if COLTRANS then B[c2][c1+1] := 1; fi; 
       fi;
       c2 := c1+1;
     fi;
@@ -398,7 +402,7 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     for i in [r+2..n] do 
       if c[i-r-1]<>0 then
 	A[r+1]:=A[r+1]+A[i]*c[i-r-1];
-	if opt[3] then 
+	if ROWTRANS then 
 	  C[r+1][i] := c[i-r-1];  
 	  Q[r+1]:=Q[r+1]+Q[i]*c[i-r-1]; 
 	fi;
@@ -410,7 +414,7 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     if i>r+1 then
       c := MATINTmgcdex(AbsInt(A[r][c1]),A[r+1][c1]+A[i][c1],[A[i][c1]])[1]+1;
       A[r+1]:=A[r+1]+A[i]*c;
-      if opt[3] then 
+      if ROWTRANS then 
 	C[r+1][i] := C[r+1][i]+c; 
 	Q[r+1]:=Q[r+1]+Q[i]*c; 
       fi;
@@ -419,17 +423,17 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     g := MATINTbezout(A[r][c1],A[r][c2],A[r+1][c1],A[r+1][c2]);
     sig:=sig*SignInt(A[r][c1]*A[r+1][c2]-A[r][c2]*A[r+1][c1]);
     A{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*A{[r,r+1]};
-    if opt[3] then 
+    if ROWTRANS then 
       Q{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*Q{[r,r+1]};
     fi;
 
     for i in [r+2..n] do
       q := QuoInt(A[i][c1],A[r][c1]);
       A[i]:=A[i]+A[r]*-q;
-      if opt[3] then Q[i]:=Q[i]+Q[r]*-q; fi;
+      if ROWTRANS then Q[i]:=Q[i]+Q[r]*-q; fi;
       q := QuoInt(A[i][c2],A[r+1][c2]);
       A[i]:=A[i]+A[r+1]*-q;
-      if opt[3] then Q[i]:=Q[i]+Q[r+1]*-q; fi;
+      if ROWTRANS then Q[i]:=Q[i]+Q[r+1]*-q; fi;
     od;
 
   od; 
@@ -437,38 +441,38 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
   if n=m and r+1<n then sig:=0;fi;
 
   #smith w/ NO transforms - farm the work out...
-  if opt[1] and not (opt[3] or opt[4]) then
+  if TRIANG and not (ROWTRANS or COLTRANS) then
     #R:=rec(normal:=SNFofREF(A{[2..n-1]}{[2..m-1]}),rank:=r-1);
     for i in [2..n-1] do
       A[i-1]:=A[i]{[2..m-1]};
     od;
     Unbind(A[n-1]);
     Unbind(A[n]);
-    R:=rec(normal:=SNFofREF(A,opt[5]),rank:=r-1);
+    R:=rec(normal:=SNFofREF(A,INPLACE),rank:=r-1);
     if n=m then R. signdet:=sig;fi;
     return R;
   fi;
 
   # hermite or (smith w/ column transforms)
-  if (not opt[1] and opt[2]) or (opt[1] and opt[4]) then
+  if (not TRIANG and REDDIAG) or (TRIANG and COLTRANS) then
     for i in [r, r-1 .. 1] do
       for j in [i+1 .. r+1] do
 	q := QuoInt(A[i][rp[j]]-(A[i][rp[j]] mod A[j][rp[j]]),A[j][rp[j]]);
 	A[i]:=A[i]+A[j]*-q;
-	if opt[3] then Q[i]:=Q[i]+Q[j]*-q; fi;
+	if ROWTRANS then Q[i]:=Q[i]+Q[j]*-q; fi;
       od;
-      if opt[1] and i<r then
+      if TRIANG and i<r then
 	for j in [i+1..m] do 
 	  q := QuoInt(A[i][j],A[i][i]);
 	  for k in [1..i] do A[k][j] := A[k][j]-q*A[k][i]; od;
-	  if opt[4] then P[i][j] := -q; fi;      
+	  if COLTRANS then P[i][j] := -q; fi;      
 	od;
       fi;
     od;
   fi;
 
   #Smith w/ row but not col transforms
-  if opt[1] and opt[3] and not opt[4] then
+  if TRIANG and ROWTRANS and not COLTRANS then
     for i in [1..r-1] do
       t := A[i][i];
       A[i] := List([1..m],x->0);
@@ -481,7 +485,7 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
   fi;
 
   #smith w/ col transforms
-  if opt[1] and opt[4] and r<m-1 then
+  if TRIANG and COLTRANS and r<m-1 then
     c := MATINTmgcdex(A[r][r],A[r][r+1],A[r]{[r+2..m-1]});
     for j in [r+2..m-1] do
       A[r][r+1] := A[r][r+1]+c[j-r-1]*A[r][j];
@@ -510,7 +514,7 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
   fi;
 
   #row transforms finisher
-  if opt[3] then for i in [r+2..n] do Q[i][i]:= 1; od; fi;
+  if ROWTRANS then for i in [r+2..n] do Q[i][i]:= 1; od; fi;
 
   for i in [2..n-1] do
     A[i-1]:=A[i]{[2..m-1]};
@@ -519,12 +523,12 @@ local sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
   Unbind(A[n]);
   R:=rec(normal:=A);
 
-  if opt[3] then 
+  if ROWTRANS then 
     R.rowC:=C{[2..n-1]}{[2..n-1]}; 
     R.rowQ:=Q{[2..n-1]}{[2..n-1]}; 
   fi;
 
-  if opt[1] and opt[4] then
+  if TRIANG and COLTRANS then
     R.colC:=B{[2..m-1]}{[2..m-1]}; 
     R.colQ:=P{[2..m-1]}{[2..m-1]}; 
   fi;
@@ -593,7 +597,6 @@ ComplementIntMat:=function( full,sub ) local F, S, M, r, T, R;
   M := Concatenation( F, S );
   T := NormalFormIntMat( M, 4 ).rowtrans^-1;
   T := T{[Length(F)+1..Length(T)]}{[1..Length(F)]};
-
   # r.rowtrans * T * F = r.normal * r.coltrans^-1 * F
   r := NormalFormIntMat( T, 13 );
   M := r.coltrans^-1 * F;

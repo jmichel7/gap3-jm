@@ -783,7 +783,8 @@ rec(name:="A_4",succ:=["A4+A1"],dynkin:=[2,2,0,0,0,2],
     balacarter:=[1,2,3,4],red:=Z(2)*Torus(1)),
 rec(name:="D_4(a_1)",succ:=["D4","A4"],dynkin:=[0,0,0,2,0,0],
     Au:=CoxeterGroup("A",2),balacarter:=[2,3,-4,5],red:=Torus(2),
-    AuAction:=ExtendedReflectionGroup(Torus(2),CoxeterGroup("A",2).matgens)),
+    AuAction:=ExtendedReflectionGroup(Torus(2),List([1..2],
+      i->MatXPerm(CoxeterGroup("A",2),EltWord(CoxeterGroup("A",2),[i]))))),
 rec(name:="A_3{+}A_1",succ:=["D4(a1)"],dynkin:=[0,1,1,0,1,0],
     balacarter:=[1,2,4,5],red:=Z(2)*Torus(1)),
 rec(name:="A_3",succ:=["A3+A1"],dynkin:=[1,2,0,0,0,1],
@@ -838,8 +839,8 @@ rec(name:="1",succ:=["A1"],dynkin:=[0,0,0,0,0,0],balacarter:=[],
     if not IsBound(c.red) then c.red:=Z(1);fi;
     if not IsBound(c.Au) then c.Au:=Z(1);fi;
     if not IsBound(c.AuAction) then
-      c.AuAction:=ExtendedReflectionGroup(c.red,List(c.Au.generators,
-        x->IdentityMat(c.red.rank)));
+      c.AuAction:=ExtendedReflectionGroup(c.red,List([1..SemisimpleRank(c.Au)],
+        x->IdentityMat(Rank(c.red))));
     fi;
   od;
 return uc;end);
