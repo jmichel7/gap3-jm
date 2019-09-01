@@ -4,11 +4,11 @@ W := CoxeterGroup( "A", 4 );
 #>CoxeterGroup("A",4)
 w := Braid( W )( 1, 2, 3, 4 );
 #>1234
-w ^ 3;
+w^3;
 #>121321432.343
-w ^ 4;
+w^4;
 #>w0.232432
-w ^ -1;
+w^-1;
 #>(1234)^-1
 CHEVIE.PrintGarside;
 #>rec(
@@ -18,14 +18,14 @@ CHEVIE.PrintGarside := rec(GAP:=true);
 #>  GAP := true )
 w;
 #>B(1,2,3,4)
-w ^ 3;
+w^3;
 #>B(1,2,1,3,2,1,4,3,2,3,4,3)
-w ^ -1;
+w^-1;
 #>B(1,2,3,4)^-1
 CHEVIE.PrintGarside := rec();
 #>rec(
 #>   )
-w ^ -1;
+w^-1;
 #>(1234)^-1
 CHEVIE.PrintGarside := rec(Greedy:=true);;
 w^-1;                                    
@@ -244,17 +244,17 @@ ct.classnames;
 ct.irredinfo;
 #>[ rec(
 #>      charparam := [ [ 1, 0 ] ],
-#>      charname := "phi{1,0}" ), rec(
+#>      charname := "\\phi_{1,0}" ), rec(
 #>      charparam := [ [ 1, 6 ] ],
-#>      charname := "phi{1,6}" ), rec(
+#>      charname := "\\phi_{1,6}" ), rec(
 #>      charparam := [ [ 1, 3, 1 ] ],
-#>      charname := "phi{1,3}'" ), rec(
+#>      charname := "\\phi_{1,3}'" ), rec(
 #>      charparam := [ [ 1, 3, 2 ] ],
-#>      charname := "phi{1,3}''" ), rec(
+#>      charname := "\\phi_{1,3}''" ), rec(
 #>      charparam := [ [ 2, 1 ] ],
-#>      charname := "phi{2,1}" ), rec(
+#>      charname := "\\phi_{2,1}" ), rec(
 #>      charparam := [ [ 2, 2 ] ],
-#>      charname := "phi{2,2}" ) ]
+#>      charname := "\\phi_{2,2}" ) ]
 W := CoxeterGroup( "A", 3 );
 #>CoxeterGroup("A",3)
 List( Elements( W ), x -> ReflectionCharValue( W, x ) );
@@ -279,7 +279,7 @@ LowestPowerGenericDegrees( CoxeterGroup( "D", 4 ) );
 #>[ 6, 6, 7, 12, 3, 3, 6, 2, 2, 3, 1, 2, 0 ]
 HighestPowerGenericDegrees( CoxeterGroup( "D", 4 ) );
 #>[ 10, 10, 11, 12, 9, 9, 10, 6, 6, 9, 5, 6, 0 ]
- ChevieCharInfo( CoxeterGroup( "G", 2 ) );
+ChevieCharInfo( CoxeterGroup( "G", 2 ) );
 #>rec(
 #>  charparams := 
 #>   [ [ [ 1, 0 ] ], [ [ 1, 6 ] ], [ [ 1, 3, 1 ] ], [ [ 1, 3, 2 ] ], 
@@ -288,14 +288,14 @@ HighestPowerGenericDegrees( CoxeterGroup( "D", 4 ) );
 #>  a := [ 0, 6, 1, 1, 1, 1 ],
 #>  A := [ 0, 6, 5, 5, 5, 5 ],
 #>  b := [ 0, 6, 3, 3, 1, 2 ],
+#>  B := [ 0, 6, 3, 3, 5, 4 ],
 #>  spaltenstein := 
 #>   [ "1", "\\varepsilon", "\\varepsilon_l", "\\varepsilon_c", 
 #>      "\\theta'", "\\theta''" ],
-#>  charnames := [ "phi{1,0}", "phi{1,6}", "phi{1,3}'", "phi{1,3}''", 
-#>      "phi{2,1}", "phi{2,2}" ],
 #>  positionId := 1,
 #>  positionDet := 2,
-#>  B := [ 0, 6, 3, 3, 5, 4 ] )
+#>  charnames := [ "phi{1,0}", "phi{1,6}", "phi{1,3}'", "phi{1,3}''", 
+#>      "phi{2,1}", "phi{2,2}" ] )
 W := CoxeterGroup( "E", 6 );;
 ChevieCharInfo( W ).frame;
 #>[ "1_p", "1_p'", "10_s", "6_p", "6_p'", "20_s", "15_p", "15_p'", 
@@ -476,7 +476,7 @@ CoxeterWords( W );
 #>[ [  ], [ 2 ], [ 1 ], [ 2, 1 ], [ 1, 2 ], [ 2, 1, 2 ], [ 1, 2, 1 ], 
 #>  [ 2, 1, 2, 1 ], [ 1, 2, 1, 2 ], [ 2, 1, 2, 1, 2 ], 
 #>  [ 1, 2, 1, 2, 1 ], [ 1, 2, 1, 2, 1, 2 ] ]
-WordsClassRepresentatives( CoxeterGroup( "F", 4 ) );
+ChevieClassInfo( CoxeterGroup( "F", 4 ) ).classtext;
 #>[ [  ], 
 #>  [ 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 
 #>      3, 4 ], [ 2, 3, 2, 3 ], [ 2, 1 ], 
@@ -640,12 +640,12 @@ T := Basis( H, "T" );
 el := CoxeterWords( W );
 #>[ [  ], [ 2 ], [ 1 ], [ 2, 1 ], [ 1, 2 ], [ 1, 2, 1 ] ]
 PrintArray(List(el,i->List(el,j->T(i)*T(j))));
-#>[[      T(),      T(2),      T(1),    T(2,1),    T(1,2),  T(1,2,1)],
-#> [     T(2),     -T(2),    T(2,1),   -T(2,1),  T(1,2,1), -T(1,2,1)],
-#> [     T(1),    T(1,2),     -T(1),  T(1,2,1),   -T(1,2), -T(1,2,1)],
-#> [   T(2,1),  T(1,2,1),   -T(2,1), -T(1,2,1), -T(1,2,1),  T(1,2,1)],
-#> [   T(1,2),   -T(1,2),  T(1,2,1), -T(1,2,1), -T(1,2,1),  T(1,2,1)],
-#> [ T(1,2,1), -T(1,2,1), -T(1,2,1),  T(1,2,1),  T(1,2,1), -T(1,2,1)]]
+#>[[     T(),      T(2),      T(1),    T(2,1),    T(1,2),  T(1,2,1)],
+#> [    T(2),     -T(2),    T(2,1),   -T(2,1),  T(1,2,1), -T(1,2,1)],
+#> [    T(1),    T(1,2),     -T(1),  T(1,2,1),   -T(1,2), -T(1,2,1)],
+#> [  T(2,1),  T(1,2,1),   -T(2,1), -T(1,2,1), -T(1,2,1),  T(1,2,1)],
+#> [  T(1,2),   -T(1,2),  T(1,2,1), -T(1,2,1), -T(1,2,1),  T(1,2,1)],
+#> [T(1,2,1), -T(1,2,1), -T(1,2,1),  T(1,2,1),  T(1,2,1), -T(1,2,1)]]
 W := CoxeterGroup( "B", 3 );
 #>CoxeterGroup("B",3)
 u := X( Rationals );; u.name := "u";;
@@ -683,10 +683,10 @@ CHEVIE.PrintHecke := rec(GAP:=true);
 #>rec(
 #>  GAP := true )
 T( pl, [ u^100, 1/u^20, 1, -5, 0 ] );
-#>u^100*T()+T(1)+u^-20*T(2)-5*T(1,2,3)
+#>u^100*T()+T(1)-5*T(2)+u^-20*T(1,2,3)
 CHEVIE.PrintHecke := rec();;
 T( pl, [ u^100, 1/u^20, 1, -5, 0 ] );
-#>u^100T()+T(1)+u^-20T(2)-5T(1,2,3)
+#>u^100T()+T(1)-5T(2)+u^-20T(1,2,3)
 q := X( Rationals );; q.name := "q";;
 H := Hecke( CoxeterGroup( "A", 2 ), q );
 #>Hecke(A2,q)
@@ -763,8 +763,8 @@ Display( CharTable( H ) );
 #>phi{1,6}       1    -1    -1      1       1        1
 #>phi{1,3}'      1   v^2    -1   -v^2     v^4     -v^6
 #>phi{1,3}''     1    -1   u^2   -u^2     u^4     -u^6
-#>phi{2,1}       2 v^2-1 u^2-1     uv -u^2v^2 -2u^3v^3
-#>phi{2,2}       2 v^2-1 u^2-1    -uv -u^2v^2  2u^3v^3
+#>phi{2,1}       2 v^2-1 u^2-1    -uv -u^2v^2  2u^3v^3
+#>phi{2,2}       2 v^2-1 u^2-1     uv -u^2v^2 -2u^3v^3
 #>
 H1 := Hecke( W, [ E(6)^2, E(6)^4 ],[ E(6), E(6)^2 ] );
 #>Hecke(G2,[E3,E3^2],[-E3^2,E3])
@@ -784,8 +784,8 @@ Display( ct );
 #>phi{1,6}       1            -1            -1      1    1      1
 #>phi{1,3}'      1          E3^2            -1  -E3^2   E3     -1
 #>phi{1,3}''     1            -1            E3    -E3 E3^2     -1
-#>phi{2,1}       2 (-3-ER(-3))/2 (-3+ER(-3))/2     -1   -1      2
-#>phi{2,2}       2 (-3-ER(-3))/2 (-3+ER(-3))/2      1   -1     -2
+#>phi{2,1}       2 (-3-ER(-3))/2 (-3+ER(-3))/2      1   -1     -2
+#>phi{2,2}       2 (-3-ER(-3))/2 (-3+ER(-3))/2     -1   -1      2
 #>
 RankMat( ct.irreducibles );
 #>5
@@ -820,9 +820,9 @@ schur := SchurElements( H);
 #>    -6), (u^(-4) + u^(-6))*v^6 + (u^(-2) + 2*u^(-4) + u^(-6))*v^4 + (
 #>    1 + 2*u^(-2) + u^(-4))*v^2 + (1 + u^(-2)), 
 #>  (u^2 + 1) + (u^4 + 2*u^2 + 1)*v^(-2) + (u^6 + 2*u^4 + u^2)*v^(
-#>    -4) + (u^6 + u^4)*v^(-6), (2*u^0)*v^2 + (2*u - 2*u^(-1))*v + (2*u^
-#>    2 - 2 + 2*u^(-2)) + (-2*u + 2*u^(-1))*v^(-1) + (2*u^0)*v^(-2), 
-#>  (2*u^0)*v^2 + (-2*u + 2*u^(-1))*v + (2*u^2 - 2 + 2*u^(-2)) + (2*u - 
+#>    -4) + (u^6 + u^4)*v^(-6), (2*u^0)*v^2 + (-2*u + 2*u^(-1))*v + (
+#>    2*u^2 - 2 + 2*u^(-2)) + (2*u - 2*u^(-1))*v^(-1) + (2*u^0)*v^(-2), 
+#>  (2*u^0)*v^2 + (2*u - 2*u^(-1))*v + (2*u^2 - 2 + 2*u^(-2)) + (-2*u + 
 #>    2*u^(-1))*v^(-1) + (2*u^0)*v^(-2) ]
 schur[1];
 #>(u^6 + u^4)*v^6 + (u^6 + 2*u^4 + u^2)*v^4 + (u^4 + 2*u^2 + 1)*v^
@@ -895,16 +895,16 @@ List([0..3],i->KazhdanLusztigCoefficient( W, px, py, i ) );
 W := CoxeterGroup( "G", 2 );;
 LeftCells(W);
 #>[ LeftCell<G2: duflo= character=phi{1,0}>, 
-#>  LeftCell<G2: duflo=1,2 character=phi{1,6}>, 
 #>  LeftCell<G2: duflo=2 character=phi{2,1}+phi{1,3}'+phi{2,2}>, 
-#>  LeftCell<G2: duflo=1 character=phi{2,1}+phi{1,3}''+phi{2,2}> ]
+#>  LeftCell<G2: duflo=1 character=phi{2,1}+phi{1,3}''+phi{2,2}>, 
+#>  LeftCell<G2: duflo=1,2 character=phi{1,6}> ]
 v := X( Cyclotomics ) ;; v.name := "v";;
 H := Hecke(CoxeterGroup( "H", 3), v^2, v );
 #>Hecke(H3,v^2,v)
 c := LeftCells( CoxeterGroup( H ) );;
 List( c, Size);
-#>[ 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 8, 8, 8, 8 ]
-Representation(c[2],H);
+#>[ 1, 6, 6, 6, 5, 5, 5, 5, 5, 8, 8, 8, 8, 5, 5, 5, 5, 5, 6, 6, 6, 1 ]
+Representation(c[1],H);
 #>[ [ [ v^2 ] ], [ [ v^2 ] ], [ [ v^2 ] ] ]
 W := CoxeterGroup( "B", 3 );;
 v := X( Rationals );; v.name := "v";;
@@ -917,7 +917,7 @@ T( C( 1 ) );
 C( T( 1 ) );
 #>v^2C()+vC(1)
 ref := HeckeReflectionRepresentation( H );;
-c := CharRepresentationWords( ref, WordsClassRepresentatives( W ) );
+c := CharRepresentationWords( ref, ChevieClassInfo( W ).classtext );
 #>[ 3*v^0, 2*v^2 - 1, v^8 - 2*v^4, -3*v^12, 2*v^2 - 1, v^4, 
 #>  v^4 - 2*v^2, -v^6, v^4 - v^2, 0*v^0 ]
 List( ChevieClassInfo( W ).classtext, i ->
@@ -1188,7 +1188,7 @@ d := PartitionTuples( 3,2 );;
 Print(Join(List(d,PartitionTupleToString),"   "),"\n");
 #>111.   11.1   1.11   .111   21.   1.2   2.1   .21   3.   .3
 W:=CoxeterGroupByCoxeterMatrix([[1,5],[5,1]]);
-#>CoxeterGroupByCoxeterMatrix([ [ 1, 5 ], [ 5, 1 ] ])
+#>CoxeterGroupByCoxeterMatrix([[1,5],[5,1]])
 PrintDiagram(W);
 #>I2(5) 1 -5- 2
 W:=ComplexReflectionGroup(24);;

@@ -445,7 +445,7 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
   end;
   partition2DR:=function(part)local p;
     p:=Concatenation(List(part,x->[1-x,3-x..x-1]));
-    Sort(p);p:=p{[1+Length(p)/2..Length(p)]};
+    Sort(p);p:=p{[1+QuoInt(Length(p),2)..Length(p)]};
     return Concatenation([p[1]+p[2]],List([1..Length(p)-1],i->p[i+1]-p[i]));
   end;
   if char=2 then ss:=XSP(4,0,n,1);
@@ -505,16 +505,16 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
       cc.red:=CoxeterGroup();
       j:=cc.parameter;
       for j in Collected(j) do
-	if j[1]mod 2=0 then cc.red:=cc.red*CoxeterGroup("C",j[2]/2);
+	if j[1]mod 2=0 then cc.red:=cc.red*CoxeterGroup("C",QuoInt(j[2],2));
 	elif j[2]mod 2<>0 then 
-	  if j[2]>1 then cc.red:=cc.red*CoxeterGroup("B",(j[2]-1)/2);fi;
-	elif j[2]>2 then cc.red:=cc.red*CoxeterGroup("D",j[2]/2);
+	  if j[2]>1 then cc.red:=cc.red*CoxeterGroup("B",QuoInt(j[2]-1,2));fi;
+	elif j[2]>2 then cc.red:=cc.red*CoxeterGroup("D",QuoInt(j[2],2));
 	else cc.red:=cc.red*Torus(1);
 	fi;
       od;
 #   else cc.red:=?????:
     fi;
-    if not IsList(cl[1].sp[2]) then cl[1].sp[3]:=1-((n/2) mod 2);fi;
+    if not IsList(cl[1].sp[2]) then cl[1].sp[3]:=1-(QuoInt(n,2) mod 2);fi;
     Add(uc.classes,cc); for s in cl do addSpringer(s,Length(uc.classes));od;
     if not IsList(cl[1].sp[2]) then
       cl[1].sp[3]:=1-cl[1].sp[3];Add(cc.name,'+');
@@ -550,20 +550,20 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
     while 4*d^2-d<=n do i:=4*d^2-d;
       if (n-d) mod 2=0 then
 	l:=Concatenation([1..i],[i+2,i+4..n]);
-	s:=rec(relgroup:=CoxeterGroup("B",(n-i)/2),levi:=l,locsys:=[]);
+	s:=rec(relgroup:=CoxeterGroup("B",QuoInt(n-i,2)),levi:=l,locsys:=[]);
 	if n mod 2=0 then s.Z:=[1,-1];else s.Z:=[E(4)];fi;
 	Add(uc.springerSeries,s);
         if d=0 then l:=Concatenation([1],[4,6..n]);fi;
-	s:=rec(relgroup:=CoxeterGroup("B",(n-i)/2),levi:=l,locsys:=[]);
+	s:=rec(relgroup:=CoxeterGroup("B",QuoInt(n-i,2)),levi:=l,locsys:=[]);
 	if n mod 2=0 then s.Z:=[-1,1];else s.Z:=[-E(4)];fi;
 	Add(uc.springerSeries,s);
 	i:=4*d^2+d;
 	if d<>0 and i<=n then
 	  l:=Concatenation([1..i],[i+2,i+4..n]);
-	  s:=rec(relgroup:=CoxeterGroup("B",(n-i)/2),levi:=l,locsys:=[]);
+	  s:=rec(relgroup:=CoxeterGroup("B",QuoInt(n-i,2)),levi:=l,locsys:=[]);
 	  if n mod 2=0 then s.Z:=[1,-1];else s.Z:=[E(4)];fi;
 	  Add(uc.springerSeries,s);
-	  s:=rec(relgroup:=CoxeterGroup("B",(n-i)/2),levi:=l,locsys:=[]);
+	  s:=rec(relgroup:=CoxeterGroup("B",QuoInt(n-i,2)),levi:=l,locsys:=[]);
 	  if n mod 2=0 then s.Z:=[1,1];else s.Z:=[-E(4)];fi;
 	  Add(uc.springerSeries,s);
 	fi;
@@ -574,10 +574,12 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
       Sort(p);a:=[];b:=[];d:=[0,1,0,-1];d:=d{List(p,x->1+x mod 4)};
       i:=1;
       while i<=Length(p) do l:=p[i];t:=Sum(d{[1..i-1]});
-	if 1=l mod 4 then Add(a,(l-1)/4-t);i:=i+1;
-	elif 3=l mod 4 then Add(b,(l-3)/4+t);i:=i+1;
-	else j:=i;while i<=Length(p) and p[i]=l do i:=i+1;od;j:=[1..(i-j)/2]*0;
-	  Append(a,j+(l+l mod 4)/4-t);Append(b,j+(l-l mod 4)/4+t);
+	if 1=l mod 4 then Add(a,QuoInt(l-1,4)-t);i:=i+1;
+	elif 3=l mod 4 then Add(b,QuoInt(l-3,4)+t);i:=i+1;
+	else j:=i;while i<=Length(p) and p[i]=l do i:=i+1;od;
+          j:=[1..QuoInt(i-j,2)]*0;
+	  Append(a,j+QuoInt(l+l mod 4,4)-t);
+          Append(b,j+QuoInt(l-l mod 4,4)+t);
 	fi;
       od;
       a:=Filtered(a,x->x<>0);a:=Reversed(a);

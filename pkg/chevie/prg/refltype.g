@@ -89,9 +89,7 @@ ReflTypeOps.WeightInfo:=function(t)local s;
   s:=["WeightInfo",t];
   if IsBound(t.cartanType) then Add(s,t.cartanType);fi;
   s:=ApplyFunc(CHEVIE.Data,s);
-  if s=false then return rec(minusculeWeights:=[],minusculeCoweights:=[],
-    decompositions:=[],moduli:=[]);
-  fi;
+  if s=false then s:=rec(minusculeWeights:=[],decompositions:=[],moduli:=[]);fi;
   if not IsBound(s.minusculeCoweights) then 
     s.minusculeCoweights:=s.minusculeWeights;
   fi;
@@ -108,12 +106,7 @@ ReflTypeOps.Invariants:=function(t)
   fi;
 end;
 
-ReflTypeOps.Discriminant:=function(t)
-# if IsBound(t.cartanType) then return CHEVIE.Data("Discriminant",t,t.cartanType);
-# else 
-    return CHEVIE.Data("Discriminant",t);
-# fi;
-end;
+ReflTypeOps.Discriminant:=t->CHEVIE.Data("Discriminant",t);
 
 ReflTypeOps.PoincarePolynomial:=function(t,param)
   return CHEVIE.Data("PoincarePolynomial",t,param);

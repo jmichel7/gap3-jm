@@ -767,7 +767,7 @@ end;
 # element  of the  mu-list for  each non-zero  value m  taken by \mu, which
 # consists of a pair whose first element is m and whose second element is a
 # list  of  lists;  if  l  is  one  of  these  lists  each pair [l[1],l[i]]
-# represents  an  edge  (x=l[1],y=l[i])  such that \mu(x,y)=\my(y,x)=m. For
+# represents  an  edge  (x=l[1],y=l[i])  such that \mu(x,y)=\mu(y,x)=m. For
 # non-symmetric  W-graphs, the first element of each pair in the mu-list is
 # a  pair [m1,m2] and each edge [x,y] obtained from the lists in the second
 # element has to be interpreted as mu(x,y)=m1 and mu(y,x)=m2.

@@ -269,11 +269,12 @@ end;
 # reflection subgroup K. Induce it to W by extending by 0 on the orthogonal
 # of K, then conjugate it so it takes >=0 values on the simple roots.
 InducedLinearForm:=function(W,K,h)local v,w,r;
-# Print("W=",W," K=",K," h=",h,"\n");
+# Print("W=",W," K=",K," h=",h);
   if SemisimpleRank(K)=0 then return W.generatingReflections*0;fi;
-  h:=ShallowCopy(h);Append(h,[1..K.rank-K.semisimpleRank]*0);
-  h:=CoxeterGroupOps.BaseX(Parent(W))*CoxeterGroupOps.BaseX(K)^-1*h;
-  r:=Parent(W).roots{W.rootInclusion};
+  h:=Concatenation(h,[1..K.rank-K.semisimpleRank]*0);
+  h:=CoxeterGroupOps.BaseX(K)^-1*h;
+# Print("=>",K.simpleRoots*h1,"\n");
+  r:=Parent(W).roots{W.rootInclusion}*Parent(W).simpleRoots;
   v:=r{[1..W.N]}*h;
   w:=ElementWithInversions(W,Filtered([1..W.N],i->v[i]<0));
   return List(W.rootRestriction{OnTuples(

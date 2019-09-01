@@ -131,6 +131,7 @@
 
 #define BASEdiv(x) ((x)>>NR_DIGIT_BITS)
 #define BASEmul(x) ((x)<<NR_DIGIT_BITS)
+#define CombineDigits(l) (BASEmul((unsigned long)((l)[1]))+(l)[0])
 
 /****************************************************************************
 **
@@ -412,11 +413,12 @@ TypHandle SumInt (TypHandle hdL, TypHandle hdR)
 **  If the operands have opposite sign 'DiffInt' calls 'SumInt',  this  helps
 **  reduce the total amount of code by a factor of two.
 */
-TypHandle __attribute__((optimize("O1"))) DiffInt(TypHandle hdL, TypHandle hdR)
+TypHandle DiffInt(TypHandle hdL, TypHandle hdR)
 {
     long   i;                  /* loop count, value for small int */
     long       k;              /* loop counter                    */
     long       c;              /* difference of two digits        */
+    unsigned long   c2;        /* to get 2 digits at once */
     TypDigit   * l;            /* pointer into the left operand   */
     TypDigit   * r;            /* pointer into the right operand  */
     TypDigit   * d;            /* pointer into the difference     */
@@ -522,14 +524,11 @@ TypHandle __attribute__((optimize("O1"))) DiffInt(TypHandle hdL, TypHandle hdR)
             }
 
             /* reduce to small integer if possible, otherwise shrink bag   */
-            if ( k<=2 && TYPE(hdD) == T_INTPOS
-              && (unsigned long)(BASE*d[1]+d[0]) < MAXSMALL )
-                hdD = INT_TO_HD( BASE*d[1]+d[0] );
-            else if ( k<=2 && TYPE(hdD) == T_INTNEG
-              && (unsigned long)(BASE*d[1]+d[0]) <= MAXSMALL )
-                hdD = INT_TO_HD( -(BASE*d[1]+d[0]) );
-            else
-                Resize( hdD, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
+            c2=CombineDigits(d);
+            if(k<=2 && TYPE(hdD)==T_INTPOS && c2<MAXSMALL) hdD = INT_TO_HD(c2);
+            else if(k<=2 && TYPE(hdD)==T_INTNEG && c2<=MAXSMALL)
+                                                           hdD=INT_TO_HD(-c2);
+            else Resize( hdD, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
         }
 
     }
@@ -604,17 +603,12 @@ TypHandle __attribute__((optimize("O1"))) DiffInt(TypHandle hdL, TypHandle hdR)
             }
 
             /* reduce to small integer if possible, otherwise shrink bag   */
-            if ( k<=2 && TYPE(hdD) == T_INTPOS
-              && (unsigned long)(BASE*d[1]+d[0]) < MAXSMALL )
-                hdD = INT_TO_HD( BASE*d[1]+d[0] );
-            else if ( k<=2 && TYPE(hdD) == T_INTNEG
-              && (unsigned long)(BASE*d[1]+d[0]) <= MAXSMALL )
-                hdD = INT_TO_HD( -(BASE*d[1]+d[0]) );
-            else
-                Resize( hdD, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
-
+            c2=CombineDigits(d);
+            if (k<=2 && TYPE(hdD)==T_INTPOS && c2<MAXSMALL)hdD=INT_TO_HD(c2);
+            else if(k<=2 && TYPE(hdD)==T_INTNEG && c2<=MAXSMALL)
+                hdD=INT_TO_HD(-c2);
+            else Resize( hdD, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
         }
-
     }
 
     /* return the difference                                               */
@@ -704,7 +698,7 @@ TypHandle ProdInt(TypHandle hdL, TypHandle hdR)
         if ( i == -1
           && TYPE(hdR) == T_INTPOS && SIZE(hdR) == 4*sizeof(TypDigit)
           && ((TypDigit*)PTR(hdR))[3]==0     && ((TypDigit*)PTR(hdR))[2]==0
-          &&BASE*((TypDigit*)PTR(hdR))[1]+((TypDigit*)PTR(hdR))[0]==MAXSMALL)
+          && CombineDigits((TypDigit*)PTR(hdR))==MAXSMALL)
             return INT_TO_HD(-MAXSMALL);
 
         /* multiplication by -1 is easy, just switch the sign and copy     */
@@ -812,7 +806,7 @@ TypHandle ProdInt(TypHandle hdL, TypHandle hdR)
 **
 **  Is called from the 'EvMod'  binop so both operands are already evaluated.
 */
-TypHandle  ModInt (TypHandle hdL, TypHandle hdR)
+TypHandle ModInt (TypHandle hdL, TypHandle hdR)
 {
     long       i;              /* loop count, value for small int */
     long       k;              /* loop count, value for small int */
@@ -859,7 +853,7 @@ TypHandle  ModInt (TypHandle hdL, TypHandle hdR)
         if ( hdL == INT_TO_HD(-MAXSMALL)
           && TYPE(hdR) == T_INTPOS && SIZE(hdR) == 4*sizeof(TypDigit)
           && ((TypDigit*)PTR(hdR))[3] == 0 && ((TypDigit*)PTR(hdR))[2] == 0
-          && BASE*((TypDigit*)PTR(hdR))[1]+((TypDigit*)PTR(hdR))[0]==MAXSMALL )
+          && CombineDigits((TypDigit*)PTR(hdR))==MAXSMALL )
             hdM = INT_TO_HD(0);
 
         /* in all other cases the remainder is equal the left operand      */
@@ -903,7 +897,6 @@ TypHandle  ModInt (TypHandle hdL, TypHandle hdR)
 
     /* compute the remainder of a large integer modulo a large integer     */
     else {
-
         /* a small divisor larger than one digit isn't handled above       */
         if ( ISINT(hdR) ) {
             if ( 0 < HD_TO_INT(hdR) ) {
@@ -936,44 +929,44 @@ TypHandle  ModInt (TypHandle hdL, TypHandle hdR)
         /* get the size of the right operand, and get the leading 2 digits */
         rs = SIZE(hdR)/sizeof(TypDigit);
         r  = (TypDigit*)PTR(hdR);
-        while ( r[rs-1] == 0 )  --rs;
-        for ( e = 0; ((long)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) < BASE/2; ++e ) ;
-        r1 = ((long)r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
-        r2 = ((long)r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
+        while (r[rs-1]==0)rs--;
+        for(e=0;((long)r[rs-1]<<e)+(e?r[rs-2]>>(NR_DIGIT_BITS-e):0)<BASE/2;++e);
+        r1 = ((long)r[rs-1]<<e) + (e?r[rs-2]>>(NR_DIGIT_BITS-e):0);
+        r2 = ((long)r[rs-2]<<e) + ((rs>=3&&e)? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
 
         /* run through the digits in the quotient                          */
         for ( i = (SIZE(hdM)-SIZE(hdR))/sizeof(TypDigit)-1; i >= 0; --i ) {
 
-            /* guess the factor                                            */
-            m = ((TypDigit*)PTR(hdM)) + rs + i;
-            m01 = ((BASE*m[0]+m[-1])<<e) + (m[-2]>>(NR_DIGIT_BITS-e));
-            if ( m01 == 0 )  continue;
-            m2  = ((long)m[-2]<<e) + (rs+i>=3 ? m[-3]>>(NR_DIGIT_BITS-e) : 0);
-            if ( ((long)m[0]<<e)+(m[-1]>>(NR_DIGIT_BITS-e)) < r1 )  qi = m01 / r1;
-            else                                   qi = BASE - 1;
-            while ( m01-(long)qi*r1 < BASE && BASE*(m01-(long)qi*r1)+m2 < (long)qi*r2 )
-                --qi;
+           /* guess the factor                                            */
+           m = ((TypDigit*)PTR(hdM)) + rs + i;
+           m01 = (CombineDigits(m-1)<<e) + (e?m[-2]>>(NR_DIGIT_BITS-e):0);
+           if ( m01 == 0 )  continue;
+           m2  = ((long)m[-2]<<e) + ((e&& rs+i>=3)? m[-3]>>(NR_DIGIT_BITS-e) : 0);
+           if ( ((long)m[0]<<e)+(e?m[-1]>>(NR_DIGIT_BITS-e):0)<r1) qi = m01 / r1;
+           else                                   qi = BASE - 1;
+           while (m01-(long)qi*r1<BASE && 
+              BASEmul(m01-(long)qi*r1)+m2<(long)qi*r2) --qi;
 
-            /* m = m - qi * r;                                             */
-            d = 0;
-            m = ((TypDigit*)PTR(hdM)) + i;
-            r = ((TypDigit*)PTR(hdR));
-            for ( k = 0; k < rs; ++k, ++m, ++r ) {
-                c = *m - (long)qi * *r - d;  *m = c;  d = -BASEdiv(c);
-            }
-            c = (long)*m - d;  *m = c;  d = -BASEdiv(c);
+           /* m = m - qi * r;                                             */
+           d = 0;
+           m = ((TypDigit*)PTR(hdM)) + i;
+           r = ((TypDigit*)PTR(hdR));
+           for ( k = 0; k < rs; ++k, ++m, ++r ) {
+               c = *m - (long)qi * *r - d;  *m = c;  d = -BASEdiv(c);
+           }
+           c = (long)*m - d;  *m = c;  d = -BASEdiv(c);
 
-            /* if we have a borrow then add back                           */
-            if ( d != 0 ) {
-                d = 0;
-                m = ((TypDigit*)PTR(hdM)) + i;
-                r = ((TypDigit*)PTR(hdR));
-                for ( k = 0; k < rs; ++k, ++m, ++r ) {
-                    c = (long)*m + *r + d;  *m = c;  d = BASEdiv(c);
-                }
-                c = (long)*m + d;  *m = c;  d = BASEdiv(c);
-                qi--;
-            }
+           /* if we have a borrow then add back                           */
+           if ( d != 0 ) {
+               d = 0;
+               m = ((TypDigit*)PTR(hdM)) + i;
+               r = ((TypDigit*)PTR(hdR));
+               for ( k = 0; k < rs; ++k, ++m, ++r ) {
+                   c = (long)*m + *r + d;  *m = c;  d = BASEdiv(c);
+               }
+               c = (long)*m + d;  *m = c;  d = BASEdiv(c);
+               qi--;
+           }
 
         }
 
@@ -984,19 +977,14 @@ TypHandle  ModInt (TypHandle hdL, TypHandle hdR)
 
             /* find the number of significant digits                       */
             m = (TypDigit*)PTR(hdM);
-            for ( k=SIZE(hdM)/sizeof(TypDigit); k != 0; --k ) {
-                if ( m[k-1] != 0 )
-                    break;
-            }
+            for(k=SIZE(hdM)/sizeof(TypDigit);k!=0;--k){if(m[k-1]!=0)break;}
 
             /* reduce to small integer if possible, otherwise shrink bag   */
-            if ( k<=2 && TYPE(hdM) == T_INTPOS
-              && (unsigned long)(BASE*m[1]+m[0]) < MAXSMALL )
-                hdM = INT_TO_HD( BASE*m[1]+m[0] );
-            else if ( k<=2 && TYPE(hdM) == T_INTNEG
-              && (unsigned long)(BASE*m[1]+m[0]) <= MAXSMALL )
-                hdM = INT_TO_HD( -(BASE*m[1]+m[0]) );
-            else Resize( hdM, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
+            c=CombineDigits(m);
+            if (k<=2 && TYPE(hdM)==T_INTPOS && c<MAXSMALL) hdM=INT_TO_HD(c);
+            else if (k<=2 && TYPE(hdM)==T_INTNEG && c<=MAXSMALL)
+                                                          hdM=INT_TO_HD(-c);
+            else Resize(hdM, (((k + 3) / 4) * 4)*sizeof(TypDigit));
         }
 
         /* make the representant positive                                  */
@@ -1291,7 +1279,7 @@ TypHandle FunIsInt(TypHandle hdCall)
 **  integers yields  a  rational  and  is  therefor  performed  in  'QuoRat'.
 **  This operation is however available through the internal function 'Quo'.
 */
-TypHandle  __attribute__((optimize("O1")))  QuoInt(TypHandle hdL, TypHandle hdR)
+TypHandle QuoInt(TypHandle hdL, TypHandle hdR)
 {
     long       i;              /* loop count, value for small int */
     long       k;              /* loop count, value for small int */
@@ -1347,7 +1335,7 @@ TypHandle  __attribute__((optimize("O1")))  QuoInt(TypHandle hdL, TypHandle hdR)
         if ( hdL == INT_TO_HD(-MAXSMALL)
           && TYPE(hdR) == T_INTPOS && SIZE(hdR) == 4*sizeof(TypDigit)
           && ((TypDigit*)PTR(hdR))[3] == 0 && ((TypDigit*)PTR(hdR))[2] == 0
-          && BASE*((TypDigit*)PTR(hdR))[1]+((TypDigit*)PTR(hdR))[0]==MAXSMALL )
+          && CombineDigits((TypDigit*)PTR(hdR))==MAXSMALL)
             hdQ = INT_TO_HD(-1);
 
         /* in all other cases the quotient is of course zero               */
@@ -1392,12 +1380,10 @@ TypHandle  __attribute__((optimize("O1")))  QuoInt(TypHandle hdL, TypHandle hdR)
         /* reduce to small integer if possible                             */
         q = ((TypDigit*)PTR(hdQ)) + SIZE(hdQ)/sizeof(TypDigit);
         if ( SIZE(hdQ)==4*sizeof(TypDigit) && q[-2]==0 && q[-1]==0 ) {
-            if ( TYPE(hdQ) == T_INTPOS
-              && (unsigned long)(BASE*q[-3]+q[-4]) < MAXSMALL )
-                hdQ = INT_TO_HD( BASE*q[-3]+q[-4] );
-            else if ( TYPE(hdQ) == T_INTNEG
-              && (unsigned long)(BASE*q[-3]+q[-4]) <= MAXSMALL )
-                hdQ = INT_TO_HD( -(BASE*q[-3]+q[-4]) );
+            if ( TYPE(hdQ) == T_INTPOS && CombineDigits(q-4) < MAXSMALL )
+                hdQ = INT_TO_HD( CombineDigits(q-4));
+            else if ( TYPE(hdQ) == T_INTNEG && CombineDigits(q-4) <= MAXSMALL )
+                hdQ = INT_TO_HD( -CombineDigits(q-4));
         }
 
     }
@@ -1451,14 +1437,14 @@ TypHandle  __attribute__((optimize("O1")))  QuoInt(TypHandle hdL, TypHandle hdR)
 
             /* guess the factor                                            */
             l = ((TypDigit*)PTR(hdL)) + rs + i;
-            l01 = ((BASE*l[0]+l[-1])<<e) + (e?l[-2]>>(NR_DIGIT_BITS-e):0);
+            l01 = (CombineDigits(l-1)<<e) + (e?l[-2]>>(NR_DIGIT_BITS-e):0);
 
             if ( l01 == 0 )  continue;
             l2  = ((long)l[-2]<<e) + ((e&&rs+i>=3)? l[-3]>>(NR_DIGIT_BITS-e) : 0);
             if ( ((long)l[0]<<e)+(e?l[-1]>>(NR_DIGIT_BITS-e):0) < r1 )qi=l01 / r1;
             else                                   qi = BASE - 1;
-            while ( l01-(long)qi*r1 < BASE && BASE*(l01-(long)qi*r1)+l2 < (long)qi*r2 )
-                --qi;
+            while ( l01-(long)qi*r1 < BASE && 
+               BASEmul(l01-(long)qi*r1)+l2<(long)qi*r2 )--qi;
 
             /* l = l - qi * r;                                             */
             d = 0;
@@ -1496,12 +1482,10 @@ TypHandle  __attribute__((optimize("O1")))  QuoInt(TypHandle hdL, TypHandle hdR)
         /* reduce to small integer if possible                             */
         q = ((TypDigit*)PTR(hdQ)) + SIZE(hdQ)/sizeof(TypDigit);
         if ( SIZE(hdQ)==4*sizeof(TypDigit) && q[-2]==0 && q[-1]==0 ) {
-            if ( TYPE(hdQ) == T_INTPOS
-              && (unsigned long)(BASE*q[-3]+q[-4]) < MAXSMALL )
-                hdQ = INT_TO_HD( BASE*q[-3]+q[-4] );
-            else if ( TYPE(hdQ) == T_INTNEG
-              && (unsigned long)(BASE*q[-3]+q[-4]) <= MAXSMALL )
-                hdQ = INT_TO_HD( -(BASE*q[-3]+q[-4]) );
+            if ( TYPE(hdQ) == T_INTPOS && CombineDigits(q-4) < MAXSMALL )
+                hdQ = INT_TO_HD(CombineDigits(q-4));
+            else if ( TYPE(hdQ) == T_INTNEG && CombineDigits(q-4) <= MAXSMALL )
+                hdQ = INT_TO_HD(-CombineDigits(q-4));
         }
 
     }
@@ -1603,7 +1587,7 @@ TypHandle RemInt (TypHandle hdL, TypHandle hdR)
         if ( hdL == INT_TO_HD(-MAXSMALL)
           && TYPE(hdR) == T_INTPOS && SIZE(hdR) == 4*sizeof(TypDigit)
           && ((TypDigit*)PTR(hdR))[3] == 0 && ((TypDigit*)PTR(hdR))[2] == 0
-          && BASE*((TypDigit*)PTR(hdR))[1]+((TypDigit*)PTR(hdR))[0]==MAXSMALL )
+          && CombineDigits((TypDigit*)PTR(hdR))==MAXSMALL )
             hdM = INT_TO_HD(0);
 
         /* in all other cases the remainder is equal the left operand      */
@@ -1677,32 +1661,31 @@ TypHandle RemInt (TypHandle hdL, TypHandle hdR)
         /* get the size of the right operand, and get the leading 2 digits */
         rs = SIZE(hdR)/sizeof(TypDigit);
         r  = (TypDigit*)PTR(hdR);
-        while ( r[rs-1] == 0 )  --rs;
-        for ( e = 0; (r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e)) < BASE/2; ++e ) ;
-        r1 = (r[rs-1]<<e) + (r[rs-2]>>(NR_DIGIT_BITS-e));
-        r2 = (r[rs-2]<<e) + (rs>=3 ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
+        while ( r[rs-1] == 0 )  rs--;
+        for ( e = 0; ((long)r[rs-1]<<e) + (e?(r[rs-2]>>(NR_DIGIT_BITS-e)):0) < BASE/2; ++e ) ;
+        r1 = ((long)r[rs-1]<<e) + (e?r[rs-2]>>(NR_DIGIT_BITS-e):0);
+        r2 = ((long)r[rs-2]<<e) + ((e && rs>=3)? r[rs-3]>>(NR_DIGIT_BITS-e):0);
 
         /* run through the digits in the quotient                          */
         for ( i = (SIZE(hdM)-SIZE(hdR))/sizeof(TypDigit)-1; i >= 0; --i ) {
 
             /* guess the factor                                            */
             m = ((TypDigit*)PTR(hdM)) + rs + i;
-            m01 = ((BASE*m[0]+m[-1])<<e) + (m[-2]>>(NR_DIGIT_BITS-e));
+            m01 = (CombineDigits(m-1)<<e) + (e?m[-2]>>(NR_DIGIT_BITS-e):0);
             if ( m01 == 0 )  continue;
-            m2  = (m[-2]<<e) + (rs+i>=3 ? m[-3]>>(NR_DIGIT_BITS-e) : 0);
-            if ( (m[0]<<e)+(m[-1]>>(NR_DIGIT_BITS-e)) < r1 )  qi = m01 / r1;
+            m2=((long)m[-2]<<e)+((e && rs+i>=3) ?m[-3]>>(NR_DIGIT_BITS-e):0);
+            if ( ((long)m[0]<<e)+(e?m[-1]>>(NR_DIGIT_BITS-e):0)<r1)qi=m01/r1;
             else                                   qi = BASE - 1;
-            while ( m01-qi*r1 < BASE && BASE*(m01-qi*r1)+m2 < qi*r2 )
-                --qi;
+            while(m01-(long)qi*r1<BASE && BASEmul(m01-(long)qi*r1)+m2<(long)qi*r2)--qi;
 
             /* m = m - qi * r;                                             */
             d = 0;
             m = ((TypDigit*)PTR(hdM)) + i;
             r = ((TypDigit*)PTR(hdR));
             for ( k = 0; k < rs; ++k, ++m, ++r ) {
-                c = *m - qi * *r - d;  *m = c;  d = -BASEdiv(c);
+                c = (long)*m - (long)qi * *r - d;  *m = c;  d = -BASEdiv(c);
             }
-            c = *m - d;  *m = c;  d = -BASEdiv(c);
+            c = (long)*m - d;  *m = c;  d = -BASEdiv(c);
 
             /* if we have a borrow then add back                           */
             if ( d != 0 ) {
@@ -1710,9 +1693,9 @@ TypHandle RemInt (TypHandle hdL, TypHandle hdR)
                 m = ((TypDigit*)PTR(hdM)) + i;
                 r = ((TypDigit*)PTR(hdR));
                 for ( k = 0; k < rs; ++k, ++m, ++r ) {
-                    c = *m + *r + d;  *m = c;  d = BASEdiv(c);
+                    c = (long)*m + *r + d;  *m = c;  d = BASEdiv(c);
                 }
-                c = *m + d;  *m = c;  d = BASEdiv(c);
+                c = (long)*m + d;  *m = c;  d = BASEdiv(c);
                 qi--;
             }
 
@@ -1730,14 +1713,12 @@ TypHandle RemInt (TypHandle hdL, TypHandle hdR)
             }
 
             /* reduce to small integer if possible, otherwise shrink bag   */
-            if ( k<=2 && TYPE(hdM) == T_INTPOS
-              && (unsigned long)(BASE*m[1]+m[0]) < MAXSMALL )
-                hdM = INT_TO_HD( BASE*m[1]+m[0] );
-            else if ( k<=2 && TYPE(hdM) == T_INTNEG
-              && (unsigned long)(BASE*m[1]+m[0]) <= MAXSMALL )
-                hdM = INT_TO_HD( -(BASE*m[1]+m[0]) );
-            else
-                Resize( hdM, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
+            c=CombineDigits(m);
+            if ( k<=2 && TYPE(hdM) == T_INTPOS && c< MAXSMALL )
+                 hdM = INT_TO_HD(c);
+            else if ( k<=2 && TYPE(hdM) == T_INTNEG && c<= MAXSMALL )
+                 hdM = INT_TO_HD( -c );
+            else Resize( hdM, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
         }
 
     }
@@ -1786,7 +1767,8 @@ TypHandle  FunRem(TypHandle hdCall)
 **
 **  It is called from 'FunGcdInt' and the rational package.
 */
-TypHandle __attribute__((optimize("O1")))  GcdInt (TypHandle hdL, TypHandle hdR)
+/*TypHandle __attribute__((optimize("O1")))  GcdInt (TypHandle hdL, TypHandle hdR)*/
+TypHandle GcdInt (TypHandle hdL, TypHandle hdR)
 {
     long       i;              /* loop count, value for small int */
     long       k;              /* loop count, value for small int */
@@ -1934,14 +1916,14 @@ TypHandle __attribute__((optimize("O1")))  GcdInt (TypHandle hdL, TypHandle hdR)
 
                 /* guess the factor                                        */
                 l = ((TypDigit*)PTR(hdL)) + rs + i;
-                l01 = ((BASE*l[0]+l[-1])<<e) + (e?l[-2]>>(NR_DIGIT_BITS-e):0);
+                l01 = (CombineDigits(l-1)<<e) + (e?l[-2]>>(NR_DIGIT_BITS-e):0);
                 if ( l01 == 0 )  continue;
                 l2  = ((long)l[-2]<<e) + ((e&&rs+i>=3)? l[-3]>>(NR_DIGIT_BITS-e) : 0);
                 if ( ((long)l[0]<<e)+(e?l[-1]>>(NR_DIGIT_BITS-e):0) < r1 )  
 		  qi = l01 / r1;
                 else                                   qi = BASE - 1;
-                while ( l01-(long)qi*r1 < BASE && BASE*(l01-(long)qi*r1)+l2 < (long)qi*r2 )
-                    --qi;
+                while ( l01-(long)qi*r1 < BASE && 
+                   BASEmul(l01-(long)qi*r1)+l2 < (long)qi*r2 ) --qi;
 
                 /* l = l - qi * r;                                         */
                 d = 0;
@@ -1992,11 +1974,11 @@ TypHandle __attribute__((optimize("O1")))  GcdInt (TypHandle hdL, TypHandle hdR)
 
                 /* reduce to small integer if possible, otherwise shrink b */
                 if ( k<=2 && TYPE(hdL) == T_INTPOS
-                  && (unsigned long)(BASE*l[1]+l[0]) < MAXSMALL )
-                    hdL = INT_TO_HD( BASE*l[1]+l[0] );
+                  && CombineDigits(l)< MAXSMALL )
+                    hdL = INT_TO_HD(CombineDigits(l));
                 else if ( k<=2 && TYPE(hdL) == T_INTNEG
-                  && (unsigned long)(BASE*l[1]+l[0]) <= MAXSMALL )
-                    hdL = INT_TO_HD( -(BASE*l[1]+l[0]) );
+                  && CombineDigits(l)<=MAXSMALL)
+                    hdL = INT_TO_HD(-CombineDigits(l));
                 else
                     Resize( hdL, (((k + 3) / 4) * 4) * sizeof(TypDigit) );
             }

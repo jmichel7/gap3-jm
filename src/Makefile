@@ -77,6 +77,10 @@ linuxd:
 	@$(MAKE) system.o CC=gcc  CFLAGS="$(LINUX) -DSYS_IS_64_BIT -g"
 	@$(MAKE) gap CC=gcc CFLAGS="$(COPTS) -DSYS_IS_64_BIT -g" LOPTS="$(LOPTS)"
 
+linuxdo:
+	@$(MAKE) system.o CC=gcc  CFLAGS="$(LINUX) -O2 -DSYS_IS_64_BIT -g"
+	@$(MAKE) gap CC=gcc CFLAGS="$(COPTS) -O2 -DSYS_IS_64_BIT -g" LOPTS="$(LOPTS)"
+
 # sbrk doesn't work in macosx so we need to use vm_allocate
 macosx:
 	@$(MAKE) system.o   CC=gcc  CFLAGS="$(COPTS) -m32 -DSYS_IS_MACOSX -DARCH_INCLUDE -DSYS_HAS_IOCTL_PROTO"

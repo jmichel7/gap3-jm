@@ -109,7 +109,8 @@ GarsideEltOps.Format:=function(b,option)local M,res,p,seqCollected,W;
     if IsBound(option.GAP) then return SPrint("[",l,"],",b.pd);
     else
       if l<>"" then l:=Concatenation(".",l);fi;
-      if IsBound(option.Greedy) then return SPrint(M.stringDelta,"^",b.pd,l);
+      if IsBound(option.Greedy) then 
+           return SPrint(FormatMonomial(M.stringDelta,b.pd,option),l);
       else return SPrint(Join(List([1..b.pd],i->M.stringDelta),"."),l);
       fi;
     fi;

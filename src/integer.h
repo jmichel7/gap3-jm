@@ -157,8 +157,8 @@ static inline TypHandle CheckedProd(TypHandle hdL,TypHandle hdR)
 *T  TypDigit  . . . . . . . . . . . . . . . . . . . .  type of a single digit
 **
 **  'TypDigit' is the type of a single digit of an  arbitrary  size  integer.
-**  This is unsigned short int if b=32, which gives us the 16 bits we want.
-**  This is unsigned int if b=64, which gives 32 bit.
+**  This is unsigned short if b=32, which gives us the 16 bit UInts we want.
+**  This is unsigned if b=64, which gives 32 bit UInts.
 */
 #ifdef SYS_IS_64_BIT
 typedef unsigned        TypDigit; /* sizeof=4 */

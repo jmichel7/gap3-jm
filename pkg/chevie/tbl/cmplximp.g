@@ -179,7 +179,7 @@ CHEVIE.AddData("ClassInfo","imp",function(p,q,r)local res,times,trans,I,i,j,a,S;
       Add(res.classnames,String(Concatenation(times(j,"1"),times(i,"z"))));
     od;od;
     for j in [2,3] do
-      for i in [0..p/2-1] do Add(res.classparams,Concatenation([j],[1..i]*0));
+      for i in [0..QuoInt(p,2)-1] do Add(res.classparams,Concatenation([j],[1..i]*0));
 	Add(res.classtext,Concatenation([j],times(i,[1,2,3])));
 	Add(res.classnames,String(Concatenation(String(j),times(i,"z"))));
       od;
@@ -187,14 +187,16 @@ CHEVIE.AddData("ClassInfo","imp",function(p,q,r)local res,times,trans,I,i,j,a,S;
     res.malle:=[];
     for a in [0..p-1] do 
        Append(res.malle,List([0..QuoInt(p-a-1,2)],m->[3,a,m]));od;
-    Append(res.malle,List([0..p/2-1],m->[1,m]));
-    Append(res.malle,List([0..p/2-1],m->[2,m]));
+    Append(res.malle,List([0..QuoInt(p,2)-1],m->[1,m]));
+    Append(res.malle,List([0..QuoInt(p,2)-1],m->[2,m]));
     res.orders:=List(res.classparams,function(c)
-     if Length(c)>0 and c[1] in [2,3] then return Lcm(2,p/Gcd(Number(c,x->x=0),p));
-     else return Lcm(p/Gcd(Number(c,x->x=0),p),(p/2)/Gcd(Number(c,x->x=1),p/2));
+     if Length(c)>0 and c[1] in [2,3] then 
+         return Lcm(2,QuoInt(p,Gcd(Number(c,x->x=0),p)));
+     else return Lcm(QuoInt(p,Gcd(Number(c,x->x=0),p)),
+       QuoInt(QuoInt(p,2),Gcd(Number(c,x->x=1),QuoInt(p,2))));
      fi;end);
     res.classes:=List(res.classparams,function(c)
-      if Length(c)>0 and c[1] in [2,3] then return p/q;
+      if Length(c)>0 and c[1] in [2,3] then return QuoInt(p,q);
       elif 1 in c then return 2;else return 1;fi;end);
     return res;
   elif q=1 then
