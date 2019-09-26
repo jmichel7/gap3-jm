@@ -850,7 +850,7 @@ CHEVIE.AddData("HeckeRepresentation","imp",function(p,q,r,para,root,i)
       -x*f(x^-1,E(3)^2),-x*f(x^-1,E(3)),
       [[[-1,0],[-1,x]],[[-1,0],[-1,x]],[[x,-x],[0,-1]]],
       [[[x]],[[x]],[[x]]]];
-    return r[i];
+    return -para[2][2]*r[i];
   elif [p,q,r]=[2,2,4] then 
     x:=-para[1][1]/para[1][2];r:=[
  x->[[[-1+x,-1,0],[-x,0,0],[x-x^2,-1+x,-1]],[[0,1,0],[x,-1+x,0],[0,0,-1]],
@@ -884,7 +884,8 @@ CHEVIE.AddData("HeckeRepresentation","imp",function(p,q,r,para,root,i)
     1,2,
  x->[[[x,0],[-1,-1]],[[x,0],[-1,-1]],[[0,1],[x,-1+x]],[[x,0],[-1,-1]]],
     3,7,4];
-    if IsInt(r[i]) then return -x*r[r[i]](x^-1);else return r[i](x)*x^0;fi;
+    if IsInt(r[i]) then return para[1][2]*x*r[r[i]](x^-1);
+    else return -para[1][2]*r[i](x)*x^0;fi;
   elif [p,q,r]=[3,3,4] then 
     x:=-para[2][1]/para[2][2];
     m:=function(i)local f1,f2,f3,f5,f7,f8,f11,f13;
@@ -943,7 +944,7 @@ x,0,0,0],[0,0,0,0,0,x,0,0,0,0,1-x,x-x^2],[0,0,0,0,0,0,0,0,0,1,0,x],[0,0,0,1,0,
        f8(x,E(3)),f8(x,E(3)^2),-x*f7(x^-1,E(3)),f11(x),-x*f3(x^-1),f13(x),
        -x*f2(x^-1,E(3)^2),-x*f2(x^-1,E(3)),-x*f11(x^-1),-x*f5(x^-1)];
      return x^0*r[i];end;
-     return m(i);
+     return -para[2][2]*m(i);
   elif [p,q,r]=[3,3,5] then 
      x:=-para[2][1]/para[2][2];
      m:=function(i)local r,f1,f2,f3,f4,f8,f9,f11,f12,f13,f17,f20,f23,f29;
@@ -1946,7 +1947,7 @@ E(3)^2*q,0,0,0,0,-E(3)+E(3)*q,E(3)^2*q,0,0,0,-1+q]]];end;
      f17(1/x)*-x,[[[x]],[[x]],[[x]],[[x]],[[x]]]];
      return r[i];
      end;
-     return m(i);
+     return -para[2][2]*m(i);
   elif [p,q,r]=[4,4,3] then 
      x:=-para[2][1]/para[2][2];
      r:=x^0*
@@ -1963,7 +1964,7 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
 -E(4)-1,x]],[[x,0,-x],[0,x,((E(4)-1)/2)*x],[0,0,-1]]],[[[-1,0,0],[-1,x,0],[-1,
 0,x]],[[x,-2*x,0],[0,-1,0],[0,E(4)-1,x]],[[x,0,-x],[0,x,((-E(4)-1)/2)*x],[0,0,
 -1]]],[[[-1,0],[-1,x]],[[-1,0],[-1,x]],[[x,-x],[0,-1]]],[[[x]],[[x]],[[x]]]];
-    return r[i];
+    return -para[2][2]*r[i];
   else
     S:=CHEVIE.R("CharInfo","imp")(p,q,r).charparams[i];
     # S is a p-tuple of partitions of area r
@@ -2378,3 +2379,62 @@ CHEVIE.AddData("Invariants","imp",function(p,q,r)local v;
   Add(v,function(arg)return Product(arg)^(p/q);end);
   return v;
 end);
+
+CHEVIE.AddData("InitHeckeBasis","imp",function(p,q,r,H)
+  if q<>1 or r<>1 then Error("implemented only for G(d,1,1)");fi;
+
+H.mul:=function(x,y)local H,res,ops,W,temp,i,xi,temp1,j,e,pol,d;
+  if IsList(x) then return List(x,u->u*y);fi;
+  if IsList(y) then return List(y,u->x*u);fi;
+  H:=Hecke(y);
+  if not IsRec(x) or not IsBound(x.hecke) or not IsBound(x.elm) then 
+  # assume x is a scalar by which to multiply y
+    if x=0*x then return HeckeElt(H,y.basis,[],[]);
+    else return HeckeElt(H,y.basis,y.elm,y.coeff*(x*H.unit));
+    fi;
+  fi;
+  if not IsIdentical(H,Hecke(x)) then 
+    Error("not elements of the same algebra");
+  fi;
+  ops:=H.operations;
+  pol:=Coefficients(Product(H.parameter[1],u->Mvp("xxx")-u),"xxx");
+  d:=Length(pol)-1;
+  if x.basis<>y.basis then return Basis(H,"T")(x)*Basis(H,"T")(y);
+  elif x.basis="T" then 
+    W:=Group(H);
+    res:=HeckeElt(H,x.basis,[],[]);
+    for i in [1..Length(x.elm)] do
+      temp:=x.coeff[i]*y;
+      xi:=x.elm[i];
+      for i in [1..Length(xi)] do
+	temp1:=HeckeElt(H,x.basis,[],[]);
+	for j in [1..Length(temp.elm)] do
+	  e:=Length(temp.elm[j]);
+	  if e+1<d then
+	    Add(temp1.elm,List([1..e+1],i->1));Add(temp1.coeff,temp.coeff[j]);
+	  else
+	    Append(temp1.elm,List([0..d-1],i->[1..i]*0+1));
+	    Append(temp1.coeff,-pol{[1..d]}*temp.coeff[j]);
+	  fi;
+	od;
+	temp:=temp1;
+	CollectCoefficients(temp);
+      od;
+      res:=res+temp;
+    od;
+    return res;
+  else return Basis(H,x.basis)(Basis(H,"T")(x)*Basis(H,"T")(y));
+  fi;
+end;
+
+H.inverse:=function(h)local H,d,pol;
+ if Length(h.elm)<>1 then Error("inverse implemented only for single T_w");fi;
+  H:=Hecke(h);
+  pol:=Coefficients(Product(H.parameter[1],u->Mvp("xxx")-u),"xxx");
+  d:=Length(pol)-1;
+  return h.coeff[1]^-1*Basis(H,"T")(List([0..d-1],i->[1..i]*0+1),
+	    -pol{[2..d+1]}/pol[1])^Length(h.elm[1]);
+end;
+  return true;
+end);
+

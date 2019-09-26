@@ -45,18 +45,18 @@ CHEVIE.IndirectAddData("CartanMat",["G25","G26","G29","G31","G32","G34"],
 end);
 
 CHEVIE.IndirectAddData("ReflectionName",
-  ["G24","G25","G26","G27","G29","G31","G32","G33","G34","E6","E7","E8","2E6",
+  ["G24","G25","G27","G29","G31","G32","G33","G34","E6","E7","E8","2E6",
    "2F4","3D4","H3","H4"],
   t->function(option)local i,o;
-  i:=["G24","G25","G26","G27","G29","G31","G32","G33","G34","E6","E7","E8",
+  i:=["G24","G25","G27","G29","G31","G32","G33","G34","E6","E7","E8",
    "2E6","2F4","3D4","H3","H4"];
-  o:=["G_{24}","G_{25}","G_{26}","G_{27}","G_{29}","G_{31}","G_{32}","G_{33}",
+  o:=["G_{24}","G_{25}","G_{27}","G_{29}","G_{31}","G_{32}","G_{33}",
    "G_{34}","E_6","E_7","E_8","{}^2E_6","{}^2F_4","{}^3D_4","H_3","H_4"];
   if IsBound(option.TeX) then return o[Position(i,t)];else return t;fi;end);
 
-CHEVIE.IndirectAddData("ReflectionName",["A","D","2A","2D"],
+CHEVIE.IndirectAddData("ReflectionName",["D","2A","2D"],
 t->function(r,option)local i,o;
-  i:=["A","D","2A","2D"];o:=["A","D","{}^2A","{}^2D"];
+  i:=["D","2A","2D"];o:=["D","{}^2A","{}^2D"];
   if IsBound(option.arg) then return SPrint(FormatGAP(t),",",r);
   elif IsBound(option.TeX) then 
        return SPrint(o[Position(i,t)],"_",TeXBracket(r));

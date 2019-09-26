@@ -23,6 +23,17 @@ CHEVIE.AddData("PrintDiagram","A",function(r,indices,title)local i;
   Print(title," ",Join(indices," - "),"\n");
 end);
 
+CHEVIE.AddData("ReflectionName","A",function(r,option)local o;
+  if IsBound(option.arg) then return SPrint("\"A\",",r);
+  elif IsBound(option.TeX) then 
+    if IsBound(option.Au) then o:=["Z_2","S_3","S_4","S_5"];return o[r];
+    else return SPrint("A_",TeXBracket(r));
+    fi;
+  elif IsBound(option.Au) then o:=["Z2","S3","S4","S5"];return o[r];
+  else return SPrint("A",r);
+  fi;
+end);
+
 # simple roots in R^{l+1} as in Bourbaki
 CHEVIE.AddData("GeneratingRoots", "A", function(l)local r, i;
   r := List([1..l],i->0*[1..l+1]);
@@ -302,7 +313,7 @@ end);
 
 CHEVIE.AddData("HeckeRepresentation","A",function(n,param,sqrtparam,i)local H;
   H:=Hecke(CoxeterGroup("A",n),-param[1][1]/param[1][2]);
-  return SpechtModel(H,Partitions(n+1)[i]);
+  return -param[1][2]*SpechtModel(H,Partitions(n+1)[i]);
 end);
 
 CHEVIE.AddData("Representation","A",function(n,i)

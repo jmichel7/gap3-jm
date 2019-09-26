@@ -37,7 +37,11 @@ CHEVIE.AddData("ReflectionName","B",function(arg)local i,r,type,option;
   r:=arg[1];option:=arg[2];
   if Length(arg)=3 then type:=arg[3];else type:=2;fi;
   if type=2 then 
-    if IsBound(option.TeX) then return SPrint("B_",TeXBracket(r));
+    if IsBound(option.TeX) then 
+      if IsBound(option.Au) then return "D_8";
+      else return SPrint("B_",TeXBracket(r));
+      fi;
+    elif IsBound(option.Au) then return "D8";
     elif IsBound(option.arg) then return SPrint("\"B\",",r);
     else return SPrint("B",r);fi;
   elif type=1 then 

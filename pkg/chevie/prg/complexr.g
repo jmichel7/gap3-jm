@@ -221,66 +221,46 @@ HeckeAlgebraOps.HighestPowerGenericDegrees:=function(H)local s;
   s:=SchurElements(H);return Degree(s[PositionId(Group(H))])-List(s,Degree);
 end;
 
-CyclicHeckeOps:=OperationsRecord("CyclicHeckeOps",HeckeAlgebraOps);
+CyclotomicHeckeOps:=OperationsRecord("CyclotomicHeckeOps",HeckeAlgebraOps);
 
 # "T" basis for cyclic groups
 CreateHeckeBasis("T",rec(T:=x->x,     # method to convert to T
 
-\*:=function(x,y)local H,res,ops,W,temp,i,xi,temp1,j,e,pol,d;
-  H:=Hecke(y);
-  if not IsRec(x) or not IsBound(x.hecke) or not IsBound(x.elm) then 
-  # assume x is a scalar by which to multiply y
-    return HeckeElt(H,y.basis,y.elm,y.coeff*(x*H.unit));
+init:=function(H)local t;
+  t:=Group(H).type;
+  if Length(t)>1 then Error("only implemented for irreducible groups");fi;
+  if CHEVIE.Data("InitHeckeBasis",t[1],H)=false then
+    Error("basis T not implemented for ",ReflectionName(t[1]));
   fi;
-  if not IsIdentical(H,Hecke(x)) then 
-    Error("not elements of the same algebra");
-  fi;
-  ops:=H.operations;
-  pol:=Coefficients(Product(H.parameter[1],u->Mvp("xxx")-u),"xxx");
-  d:=Length(pol)-1;
-  if x.basis<>y.basis then return Basis(H,"T")(x)*Basis(H,"T")(y);
-  elif x.basis="T" then 
-    W:=Group(H);
-    res:=HeckeElt(H,x.basis,[],[]);
-    for i in [1..Length(x.elm)] do
-      temp:=x.coeff[i]*y;
-      xi:=x.elm[i];
-      for i in [1..Length(xi)] do
-	temp1:=HeckeElt(H,x.basis,[],[]);
-	for j in [1..Length(temp.elm)] do
-	  e:=Length(temp.elm[j]);
-	  if e+1<d then
-	    Add(temp1.elm,List([1..e+1],i->1));Add(temp1.coeff,temp.coeff[j]);
-	  else
-	    Append(temp1.elm,List([0..d-1],i->[1..i]*0+1));
-	    Append(temp1.coeff,-pol{[1..d]}*temp.coeff[j]);
-	  fi;
-	od;
-	temp:=temp1;
-	CollectCoefficients(temp);
-      od;
-      res:=res+temp;
-    od;
-    return res;
-  else return Basis(H,x.basis)(Basis(H,"T")(x)*Basis(H,"T")(y));
+end,
+  
+\*:=function(x,y)return Hecke(y).mul(x,y);end,
+
+\+:=function(x,y)
+  if IsBound(Hecke(y).add) then return Hecke(y).add(x,y);
+  else return HeckeEltOps.\+(x,y);
   fi;
 end,
 
-inverse:=function(h)local H,d,pol;
- if Length(h.elm)<>1 then Error("inverse implemented only for single T_w");fi;
-  H:=Hecke(h);
-  pol:=Coefficients(Product(H.parameter[1],u->Mvp("xxx")-u),"xxx");
-  d:=Length(pol)-1;
-  return h.coeff[1]^-1*Basis(H,"T")(List([0..d-1],i->[1..i]*0+1),
-	    -pol{[2..d+1]}/pol[1])^Length(h.elm[1]);
+Format:=function(x,opt)
+  if IsBound(Hecke(x).Format) then return Hecke(x).Format(x,opt);
+  else return HeckeEltOps.Format(x,opt);
+  fi;
+end,
+
+inverse:=function(x)return Hecke(x).inverse(x);end,
+
+MakeBasisElt:=function(H,basis,arg)
+  if IsBound(H.HeckeElt) then return H.HeckeElt(H,arg);
+  else return HeckeEltOps.MakeBasisElt(H,basis,arg);
+  fi;
 end),
-CyclicHeckeOps);
+
+CyclotomicHeckeOps);
 
 ComplexGroupOps.Hecke:=function(arg)local H;
   H:=ApplyFunc(PermRootOps.Hecke,arg);
-  if IsCyclic(arg[1]) then H.operations:=CyclicHeckeOps;
-  else H.operations:=HeckeAlgebraOps;
-  fi;
+  H.operations:=CyclotomicHeckeOps;
   return H;
 end;
 
