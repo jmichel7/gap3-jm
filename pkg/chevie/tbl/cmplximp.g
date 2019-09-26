@@ -2384,8 +2384,6 @@ CHEVIE.AddData("InitHeckeBasis","imp",function(p,q,r,H)
   if q<>1 or r<>1 then Error("implemented only for G(d,1,1)");fi;
 
 H.mul:=function(x,y)local H,res,ops,W,temp,i,xi,temp1,j,e,pol,d;
-  if IsList(x) then return List(x,u->u*y);fi;
-  if IsList(y) then return List(y,u->x*u);fi;
   H:=Hecke(y);
   if not IsRec(x) or not IsBound(x.hecke) or not IsBound(x.elm) then 
   # assume x is a scalar by which to multiply y

@@ -234,7 +234,10 @@ init:=function(H)local t;
   fi;
 end,
   
-\*:=function(x,y)return Hecke(y).mul(x,y);end,
+\*:=function(x,y)
+  if IsList(x) then return List(x,u->u*y);fi;
+  if IsList(y) then return List(y,u->x*u);fi;
+return Hecke(y).mul(x,y);end,
 
 \+:=function(x,y)
   if IsBound(Hecke(y).add) then return Hecke(y).add(x,y);
