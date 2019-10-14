@@ -330,7 +330,7 @@ function(arg)local W,f,inds,O,P,S,Sbar,Id,real,wreal,i,j,v,
   ps:=SignedPermListList(Sbar,S);
   if ps=false then ChevieErr("S* is not ps(S)\n| ");fi;
   wreal:=IsBound(f.perm);
-  if not IsBound(f.sh) and wreal<>ForAll(ps,x->x>0) then
+  if not IsBound(f.sh) and wreal<>ForAll(ps.l,x->x>0) then
     Error("weakly real=",wreal," but ps=",ps,"\n");
   fi;
   if wreal then # S^2 is perm
@@ -367,16 +367,15 @@ function(arg)local W,f,inds,O,P,S,Sbar,Id,real,wreal,i,j,v,
     elif IsBound(f.cospecial) and f.special<>f.cospecial then
       ChevieErr("\n.cospecial=",f.cospecial," should be",special,"\n");
     fi;
-    check(ComplexConjugate(ud)=SignPermuted(ud,ps),"ud*=ud^p");
+    check(ComplexConjugate(ud)=Permuted(ud,ps),"ud*=ud^p");
     if real<>false then
       check(Permuted(f.eigenvalues,real/f.perm)=f.eigenvalues,"eig*=eig^perm");
     fi;
     if IsBound(opt.hard) then
       if S=Sbar then Print("\n|  S real");
-      else Print("\n|  S->S* is p=",Concatenation(List(CyclesSignedPerm(ps),
-        x->SPrint("(",Join(x),")"))),"\n| ");fi;
+      else Print("\n|  S->S* is p=",ps,"\n| ");fi;
       if wreal then # check ps is a sub-permutation of perm
-        if not ForAll(inds,x->ps[x]=x or ps[x]=x^f.perm) then
+        if not ForAll(inds,x->x^ps=x or x^ps=x^f.perm) then
           ChevieErr("*** S->S* is not a sub-perm of .perm\n| ");
         fi;
       fi;

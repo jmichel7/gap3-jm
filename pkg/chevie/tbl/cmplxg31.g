@@ -2094,7 +2094,7 @@ CHEVIE.AddData("Representation","G31",function(i)local r,f,dec;
 27,26,35,34,36,32,31,33],[4,8,9,1,7,15,5,2,3,14,17,20,24,10,6,21,11,27,28,12,
 16,29,26,13,30,23,18,19,22,25,36,34,35,32,33,31],[5,8,11,7,1,12,4,2,17,16,3,6,
 18,21,20,10,9,13,23,15,14,-25,19,27,-22,28,24,26,-30,-29,32,31,35,36,33,34]],
-SignedPermutationMat);
+x->PermutationMat(SignedPerm(x)));
 #if i=42 then return Zip(f(3),f(13),KroneckerProduct);
   elif i=50 then return Zip(f(3),f(15),KroneckerProduct);
   elif i=51 then return -f(50);

@@ -4,70 +4,60 @@
 <P><P><P>
 A   <strong>signed  permutation</strong>  of   <code>[1..n]</code>  is  a   permutation  of  the  set
 <I>{-n,...,-1,1,...,n}</I>  which  preserves  the  pairs <I>[-i,i]</I>. It is
-represented  as the images of <I>[1..n]</I>.
+represented  internally  as  the  images  of  <I>[1..n]</I>.  It is printed as a
+product of signed cycles.
 <P>
 A  signed permutation  can be  represented in  two other  ways which may be
-convenient.  The first way is to replace the integers <I>{-n,...,-1}</I> by
-<I>{n+1,...,2n}</I>   to   have   <strong>GAP3</strong>   permutations,   which   form  the
-hyperoctaedral group (see <a href="chap083.htm#SECT002">CoxeterGroupHyperoctaedralGroup</a>).
+convenient. The first way is to replace the integers
+<I>{1,...,n,-n,...,-1}</I>   by  <I>{1,3,...,2n-1,2,4,...,2n}</I>  to
+have   <strong>GAP3</strong>  permutations,  which  form   the  hyperoctaedral  group  (see
+<a href="chap083.htm#SECT002">CoxeterGroupHyperoctaedralGroup</a>).
 <P>
 The  second way is to represent the signed permutation by a monomial matrix
 with  entries  <code>1</code>  or  <code>-1</code>.  If  such  a matrix <var>m</var> represents the signed
-permutation <var>sp</var>, then <code>l*m</code> is the same as <code>SignPermuted(<var>l</var>,<var>sp</var>)</code>.
+permutation <var>sp</var>, then <code>l*m</code> is the same as <code>Permuted(<var>l</var>,<var>sp</var>)</code>.
 <P><P>
 <H3> Subsections</H3>
 <oL>
-<LI> <A HREF="chap108.htm#SECT001">SignPermuted</a>
-<LI> <A HREF="chap108.htm#SECT002">SignedPermutationMat</a>
+<LI> <A HREF="chap108.htm#SECT001">Permuted for signed permutations</a>
+<LI> <A HREF="chap108.htm#SECT002">PermutationMat for signed permutations</a>
 <LI> <A HREF="chap108.htm#SECT003">SignedPerm</a>
-<LI> <A HREF="chap108.htm#SECT004">CyclesSignedPerm</a>
+<LI> <A HREF="chap108.htm#SECT004">Cycles for signed permutations</a>
 <LI> <A HREF="chap108.htm#SECT005">SignedPermListList</a>
+<LI> <A HREF="chap108.htm#SECT006">SignedMatStab</a>
+<LI> <A HREF="chap108.htm#SECT007">SignedPermMatMat</a>
 </ol>
-<A NAME="SECT001"><h2>108.1 SignPermuted</h2></a>
+<A NAME="SECT001"><h2>108.1 Permuted for signed permutations</h2></a>
 <P><P>
 <A name = "I0"></a>
 
 <P>
-<code>SignPermuted( <var>l</var>, <var>sp</var>)</code>
+<code>Permuted( <var>l</var>, <var>sp</var>)</code>
 <P>
-<code>SignPermuted</code>  returns a  new list  <var>n</var> that  contains the elements of the
-list  <var>l</var> permuted  according to  the signed  permutation <var>sp</var>.  If <var>sp</var> is
-given  as a  list, then  <code><var>n</var>[AbsInt(sp[i])] = <var>l</var>[<var>i</var>]SignInt(sp[i])</code>. The
-signed   permutation  <var>sp</var>  can  also  be   given  as  an  element  of  the
-hyperoctaedral group (see the introduction of the chapter for definitions).
+<code>Permuted</code>  returns a new list  <var>n</var> that contains the  elements of the list
+<var>l</var>  permuted according to the signed permutation <var>sp</var>. If <var>sp</var> is given as
+a list, then <code><var>n</var>[AbsInt(i^sp)] = <var>l</var>[<var>i</var>]SignInt(i^sp)</code>.
 <P>
-<pre>    gap> SignPermuted([20,30,40],[-2,-1,-3]);
-    [ -30, -20, -40 ]
-    gap> W:=CoxeterGroupHyperoctaedralGroup(3);
-    Group( (3,4), (2,3)(4,5), (1,2)(5,6) )
-    gap> SignPermuted([20,30,40],W.3);
-    [ 30, 20, 40 ]
-    gap> SignPermuted([20,30,40],W.2);
-    [ 20, 40, 30 ]
-    gap> SignPermuted([20,30,40],W.1);
-    [ 20, 30, -40 ]</pre>
-<P><A NAME="SECT002"><h2>108.2 SignedPermutationMat</h2></a>
+<pre>    gap> p:=SignedPerm([-2,-1,-3]);
+    (1,-2)(3,-3)
+    gap> Permuted([20,30,40],p);
+    [ -30, -20, -40 ]</pre>
+<P><A NAME="SECT002"><h2>108.2 PermutationMat for signed permutations</h2></a>
 <P><P>
 <A name = "I1"></a>
 
 <P>
-<code>SignedPermutationMat( <var>sp</var> [,<var>d</var>])</code>
+<code>PermutationMat( <var>sp</var> [,<var>d</var>])</code>
 <P>
 This   function  returns  the  signed  permutation  matrix  of  the  signed
-permutation  <var>sp</var>, given as a  list or as an  element of the hyperoctaedral
-group.  This is a matrix <var>m</var> such that <code>SignPermuted(l,sp)=l*m</code>. If <var>sp</var> is
-an  element of hyperoctaedral  group, the matrix  is given of dimension the
-rank  of the  smallest hyperoctaedral  group to  which <var>sp</var>  belongs. If an
-additional argument <var>d</var> is given the matrix is returned of that dimension.
+permutation  <var>sp</var>. This is a matrix  <var>m</var> such that <code>Permuted(l,sp)=l*m</code> for
+any list of numbers l. If an additional argument <var>d</var> is given the matrix is
+returned of that dimension.
 <P>
-<pre>    gap> m:=SignedPermutationMat([-2,-3,-1]);
-    [ [ 0, -1, 0 ], [ 0, 0, -1 ], [ -1, 0, 0 ] ]
-    gap> m=SignedPermutationMat((1,5,3,6,2,4));
-    true
-    gap> [20,30,40]*m;
-    [ -40, -20, -30 ]
-    gap> SignPermuted([20,30,40],[-2,-3,-1]);
-    [ -40, -20, -30 ]</pre>
+<pre>    gap> p:=SignedPerm([-2,-1,-3]);
+    (1,-2)(3,-3)
+    gap> PermutationMat(p);
+    [ [ 0, -1, 0 ], [ -1, 0, 0 ], [ 0, 0, -1 ] ]</pre>
 <P><A NAME="SECT003"><h2>108.3 SignedPerm</h2></a>
 <P><P>
 <A name = "I2"></a>
@@ -75,43 +65,38 @@ additional argument <var>d</var> is given the matrix is returned of that dimensi
 <P>
 <code>SignedPerm( <var>sp</var> [,<var>d</var> or <var>sgns</var>])</code>
 <P>
-This  function converts to a signed permutation  given as a list, either an
-element of the hyperoctaedral group, a signed permutation matrix, or a pair
-of  a  permutation  and  of  a  list  of  signs. If given an element of the
+This  function converts to a  signed permutation a list,  an element of the
+hyperoctaedral  group,  a  signed  permutation  matrix,  or  a  pair  of  a
+permutation   and  of  a  list  of  signs.  If  given  an  element  of  the
 hyperoctaedral  group,  the  rank  <var>d</var>  of  that  group  can be given as an
 argument,   otherwise  a  representation  of  <var>sp</var>   as  a  list  is  given
 corresponding to the smallest hyperoctaedral group to which it belongs.
 <P>
-Finally, if given a signed permutation as a list, this function returns
-am element of the hyperoctaedral group.
-<P>
 <pre>    gap> SignedPerm([[0,-1,0],[0,0,-1],[-1,0,0]]);
-    [ -2, -3, -1 ]
-    gap> SignedPerm((1,5,3,6,2,4));
-    [ -2, -3, -1 ]
+    (1,-2,3,-1,2,-3)
+    gap> SignedPerm((1,4,5,2,3,6)); 
+    (1,-2,3,-1,2,-3)
     gap> SignedPerm((1,2,3),[-1,-1,-1]);
-    [ -2, -3, -1 ]
+    (1,-2,3,-1,2,-3)
     gap> SignedPerm([-2,-3,-1]);
-    (1,5,3,6,2,4)</pre>
-<P><A NAME="SECT004"><h2>108.4 CyclesSignedPerm</h2></a>
+    (1,-2,3,-1,2,-3)</pre>
+<P><A NAME="SECT004"><h2>108.4 Cycles for signed permutations</h2></a>
 <P><P>
 <A name = "I3"></a>
 
 <P>
-<code>CyclesSignedPerm( <var>sp</var> )</code>
+<code>Cycles( <var>sp</var> )</code>
 <P>
 Returns   the  list   of  cycles   of  the   signed  permutation   <var>sp</var>  on
-<I>{-n,...,-1,1,...,n}</I>,  given as  a list  or a  permutation. If one
-cycle is the negative of another, only one of the two cycles is given.
+<I>{-n,...,-1,1,...,n}</I>.  If one  cycle is  the negative  of another,
+only one of the two cycles is given.
 <P>
-<pre>    gap> CyclesSignedPerm([-2,-3,-1]);
+<pre>    gap> Cycles(SignedPerm([-2,-3,-1]));
     [ [ 1, -2, 3, -1, 2, -3 ] ]
-    gap> CyclesSignedPerm([-2,-1,-3]);
+    gap> Cycles(SignedPerm([-2,-1,-3]));
     [ [ 1, -2 ], [ 3, -3 ] ]
-    gap> CyclesSignedPerm([-2,-1,3]);
-    [ [ 1, -2 ] ]
-    gap> CyclesSignedPerm((1,5,3,6,2,4));
-    [ [ 1, -2, 3, -1, 2, -3 ] ]</pre>
+    gap> Cycles(SignedPerm([-2,-1,3]));
+    [ [ 1, -2 ] ]</pre>
 <P><A NAME="SECT005"><h2>108.5 SignedPermListList</h2></a>
 <P><P>
 <A name = "I4"></a>
@@ -123,9 +108,58 @@ cycle is the negative of another, only one of the two cycles is given.
 <var>list1</var> to obtain <var>list2</var>, if there is one. Otherwise it returns <code>false</code>.
 <P>
 <pre>    gap> SignedPermListList([20,30,40],[-40,-20,-30]);
-    [ -2, -3, -1 ]
-    gap> SignPermuted([20,30,40],[-2,-3,-1]);
+    (1,-2,3,-1,2,-3)
+    gap> Permuted([20,30,40],last);
     [ -40, -20, -30 ]</pre>
+<P><A NAME="SECT006"><h2>108.6 SignedMatStab</h2></a>
+<P><P>
+<A name = "I5"></a>
+
+<P>
+<code>SignedMatStab(<var>M</var>[, <var>l</var>])</code>
+<P>
+Finds the stabilizer of <var>M</var> in the group of signed permutations.
+<P>
+<pre>    gap> uc:=UnipotentCharacters(ComplexReflectionGroup(6));
+    UnipotentCharacters( G6 )
+    gap> SignedMatStab(Fourier(uc.families[2]));
+    Group( (2,19)(4,-14)(5,20)(7,12), (1,-1)(2,-2)(3,-3)(4,-4)(5,-5)(6,-6)\ 
+    (7,-7)(8,-8)(9,-9)(10,-10)(11,-11)(12,-12)(13,-13)(14,-14)(15,-15)(16,\ 
+    -16)(17,-17)(18,-18)(19,-19)(20,-20)(21,-21)(22,-22), (1,3)(2,19)(4,-1\ 
+    4)(5,-5)(6,-18)(7,-7)(8,10)(11,15)(12,-12)(13,22)(16,21)(17,-17)(20,-2\ 
+    0), (1,6)(2,-19)(3,-18)(4,14)(8,16)(9,-9)(10,21)(11,-13)(15,-22), (1,1\ 
+    1)(3,15)(4,14)(6,-13)(7,-12)(8,-10)(9,-9)(16,-21)(18,22) )
+    gap> Size(last);
+    32</pre>
+<P><A NAME="SECT007"><h2>108.7 SignedPermMatMat</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>SignedPermMatMat( <var>M</var> , <var>N</var> [, <var>l1</var>, <var>l2</var>])</code>
+<P>
+<var>M</var>  and <var>N</var>  should be  symmetric matrices.  <code>PermMatMat</code> returns a signed
+permutation <var>p</var> such that <code>OnMatrices(M,p)=N</code> if such a permutation exists,
+and  <code>false</code>  otherwise.  If  list  arguments  <var>l1</var> and <var>l2</var> are given, the
+permutation <var>p</var> should also satisfy <code>Permuted(l1,p)=l2</code>.
+<P>
+This  routine is  useful to  identify two  objects which are isomorphic but
+with  different  labelings.  It  is  used  in  <strong>CHEVIE</strong> to identify Lusztig
+Fourier  transform matrices  with standard  (classified) data.  The program
+uses  sophisticated  algorithms,  and  can  often  handle  matrices  up  to
+<I>80&times; 80</I>.
+<P>
+<pre>    gap> f:=SubFamilyij(CHEVIE.families.X(12),1,3,(3+ER(-3))/2);
+    Family("RZ/12^2[1,3]")
+    gap> M:=Fourier(ComplexConjugate(f));;
+    gap> uc:=UnipotentCharacters(ComplexReflectionGroup(6));
+    UnipotentCharacters( G6 )
+    gap> N:=Fourier(uc.families[2]);;
+    gap> SignedPermMatMat(M,N);
+    (1,13)(2,19,-2,-19)(3,22)(4,-4)(5,-5)(6,-11)(7,12)(8,21,-8,-21)(9,-9)(\ 
+    10,16)(15,-18,-15,18)
+    gap> OnMatrices(M,last)=N;
+    true</pre>
 <P><a href ="chap107.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap109.htm">Next</a><BR><a href = "theindex.htm">Index</a>
 <P>
 <address>gap3-jm<br>11 Mar 2019</address></body></html>

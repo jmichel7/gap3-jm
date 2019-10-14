@@ -516,18 +516,19 @@ TransposedMat := function ( mat )
 ##
 PermutationMat := function( arg )
 
-    local i,       # loop variable
-          perm,    # permutation
-          dim,     # desired dimension of the permutation matrix
-          F,       # field of the matrix entries (defauled to 'Rationals')
-          mat;     # matrix corresponding to 'perm', result
+  local i,       # loop variable
+        perm,    # permutation
+        dim,     # desired dimension of the permutation matrix
+        F,       # field of the matrix entries (defauled to 'Rationals')
+        mat;     # matrix corresponding to 'perm', result
 
+  perm:= arg[1];
+  if IsPerm(perm) then
     if not ( ( Length( arg ) = 2 or Length( arg ) = 3 )
-             and IsPerm( arg[1] ) and IsInt( arg[2] ) ) then
+             and IsInt( arg[2] ) ) then
       Error( "usage: PermutationMat( <perm>, <dim> [, <F> ] )" );
     fi;
 
-    perm:= arg[1];
     dim:= arg[2];
     if Length( arg ) = 2 then
       F:= Rationals;
@@ -542,7 +543,13 @@ PermutationMat := function( arg )
     od;
 
     return mat;
-    end;
+  fi;
+  if not IsRec(perm) or not IsBound(perm.operations) or not
+    IsBound(perm.operations.PermutationMat) then 
+    Error(perm," has no method for PermutationMat");
+  fi;
+  return ApplyFunc(perm.operations.PermutationMat,arg);
+  end;
 
 #############################################################################
 ##

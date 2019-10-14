@@ -663,7 +663,12 @@ end;
 ##  make maximum use of kernel functions
 ##
 Permuted := function ( list, perm )
-  return list{OnTuples([1..Length(list)],perm^-1)}; 
+  if IsPerm(perm) then return list{OnTuples([1..Length(list)],perm^-1)}; 
+  elif not IsRec(perm) or not IsBound(perm.operations) or not
+    IsBound(perm.operations.Permuted) then 
+      Error(perm," has no method for Permuted");
+  else return perm.operations.Permuted(list,perm);
+  fi;
 end;
 
 #############################################################################

@@ -426,10 +426,8 @@ end;
 BruhatPoset:=function(arg)local W,w,s,p,l,new,h,i,j,k;
   W:=arg[1];
   if Length(arg)=1 then w:=LongestCoxeterElement(W);else w:=arg[2];fi;
-  if w=W.identity then return rec(elts:=[w],hasse:=[[]],
+  if w=W.identity then return rec(labels:=["."],elts:=[w],hasse:=[[]],
     action:=List(W.generatingReflections,x->[]),operations:=PosetOps,size:=1,
-    label:=function(p,n,opt)return IntListToString(CoxeterWord(p.W,p.elts[n]));
-           end,
     W:=W);
   fi;
   s:=FirstLeftDescending(W,w);p:=BruhatPoset(W,W.reflections[s]*w);l:=Size(p);
@@ -448,6 +446,7 @@ BruhatPoset:=function(arg)local W,w,s,p,l,new,h,i,j,k;
     fi;
   od;
   p.size:=Length(p.hasse);
+  p.labels:=List(p.elts,x->IntListToString(CoxeterWord(W,x)));
   return p;
 end;
 

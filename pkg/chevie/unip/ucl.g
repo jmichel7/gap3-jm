@@ -421,8 +421,8 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
 end;
 
 UnipotentClassesOps.Poset:=function(uc)local res;
-  res:=Poset(uc.orderClasses); res.uc:=uc;
-  res.label:=function(p,n,opt)return Name(p.uc.classes[n],opt);end;
+  res:=Poset(uc.orderClasses);
+  res.label:=function(n,opt)return Name(uc.classes[n],opt);end;
   return res;
 end;
 

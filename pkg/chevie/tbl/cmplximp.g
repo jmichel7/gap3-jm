@@ -88,7 +88,7 @@ CHEVIE.AddData("BraidRelations","imp",function(p,q,r)local i,b,res;
   return res;
 end);
 
-CHEVIE.AddData("Size","imp",function(p,q,r)return p^r*Factorial(r)/q;end);
+CHEVIE.AddData("Size","imp",function(p,q,r)return QuoInt(p^r*Factorial(r),q);end);
 
 CHEVIE.AddData("ReflectionName","imp",function(arg)local n,option;
   option:=arg[4];
@@ -133,7 +133,7 @@ CHEVIE.AddData("CartanMat", "imp",function(p,q,r)local rt,rbar,e;
 end);
 
 CHEVIE.AddData("ReflectionDegrees","imp",function(p,q,r)
-  return Concatenation(p*[1..r-1],[r*p/q]);end);
+  return Concatenation(p*[1..r-1],[QuoInt(r*p,q)]);end);
 
 CHEVIE.AddData("ReflectionCoDegrees","imp",function(p,q,r)local res;
   res:=p*[0..r-1];
@@ -163,7 +163,7 @@ CHEVIE.AddData("ParabolicRepresentatives","imp",function(p,q,r,s)local t;
 end);
 
 CHEVIE.AddData("NrConjugacyClasses","imp",function(p,q,r)
-  if [q,r]=[2,2] then return p*(p+6)/4;
+  if [q,r]=[2,2] then return QuoInt(p*(p+6),4);
   elif q=1 then return NrPartitionTuples(r,p);
   else return Length(CHEVIE.R("ClassInfo","imp")(p,q,r).classtext);
   fi;
@@ -220,7 +220,7 @@ CHEVIE.AddData("ClassInfo","imp",function(p,q,r)local res,times,trans,I,i,j,a,S;
        else return Lcm(m[i]*p/Gcd(i-1,p));fi;end)));
     res.centralizers:=List(res.classparams,m->p^Sum(m,Length)*
      Product(List(m,pp->Product(Collected(pp),y->Factorial(y[2])*y[1]^y[2]))));
-    res.classes:=List(res.centralizers,x->p^r*Factorial(r)/x);
+    res.classes:=List(res.centralizers,x->QuoInt(p^r*Factorial(r),x));
     return res;
   else
   # According  to Hugues  ``On  decompositions  in complex  imprimitive 
@@ -2036,7 +2036,7 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
       m:=PermListList(T,List(T,S->S{Concatenation([d+1..p],[1..d])}));
       m:=Cycles(m,[1..Length(T)]);
       l:=List([0,-1..1-p/d],i->extra^i);m1:=List(m,x->x[1]);
-      return List(v,x->List(m,c->l*x{c}{m1}));
+      return List(v,x->List(m,c->l*List(x{c},y->y{m1})));
     else return v;
     fi;
   fi;
@@ -2387,7 +2387,7 @@ H.mul:=function(x,y)local H,res,ops,W,temp,i,xi,temp1,j,e,pol,d;
   H:=Hecke(y);
   if not IsRec(x) or not IsBound(x.hecke) or not IsBound(x.elm) then 
   # assume x is a scalar by which to multiply y
-    if x=0*x then return HeckeElt(H,y.basis,[],[]);
+    if x=x*0 then return HeckeElt(H,y.basis,[],[]);
     else return HeckeElt(H,y.basis,y.elm,y.coeff*(x*H.unit));
     fi;
   fi;
@@ -2435,4 +2435,3 @@ H.inverse:=function(h)local H,d,pol;
 end;
   return true;
 end);
-

@@ -528,7 +528,10 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu;
   return res;
 end;
 
-FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt;
+# A:=FusionAlgebra(<family> [,rec(special:=i, params:=xxx)])
+# if second argument given it will change A.special to i, and
+# params should also be given which will change A.parameters
+FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt,S1;
   if IsMat(arg[1]) then S:=arg[1];else S:=arg[1].fourierMat;fi;
   if Length(arg)=2 then opt:=arg[2];fi;
   if Length(arg)=1 then params:=[1..Length(S)]; else params:=arg[2].params; fi;
@@ -545,7 +548,13 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt;
   A.dimension:=d;
   A.operations.underlyingspace(A);
   A.involution:=SignedPermListList(S,ComplexConjugate(S));
-  A.Involution:=function(r)local b; b:=SignPermuted(A.basis,A.involution);
+  A.Involution:=function(r)local b; b:=Permuted(A.basis,A.involution);
+    return Sum(r.coefficients,x->x[1]*b[x[2]]);
+  end;
+  S1:=List(S,x->x/x[special]);
+  A.involution2:=SignedPermListList(TransposedMat(Permuted(S1,
+     Perm(A.involution))),TransposedMat(S1));
+  A.Involution2:=function(r)local b; b:=Permuted(A.basis,A.involution2);
     return Sum(r.coefficients,x->x[1]*b[x[2]]);
   end;
   A.operations.CharTable:=function(A)local tbl;
@@ -553,6 +562,7 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt;
     if IsBound(A.idempotents) then
       tbl.irreducibles:=List(A.idempotents,e->List(A.basis,b->
         ProportionalityCoefficient(Coefficients(b*e),Coefficients(e))));
+      if tbl.irreducibles<>S1 then Error();fi;
       tbl.basistraces:=tbl.irreducibles;
       tbl.matrix:=tbl.irreducibles;
     fi;
@@ -569,8 +579,10 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt;
     if i>=j then return A.structureconstants[i][j];
             else return A.structureconstants[j][i];fi;end;
   A.operations.Print:=function(A)Print(A.type," dim.",A.dimension);end;
-  A.idempotents:=SignPermuted(ComplexConjugate(DiagonalMat(S[special]))*
-     TransposedMat(S)*A.basis,A.involution);
+# A.idempotents:=SignPermuted(ComplexConjugate(DiagonalMat(S[special]))*
+#    TransposedMat(S)*A.basis,A.involution);
+  A.idempotents:=DiagonalMat(S[special])*
+     ComplexConjugate(TransposedMat(S))*A.basis;
   d:=Zip(CharTable(A).irreducibles,TransposedMat(S),ProportionalityCoefficient);
   if false in d then return A;fi;
   A.cDim:=d[special]^2;

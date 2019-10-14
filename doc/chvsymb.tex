@@ -12,55 +12,57 @@
 
 \Chapter{Partitions and symbols}
 
-The functions  described below,  used in various  parts of  the \CHEVIE\
-package, sometimes duplicate or have similar functions to some functions
-in other packages (like the SPECHT  package). It is hoped that a review
-of this area will be done in the future.
+The  functions  described  below,  used  in  various  parts of the \CHEVIE\
+package, sometimes duplicate or have similar functions to some functions in
+other packages (like the SPECHT package). It is hoped that a review of this
+area will be done in the future.
 
 The combinatorial objects dealt with here are *partitions*, *beta-sets* and
 *symbols*.  A  partition  in  \CHEVIE\  is  a  decreasing  list of strictly
 positive  integers  $p_1\ge  p_2\ge  \ldots  p_n>0$, represented as a \GAP\
-list.  A  beta-set  is  a  set  of  positive  integers,  up  to the *shift*
+list.  A beta-set is  a \GAP\ Set  of positive integers,  up to the *shift*
 equivalence  relation. This equivalence relation  is the transitive closure
 of the elementary equivalence of $[s_1,\ldots,s_n]$ and
 $[0,1+s_1,\ldots,1+s_n]$. An equivalence class has exactly one member which
 does not contain $0$\: it is called the normalized beta-set. To a partition
 $p_1\ge  p_2\ge\ldots\ge p_n>0$ is associated  a beta-set, whose normalized
 representative   is  $p_n,p_{n-1}+1,\ldots,p_1+n-1$.  Conversely,  to  each
-beta-set is associated a partition, the one associated by the above formula
-to its normalized representative.
+beta-set is associated a partition, the one giving by the above formula its
+normalized representative.
 
-A  symbol  is  a  tuple  $S=[S_1,..,S_n]$  of  beta-sets,  taken modulo the
+A  symbol  is  a  list  $S=[S_1,..,S_n]$  of  beta-sets,  taken  modulo the
 equivalence  relation  generated  by  two  elementary  equivalences\:\  the
-simultaneous  shift of all  lists, and the  cyclic permutation of the tuple
-(in the particular case where $n=2$ it is thus an unordered pair of lists).
-This  time  there  is  a  unique  normalized  symbol  where 0 is not in the
-intersection  of the  $S_i$. A  basic invariant  attached to symbols is the
-*shape* 'List(S,Length)'; when $n=2$ one can assume that $S_1$ has at least
-the same length as $S_2$ and the difference of cardinals
-'Length(S[1])-Length(S[2])',  called  the  *defect*,  is  then invariant by
-shift. Another invariant by shift in general is the *rank*, defined as
+simultaneous shift of all beta-sets, and the cyclic permutation of the list
+(in  the  particular  case  where  $n=2$  it  is  thus an unordered pair of
+beta-sets). This time there is a unique normalized symbol where 0 is not in
+the intersection of the $S_i$.
+
+A  basic invariant  attached to symbols is the *rank*, defined as
 
 |Sum(S,Sum)-QuoInt((Sum(S,Length)-1)*(Sum(S,Length)-Length(S)+1),2*Length(S))|
 
-Partitions and pairs of partitions  are parameters for characters of the
-Weyl groups of classical types,  and tuples of partitions are parameters
-for characters  of imprimitive  complex reflection groups.  Symbols with
-two  lines are  parameters  for the  unipotent  characters of  classical
-Chevalley groups, and more general  symbols for the unipotent characters
-of  Spetses associated  to complex  reflection groups.  The rank  of the
-symbol is the  semi-simple rank of the corresponding  Chevalley group or
-Spetses.
+Another  function attached to symbols is the *shape* 'List(S,Length)'; when
+$n=2$  one can assume that $S_1$ has at  least the same length as $S_2$ and
+the   difference  of  cardinals   'Length(S[1])-Length(S[2])',  called  the
+*defect*, is then an invariant of the symbol.
 
-Symbols of rank  $n$ and defect $0$ parameterize characters  of the Weyl
-group of  type $D_n$, and  symbols of rank  $n$ and defect  divisible by
-4  parameterize  unipotent  characters  of split  orthogonal  groups  of
-dimension $2n$. Symbols of rank $n$  and defect congruent to $2 \pmod 4$
-parameterize  unipotent characters  of  non-split  orthogonal groups  of
-dimension  $2n$.  Symbols  of  rank  $n$  and  defect  $1$  parameterize
-characters of the Weyl group of  type $B_n$, and finally symbols of rank
-$n$  and  odd defect  parameterize  unipotent  characters of  symplectic
-groups of dimension $2n$ or orthogonal groups of dimension $2n+1$.
+Partitions  and pairs  of partitions  are parameters  for characters of the
+Weyl groups of classical types, and tuples of partitions are parameters for
+characters of imprimitive complex reflection groups. Symbols with two lines
+are  parameters for the unipotent characters of classical Chevalley groups,
+and more general symbols for the unipotent characters of Spetses associated
+to  complex reflection  groups. The  rank of  the symbol is the semi-simple
+rank of the corresponding Chevalley group or Spetses.
+
+Symbols  of rank  $n$ and  defect $0$  parameterize characters  of the Weyl
+group  of type  $D_n$, and  symbols of  rank $n$  and defect divisible by 4
+parameterize  unipotent characters of split  orthogonal groups of dimension
+$2n$.  Symbols of rank $n$ and defect congruent to $2 \pmod 4$ parameterize
+unipotent  characters  of  non-split  orthogonal  groups of dimension $2n$.
+Symbols  of rank  $n$ and  defect $1$  parameterize characters  of the Weyl
+group  of  type  $B_n$,  and  finally  symbols  of  rank $n$ and odd defect
+parameterize unipotent characters of symplectic groups of dimension $2n$ or
+orthogonal groups of dimension $2n+1$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Compositions}%
@@ -121,6 +123,33 @@ are separated by a dot.
     >      Print( PartitionTupleToString( i ),"   ");
     >  od; Print("\n");
     111.   11.1   1.11   .111   21.   1.2   2.1   .21   3.   .3|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{SymbolPartitionTuple}%
+\index{SymbolPartitionTuple}%
+
+'SymbolPartitionTuple( <p>, <s>)'
+
+returns the symbol of shape <s> associated to partition tuple <p>.
+
+In the most general case, <s> is a list of positive integers of same length
+as <p> and the BetaSets for <p> are shifted accordingly (a constant integer
+may be added to <s> to make the shifts possible).
+
+When  <s> is a  positive integer it  is interpreted as  |[s,0,0,...]| and a
+negative integer is interpreted as |[0,-s,-s,....]| so when <p> is a double
+partition  one gets the  symbol of defect  <s> associated to  <p>; as other
+uses  the principal  series of  G(e,1,r) is |SymbolPartitionTuple(p,1)| and
+that of G(e,e,r) is |SymbolPartitionTuple(p,0)|.
+
+Note. The function works also for periodic <p> for G(e,e,r) provided $s=0$.
+
+|    gap> SymbolPartitionTuple([[1,2],[1]],1);
+    [ [ 2, 2 ], [ 1 ] ]
+    gap> SymbolPartitionTuple([[1,2],[1]],0);
+    [ [ 2, 2 ], [ 0, 2 ] ]
+    gap> SymbolPartitionTuple([[1,2],[1]],-1);
+    [ [ 2, 2 ], [ 0, 1, 3 ] ]|
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Tableaux}%

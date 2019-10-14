@@ -125,7 +125,9 @@ PosetOps.Format:=function(x,opt)local s,labels,p,sep;
   p:=Partition(x);s:=Hasse(x);
   s:=Poset(List(p,x->Set(List(s[x[1]],y->PositionProperty(p,z->y in z)))));
   labels:=List(p,y->Join(List(y,function(n)
-    if IsBound(x.label) then return x.label(x,n,opt);else return String(n);fi;
+    if IsBound(x.labels) then return x.labels[n];
+    elif IsBound(x.label) then return x.label(n,opt);
+    else return String(n);fi;
   end)));
   if IsBound(opt.symbol) then sep:=opt.symbol;
   elif IsBound(opt.TeX) then sep:="{<}";
@@ -163,8 +165,9 @@ PosetOps.Restricted:=function(a)local p,ind,res;
     Unbind(res.hasse);
   fi;
   res.size:=Length(ind);
-  if IsBound(p.label) then res.indices:=ind;
-    res.label:=function(x,n,opt)return p.label(x,x.indices[n],opt);end;
+  if IsBound(p.label) then
+    res.label:=function(n,opt)return p.label(ind[n],opt);end;
+  elif IsBound(p.labels) then res.labels:=p.labels[ind];
   fi;
   return res;
 end;

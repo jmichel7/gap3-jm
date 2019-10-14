@@ -127,17 +127,24 @@ end;
 #
 CoxeterGroupHyperoctaedralGroup:=function(n)local W,i,f,conj;
   conj:=i->2*n+1-i;
-  f:=[(n,conj(n))];for i in [n,n-1..2] do Add(f,(i,i-1)(conj(i),conj(i-1)));od;
+  f:=[(1,2)];for i in [1..n-1] do Add(f,(2*i-1,2*i+1)(2*i,2*i+2));od;
   W:=Group(f,());
   W.reflections:=f;
-  W.operations.IsLeftDescending:=function(W,w,i) return (n+1-i)^w>(n+2-i)^w;end;
+  W.operations.IsLeftDescending:=function(W,w,i) 
+    if i=1 then return 1^w mod 2=0;
+           else return (((2*i-3)^w mod 2<>0) and (2*i-3)^w>(2*i-1)^w)
+              or ((2*i-1)^w mod 2=0);fi;
+  end;
   AbsCoxOps.CompleteCoxeterGroupRecord(W);
   W.operations.Reflections:=function(W)local i;
     if Length(W.reflections)>=n^2 then return W.reflections{[1..n^2]};fi;
     W.reflections:=Concatenation(W.reflections{[1..n]},
-                                List([1..n-1],i->(i,conj(i))));
-    for i in [1..n] do  Append(W.reflections,
-      List(Concatenation([i+2..n],List([1..i-1],conj)),j->(i,j)(conj(i),conj(j))));
+                                List([2..n],i->(2*i-1,2*i)));
+    for i in [2..n-1] do  Append(W.reflections,
+      List([1..n-i],j->(2*j-1,2*(i+j)-1)(2*i,2*(i+j))));
+    od;
+    for i in [1..n-1] do  Append(W.reflections,
+      List([1..n-i],j->(2*j-1,2*(i+j))(2*i,2*(i+j)-1)));
     od;
     return W.reflections{[1..n^2]};
   end;

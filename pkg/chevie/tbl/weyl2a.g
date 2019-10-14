@@ -22,8 +22,8 @@ function(arg)local n, part, guesslongest, redw,l,w0,p;
   # make word from permutation:
   redw:=function(n,w) local l, i; l:=[];
     while true  do
-      i := 0;
-      repeat if i>=n then return l;fi; i := i + 1; until i^w>(i+1)^w;
+      i:=PositionProperty([1..n],j->j^w>(j+1)^w);
+      if i=false then return l;fi;
       Add( l, i ); w := (i,i+1) * w;
     od;
     return l;

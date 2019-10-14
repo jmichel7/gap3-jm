@@ -37,9 +37,12 @@ CoxeterElementsLength:=function(arg)
   return ApplyFunc(CoxeterElements,arg);
 end;
 
-WeylReflections:=W->List(Reflections(W),x->CoxeterWord(W,x));
-
 CoxeterWordReflections:=WeylReflections;
+
+CyclesSignedPerm:=function(arg)
+  Print("#W CyclesSignedPerm is obsolete; use Cycles\n");
+  return ApplyFunc(Cycles,arg);
+end;
 
 DirectSumCartanMat:=function(arg)
   Print("#W DirectSumCartanMat is obsolete; use DiagonalMat\n");
@@ -154,6 +157,16 @@ SemisimpleCentralizer:=function(arg)
   return ApplyFunc(Centralizer,arg);
 end;
 
+SignPermuted:=function(arg)
+  Print("#W SignPermuted is obsolete; use Permuted\n");
+  return ApplyFunc(Permuted,arg);
+end;
+
+SignPermutationMat:=function(arg)
+  Print("#W SignPermutationMat is obsolete; use PermutationMat\n");
+  return ApplyFunc(PermutationMat,arg);
+end;
+
 SimpleLeftDivisors:=function(arg)
   Print("#W SimpleLeftDivisors is obsolete; use LeftDivisorsSimple\n");
   return ApplyFunc(LeftDivisorsSimple,arg);
@@ -197,16 +210,18 @@ WeylMueMat:=function(arg)
   return ApplyFunc(KLMueMat,arg);
 end;
 
-WeylWordPerm:=function(arg)
-  Print("#W WeylWordPerm is obsolete; use CoxeterWord\n");
-  return ApplyFunc(CoxeterWord,arg);
-end;
+WeylReflections:=W->List(Reflections(W),x->CoxeterWord(W,x));
 
 WeylRightCosetRepresentatives:=function(W,I,J)
     return List(ReducedRightCosetRepresentatives(
                    ReflectionSubgroup(W,W.rootInclusion{I}),
                    ReflectionSubgroup(W,W.rootInclusion{J})),
                    x->CoxeterWord(W,x));
+end;
+
+WeylWordPerm:=function(arg)
+  Print("#W WeylWordPerm is obsolete; use CoxeterWord\n");
+  return ApplyFunc(CoxeterWord,arg);
 end;
 
 WordBraid:=function(arg)

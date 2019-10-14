@@ -258,8 +258,8 @@ end;
 
 #############################################################################
 ##
-#F  OnMatrices(M,p) . . . Simultaneaous action on rows and columns of a 
-#                        permutation p on the square matrix M
+#F  OnMatrices(M,p) . . . Simultaneous action on rows and columns of a 
+#                         permutation p on the square matrix M
 #
 OnMatrices:=function(M,p)return Permuted(List(M,y->Permuted(y,p)),p);end;
 
@@ -270,46 +270,37 @@ OnMatrices:=function(M,p)return Permuted(List(M,y->Permuted(y,p)),p);end;
 # <g> if given should be a subgroup of Symmetricgroup(Length(M)) [default].
 # returns stabilizer in g of M and of vector <extra> if given.
 #
-MatStab:=function(arg)local stab,M,g,r,l,I,p,s,k,n,i,j,e,blocks,extra;
+MatStab:=function(arg)local M,g,r,I,p,s,k,n,e,blocks,extra,gr;
   if IsGroup(arg[1]) then g:=arg[1];arg:=arg{[2..Length(arg)]};fi;
-  if Length(arg)=2 then extra:=arg[2];fi;
   M:=arg[1];k:=Length(M);
-  blocks:=I->CollectBy(I,function(i)local inv;
-    inv:=List(I,i->[Collected(M[i]{I}),Collected(M{I}[i]),M[i][i]]);
+  if Length(arg)=2 then extra:=arg[2];fi;
+  blocks:=CollectBy([1..k],function(i)local inv;
+    inv:=[Collected(M[i]),Collected(M{[1..k]}[i]),M[i][i]];
     if IsBound(extra) then Add(inv,extra[i]);fi;
     return inv;end);
-  stab:=function(I)local ind,g,p,iM;
-    ind:=blocks(I);
-    if Length(ind)>1 then return Concatenation(List(ind,J->stab(J)));
-    elif Length(I)>1 then
-      if Length(I)>7 then InfoChevie("#I Large Block:",I,"\n");fi;
-      g:=MatStab(CoxeterGroupSymmetricGroup(Length(I)),M{I}{I});
-      p:=MappingPermListList([1..Length(I)],I);
-      return [rec(gens:=OnTuples(g.generators,p),ind:=I)];
-    else return [];
-    fi;
-  end;
   if IsBound(g) then
-    for r in blocks([1..k]) do g:=Stabilizer(g,Set(r),OnSets);od;
-    s:=Concatenation(List([1..k],i->List([1..k],j->[M[i][j],k*(i-1)+j])));
-    Sort(s);
-    l:=[];j:=0;
-    for i in [1..Length(s)] do
-      if i=1 or s[i][1]<>s[i-1][1] then j:=j+1;l[j]:=[];fi;
-      Add(l[j],s[i][2]);
-    od;
+    for r in blocks do g:=Stabilizer(g,Set(r),OnSets);od;
     n:=Cartesian([1..k],[1..k]);
-    e:=Group(List(g.generators,p->PermListList(n,List(n,x->OnTuples(x,p)))),());
-    for s in l do e:=Stabilizer(e,s,OnSets);od;
+    e:=Group(List(g.generators,y->PermListList(n,List(n,x->OnTuples(x,y)))),());
+    for s in CollectBy([1..k^2],Concatenation(M)) do 
+      e:=Stabilizer(e,s,OnSets);
+    od;
     return Group(List(e.generators,p->PermList(List([1..k],i->n[i^p][2]))),());
   fi;
   g:=Group(());I:=[];
-  for r in stab([1..k]) do
-    Append(I,r.ind);p:=MappingPermListList(I,[1..Length(I)]);
-    g:=Group(Concatenation(g.generators,OnTuples(r.gens,p)),());
-    g:=MatStab(g,M{I}{I});
+  for r in blocks do
+    if Length(r)>7 then InfoChevie("#I Large Block:",r,"\n");fi;
+    if Length(r)>1 then
+      gr:=MatStab(CoxeterGroupSymmetricGroup(Length(r)),M{r}{r});
+      gr:=OnTuples(gr.generators,MappingPermListList([1..Length(r)],r));
+      g:=Group(Concatenation(g.generators,gr),());
+    fi;
+    Append(I,r);
+    p:=MappingPermListList(I,[1..Length(I)]);
+    g:=MatStab(Group(OnTuples(g.generators,p),()),M{I}{I});
+    g:=Group(OnTuples(g.generators,p^-1),());
   od;
-  return Group(List(g.generators,x->x^(p^-1)),());
+  return g;
 end;
 
 ##########################################################################
@@ -382,9 +373,8 @@ PermMatMat:=function(arg)local ind,l,I,J,r,p,e,g,s,h,sg,M,N,m,n;
       iM:=Zip(iM,m{I},function(x,y)Add(x,y);return x;end);
       iN:=Zip(iN,n{J},function(x,y)Add(x,y);return x;end);
     fi;
-    if Set(iM)<>Set(iN) then return false;fi;
+    if Collected(iM)<>Collected(iN) then return false;fi;
     iM:=CollectBy(I,iM); iN:=CollectBy(J,iN);
-    if List(iM,Length)<>List(iN,Length) then return false;fi;
     p:=Zip(iM,iN,function(I,J)local g;
       if Length(I)>7 then InfoChevie("#I  large block:",Length(I),"\n");
         if Length(iM)=1 then

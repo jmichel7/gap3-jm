@@ -129,7 +129,7 @@ ClosedSubsets:=function(W)local sum,closure,l,w,new,n,p,P,covered,f;
   od;
   P:=Poset(covered);
   P.elements:=l;
-  P.label:=function(P,i,opt)return Format(P.elements[i],opt);end;
+  P.label:=function(i,opt)return Format(l[i],opt);end;
   W.closedsubsets:=P;return P;
 end;
 
