@@ -421,7 +421,7 @@ function(arg)local W,f,inds,O,P,S,Sbar,Id,real,wreal,i,j,v,
       max:=Maximum(max,Number(v,y->y<>0));
    #  Print("e[",i,"]*e[",j,"]=",v,"\n");
       if not ForAll(v,IsInt) then
-        ChevieErr("not integral:",i,",",j,":",Format(v),"\n| ");
+        Error("not integral:",i,",",j,":",Format(v),"\n| ");
       fi;
       p:=ForAll(v,x->x>=0);
       if wreal and not p then 

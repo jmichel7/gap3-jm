@@ -478,15 +478,15 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu;
                      ClassNamesCharTable(CharTable(g)),
     function(c,n)local r,t;
     r:=rec(elt:=Representative(c),name:=n);
-    if r.elt=g.identity then r.name:="1";fi;
+    if r.elt=g.identity then r.name:="Id";fi;
     r.centralizer:=Centralizer(g,r.elt);
     r.centelms:=List(ConjugacyClasses(r.centralizer),Representative);
     t:=CharTable(r.centralizer);
     r.charNames:=CharNames(r.centralizer,rec(TeX:=true));
     r.names:=ClassNamesCharTable(t);
-    r.names[Position(r.centelms,g.identity)]:="1";
+    r.names[Position(r.centelms,g.identity)]:="Id";
     r.chars:=t.irreducibles;
-    r.charNames[PositionProperty(r.chars,y->y=y*0+1)]:="1";
+    r.charNames[PositionProperty(r.chars,y->y=y*0+1)]:="Id";
     r.centralizers:=t.centralizers;
     return r;end);
   res.charLabels:=Concatenation(List(res.classinfo,r->List(r.charNames,
@@ -525,6 +525,7 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu;
     res.fourierMat:=Permuted(res.fourierMat,res.perm);
   fi;
   res.special:=Position(res.charLabels,"(1,1)");
+  if res.special=false then res.special:=1;fi;
   return res;
 end;
 
@@ -548,13 +549,17 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt,S1;
   A.dimension:=d;
   A.operations.underlyingspace(A);
   A.involution:=SignedPermListList(S,ComplexConjugate(S));
+  if A.involution=false then 
+    Error("complex conjugacy is not a permutation-with signs of the lines");
+  fi;
   A.Involution:=function(r)local b; b:=Permuted(A.basis,A.involution);
     return Sum(r.coefficients,x->x[1]*b[x[2]]);
   end;
   S1:=List(S,x->x/x[special]);
-  A.involution2:=SignedPermListList(TransposedMat(Permuted(S1,
+  A.duality:=SignedPermListList(TransposedMat(Permuted(S1,
      Perm(A.involution))),TransposedMat(S1));
-  A.Involution2:=function(r)local b; b:=Permuted(A.basis,A.involution2);
+  if A.duality=false then Error("the matrix does not have the * involution");fi;
+  A.Duality:=function(r)local b; b:=Permuted(A.basis,A.duality);
     return Sum(r.coefficients,x->x[1]*b[x[2]]);
   end;
   A.operations.CharTable:=function(A)local tbl;

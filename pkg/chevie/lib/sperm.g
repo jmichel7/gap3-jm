@@ -154,7 +154,7 @@ SignedPermListList:=function(a,b)local p,i,res;
   if p=false then return false;fi;
   res:=Permuted([1..Length(a)],p);
   for i in [1..Length(a)] do
-    if b[i^p]<>a[i] then res[i]:=-res[i];fi;
+    if b[i^(p^-1)]<>a[i] then res[i]:=-res[i];fi;
   od;
   return SignedPerm(res);
 end;
