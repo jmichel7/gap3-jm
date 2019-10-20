@@ -524,8 +524,8 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu;
       TransposedMat(res.mellin));
     res.fourierMat:=Permuted(res.fourierMat,res.perm);
   fi;
-  res.special:=Position(res.charLabels,"(1,1)");
-  if res.special=false then res.special:=1;fi;
+  res.special:=Position(res.charLabels,"(Id,Id)");
+  if res.special=false then Error();fi;
   return res;
 end;
 

@@ -518,7 +518,7 @@ CHEVIE.AddData("HeckeRepresentation","G33",function(para,root,i)
     rep:=WGraph2Representation([[[1,5],[1,3,4],[2],[2,5],[3],[4]],
      [[1,2,-y,x],[1,4,-y,x],[2,3,-y,x],[2,5,-y,0],[2,6,-y,0],[3,4,0,-y],
      [4,5,-y,x],[4,6,-y,x]]],[x,y])*y^0*x^0;
-    rep[4]:=rep[4]^rep[5];rep[3]:=rep[4]*rep[3]/rep[4];
+    rep[4]:=rep[4]^rep[5];rep[3]:=rep[3]^(rep[4]^-1);
   return rep;end;
   f10:=function(r,p,a) return List(f5(r,p,a),x->ExteriorPower(x,2)/r);end;
   f13:=function(x,y) return dec(15,[[-1,91,108,129,709,729,788],[-x,388,418,451,

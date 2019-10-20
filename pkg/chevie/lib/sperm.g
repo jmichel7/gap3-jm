@@ -111,8 +111,7 @@ Signs:=p->Permuted(List(p.l,SignInt),Perm(p));
 # if N=OnMatrices(M,p) then
 #    M=OnMatrices(N,Perm(p))^DiagonalMat(Signs(p)))
 
-# Transforms perm or matrix or perm+signs to a list signed perm,
-# and SignedPerm to an hyperoctaedral perm
+# Transforms hyperoctaedral perm or matrix or perm+signs to a signed perm,
 SignedPerm:=function(arg)local ls,n,i,nz,res;
   ls:=arg[1];
   if IsMat(ls) then
