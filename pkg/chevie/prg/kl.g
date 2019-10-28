@@ -131,7 +131,8 @@ if VKCURVE.mvp=2 then
   od;
 
   H.Bar:=p->Mvp(List(p.elm,function(x)local res,f;res:=rec();
-    for f in RecFields(x) do res.(f):=-x.(f);od;return res;end),p.coeff);
+    for f in RecFields(x) do res.(f):=-x.(f);od;return res;end),
+    ShallowCopy(p.coeff));
   
   H.PositivePart:=function(p)local v;
     v:=Filtered([1..Length(p.elm)],function(i)local f;i:=p.elm[i];
@@ -152,7 +153,8 @@ else
     fi;
   od;
 
-  H.Bar:=p->Mvp(List(p.elm,x->rec(elm:=x.elm,coeff:=-x.coeff)),p.coeff);
+  H.Bar:=p->Mvp(List(p.elm,x->rec(elm:=x.elm,coeff:=-x.coeff)),
+    ShallowCopy(p.coeff));
   
   H.PositivePart:=function(p)local v;
     v:=Filtered([1..Length(p.elm)],x->p.elm[x].coeff=[] or p.elm[x].coeff[1]>0);

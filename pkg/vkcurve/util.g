@@ -121,14 +121,16 @@ Cut:=function(arg)local opt,s,a,pa,pb,wr,pos,res;
     pos:=0;
     while Length(s)>pos+opt.width do
       pa:=PositionProperty(Reversed(pos+[1..opt.width]),x->s[x] in opt.after);
-      pb:=PositionProperty(Reversed(pos+[1..opt.width+1]),
+      pb:=PositionProperty(Reversed(pos+[1..opt.width]),
          x->s[x] in opt.before);
       if pa<>false and (pb=false or pa<=pb) then
         PrintToString(res,s{pos+[1..opt.width+1-pa]},"\n");
         pos:=pos+opt.width+1-pa;
+        if opt.width=pa-1 then Error("pa");fi;
       elif pb<>false then
         PrintToString(res,s{pos+[1..opt.width-pb+1]},"\n");
-        pos:=pos+opt.width-pb+1;
+        pos:=pos+opt.width+1-pb;
+        if opt.width=pb-1 then Error("pb");fi;
       else Error("could not cut ",s{pos+[1..opt.width+1]});fi;
     od;
     PrintToString(res,s{[pos+1..Length(s)]},"\n");
