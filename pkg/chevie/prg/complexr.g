@@ -278,7 +278,7 @@ end;
 ## Iwahori-Hecke algebra. Cf. BrMi, 4.16 for the formula used
 
 HeckeCentralMonomials:=function(H)local v,W;
-  W:=Group(H);v:=List(HyperplaneOrbits(W),ShallowCopy);
+  W:=Group(H);v:=HyperplaneOrbits(W);
   return List(CharTable(W).irreducibles,irr->Product(v,function(C)local q,m;
     q:=H.parameter[W.rootRestriction[C.s]];
     m:=List([0..C.e_s-1],j->(irr[1]+Sum([1..C.e_s-1],

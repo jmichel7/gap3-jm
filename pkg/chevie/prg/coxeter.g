@@ -372,7 +372,7 @@ AddComponentsCoxeterGroup:=function(W)local parent, tmp, i, p, f,C;
   fi;
 
   # for each root in parent group we determine a simple root in the same orbit
-  tmp:=PointsAndRepresentativesOrbits(W,2*W.parentN);
+  tmp:=Transversals(W,2*W.parentN);
   W.orbitRepresentative:=[];
   W.orbitRepresentativeElements:=[];
   for i in [1..Length(tmp[1])] do 

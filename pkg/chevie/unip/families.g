@@ -552,6 +552,9 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt,S1;
   if A.involution=false then 
     Error("complex conjugacy is not a permutation-with signs of the lines");
   fi;
+  if A.involution^2<>A.involution^0 then 
+    Error("complex conjugacy is of order 4");
+  fi;
   A.Involution:=function(r)local b; b:=Permuted(A.basis,A.involution);
     return Sum(r.coefficients,x->x[1]*b[x[2]]);
   end;
@@ -559,6 +562,9 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt,S1;
   A.duality:=SignedPermListList(TransposedMat(Permuted(S1,
      Perm(A.involution))),TransposedMat(S1));
   if A.duality=false then Error("the matrix does not have the * involution");fi;
+  if A.duality^2<>A.duality^0 then 
+    Error("duality is not an involution");
+  fi;
   A.Duality:=function(r)local b; b:=Permuted(A.basis,A.duality);
     return Sum(r.coefficients,x->x[1]*b[x[2]]);
   end;
@@ -580,6 +586,12 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt,S1;
   A.structureconstants:=List([1..d],i->List([1..i],j->
     Filtered(TransposedMat([List([1..d],k->S[i][k]*S[j][k])*s,[1..d]]),
      x->x[1]<>0)));
+  if ForAll(Flat(A.structureconstants),x->x>=0) then
+    InfoChevie("# positive structure constants\n");
+  fi;
+  if ForAny(Flat(A.structureconstants),x->not IsInt(x)) then
+    Error("structure constants are not integral");
+  fi;
   A.multiplication:=function(i,j)
     if i>=j then return A.structureconstants[i][j];
             else return A.structureconstants[j][i];fi;end;

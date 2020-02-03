@@ -179,8 +179,7 @@ PermRootOps.RelativeGroup:=function(arg)
 	Add(res.relativeIndices,l.index);
 	Add(res.parentMap,l.parentMap);
 	Inherit(res,R);
-#	Print(relname,"=",ReflectionName(res),"<",
-#	  IntListToString(res.relativeIndices),"+",r,">\n");
+#	Print(relname,"=",ReflectionName(res),"<",IntListToString(res.relativeIndices),"+",r,">\n");
 	return res;
 #      else Print("N=",N," Size(R)=",Size(R),"\n");
       fi;
@@ -234,6 +233,7 @@ SplitLevis:=function(arg)local W,d,eig,ad,cl,w,V,I,HF,res,refs,H,WF,mats,f,P,Ed;
       ad->SplitLevis(WF,d,ad)));
   fi;
   ad:=arg[3];
+ # first occurence of each reflection in W.reflections
   refs:=Filtered([1..Length(W.roots)],
                   i->Position(W.reflections,Reflection(W,i))=i);
   mats:=List(refs,i->MatXPerm(W,Reflection(W,i)));
@@ -264,4 +264,16 @@ SplitLevis:=function(arg)local W,d,eig,ad,cl,w,V,I,HF,res,refs,H,WF,mats,f,P,Ed;
     fi;
   od;
   return res;
+end;
+
+# CuspidalUnipotentCharacters(WF[,d]) indices of the unipotent characters
+# of the Spets WF which are d-cuspidal (d=0 if not specified)
+CuspidalUnipotentCharacters:=function(arg)local WF,d,ad,ud;
+  WF:=arg[1];
+  if Size(WF)=1 then return [1];fi;
+  if Length(arg)>1 then d:=arg[2];else d:=0;fi;
+  ad:=Number(RelativeDegrees(WF,d),x->x<>1);
+# if ad=0 then Error(d," should divide one of the degrees");fi;
+  ud:=CycPolUnipotentDegrees(WF);
+  return Filtered([1..Length(ud)],i->ad=Valuation(ud[i],d));
 end;

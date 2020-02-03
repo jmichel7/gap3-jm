@@ -9,11 +9,11 @@
 #  Maybe the best illustration is the session log below
 #  
 #  gap> w:=DualBraid(CoxeterGroup("A",4))(1,2,3,4,3);
-#  1234.3
+#  124.34
 #  gap> w*w;
-#  1234.1249.34
+#  c.[5,6,10].34.3
 #  gap> w^4;
-#  1234.1249.1249.1249.267.4.
+#  c.c.c.c.c
 #
 #  Elements are stored  as delta^pd w_1.w_2...w_n where pd is positive or
 #  negative and w_1.w_2...w_n is the  left-greedy canonical form: w_1 is
@@ -31,7 +31,7 @@
 #   .monoid   a pointer to the monoid info
 #   .operations=GarsideEltOps  see below
 #
-#   Most examples are 'generated groups' where simples are identified to
+#   Most examples are 'interval monoids' where simples are identified to
 #   elements of some finite group.
 #############################################################################
 
@@ -463,9 +463,9 @@ CompleteGarsideRecord:=function(M,opt)local eltops;
     if not IsBound(M.DeltaAction) then
       M.DeltaAction:=function(x,i)
         while i>0 do
-          x:=M.LeftQuotient(M.RightComplementToDelta(x),M.delta);i:=i-1;od;
+          x:=M.RightComplementToDelta(M.RightComplementToDelta(x));i:=i-1;od;
         while i<0 do
-          x:=M.RightQuotient(M.delta,M.LeftComplementToDelta(x));i:=i+1;od;
+          x:=M.LeftComplementToDelta(M.LeftComplementToDelta(x));i:=i+1;od;
         return x;
       end;
     fi;

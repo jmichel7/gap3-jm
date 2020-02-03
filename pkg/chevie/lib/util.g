@@ -430,16 +430,16 @@ end;
 
 #############################################################################
 ##
-#F  PointsAndRepresentativesOrbits( <g>[, <m>] ) . . . . . . orbits of points 
-#F  under permutation group <g>
+#F  Transversals( <g>[, <m>] ) . . . . . . transversals of permutation group
+#F  <g> on the orbits in [1..<m>]
 ##  
-##  <g>  must  be  a permutation  group.   'PointAndRepresentativesOrbits'
-##  returns a  list [orb,rep].  Here  orb is  a list  of the <g>-orbits on
-##  [1..LargestMovedPoint(<g>)] or,  if  given, [1..<m>].  rep[i][j] is an
+##  <g>  must  be  a  permutation  group.  'Transversals'  returns  a  list
+##  [orb,rep]. Here orb is a list of the <g>-orbits on
+##  [1..LargestMovedPoint(<g>)] or, if <m> given, [1..<m>]. rep[i][j] is an
 ##  element of <g>, such that orb[i][1]^rep[i][j] = orb[i][j].
 ##  
 ##  ??? better to give list of points instead of <m> ???
-PointsAndRepresentativesOrbits:=function ( arg )
+Transversals:=function ( arg )
   local  G, orbs, orb, max, g, gs, new, gen, Ggen, p, pnt, fst, img;
   G:=arg[1];
 

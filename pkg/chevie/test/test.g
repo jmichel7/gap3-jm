@@ -7,6 +7,7 @@
 # The main functions defined here are:
 #
 # CHEVIE.Test(W) applies various tests to spets W
+# CHEVIE.Test("foo",W[,arg]) applies test .foo to spets W (with arguments arg)
 #
 # CHEVIE.RegressionTest() applies CHEVIE.Test to all CHEVIE.TestObjs
 #
@@ -129,6 +130,10 @@ ChevieErr:=CHEVIE.Warn;
 # or by given test or tests
 CHEVIE.Test:=function(arg)local a,tests,i,W,ttest;
   if IsString(arg[1]) then tests:=Filtered(CHEVIE.TestList,x->x.name=arg[1]);
+    if Length(tests)=0 then
+      Print("**** no tests found. Tests are:",
+       List(CHEVIE.TestList,x->x.name),"\n");
+    fi;
     W:=arg[2];
     arg:=arg{[3..Length(arg)]};
   elif IsList(arg[1]) then tests:=arg[1];W:=arg[2];

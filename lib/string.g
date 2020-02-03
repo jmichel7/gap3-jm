@@ -214,7 +214,10 @@ String:=function(arg)local obj,str,width,blanks;
     blanks:=blanks{[1..width-Length(str)]*0+1};Append(blanks,str);
     str:=blanks;
   else 
-    str:=ShallowCopy(str);Append(str,blanks{[1..-width-Length(str)]*0+1});
+    str:=ShallowCopy(str);
+    if width<>-Length(str) then 
+      Append(str,blanks{[1..-width-Length(str)]*0+1});
+    fi;
   fi;
   IsString(str); return str;
 end;

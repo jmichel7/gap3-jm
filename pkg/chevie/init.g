@@ -58,10 +58,8 @@ AUTO(ReadChv("lib/util"),
   CollectCoefficients, DecomposeTensor, DetPerm, Dictionary, DifferenceMultiSet,
   Drop, EvalWords, EvalPolRoot, FastValue, FOrbit, FOrbits, GetRoot, GetWord,
   InductionTable, InductionTableOps, Inherit, InverseListsMap,
-  MinimalWordProperty, PointsAndRepresentativesOrbits, PositionCartesian,
-  PositionDet, Replace, Rotations, SymmetricDifference, TwoTree, 
-  Dtime, Stime, Elapsed,
-  EvScheme);
+  MinimalWordProperty, PositionCartesian, PositionDet, Replace, Rotations, 
+  SymmetricDifference, Transversals, TwoTree, Dtime, Stime, Elapsed, EvScheme);
 
 AUTO(ReadChv("lib/po"),
   Chains, GcdPartitions, Hasse, Incidence, LcmPartitions, LinearExtension, 
@@ -161,7 +159,8 @@ AUTO(ReadChv("prg/dispatch"),
   StandardParabolic, TorusOrder, Variables, WeightInfo, WGraph);
 
 AUTO(ReadChv("prg/eigenspaces"),
-  GetRelativeAction, GetRelativeRoot, EigenspaceProjector,
+  CuspidalUnipotentCharacters,GetRelativeAction, GetRelativeRoot, 
+  EigenspaceProjector,
   PositionRegularClass, RegularEigenvalues, RelativeDegrees, SplitLevis);
 
 AUTO(ReadChv("prg/garside"), 

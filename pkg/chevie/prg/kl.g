@@ -609,36 +609,20 @@ LeftCellOps.Representation:=function(c,H)local v,W,u,e,mu,w,res,l,k,s,n,value;
 end;
 
 # returns right star operation st (a BraidRelation) of LeftCell c
-RightStar:=function(st,c)local res,W,n;
-  res:=ShallowCopy(c);Unbind(res.elements);
+RightStar:=function(st,c)local res,W,n,rs;
+  res:=ShallowCopy(c);
   W:=c.group;
-  if IsBound(c.duflo) then
-     res.duflo:=LeftStar(W,st,LeftStar(W,st,c.duflo^-1)^-1)^-1;
-  fi;
-  if IsBound(c.reps) then
-     res.reps:=List(c.reps,w->LeftStar(W,st,w^-1)^-1);
-  fi;
+  rs:=w->LeftStar(W,st,w^-1)^-1;
+  if IsBound(c.duflo) then res.duflo:=rs(rs(c.duflo)^-1); fi;
+  if IsBound(c.reps) then res.reps:=List(c.reps,rs); fi;
   if IsBound(c.elements) then
-    res.elements:=List(c.elements,w->LeftStar(W,st,w^-1)^-1);
+    res.elements:=List(c.elements,rs);
     n:=[1..Length(c.elements)];
     SortParallel(res.elements,n);
     if IsBound(c.mu) then res.mu:=c.mu{n}{n}; fi;
     if IsBound(c.graph) then res.orderGraph:=c.orderGraph{n};fi;
   fi;
   return res;
-end;
-
-# LeftCell containing w
-LeftCell:=function(W,w)local word,v,g,sst,cell,l;
-  l:=KLeftCellRepresentatives(W);
-  sst:=Filtered(BraidRelations(W),r->Length(r[1])>2);
-  word:=MinimalWordProperty(w,List(sst,st->(w->LeftStar(W,st,w^-1)^-1)),
-     w->ForAny(l,c->w in c));
-  v:=w;
-  for g in Reversed(word) do v:=LeftStar(W,sst[g],v^-1)^-1;od;
-  cell:=First(l,c->v in c);
-  for g in word do cell:=RightStar(sst[g],cell);od;
-  return cell;
 end;
 
 OldKLeftCellRepresentatives:=function(W)
@@ -675,7 +659,8 @@ OldKLeftCellRepresentatives:=function(W)
       c.reps:=List(i,x->x[1]);
       Add(W.cells0,c);
       n:=FOrbit(st,c);
-      InfoChevie(", ",Length(n)," new cell" );
+#     InfoChevie(", ",Length(n)," new cell" );
+      InfoChevie(", ",n," new cell" );
       if Length(n)>1 then InfoChevie("s");fi;
       for e in n do
         rd:=RightDescentSet(W,e.duflo);
@@ -694,16 +679,24 @@ OldKLeftCellRepresentatives:=function(W)
   return W.cells0;
 end;
   
+# LeftCell containing w
+LeftCell:=function(W,w)local word,v,g,sst,cell,l;
+  l:=KLeftCellRepresentatives(W);
+  if l=false then l:=OldKLeftCellRepresentatives(W);fi;
+  sst:=Filtered(BraidRelations(W),r->Length(r[1])>2);
+  word:=MinimalWordProperty(w,List(sst,st->(w->LeftStar(W,st,w^-1)^-1)),
+     w->ForAny(l,c->w in c));
+  v:=w;
+  for g in Reversed(word) do v:=LeftStar(W,sst[g],v^-1)^-1;od;
+  cell:=First(l,c->v in c);
+  for g in word do cell:=RightStar(sst[g],cell);od;
+  return cell;
+end;
+
 #############################################################################
 ##
 #F  LeftCells( <W> [,i] ) . . . left cells of W [in i-th 2-sided cell]
 #   for the 1-parameter Hecke algebra
-##
-## 'LeftCells'  returns a list  of pairs. The  first component of each pair
-## consists  of the reduced words in the Coxeter group <W> which lie in one
-## left  cell C, the second component  consists of the corresponding matrix
-## of highest coefficients mu(y,w), where y,w are in C.
-## options: family= only leftcells in that uc.family
 ##
 LeftCells:=function(arg)local W,ch,cc,opt,uc,st;
   W:=arg[1]; cc:=KLeftCellRepresentatives(W);

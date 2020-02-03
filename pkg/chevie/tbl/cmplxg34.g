@@ -9252,9 +9252,8 @@ f37:=function(x,y)return dec(90,
         [f29,r,p,E(3)],[f29,r,p,E(3)^2],[f29,p,r,E(3)^2],[f29,p,r,E(3)],
         [f33,r,p,E(3)^2],[f33,p,r,E(3)],[f33,r,p,E(3)],[f33,p,r,E(3)^2],
         [f37,r,p],[f37,p,r]];
-  if IsBound(rep[i]) then 
-    return ApplyFunc(rep[i][1],rep[i]{[2..Length(rep[i])]});
-  else return false;fi;
+  if i>Length(rep) then return false;fi;
+  return ApplyFunc(rep[i][1],rep[i]{[2..Length(rep[i])]});
 end);
 
 CHEVIE.AddData("Representation","G34",function(i)local r,f,v,j,l,r1;
@@ -9831,85 +9830,85 @@ CHEVIE.AddData("UnipotentCharacters","G34",
    Family(ComplexConjugate(CHEVIE.families.X(3)),[5,3,170],
      rec(signs:=[1,1,-1],ennola:=2)),   #I3^3
    Family(ComplexConjugate(CHEVIE.families.X(3)),[17,15,171],
-     rec(signs:=[1,1,-1],ennola:=1)),   #I3^3
-   Family("C2",[24,14,20,172],rec(ennola:=1)),  #D4
+     rec(signs:=[1,1,-1],ennola:=-3)),   #I3^3
+   Family("C2",[24,14,20,172],rec(ennola:=-4)),  #D4
   Family(CHEVIE.families.X(3)*ComplexConjugate(Family("X5")),
      [42,55,178,174,8,10,53,179,173,46,176,177,180,37,175],
-     rec(signs:=[1,1,-1,-1,1,1,1,-1,-1,1,-1,-1,1,1,-1],ennola:=10)),  #G_33
+     rec(signs:=[1,1,-1,-1,1,1,1,-1,-1,1,-1,-1,1,1,-1],ennola:=15)),  #G_33
    Family(CHEVIE.families.QZ(3),[26,59,57,31,183,181,32,182,184],
-    rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2,ennola:=6)),#I4^3
+    rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2,ennola:=-6)),#I4^3
    Family(CHEVIE.families.QZ(3),[81,68,71,45,185,188,39,187,186],
-     rec(signs:=[1,1,1,1,1,1,1,-1,-1],ennola:=1)), #I5^3
+     rec(signs:=[1,1,1,1,1,1,1,-1,-1],ennola:=6)), #I5^3
   Family(CHEVIE.families.X(3)*ComplexConjugate(Family("X5")),
      [109,89,194,190,35,33,91,195,189,107,192,193,196,116,191],
-     rec(signs:=[1,1,1,-1,-1,-1,1,1,-1,1,-1,-1,1,1,-1],ennola:=6)),
+     rec(signs:=[1,1,1,-1,-1,-1,1,1,-1,1,-1,-1,1,1,-1],ennola:=-15)),
    # C2 changed to C'\"2 Gunter 22/9/99
    Family(ComplexConjugate(CHEVIE.families.X(3))*Family("C'\"2"),
      [ 103, 96, 199, 201, 101, 98, 200, 202, 198, 197, 203, 204 ],
-     rec(signs:=[1,1,1,1,1,1,1,1,-1,-1,-1,-1],ennola:=7)),
-   Family("C1",[28]),
-   Family("C2",[124,63,105,205],rec(ennola:=1)),  #D4
+     rec(signs:=[1,1,1,1,1,1,1,1,-1,-1,-1,-1],ennola:=11)),
+   Family("C1",[28],rec(ennola:=-1)),
+   Family("C2",[124,63,105,205],rec(ennola:=-4)),  #D4
    Family(CHEVIE.families.QZ(3),[22,86,84,79,208,206,78,207,209],
-    rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2,ennola:=3)),#I4^3
+    rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2,ennola:=9)),#I4^3
    Family(ComplexConjugate(Family("Z9")),[141,215,213,145,214,212,143,211,210],
-     rec(special:=7,cospecial:=1,ennola:=1)),
+     rec(special:=7,cospecial:=1,ennola:=2)),
    Family(ComplexConjugate(CHEVIE.families.X(3)),[134,136,216],
-     rec(signs:=[1,1,-1],ennola:=2)),  #I3^3
+     rec(signs:=[1,1,-1],ennola:=3)),  #I3^3
    Family(CHEVIE.families.QZ(3),[129,156,154,72,219,217,74,218,220],
-     rec(signs:=[1,1,1,-1,1,1,-1,-1,-1],special:=3,cospecial:=2,ennola:=5)),
+     rec(signs:=[1,1,1,-1,1,1,-1,-1,-1],special:=3,cospecial:=2,ennola:=-5)),
    Family("C1",[67]),
    # C2 changed to C'\"2 Gunter 22/9/99
-   Family("C'\"2",[159, 161,221,222],rec(ennola:=1)),  #G_33
+   Family("C'\"2",[159, 161,221,222],rec(ennola:=-3)),  #G_33
    Family(CHEVIE.families.QZ(6),[65,94,148,118,146,92,49,241,225,234,227,238,
      162,232,243,152,224,229,83,237,113,235,111,236,164,230,223,150,242,231,47,
      239,228,233,226,240],
      rec(signs:=[1,-1,-1,1,-1,-1,1,1,-1,1,1,-1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,
        1,-1,-1,1,-1,-1,1,1,-1,1,1,-1],special:=16,cospecial:=28,ennola:=8)),
    Family(CHEVIE.families.X(3),[132,130,244],
-     rec(signs:=[1,1,-1],ennola:=1)), #\bar I3^3
+     rec(signs:=[1,1,-1],ennola:=-2)), #\bar I3^3
    Family("F42",[169,265,122,121,12,11,52,166,119,249,245,252,248,139,
     257,253,261,256,264,138,258,254,262,255,263,168,266,127,259,126,260,167,
     120,250,246,251,247,51,267,268,269,270,271,272],
     rec(signs:=[1,-1,-1,-1,1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,1,1,-1,
-      1,-1,1,-1,1,1,-1,-1,-1,-1,1,1,1,1,1,1,1],ennola:=2)),
-   Family("C2",[125,61,106,273]),  #D4
+      1,-1,1,-1,1,1,-1,-1,-1,-1,1,1,1,1,1,1,1],ennola:=3)),
+   Family("C2",[125,61,106,273],rec(ennola:=4)),  #D4
    Family(ComplexConjugate(CHEVIE.families.X(3)),[133,131,274],
-     rec(signs:=[1,1,-1],ennola:=1)),  #I3^3
+     rec(signs:=[1,1,-1],ennola:=-3)),  #I3^3
    Family(CHEVIE.families.QZ(6),[117,149,93,64,95,147,50,290,279,286,277,293,
      151,295,284,163,281,276,82,288,112,287,114,289,153,275,282,165,283,294,
      48,292,278, 285,280,291],
     rec(signs:=[1,-1,-1,1,-1,-1,-1,1,-1,-1,1,-1,1,1,1,1,1,1,1,1,1,1,1,1,1,-1,
-      -1,1,-1,-1,-1,1,-1,-1,1,-1],special:=13,cospecial:=25,ennola:=12)),
+      -1,1,-1,-1,-1,1,-1,-1,1,-1],special:=13,cospecial:=25,ennola:=-20)),
    # C2 changed to C'\"2 Gunter 22/9/99, the to C2h on 26.2.2003:
-   Family("C'\"2",[160, 158,296,297],rec(ennola:=1)),  #G_33
+   Family("C'\"2",[160, 158,296,297],rec(ennola:=3)),  #G_33
    Family("C1",[66]),
    Family(CHEVIE.families.QZ(3),[128,73,75,157,298,301,155,300,299],
      rec(signs:=[1,-1,-1,1,1,-1,1,1,-1],special:=4,cospecial:=7,ennola:=3)),
    Family(CHEVIE.families.X(3),[137,135,302],rec(signs:=[1,1,-1],ennola:=2)),
 # order changed by JM 22/10/99 from [144,142,140,303,307,305,304,306,308]
    Family("Z9",[140,304,303,144,308,306,142,307,305],
-     rec(special:=1,cospecial:=4,ennola:=2)),
+     rec(special:=1,cospecial:=4,ennola:=6)),
    Family(CHEVIE.families.QZ(3),[21,77,76,85,309,312,87,311,310],
-     rec(signs:=[1,-1,-1,1,1,1,1,-1,-1],special:=4,cospecial:=7,ennola:=4)), #\bar I4^3
-   Family("C2",[123,62,104,313],rec(ennola:=1)),  #D4
-   Family("C1",[27]),
+     rec(signs:=[1,-1,-1,1,1,1,1,-1,-1],special:=4,cospecial:=7,ennola:=5)), #\bar I4^3
+   Family("C2",[123,62,104,313],rec(ennola:=-4)),  #D4
+   Family("C1",[27],rec(ennola:=-1)),
    # C2 changed to C'\"2 Gunter 22/9/99, then to C2h on 26.2.2003:
    Family(CHEVIE.families.X(3)*Family("C'\"2"),
     [97,102,316,318,99,100,317,319,315,314,320,321],
-     rec(signs:=[1,1,1,1,1,1,1,1,-1,-1,-1,-1],ennola:=-5)),
+     rec(signs:=[1,1,1,1,1,1,1,1,-1,-1,-1,-1],ennola:=-9)),
    Family(ComplexConjugate(CHEVIE.families.X(3))*Family("X5"),
      [108,88,327,323,34,36,90,328,322,110,325,326,329,115,324],
-     rec(signs:=[1,1,1,-1,-1,-1,1,1,-1,1,-1,-1,1,1,-1],ennola:=6)),
+     rec(signs:=[1,1,1,-1,-1,-1,1,1,-1,1,-1,-1,1,1,-1],ennola:=-10)),
    Family(CHEVIE.families.QZ(3),[80,69,70,41,332,331,44,330,333],
-                rec(signs:=[1,1,1,1,-1,-1,1,1,1],ennola:=1)),  #\bar I3^5
+                rec(signs:=[1,1,1,1,-1,-1,1,1,1],ennola:=-5)),  #\bar I3^5
    Family(CHEVIE.families.QZ(3),[25,30,29,58,334,337,60,336,335],
-     rec(signs:=[1,-1,-1,1,1,1,1,-1,-1],special:=4,cospecial:=7,ennola:=5)), #\bar I3^4
+     rec(signs:=[1,-1,-1,1,1,1,1,-1,-1],special:=4,cospecial:=7,ennola:=-6)), #\bar I3^4
    Family(ComplexConjugate(CHEVIE.families.X(3))*Family("X5"),
      [40,56,343,339,7,9,54,344,338,43,341,342,345,38,340],
      rec(signs:=[1,1,-1,-1,1,1,1,-1,-1,1,-1,-1,1,1,-1],ennola:=10)),
-   Family("C2",[23,13,19,346],rec(ennola:=1)),  #D4
-   Family(CHEVIE.families.X(3),[18,16,347],rec(signs:=[1,1,-1],ennola:=1)), #\bar I3^3
-   Family(CHEVIE.families.X(3),[6,4,348],rec(signs:=[1,1,-1],ennola:=2)), #\bar I3^3
+   Family("C2",[23,13,19,346],rec(ennola:=-4)),  #D4
+   Family(CHEVIE.families.X(3),[18,16,347],rec(signs:=[1,1,-1],ennola:=-2)), #\bar I3^3
+   Family(CHEVIE.families.X(3),[6,4,348],rec(signs:=[1,1,-1],ennola:=3)), #\bar I3^3
    Family("C1",[2])],
  a:=[0,126,1,85,1,85,46,4,46,4,15,15,57,3,2,68,2,68,57,3,28,10,57,3,41,5,45,9,
   41,41,5,5,7,31,7,31,4,46,6,46,36,4,46,36,6,4,13,19,13,19,15,15,4,46,4,46,5,41,

@@ -41,7 +41,7 @@ function(arg)local n, part, guesslongest, redw,l,w0,p;
   end;
   l:=[]; w0:=();
   for p in [1..QuoInt(n+1,2)] do Append(l,[p,n-p+2]); w0:=w0*(p,n-p+2); od;
-  if n mod 2 =0 then Add(l,p+1); fi;
+  if n mod 2 =0 then Add(l,QuoInt(n,2)+1); fi;
   return List(part,p->redw(n,guesslongest(p)*w0));
 end);
 
@@ -201,7 +201,7 @@ CHEVIE.AddData("UnipotentCharacters","2A",function(l)local  uc, d, k, s, i, r;
   return uc;
 end);
 
-CHEVIE.AddData("UnipotentClasses","2A",function(r,p)local uc,c,t,WF,m,p;
+CHEVIE.AddData("UnipotentClasses","2A",function(r,p)local uc,c,t,WF,m;
   uc:=Copy(CHEVIE.R("UnipotentClasses","A")(r,p));
   for c in uc.classes do
     t:=Parent(c.red);
