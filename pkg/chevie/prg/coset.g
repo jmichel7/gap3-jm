@@ -336,6 +336,30 @@ TwistingElements:=function(WF,J)local L,e,W,W_L,H,h,N,WF_L,gens,i;
   return List(ConjugacyClasses(W_L),x->Representative(Representative(x).element));
 end;
 
+# t should be a reflection type. We compute the group of permutations
+# of Union(List(t,x->x.indices)) induced by graph automorphisms
+GraphAutomorphisms:=function(t)local tt,gens,i,J;
+  tt:=CollectBy(t,ReflectionName);
+  gens:=[];
+  for t in tt do
+    for i in [1..Length(t)-1] do
+      Add(gens,Product(Zip(t[i].indices,t[i+1].indices,
+        function(i,j)return (i,j);end)));
+    od;
+    J:=t[1].indices;
+    if t[1].series="A" then 
+      if t[1].rank>1 then Add(gens,
+        Product([1..QuoInt(t[1].rank,2)],i->(J[i],J[t[1].rank+1-i])));
+      fi;
+    elif t[1].series="D" then Add(gens,(J[1],J[2]));
+      if t[1].rank=4 then Add(gens,(J[1],J[4]));fi;
+    elif t[1].series="E" and t[1].rank=6 then
+      Add(gens,(J[1],J[6])(J[3],J[5]));
+    fi;
+  od;
+  return Group(gens,());
+end;
+
 ########################################################################
 ##
 ## Twistings( <W>, <L> )'
@@ -344,33 +368,18 @@ end;
 ## of the generating reflections.
 ## Returns  a list of  representatives, up to  <W>-conjugacy, of reflection
 ## sub-cosets whose reflection group is <L>.
-Twistings:=function(arg)local WF,J,tt,t,i,gens,W;
+Twistings:=function(arg)local WF,J,gens,W;
   WF:=arg[1];
   if Length(arg)=1 then
     W:=WF;
-    tt:=CollectBy(ReflectionType(W),ReflectionName);
-    gens:=[];
-    for t in tt do
-      for i in [1..Length(t)-1] do
-        Add(gens,Product(Zip(W.rootInclusion{t[i].indices},
-                             W.rootInclusion{t[i+1].indices},
-          function(i,j)return (i,j);end)));
-      od;
-      J:=W.rootInclusion{t[1].indices};
-      if t[1].series="A" then 
-        if t[1].rank>1 then Add(gens,
-          Product([1..QuoInt(t[1].rank,2)],i->(J[i],J[t[1].rank+1-i])));
-        fi;
-      elif t[1].series="D" then Add(gens,(J[1],J[2]));
-        if t[1].rank=4 then Add(gens,(J[1],J[4]));fi;
-      elif t[1].series="E" and t[1].rank=6 then
-        Add(gens,(J[1],J[6])(J[3],J[5]));
-      fi;
-    od;
     if W<>Parent(W) then
-      Error(W," must not be a proper subgroup of another reflection group");
+      Error(W," must not be a proper subgroup of another reflection group\n",
+              " since the computed twistings may not extend to the parent\n",
+              " call Twistings with 2 arguments if you want to do that");
     fi;
-    return List(Elements(Group(gens,())),x->CoxeterCoset(W,x));
+    gens:=Elements(GraphAutomorphisms(ReflectionType(W)));
+    gens:=Filtered(gens,x->ForAll(Flat(MatYPerm(W,x)),IsInt));
+    return List(gens,x->CoxeterCoset(W,x));
   fi;
   J:=arg[2];
   if IsGroup(J) then J:=J.rootInclusion{J.generatingReflections};fi;

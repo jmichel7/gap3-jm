@@ -124,8 +124,8 @@ AUTO(ReadChv("prg/conjbrai"),
   PreferredPrefix, RepresentativeConjugation, RepresentativeSC, ShowMaps);
 
 AUTO(ReadChv("prg/coset"),
-  CoxeterCoset, CoxeterCosetOps, CoxeterSubCoset, IsCoxeterCoset,
-  Torus,TwistedPower, TwistingElements, Twistings);
+  CoxeterCoset, CoxeterCosetOps, CoxeterSubCoset, GraphAutomorphisms,
+  IsCoxeterCoset, Torus,TwistedPower, TwistingElements, Twistings);
 
 AUTO(ReadChv("prg/coxeter"),
   AddComponentsCoxeterGroup , BadPrimes, CartanMat, CoxeterGroup, 
