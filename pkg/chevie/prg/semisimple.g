@@ -297,23 +297,12 @@ end;
 ## of each irreducible component.
 ## The fundamental group is defined as (P^\vee\cap Y(T))/Q^\vee
 #
-CoxeterGroupOps.FundamentalGroup:=function(W)local n,l,e,omega,r,moved,iszero;
+CoxeterGroupOps.FundamentalGroup:=function(W)local e,omega;
   if W.cartan=[] then return Group(());fi;
-  omega:=Mod1(W.cartan^-1*W.simpleCoroots);# simple coweights in basis of Y(T)
-  Add(omega,omega[1]*0); # add a"zero" weight
-  iszero:=x->x=x*0;
-  l:=List(W.type,function(t)local n,r;n:=t.indices;
-    # next line  uses that negative roots are listed by decreasing height!
-    r:=First([2*W.N,2*W.N-1..1],i->Sum(W.roots[i]{n})<>0);
-    return [n,r,
-       Concatenation(Filtered(n,i->W.roots[r][i]=-1),[Length(omega)])];end);
-  e:=Cartesian(List(l,x->x[3]));
-  e:=Filtered(e,x->iszero(Mod1(Sum(omega{x}))));
-  e:=List(e,x->Product([1..Length(x)],i->
-    LongestCoxeterElement(W,W.rootInclusion{l[i][1]})*
-       LongestCoxeterElement(W,W.rootInclusion{Difference(l[i][1],[x[i]])})));
-  moved:=Concatenation(List(l,x->x[1]));Append(moved,List(l,x->x[2]));
-  e:=List(e,p->RestrictedPerm(p,W.rootInclusion{moved}));
+  omega:=W.cartan^-1*W.simpleCoroots;# simple coweights in basis of Y(T)
+  e:=WeightInfo(W).minusculeCoweights;
+  e:=Filtered(e,x->ForAll(Sum(omega{x}),IsInt)); # minusc. coweights in Y
+  e:=List(e,x->Product(x,y->WeightToAdjointFundamentalGroupElement(W,y)));
   return Group(AbelianGenerators(e),());
 end;
 

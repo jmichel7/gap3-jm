@@ -11,8 +11,7 @@ CHEVIE.AddTest("BraidRelations",function(arg)local W,r,gens,rel;
   od;
 end,
 W->not IsSpets(W),
-"(W[,t]) check that W satisfies braid relations of its type [of type t]"
-);
+"(W[,t=W.type]) check that W satisfies braid relations of type t");
 
 CHEVIE.AddTest("RootSystem",
 function(W)local index,m,R,cr,rb,integrality,Coroots,try,p,replines,x;
@@ -53,8 +52,8 @@ function(W)local index,m,R,cr,rb,integrality,Coroots,try,p,replines,x;
     ChevieErr("not a root system");fi;
 end,
 W->not IsSpets(W),
-"Check that the roots of W define a distinguished root system in the sense\
- of Broue-Corran-Michel");
+"Check that W.roots define a distinguished root system",
+" in the sense of Broue-Corran-Michel");
 
 CHEVIE.AddTest("GaloisAutomorphisms",
 function(W)local k,Wk,m,g,gm,p;
@@ -73,7 +72,8 @@ function(W)local k,Wk,m,g,gm,p;
   od;
 end,
 W->not IsSpets(W),
-"check that W's reflection representation is globally invariant by Gal(k_W/Q)");
+"check that W's reflection representation is globally",
+"invariant by Gal(k_W/Q)");
 
 CHEVIE.AddTest("WFromBraidRelations",
 function(W)local n,F,r;
@@ -85,8 +85,8 @@ function(W)local n,F,r;
   return Size(W)=Size(F/r);
 end,
 W->not IsSpets(W) and Size(W)<64000,
-"check that the abstract group defined by the braid and order relations has\
- the expected Size");
+"check that the finitely presented group defined by the",
+" braid and order relations has the expected Size");
 
 CHEVIE.AddTest("ClassRepresentatives",
 function(W)local cl,i,w,l,o,wF;
@@ -117,5 +117,28 @@ function(W)local cl,i,w,l,o,wF;
   od;
 end,
 W->IsCoxeterGroup(W) or IsCoxeterCoset(W),
-"check that the class representatives are very good in the sense of\
- Geck-Michel");
+"check that the class representatives are very good",
+" in the sense of Geck-Michel");
+
+CHEVIE.AddTest("MinusculeWeights",
+function(W)local w,l;
+  w:=WeightInfo(W);
+  l:=List(W.type,function(t)local n,r;n:=t.indices;
+    r:=List(W.roots{[1..2*W.N]}{n},Sum);
+    r:=Position(r,Maximum(r));
+    return Concatenation(Filtered(n,i->W.roots[r][i]=1),[0]);end);
+  l:=List(Cartesian(l),x->Filtered(x,y->y<>0));
+  l:=Filtered(l,x->x<>[]);
+  if l<>w.minusculeCoweights then ChevieErr("minuscule coweights");fi;
+  l:=List(W.type,function(t)local n,r;n:=t.indices;
+    r:=List(W.coroots{[1..2*W.N]}{n},Sum);
+    r:=Position(r,Maximum(r));
+    return Concatenation(Filtered(n,i->W.coroots[r][i]=1),[0]);end);
+  l:=List(Cartesian(l),x->Filtered(x,y->y<>0));
+  l:=Filtered(l,x->x<>[]);
+  if l<>w.minusculeWeights then ChevieErr("minuscule weights");fi;
+end,
+W->IsCoxeterGroup(W) and ForAll(Flat(CartanMat(W)),IsInt),
+"check that the minuscule coweights correspond to",
+"coefficients 1 of highest root on simple roots",
+"and similarly for weights");

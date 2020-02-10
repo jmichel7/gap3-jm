@@ -595,11 +595,15 @@ HasTypeOps.ParabolicRepresentatives:=function(W,s)local t,res,sols;
      fi;end)),Concatenation)));
 end;
 
+# given a minuscule coweight in one irreducible comonent (by its index)
+# return corresponding permutation of extended diagram of component
 WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
   t:=First(ReflectionType(W),t->i in t.indices);
   l:=W.rootInclusion{t.indices};
   b:=LongestCoxeterElement(W,l)*LongestCoxeterElement(W,
      Difference(l,[W.rootInclusion[i]]));
+# add index of lowest negative root in component; uses that negative roots
+# are listed by decreasing height
   Add(l,W.rootInclusion[Maximum(Filtered([1..Length(W.roots)],
     i->ForAll([1..W.semisimpleRank],j->j in t.indices or W.roots[i][j]=0)))]);
   return RestrictedPerm(b,l);

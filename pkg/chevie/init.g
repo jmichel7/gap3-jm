@@ -181,7 +181,8 @@ AUTO(ReadChv("prg/gencox"),
   GenCoxOps);
 
 AUTO(ReadChv("prg/hastype"),
-  FakeDegree, HasTypeOps, ReflectionGroup);
+  FakeDegree, HasTypeOps, ReflectionGroup, 
+  WeightToAdjointFundamentalGroupElement);
 
 AUTO(ReadChv("prg/hecke"),
   HeckeAlgebraOps, HeckeReflectionRepresentation, 

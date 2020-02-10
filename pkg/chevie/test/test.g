@@ -96,8 +96,17 @@ CHEVIE.TestList:=[];
 CHEVIE.AddTest:=function(arg)local res;
   res:=rec(name:=arg[1],test:=arg[2]);
   if Length(arg)>=3 then res.cond:=arg[3];else res.cond:=x->true;fi;
-  if Length(arg)=4 then res.explanation:=arg[4];fi;
+  if Length(arg)>=4 then res.explanation:=Join(arg{[4..Length(arg)]},"\n\t");fi;
   Add(CHEVIE.TestList,res);
+end;
+
+CHEVIE.ShowTests:=function()local t;
+  for t in CHEVIE.TestList do
+#   Print(String(t.name,-22));
+    Print(t.name,"\t");
+    if IsBound(t.explanation) then Print(t.explanation);fi;
+    Print("\n");
+  od;
 end;
 
 CHEVIE.Title:=[];
@@ -191,7 +200,8 @@ IsSpetsial:=W->UnipotentCharacters(W)<>false;
 # now load various tests
 ReadChv("test/check");
 ReadChv("test/checkcharpara");
-CHEVIE.AddTest("CharParams",CheckCharParams,W->not IsSpets(W));
+CHEVIE.AddTest("CharParams",CheckCharParams,W->not IsSpets(W),
+"check that CharParams(W) describe chars following Michel-Thiel");
 ReadChv("test/checkbasic");
 ReadChv("test/checkchar");
 ReadChv("test/checkunideg");
