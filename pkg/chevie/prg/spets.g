@@ -262,7 +262,7 @@ SpetsOps.ReflectionType:=function(WF)
 	v:=[AsRootOfUnity(scal)];m:=1;
       fi;
 # simplify again by -1 in types 2A(>1), 2D(odd), 2E6
-      if Denominator(v[m]) mod 2 <> Denominator(2*v[m]) mod 2 and 
+      if Denominator(v[m]) mod 4=2 and 
         (a.series in ["A","D"] or (a.series="E" and a.rank=6))then 
 	w0:=Product(a.subgroup.generators{LongestCoxeterWord(CoxeterGroup(a))});
         WF.phi:=w0*WF.phi;
@@ -372,17 +372,22 @@ Spets:=function(arg)local W, WF,perm,t,s,i,j;
   # just return  component .spets:
   if Length(arg)=1 then
     if IsRec(arg[1]) and IsBound(arg[1].spets) then return arg[1].spets;
-    elif arg[1]="3G422" then return Spets(PermRootGroup(
+    elif IsString(arg[1]) then
+      if arg[1]="3G422" then return Spets(PermRootGroup(
 [[2,(-1+ER(3))*E(3)], [2,(-1+ER(3))*E(3)^2], [2,(-1+ER(3))]],
 [[(3+ER(3))/2,ER(3)*E(3)^2],[(3+ER(3))/2,ER(3)*E(3)],[(3+ER(3))/2,ER(3)]]/3),
 (1,2,3));
-    elif arg[1]="2G5" then return Spets(ComplexReflectionGroup(5),(1,2));
-    elif arg[1]="3G333" then return Spets(ComplexReflectionGroup(3,3,3),(1,2,44));
-    elif arg[1]="3pG333" then return Spets(ComplexReflectionGroup(3,3,3),(1,44,2));
-    elif arg[1]="4G333" then return
+      elif arg[1]="2G5" then return Spets(ComplexReflectionGroup(5),(1,2));
+      elif arg[1]="3G333" then 
+        return Spets(ComplexReflectionGroup(3,3,3),(1,2,44));
+      elif arg[1]="3pG333" then 
+        return Spets(ComplexReflectionGroup(3,3,3),(1,44,2));
+      elif arg[1]="4G333" then return
    Spets(ComplexReflectionGroup(3,3,3),(2,12,22,38)(3,35,14,32)(5,26,8,33)
  (6,39,13,20)(7,42,24,27)(9,51,29,54)(10,15,21,46)(16,50,30,44)(17,53,23,36)
  (18,47,28,49)(19,41,40,34)(31,45,37,43));
+      else Error("A string argument should be 2G5, 3G333, 3pG333 or 4G333");
+      fi;
     fi;
   fi;
   W:=arg[1];

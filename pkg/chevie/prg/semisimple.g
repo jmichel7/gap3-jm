@@ -415,6 +415,10 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
   end;
   data.pgl:=dim->CoxeterGroup("A",dim-1);
   data.sl:=dim->CoxeterGroup("A",dim-1,"sc");
+  data.slmod:=function(dim,q)
+    if dim mod q<>0 then Error(q," should divide ",dim);fi;
+    return IntermediateGroup(data.sl(dim),[q]);
+  end;
   data.u:=dim->CoxeterCoset(data.gl(dim),List(-IdentityMat(dim),Reversed));
   data.su:=function(dim)if dim=2 then return CoxeterCoset(data.sl(dim));
     else return CoxeterCoset(data.sl(dim),
@@ -422,6 +426,18 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
   data.psu:=function(dim)if dim=2 then return CoxeterCoset(data.pgl(dim));
     else return CoxeterCoset(data.pgl(dim),
          Product([1..QuoInt(dim-1,2)],i->(i,dim-i)));fi;end;
+  data.tgl:=function(n, k)local X, Y,lat;
+    if Gcd(n,k)<>1 then Error(k," should be prime to ",n);fi;
+    X:=DiagonalMat(CartanMat("A", n-1), 1){[1..n-1]};
+
+    # We intertwine the last weight with the torus
+    lat:=Concatenation(X,[Concatenation(0*[1..n-2], [k,1])]);
+    # Get a basis for the sublattice
+    lat := HermiteNormalFormIntegerMatTransform(lat).normal;
+    # Find the roots in a basis of the sublattice
+    Y := IdentityMat(n){[1..n-1]};
+    return CoxeterGroup(List(X,x->SolutionIntMat(lat,x)),Y*TransposedMat(lat));
+  end;
   data.sp:=function(dim)local R,R1,i;
     R:=IdentityMat(dim/2); for i in [2..dim/2] do R[i][i-1]:=-1;od;
     R1:=Copy(R);R1[1]:=2*R1[1];
