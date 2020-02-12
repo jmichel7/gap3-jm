@@ -392,11 +392,10 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
   ucl.springerSeries:=Filtered(ucl.springerSeries,
     x->OnSets(Set(x.levi),WF.phi)=Set(x.levi));
 # To deal with a general group intermediate between Gad and Gsc, we discard
-# the  Springer series  corresponding to  a central  character which is not
-# trivial on the fundamental group (seen as a subgroup of ZGsc)
-# AlgebraicCentre(W).descAZ returns the generators of the fundamental group
-# of  the  algebraic  group  W  as  words  in  generators  of  the absolute
-# fundamental group.
+# the  Springer series corresponding to a  central character which does not
+# factor  through  the  fundamental  group  (seen  as  a  quotient of ZGsc)
+# AlgebraicCentre(W).descAZ  returns the  generators of  the kernel of this
+# quotient map as words in generators of the adjoint fundamental group.
   if not ForAll(ucl.springerSeries,x->Set(x.Z)=[1]) then 
     ucl.springerSeries:=Filtered(ucl.springerSeries,
        s->ForAll(AlgebraicCentre(W).descAZ,y->Product(s.Z{y})=1));

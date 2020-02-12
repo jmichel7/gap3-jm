@@ -37,7 +37,7 @@ CoxeterElementsLength:=function(arg)
   return ApplyFunc(CoxeterElements,arg);
 end;
 
-CoxeterWordReflections:=WeylReflections;
+CoxeterWordReflections:=W->List(Reflections(W),x->CoxeterWord(W,x));
 
 CyclesSignedPerm:=function(arg)
   Print("#W CyclesSignedPerm is obsolete; use Cycles\n");
