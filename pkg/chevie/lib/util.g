@@ -343,23 +343,17 @@ end;
 
 ############################################################################
 ##
-#F  AbelianGenerators( <l>) . . . . . . . minimal genators of abelian group
+#F  AbelianGenerators( <l>) . . . . . . . minimal generators of abelian group
 ##
-##  l is the list of elements of an abelian group G; this is a
-##  (non-optimal) routine to return a minimal set of generators for G
+##  l is an abelian group or the list of its elements; the result is
+##  a new set of generators whose orders are the abelian invariants of G
 ##
-AbelianGenerators:=function(l)local res,o,ord;
-  ord:=function(x)local i,p,id;
-    i:=1;p:=x;id:=x^0;while p<>id do p:=p*x;i:=i+1;od;
-    return i;
-  end;
-  res:=[];
-  while l<>[] do
-    o:=List(l,ord);
-    Add(res,l[Position(o,Maximum(o))]);
-    l:=Difference(l,Elements(ApplyFunc(Group,res)));
-  od;
-  return res;
+AbelianGenerators:=function(G)local ords, M;
+  if IsList(G) then G:=ApplyFunc(Group,G);fi;
+  ords := List(G.generators, g -> Order(G,g));
+  M:=SmithNormalFormIntegerMatTransforms(DiagonalMat(ords)).coltrans^-1;
+  M:=List(M,r->Product(Zip(r, G.generators, function(i, g) return g^i; end)));
+  return Filtered(M, g -> g<>g^0);
 end;
 
 # decompose tensor product arg{[2..Length(arg)]} (given as indices in chars)
