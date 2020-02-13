@@ -347,13 +347,23 @@ end;
 ##
 ##  l is an abelian group or the list of its elements; the result is
 ##  a new set of generators whose orders are the abelian invariants of G
+##  (thanks to Klaus Lux for the algorithm)
 ##
-AbelianGenerators:=function(G)local ords, M;
+AbelianGenerators:=function(G)local l,i,H,d,rels,rel;
   if IsList(G) then G:=ApplyFunc(Group,G);fi;
-  ords := List(G.generators, g -> Order(G,g));
-  M:=SmithNormalFormIntegerMatTransforms(DiagonalMat(ords)).coltrans^-1;
-  M:=List(M,r->Product(Zip(r, G.generators, function(i, g) return g^i; end)));
-  return Filtered(M, g -> g<>g^0);
+  l:=Filtered(G.generators,x->x<>x^0);
+  rels:=[];
+  for i in [1..Length(l)] do
+    H:=Subgroup(G,l{[1..i-1]});
+    d:=First([1..Order(G,l[i])],o->l[i]^o in H);
+    rel:=0*[1..Length(l)];
+    for p in Collected(GetWord(H,l[i]^d)) do rel[p[1]]:=p[2];od;
+    rel[i]:=-d;
+    Add(rels,rel);
+  od;
+  rels:=SmithNormalFormIntegerMatTransforms(rels).coltrans^-1;
+  l:=List(rels,r->Product(Zip(r,l,function(i,g)return g^i; end)));
+  return Filtered(l, g->g<>g^0);
 end;
 
 # decompose tensor product arg{[2..Length(arg)]} (given as indices in chars)

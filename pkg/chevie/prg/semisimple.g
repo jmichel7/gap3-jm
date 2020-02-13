@@ -178,7 +178,7 @@ end;
 ##   Returns words in the generators of Pi which generate the kernel of the
 ##   map Pi->AZ
 ##
-AlgebraicCentre:=function(W)local Z0,res,F0s,w,toAZ,hom,AZ,m,id;
+AlgebraicCentre:=function(W)local Z0,res,F0s,w,toAZ,hom,AZ,m,id,toZD;
   if IsExtendedGroup(W) then F0s:=List(W.F0s,TransposedMat); W:=W.group;fi;
   if W.simpleRoots=[] then Z0:=IdentityMat(W.rank);
   else Z0:=NullspaceIntMat(TransposedMat(W.simpleRoots));
@@ -200,6 +200,8 @@ AlgebraicCentre:=function(W)local Z0,res,F0s,w,toAZ,hom,AZ,m,id;
   AZ:=List(WeightInfo(W).CenterSimplyConnected,x->SemisimpleElement(W,x));
   if Length(AZ)=0 then res.descAZ:=AZ;return res;fi;
   AZ:=ApplyFunc(Group,AZ);
+  toZD:=s->SemisimpleElement(W,s.v*W.simpleCoroots);
+  res.ZD:=ApplyFunc(Group,List(AZ.generators,toZD));
   toAZ:=function(s)
     s:=s.v*W.simpleCoroots;
     s:=SolutionMat(Concatenation(res.Z0.complement,res.Z0.generators),s);
