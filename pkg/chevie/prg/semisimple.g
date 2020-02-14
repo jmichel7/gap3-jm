@@ -293,8 +293,8 @@ end;
 ## This  function  returns  the  fundamental  group  of the algebraic group
 ## corresponding  to the Weyl group record <W> as the diagram automorphisms
 ## of  the  corresponding  affine  Weyl  group  induced  by  <W>, thus as a
-## permutation group on the simple roots and the negative longest roots
-## of each irreducible component.
+## permutation  group on the simple roots and the negative longest roots of
+## each irreducible component.
 ## The fundamental group is defined as (P^\vee\cap Y(T))/Q^\vee
 #
 CoxeterGroupOps.FundamentalGroup:=function(W)local e,omega;
@@ -302,8 +302,8 @@ CoxeterGroupOps.FundamentalGroup:=function(W)local e,omega;
   omega:=W.cartan^-1*W.simpleCoroots;# simple coweights in basis of Y(T)
   e:=WeightInfo(W).minusculeCoweights;
   e:=Filtered(e,x->ForAll(Sum(omega{x}),IsInt)); # minusc. coweights in Y
-  e:=List(e,x->Product(x,y->WeightToAdjointFundamentalGroupElement(W,y)));
-  return Group(AbelianGenerators(e),());
+  e:=List(e,x->WeightToAdjointFundamentalGroupElement(W,x));
+  return ApplyFunc(Group,AbelianGenerators(e));
 end;
 
 CoxeterGroupOps.Dual:=W->CoxeterGroup(W.simpleCoroots,W.simpleRoots);

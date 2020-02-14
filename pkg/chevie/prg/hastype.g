@@ -595,9 +595,14 @@ HasTypeOps.ParabolicRepresentatives:=function(W,s)local t,res,sols;
      fi;end)),Concatenation)));
 end;
 
-# given a minuscule coweight in one irreducible comonent (by its index)
+# given a minuscule coweight in one irreducible component (by its index)
 # return corresponding permutation of extended diagram of component
+# or given a coweight (as a list) return corresponding permutation
 WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
+  if IsList(i) then 
+    if IsEmpty(i) then return ();fi;
+    return Product(i,x->WeightToAdjointFundamentalGroupElement(W,x));
+  fi;
   t:=First(ReflectionType(W),t->i in t.indices);
   l:=W.rootInclusion{t.indices};
   b:=LongestCoxeterElement(W,l)*LongestCoxeterElement(W,
@@ -607,6 +612,13 @@ WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
   Add(l,W.rootInclusion[Maximum(Filtered([1..Length(W.roots)],
     i->ForAll([1..W.semisimpleRank],j->j in t.indices or W.roots[i][j]=0)))]);
   return RestrictedPerm(b,l);
+end;
+
+AdjointFundamentalGroupElementToWeight:=function(W,p)
+  return Inversions(W,p^-1);
+# the above works because of the way inversions are computed --- p permutes
+# only  the roots of the  extended diagram and those  which change sign are
+# the right ones.
 end;
 
 # returns a record containing minuscule coweights, decompositions

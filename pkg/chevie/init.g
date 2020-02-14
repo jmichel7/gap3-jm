@@ -181,6 +181,7 @@ AUTO(ReadChv("prg/gencox"),
   GenCoxOps);
 
 AUTO(ReadChv("prg/hastype"),
+  AdjointFundamentalGroupElementToWeight,
   FakeDegree, HasTypeOps, ReflectionGroup, 
   WeightToAdjointFundamentalGroupElement);
 
