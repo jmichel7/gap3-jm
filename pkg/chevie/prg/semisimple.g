@@ -510,6 +510,11 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
   data.3D4sc:=CoxeterCoset(CoxeterGroup("D",4,"sc"),(1,2,4));
   data.2E6:=CoxeterCoset(CoxeterGroup("E",6),(1,6)(3,5));
   data.2E6sc:=CoxeterCoset(CoxeterGroup("E",6,"sc"),(1,6)(3,5));
+  data.E6sc:=CoxeterGroup("E",6,"sc");
+  data.E6:=CoxeterGroup("E",6);
+  data.E7sc:=CoxeterGroup("E",7,"sc");
+  data.E7:=CoxeterGroup("E",7);
+  data.E8:=CoxeterGroup("E",8);
   data.2F4:=CoxeterCoset(CoxeterGroup("Fsym",4),(1,4)(2,3));
   data.F4:=CoxeterGroup("F",4);
 # the following is Galois-stable for Aut(H3,[[1,2,1,2,3,2,1,2,1],[3],[2]])

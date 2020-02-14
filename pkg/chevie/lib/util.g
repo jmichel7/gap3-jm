@@ -352,6 +352,7 @@ end;
 AbelianGenerators:=function(G)local l,i,H,d,rels,rel;
   if IsList(G) then G:=ApplyFunc(Group,G);fi;
   l:=Filtered(G.generators,x->x<>x^0);
+  if l=[] then return l;fi;
   rels:=[];
   for i in [1..Length(l)] do
     H:=Subgroup(G,l{[1..i-1]});
