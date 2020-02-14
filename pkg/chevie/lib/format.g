@@ -176,6 +176,7 @@ TeXStrip:=function(arg)local s,opt,f;
       "\\varepsilon","eps",
       "\\gamma","gamma",
       "\\lambda","lambda",
+      "\\mu","mu",
       "\\theta","theta",
       "\\nu","nu",
       "\\rho","r",
@@ -184,6 +185,7 @@ TeXStrip:=function(arg)local s,opt,f;
       "\\!\\wedge\\!",".",
       "\\wedge","",
       "\\overline","'",
+      "^\\hbox","",
       " ","");
     s:=List([1..Length(s)],function(i)if s[i]='i' and 
       (i=Length(s) or not s[i+1] in "abcdefghijklmnopqrstuvwxyz")

@@ -642,6 +642,5 @@ HasTypeOps.WeightInfo:=function(W)local l,res,n;
   res.minusculeCoweights:=List(res.minusculeCoweights{[1..n]},
     x->Filtered(x,y->y<>0));
   res.decompositions:=res.decompositions{[1..n]};
-  res.type:=List(l,x->Length(x.moduli));
   return res;
 end;
