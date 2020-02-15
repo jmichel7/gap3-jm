@@ -600,7 +600,7 @@ end;
 # or given a coweight (as a list) return corresponding permutation
 WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
   if IsList(i) then 
-    if IsEmpty(i) then return ();fi;
+    if i=[] then return ();fi;
     return Product(i,x->WeightToAdjointFundamentalGroupElement(W,x));
   fi;
   t:=First(ReflectionType(W),t->i in t.indices);

@@ -195,7 +195,7 @@ AlgebraicCentre:=function(W)local Z0,res,F0s,w,toAZ,hom,AZ,m,id,toZD;
     od;
   fi;
   id:=SemisimpleElement(W,[1..W.rank]*0);
-  res:=rec(Z0:=Z0,AZ:=Group(AbelianGenerators(AZ),id));
+  res:=rec(Z0:=Z0,AZ:=Group(AbelianGenerators(Group(AZ,id)),id));
   if IsBound(F0s) and Length(F0s)>0 then return res;fi;
   AZ:=List(WeightInfo(W).CenterSimplyConnected,x->SemisimpleElement(W,x));
   if Length(AZ)=0 then res.descAZ:=AZ;return res;fi;
@@ -303,7 +303,7 @@ CoxeterGroupOps.FundamentalGroup:=function(W)local e,omega;
   e:=WeightInfo(W).minusculeCoweights;
   e:=Filtered(e,x->ForAll(Sum(omega{x}),IsInt)); # minusc. coweights in Y
   e:=List(e,x->WeightToAdjointFundamentalGroupElement(W,x));
-  return ApplyFunc(Group,AbelianGenerators(e));
+  return Group(AbelianGenerators(Group(e,())),());
 end;
 
 CoxeterGroupOps.Dual:=W->CoxeterGroup(W.simpleCoroots,W.simpleRoots);
