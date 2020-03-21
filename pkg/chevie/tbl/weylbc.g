@@ -187,7 +187,7 @@ end);
 
 ##  essentially the library call to table "WeylB", l, but different
 ##  in GAP 3 and GAP 4
-CHEVIE.IndirectAddData("CharTable", ["B"], CHEVIE.compat.CharTableB);
+CHEVIE.AddData("CharTable", "B", CHEVIE.compat.CharTableB);
 
 #############################################################################
 ##

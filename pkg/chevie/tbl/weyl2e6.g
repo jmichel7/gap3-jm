@@ -189,6 +189,11 @@ CHEVIE.AddData("vpolheckeirreducibles","2E6",[[[[1],72],[[1],0],[[1],12],
   [[3,0,-3],4],[[-1,0,2,0,-1],2],[[-1,0,3,0,-2],0],[[-1],4],[[1],2],
   [[2,0,-3,0,1],2]]]);
 
+CHEVIE.AddData("FakeDegree","2E6",function(p,q)local sgns;
+  sgns:=[1,1,-1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,1,-1,1,1];
+  return sgns[Position(CHEVIE.R("CharInfo","E6")().charparams,p)]*
+    CHEVIE.R("FakeDegree","E6")(p,-q);end);
+
 #############################################################################
 ##
 #F  CHEVIE.R("ClassParameter","2E6")( <w> ) . . . . class parameter of w

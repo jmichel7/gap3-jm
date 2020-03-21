@@ -25,11 +25,12 @@ UnipCharOps.Format:=function(r,option)local m,c,i,s,n,res;
       if c<>"0" then
 	if c="1" then Append(res,"+");
 	elif c="-1" then Append(res,"-");
-	else  if '+' in c{[2..Length(c)]} or '-' in c{[2..Length(c)]} then
+	else  
+          if '+' in c{[2..Length(c)]} or '-' in c{[2..Length(c)]} then
 		  c:=Concatenation("(",c,")");
-	      fi;
-	      if not c[1] in "+-" then Append(res,"+");fi;
-	      Append(res,c);
+          fi;
+          if not c[1] in "+-" then Append(res,"+");fi;
+          Append(res,c);
 	fi;
 	Append(res,n);
       fi;
@@ -134,10 +135,8 @@ end;
 # if i given use eigenvalues^i
 DeligneLusztigLefschetz:=function(arg)local W,h,ct,uc,i;
   h:=arg[1];
-  if IsBound(h.coset) 
-  then W:=ReflectionCoset(h.coset);
-  else W:=Group(Hecke(h));
-  fi;
+  if IsHeckeCosetElt(h) then W:=ReflectionCoset(h.coset);
+  else W:=Group(Hecke(h)); fi;
   uc:=UnipotentCharacters(W);
   if Length(arg)=2 then i:=arg[2];else i:=0;fi;
   return UnipotentCharacter(W,Zip(ComplexConjugate(HeckeCharValues(h))*

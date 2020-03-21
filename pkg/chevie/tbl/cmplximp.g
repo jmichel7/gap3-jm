@@ -395,7 +395,7 @@ CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,s,fd;
     fi;
   fi;
   t:=List([r,r-1..0],function(i)local v;
-    v:=List([1..de],x->[]);if i>0 then v[1]:=[i];fi;
+    v:=List([1..Maximum([de,2])],x->[]);if i>0 then v[1]:=[i];fi;
     v[2]:=[1..r-i]*0+1;return v;end);
   if e>1 then t:=List(t,v->Minimum(List([1..e],i->Rotation(v,i*d))));fi;
   res.extRefl:=List(t,v->Position(res.charparams,v));
@@ -748,7 +748,7 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
       if k=0 then return res;fi;
       ctSC:=List(hs.SC,x->v[x[1]]*q^x[2]);
       ctDC:=List(hs.DC,x->v[x[1]]*q^x[2]);
-      res:=res*Product(ctSC)*Product(ctDC)^-1;
+      res:=res*Product(ctSC)/Product(ctDC);
       if k=1 then return res;fi;
 
       ElementarySymmetricFunction:=function(t,v)
@@ -1990,7 +1990,7 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
 	    fi;
 	  else tll:=Sum(para[2])/(1-ct(b)/ct(a));
 	  fi;
-	  v:=[1..Length(T)]*0; v[j]:=tll; 
+	  v:=[1..Length(T)]*0/1*tll; v[j]:=tll; 
 	  p:=Position(T,S);if p<>false then v[p]:=tll-para[2][2];fi;
 	  return v;end)))*Product(para,Product)^0;
     end;

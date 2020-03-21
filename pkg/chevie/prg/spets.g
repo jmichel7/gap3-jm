@@ -560,10 +560,12 @@ GenericSign:=WF->(-1)^Group(WF).rank*Product(ReflectionDegrees(WF),x->x[2])*
 ## order  of the  corresponding Spets  is q^N  theta product(q^di-ei^-1)
 ## where theta is the constant by which phi acts on the discriminant (if
 ## phi is zeta-regular then theta=\zeta^(N+Nhyp))
-SpetsOps.GenericOrder:=function(WF,q)
+SpetsOps.GenericOrder:=function(WF,q)local p,r;
   if Group(WF).rank=0 then return q^0;
-  else return GenericSign(WF)*q^Sum(ReflectionCoDegrees(WF),x->x[1]+1)*
-    Product(ReflectionDegrees(WF),p->1-q^p[1]*p[2]^-1);
+  else 
+    r:=Indeterminate(Cyclotomics);
+    p:=CycPol(Product(ReflectionDegrees(WF),p->1-r^p[1]*p[2]^-1));
+    return GenericSign(WF)*q^Sum(ReflectionCoDegrees(WF),x->x[1]+1)*Value(p,q);
   fi;
 end;
 

@@ -154,6 +154,9 @@ CHEVIE.AddData("HeckeRepresentation","3D4",
   return res;
 end);
 
+CHEVIE.AddData("sparseFakeDegrees","3D4",
+[[1,0],[1,12],[1,4,1,8],[-1,4,2,6,-1,8],[1,1,-1,3,1,5],[1,7,-1,9,1,11],[1,3,1,9]]);
+
 CHEVIE.AddData("UnipotentCharacters","3D4",function()local res;
   return rec(
   harishChandra:=[

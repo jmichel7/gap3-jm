@@ -154,6 +154,12 @@ CHEVIE.families.X2:=rec(name:="X_2",
    fourierMat:=ER(2)/2*[[-1,-1],[-1,1]], eigenvalues:=[E(8)^3,-E(8)], 
    charLabels:=["1","2"], special:=1, sh:=[1,-1]);
 
+CHEVIE.AddData("sparseFakeDegrees","2F4",
+[[1,0],[1,24],[1,8,1,16],[1,2,-1,4,1,8,-1,12,1,14],
+ [-1,10,1,12,-1,16,1,20,-1,22],[1,6,-1,8,-1,16,1,18],
+ [-1,6,1,8,-2,12,1,16,-1,18],[1,4,1,20],[1,1,-1,5,1,7,-1,11],
+ [1,13,-1,17,1,19,-1,23],[-1,5,2,9,-1,11,-1,13,2,15,-1,19]]);
+  
 CHEVIE.AddData("UnipotentCharacters","2F4",function()local res;
   return rec(
   harishChandra:=[

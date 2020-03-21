@@ -243,7 +243,7 @@ LusztigInductionTable:=function(arg)
   if IsBound(res.scalar) then return res;fi;
   res:=LusztigInductionPieces(res);if res=false then return false;fi;
   uL:=UnipotentCharacters(LF);
-  fL:=UnipotentCharactersOps.Fourier(uL);
+  fL:=Fourier(uL);
   hh:=uL.almostHarishChandra;
   fWinv:=UnipotentCharactersOps.FourierInverse(uW);
   maps:=List([1..Length(hh)],function(i)local piece;
@@ -323,8 +323,7 @@ HarishChandraInductionTable:=function(HF,WF)
       if p.op<>() then
         rh:=RelativeGroup(H,h.levi).generators;
         rh:=Filtered(Arrangements([1..Length(Wi.generators)],Length(rh)),
-          a->ForAll([1..Length(a)],i->OrderPerm(Wi.generators[a[i]])=
-                                                OrderPerm(rh[i])));
+          a->List(WI.generators{a},OrderPerm)=List(rh,OrderPerm));
         if Length(rh)>1 then
           ChevieErr("WARNING: embedding ambiguous:",rh,"\n");
         fi;

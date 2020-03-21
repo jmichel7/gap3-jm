@@ -230,8 +230,8 @@ ReflTypeOpsUnipotentCharacters:=function(t) local uc,a,s,i,indices,r;
     uc.almostCharSymbols:=uc.charSymbols;
   fi;
   a:=UnipotentCharactersOps.ParamsAndNames(uc.almostHarishChandra);
-  for s in [["almostCharParams","charParams"],["almostTeXCharNames","TeXCharNames"]]
-  do uc.(s[1]):=a.(s[2]);od;
+  uc.almostCharParams:=a.charParams;
+  uc.almostTeXCharNames:=a.TeXCharNames;
   return uc;
 end;
 

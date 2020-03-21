@@ -118,9 +118,45 @@ CHEVIE.AddData("CharInfo","2A",n->CHEVIE.R("CharInfo","A")(n));
 ##  'CharTable2A' gives the values of the *preferred* extensions defined in
 ##  [CS,17.2, case A_l].
 ##
-CHEVIE.AddData("CharTable","2A", CHEVIE.compat.CharTable2A);
+CHEVIE.AddData("CharTable","2A",function(r)local i, tbl;
+  tbl := CHEVIE.R("CharTable","A")(r);
+  tbl.identifier := SPrint("W(^2A",r,")");
+  for i in [1..Length(tbl.irreducibles)] do
+    # Lusztig [Character Sheaves] 17.2:
+    # Preferred extension: \sigma acts on \tilde E by (-1)^a_E.w_0
+    tbl.irreducibles[i]:=(-1)^CHEVIE.R("LowestPowerFakeDegree","A")
+        (tbl.irredinfo[i].charparam)*tbl.irreducibles[i];
+  od;
+  Inherit(tbl,CHEVIE.R("ClassInfo","2A")(r));
+  return tbl;
+end);
 
-CHEVIE.AddData("HeckeCharTable","2A", CHEVIE.compat.HeckeCharTable2A);
+CHEVIE.AddData("HeckeCharTable","2A", function(r,param,rootparam)
+  local q, v, W, T, qE, H, tbl, cl, i;
+  q:=-param[1][1]/param[1][2];
+  if not IsBound(rootparam[1]) then v:=GetRoot(q,2,"CharTable(Hecke(2A))");
+  else v:=rootparam[1];
+  fi;
+  W:=CoxeterGroup("A",r);
+# If q_E is the square root which deforms to 1 of the eigenvalue of T_{w_0}
+# on E which deforms to 1, then we have:
+#  E~(T_w\phi)=\overline(E(T_{w^-1w_0}))q_E (trivial extension)
+#  E~(T_w\phi)=(-1)^a_E\overline(E(T_{w^-1w_0}))q_E (preferred extension)
+# where \overline means q->q^-1
+  qE:=HeckeCentralMonomials(Hecke(W,v));
+  H:=Hecke(W,v^-2);T:=Basis(H,"T");
+  tbl:=ShallowCopy(CharTable(H));
+  Inherit(tbl,CHEVIE.R("ClassInfo","2A")(r));
+  tbl.identifier:=SPrint("H(^2A",r,")");
+  cl:=List(tbl.classtext,x->T(EltWord(W,x)*LongestCoxeterElement(W)));
+  tbl.irreducibles:=TransposedMat(List(cl,HeckeCharValues));
+  for i in [1..Length(tbl.irreducibles)] do
+    tbl.irreducibles[i]:=(-1)^CHEVIE.R("LowestPowerFakeDegree","A")
+      (tbl.irredinfo[i].charparam[1])*qE[i]*tbl.irreducibles[i];
+  od;
+  CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
+  return tbl;
+end);
 
 CHEVIE.AddData("PhiFactors","2A",n->List([2..n+1],x->(-1)^x));
 
@@ -165,9 +201,9 @@ CHEVIE.AddData("UnipotentCharacters","2A",function(l)local  uc, d, k, s, i, r;
   uc.harishChandra:=[];
   d:=0;
   while d*(d+1)/2 <= l+1 do
-    k:=l+1-d*(d+1)/2;
+    k:=l+1-QuoInt(d*(d+1),2);
     if k mod 2 = 0 then
-      r:=k/2;
+      r:=QuoInt(k,2);
       s:=rec(levi:=[r+1..l-r],
              relativeType:=rec(series:="B",indices:=[r,r-1..1],rank:=r),
              eigenvalue:=(-1)^(Product(d+[-1..2])/8));

@@ -193,7 +193,7 @@ AUTO(ReadChv("prg/heckeelt"),
   CreateHeckeBasis, HeckeEltOps,HeckeElt,IsHeckeElt); 
 
 AUTO(ReadChv("prg/hekcoset"),
-  HeckeCosetOps);
+  HeckeCosetOps, IsHeckeCoset, IsHeckeCosetElt);
 
 AUTO(ReadChv("prg/kl"),
   AsymptoticAlgebra, CriticalPair, DualWGraph, KLMueMat, 
@@ -233,7 +233,8 @@ AUTO(ReadChv("prg/wclsinv"),
 AUTO(ReadChv("tbl/cmplximp"),
   ImprimitiveCuspidalName);
 
-AUTO(ReadChv("tbl/exceptio"),VcycSchurElement, VFactorSchurElement);
+AUTO(ReadChv("tbl/exceptio"),VcycSchurElement, VFactorSchurElement,
+  ExpandRep);
 
 if not IsBound(InfoChevie) then InfoChevie:=Ignore;fi;
 if not IsBound(InfoChevie2) then InfoChevie2:=Ignore;fi;

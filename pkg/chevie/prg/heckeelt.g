@@ -247,7 +247,7 @@ end;
 HeckeEltOps.HeckeClassPolynomials:=function(h)
   local H,minl,min,l,maxl,new,i,o,orb,W,WF,p;
   H:=Hecke(h);
-  if IsBound(h.coset) then WF:=Spets(h.coset); W:=Group(WF);
+  if IsHeckeCosetElt(h) then WF:=Spets(h.coset); W:=Group(WF);
   else W:=Group(H);WF:=W;fi;
   minl:=List(ChevieClassInfo(WF).classtext,Length);
   h:=Basis(H,"T")(h);
@@ -301,7 +301,7 @@ end;
 ##   If absent, <irreds> is taken to be all irreducible characters of <H>.
 
 HeckeEltOps.HeckeCharValues:=function(arg)local irrs,H,cox;
-  if IsBound(arg[1].coset) then H:=arg[1].coset;cox:=IsCoxeterCoset(Spets(H));
+  if IsHeckeCosetElt(arg[1]) then H:=arg[1].coset;cox:=IsCoxeterCoset(Spets(H));
   else H:=Hecke(arg[1]);cox:=IsCoxeterGroup(Group(H));
   fi;
   if cox then
@@ -322,7 +322,7 @@ end;
 ##  returns the values of repr. n on T.
 
 HeckeEltOps.Representation:=function(h,n)local H,W,r;
-  if IsBound(h.coset) then H:=h.coset; else H:=Hecke(h); fi;
+  if IsHeckeCosetElt(h) then H:=h.coset; else H:=Hecke(h); fi;
   W:=Group(H);h:=Basis(H,"T")(h);
   if IsInt(n) then r:=Representation(H,n);else r:=n;fi;
   if Length(h.coeff)=0 then return 0*r[1];fi;

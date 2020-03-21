@@ -127,14 +127,12 @@ SchurFunctor:=function(A,la)local n,r,m,S,M,f,rep,basis;
   M:=Sum(Elements(S),x->KroneckerProduct(rep(x),
      List(basis,function(i)
        i:=Permuted(i,x);
-       return List(basis,function(j)local p,k;p:=1;
-         for k in [1..n] do p:=p*A[i[k]][j[k]];od;return p;end)/f(i);end)));
+       return List(basis,j->Product([1..n],k->A[i[k]][j[k]]))/f(i);end)));
 # Print(Length(M),"=>");
   M:=Filtered(M,x->x<>x*0);
   M:=TransposedMat(M);
   M:=Filtered(M,x->x<>x*0);
-  m:=Set(List(M,x->Position(M,x)));
-  m:=List(m,x->Filtered([1..Length(M)],i->M[i]=M[x]));
+  m:=CollectBy([1..Length(M)],i->M[i]);Sort(m);
   M:=M{List(m,x->x[1])};M:=TransposedMat(M);
   M:=List(m,x->Sum(M{x}));
 # Print(Length(M),"\n");

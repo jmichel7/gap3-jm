@@ -94,8 +94,8 @@ function(t)local r;r:=CHEVIE.R("GeneratingRoots",t);
 
 CHEVIE.IndirectAddData("SemisimpleRank",["A","B","D"],t->(r->r));
 
-CHEVIE.IndirectAddData("FakeDegree",
-["G2","F4","H3","E6","G24","G25","G26","G27","G29","G32","G33","G34"], 
+CHEVIE.IndirectAddData("FakeDegree", ["3D4","G2","F4","2F4","H3","E6","G24",
+ "G25","G26","G27","G29","G32","G33","G34"], 
   t->function(phi,q)local f;f:=CHEVIE.R("sparseFakeDegrees",t)
    [Position(CHEVIE.R("CharInfo",t)().charparams,phi)];
    return Sum([1,3..Length(f)-1],i->f[i]*q^f[i+1]);
@@ -270,4 +270,15 @@ VFactorSchurElement:=function(arg)local para,r,data,res,n,monomial,den,root;
   res.operations:=FactorizedSchurElementsOps;
 # res.factor:=Mvp(res.factor);
   return FactorizedSchurElementsOps.Simplify(res);
+end;
+
+############################################################################
+#  ExpandRep(ngens,dim,list)
+#  decompact encoded representation for G31, G33, G34
+ExpandRep:=function(r,d,l)local m,v,k,i;
+  m:=List([1..r],i->NullMat(d));
+  for v in l do for k in v{[2..Length(v)]} do i:=k mod d^2;
+      m[QuoInt(k,d^2)+1][QuoInt(i,d)+1][(i mod d)+1]:=v[1];
+  od; od;
+  return m;
 end;

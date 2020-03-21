@@ -226,7 +226,7 @@ CycPolGenericDegreeSymbol:=function(S)local sh,res,theta,m,r,d,e,defect,q;
   fi;
   # Dudas' sign change
   
-  if d=0 then res:=res*First([1..e],i->S{1+List(i+[0..e-1],j->j mod e)}=S);fi;
+  if d=0 then res:=res*First([1..e],i->Rotation(S,i)=S);fi;
   if defect=0 or r<>2 or e<=2 then return res;
   else return E(e)^-1*CycPolOps.EnnolaTwist(res,E(2*e)); # 2I(e)
   fi;

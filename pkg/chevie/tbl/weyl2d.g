@@ -146,9 +146,51 @@ end);
 ##  Alternatively  you can get the  *good* extension instead of *preferred*
 ##  extension by defining testchar appropriately.
 ##
-CHEVIE.AddData("CharTable","2D", CHEVIE.compat.CharTable2D);
+CHEVIE.AddData("CharTable","2D", function(l)local hi, tbl,lst, chr;
+  hi:=CHEVIE.R("CharTable","B")(l);
+  chr:=[1..Length(hi.classparams)];
+  lst:=Filtered(chr, i->Length(hi.classparams[i][2]) mod 2=1);
+  chr:=Filtered(chr,i->CHEVIE.R("testchar","2D")
+                     (hi.irredinfo[i].charparam));
+  tbl:=rec(identifier:=SPrint("W(^2D",l,")"),
+    size:=hi.size/2,
+    centralizers:=hi.centralizers{lst}/2,
+    orders:=hi.orders{lst},
+    classes:=hi.classes{lst},
+    text:="extracted from generic character table of type B",
+    operations:=CharTableOps,
+    irredinfo:=List(hi.irredinfo{chr},a->rec(charparam:=a.charparam,
+		   charname:=CHEVIE.R("CharName","2D")(l,a.charparam))),
+    irreducibles:=hi.irreducibles{chr}{lst});
+   Inherit(tbl,CHEVIE.R("ClassInfo","2D")(l));
+   return tbl;
+end);
 
-CHEVIE.AddData("HeckeCharTable", "2D", CHEVIE.compat.HeckeCharTable2D);
+CHEVIE.AddData("HeckeCharTable", "2D", function(l,param,rootparam)
+  local hi,cli,lst,tbl,chr,q;
+  q:=-param[1][1]/param[1][2];
+  q:=Concatenation([[q^0,-1]],List([2..l],i->[q,-1]));
+  hi:=CHEVIE.R("HeckeCharTable","B")(l,q,[]);
+  chr:=[1..Length(hi.classparams)];
+  lst:=Filtered(chr,i->Length(hi.classparams[i][2]) mod 2=1);
+  tbl:=rec(identifier:=SPrint("H(^2D",l,")"),
+	   size:=hi.size/2,
+	   orders:=hi.orders{lst},
+	   centralizers:=hi.centralizers{lst}/2,
+       classes:=hi.classes{lst},
+	   text:="extracted from generic character table of HeckeB",
+	   operations:=CharTableOps);
+  Inherit(tbl,CHEVIE.R("ClassInfo","2D")(l));
+  chr:=Filtered(chr,
+	i->CHEVIE.R("testchar","2D")(hi.irredinfo[i].charparam));
+  tbl.irredinfo:=List(hi.irredinfo{chr},a->rec(charparam:=a.charparam,
+      charname:=CHEVIE.R("CharName","2D")(l,a.charparam)));
+  tbl.irreducibles:=TransposedMat(List(tbl.classtext,
+    x->HeckeCharValues(Basis(Hecke(CoxeterGroup("B",l),q),"T")
+      (Concatenation([1],Replace(x,[1],[1,2,1]))),hi.irreducibles{chr})));
+  CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
+  return tbl;
+end);
 
 CHEVIE.AddData("FakeDegree","2D",function(n,c,q)
   return Value(CycPolFakeDegreeSymbol(SymbolPartitionTuple(c,0),1),q);end);
@@ -161,7 +203,7 @@ CHEVIE.AddData("UnipotentCharacters","2D",function(rank)
   local symbols,uc,n,i,d,s,r,f,z,Defect0to2;
   uc:=rec(harishChandra:=[],charSymbols:=[],almostHarishChandra:=[]);
   for d in 4*[0..QuoInt(RootInt(rank)-1,2)]+2 do
-    r:=d^2/4;
+    r:=QuoInt(d^2,4);
     s:=rec(relativeType:=rec(series:="B",indices:=[1+r..rank],rank:=rank-r),
            levi:=[1..r],
            eigenvalue:=1, # see Geck-malle
@@ -178,9 +220,10 @@ CHEVIE.AddData("UnipotentCharacters","2D",function(rank)
   od;
   uc.a:=List(uc.charSymbols,LowestPowerGenericDegreeSymbol);
   uc.A:=List(uc.charSymbols,HighestPowerGenericDegreeSymbol);
-  uc.almostCharSymbols:=[];
+  uc.almostCharSymbols:=List(  # for Julia
+    [1..Sum(uc.harishChandra,x->Length(x.charNumbers))],i->[[0],[0]]);
   for d in 4*[0..RootInt(QuoInt(rank,4),2)] do
-    r:=d^2/4;
+    r:=QuoInt(d^2,4);
     s:=rec(relativeType:=rec(series:="B",indices:=[1+r..rank],rank:=rank-r),
            levi:=[1..r], eigenvalue:=(-1)^QuoInt(d+1,4));
     if r<10 then s.cuspidalName:=SPrint("D_",r,"");
@@ -217,7 +260,7 @@ CHEVIE.AddData("UnipotentCharacters","2D",function(rank)
     res.almostCharNumbers:=res.charNumbers;
     res.fourierMat:=List(uc.charSymbols{res.charNumbers},
        u->List(uc.almostCharSymbols{res.almostCharNumbers},
-       a->2^(-QuoInt(Length(f.Z1)-1,2))*
+       a->(1/2)^QuoInt(Length(f.Z1)-1,2)*
          (-1)^Length(Intersection(sharp(u),sharp(a)))));
     if Length(res.fourierMat)=16 then # JM jan 2015: fix this horrible kludge
       res.fourierMat[16]:=-res.fourierMat[16];

@@ -73,6 +73,14 @@ CHEVIE.AddData("CharInfo","2I",function(m)local res;
   return res;
 end);
 
+CHEVIE.AddData("FakeDegree","2I",function(m,phi,q)local i;
+  i:=Position(CHEVIE.R("CharInfo","2I")(m).charparams,phi);
+  if i=1 then return q^0;
+  elif i=2 then return q^m;
+  else return q^(m+2-i)-q^(i-2);
+  fi;
+end);
+
 #########################################################################
 ##
 #F  HeckeCharTable( <m>, <v> )  . . . . . . . . . . . . . . . .
@@ -92,9 +100,10 @@ CHEVIE.AddData("HeckeCharTable","2I",function(m,param,sqrtparam)
   fi;
   cl:=CHEVIE.R("ClassInfo","2I")(m);
   cos:=i->E(2*m)^i+E(2*m)^-i;
-  ct:=[List(cl.classtext,i->q^Length(i)),List(cl.classtext,i->(-1)^Length(i))];
+  ct:=List(cl.classtext,i->List(cl.classtext,j->cos(1)*0*v)); #for julia
+  ct[1]:=List(cl.classtext,i->q^Length(i));
+  ct[2]:=List(cl.classtext,i->(-1)^Length(i));
   for i in [1..QuoInt(m-1,2)] do
-    ct[i+2]:=[0];
     for j in [1..QuoInt(m+1,2)] do ct[i+2][j+1]:=-v^(2*j-1)*cos(i*(2*j-1));
     od;
 #   ct[i+2]:=ct[i+2]*(-1)^i; # to make Ennola duality work
@@ -162,7 +171,7 @@ CHEVIE.AddData("UnipotentCharacters","2I",function(e)
   if e mod 2=1 then
   # each character is aligned with its Ennola-correspondent almost char.
     untUnp:=List(symUnp,function(s)local res;
-    res:=List((e-Reversed(s))/2,x->x mod e);
+    res:=List(e-Reversed(s),x->QuoInt(x,2) mod e);
     if res[1]>res[2] then res:=List(-res,x->x mod e);fi;
     return res;
     end);
@@ -195,9 +204,8 @@ CHEVIE.AddData("UnipotentCharacters","2I",function(e)
   elif e=6 then eig:=[E(3)^2,-1,E(3),1];
     uc.almostHarishChandra[1].relativeType.orbit[1]:=
        rec(series:="G",indices:=[1,2],rank:=2,cartanType:=ER(3));
-    for i in [1..4] do 
-      uc.almostHarishChandra[i+1].cuspidalName:=
-        SPrint("G2[",Format(eig[i],rec(TeX:=1)),"]");
+    for i in [1..4] do uc.almostHarishChandra[i+1].cuspidalName:=
+        SPrint("G2[",FormatTeX(eig[i]),"]");
     od;
   fi;
   uc.charParams:=Concatenation(CHEVIE.R("CharInfo","I")(e).charparams{[1,2]},ac);
@@ -208,7 +216,7 @@ CHEVIE.AddData("UnipotentCharacters","2I",function(e)
   uc.almostCharSymbols[1][e]:=[2];uc.almostCharSymbols[2][e]:=[1,2];
   uc.charSymbols:=Concatenation([List([1..e],x->[0]),List([1..e],x->[0,1])],
     List(symUnp,function(s)local S,k,l;
-    k:=(s[1]+1)/2;l:=(s[2]+1)/2;S:=List([1..e],function(i)
+    k:=QuoInt(s[1]+1,2);l:=QuoInt(s[2]+1,2);S:=List([1..e],function(i)
       if i=k+1 or i=l+1 then return [];else return [0];fi;end);
       Add(S[1],1);Add(S[k+l],1);return S; end));
   uc.charSymbols[1]{[1,2]}:=[[0,2],[]];uc.charSymbols[2]{[1,2]}:=[[0,1,2],[1]];

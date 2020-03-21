@@ -13,6 +13,8 @@ HeckeCosetOps:=OperationsRecord("HeckeCosetOps",HeckeAlgebraOps);
 HeckeCosetOps.Hecke:=HF->HF.hecke;
 HeckeCosetOps.Group:=HF->Group(HF.hecke);
 
+IsHeckeCoset:=H->IsRec(H) and IsBound(H.hecke) and IsBound(H.spets);
+
 HeckeCosetOps.CharTable:=function(HF)local res,tbl,WF,H,tmp;
   WF:=ReflectionCoset(HF);
   H:=Hecke(HF);
@@ -44,6 +46,8 @@ HeckeCosetOps.Basis:=function(H,basis)
    return res;
    end;
 end;
+
+IsHeckeCosetElt:=h->IsHeckeElt(h) and IsBound(h.coset);
 
 HeckeCosetOps.HeckeSubAlgebra:=function(HF,subW)local WF,W;
   WF:=ReflectionCoset(HF);

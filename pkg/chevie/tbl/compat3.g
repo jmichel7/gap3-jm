@@ -74,57 +74,14 @@ CHEVIE.compat.HeckeCharTableA := function(n, param,sqrtparam)local tbl,q;
   CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
   return tbl;
 end;
-##  case ^2A
-CHEVIE.compat.CharTable2A := function(r)local i, tbl;
-  tbl := CHEVIE.R("CharTable","A")(r);
-  tbl.identifier := SPrint("W(^2A",r,")");
-  for i in [1..Length(tbl.irreducibles)] do
-    # Lusztig [Character Sheaves] 17.2:
-    # Preferred extension: \sigma acts on \tilde E by (-1)^a_E.w_0
-    tbl.irreducibles[i]:=(-1)^CHEVIE.R("LowestPowerFakeDegree","A")
-        (tbl.irredinfo[i].charparam)*tbl.irreducibles[i];
-  od;
-  Inherit(tbl,CHEVIE.R("ClassInfo","2A")(r));
+CHEVIE.compat.CharTableB := function(rank)local tbl;
+  tbl:=CharTable("WeylB",rank);
+  tbl.identifier:=SPrint("W(B",rank,")");
+  tbl.cartan:=CartanMat("B",rank);
+  Inherit(tbl,CHEVIE.R("ClassInfo","B")(rank));
+  tbl.irredinfo:=List(CHEVIE.R("CharParams","B")(rank),x->rec(charparam:=x,
+    charname:=CHEVIE.R("CharName","B")(rank,x,rec(TeX:=true))));
   return tbl;
-end;
-CHEVIE.compat.HeckeCharTable2A := function(r,param,rootparam)
-  local q, v, W, T, qE, H, tbl, cl, i;
-  q:=-param[1][1]/param[1][2];
-  if not IsBound(rootparam[1]) then v:=GetRoot(q,2,"CharTable(Hecke(2A))");
-  else v:=rootparam[1];
-  fi;
-  W:=CoxeterGroup("A",r);
-# If q_E is the square root which deforms to 1 of the eigenvalue of T_{w_0}
-# on E which deforms to 1, then we have:
-#  E~(T_w\phi)=\overline(E(T_{w^-1w_0}))q_E (trivial extension)
-#  E~(T_w\phi)=(-1)^a_E\overline(E(T_{w^-1w_0}))q_E (preferred extension)
-# where \overline means q->q^-1
-  qE:=HeckeCentralMonomials(Hecke(W,v));
-  H:=Hecke(W,v^-2);T:=Basis(H,"T");
-  tbl:=ShallowCopy(CharTable(H));
-  Inherit(tbl,CHEVIE.R("ClassInfo","2A")(r));
-  tbl.identifier:=SPrint("H(^2A",r,")");
-  cl:=List(tbl.classtext,x->T(EltWord(W,x)*LongestCoxeterElement(W)));
-  tbl.irreducibles:=TransposedMat(List(cl,HeckeCharValues));
-  for i in [1..Length(tbl.irreducibles)] do
-    tbl.irreducibles[i]:=(-1)^CHEVIE.R("LowestPowerFakeDegree","A")
-      (tbl.irredinfo[i].charparam[1])*qE[i]*tbl.irreducibles[i];
-  od;
-  CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
-  return tbl;
-end;
-##  for tname in ["B", "Bsym", "C"]
-CHEVIE.compat.CharTableB := function(tname)
-  return function(rank)local tbl;
-    tbl:=CharTable("WeylB",rank);
-    tbl.identifier:=SPrint("W(",tname,rank,")");
-    tbl.cartan:=CartanMat(tname,rank);
-    Inherit(tbl,CHEVIE.R("ClassInfo","B")(rank));
-    tbl.irredinfo:=List(CHEVIE.R("CharParams","B")(rank),
-      x->rec(charparam:=x,
-charname:=CHEVIE.R("CharName","B")(rank,x,rec(TeX:=true))));
-    return tbl;
-  end;
 end;
 CHEVIE.compat.HeckeCharTableB := function(tname)
   return function(n, param,sqrtparam) local q, tbl;
@@ -236,50 +193,4 @@ CHEVIE.compat.HeckeCharTableD:=function(n, param,sqrtparam)local r, tbl,u;
    Inherit(tbl,CHEVIE.R("ClassInfo","D")(n));
    CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
    return tbl;
-end;
-
-CHEVIE.compat.CharTable2D := function(l)local hi, tbl,lst, chr;
-  hi:=CHEVIE.R("CharTable","B")(l);
-  chr:=[1..Length(hi.classparams)];
-  lst:=Filtered(chr, i->Length(hi.classparams[i][2]) mod 2=1);
-  chr:=Filtered(chr,i->CHEVIE.R("testchar","2D")
-                     (hi.irredinfo[i].charparam));
-  tbl:=rec(identifier:=SPrint("W(^2D",l,")"),
-    size:=hi.size/2,
-    centralizers:=hi.centralizers{lst}/2,
-    orders:=hi.orders{lst},
-    classes:=hi.classes{lst},
-    text:="extracted from generic character table of type B",
-    operations:=CharTableOps,
-    irredinfo:=List(hi.irredinfo{chr},a->rec(charparam:=a.charparam,
-		   charname:=CHEVIE.R("CharName","2D")(l,a.charparam))),
-    irreducibles:=hi.irreducibles{chr}{lst});
-   Inherit(tbl,CHEVIE.R("ClassInfo","2D")(l));
-   return tbl;
-end;
-
-CHEVIE.compat.HeckeCharTable2D := function(l,param,rootparam)
-  local hi,cli,lst,tbl,chr,q;
-  q:=-param[1][1]/param[1][2];
-  q:=Concatenation([[q^0,-1]],List([2..l],i->[q,-1]));
-  hi:=CHEVIE.R("HeckeCharTable","B")(l,q,[]);
-  chr:=[1..Length(hi.classparams)];
-  lst:=Filtered(chr,i->Length(hi.classparams[i][2]) mod 2=1);
-  tbl:=rec(identifier:=SPrint("H(^2D",l,")"),
-	   size:=hi.size/2,
-	   orders:=hi.orders{lst},
-	   centralizers:=hi.centralizers{lst}/2,
-       classes:=hi.classes{lst},
-	   text:="extracted from generic character table of HeckeB",
-	   operations:=CharTableOps);
-  Inherit(tbl,CHEVIE.R("ClassInfo","2D")(l));
-  chr:=Filtered(chr,
-	i->CHEVIE.R("testchar","2D")(hi.irredinfo[i].charparam));
-  tbl.irredinfo:=List(hi.irredinfo{chr},a->rec(charparam:=a.charparam,
-      charname:=CHEVIE.R("CharName","2D")(l,a.charparam)));
-  tbl.irreducibles:=TransposedMat(List(tbl.classtext,
-    x->HeckeCharValues(Basis(Hecke(CoxeterGroup("B",l),q),"T")
-      (Concatenation([1],Replace(x,[1],[1,2,1]))),hi.irreducibles{chr})));
-  CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
-  return tbl;
 end;
