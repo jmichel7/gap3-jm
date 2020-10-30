@@ -194,7 +194,7 @@ end;
 AbsHeckeOps.HeckeSubAlgebra:=function(H,subW)local W,subroots,res,s,p;
   W:=Group(H);
   if IsList(subW) then subW:=ReflectionSubgroup(W,subW);fi;
-  subroots:=W.rootRestriction{subW.rootInclusion{subW.generatingReflections}};
+  subroots:=W.rootRestriction{InclusionGens(subW)};
   s:=W.rootRestriction{W.orbitRepresentative{subroots}};
   p:=List(W.OrdersGeneratingReflections{s},i->List([1..i],j->E(i)^(j-1)));
   if H.parameter{s}=p then return Hecke(subW,p);

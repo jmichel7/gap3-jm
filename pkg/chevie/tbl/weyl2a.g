@@ -241,13 +241,13 @@ CHEVIE.AddData("UnipotentClasses","2A",function(r,p)local uc,c,t,WF,m;
   uc:=Copy(CHEVIE.R("UnipotentClasses","A")(r,p));
   for c in uc.classes do
     t:=Parent(c.red);
-    if Length(t.type)>1 then Error();fi;
-    if Length(t.type)=0 or Rank(t)=1 then
+    if Length(ReflectionType(t))>1 then Error();fi;
+    if Length(ReflectionType(t))=0 or Rank(t)=1 then
       WF:=CoxeterCoset(Parent(c.red));
-    else WF:=CoxeterCoset(Parent(c.red),Product([1..QuoInt(t.rank,2)],
-      i->(i,t.rank+1-i)));
+    else WF:=CoxeterCoset(Parent(c.red),Product([1..QuoInt(Rank(t),2)],
+      i->(i,Rank(t)+1-i)));
     fi;
-    t:=Twistings(WF,c.red.rootInclusion{c.red.generatingReflections});
+    t:=Twistings(WF,InclusionGens(c.red));
     m:=List(t,x->ReflectionEigenvalues(x,PositionClass(x,x.phi)));
     m:=List(m,x->Number(x,y->y=1/2));
     p:=Position(m,Maximum(m));

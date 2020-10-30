@@ -625,7 +625,7 @@ end;
 # (in terms of generators of the fundamental group)
 HasTypeOps.WeightInfo:=function(W)local l,res,n;
   l:=List(ReflectionType(W),function(t)local r,g,C;
-    r:=WeightInfo(t);
+    r:=ShallowCopy(WeightInfo(t));
     g:=Filtered([1..Length(r.minusculeCoweights)],
        i->Sum(r.decompositions[i])=1); # generators of fundamental group
     r.ww:=List(t.indices{r.minusculeCoweights{g}},

@@ -478,7 +478,7 @@ MvpOps.Mod1:=function(p)local res,i;
 end;
 
 # action(m,p [,varnames]) matrix m acts on Mvp p [on variables varnames]
-OnPolynomials:=function(arg)local m,p,varnames,vars;
+OnPolynomials:=function(arg)local m,p,varnames;
   m:=arg[1];p:=arg[2];
   if Length(arg)=3 then varnames:=arg[3]{[1..Length(m)]};
   else varnames:=Variables(p);

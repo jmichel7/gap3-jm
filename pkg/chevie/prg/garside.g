@@ -97,7 +97,7 @@ GarsideEltOps.Format:=function(b,option)local M,res,p,seqCollected,W;
     if IsBound(option.Brieskorn) then
       return Join(List(seqCollected(BrieskornNormalForm(b)),function(x)local s;
         W:=M.group;
-        if x[1]=W.rootInclusion{W.generatingReflections} then s:=M.stringDelta;
+        if x[1]=InclusionGens(W) then s:=M.stringDelta;
 	elif Length(x[1])=1 then s:=String(x[1][1]);
 	else s:=SPrint("w_",IntListToString(x[1]));
 	fi;

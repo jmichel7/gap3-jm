@@ -119,8 +119,8 @@ CHEVIE.AddData("ClassInfo", "D", function(n) local res;
 end);
 
 CHEVIE.AddData("NrConjugacyClasses", "D", function(n)
-  if n mod 2 = 1 then return NrPartitionTuples(n, 2) / 2;
-  else return (NrPartitionTuples(n, 2) + 3*NrPartitions(n/2)) /2;
+  if n mod 2 = 1 then return QuoInt(NrPartitionTuples(n, 2),2);
+  else return QuoInt(NrPartitionTuples(n, 2) + 3*NrPartitions(QuoInt(n,2)),2);
   fi;
 end);
 

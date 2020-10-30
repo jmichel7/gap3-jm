@@ -5,12 +5,12 @@
 RationalUnipotentClasses:=function(WF,p)local t,u;
 # Print("WF=",WF," p=",p,"\n");
   u:=UnipotentClasses(WF,p);
-  t:=GreenTable(u,rec(classes:=true));
-  return List([1..Length(t.locsys)],i->
+  t:=XTable(u,rec(classes:=true));
+  return List([1..Length(t.classes)],i->
       rec(card:=CycPol(t.cardClass[i]),
-          class:=u.classes[t.locsys[i][1]],
-          classno:=t.locsys[i][1],
-          AuNo:=t.locsys[i][2]));
+          class:=u.classes[t.classes[i][1]],
+          classno:=t.classes[i][1],
+          AuNo:=t.classes[i][2]));
 end;
 
 ClassTypesOps:=OperationsRecord("ClassTypesOps");
@@ -144,8 +144,7 @@ ClassTypesOps.NrConjugacyClasses:=function(C)local HF,W,H,o,P,l,less,mu,n,i,r,b;
     if not IsBound(r.nrClasses) then 
     HF:=r.CGs;H:=Group(HF); P:=Copy(ClosedSubsets(W));
     o:=Filtered([1..Size(P)],i->OnSets(P.elements[i],HF.phi)=P.elements[i]);
-    o:=Filtered(o,i->ForAll(H.rootInclusion{H.generatingReflections},j->
-      j in P.elements[i]));
+    o:=Filtered(o,i->ForAll(InclusionGens(H),j->j in P.elements[i]));
     P:=Restricted(P,o);P.elements:=P.elements{o};
     # here P poset of HF.phi-stable closed subsets containing roots(H)
     InfoChevie("# ",HF,"=>",P,"\c");
@@ -165,7 +164,7 @@ ClassTypesOps.NrConjugacyClasses:=function(C)local HF,W,H,o,P,l,less,mu,n,i,r,b;
     less:=i->Difference(ListBlist([1..Length(l)],Incidence(P)[i]),[i]);
     o:=LinearExtension(P);mu:=[];mu[o[Size(P)]]:=1;
     for i in o{[Size(P)-1,Size(P)-2..1]} do mu[i]:=-Sum(mu{less(i)});od;
-    n:=Stabilizer(W,Set(H.rootInclusion{H.generatingReflections}),OnSets);
+    n:=Stabilizer(W,Set(InclusionGens(H)),OnSets);
     n:=mu*l/Size(Centralizer(n,HF.phi));
     InfoChevie("=>",n,":",Stime(),"\n");
     r.nrClasses:=n;

@@ -22,12 +22,13 @@ ReflTypeOps.DegreeDescent:=function(t)
   if IsBound(t.orbit) then return Length(t.orbit); else return 1; fi;
 end;
 
-ReflTypeOps.CartanMat:=function(t)
+ReflTypeOps.CartanMat:=function(t)local C;
   if IsBound(t.cartan) then return t.cartan;
   elif IsBound(t.cartanType) then 
-       return CHEVIE.Data("CartanMat",t,t.cartanType);
-  else return CHEVIE.Data("CartanMat",t);
+       C:=CHEVIE.Data("CartanMat",t,t.cartanType);
+  else C:=CHEVIE.Data("CartanMat",t);
   fi;
+  return C;
 end;
 
 ReflTypeOps.ReflectionDegrees:=function(t)local f,d,a;

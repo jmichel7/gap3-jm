@@ -46,7 +46,7 @@ Affine:=function(W)local tmp,Wa,i,j,n;
   if
   Set(W.rootInclusion{[1..n-1]})<>[1..n-1]
   then Error("Affine Coxeter groups implemented only for W such that\n",
-  "Set(W.rootInclusion{W.generatingReflections})=[1..W.nbGeneratingReflections]");
+  "Set(InclusionGens(W)=[1..W.nbGeneratingReflections]");
   fi;
   tmp.reflectionsLabels:=[1..n];
 ##
@@ -102,6 +102,18 @@ CHEVIE.AddData("PrintDiagram","AffineA",function(v)local s,n,r,o;
   fi;
 end);
 
+CHEVIE.AddData("PrintDiagram","AffineB",function(v,cartanType)local r,s;
+  r:=Length(v)-1;
+  if cartanType=1 or r=2 then
+    Print("C",r,"~   ",v[1]," > ",Join(v{[2..r]}," - ")," < ",v[r+1],"\n");
+  else
+    s:=SPrint("B",r,"~   ",v[1]," < ",Join(v{[2..r-1]}," - "));
+    Print(String("",Length(s)-1),Format(v[r+1]),"\n");
+    Print(String("",Length(s)-1),"|\n");
+    Print(s," - ",Format(v[r]),"\n");
+  fi;
+end);
+
 CHEVIE.AddData("PrintDiagram","AffineD",function(v)local i,r;
   r:=Length(v)-1;
   Print("D",r,"~  ",v[1],String("",4*(r-3)-1),v[r+1],"\n");
@@ -128,42 +140,51 @@ CHEVIE.AddData("PrintDiagram","AffineI",function(v,bond)
   fi;
 end);
 
+CHEVIE.AddData("PrintDiagram","AffineE6",function(v)
+  Print("             ",v[7],"\n             |\n",
+        "             ",v[2],"\n             |\n",
+        "E6~  ",Join(v{[1,3,4,5,6]}," - "),"\n");
+end);
+
+CHEVIE.AddData("PrintDiagram","AffineE7",function(v)
+  Print("                 ",v[2],"\n                 |\nE7~  ",
+    Join(v{[8,1,3,4,5,6,7]}," - "),"\n");
+end);
+
+CHEVIE.AddData("PrintDiagram","AffineE8",function(v)
+  Print("             ",v[2],"\n             |\nE8~  ",
+   Join(v{[1,3,4,5,6,7,8,9]}," - "),"\n");
+end);
+
+CHEVIE.AddData("PrintDiagram","AffineG",function(v)
+  Print("G2~  ",v[3]," - ",v[1]," > ",v[2]," \n");
+end);
+
+CHEVIE.AddData("PrintDiagram","AffineF",function(v)
+  Print("F4~  ",v[5]," - ",v[1]," - ",v[2]," > ",v[3]," - ",v[4],"\n");
+end);
+
+CHEVIE.AddData("PrintDiagram","AffineH3",function(v)
+  Print("     ",v[4],"\n    5 \\\nH3~    ",v[2]," - ",v[3],"\n",
+            "    5 /\n     ",v[1],"\n");
+end);
+
+CHEVIE.AddData("PrintDiagram","AffineH4",function(v)
+  Print("        5           5\nH4    ",Join(v," - "),"\n");
+end);
 #############################################################################
 #F  PrintDiagram( <rec> ) . . prints Dynkin diagram of affine Coxeter
 ##
-AffineCoxeterGroupOps.PrintDiagram:=function(W)local i, v, r, n, t, a, o, s;
-  a:=W.linear.type[1];
-  v:=W.reflectionsLabels;r:=a.rank;t:=a.series;
-  if t="I" then CHEVIE.R("PrintDiagram","AffineI")(W.reflectionsLabels,a.bond);
+AffineCoxeterGroupOps.PrintDiagram:=function(W)local v, r, t, a, c;
+  a:=W.linear.type[1];v:=W.reflectionsLabels;t:=a.series;
+  if t in ["A","D","G","F"] then 
+    CHEVIE.R("PrintDiagram",SPrint("Affine",t))(v);
   elif t="B" then
-    if (IsBound(a.cartanType) and a.cartanType=1) or r=2 then
-      Print("C",r,"~   ",v[1]," > ",Join(v{[2..r]}," - ")," < ",v[r+1],"\n");
-    else
-      s:=SPrint("B",r,"~   ",v[1]," < ",Join(v{[2..r-1]}," - "));
-      Print(String("",Length(s)-1),Format(v[r+1]),"\n");
-      Print(String("",Length(s)-1),"|\n");
-      Print(s," - ",Format(v[r]),"\n");
-    fi;
-  elif t="A" then CHEVIE.R("PrintDiagram","AffineA")(W.reflectionsLabels);
-  elif t="D" then CHEVIE.R("PrintDiagram","AffineD")(W.reflectionsLabels);
-  elif t="E" then
-    if r=6 then Print("             ",v[7],"\n             |\n",
-	  "             ",v[2],"\n             |\n",
-          "E6~  ",Join(v{[1,3,4,5,6]}," - "),"\n");
-    elif r=7 then Print("                 ",v[2],"\n                 |\nE7~  ",
-	    Join(v{[8,1,3,4,5,6,7]}," - "),"\n");
-    else Print("             ",v[2],"\n             |\nE8~  ",
-	   Join(v{[1,3,4,5,6,7,8,9]}," - "),"\n");
-    fi;
-  elif t="G" then Print("G2~  ",v[3]," - ",v[1]," > ",v[2]," \n");
-  elif t="F" then
-    Print("F4~  ",v[5]," - ",v[1]," - ",v[2]," > ",v[3]," - ",v[4],"\n");
-  elif t="H" then
-    if r=3 then
-      Print("     ",v[4],"\n    5 \\\nH3~    ",v[2]," - ",v[3],"\n",
-            "    5 /\n     ",v[1],"\n");
-    else Print("        5           5\nH",r,"    ",Join(v," - "),"\n");
-    fi;
+    if IsBound(a.cartanType) then c:=a.cartanType;else c:=2;fi;
+    CHEVIE.R("PrintDiagram","AffineB")(v,c);
+  elif t in ["E","H"] then
+    CHEVIE.R("PrintDiagram",SPrint("Affine",t,a.rank))(v);
+  elif t="I" then CHEVIE.R("PrintDiagram","AffineI")(v,a.bond);
   fi;
 end;
 

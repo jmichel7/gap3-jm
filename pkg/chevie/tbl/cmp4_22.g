@@ -2046,7 +2046,7 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
     if Length(arg)>2 and IsInt(arg[3]) then PrintToString(n,"^",arg[3]);fi;
     PrintToString(n,"[",FormatTeX(arg[2]),"]");
     res:=rec(relativeType:=rec(series:="A",indices:=[],rank:=0),
-        levi:=[1..6], parameterExponents:=[],
+        levi:=[1..2], parameterExponents:=[],
         charNumbers:=[arg[1]], eigenvalue:=arg[2], cuspidalName:=n);
     if Length(arg)>2 and not IsInt(arg[Length(arg)]) then
       res.qEigen:=arg[Length(arg)];fi;

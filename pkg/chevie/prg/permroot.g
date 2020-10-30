@@ -136,6 +136,8 @@ AsReflection:=function(arg)local e,rc,j,r,zeta,norm,orth,m;
   return rec(root:=r,coroot:=rc,eigenvalue:=zeta,isOrthogonal:=orth);
 end;
 
+InclusionGens:=W->W.rootInclusion{W.generatingReflections};
+
 #############################################################################
 ##
 #F  PermRootGroup( <roots> [,<eigenvalues>])
@@ -278,15 +280,14 @@ PermRootOps.ReflectionSubgroupNC:=function(W,refs)local res,i,r;
   r.rootInclusion:=List(r.roots,x->Position(W.roots,x));
   r.rank:=W.rank; # otherwise when refs=[] gets it wrong
 
-  if r.rootInclusion{r.generatingReflections}=W.generatingReflections
+  if InclusionGens(r)=W.generatingReflections
   then return W;fi;
   # We want to have ReflectionSubgroups which just re-order the generators.
   # But the command 'Subgroup' returns W, if Size(res)=Size(W).
   # To avoid this we substitute it by some more lines.
   res:=rec(isDomain:=true,isGroup:=true,parent:=W,identity:=(),
     isPermGroup:=true,
-    generators := List(r.rootInclusion{r.generatingReflections},
-                          i->Reflection(W,i)));
+    generators :=List(InclusionGens(r),i->Reflection(W,i)));
   for i in [1..Length(res.generators)] do res.(i):=res.generators[i];od;
 
   for i in [ "roots", "simpleCoroots", "nbGeneratingReflections", 
@@ -299,13 +300,12 @@ PermRootOps.ReflectionSubgroupNC:=function(W,refs)local res,i,r;
   res.rootRestriction{res.rootInclusion}:=[1..Length(res.roots)];
   res.orbitRepresentative:=res.rootInclusion{r.orbitRepresentative};
   res.reflections:=ShallowCopy(res.generators);
-  i:=res.rootInclusion{res.generatingReflections};
+  i:=InclusionGens(res);
   if ForAll(i,j->IsBound(W.reflectionsLabels[j])) then
        res.reflectionsLabels:=W.reflectionsLabels{i};
   else res.reflectionsLabels:=res.rootInclusion;
   fi;
-  res.name:=SPrint("ReflectionSubgroup(",res.parent,", ",
-	      res.rootInclusion{res.generatingReflections},")");
+  res.name:=SPrint("ReflectionSubgroup(",res.parent,", ",InclusionGens(res),")");
   return res;
 end;
 
@@ -338,8 +338,7 @@ PermRootOps.\*:=function(W1,W2)local g,t,t1,t2,r1,r2,maps,maketype;
     else maps:=Parent(W2).operations.ProductRootEmbed(Parent(W1),Parent(W2));
     fi;
     return ReflectionSubgroup(g,Concatenation(
-      maps[1]{W1.rootInclusion{W1.generatingReflections}},
-      maps[2]{W2.rootInclusion{W2.generatingReflections}}));
+      maps[1]{InclusionGens(W1)},maps[2]{InclusionGens(W2)}));
   fi;
   if Length(W1.roots)=0 then r1:=0;else r1:=Length(W1.roots[1]);fi;
   if Length(W2.roots)=0 then r2:=0;else r2:=Length(W2.roots[1]);fi;
@@ -459,8 +458,7 @@ end;
 fi;
 
 PermRootOps.ConjugateSubgroup:=function(W,w)
-  return ReflectionSubgroup(Parent(W),
-    OnTuples(W.rootInclusion{W.generatingReflections},w));
+  return ReflectionSubgroup(Parent(W),OnTuples(InclusionGens(W),w));
 end;
 
 # base of X formed of independent roots, followed by a base of X^W
@@ -519,13 +517,12 @@ end;
 # CartanMat(W [,l])
 # The Cartan coefficient between two roots a and b with associated reflections
 # r and s is the number x such that r(b)=b-xa
-# l omitted is taken as  W.rootInclusion{W.generatingReflections}
+# l omitted is taken as  InclusionGens(W)
 PermRootOps.CartanMat:=function(arg)local W,cartan;
   cartan:=l->List(l,i->List(l,j->CartanCoefficient(W,i,j)));
   W:=arg[1];
   if Length(arg)=1 then
-    if not IsBound(W.cartan) then 
-      W.cartan:=cartan(W.rootInclusion{W.generatingReflections});fi;
+    if not IsBound(W.cartan) then W.cartan:=cartan(InclusionGens(W));fi;
     return W.cartan;
   else return cartan(arg[2]);
   fi;
@@ -1061,7 +1058,7 @@ PermRootOps.ReflectionType:=function(W)
        Length(W.generatingReflections)," refs>\n");
     else InfoChevie("# changing generatingReflections to <",
       Join(W.rootInclusion{l}),"> for ",ReflectionName(W.type),"<",
-       Join(W.rootInclusion{W.generatingReflections}),">\n");
+      Join(InclusionGens(W)),">\n");
     fi;
     if IsParent(W) then
       t:=PermRootGroupNC(W.roots{l},List(l,i->PermRootOps.Coroot(W,i)));
@@ -1121,7 +1118,7 @@ ReadChv("prg/eigenspaces"); # to have some more PermRootOps methods defined
 IsParabolic:=function(H)local v,gens,W,setr;W:=Parent(H);
   setr:=s->Set(List(s,x->Reflection(W,x)));
   if H.nbGeneratingReflections=0 then return true;fi;
-  v:=VectorSpace(W.roots{H.rootInclusion{H.generatingReflections}},Cyclotomics);
+  v:=VectorSpace(W.roots{InclusionGens(H)},Cyclotomics);
   gens:=Filtered([1..Length(W.roots)],i->W.roots[i] in v);
   return setr(gens)=setr(H.rootInclusion);
 end;
@@ -1131,7 +1128,7 @@ ParabolicClosure:=function(W,I)local v,WI;
   v:=VectorSpace(W.roots{I},Cyclotomics);
   WI:=ReflectionSubgroup(W,
     W.rootInclusion{Filtered([1..Length(W.roots)],i->W.roots[i] in v)});
-  return WI.rootInclusion{WI.generatingReflections};
+  return InclusionGens(WI);
 end;
 
 #  superseded by HasTypeOps.ParabolicRepresentatives but can recompute data
@@ -1153,7 +1150,7 @@ PermRootOps.ParabolicRepresentatives:=function(W,s)
            c:=Union(List([1..by],i->Combinations(List(Reflections(W),stoi),i)));
         else c:=Combinations(List(Reflections(W),stoi),1);
         fi;
-        c:=List(c,x->Union(x,v.rootInclusion{v.generatingReflections}));
+        c:=List(c,x->Union(x,InclusionGens(v)));
         c:=Filtered(c,x->RankMat(W.roots{W.rootRestriction{x}})=i);
         InfoChevie(" ",Length(c)," new subgroups\c");
         c:=List(c,function(x)InfoChevie("*\c");
@@ -1181,9 +1178,9 @@ PermRootOps.ParabolicRepresentatives:=function(W,s)
     l:=List(Concatenation(l),function(v)local p;
       p:=StandardParabolic(W,v);if p<>false then v:=v^p;fi;return v;end);
     l:=CollectBy(l,SemisimpleRank);
-    l:=List(l,v->List(v,x->x.rootInclusion{x.generatingReflections}));
+    l:=List(l,v->List(v,InclusionGens));
     l:=Concatenation([[[]]],l);
-    Add(l,[W.rootInclusion{W.generatingReflections}]);
+    Add(l,[InclusionGens(W)]);
     l:=List(l,v->List(v,x->List(x,y->stoi(Reflection(W,
                                             W.rootRestriction[y])))));
     l:=List(l,x->Set(List(x,Set)));

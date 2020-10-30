@@ -247,6 +247,5 @@ ParametersCentralizers := function(W)
         "   SemisimpleCentralizerRepresentatives and Twistings\n");
   return Concatenation(List(SemisimpleCentralizerRepresentatives(W,0),
      I->List(Twistings(W,I),function(x)local W;W:=Group(x);
-    return [W.rootInclusion{W.generatingReflections},
-      CoxeterWord(Parent(W),x.phi)];end)));
+    return [InclusionGens(W),CoxeterWord(Parent(W),x.phi)];end)));
 end;

@@ -50,10 +50,8 @@ SpetsOps.Elements:=function(WF)
   fi;
 end;
 
-SpetsOps.\^:=function(WF,g)local W;
-  W:=Group(WF);
-  return Spets(ReflectionSubgroup(Parent(W),
-    OnTuples(W.rootInclusion{W.generatingReflections},g)),WF.phi^g);
+SpetsOps.\^:=function(WF,g)local W;W:=Group(WF); return 
+  Spets(ReflectionSubgroup(Parent(W),OnTuples(InclusionGens(W),g)),WF.phi^g);
 end;
 
 SpetsOps.\in:=function(x,WF)return x/WF.phi in Group(WF);end;
@@ -71,8 +69,7 @@ SpetsOps.Format:=function(WF,option)local res;
     if IsBound(WF.parent) and WF<>WF.parent then
       if IsCoxeterCoset(WF) then PrintToString(res,"CoxeterSubCoset(");
                             else PrintToString(res,"SubSpets(");fi;
-      PrintToString(res,WF.parent,", ",
-	     Group(WF).rootInclusion{Group(WF).generatingReflections});
+      PrintToString(res,WF.parent,", ",InclusionGens(Group(WF)));
       if WF.phi/WF.parent.phi<>() then
 	PrintToString(res,", ",WF.phi/WF.parent.phi);
       fi;

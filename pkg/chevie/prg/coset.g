@@ -101,14 +101,17 @@ CoxeterCosetOps.CoxeterWords:=function(arg)local a;
   return ApplyFunc(CoxeterWords,a);
 end;
 
-CoxeterCosetOps.ParabolicRepresentatives:=function(WF,s)local W,l;
+CoxeterCosetOps.ParabolicRepresentatives:=function(WF,s)local W,l,res,I,c;
   W:=Group(WF);
-  l:=Combinations(W.rootInclusion{W.generatingReflections},s);
-  l:=Filtered(l,x->OnSets(Set(x),WF.phi)=Set(x));
-  l:=CollectBy(l,x->IsomorphismType(ReflectionSubgroup(W,x)));
-  return Concatenation(List(l,v->v{Filtered([1..Length(v)],i->
-    not ForAny([1..i-1],
-      j->RepresentativeOperation(W,Set(v[i]),Set(v[j]),OnSets)<>false))}));
+  res:=[];
+  for I in ParabolicRepresentatives(W,s) do
+    if OnSets(Set(I),WF.phi)=Set(I) then Add(res,I);
+    else 
+      c:=Filtered(StandardParabolicClass(W,I),x->OnSets(Set(x),WF.phi)=Set(x));
+      if Length(c)<>0 then Add(res,c[1]);fi;
+    fi;
+  od;
+  return res;
 end;
 
 #############################################################################
@@ -249,7 +252,9 @@ CoxeterSubCoset:=function(arg)local WF, W, w, tmp, I, res, i;
   fi;
   
   res.phi:=ReducedInRightCoset(res.reflectionGroup,w*WF.phi);
-  res.F0Mat:=MatXPerm(W,res.phi/WF.phi)*WF.F0Mat;
+  if WF.F0Mat=[] then res.F0Mat:=[];
+  else res.F0Mat:=MatXPerm(W,res.phi/WF.phi)*WF.F0Mat;
+  fi;
   res.operations:=CoxeterCosetOps;
 
   return CHEVIE.GetCached(W,"SubCosets",res,x->[x.reflectionGroup,x.F0Mat]);
@@ -307,7 +312,7 @@ TwistingElements:=function(WF,J)local L,e,W,W_L,H,h,N,WF_L,gens,i;
   if IsSpets(WF) then W:=Group(WF); else W:=WF;WF:=Spets(W);fi;
   if J=[] then return List(ConjugacyClasses(WF),Representative)*WF.phi^-1;fi;
   if IsCoxeterGroup(W) 
-#   and IsSubset(W.rootInclusion{W.generatingReflections},J) 
+#   and IsSubset(InclusionGens(W),J) 
   then
     h:=RepresentativeOperation(W,OnSets(Set(J),WF.phi),Set(J),OnSets);
     if h=false then 
@@ -382,7 +387,7 @@ Twistings:=function(arg)local WF,J,gens,W;
     return List(gens,x->CoxeterCoset(W,x));
   fi;
   J:=arg[2];
-  if IsGroup(J) then J:=J.rootInclusion{J.generatingReflections};fi;
+  if IsGroup(J) then J:=InclusionGens(J);fi;
   if not IsSpets(WF) then WF:=Spets(WF);fi;
   return Filtered(List(TwistingElements(WF,J),
        x->SubSpets(WF,J,x)),x->not IsIdentical(x,false));

@@ -91,7 +91,7 @@ ComplexConjugate:=function(x)
   fi;
 end;
 
-# try to covert x to a cyclotomic
+# try to convert x to a cyclotomic
 Cyclotomic:=function(x)
   if IsCyc(x) then return x;
   elif IsComplex(x) then 

@@ -84,7 +84,7 @@ AbsCoxOps.CompleteCoxeterGroupRecord:=function(W)local i,j,ord;
      W.rootRestriction:=W.generatingReflections;
   fi;
   if not IsBound(W.reflectionsLabels) then
-    W.reflectionsLabels:=W.rootInclusion{W.generatingReflections};
+    W.reflectionsLabels:=InclusionGens(W);
   fi;
   if not IsBound(W.operations.ReflectionFromName) then
     W.operations.ReflectionFromName:=function(W,x)
@@ -511,7 +511,7 @@ CoxeterMatrixFromCartanMat:=function(m)local res,i,j,find,c;
     x:=NofCyc(c);
     if c=2+E(x)+E(x)^-1 then return x; 
     elif c=2+E(2*x)+E(2*x)^-1 then return 2*x;
-    else Error("not a Cartan matrix of a Coxeter group");
+    else Error(m,": not a Cartan matrix of a Coxeter group");
     fi;
   end;
   res:=IdentityMat(Length(m));
@@ -617,7 +617,7 @@ AbsCoxOps.ReflectionSubgroup:=function(W,J)local refs,P,inc,l;
     P.generatingReflections:=[1..Length(P.generatingReflections)];
     P.nbGeneratingReflections:=Length(P.generatingReflections);
     P.semisimpleRank:=Length(P.generatingReflections);
-    P.reflectionsLabels:=P.rootInclusion{P.generatingReflections};
+    P.reflectionsLabels:=InclusionGens(P);
     P.operations.IsLeftDescending:=function(P,w,i)
       return CoxeterLength(P.reflectionParent,P.reflections[i]*w)<
              CoxeterLength(P.reflectionParent,w);end;
@@ -644,8 +644,7 @@ AbsCoxOps.ReflectionSubgroup:=function(W,J)local refs,P,inc,l;
   AbsCoxOps.CompleteCoxeterGroupRecord(P);
   if P.semisimpleRank=0 then
        P.name:=SPrint("ReflectionSubgroup(",W,", [])");
-  else P.name:=SPrint("ReflectionSubgroup(",W,", ",
-			P.rootInclusion{P.generatingReflections},")");
+  else P.name:=SPrint("ReflectionSubgroup(",W,", ",InclusionGens(P),")");
   fi;
   return P;
 end;
@@ -696,7 +695,7 @@ ForEachCoxeterWord:=function(W,f)local l,g;
   g([],l);
 end;
 
-# I is subset of W.rootInclusion{W.generatingReflections}
+# I is subset of InclusionGens(W)
 # return all W-conjugate subsets
 StandardParabolicClass:=function(W,I)local res,n,new;
   res:=[]; new:=[I];

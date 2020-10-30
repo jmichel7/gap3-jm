@@ -226,6 +226,7 @@ CHEVIE.AddData("UnipotentCharacters","2I",function(e)
       fourierMat:=List(ac,j->List(symUnp,i->(c(i*Reversed(j))-c(i*j))/e)),
       sh:=List(ac,s->E(e)^(-s[1]*s[2])),
       charNumbers:=2+[1..Length(ac)],
+      name:=SPrint("?",2+Length(ac)),
       special:=1))];
   uc.a:=Concatenation([0,e],List(ac,x->1));
   uc.A:=Concatenation([0,e],List(ac,x->e-1));

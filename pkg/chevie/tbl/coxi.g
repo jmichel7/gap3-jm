@@ -15,7 +15,7 @@
 ##  [1,m/2,"''"].
 ##
 CHEVIE.AddData("CartanMat","I",function(arg)local bond,type,m;
-  m:=[[2,0],[0,2]];
+  m:=[[2*E(1),0],[0,2]];
   bond:=arg[1];
   if bond=2 then return m;fi;
   if Length(arg)=2 then type:=arg[2];
@@ -73,7 +73,7 @@ CHEVIE.AddData("GeneratingRoots", "I", function(m)local a, b, r;
   return [[1, 0], [r*(a+b)/2, r*(a-b)/2/E(4)]];
 end);
 
-CHEVIE.AddData("EigenvaluesGeneratingReflections","I",m->[-1,-1]);
+CHEVIE.AddData("EigenvaluesGeneratingReflections","I",m->[1/2,1/2]);
 
 CHEVIE.AddData("Size", "I", function(arg) return 2*arg[1]; end);
 
@@ -104,20 +104,13 @@ CHEVIE.AddData("CharInfo","I",function(m)local res,applyf,v,m1;
   Append(res.charparams,List([1..QuoInt(m-1,2)],i->[2,i]));
   res.b:=List(res.charparams,x->x[2]);
   res.B:=List(res.charparams,function(phi)
-    if phi[1]=1 then return phi[2]; else return m-phi[2]; fi;
-  end);
+    if phi[1]=1 then return phi[2]; else return m-phi[2]; fi; end);
   res.a:=List(res.charparams,function(phi)
-     if phi[1]<>1 or phi[2]=m/2 then return 1;else return phi[2]; fi;
-  end);
+  if phi[1]<>1 or phi[2]=QuoInt(m,2) then return 1;else return phi[2]; fi; end);
   res.A:=List(res.charparams,function(phi)
-     if phi[1]=1 or phi[2]=m/2 then return m-1;else return phi[2];fi;
-  end);
-  res.charSymbols:=List([1..QuoInt(m-1,2)],function(l)local S,k; 
-      S:=List([1..m],i->[0]);k:=0;
-      if k<>0 then S[1]:=[0,1];S[1+((k+l)mod m)]:=[0,1];S[k+1]:=[];S[l+1]:=[];
-      else S[1]:=[1];S[l+1]:=[1];
-      fi;
-      return S;end);
+  if phi[1]=1 or phi[2]=QuoInt(m,2) then return m-1;else return phi[2];fi; end);
+  res.charSymbols:=List([1..QuoInt(m-1,2)],function(l)local S;
+      S:=List([1..m],i->[0]); S[1]:=[1];S[l+1]:=[1];return S;end);
   v:=List([1..m],x->[0]);v[m]:=[1,2];
   res.charSymbols:=Concatenation([v],res.charSymbols);
   if m mod 2=0 then

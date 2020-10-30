@@ -36,7 +36,7 @@ RelativeDatum:=function(WF)local n,W,Phis,cPhis,cc;
     WF.Y_s:=BaseIntMat(n*TransposedMat(WF.pi))/n; # basis of Y_\sigma
     WF.Xs:=(WF.X_s*TransposedMat(WF.Y_s))^-1*WF.X_s; # basis of X^\sigma
     WF.Ys:=(WF.Y_s*TransposedMat(WF.X_s))^-1*WF.Y_s; # basis of Y^\sigma
-    cc:=Cycles(WF.phi,W.rootInclusion{W.generatingReflections});
+    cc:=Cycles(WF.phi,InclusionGens(W));
     Phis:=List(cc,function(c)local res;
       res:=Sum(W.roots{W.rootRestriction{c}})*W.simpleRoots;
       if IsSpecial(WF,c) then res:=2*res;fi; return res;end);
@@ -51,6 +51,9 @@ end;
 # computes the centralizer of t\sigma as an ExtendedReflectionGroup
 CoxeterCosetOps.Centralizer:=function(WF,t)
   local W,Rs,cRs,o,t,C,i,refC,p,good,labels;
+  if  not IsSemisimpleElement(t) then
+    Error(t, " must be a semisimple element");
+  fi;
   W:=Group(WF);
   if not IsBound(WF.Cso) then # compute constants C_\sigma,\alpha
     WF.Cso:=[1..W.N]*0+1;
@@ -103,62 +106,6 @@ CoxeterCosetOps.Centralizer:=function(WF,t)
   return ExtendedReflectionGroup(C,ApplyFunc(Group,List(refC.F0s,x->x^p)));
 end;
 
-CoxeterCosetOps.Centralizer:=function(WF,t)
-  local W,Rs,cRs,o,t,C,i,refC,p,good,labels;
-  if  not IsSemisimpleElement(t) then
-    Error(t, " must be a element semisimple element");
-  fi;
-  W:=Group(WF);
-  if not IsBound(WF.Cso) then # compute constants C_\sigma,\alpha
-    WF.Cso:=[1..W.N]*0+1;
-    for o in ReflectionType(WF) do
-      if OrderPerm(o.twist)=2 and 
-         o.orbit[1].series="A" and o.orbit[1].rank mod 2=0 then
-        for p in o.orbit do WF.Cso{p.indices{p.rank/2+[0,1]}}:=[-1,-1];od;
-      fi;
-    od;
-    C:=function(i)local p,j;
-      for j in [1..W.semisimpleRank] do
-        if W.roots[i][j]>0 then p:=Position(W.roots,W.roots[i]-W.roots[j]);
-          if p<>false then return WF.Cso[j]*WF.Cso[p];fi;
-        fi;
-      od;
-    end;
-    for i in [W.semisimpleRank+1..W.N] do WF.Cso[i]:=C(i);od;
-    Append(WF.Cso,WF.Cso);
-  fi;
-  RelativeDatum(WF);
-  refC:=Centralizer(WF.Rs,
-    SemisimpleElement(WF.Rs,SolutionMat(WF.Y_s,t.v*TransposedMat(WF.pi))));
-  Rs:=List(Cycles(WF.phi,W.rootInclusion{[1..W.N]}),function(c)local res;
-    res:=[c,Sum(W.roots{W.rootRestriction{c}}*W.simpleRoots)/Length(c),
-          Sum(W.coroots{W.rootRestriction{c}})*W.simpleCoroots];
-    if IsSpecial(WF,c) then res[3]:=2*res[3];fi;
-    return res;end);
-  labels:=List(Cycles(WF.phi,W.rootInclusion{[1..W.N]}),IntListToString);
-  if t.additive  then good:=List(Rs,p->Mod1(Sum(p[1],
-      i->t^Parent(W).roots[i])+AsRootOfUnity(WF.Cso[p[1][1]]))=0);
-  else good:=List(Rs,p->Product(p[1],
-      i->t^Parent(W).roots[i])*WF.Cso[p[1][1]]=t.v[1]^0);
-  fi;
-  Rs:=ListBlist(Rs,good); labels:=ListBlist(labels,good);
-  cRs:=List(Rs,x->x[3]); cRs:=List(cRs,x->SolutionMat(WF.Ys,x));
-  cRs:=Filtered(cRs,x->not x in List(Cartesian(cRs,cRs),Sum));
-  Rs:=List(Rs,x->x[2]); Rs:=List(Rs,x->SolutionMat(WF.X_s,x));
-  good:=List(Rs,x->not x in List(Cartesian(Rs,Rs),Sum));
-  Rs:=ListBlist(Rs,good);
-  labels:=ListBlist(labels,good);
-  if Length(Rs)>0 then C:=CoxeterGroup(Rs,cRs);
-  else C:=Torus(Length(WF.Xs));
-  fi;
-# C.reflectionsLabels:=labels;
-  C.operations.ReflectionFromName:=function(W,x)
-    return Position(W.rootInclusion,x);end;
-  p:=List(WF.Xs,x->SolutionMat(WF.X_s,x));
-  # transfer matrix on X^\sigma to X_\sigma
-  if refC.F0s=[] then return ExtendedReflectionGroup(C);fi;
-  return ExtendedReflectionGroup(C,ApplyFunc(Group,List(refC.F0s,x->x^p)));
-end;
 # returns representatives of quasi-isolated classes of G.\sigma
 CoxeterCosetOps.QuasiIsolatedRepresentatives:=function(arg)local WF,p;
   WF:=arg[1]; if Length(arg)=2 then p:=arg[2];else p:=0;fi;

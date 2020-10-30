@@ -348,7 +348,7 @@ CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,s,fd;
       if t=Minimum(tt) then
 	s:=Position(tt,t);
 	if s=e then Add(res.charparams,t);
-	else t:=t{[1..s*d]}; s:=e/s;
+	else t:=t{[1..s*d]}; s:=QuoInt(e,s);
 	  Append(res.charparams,List([0..s-1],i->Concatenation(t,[s,i])));
 	fi;
       fi;
@@ -363,7 +363,7 @@ CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,s,fd;
 	    if t[Length(t)]=0 then return [1,2,1,Position(t,[1])];
 	    else                   return [1,1,2,Position(t,[1])];
 	    fi;
-	  else de:=Length(t)/2;
+	  else de:=QuoInt(Length(t),2);
 	    pos:=Filtered([1..Length(t)],i->Length(t[i])>0);
 	    if Length(pos)=1 then
 	      if t[pos[1]]=[2] then return [1,1,1,pos[1]-de];
@@ -461,7 +461,7 @@ CHEVIE.AddData("CharName","imp",function(p,q,r,s,option)
 end);
 
 CHEVIE.AddData("SchurModel","imp",function(p,q,r,phi)
-  local l,i,j,res,s,t,ci,GenHooks,v,h,d;
+  local l,i,j,res,s,t,ci,GenHooks,v,h,d,p2;
   if q=1 then # cf. Chlouveraki, arxiv 1101.1465
     GenHooks:=function(l,m)if Length(l)=0 then return [];fi;
       m:=AssociatedPartition(m);Append(m,[1..l[1]-Length(m)]*0);
@@ -481,30 +481,31 @@ CHEVIE.AddData("SchurModel","imp",function(p,q,r,phi)
   elif [q,r]=[2,2] then
     ci:=CHEVIE.R("CharInfo","imp")(p,q,r);
     phi:=ci.malle[Position(ci.charparams,phi)];
+    p2:=QuoInt(p,2);
     if phi[1]=1 then
-      res:=rec(coeff:=1,factor:=[1..4+p/2]*0, vcyc:=[]);
+      res:=rec(coeff:=1,factor:=[1..4+p2]*0, vcyc:=[]);
       for l in [[1,-1,0,0],[0,0,1,-1]] do
-        Append(l,[1..p/2]*0);Add(res.vcyc,[l,1]);
+        Append(l,[1..p2]*0);Add(res.vcyc,[l,1]);
       od;
-      for i in [2..p/2] do for l in [[0,0,0,0,1],[1,-1,1,-1,1]] do
-        Append(l,[1..p/2-1]*0);l[4+i]:=-1;Add(res.vcyc,[l,1]);
+      for i in [2..p2] do for l in [[0,0,0,0,1],[1,-1,1,-1,1]] do
+        Append(l,[1..p2-1]*0);l[4+i]:=-1;Add(res.vcyc,[l,1]);
       od;od;
     else
-      res:=rec(coeff:=-2,factor:=[1..4+p/2]*0, vcyc:=[],root:=[1..4+p/2]*0);
-      res.rootCoeff:=E(p/2)^(2-phi[3]-phi[4]);
+      res:=rec(coeff:=-2,factor:=[1..4+p2]*0, vcyc:=[],root:=[1..4+p2]*0/1);
+      res.rootCoeff:=E(p2)^(2-phi[3]-phi[4]);
       res.root{[1..6]}:=[1,1,1,1,1,1]/2;
-      for i in [3..p/2] do for j in [1,2] do
-	l:=[1..4+p/2]*0;l{4+[j,i]}:=[1,-1];Add(res.vcyc,[l,1]);
+      for i in [3..p2] do for j in [1,2] do
+	l:=[1..4+p2]*0;l{4+[j,i]}:=[1,-1];Add(res.vcyc,[l,1]);
       od;od;
       if IsBound(CHEVIE.old) then
       for l in [[0,-1,0,-1,-1,0],[0,-1,-1,0,-1,0],
                 [-1,0,-1,0,-1,0],[-1,0,0,-1,-1,0]] do
-        Append(l,[1..p/2-2]*0);Add(l,1);Add(res.vcyc,[l,1]);
+        Append(l,[1..p2-2]*0);Add(l,1);Add(res.vcyc,[l,1]);
       od;
       else
       for l in [[0,-1,0,-1,-1,0],[0,-1,-1,0,0,-1],
                 [-1,0,-1,0,-1,0],[-1,0,0,-1,0,-1]] do
-        Append(l,[1..p/2-2]*0);Add(l,1);Add(res.vcyc,[l,1]);
+        Append(l,[1..p2-2]*0);Add(l,1);Add(res.vcyc,[l,1]);
       od;
       fi;
     fi;
@@ -519,11 +520,11 @@ CHEVIE.AddData("SchurData","imp",function(p,q,r,phi)local ci,res;
     phi:=ci.malle[Position(ci.charparams,phi)];
     if phi[1]=1 then
       res:=rec(order:=[phi[2],3-phi[2],2+phi[3],5-phi[3],4+phi[4]]);
-      Append(res.order,4+Difference([1..p/2],[phi[4]]));
+      Append(res.order,4+Difference([1..QuoInt(p,2)],[phi[4]]));
       return res;
     else
       res:=rec(order:=[1,2,3,4,4+phi[3],4+phi[4]]);
-      Append(res.order,4+Difference([1..p/2],phi{[3,4]}));
+      Append(res.order,4+Difference([1..QuoInt(p,2)],phi{[3,4]}));
       res.rootPower:=phi[2]*E(p)^(phi[3]+phi[4]-2);
       return res;
     fi;

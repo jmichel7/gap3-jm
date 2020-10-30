@@ -450,7 +450,7 @@ end;
 CHEVIE.AddData("Hk","B",CHEVIE.tmp);
 Unbind(CHEVIE.tmp);
 
-CHEVIE.IndirectAddData("HeckeCharTable",["B"],CHEVIE.compat.HeckeCharTableB);
+CHEVIE.AddData("HeckeCharTable","B",CHEVIE.compat.HeckeCharTableB);
 
 #############################################################################
 ##

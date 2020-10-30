@@ -231,7 +231,7 @@ ReflTypeOpsUnipotentClasses:=function(t,p)local s,uc,u,weights;
   if IsBound(t.orbit) then t:=t.orbit[1];fi;
   Add(s,p);
   if IsBound(t.cartanType) then Add(s,t.cartanType);fi;
-  uc:=ApplyFunc(CHEVIE.Data,s);
+  uc:=Copy(ApplyFunc(CHEVIE.Data,s));
   if uc=false then return false;fi;
   for u in uc.classes do # fill omitted fields
     if not IsBound(u.parameter) then u.parameter:=u.name;fi;
@@ -252,6 +252,7 @@ ReflTypeOpsUnipotentClasses:=function(t,p)local s,uc,u,weights;
       u.dimunip:=2*u.dimBu+t.rank-u.dimred;
     fi;
   od;
+# for s in uc.springerSeries do s.levi:=t.indices{s.levi}; od;
   return uc;
 end;
 
@@ -301,14 +302,14 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
   W:=Group(WF);
   t:=ReflectionType(W); 
   tf:=ReflectionType(WF); 
-  uc:=List(t,x->UnipotentClasses(First(tf,
-     y->ForAny(y.orbit,z->Set(x.indices)=Set(z.indices))),p));
+  uc:=List(t,x->Copy(UnipotentClasses(First(tf,
+     y->ForAny(y.orbit,z->Set(x.indices)=Set(z.indices))),p)));
   if false in uc then return false;fi;
   if t=[] then ucl:=rec(classes:=[rec(name:="",Au:=CoxeterGroup(),
       parameter:=[],dimBu:=0,dynkin:=[],balacarter:=[],
       dimunip:=0,red:=Torus(W.rank),operations:=UnipotentClassOps)]);
   else
-  ucl:=rec(classes:=List(Cartesian(List(uc,x->x.classes)),
+    ucl:=rec(classes:=List(Cartesian(List(uc,x->x.classes)),
     function(v)local u,p;
       u:=rec(name:=Join(List(v,x->x.name)),Au:=Product(v,x->x.Au),
          dimBu:=Sum(v,x->x.dimBu), parameter:=List(v,x->x.parameter));
@@ -333,7 +334,8 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
       if ForAll(v,x->IsBound(x.balacarter)) then
         u.balacarter:=Concatenation(List([1..Length(l)],
 	   i->List(v[i].balacarter,function(j)
-	     if j>0 then return l[i][j];else return -l[i][-j];fi;end)));
+	     if j>0 then return W.rootInclusion[l[i][j]];
+                    else return -W.rootInclusion[l[i][-j]];fi;end)));
       fi;
     if W.rank>W.semisimpleRank and IsBound(u.red) 
     then u.red:=u.red*Torus(W.rank-W.semisimpleRank);
@@ -363,10 +365,11 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
   ucl.springerSeries:=List(Cartesian(List(uc,x->x.springerSeries)),
     function(v)local s;
       if v=[] then return rec(Z:=[],levi:=[],locsys:=[[1,1]]);
-      elif Length(v)=1 then return Copy(v[1]);
+      elif Length(v)=1 then 
+        v[1]:=Copy(v[1]); v[1].levi:=l[1]{v[1].levi}; return v[1];
       fi;
-      s:=rec(levi:=Concatenation(List([1..Length(v)],
-         i->l[i]{v[i].levi})));
+      s:=rec(levi:=Concatenation(List([1..Length(v)],i->l[i]{v[i].levi})));
+   #  s:=rec(levi:=Concatenation(List([1..Length(v)],i->v[i].levi)));
       s.Z:=Concatenation(List(v,x->x.Z));
       s.locsys:=List(Cartesian(List(v,x->x.locsys)),function(v)
 	  v:=TransposedMat(v);
@@ -445,8 +448,10 @@ UnipotentClassesOps.Format:=function(uc,opt)local W,sp,tbl,res,p,TeX,c;
     if uc.p=0 and opt.balaCarter then 
       if IsBound(u.balacarter) then
 	b:=List(W.generatingReflections,x->'.');
-	for i in Filtered(u.balacarter, x->x>0) do b[i]:='2';od;
-	for i in Filtered(u.balacarter, x->x<0) do b[-i]:='0';od;
+	for i in Filtered(u.balacarter, x->x>0) do 
+          b[W.rootRestriction[i]]:='2';od;
+	for i in Filtered(u.balacarter, x->x<0) do 
+          b[W.rootRestriction[-i]]:='0';od;
       else b:=List(W.generatingReflections,x->'?');
       fi;
       Add(res,String(b));
@@ -571,11 +576,12 @@ ICCTable:=function(arg)local W,i,q,tbl,o,res,q,uc,ss,b,f,k,R,n;
   return res;
 end;
 
-# Green functions: Green(uc[,opt]) values on unipotent classes or local systems
+# XTable(uc[,opt]): values of functions X_\iota on unipotent
+# classes (opt.classes bound) or local systems (opt.classes unbound)
 # opt: variable (default X(Cyclotomics))
 #
 # Formatting: options of FormatTable + [.classes, .CycPol]
-GreenTable:=function(arg)
+XTable:=function(arg)
   local opt,uc,W,res,pieces,l,m,n,p,q,greenpieces,Au,i,b;
   uc:=arg[1];W:=Group(uc.spets);
   if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
@@ -590,33 +596,34 @@ GreenTable:=function(arg)
     scalar:=TransposedMat(Permuted(ApplyFunc(DiagonalMat,greenpieces),p)),
     uc:=uc,
     Y:=OnMatrices(ApplyFunc(DiagonalMat,List(pieces,p->p.L)),p),
-    locsys:=Permuted(l,p),
     parameter:=Concatenation(List(pieces,x->x.parameter)),
     relgroups:=List(uc.springerSeries,x->x.relgroup));
-  n:=Length(res.locsys);
+  n:=Length(l);
   if IsBound(opt.classes) then
+    res.classes:=Permuted(l,p);
     res.cardClass:=[];
     for i in [1..Length(uc.classes)] do
       Au:=uc.classes[i].Au;
-      b:=Filtered([1..Length(res.locsys)],j->res.locsys[j][1]=i);
+      b:=Filtered([1..Length(res.classes)],j->res.classes[j][1]=i);
       res.scalar{[1..n]}{b}:=res.scalar{[1..n]}{b}*CharTable(Au).irreducibles;
       res.cardClass{b}:=res.Y[b[PositionId(Au)]]{b}*CharTable(Au).irreducibles;
       res.cardClass{b}:=Zip(res.cardClass{b},ChevieClassInfo(Au).classes,
         function(x,y)return x*y/Size(Au);end);
     od;
-    res.classes:=true;
+  else
+    res.locsys:=Permuted(l,p);
   fi;
   res.operations:=rec();
-  res.operations.String:=x->SPrint("GreenTable(",W,",rec(variable:=",q,"))");
+  res.operations.String:=x->SPrint("XTable(",W,",rec(variable:=",q,"))");
   res.operations.Format:=function(x,opt)local res,tbl,i,b;
-    res:=SPrint("Values of character sheaves on");
+    res:=SPrint("Values of character sheaves X_\iota on");
     opt.rowLabels:=Concatenation(List(x.relgroups,g->
       List(CharNames(g,opt),n->SPrint("Q^{",ReflectionName(g),"}_{",n,"}"))));
     opt.rowsLabel:="Q";
     tbl:=Copy(x.scalar);
     if IsBound(x.classes) then
       PrintToString(res," unipotent classes\n");
-      opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],
+      opt.columnLabels:=List(x.classes,p->Name(x.uc.classes[p[1]],
 	  Inherit(rec(class:=p[2]),opt)));
     else PrintToString(res," local systems\n");
       opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],
@@ -633,14 +640,52 @@ GreenTable:=function(arg)
   return res;
 end;
 
+# GreenTable(uc[,opt])
+# values of Green functions Q_{wF} on unipotent classes
+# opt: variable:=(default X(Cyclotomics))
+GreenTable:=function(arg)local uc,W,opt,t,m,i,g;
+  uc:=arg[1];W:=Group(uc.spets);
+  if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
+  opt:=Inherit(opt,rec(classes:=true));
+  t:=XTable(uc,opt);
+  m:=ApplyFunc(DiagonalMat,List(t.relgroups,
+       g->TransposedMat(CharTable(g).irreducibles)));
+  t.scalar:=m*t.scalar;
+  t.indices:=[];i:=0;
+  for g in t.relgroups do
+    Add(t.indices,[1..NrConjugacyClasses(g)]+i);
+    i:=i+NrConjugacyClasses(g);
+  od;
+  t.operations.Format:=function(x,opt)local res,tbl,i,b;
+    res:=SPrint("Values of Green functions Q_{wF} on unipotent classes\n");
+    opt.rowLabels:=Concatenation(List(x.relgroups,function(g)local classnames;
+      classnames:=List(ChevieClassInfo(g).classnames,x->TeXStrip(x,opt));
+      return List(classnames,n->SPrint("Q^{",ReflectionName(g),"}_{",n,"}"));
+      end));
+    opt.rowsLabel:="Q^I_{wF}\\class";
+    tbl:=Copy(x.scalar);
+    opt.columnLabels:=List(x.classes,p->Name(x.uc.classes[p[1]],
+        Inherit(rec(class:=p[2]),opt)));
+    if not IsBound(opt.CycPol) then opt.CycPol:=true;fi;
+    if opt.CycPol then tbl:=List(tbl,y->List(y,CycPol));fi;
+    PrintToString(res,FormatTable(tbl,opt));
+    return String(res);
+  end;
+  t.operations.String:=x->SPrint("GreenTable(",W,")");
+  t.operations.Display:=function(x,opt)opt.screenColumns:=SizeScreen()[1];
+               Print(Format(x,opt));end;
+  return t;
+end;
+
 # values of unipotent characters
-# UnipotentValues(uc[,opt]) values on unipotent classes or local systems
+# UnipotentValues(uc[,opt]) values on unipotent classes (opt.classes bound)
+# or local systems (opt.classes unbound)
 UnipotentValues:=function(arg)local uc,opt,res,q,W;
   uc:=arg[1];W:=Group(uc.spets);
   if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
   if not IsBound(opt.variable) then opt.variable:=X(Cyclotomics);fi;
   q:=opt.variable;
-  res:=Copy(GreenTable(uc,opt));
+  res:=Copy(XTable(uc,opt));
   uc:=UnipotentCharacters(W);
   res.scalar:=TransposedMat(uc.operations.Fourier(uc){res.parameter})
     *res.scalar;
@@ -654,7 +699,7 @@ UnipotentValues:=function(arg)local uc,opt,res,q,W;
     tbl:=Copy(x.scalar);
     if IsBound(x.classes) then
       PrintToString(s," on unipotent classes\n");
-      opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],
+      opt.columnLabels:=List(x.classes,p->Name(x.uc.classes[p[1]],
 	  Inherit(rec(class:=p[2]),opt)));
     else opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],
         Inherit(rec(locsys:=p[2]),opt)));
@@ -671,7 +716,7 @@ end;
 # values of mellin  on unipotent classes
 MellinValues:=function(arg)local uc,q,res,b,tbl,f,labels,W;
   uc:=arg[1];if Length(arg)=1 then q:=X(Cyclotomics); else q:=arg[2];fi;
-  res:=Copy(GreenTable(uc,q));
+  res:=Copy(XTable(uc,q));
   W:=Group(uc.spets);
   uc:=UnipotentCharacters(W);
   uc.mellin:=IdentityMat(Size(uc));
@@ -695,11 +740,11 @@ MellinValues:=function(arg)local uc,q,res,b,tbl,f,labels,W;
     if IsBound(opt.classes) then
       PrintToString(s," on unipotent classes\n");
       for i in [1..Length(x.uc.classes)] do
-	b:=Filtered([1..Length(x.locsys)],j->x.locsys[j][1]=i);
+	b:=Filtered([1..Length(x.classes)],j->x.classes[j][1]=i);
 	tbl{[1..Length(tbl)]}{b}:=tbl{[1..Length(tbl)]}{b}*
 	   CharTable(x.uc.classes[i].Au).irreducibles;
       od;
-      opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],
+      opt.columnLabels:=List(x.classes,p->Name(x.uc.classes[p[1]],
 	  Inherit(rec(class:=p[2]),opt)));
     else opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],
         Inherit(rec(locsys:=p[2]),opt)));

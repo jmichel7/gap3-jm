@@ -322,8 +322,8 @@ end;
 #F  corresponding matrix operating on X
 ##  
 ##  Let <w> be a permutation with the following property: The images of the
-##  simple roots of <W> ( i.e., <W>.rootInclusion{<W>.generatingReflections})
-##  must be roots of  <W> ( i.e., in the set <W>.rootInclusion ).
+##  simple roots of <W> ( i.e., InclusionGens(W)
+##  must be roots of  <W> ( i.e., in the set <W>.rootInclusion )).
 ##  
 ##  Let X_1 be the sublattice of X consisting of the elements orthogonal to
 ##  all  coroots of  <W>. 'MatXPerm'  returns the  unique invertible matrix
@@ -386,8 +386,7 @@ AddComponentsCoxeterGroup:=function(W)local parent, tmp, i, p, f,C;
 
   # root lengths from parent group, if already known:
   if IsBound(parent.rootLengths) then
-    W.rootLengths:=parent.rootLengths{parent.orbitRepresentative{
-     W.rootInclusion{W.generatingReflections}}};
+    W.rootLengths:=parent.rootLengths{parent.orbitRepresentative{InclusionGens(W)}};
   else
   f:=function(t)local i,j,k,c;
     c:=CartanMat(t);
@@ -572,8 +571,7 @@ CoxeterGroupOps.ReflectionSubgroup:=function(W,J)
   Inherit(res.operations,CoxeterGroupOps);
   if res.semisimpleRank=0 then
        res.name:=SPrint("ReflectionSubgroup(",W,", [])");
-  else res.name:=SPrint("ReflectionSubgroup(",W,", ",
-			res.rootInclusion{res.generatingReflections},")");
+  else res.name:=SPrint("ReflectionSubgroup(",W,", ",InclusionGens(res),")");
   fi;
   return res;
 end;
@@ -586,7 +584,7 @@ end;
 ##  group
 ##  
 CoxeterGroupOps.LeftDescentSet:=function(W,w) 
- return Filtered(W.rootInclusion{W.generatingReflections},i->i^w>W.parentN);
+  return Filtered(InclusionGens(W),i->i^w>W.parentN);
 end;
 
 #############################################################################
@@ -770,7 +768,7 @@ end;
 # of W
 #
 CoxeterGroupOps.StandardParabolic:=function(W,hr)local b,N,w;
-  if not IsList(hr) then hr:=hr.rootInclusion{hr.generatingReflections};fi;
+  if not IsList(hr) then hr:=InclusionGens(hr);fi;
   if hr=[] then return ();fi;
   b:=W.roots{W.rootRestriction{hr}};
   b:=Concatenation(ListBlist(W.roots{W.generatingReflections},
@@ -781,8 +779,7 @@ CoxeterGroupOps.StandardParabolic:=function(W,hr)local b,N,w;
            elif (IsRat(x) and x>0) or evalf(x)>0 then return false;fi;od;end));
 # find negative roots for associated order and make order standard
   w:=ElementWithInversions(W,N);
-  if IsSubset(W.rootInclusion{W.generatingReflections},OnTuples(hr,w)) then
-    return w;
+  if IsSubset(InclusionGens(W),OnTuples(hr,w)) then return w;
   else return false;
   fi;
 end;
@@ -791,9 +788,9 @@ end;
 ##
 #F  RelativeGroup(<W>,<J>)
 #
-#   W  is a  Coxeter group;  if S=W.rootInclusion{W.generatingReflections},
-#   then J should be a *distinguished* subset of S, that is if for s\in S-J
-#   we  set v(s,J)=w_0^{J\cup s}w_0^J then J  is stable by all v(s,J). Then
+#   W  is  a  Coxeter  group;  if  S=InclusionGens(W),  then  J should be a
+#   *distinguished*   subset  of  S,  that  is  if  for  s\in  S-J  we  set
+#   v(s,J)=w_0^{J\cup  s}w_0^J  then  J  is  stable  by  all  v(s,J).  Then
 #   R=N_W(W_J)/W_J  is a Coxeter group with  Coxeter system the v(s,J). The
 #   program  return  R  in  its  reflection  representation  on X(ZL_J/ZG).
 #   (according to Lusztig's "Coxeter Orbits...", the images of the roots of
@@ -806,7 +803,7 @@ end;
 #         elements of R
 #
 CoxeterGroupOps.RelativeGroup:=function(W,J)local res,qr,S,I,vI,r;
-  S:=W.rootInclusion{W.generatingReflections};
+  S:=InclusionGens(W);
   if not IsSubset(S,J) then
     Error("implemented only for standard parabolic subgroups");
   fi;
@@ -868,8 +865,7 @@ ExtendedGroupOps.ReflectionName:=function(W,opt)local g,ff;
   if ForAll(W.F0s,x->x^2=x^0) and Size(ApplyFunc(Group,W.F0s))=6 then
     return SPrint(ReflectionName(W.group,opt),".S3");
   fi;  
-  ff:=List(W.phis,x->RestrictedPerm(x,
-     W.group.rootInclusion{W.group.generatingReflections}));
+  ff:=List(W.phis,x->RestrictedPerm(x,InclusionGens(W.group)));
   if ForAll(ff,x->x<>()) or Rank(W.group)=0 or ForAll(g,x->x=x^0) then
     return SPrint("Extended(",ReflectionName(W.group,opt),",",Join(ff),")");
   fi;

@@ -184,7 +184,7 @@
 InfoRead1:=Ignore;
 Revision:=rec();  # used by tbl/*.tbl
 
-VERLIB := "03 Jan 2020";
+VERLIB := "15 Feb 2020";
 if not IsBound( VERSRC ) then  VERSRC := "unknown";  fi;
 if not IsBound( VERSYS ) then  VERSYS := "unknwon";  fi;
 VERSION:="lib:";Append(VERSION,VERLIB);

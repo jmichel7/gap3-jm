@@ -544,11 +544,10 @@ end;
 ## Representatives of G-classes of C_G(s)^0.
 ## Same as W-orbits of subsets of \Pi\cup\{-\alpha_0\}
 SemisimpleCentralizerRepresentatives:=function(arg)
-  local W,p,cent,ED,J,R,indices,h;
+  local W,p,cent,ED,J,R,h;
   W:=arg[1];
   if Length(arg)=1 then p:=0;else p:=arg[2];fi;
   return List(Cartesian(List(ReflectionType(W),function(t)local r;
-  indices:=W->W.rootInclusion{W.generatingReflections};
   cent:=[];
   r:=Filtered([1..W.N],i->Sum(W.roots[i])=Sum(W.roots[i]{t.indices}));
   h:=List(W.roots{r},Sum);
@@ -556,11 +555,12 @@ SemisimpleCentralizerRepresentatives:=function(arg)
   for J in Combinations(ED) do
     R:=ReflectionSubgroup(W,J);
     if ForAll(cent,G->IsomorphismType(R)<>IsomorphismType(G) or
-      RepresentativeOperation(W,indices(R),indices(G),OnSets)=false) then
+      RepresentativeOperation(W,InclusionGens(R),InclusionGens(G),OnSets)=false)
+    then
       Add(cent,R);
     fi;
   od;
-  cent:=List(cent,indices);
+  cent:=List(cent,InclusionGens);
   if p=0 then return cent;fi;
   return Filtered(cent,I->ForAll(Concatenation(SmithNormalFormMat(W.roots{I})),
      x->x=0 or x mod p<>0));end)),Concatenation);

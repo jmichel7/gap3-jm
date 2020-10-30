@@ -47,36 +47,22 @@ end;
 # l is a list of vectors each of length n. FindIntSol returns roots of unity
 # x_i such that l[i]*[1,x2,..xn] is an integer for each i.
 FindIntSol:=function(l)
-  local apply,vals,try,smallnorm,stuck,simple,v,vars,simplify;
+  local apply,applylist,vals,try,smallnorm,stuck,simple,v,vars,simplify,usevals;
+# Print("l=",l,"\n");
   vars:=Concatenation([1],List([2..Length(l[1])],i->SPrint("x",i)));
   simplify:=function()
     l:=List(l,function(p)
-      if p=0 or Length(p.elm[1].elm)>0 or not IsRat(p.coeff[1]) then return p;fi;
+      if Valuation(p)<>0 or not IsRat(p.coeff[1]) then return p;fi;
       if p.coeff[1]<0 then p:=-p;fi;
       return p-Int(p.coeff[1]);end);
     l:=Set(Filtered(l,x->x<>0));
   end;
 
   l:=l*List(vars,Mvp);
+# l:=shrint(l);
   simplify();
 
-# Print("FindIntSol",l,"\n");
-# variable v is val: mvp or list-of-rootsofunity-possibilities.
-  apply:=function(v,val)local i,f;
-    i:=Position(vars,v);
-    if IsBound(vals[i]) then # vals[i] is a list of possibilities
-      if IsMvp(val) then return true;fi;
-      vals[i]:=Intersection(vals[i],val);
-      if Length(vals[i])=0 then return false;
-      elif Length(vals[i])>1 then return true;fi;
-      val:=vals[i];
-    fi;
-    vals[i]:=val;
-    if IsList(vals[i]) then 
-       if Length(vals[i])>1 then return true;
-       else val:=vals[i][1];
-       fi;
-    fi;
+  usevals:=function(v,val)local i,f;
     for i in Filtered([1..Length(vals)],j->IsBound(vals[j]) and IsMvp(vals[j]))
     do vals[i]:=Value(vals[i],[v,val]);
        f:=ScalMvp(vals[i]);if f<>false then vals[i]:=[f];fi;
@@ -84,6 +70,31 @@ FindIntSol:=function(l)
     l:=List(l,x->Value(x,[v,val]));
     simplify();
 #   Print(v,"->",val," vals=",vals,"\n");
+  end;
+# Print("FindIntSol",l,"\n");
+# variable v is val: mvp
+  apply:=function(v,val)local i;
+    i:=Position(vars,v);
+    if IsBound(vals[i]) then return true;fi;
+    vals[i]:=val;
+    Print("A v=",v," val=",val,"\n");
+    usevals(v,val);
+    return true;
+  end;
+# variable v is val:list-of-rootsofunity-possibilities.
+  applylist:=function(v,val)local i;
+    i:=Position(vars,v);
+    if IsBound(vals[i]) then # vals[i] is a list of possibilities
+      vals[i]:=Intersection(vals[i],val);
+      if Length(vals[i])=0 then return false;fi;
+      val:=vals[i];
+    else
+      vals[i]:=val;
+    fi;
+    if Length(vals[i])>1 then return true;
+    else val:=vals[i][1];
+    fi;
+    usevals(v,val);
     return true;
   end;
       
@@ -92,7 +103,7 @@ FindIntSol:=function(l)
 
   simple:=function(p)local N,i;
     if Length(p.coeff)>2 or 
-       (Length(p.coeff)=2 and Length(p.elm[1].elm)>0) then return false;fi;
+       (Length(p.coeff)=2 and Valuation(p)>0) then return false;fi;
     if Length(p.coeff)=1 then
       if Length(p.elm[1].elm)=0 then 
         InfoChevie("#I WARNING! FindIntSol cannot make:",p," integral\n");
@@ -117,7 +128,7 @@ FindIntSol:=function(l)
       if v<>false then
         if v=0 then return false;
         else l:=Drop(l,i);
-          return apply(v[1],v[2]);
+          return applylist(v[1],v[2]);
         fi;
       fi;
     od;
@@ -130,7 +141,9 @@ FindIntSol:=function(l)
   end;
 
   vals:=[[1]];stuck:=false;
-  while try() do if Length(l)=0 then return Cartesian(vals);fi;od;
+  while try() do if Length(l)=0 then 
+#   Print("=>",vals,"\n");
+    return Cartesian(vals);fi;od;
   if stuck then InfoChevie("#I WARNING! FindIntSol: stuck ",l,"\n");fi;
   return false;
 end;
@@ -152,7 +165,6 @@ LusztigInductionPieces:=function(res)
   hw:=uW.almostHarishChandra;
   for h in uL.almostHarishChandra do
     p:=FindSeriesInParent(h,LF,WF,hw);ser:=p.ser;
-    L:=ReflectionSubgroup(W,ser.levi); # L^op contained in LF
     if IsBound(WF.isCoxeterCoset) then
       WFGL:=RelativeCoset(WF,h.levi);
       LFGL:=RelativeCoset(LF,h.levi);
@@ -161,6 +173,7 @@ LusztigInductionPieces:=function(res)
           x->Position(Group(WFGL).relativeIndices,x))},
             Group(WFGL).MappingFromNormalizer(LF.phi*WF.phi^-1));
     else
+      L:=ReflectionSubgroup(W,ser.levi); # L^op contained in LF
       Jb:=Concatenation(List(ser.relativeType,
          function(x)if IsBound(x.orbit) then return
           Concatenation(List(x.orbit,y->y.indices));
@@ -323,7 +336,7 @@ HarishChandraInductionTable:=function(HF,WF)
       if p.op<>() then
         rh:=RelativeGroup(H,h.levi).generators;
         rh:=Filtered(Arrangements([1..Length(Wi.generators)],Length(rh)),
-          a->List(WI.generators{a},OrderPerm)=List(rh,OrderPerm));
+          a->List(Wi.generators{a},OrderPerm)=List(rh,OrderPerm));
         if Length(rh)>1 then
           ChevieErr("WARNING: embedding ambiguous:",rh,"\n");
         fi;

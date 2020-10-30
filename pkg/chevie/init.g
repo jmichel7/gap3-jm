@@ -11,7 +11,7 @@ if not IsBound(CHEVIE) then
 fi;
 
 CHEVIE.name:="chevie";
-CHEVIE.date:=[2020,02,15];
+CHEVIE.date:=[2020,10,30];
 CHEVIE.homepage:="http://webusers.imj-prg.fr/~jean.michel/chevie";
 CHEVIE.copyright:=
 ["If you use CHEVIE in your work please cite the authors as follows:",
@@ -204,9 +204,9 @@ AUTO(ReadChv("prg/kl"),
   WGraph2Representation);
 
 AUTO(ReadChv("prg/permroot"),
-  AsReflection, CartanCoefficient, HyperplaneOrbits, IsParabolic, IsWordFor, 
-  ParabolicClosure, PermRootGroup, PermRootGroupNC, PermRootOps, MatYPerm, 
-  Reflection, ReflectionCharacter, ReflectionWord, jInductionTable);
+  AsReflection, CartanCoefficient, HyperplaneOrbits, InclusionGens, IsParabolic,
+  IsWordFor, ParabolicClosure, PermRootGroup, PermRootGroupNC, PermRootOps, 
+  MatYPerm, Reflection, ReflectionCharacter, ReflectionWord, jInductionTable);
 
 AUTO(ReadChv("prg/refltype"), 
   ReflTypeOps);

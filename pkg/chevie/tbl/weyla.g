@@ -345,9 +345,8 @@ CHEVIE.AddData("UnipotentCharacters","A",function(l)local ci;
 end);
 
 CHEVIE.AddData("Invariants","A",function(n)local m;
-  m:=CHEVIE.A.GeneratingRoots(n);Add(m,[1..n+1]*0+1);
-  return List([2..n+1],i->function(arg)local v;
-    v:=ShallowCopy(arg);Add(v,0*v[1]);v:=v*m;
+  m:=CHEVIE.A.GeneratingRoots(n);
+  return List([2..n+1],i->function(arg)local v;v:=arg*m;
     return Sum(Arrangements([1..n+1],i),a->Product(v{a}));end);
   end);
 

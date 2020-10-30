@@ -659,9 +659,9 @@ OldKLeftCellRepresentatives:=function(W)
       c.reps:=List(i,x->x[1]);
       Add(W.cells0,c);
       n:=FOrbit(st,c);
-#     InfoChevie(", ",Length(n)," new cell" );
-      InfoChevie(", ",n," new cell" );
+      InfoChevie(", ",Length(n)," new cell" );
       if Length(n)>1 then InfoChevie("s");fi;
+#     InfoChevie(", ",n," new cell" );
       for e in n do
         rd:=RightDescentSet(W,e.duflo);
         i:=PositionProperty(rw,x->x.rd=rd);
@@ -708,7 +708,8 @@ LeftCells:=function(arg)local W,ch,cc,opt,uc,st;
   fi;
   st:=List(Filtered(BraidRelations(W),r->Length(r[1])>2),
      st->(c->RightStar(st,c)));
-  return Union(List(cc,c->FOrbit(st,c)));
+  ch:=List(cc,c->FOrbit(st,c));
+  return Union(ch);
 end;
 
 # WGraph of LeftCell c
