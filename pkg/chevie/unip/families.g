@@ -296,7 +296,10 @@ CHEVIE.families.X5.cospecial:=5;
 CHEVIE.families.Z9:=CHEVIE.families.ExtPowCyclic(9,1);
 if CHEVIE.families.Z9.eigenvalues<>List([0..8],i->E(9)^(5*i^2))then Error();fi;
 Inherit(CHEVIE.families.Z9, rec(
+  charparams:=[[0,1],[1,E(9)^5],[2,E(9)],[0,E(3)],[1,E(9)^8],
+               [2,E(9)^4],[0,E(3)^2],[1,E(9)^2],[2,E(9)^7]],
   perm:=(2,9)(3,8)(4,7)(5,6),
+  explanation:="Twisted Drinfeld double of Z/3",
   qEigen:=[0,2/3,1/3,0,2/3,1/3,0,2/3,1/3]));
 
 CHEVIE.families.Z4:=CHEVIE.families.ExtPowCyclic(4,1);

@@ -24,6 +24,7 @@
 ##
 ##  AbsCox groups which happen to be finite inherit from HasType
 
+AlgebraicRadical:=Dispatcher("AlgebraicRadical");
 AlphaInvolution:=Dispatcher("AlphaInvolution");
 AltInvolution:=Dispatcher("AltInvolution");
 BetaInvolution:=Dispatcher("BetaInvolution");

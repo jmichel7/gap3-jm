@@ -710,7 +710,7 @@ CoxeterGroupOps.ProductRootEmbed:=function(W1,W2)local p;
 end;
 
 CoxeterGroupOps.\*:=function(W1,W2)local g;
-  if IsGroup(W2) then
+  if IsGroup(W1) then
     g:=ComplexGroupOps.\*(W1,W2);
     if not IsCoxeterGroup(W1) then return g;fi;
     g.cartan:=DiagonalMat(W1.cartan,W2.cartan);
@@ -724,7 +724,7 @@ CoxeterGroupOps.\*:=function(W1,W2)local g;
     AbsCoxOps.CompleteCoxeterGroupRecord(g);
     Inherit(g.operations,CoxeterGroupOps);
     return g;
-  else return CoxeterCoset(W1,W2);
+  else return W1*Spets(W2);
   fi;
 end;
 
@@ -814,10 +814,11 @@ CoxeterGroupOps.RelativeGroup:=function(W,J)local res,qr,S,I,vI,r;
     Error(J," is not distinguished in ",W,"\n");
   fi;
   qr:=i->W.roots[W.rootRestriction[i]]{W.rootRestriction{I}};
-  if J=[] then res:=W;
-  else res:=CoxeterGroup(List(I,i->List(I,j->
+# if J=[] then res:=W;
+# else 
+       res:=CoxeterGroup(List(I,i->List(I,j->
        ProportionalityCoefficient(qr(j)-qr(j^vI[Position(I,i)]),qr(i)))));
-  fi;
+# fi;
   res.relativeIndices:=I;
   res.parentMap:=vI;
   res.MappingFromNormalizer:= # maps reduced elts of N_W(W_J) to elts of res

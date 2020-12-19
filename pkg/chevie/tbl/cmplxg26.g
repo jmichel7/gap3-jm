@@ -331,8 +331,6 @@ CHEVIE.AddData("SchurData","G26",[
 
 CHEVIE.AddData("HeckeRepresentation","G26",function(para,root,i)
   local x,y,u,v,w,f10,f23,f31,f36,f6,f8,f9,rep;
-  x:=para[1][1];y:=para[1][2];
-  u:=para[2][1];v:=para[2][2];w:=para[2][3];
   f10:=function(x,u)return [[[x]],[[u]],[[u]]];end;
   f23:=function(x,u,v) return 
     [[[x,0],[0,x]],[[u,0],[-u,v]],[[v,v],[0,u]]];end;
@@ -377,6 +375,8 @@ u,0],[0,0,0,u,p^-1*s-p^-1*r*u-p^-1*s*u^2*v^-2+p^-1*r*u^2*v^-1-p^-1*s*u^2*v^-
   [0,0,j^2*r*u,0,0,u,0,-u*w^-1,0],[0,0,0,0,0,0,v,0,v*w],
   [0,0,j^2*p*u^-1*v^2*w+p*u*w+j^2*p*v*w-j^2*p*v^2-r*w^2,
    j^2*p*u^-1*v*w-r*u^-1*w^2+p*w,0,0,0,v,0],[0,0,0,0,0,0,0,0,w]]];end;
+  x:=para[1][1];y:=para[1][2];
+  u:=para[2][1];v:=para[2][2];w:=para[2][3];
   rep:=[[f10,x,u],[f10,y,u],[f10,y,w],[f10,y,v],[f10,x,w],[f10,x,v],
     [f23,y,v,w],[f23,x,v,w],[f23,y,u,v],[f23,x,u,v],[f23,y,u,w],[f23,x,u,w],
     [f36,x],[f36,y],[f31,x,y,u,v],[f31,y,x,u,v],[f31,x,y,w,u],[f31,y,x,w,u],
@@ -389,9 +389,7 @@ u,0],[0,0,0,u,p^-1*s-p^-1*r*u-p^-1*s*u^2*v^-2+p^-1*r*u^2*v^-1-p^-1*s*u^2*v^-
     [f8,x,y,w,v,u,-1],[f8,x,y,v,u,w,-1], [f8,x,y,v,u,w,1],
     [f9,x,y,u,v,w,E(3)^2],[f9,y,x,u,v,w,E(3)^2],
     [f9,x,y,u,v,w,E(3)],[f9,y,x,u,v,w,E(3)]];
-  if IsBound(rep[i]) then return
-    ApplyFunc(rep[i][1],rep[i]{[2..Length(rep[i])]})+0*Product(para,Product);
-  else return false;fi;
+  return ApplyFunc(rep[i][1],rep[i]{[2..Length(rep[i])]})+0*x*y*u*v*w;
 end);
 
 CHEVIE.AddData("UnipotentCharacters","G26",function()

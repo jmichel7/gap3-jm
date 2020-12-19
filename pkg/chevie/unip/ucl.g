@@ -54,10 +54,14 @@ UnipotentClassOps.FormatCentralizer:=function(u,opt)local c,AuName,n;
   if IsBound(u.AuAction) then 
     if Rank(u.red)>0 then
       PrintToString(c,".");
-      if Size(u.Au)=1 or Size(u.Au)=Size(ApplyFunc(Group,u.AuAction.F0s)) then
-	PrintToString(c,ReflectionName(u.AuAction,opt));
-      elif ForAll(u.AuAction.F0s,x->x=x^0) then
-	PrintToString(c,ReflectionName(u.AuAction.group,opt),AuName(u));
+      if ForAll(u.AuAction.F0s,x->x=x^0) then
+	PrintToString(c,ReflectionName(u.red,opt),AuName(u));
+      elif Size(u.Au)=1 or Size(u.Au)=Size(ApplyFunc(Group,u.AuAction.F0s)) then
+        if u.red.phi=() or Size(u.Au)=1 then
+	  PrintToString(c,ReflectionName(u.AuAction,opt));
+        else 
+	  PrintToString(c,"[",ReflectionName(u.red,opt),"]",ReflectionName(u.AuAction,opt));
+        fi;
       else
 	PrintToString(c,ReflectionName(u.AuAction,opt),AuName(u));
       fi;
@@ -315,7 +319,7 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
          dimBu:=Sum(v,x->x.dimBu), parameter:=List(v,x->x.parameter));
       if Length(v)=1 then Inherit(u,v[1]);fi;
       if ForAll(v,x->IsBound(x.dimred)) then 
-        u.dimred:=Sum(v,x->x.dimred);
+        u.dimred:=Sum(v,x->x.dimred)+Rank(W)-SemisimpleRank(W);
       fi;
       if ForAll(v,x->IsBound(x.dimunip)) then 
         u.dimunip:=Sum(v,x->x.dimunip);
@@ -337,8 +341,9 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
 	     if j>0 then return W.rootInclusion[l[i][j]];
                     else return -W.rootInclusion[l[i][-j]];fi;end)));
       fi;
-    if W.rank>W.semisimpleRank and IsBound(u.red) 
-    then u.red:=u.red*Torus(W.rank-W.semisimpleRank);
+    if IsBound(u.red) and not IsSpets(u.red) then u.red:=Spets(u.red);fi;
+    if W.rank>W.semisimpleRank and IsBound(u.red) then 
+      u.red:=u.red*AlgebraicRadical(WF);
       if IsBound(u.AuAction) then
         u.AuAction.group:=u.AuAction.group*Torus(W.rank-W.semisimpleRank);
 	u.AuAction.F0s:=List(u.AuAction.F0s,x->DiagonalMat(x,
@@ -581,6 +586,8 @@ end;
 # opt: variable (default X(Cyclotomics))
 #
 # Formatting: options of FormatTable + [.classes, .CycPol]
+# In the case opt.classes a side effect is computing cardClass giving the
+# cardinality of conjugacy classes
 XTable:=function(arg)
   local opt,uc,W,res,pieces,l,m,n,p,q,greenpieces,Au,i,b;
   uc:=arg[1];W:=Group(uc.spets);

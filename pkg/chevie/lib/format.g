@@ -181,6 +181,7 @@ TeXStrip:=function(arg)local s,opt,f;
       "\\nu","nu",
       "\\rho","r",
       "\\sigma","sigma",
+      "\\chi","chi",
       "\\BZ","Z",
       "\\!\\wedge\\!",".",
       "\\wedge","",
@@ -188,7 +189,8 @@ TeXStrip:=function(arg)local s,opt,f;
       "^\\hbox","",
       " ","");
     s:=List([1..Length(s)],function(i)if s[i]='i' and 
-      (i=Length(s) or not s[i+1] in "abcdefghijklmnopqrstuvwxyz")
+      (i=Length(s) or not s[i+1] in "abcdefghijklmnopqrstuvwxyz") and
+      (i=1 or not s[i-1] in "abcdefghijklmnopqrstuvwxyz")
       then return 'I';else return s[i];fi;end);
     if Length(s)>0 and s[1]='^' then s:=s{[2..Length(s)]};fi;
     s:=String(f(s));

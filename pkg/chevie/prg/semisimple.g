@@ -210,6 +210,7 @@ AlgebraicCentre:=function(W)local Z0,res,F0s,w,toAZ,hom,AZ,m,id,toZD;
   res.AZ:=ApplyFunc(Group,List(AZ.generators,toAZ));
   # map of root data Y(Wsc)->Y(W)
   hom:=GroupHomomorphismByImages(AZ,res.AZ,AZ.generators,res.AZ.generators);
+  res.AZ:=Group(AbelianGenerators(res.AZ.generators),id);
   res.descAZ:=List(Kernel(hom).generators,x->GetWord(AZ,x));
   return res;
 end;

@@ -251,6 +251,6 @@ CHEVIE.AddData("UnipotentClasses","2A",function(r,p)local uc,c,t,WF,m;
     m:=List(t,x->ReflectionEigenvalues(x,PositionClass(x,x.phi)));
     m:=List(m,x->Number(x,y->y=1/2));
     p:=Position(m,Maximum(m));
-    c.F:=t[p].phi;
+    c.red:=Spets(c.red,t[p].phi);
   od;
   return uc;end);

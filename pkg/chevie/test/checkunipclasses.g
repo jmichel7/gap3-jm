@@ -1,8 +1,10 @@
+IsWeylGroup:=W->IsCoxeterGroup(W) and ForAll(Flat(CartanMat(W)),IsInt);
+IsRootDatum:=W->IsWeylGroup(W) or (IsSpets(W) and IsRootDatum(Group(W)));
+
 # Check various consistencies for UnipotentClasses(W[,p])
 CHEVIE.AddTest("UnipotentClasses",
-function(arg)
-  local W,uc,b,u,a,ad,bu,s,nid,du,i,j,k,pl,cl,order,t,l,p,L,w,bc,name,
-    PosetFromICC;
+function(arg)local W,uc,b,u,a,ad,bu,s,nid,du,i,j,k,pl,cl,order,t,l,p,L,w,bc,
+  name,PosetFromICC,WF;
   pl:=function(u,i)return SPrint(Position(uc.classes,u),".",i,"=",u.name,".",
        CharNames(u.Au)[i]);end;
   PosetFromICC:=function(t)local l,o,notzero;
@@ -14,11 +16,14 @@ function(arg)
     return Poset(o);
   end;
   W:=arg[1];
-  if Length(arg)=1 then l:=[0];Append(l,BadPrimes(W));
-    for p in l do CHEVIE.Test("UnipotentClasses",W,p);od;
+  if IsSpets(W) then WF:=W;W:=Group(WF);else WF:=Spets(W);fi;
+  if Length(arg)=1 then 
+    for p in Concatenation([0],BadPrimes(W)) do 
+      CHEVIE.Test("UnipotentClasses",WF,p);
+    od;
     return;
   fi;
-  uc:=UnipotentClasses(W,arg[2]);
+  uc:=UnipotentClasses(WF,arg[2]);
   s:=uc.springerSeries[1];
   b:=LowestPowerFakeDegrees(W);du:=[];
   for u in uc.classes do
@@ -112,9 +117,8 @@ function(arg)
           IsomorphismType(u.red,rec(torus:=true)),")=",Dimension(u.red),"\n");
     fi;
   od;
-end,
-#W->(IsCoxeterGroup(W) or IsCoxeterCoset(W)) and ForAll(Flat(CartanMat(W)),IsInt)];
-W->IsCoxeterGroup(W) and ForAll(Flat(CartanMat(W)),IsInt));
+end,IsRootDatum,
+"Check dimBu from DR, from b, with < ; Check BalaCarter, dimred");
 
 CHEVIE.AddTest("UnipotentCentralizers",function(arg)
   local W,p,c,t,cl,cc,q,w,sum,f,u,g,N;
@@ -127,24 +131,13 @@ CHEVIE.AddTest("UnipotentCentralizers",function(arg)
     cl:=u.classes[c.classno];
     cc:=q^cl.dimunip;
     if NrConjugacyClasses(cl.Au)>1 then
-      if cl.red.rank>0 then
-        if IsBound(cl.F) then 
-          if IsPerm(cl.F) then f:=MatXPerm(cl.red,cl.F);else f:=cl.F;fi;
-        else f:=MatXPerm(cl.red,());
-        fi;
-        if IsBound(cl.AuAction) and ForAny(cl.AuAction.F0s,x->x<>x^0) then
-          w:=ChevieClassInfo(cl.Au).classtext[c.AuNo];
-          w:=Product(cl.AuAction.F0s{w})*f;
-          if w=1 then w:=cl.AuAction.F0s[1]^0;fi;
-          cc:=cc*GenericOrder(Spets(cl.red,w),q);
-        else
-#   Print("cl=",cl," red=",cl.red," F=",cl.F,"\n");
-           cc:=cc*GenericOrder(Spets(cl.red,f),q);
-        fi;
+      if Rank(cl.red)>0 and IsBound(cl.AuAction) then
+        w:=ChevieClassInfo(cl.Au).classtext[c.AuNo];
+        w:=Product(cl.AuAction.F0s{w})*cl.red.F0Mat;
+        cc:=cc*GenericOrder(Spets(Group(cl.red),w),q);
+      else cc:=cc*GenericOrder(cl.red,q);
       fi;
       cc:=cc*Size(cl.Au)/ChevieClassInfo(cl.Au).classes[c.AuNo];
-    elif IsBound(cl.F) then 
-      cc:=cc*GenericOrder(Spets(cl.red,cl.F),q);
     else cc:=cc*GenericOrder(cl.red,q);
     fi;
     sum:=sum+Value(c.card,q);
@@ -159,9 +152,7 @@ CHEVIE.AddTest("UnipotentCentralizers",function(arg)
   if sum<>q^(2*N) then
     ChevieErr("found nr. unip=",sum," instead of ",q^(2*N),"\n");
   fi;
-end,
-W->IsCoxeterGroup(W) and ForAll(Flat(CartanMat(W)),IsInt),
-"(W[,p]) check info on centralizers agrees with ICCTable");
+end,IsRootDatum,"(W[,p]) check info on centralizers agrees with ICCTable");
 
 # Check classtypes gives nrclasses (for simply connected groups)
 CHEVIE.AddTest("NrSemisimple",function(WF)local l,g,q;
@@ -171,6 +162,4 @@ CHEVIE.AddTest("NrSemisimple",function(WF)local l,g,q;
   if Sum(l) <> g then
     ChevieErr("found nr elem=",Sum(l)," instead of ",g,"\n");
   fi;
-end,
-W->IsCoxeterGroup(W) and ForAll(Flat(CartanMat(W)),IsInt) and
-Size(FundamentalGroup(W))=1);
+end,W->IsWeylGroup(W) and Size(FundamentalGroup(W))=1);

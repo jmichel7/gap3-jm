@@ -1224,3 +1224,4 @@ end;
 
 PermRootOps.DualBraidMonoid:=PermRootOpsDualBraidMonoid;
 
+PermRootOps.AlgebraicRadical:=W->Torus(W.rank-W.semisimpleRank);

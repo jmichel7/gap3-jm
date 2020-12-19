@@ -63,6 +63,11 @@ SpetsOps.\=:=function(WF1,WF2)
          (WF1.F0Mat=WF2.F0Mat and Group(WF1)=Group(WF2));
 end;
 
+SpetsOps.\*:=function(W1,W2)
+  if not IsSpets(W1) then W1:=Spets(W1);fi;
+  return Spets(Group(W1)*Group(W2),DiagonalMat(W1.F0Mat,W2.F0Mat));
+end;
+
 SpetsOps.Format:=function(WF,option)local res;
   if IsBound(option.GAP) then 
     res:="";
@@ -694,6 +699,13 @@ SpetsOps.Frobenius:=function(W)local finv; finv:=W.phi^-1;
       fi;
    fi;
   end;
+end;
+
+SpetsOps.AlgebraicRadical:=function(W)local M,t;
+  M:=PermRootOps.BaseX(Group(W));
+  M:=M*W.F0Mat*M^-1;
+  t:=[1+SemisimpleRank(W)..Rank(W)];
+  return Torus(M{t}{t});
 end;
 
 IsSpets:=W->IsRec(W) and IsBound(W.isCoset) and W.isCoset;

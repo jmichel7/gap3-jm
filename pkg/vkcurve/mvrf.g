@@ -72,7 +72,9 @@ end;
 
 RatFracOps.RatFrac:=function(n,d)
   if Length(d.coeff)=0 then Error("division by zero");fi;
-  if d.coeff[1]<>1 then
+  if Length(n.coeff)=0 then 
+           return rec(num:=n,den:=Mvp(1),operations:=RatFracOps);
+  elif d.coeff[1]<>1 then
 #   Print("Making ",n,"/",d,"\n");
 #   if Valuation(n/d.coeff[1])<0 then Error();fi;
 #   if Valuation(d/d.coeff[1])<0 then Error();fi;

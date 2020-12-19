@@ -92,6 +92,8 @@ CoxeterCosetOps.CoxeterElements:=function(arg)local W;
   return ApplyFunc(CoxeterElements,arg)*W.phi;
 end;
 
+CoxeterCosetOps.Dimension:=W->Dimension(Group(W));
+
 CoxeterCosetOps.ReflectionCharValue:=function(W,w)
   return CoxeterGroupOps.ReflectionCharValue(Group(W),w);
 end;
@@ -288,10 +290,10 @@ end;
 CoxeterCosetOps.RelativeCoset:=function(WF,J)local res,p;
 # Print("CoxeterCosetOps.RelativeCoset ",WF,J," called \n");
   res:=RelativeGroup(Group(WF),J);
-  if J=[] then p:=WF.phi;
-  else p:=PermListList(res.parentMap,OnTuples(res.parentMap,WF.phi));
-  fi;
-  return CoxeterCoset(res,p);
+  p:=PermListList(res.parentMap,OnTuples(res.parentMap,WF.phi));
+  res:=CoxeterCoset(res,p);
+  res.parentPhi:=WF.phi;
+  return res;
 end;
 
 ########################################################################
@@ -356,10 +358,14 @@ GraphAutomorphisms:=function(t)local tt,gens,i,J;
       if t[1].rank>1 then Add(gens,
         Product([1..QuoInt(t[1].rank,2)],i->(J[i],J[t[1].rank+1-i])));
       fi;
+    elif t[1].series="B" and t[1].cartanType=ER(2) then Add(gens,(J[1],J[2]));
     elif t[1].series="D" then Add(gens,(J[1],J[2]));
       if t[1].rank=4 then Add(gens,(J[1],J[4]));fi;
     elif t[1].series="E" and t[1].rank=6 then
       Add(gens,(J[1],J[6])(J[3],J[5]));
+    elif t[1].series="F" and t[1].cartanType=ER(2) then 
+      Add(gens,(J[1],J[4])(J[2],J[3]));
+    elif t[1].series="G" and t[1].cartanType=ER(3) then Add(gens,(J[1],J[2]));
     fi;
   od;
   return Group(gens,());

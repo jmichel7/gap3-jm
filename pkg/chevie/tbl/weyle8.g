@@ -3085,8 +3085,7 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("E",8),levi:="",Z:=[],
     [27,1],[35,1],[23,2],[43,2],[31,2],[15,2],[53,2],[22,1],[45,1],[31,3],
     [20,2],[47,1],[28,1],[39,2],[24,2],[44,1],[27,2],[35,2]]),
    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[29,1]],
-     parameter:=[165])],# Fourier transform of 165th unip. character
-  operations:=UnipotentClassesOps); 
+     parameter:=[165])]);# Fourier transform of 165th unip. character
   if p=2 then Append(uc.classes,[
     rec(name:="(D_7(a_1))_2",succ:=["D7(a1)"],red:=Z(2),dimBu:=10,Au:=Z(2)),
     rec(name:="(D_5{+}A_2)_2",succ:=["D5+A2"],red:=Z(2),dimBu:=14,Au:=Z(2)),

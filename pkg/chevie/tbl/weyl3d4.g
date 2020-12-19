@@ -196,11 +196,13 @@ end);
 CHEVIE.AddData("UnipotentClasses","3D4",function(p)local uc,c,g,class;
   class:=n->First(uc.classes,x->x.name=n);
   uc:=Copy(CHEVIE.R("UnipotentClasses","D")(4,p));
-  for p in [["11111111",(1,2,4)],["221111",(1,2,3)]] do class(p[1]).F:=p[2];od;
+  for c in [["11111111",(1,2,4)],["221111",(1,2,3)]] do 
+    if p<>2 then class(c[1]).red:=Spets(class(c[1]).red,c[2]);fi;
+  od;
   c:=class("3311");
   g:=CoxeterGroup("G",2);
-  c.red:=ReflectionSubgroup(g,[]);
+  c.red:=Torus(g,5);
   c.F:=EltWord(g,[1,2,1,2]);
-  c.AuAction:=ExtendedReflectionGroup(c.red,EltWord(g,[1,2,1,2,1,2]));
+  c.AuAction:=ExtendedReflectionGroup(Group(c.red),EltWord(g,[1,2,1,2,1,2]));
   return uc;
 end);

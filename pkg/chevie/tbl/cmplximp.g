@@ -852,7 +852,7 @@ CHEVIE.AddData("HeckeRepresentation","imp",function(p,q,r,para,root,i)
       [[[-1,0],[-1,x]],[[-1,0],[-1,x]],[[x,-x],[0,-1]]],
       [[[x]],[[x]],[[x]]]];
     return -para[2][2]*r[i];
-  elif [p,q,r]=[2,2,4] then 
+  elif [p,q,r]=[2,2,4] then # integral matrices for D4
     x:=-para[1][1]/para[1][2];r:=[
  x->[[[-1+x,-1,0],[-x,0,0],[x-x^2,-1+x,-1]],[[0,1,0],[x,-1+x,0],[0,0,-1]],
      [[-1,0,0],[0,0,1],[0,x,-1+x]],[[0,1,0],[x,-1+x,0],[0,0,-1]]],

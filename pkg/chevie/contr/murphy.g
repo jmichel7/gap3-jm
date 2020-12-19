@@ -336,6 +336,7 @@ Xst:=function(H,s,t) local xst;
     elif t.ind=1 then 
       xst:=AlphaInvolution(HeckeAlgebraOps.Murphy.Xt(H,s));
     elif IsBound(s.(t.ind)) then 
+      Error("should not be here\n");
       xst:=AlphaInvolution(s.(t.ind));
     else
       xst:=Basis(H,"T")(HeckeAlgebraOps.Murphy.CoxeterPermTableau(H,s)^-1)

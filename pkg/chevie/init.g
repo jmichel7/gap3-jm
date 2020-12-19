@@ -137,7 +137,7 @@ AUTO(ReadChv("prg/coxeter"),
   CoxeterTypeFromArg, PermutationsSimpleReflections);
 
 AUTO(ReadChv("prg/dispatch"),
-  AlmostCharNames, AlphaInvolution, AltInvolution, 
+  AlgebraicRadical, AlmostCharNames, AlphaInvolution, AltInvolution, 
   BetaInvolution, BraidRelations, BrieskornNormalForm,
   CharName, CharNames, CharNumbers, CharParams, ChevieCharInfo, ChevieClassInfo,
   ClassName, CoxeterElements, CoxeterLength, CoxeterWord, 

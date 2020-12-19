@@ -347,7 +347,7 @@ CHEVIE.AddData("UnipotentCharacters","2E6",function()local uc,p,h;
    return uc;
 end);
 
-CHEVIE.AddData("UnipotentClasses","2E6",function(p)local uc,l;
+CHEVIE.AddData("UnipotentClasses","2E6",function(p)local uc,l,u;
   uc:=Copy(CHEVIE.R("UnipotentClasses","E6")(p));
   uc.springerSeries:=Filtered(uc.springerSeries,x->x.Z=[1]); # |H^1(F,Z)|=1 
   l:=[["1",(1,6)(3,5)],["A_1",(1,5)(2,4)],["A_2",(1,2)(3,4)],
@@ -357,7 +357,8 @@ CHEVIE.AddData("UnipotentClasses","2E6",function(p)local uc,l;
    ["A_3",DiagonalMat(1,1,-1)],["A_2{+}A_1",[[0,1,0],[1,0,0],[0,0,-1]]],
    ["3A_1",(1,2)],["2A_1",DiagonalMat(1,1,1,-1)]];
   for p in l do
-    First(uc.classes,x->x.name=p[1]).F:=p[2];
+    u:=First(uc.classes,x->x.name=p[1]);
+    u.red:=Spets(u.red,p[2]);
   od;
   return uc;
 end);

@@ -130,10 +130,11 @@ CoxeterGroupHyperoctaedralGroup:=function(n)local W,i,f,conj;
   f:=[(1,2)];for i in [1..n-1] do Add(f,(2*i-1,2*i+1)(2*i,2*i+2));od;
   W:=Group(f,());
   W.reflections:=f;
-  W.operations.IsLeftDescending:=function(W,w,i) 
-    if (2*i-1)^w mod 2=0 then return true;fi;
-    if i=1 then return false;fi;
-    return ((2*i-3)^w mod 2<>0) and (2*i-3)^w>(2*i-1)^w;
+  W.operations.IsLeftDescending:=function(W,w,i)local a,b;
+    if i=1 then return (i^w)mod 2=0;fi;
+    a:=(2*i-1)^w;if a mod 2=0 then a:=-a;fi;
+    b:=(2*i-3)^w;if b mod 2=0 then b:=-b;fi;
+    return a<b;
   end;
   AbsCoxOps.CompleteCoxeterGroupRecord(W);
   W.operations.Reflections:=function(W)local i;
