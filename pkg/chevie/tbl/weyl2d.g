@@ -295,5 +295,25 @@ CHEVIE.AddData("UnipotentCharacters","2D",function(rank)
   return uc;
 end);
 
-CHEVIE.AddData("UnipotentClasses","2D",function(r,p)
-  return CHEVIE.R("UnipotentClasses","D")(r,p);end);
+CHEVIE.AddData("UnipotentClasses","2D",function(r,p)local uc,cc,j;
+  uc:=Copy(CHEVIE.R("UnipotentClasses","D")(r,p));
+  if p<>2 then
+  for cc in uc.classes do
+    cc.red:=CoxeterGroup();
+    j:=cc.parameter;
+    for j in Collected(j) do
+      if j[1]mod 2=0 then cc.red:=cc.red*CoxeterGroup("C",QuoInt(j[2],2));
+      elif j[2]mod 2<>0 then 
+        if j[2]>1 then cc.red:=cc.red*CoxeterGroup("B",QuoInt(j[2]-1,2));fi;
+      elif j[2]>2 then 
+        if QuoInt(j[2],2)=3 then
+             cc.red:=cc.red*Spets(CoxeterGroup("D",QuoInt(j[2],2)),(1,3));
+        else cc.red:=cc.red*Spets(CoxeterGroup("D",QuoInt(j[2],2)),(1,2));
+        fi;
+      else cc.red:=cc.red*Torus([[-1]]);
+      fi;
+    od;
+  od;
+  fi;
+  return uc;
+  end);
