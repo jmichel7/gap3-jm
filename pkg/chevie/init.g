@@ -376,3 +376,4 @@ end;
 ReadChv("unip/init");
 ReadChv("contr/init");
 ReadChv("tbl/compat3");
+ReadChv("tbl/cmplxg34"); # otherwise UnipotentClasses(CoxeterGroup("G",2)) fails
