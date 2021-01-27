@@ -230,7 +230,7 @@ CHEVIE.AddData("UnipotentCharacters","2I",function(e)
       special:=1))];
   uc.a:=Concatenation([0,e],List(ac,x->1));
   uc.A:=Concatenation([0,e],List(ac,x->e-1));
-# if e=4 then uc.families[3].fourierMat:=ER(2)/2*[[1,1],[1,-1]];fi;
+  if e=4 then uc.families[3].ennola:=-2; fi;
   if e=5 then 
 # Modified 25-8-2004 to fit with H3, H4
 # Asterisque, Geck-Malle, H4 in Duke are like the old version
@@ -238,6 +238,7 @@ CHEVIE.AddData("UnipotentCharacters","2I",function(e)
     uc.families[3]:=uc.families[3]^13; # "GaloisCyc(f,13)"
     for c in uc.harishChandra do c.eigenvalue:=GaloisCyc(c.eigenvalue,13);od;
   fi;
+  if e=6 then uc.families[3].ennola:=[-5,-2,-3,-6,-1,-4]; fi;
   return uc;
 # Properties: S^-1=TransposedMat(S)
 # f.fakdeg:=Concatenation(List(ac,i->x^(e-i[2])-x^i[2]),List(nc,i->0*x));
@@ -245,4 +246,25 @@ CHEVIE.AddData("UnipotentCharacters","2I",function(e)
 #      (c(i[1])-c(i[2]))/e*x*(x^2-1)*(x^e+1)/Product(i,a->(x-z^a)*(x-z^-a)));
 # S*f.unpdeg=f.fakdeg
 # (DiagonalMat(f.eigenvalues)*TransposedMat(S)*DiagonalMat(f.sh)^-1*S)^2=S^0
+end);
+
+CHEVIE.AddData("Ennola","2I",function(e)local uc,res,p,A,b,f;
+  uc:=CHEVIE.R("UnipotentCharacters","2I")(e);
+  if IsFunc(uc) then uc:=uc();fi;
+  res:=uc.a*0;
+  for f in uc.families do
+    if IsBound(f.ennola) then
+      if IsList(f.ennola) then p:=SignedPerm(f.ennola);
+      else A:=FusionAlgebra(f);
+        b:=Basis(A);
+        if not IsBound(f.ennola) then f.ennola:=f.special;fi;
+        if f.ennola>0 then p:=SignedPermListList(b,b[f.ennola]*b);
+                      else p:=SignedPermListList(b,-b[-f.ennola]*b);
+        fi;
+      fi;
+    else p:=SignedPerm();
+    fi;
+    res{f.charNumbers}:=Permuted(f.charNumbers,p);
+  od;
+  return SignedPerm(res);
 end);

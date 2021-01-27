@@ -87,6 +87,7 @@ WGraph:=Dispatcher("WGraph");
 CharNumbers:=AttributeDispatcher("CharNumbers");
 ChevieCharInfo:=AttributeDispatcher("ChevieCharInfo","charInfo");
 ChevieClassInfo:=AttributeDispatcher("ChevieClassInfo","classInfo");
+Ennola:=AttributeDispatcher("Ennola");
 FactorizedSchurElements:=AttributeDispatcher("FactorizedSchurElements");
 FieldOfDefinition:=AttributeDispatcher("FieldOfDefinition","field");
 KLeftCellRepresentatives:=

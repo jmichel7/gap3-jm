@@ -174,12 +174,16 @@ CHEVIE.Test:=function(arg)local a,tests,i,W,ttest;
   od;
 end;
 
-# CHEVIE.RegressionTest(test or [tests])
-# Apply all possible tests (or argument tests) to all TestObjs
+# CHEVIE.RegressionTest()
+# Apply all possible tests all TestObjs
+# CHEVIE.RegressionTest("test" or [tests])
+# Apply all "test" or tests to all TestObjs
 CHEVIE.RegressionTest:=function(arg)local W,msg,i,tstart,objs,tests;
   objs:=CHEVIE.TestObjs;
   CHEVIE.log:="all.log";ChevieErr:=CHEVIE.Warn;
-  if Length(arg)=0 then tests:=CHEVIE.TestList;else tests:=arg[1];fi;
+  if Length(arg)=0 then tests:=CHEVIE.TestList;
+  elif IsList(arg[1]) then tests:=arg[1];
+  else tests:=arg;fi;
   for i in [1..Length(objs)] do Print(i,"/",Length(objs),":");
     W:=objs[i];
     if IsList(W) then W:=ApplyFunc(W[1],W{[2..Length(W)]});fi;
@@ -206,3 +210,4 @@ ReadChv("test/checkbasic");
 ReadChv("test/checkchar");
 ReadChv("test/checkunideg");
 ReadChv("test/checkunipclasses");
+ReadChv("test/checkennola");

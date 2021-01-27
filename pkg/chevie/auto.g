@@ -5,7 +5,9 @@ CHEVIE.AutoLoad:=function(flist,fields,file)local f,t;
     for f in flist do CHEVIE.AUTO.(t).(f):=file;od;
   od;
 end;
-CHEVIE.AutoLoad(["PrintDiagram"],["AffineA","AffineD","AffineI"],"prg/affine");
+CHEVIE.AutoLoad(["PrintDiagram"],["AffineA","AffineB","AffineD","AffineE6",
+  "AffineE7","AffineE8","AffineF","AffineG","AffineH3","AffineH4","AffineI"],
+  "prg/affine");
 CHEVIE.AutoLoad(["PrintDiagram","BraidRelations","CharName","ReflectionName",
   "SemisimpleRank","Size","paramclasses","GeneratingRoots","GeneratingCoRoots",
   "CartanMat","EigenvaluesGeneratingReflections","ReflectionCoDegrees",
@@ -14,7 +16,8 @@ CHEVIE.AutoLoad(["PrintDiagram","BraidRelations","CharName","ReflectionName",
   "LowestPowerFakeDegrees","Generic","SchurModels","paramchars","SchurData",
   "FactorizedSchurElement","SchurElement","DecompositionMatrix","GetParams",
   "Embed","HeckeCharTable","Rep","HeckeRepresentation","Representation",
-  "UnipotentCharacters","Invariants","Discriminant"],["G4_22"],"tbl/cmp4_22");
+  "UnipotentCharacters","Ennola","Invariants","Discriminant"],["G4_22"],
+  "tbl/cmp4_22");
 CHEVIE.AutoLoad(["NrConjugacyClasses","ClassInfo","CharInfo","CharTable"],
   ["2G5","G4_22"],"tbl/cmp4_22");
 CHEVIE.AutoLoad(["PhiFactors"],["2G5"],"tbl/cmp4_22");
@@ -81,8 +84,8 @@ CHEVIE.AutoLoad(["PrintDiagram","BraidRelations","GeneratingRoots",
   "NrConjugacyClasses","ParabolicRepresentatives","ClassNames",
   "WordsClassRepresentatives","PowerMaps","ClassInfo","CharInfo",
   "CycPolSchurElements","HeckeCharTable","CharTable","HeckeRepresentation",
-  "Representation","sparseFakeDegrees","UnipotentCharacters","Invariants"],
-  ["G34"],"tbl/cmplxg34");
+  "Representation","sparseFakeDegrees","Invariants"],["G34"],"tbl/cmplxg34");
+CHEVIE.AutoLoad(["UnipotentCharacters"],["G34","G34"],"tbl/cmplxg34");
 CHEVIE.AutoLoad(["PrintDiagram","SemisimpleRank","BraidRelations","Size",
   "ReflectionName","GeneratingRoots","EigenvaluesGeneratingReflections",
   "CartanMat","ReflectionDegrees","ReflectionCoDegrees",
@@ -153,6 +156,8 @@ CHEVIE.AutoLoad(["SchurElement"],["E6","E7","E8","F4","G24","G25","G26","G27",
   "G29","G32","G33","G34","H3","H4"],"tbl/exceptio");
 CHEVIE.AutoLoad(["FactorizedSchurElement"],["E6","E7","E8","F4","G2","G24",
   "G25","G26","G27","G29","G32","G33","G34","H3","H4"],"tbl/exceptio");
+CHEVIE.AutoLoad(["Ennola"],["E7","E8","F4","G2","G24","G25","G26","G27","G29",
+  "G32","G33","G34","H3","H4"],"tbl/exceptio");
 CHEVIE.AutoLoad(["WordsClassRepresentatives","ClassInfo","NrConjugacyClasses",
   "ClassParameter","CharParams","CharName","CharInfo","CharTable",
   "HeckeCharTable","PhiFactors","HeckeRepresentation","Representation",

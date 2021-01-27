@@ -3,6 +3,7 @@ AUTO(ReadChv("unip/uc"),
    FixRelativeType,
    ReflTypeOpsUnipotentCharacters,
    HasTypeOpsUnipotentCharacters,
+   PermutationOnUnipotents,
    UnipotentCharacters,
    UnipotentCharactersOps,
    UnipotentDegrees);

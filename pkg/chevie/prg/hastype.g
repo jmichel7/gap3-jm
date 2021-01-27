@@ -16,9 +16,13 @@
 ##  This field is accessed by the function 'ReflectionType' .
 
 # ReflectionGroup from a ReflectionType
-ReflectionGroup:=function(arg)local t,g,res,o,i,r;
+ReflectionGroup:=function(arg)local t,g,res,o,i,r,W;
   if Length(arg)=0 then return CoxeterGroup();fi;
   for t in arg do
+    if IsBound(t.orbit) then
+      W:=ApplyFunc( ReflectionGroup, t.orbit );
+      return Spets(W,t.twist);
+    fi;
     if t.series<>"ST" then g:=CoxeterGroup(t);
     elif IsBound(t.ST) then g:=ComplexReflectionGroup(t.ST);
     else g:=ComplexReflectionGroup(t.p,t.q,t.rank);
@@ -655,4 +659,9 @@ HasTypeOps.WeightInfo:=function(W)local l,res,n;
     x->Filtered(x,y->y<>0));
   res.decompositions:=res.decompositions{[1..n]};
   return res;
+end;
+
+HasTypeOps.Ennola:=function(W)
+  if Length(W.type)>1 then Error(W," should be irreducible");fi;
+  return Ennola(W.type[1]);
 end;

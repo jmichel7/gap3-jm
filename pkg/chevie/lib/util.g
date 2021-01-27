@@ -341,6 +341,20 @@ InductionTable:=function(u,g) local tu,tg,res;
   return res;
 end;
 
+# Permutation of the conjugacy classes induced by an automorphism of W
+PermutationOnClasses:=function(W,aut)
+  return PermList(List(ConjugacyClasses(W),
+     c->PositionClass(W,Representative(c)^aut)));
+end;
+
+# Permutation of the characters induced by an automorphism of W
+# PermutationOnCharacters(W,aut [,charlist])
+PermutationOnCharacters:=function(arg)local W,p,ct;
+  W:=arg[1]; p:=PermutationOnClasses(W,arg[2]);
+  ct:=CharTable(W).irreducibles;if Length(arg)=3 then ct:=ct{arg[3]};fi;
+  return PermListList(ct,List(ct,r->Permuted(r,p)));
+end;
+
 ############################################################################
 ##
 #F  AbelianGenerators( <l>) . . . . . . . minimal generators of abelian group

@@ -10795,7 +10795,7 @@ CHEVIE.AddData("UnipotentCharacters","G34",
    # C2 changed to C'\"2 Gunter 22/9/99, then to C2h on 26.2.2003:
    Family(CHEVIE.families.X(3)*Family("C'\"2"),
     [97,102,316,318,99,100,317,319,315,314,320,321],
-     rec(signs:=[1,1,1,1,1,1,1,1,-1,-1,-1,-1],ennola:=-9)),
+     rec(signs:=[1,1,1,1,1,1,1,1,-1,-1,-1,-1],ennola:=-7)),
    Family(ComplexConjugate(CHEVIE.families.X(3))*Family("X5"),
      [108,88,327,323,34,36,90,328,322,110,325,326,329,115,324],
      rec(signs:=[1,1,1,-1,-1,-1,1,1,-1,1,-1,-1,1,1,-1],ennola:=-10)),

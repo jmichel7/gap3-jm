@@ -18,7 +18,7 @@ CHEVIE.AddData("CartanMat","B",function (arg) local  n,type,a;
   n:=arg[1];
   if Length(arg)=2 then type:=arg[2];else type:=2;fi;
   a:=CHEVIE.R("CartanMat","A")(n);
-  a[1][2]:=-type;a[2][1]:=2/a[1][2];
+  if n>=2 then a[1][2]:=-type;a[2][1]:=2/a[1][2];fi;
   return a;
 end);
 

@@ -156,21 +156,8 @@ DeligneLusztigLefschetzTable:=function(H)local WF,t,uc;
     uc.operations.Fourier(uc){uc.almostHarishChandra[1].charNumbers};
 end;
 
-UnipCharOps.Frobenius:=function(WF,x,i)local W,p,uc,t,pt;
-  W:=x.group;
-  p:=List(ConjugacyClasses(W),x->PositionClass(W,Representative(x)^WF.phi));
-  p:=PermList(p);
-  uc:=UnipotentCharacters(W);
-  t:=DeligneLusztigCharacterTable(W);Add(t,Eigenvalues(uc));
-  pt:=Permuted(t,p);
-  t:=TransposedMat(t);
-  pt:=TransposedMat(pt);
-  p:=List(pt,x->Positions(t,x));
-  if ForAny(p,x->Length(x)>1) then 
-    Error("Rw + eigen cannot disambiguate\n");
-  fi;
-  p:=PermList(List(p,x->x[1]));
+UnipCharOps.Frobenius:=function(WF,x,i)
   x:=ShallowCopy(x);
-  x.v:=Permuted(x.v,p^-i);
+  x.v:=Permuted(x.v,PermutationOnUnipotents(Group(WF),WF.phi));
   return x;
 end;

@@ -189,7 +189,15 @@ The  function returns  a list  of representatives  of conjugacy  classes of
 $d$-split  Levis of <W>. A  $d$-split Levi is a  subcoset of <WF> formed of
 all the elements which act by $\zeta$ on a given subspace $V_\zeta$. If the
 additional  argument <ad>  is given,  it returns  only those subcosets such
-that the common $\zeta$-eigenspace of their elements is of dimension <ad>.
+that  the common $\zeta$-eigenspace of their elements is of dimension <ad>.
+These  notions  make  sense  and  thus  are  implemented  for  any  complex
+reflection group.
+
+In  terms of algebraic groups, an $F$-stable Levi subgroup of the reductive
+group  $\bG$  is  $d$-split  if  and  only  if it is the centralizer of the
+$\Phi_d$-part  of its center.  When $d=1$, we  get the notion  of a *split*
+Levi,  which  is  the  same  as  a  Levi sugroup of an $F$-stable parabolic
+subgroup of $\bG$.
 
 |    gap> W:=CoxeterGroup("A",3);
     CoxeterGroup("A",3)
@@ -203,7 +211,9 @@ that the common $\zeta$-eigenspace of their elements is of dimension <ad>.
     CoxeterGroup("E",8)
     gap> SplitLevis(W,4,2);
     [ D4<3,2,4,5>.(q^2+1)^2, (A1xA1)<5,7>x(A1xA1)<2,3>.(q^2+1)^2,
-      2(A2xA2)<3,1,5,6>.(q^2+1)^2 ]|
+      2(A2xA2)<3,1,5,6>.(q^2+1)^2 ]
+    gap> SplitLevis(ComplexReflectionGroup(5));
+    [ G5, Z3.(q-1), Z3<2>.(q-1), (q-1)^2 ]|
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{CuspidalUnipotentCharacters}
@@ -218,7 +228,12 @@ A  unipotent character $\gamma$ of the corresponding finite reductive group
 $\bG$  is $d$-cuspidal if  its Lusztig restriction  to any proper $d$-split
 Levi  is zero. When $d=0$ we recover the usal notion of cuspidal character.
 Equivalently  the $\Phi_d$-part of the generic  degree of $\gamma$ is equal
-to the $\Phi_d$-part of the generic order of the adjoint group of $\bG$.
+to  the $\Phi_d$-part of the  generic order of the  adjoint group of $\bG$.
+This  makes  sense  for  any  Spetsial  complex  reflection  group  and  is
+implemented  for them. This also generalises  to an arbitrary root of unity
+'E(d)\^r'  (which should be given as the fraction 'r/d') by asking that the
+generic  degree of $\gamma$  and the generic  order of the  adjoin group of
+$\bG$ have zeros of the same order at 'E(d)\^r'.
 
 The function returns the list of indices of unipotent characters which are
 $d$-cuspidal. If $d$ is omitted, it is taken to be $0$.
@@ -228,6 +243,26 @@ $d$-cuspidal. If $d$ is omitted, it is taken to be $0$.
     gap> CuspidalUnipotentCharacters(W);
     [ 14 ]
     gap> CuspidalUnipotentCharacters(W,3);
-    [ 1, 2, 5, 7, 8, 9, 12, 14 ]|
+    [ 1, 2, 5, 7, 8, 9, 12, 14 ]
+    gap> CuspidalUnipotentCharacters(ComplexReflectionGroup(4),3);
+    [ 3, 6, 7, 10 ]|
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CuspidalPairs}
+\index{CuspidalPairs}
+
+'CuspidalPairs(<W>[,<d>[,<ad>]])'
+
+returns  the  pairs  $(LF,\lambda)$  where  $LF$  is a $d$-split Levi (with
+$d$-center  of  dimension  $ad$  if  $ad$  is  given)  and  $\lambda$  is a
+$d$-cuspidal  character of $LF$. If $d$ is omitted it is assumed to be $1$,
+which means ordinary cuspidal pairs. The character $\lambda$ is returned as
+its index amongst unipotent characters. 'd' can represent an arbitrary root
+of  unity  (if  integral,  it  represents  'E(d)'  and  if a fraction 'r/d'
+represents 'E(d)\^r').
+
+|    gap> CuspidalPairs(CoxeterGroup("F",4));
+    [ [ F4, 31 ], [ F4, 32 ], [ F4, 33 ], [ F4, 34 ], [ F4, 35 ],
+      [ F4, 36 ], [ F4, 37 ], [ B2<3,2>.(q-1)^2, 6 ], [ (q-1)^4, 1 ] ]
+    gap> CuspidalPairs(ComplexReflectionGroup(4),3);
+    [ [ G4, 3 ], [ G4, 6 ], [ G4, 7 ], [ G4, 10 ], [ (q-1)(q-E3), 1 ] ]|

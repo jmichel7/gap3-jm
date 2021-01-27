@@ -58,7 +58,8 @@ AUTO(ReadChv("lib/util"),
   CollectCoefficients, DecomposeTensor, DetPerm, Dictionary, DifferenceMultiSet,
   Drop, EvalWords, EvalPolRoot, FastValue, FOrbit, FOrbits, GetRoot, GetWord,
   InductionTable, InductionTableOps, Inherit, InverseListsMap,
-  MinimalWordProperty, PositionCartesian, PositionDet, Replace, Rotations, 
+  MinimalWordProperty, PermutationOnCharacters, PermutationOnClasses,
+  PositionCartesian, PositionDet, Replace, Rotations, 
   SymmetricDifference, Transversals, TwoTree, Dtime, Stime, Elapsed, EvScheme);
 
 AUTO(ReadChv("lib/po"),
@@ -141,7 +142,7 @@ AUTO(ReadChv("prg/dispatch"),
   BetaInvolution, BraidRelations, BrieskornNormalForm,
   CharName, CharNames, CharNumbers, CharParams, ChevieCharInfo, ChevieClassInfo,
   ClassName, CoxeterElements, CoxeterLength, CoxeterWord, 
-  CoxeterWords, DualBraidMonoid, EltWord, 
+  CoxeterWords, DualBraidMonoid, EltWord, Ennola,
   FactorizedSchurElement, FactorizedSchurElements, 
   FakeDegrees, FieldOfDefinition,
   FirstLeftDescending, Fourier, Frobenius, GenericOrder, Hecke, HeckeCharValues,
@@ -159,8 +160,8 @@ AUTO(ReadChv("prg/dispatch"),
   StandardParabolic, TorusOrder, Variables, WeightInfo, WGraph);
 
 AUTO(ReadChv("prg/eigenspaces"),
-  CuspidalUnipotentCharacters,GetRelativeAction, GetRelativeRoot, 
-  EigenspaceProjector,
+  CuspidalPairs, CuspidalUnipotentCharacters,GetRelativeAction, 
+  GetRelativeRoot, EigenspaceProjector,
   PositionRegularClass, RegularEigenvalues, RelativeDegrees, SplitLevis);
 
 AUTO(ReadChv("prg/garside"), 
@@ -209,7 +210,7 @@ AUTO(ReadChv("prg/permroot"),
   MatYPerm, Reflection, ReflectionCharacter, ReflectionWord, jInductionTable);
 
 AUTO(ReadChv("prg/refltype"), 
-  ReflTypeOps);
+  OrderCenter,ReflTypeOps);
 
 AUTO(ReadChv("prg/semisimple"),
   AlgebraicCentre, FixedPoints, IntermediateGroup,
@@ -217,6 +218,9 @@ AUTO(ReadChv("prg/semisimple"),
   SemisimpleCentralizerRepresentatives,
   SemisimpleElement, SemisimpleElementOps, SemisimpleSubgroup,
   StructureRationalPointsConnectedCentre, SubTorus);
+
+AUTO(ReadChv("prg/series"),FactorsSet, Series, SeriesNC, SeriesOps, IsSeries,
+ProperSeries);
 
 AUTO(ReadChv("prg/spets"),
   GenericSign, IsSpets, PhiOnDiscriminant, 

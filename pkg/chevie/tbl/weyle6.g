@@ -613,6 +613,8 @@ CHEVIE.AddData("UnipotentCharacters","E6",rec(
   A:=[0,36,29,11,35,29,21,33,21,33,16,34,24,30,21,33,29,29,
      29,25,31,23,32,26,30,21,33,29,29,29]));
 
+CHEVIE.AddData("Ennola","E6",SignedPerm());
+
 CHEVIE.AddData("Invariants","E6",function()local r,C;
   C:=CHEVIE.R("CartanMat","E6");r:=RootsCartan(C)*C; 
  return 

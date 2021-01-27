@@ -347,9 +347,10 @@ CHEVIE.AddData("UnipotentCharacters","2E6",function()local uc,p,h;
    return uc;
 end);
 
+CHEVIE.AddData("Ennola","2E6",SignedPerm());
+
 CHEVIE.AddData("UnipotentClasses","2E6",function(p)local uc,l,u;
   uc:=Copy(CHEVIE.R("UnipotentClasses","E6")(p));
-  uc.springerSeries:=Filtered(uc.springerSeries,x->x.Z=[1]); # |H^1(F,Z)|=1 
   l:=[["1",(1,6)(3,5)],["A_1",(1,5)(2,4)],["A_2",(1,2)(3,4)],
    ["D_4",(1,2)],["D_5",[[-1]]],["D_5(a_1)",[[-1]]],["A_4{+}A_1",[[-1]]],
    ["A_4",[[1,0],[0,-1]]],["D_4(a_1)",[[-1,0],[0,-1]]],

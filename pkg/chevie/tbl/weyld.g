@@ -501,7 +501,7 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
     fi;
     cc.Au:=ApplyFunc(CoxeterGroup,Concatenation(List(cl[1].Au,x->["A",1])));
     CharNames(cc.Au);
-    if char<>2 then
+    if char<>2 then # see [Springer-Steinberg] E-95
       cc.red:=CoxeterGroup();
       j:=cc.parameter;
       for j in Collected(j) do

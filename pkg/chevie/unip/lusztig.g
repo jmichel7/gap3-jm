@@ -77,7 +77,7 @@ FindIntSol:=function(l)
     i:=Position(vars,v);
     if IsBound(vals[i]) then return true;fi;
     vals[i]:=val;
-    Print("A v=",v," val=",val,"\n");
+#   Print("A v=",v," val=",val,"\n");
     usevals(v,val);
     return true;
   end;
@@ -230,12 +230,27 @@ LusztigInductionPieces:=function(res)
   return res;
 end;
 
+CheckMaps:=function(WF,LF,maps)local q,uL,uW,deg;
+  q:=X(Cyclotomics);
+  uL:=UnipotentDegrees(LF,q);
+  deg:=GenericSign(WF)^-1*GenericOrder(WF,q)/
+       (GenericSign(LF)^-1* GenericOrder(LF,q));
+  deg.valuation:=0;
+  uL:=uL*deg;
+  uW:=UnipotentDegrees(WF,q);
+  if ForAny([2..Length(maps)],i->uW*maps[i]<>uL*0) then
+    Error("not what I expected");
+  fi;
+  InfoChevie("# comparing degrees\n");
+  CHEVIE.Check.EqLists(uW*maps[1],uL);
+end;
+
 CHEVIE.Cache.LusztigInductionMaps:=false;
 # arguments (LF,WF[,force])
 # if there is a third argument then return res (with the pieces)
 # even in case of failure
 LusztigInductionTable:=function(arg)
-  local LF,WF,res,uW,uL,hh,scalars,fL,fWinv,map,maps,ret,p;
+  local LF,WF,res,uW,uL,hh,scalars,fL,fWinv,map,maps,ret,p,q,deg;
   LF:=arg[1];WF:=arg[2];
   if not IsSpets(WF) then WF:=Spets(WF);fi;
   if not IsSpets(LF) then LF:=Spets(LF);fi;
@@ -281,8 +296,12 @@ LusztigInductionTable:=function(arg)
     return ret(map);
   fi;
   scalars:=FindIntSol(Set(TransposedMat(List(maps,Concatenation))));
-  if scalars=false then return ret(scalars);fi;
+  if scalars=false then 
+    CheckMaps(WF,LF,maps);
+    return ret(scalars);
+  fi;
   if Length(scalars)>1 then
+    CheckMaps(WF,LF,maps);
     ChevieErr("#I WARNING: ambiguity in scalars:",FormatGAP(scalars),"\n");
   fi;
   scalars:=scalars[1];

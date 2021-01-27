@@ -365,3 +365,125 @@ ReflTypeOps.DecompositionMatrix:=function(arg)local m,res,n;
   SortParallel(Concatenation(List(m,x->x[1])),res);
   return res;
 end;
+
+# order of the center of the complex reflection group W
+OrderCenter:=function(t)
+  if IsBound(t.orbit) then return OrderCenter(t.orbit[1]);
+  else return Gcd(ReflectionDegrees(t));
+  fi;
+end;
+
+# SpetsEnnola(t[,ret]) if 2-arg return basis no.
+SpetsEnnola:=function(arg)local t,z,xi,PositionsSgn,uc,EnnolaBete,OmegaChi,
+  predeigen,EnnolaBE,FamEnnola,fd,q,l,res,A,b,i,f;
+  t:=arg[1];
+  if IsBound(t.orbit) then z:=Gcd(List(ReflectionDegrees(t),x->x[1]));
+  else z:=Gcd(ReflectionDegrees(t));
+  fi;
+  xi:=E(z)^-1;
+
+  # positions(-with-sign) in l where o or -o appears
+  PositionsSgn:=function(l,o)
+    return Concatenation(Positions(l,o),-Positions(l,-o));
+  end;
+
+  uc:=Copy(CHEVIE.Data("UnipotentCharacters",t));
+  uc.operations:=UnipotentCharactersOps;
+  uc.size:=Length(uc.a);
+  q:=X(Cyclotomics);
+  fd:=[1..Size( uc)]*0*q;
+  if IsBound(uc.almostHarishChandra) then
+       l:=uc.almostHarishChandra[1].charNumbers;
+  else l:=uc.harishChandra[1].charNumbers;
+  fi;
+  fd{l}:=FakeDegrees(ReflectionGroup(t),q);
+  uc.degrees:=UnipotentCharactersOps.FourierInverse(uc)*fd;
+  uc.CycPolDegrees:=List(uc.degrees,CycPol);
+
+  # EnnolaBete(i)
+  # possible action of Ennola on i-th family 
+  # (list of possible destinations for each char, taking just degree in account)
+  EnnolaBete:=function(i)local ud;
+    ud:=uc.CycPolDegrees{uc.families[i].charNumbers};
+    return List(ud,p->PositionsSgn(ud,CycPolOps.EnnolaTwist(p,xi)));
+  end;
+
+  # List of omega_chi(E(z)) for character sheaves (rho,chi)
+  OmegaChi:=function(uc)local relativeFake,h;
+    if not IsBound(uc.omegachi) then
+      relativeFake:=[];
+      for h in uc.harishChandra do
+        h.relativeType.operations:=ReflTypeOps;
+        relativeFake{h.charNumbers}:=FakeDegrees(ReflectionGroup(h.relativeType),q);
+      od;
+      uc.omegachi:=List(relativeFake,f->Value(f,xi)/Value(f,1));
+    fi;
+    return uc.omegachi;
+  end;
+
+  # if Ennola_xi(U_{\chi_i})=\pm\rho returns deduced Frob(\rho) 
+  predeigen:=function(i)
+    if not(i in uc.harishChandra[1].charNumbers) then 
+      Error("only for principal series");
+    fi;
+    return OmegaChi(uc)[i]^-1*E(z^2)^(uc.a[i]+uc.A[i])*Eigenvalues(uc)[i];
+  end;
+
+  # More sophisticated Ennola taking in account the predicted eigenvalues for
+  # Ennola(principal series).
+  EnnolaBE:=function(i)local W,f,eig,n,e,j;
+    f:=uc.families[i];
+    eig:=Eigenvalues(f);
+    n:=uc.harishChandra[1].charNumbers;
+    e:=EnnolaBete(i);
+  # Print(Product(e,Length),"=>");
+    for j in [1..Size(f)] do
+      if f.charNumbers[j] in n then
+         e[j]:=Filtered(e[j],k->eig[AbsInt(k)]=predeigen(f.charNumbers[j]));
+      fi;
+    od;
+  # Print(Product(e,Length),"\n");
+    return e;
+  end;
+
+  FamEnnola:=function(i)local poss,f,A,b,res;
+    if IsBound(t.twist) and t.twist<>() then poss:=EnnolaBete(i);
+    else poss:=EnnolaBE(i);
+    fi;
+    f:=uc.families[i];
+    A:=FusionAlgebra(f);
+    b:=Basis(A);
+    res:=[];
+    for i in [1..Length(b)] do
+      p:=SignedPermListList(b,b[i]*b);
+      if p<>false then 
+        if ForAll([1..Size(f)],j->j^p in poss[j]) then Add(res,i);fi;
+        p:=SignedPerm(-p.l);
+        if ForAll([1..Size(f)],j->j^p in poss[j]) then Add(res,-i);fi;
+      fi;
+    od;
+    return res;
+  end;
+
+  l:=List([1..Length(uc.families)],FamEnnola);
+  if Length(arg)=2 then return l;fi;
+  l:=Cartesian(l)[1];
+  res:=uc.a*0;
+  for i in [1..Length(l)] do
+    f:=uc.families[i];
+    A:=FusionAlgebra(f);b:=Basis(A);
+    if l[i]>0 then p:=SignedPermListList(b,b[l[i]]*b);
+              else p:=SignedPermListList(b,-b[-l[i]]*b);
+    fi;
+    res{f.charNumbers}:=Permuted(f.charNumbers,p);
+  od;
+  return SignedPerm(res);
+end;
+
+ReflTypeOps.Ennola:=function(t)local res;
+  res:=CHEVIE.Data("Ennola",t);
+  if res=false then InfoChevie("#using SpetsEnnola\n");
+    res:=SpetsEnnola(t);
+  fi;
+  return res;
+end;

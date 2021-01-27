@@ -113,6 +113,7 @@ Signs:=p->Permuted(List(p.l,SignInt),Perm(p));
 
 # Transforms hyperoctaedral perm or matrix or perm+signs to a signed perm,
 SignedPerm:=function(arg)local ls,n,i,nz,res;
+  if Length(arg)=0 then return SignedPerm([]);fi;
   ls:=arg[1];
   if IsMat(ls) then
     n:=Length(ls);
@@ -191,7 +192,7 @@ SignedMatStab:=function(arg)local blocks,stab,g,r,gens,I,p,ss,M,extra,k,gr;
     g:=ApplyFunc(Group,List(g.generators,x->x^p));
     g:=Group(List(g.generators,SignedPermOps.HO),());
     g:=MatStab(g,SignedPermOps.dup(M{I}{I}));
-    g:=Group(List(g.generators,x->SignedPerm(x,k)),SignedPerm([]));
+    g:=Group(List(g.generators,x->SignedPerm(x,k)),SignedPerm());
     g:=ApplyFunc(Group,List(g.generators,x->x^(p^-1)));
   od;
   return g;
@@ -237,7 +238,7 @@ SignedPermMatMat:=function(arg)
   end;
   l:=ind([1..Length(M)],[1..Length(N)]);
   if l=false then return false;fi;
-  I:=[];J:=[];g:=Group(SignedPerm([]));tr:=SignedPerm([]);
+  I:=[];J:=[];g:=Group(SignedPerm());tr:=SignedPerm();
   for r in l do
 #   Print("r=",r,"\n");
     n:=Length(r[1]);
@@ -245,22 +246,22 @@ SignedPermMatMat:=function(arg)
     p:=MappingPermListList([1..n],[1..n]+Length(I));
     Append(I,r[1]);Append(J,r[2]);
 #   Print("#I=",Length(I),"\c");
-    if Comm(r[3]^p,tr^q)<>SignedPerm([]) then Error("noncomm");fi;
+    if Comm(r[3]^p,tr^q)<>SignedPerm() then Error("noncomm");fi;
     tr:=tr^q*r[3]^p;
     h:=OnTuples(SignedMatStab(M{r[1]}{r[1]}).generators,p);
-    g:=Group(Concatenation(OnTuples(g.generators,q),h),SignedPerm([]));
+    g:=Group(Concatenation(OnTuples(g.generators,q),h),SignedPerm());
 #   Print(" #g=",Size(g),"\c");
     e:=RepresentativeOperation(g,M{I}{I},
       OnMatrices(N{J}{J},tr^-1),OnMatrices);
     if e=false then return false;
-    else if e^-1*e^tr<>SignedPerm([]) then 
+    else if e^-1*e^tr<>SignedPerm() then 
             Print("*** tr does not commute to e\n");
          fi;
          tr:=e*tr;
     fi;
     g:=MatStab(Group(List(g.generators,SignedPermOps.HO),()),SignedPermOps.dup(M{I}{I}));
 #   Print(" #stab=",Size(g),"\n");
-    g:=Group(List(g.generators,x->SignedPerm(x,Length(I))),SignedPerm([]));
+    g:=Group(List(g.generators,x->SignedPerm(x,Length(I))),SignedPerm());
   od;
   # transporter of a ps from [1..Length(I)] to I
   trans:=I->SignedPerm(ListPerm(MappingPermListList([1..Length(I)],I)));

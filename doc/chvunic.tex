@@ -14,6 +14,8 @@
 \def\bP{{\bf P}}
 \def\bT{{\bf T}}
 \def\bU{{\bf U}}
+\def\bX{{\bf X}}
+\def\BF{{\mathbb F}}
 \def\Sym{{\mathfrak S}}
 
 \Chapter{Unipotent characters of finite reductive groups and Spetses}
@@ -507,6 +509,41 @@ reductive group (or Spetses) with Weyl group (or Spetsial reflection group)
 For  a  non-rational  Spetses,  'Indeterminate(Cyclotomics)'  would be more
 appropriate.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ennola}
+\index{Ennola}
+
+'Ennola(<W>)'
+
+Let  <W> be an irreducible spetsial reflection  group or coset, and <z> the
+generator  of the  center of  <W>, viewed  as a  root of  unity. A property
+checked  case-by  case  is  that,  for  a unipotent character $\gamma$ with
+polynomial  generic  degree  $\deg\gamma(q)$  of  the spets attached to <W>
+(this  spets is a  finite reductive group,  for <W> a  Weyl group, in which
+case  $z=-1$  if  $-1$  is  in  <W>), $\deg\gamma(zq)$ is equal to $\pm\deg
+En(\gamma)(q)$  for  another  unipotent  character $En(\gamma)$, the Ennola
+transform of $\gamma$. The function returns the permutation-with-signs done
+by   $En$  on  the  unipotent  degrees  (as  a  permutation-with  signs  of
+'[1..Size(UnipotentCharacters(W))]'). The argument <W> must be irreducible.
+
+The  permutation-with-signs is not uniquely determined by the degrees since
+two  of them may  be equal, but  is uniquely determined  by some additional
+axioms that we do not recall here.
+
+|    gap> Ennola(RootDatum("3D4"));
+    (3,-4)(5,-5)(6,-6)(7,-8)
+    gap> Ennola(ComplexReflectionGroup(14));
+    (2,43,-14,16,41,34)(3,35,40,18,-11,42)(4,-37,25,-17,-26,-36)(5,-6,-79)\
+    (7,-7)(8,-74)(9,-73)(10,-52,13,31,-50,29)(12,53,15,32,-51,-30)(19,71,7\
+    0,21,67,68,20,69,72)(22,-39,27,-33,-28,-38)(23,24,-66,-23,-24,66)(44,4\
+    6,49,-44,-46,-49)(45,48,47,-45,-48,-47)(54,-63,-55,-57,62,-56)(58,-65,\
+    -59,-61,64,-60)(75,-77)(76,-76)(78,-78)|
+
+The  last example  shows that  it may  happen that  the order of $z$-Ennola
+(here 18) is greater than the order of $z$ (here 6); this is related to the
+presence  of irrationalities in  the character table  of the spetsial Hecke
+algebra of $W$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{CycPolUnipotentDegrees}
 \index{CycPolUnipotentDegrees}
 
@@ -694,6 +731,24 @@ We now show an example with a coset (corresponding to the unitary group).
     function ( arg ) ... end
     gap> DeligneLusztigLefschetz(T(1));
     [2A2]=-<11>-q<2A2>+q^2<2>|
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{PermutationOnUnipotents}
+\index{PermutationOnUnipotents}
+
+'PermutationOnUnipotents(<W>,<aut>)'
+
+<W>  is  a  reflection  group  or  reflection  coset  representing a finite
+reductive group $\bG^F$, and <aut> is an automorphism of $\bG^F$ (for $W$ a
+permutation  group, this can be  given as a permutation  of the roots). The
+function  returns the  permutation of  the unipotent  characters of $\bG^F$
+induced  by <aut>. This makes sense  for Spetsial complex reflection groups
+and is implemented for them.
+
+|    gap> WF:=RootDatum("3D4");
+    3D4
+    gap> PermutationOnUnipotents(Group(WF),WF.phi);
+    ( 1, 7, 2)( 8,12, 9)|
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Families of unipotent characters}
@@ -1093,3 +1148,165 @@ $(b_i,b_j)=C_{i,j,\sigma(s)}$.
 |
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{$d$-Harish-Chandra series}
+$d$-Harish-Chandra   series  describe  unipotent  $l$-blocks  of  a  finite
+reductive  group $\bG(\BF_q)$ for $l\|\Phi_d(q)$ (at  least, when $l$ is not
+too  small which means mostly not a bad prime for $\bG$). Some of the facts
+stated  below are  still partly  conjectural, we  do not try to distinguish
+precisely what has been established and what is still conjectural.
+
+If  $(\bL,\lambda)$ is  a $d$-cuspidal  pair then  the constituents  of the
+Lusztig   induced  $R_\bL^\bG(\lambda)$  are  called  a  $d$-Harish-Chandra
+series;  they form  the unipotent  part of  an $l$-block  of $\bG^F$. It is
+conjectured  (and  proven  in  some  cases)  that  the $\bG^F$-endomorphism
+algebra  of the $l$-adic cohomology of  the variety $\bX$ which defines the
+Lusztig  induction is  a $d$-cyclotomic  Hecke algebra $H_\bG(\bL,\lambda)$
+for  the  group  $W_\bG(\bL,\lambda)\:=N_\bG(\bL,\lambda)/\bL$,  which is a
+complex  reflection group --- here $d$-cyclotomic means that the parameters
+of  $H_\bG(\bL,\lambda)$ are monomials in $q$ and that $H_\bG(\bL,\lambda)$
+specializes to the algebra of $W_\bG(\bL,\lambda)$ for $q\mapsto$|E(d)|.
+
+It  follows that the decomposition of the  Lusztig induction is of the form
+$$R_\bL^\bG(\lambda)=\sum_{\phi\in\hbox{Irr}(W_\bG(\bL,\lambda))}(-1)^{n_\phi}
+\phi(1)\gamma_\phi,$$  where  $\gamma_\phi$  is  a  unipotent  character of
+$\bG^F$ attached to $\phi$ and where $n_\phi$ is the degree
+$H^{n_\phi}_c(\bX)$ where $\gamma_\phi$ occurss; and further for any $\phi$
+we  have $R_\bL^\bG(\lambda)(1)=  (-1)^{n_\phi} \gamma_\phi(1)S_\phi$ where
+$S_\phi$  is  the  Schur  element  of the character of $H_\bG(\bL,\lambda)$
+which  deforms  to  $\phi$.  The  function  |Series|  allows  to  explore a
+$d$-Harish-Chandra series.
+
+|    gap> W:=RootDatum("3D4");;
+    gap> l:=CuspidalPairs(W,3);
+    [ [ 3D4, 8 ], [ (q^2+q+1)^2, 1 ] ]
+    gap> s:=Series(W,l[2][1],l[2][2],3);;
+    gap> Display(s);
+    E(3)-series R^{3D4}_{(q^2+q+1)^2}() H_G(L,c)=Hecke(G4,[[E3q^2,E3,E3q]])
+      |'\|'|      Name  WGLname eps family #
+    ____________________________________
+    1 |'\|'|  phi{1,0} phi{1,0}   1        1
+    2 |'\|'|  phi{1,6} phi{1,4}   1        2
+    3 |'\|'|  phi{2,2} phi{1,8}  -1        5
+    6 |'\|'| phi{1,3}' phi{2,5}   1        4
+    5 |'\|'|phi{1,3}'' phi{2,3}  -1        3
+    7 |'\|'|  phi{2,1} phi{2,1}  -1        5
+    4 |'\|'|    3D4[1] phi{3,2}   1        5|
+
+Above we explore the 3-series corresponding to $R_\bT^\bG(\hbox{Id})$ where
+$\bG$  is the triality group and $\bT$  is the torus of type $(q^2+q+1)^2$.
+The  group $W_\bG(\bT)$ is the complex reflection group $G_4$. The displays
+shows   in  the  column  'Name'  the   name  of  the  unipotent  characters
+constituents  of $R_\bT^\bG(\hbox{Id})$, and in the first column the number
+of  these characters  in the  list of  unipotent characters.  In the column
+'WGLname' the name of the character $\phi$ of $W_\bG(\bT)$ corresponding to
+the unipotent character $\gamma_\phi$ is shown; in the column 'eps' we show
+the  sign  $(-1)^{n_\phi}$.  Finally  in  the  last column we show in which
+family of unipotent characters is $\gamma_\phi$.
+
+The theory of $d$-Harish-Chandra series can be generalized to spetsial complex
+reflection groups using some axioms. We show below an example.
+
+|    gap> W:=ComplexReflectionGroup(4);
+    ComplexReflectionGroup(4)
+    gap> l:=CuspidalPairs(W,3);
+    [ [ G4, 3 ], [ G4, 6 ], [ G4, 7 ], [ G4, 10 ], [ (q-1)(q-E3), 1 ] ]
+    gap> s:=Series(W,l[5][1],l[5][2],3);;
+    gap> Display(s);
+    E(3)-series R^{G4}_{(q-1)(q-E3)}() W_G(L,c)=Z6
+      |'\|'|    Name WGLname(mod 3) eps  param family #
+    _______________________________________________
+    1 |'\|'|phi{1,0}              1   1  E3q^2        1
+    5 |'\|'|phi{2,3}          -E3^2   1   -E3q        2
+    2 |'\|'|phi{1,4}             E3  -1     E3        4
+    8 |'\|'|    Z3:2             -1  -1 -E3^2q        2
+    9 |'\|'|   Z3:11           E3^2  -1   E3^2        4
+    4 |'\|'|phi{2,5}            -E3  -1    -E3        4|
+
+Above  we explore the $3$-series corresponding  to the trivial character of
+the  torus of type $(q-1)(q-E(3))$.  For cyclic groups $W_\bG(\bL,\lambda)$
+we  display  the  parameters  in  the  table  since  they are associated to
+characters  of $W_\bG(\bL,\lambda)$.  Finally the  mention '(mod  3)' which
+appears in the 'WGLname' column means that in this case the axioms leave an
+ambiguity  in the correspondence between unipotent characters $\gamma_\phi$
+and characters $\phi$ (as well as with parameters)\:\ the correspondence is
+known  only up to  a translation by  3 (in this  case, the same as a global
+multiplication of all $\phi$ by $-1$).
+
+Finally,  we should note that  if the reflection group  or coset $W$ is not
+defined  over the integers,  what counts is  not cyclotomic polynomials but
+factors  of them  over the  field of  definition of  $W$. In this case, one
+should  not give as argument an integer 'd' representing 'E(d)' but specify
+a root of unity with a fraction 'r/d' representing 'E(d)\^r'. For instance,
+in the above case we get a different answer with\:
+
+|    gap> CuspidalPairs(W,2/3);
+    [ [ G4, 2 ], [ G4, 5 ], [ G4, 7 ], [ G4, 10 ], [ (q-1)(q-E3^2), 1 ] ]|
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Series}
+\index{Series}
+
+'Series(<W>, <L>, <cuspidal>, <d>)'
+
+If the reflection coset or group <W> corresponds to the algebraic group $\bG$
+and <cuspidal> to the $d$-cuspidal unipotent character $\lambda$ of $\bL$,
+constructs the $d$-series corresponding to $R_\bL^\bG(\lambda)$.
+If 's' is the result, it
+is a record with the following fields and functions\:
+
+'s.spets': the reflection group or coset <W>.
+
+'s.levi': the subcoset <L>.
+
+'s.cuspidal': the index of $\lambda$ in 'UnipotentCharacters(L)'.
+
+'s.d': the value of 'd' (represents a root of unity as a fraction in $[0,1[$).
+
+'s.WGL': the group $W_\bG(\bL,\lambda)$.
+
+'s.RLG': the 'UnipotentCharacter' given by $R_\bL^\bG(\lambda)$.
+
+'s.eps':  for each character $\phi$ of  's.WGL' the sign $(-1)^{n_\phi}$ in
+the  cohomology  of  the  variety  defining  's.RLG'  of  the corresponding
+constituent $\gamma_\phi$ of 's.RLG'.
+
+'Degree(s)': the generic degree of 's.RLG', as a 'CycPol'.
+
+'CharNumbers(s)':   the   indices   in   'UnipotentCharacters(W)'   of  the
+constituents of 's.RLG'.
+
+'Hecke(s)': the hecke algebra $H_\bG(\bL,\lambda)$.
+
+The function 'Series' has another form:
+
+'Series(<W> [,<d> [,<ad>]])'
+
+returns  all the  $d$-series of  <W> corresponding  to a  $d$-eigenspace of
+dimension   <ad>  (default  $d=1$,  and  if  <ad>  not  given  returns  all
+<d>-series).
+
+|    gap> W:=ComplexReflectionGroup(4);
+    ComplexReflectionGroup(4)
+    gap> Series(W,3,1);
+    [ E(3)-series R^{G4}_{(q-1)(q-E3)}() W_G(L,c)=Z6 ]
+    gap> s:=last[1];
+    E(3)-series R^{G4}_{(q-1)(q-E3)}() W_G(L,c)=Z6
+    gap> s.spets;
+    G4
+    gap> s.levi;
+    (q-1)(q-E3)
+    gap> s.cuspidal;
+    1
+    gap> s.d;
+    1/3
+    gap> Hecke(s);
+    Hecke(Z6,[[E3q^2,-E3q,E3,-E3^2q,E3^2,-E3]])
+    gap> Degree(s);
+    E3P1P2^2P"3P4P6
+    gap> s.RLG;
+    [G4]=<phi{1,0}>-<phi{1,4}>-<phi{2,5}>+<phi{2,3}>-<Z3:2>-<Z3:11>
+    gap> CharNumbers(s);
+    [ 1, 5, 2, 8, 9, 4 ]
+    gap> s.eps;
+    [ 1, 1, -1, -1, -1, -1 ]
+    gap> ReflectionName(s.WGL);
+    "Z6"|

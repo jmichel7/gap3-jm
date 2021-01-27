@@ -72,6 +72,7 @@ situations.
 <LI> <A HREF="chap099.htm#SECT004">EigenspaceProjector</a>
 <LI> <A HREF="chap099.htm#SECT005">SplitLevis</a>
 <LI> <A HREF="chap099.htm#SECT006">CuspidalUnipotentCharacters</a>
+<LI> <A HREF="chap099.htm#SECT007">CuspidalPairs</a>
 </ol>
 <A NAME="SECT001"><h2>99.1 RelativeDegrees</h2></a>
 <P><P>
@@ -192,7 +193,15 @@ The  function returns  a list  of representatives  of conjugacy  classes of
 <I>d</I>-split  Levis of <var>W</var>. A  <I>d</I>-split Levi is a  subcoset of <var>WF</var> formed of
 all the elements which act by <I>&zeta;</I> on a given subspace <I>V<sub>&zeta;</sub></I>. If the
 additional  argument <var>ad</var>  is given,  it returns  only those subcosets such
-that the common <I>&zeta;</I>-eigenspace of their elements is of dimension <var>ad</var>.
+that  the common <I>&zeta;</I>-eigenspace of their elements is of dimension <var>ad</var>.
+These  notions  make  sense  and  thus  are  implemented  for  any  complex
+reflection group.
+<P>
+In  terms of algebraic groups, an <I>F</I>-stable Levi subgroup of the reductive
+group  <I><strong>G</strong></I>  is  <I>d</I>-split  if  and  only  if it is the centralizer of the
+<I>&Phi;<sub>d</sub></I>-part  of its center.  When <I>d=1</I>, we  get the notion  of a <strong>split</strong>
+Levi,  which  is  the  same  as  a  Levi sugroup of an <I>F</I>-stable parabolic
+subgroup of <I><strong>G</strong></I>.
 <P>
 <pre>    gap> W:=CoxeterGroup("A",3);
     CoxeterGroup("A",3)
@@ -206,7 +215,9 @@ that the common <I>&zeta;</I>-eigenspace of their elements is of dimension <var>
     CoxeterGroup("E",8)
     gap> SplitLevis(W,4,2);
     [ D4&lt;3,2,4,5>.(q^2+1)^2, (A1xA1)&lt;5,7>x(A1xA1)&lt;2,3>.(q^2+1)^2,
-      2(A2xA2)&lt;3,1,5,6>.(q^2+1)^2 ]</pre>
+      2(A2xA2)&lt;3,1,5,6>.(q^2+1)^2 ]
+    gap> SplitLevis(ComplexReflectionGroup(5));
+    [ G5, Z3.(q-1), Z3&lt;2>.(q-1), (q-1)^2 ]</pre>
 <P><A NAME="SECT006"><h2>99.6 CuspidalUnipotentCharacters</h2></a>
 <P><P>
 <A name = "I5"></a>
@@ -221,7 +232,12 @@ A  unipotent character <I>&gamma;</I> of the corresponding finite reductive grou
 <I><strong>G</strong></I>  is <I>d</I>-cuspidal if  its Lusztig restriction  to any proper <I>d</I>-split
 Levi  is zero. When <I>d=0</I> we recover the usal notion of cuspidal character.
 Equivalently  the <I>&Phi;<sub>d</sub></I>-part of the generic  degree of <I>&gamma;</I> is equal
-to the <I>&Phi;<sub>d</sub></I>-part of the generic order of the adjoint group of <I><strong>G</strong></I>.
+to  the <I>&Phi;<sub>d</sub></I>-part of the  generic order of the  adjoint group of <I><strong>G</strong></I>.
+This  makes  sense  for  any  Spetsial  complex  reflection  group  and  is
+implemented  for them. This also generalises  to an arbitrary root of unity
+<code>E(d)^r</code>  (which should be given as the fraction <code>r/d</code>) by asking that the
+generic  degree of <I>&gamma;</I>  and the generic  order of the  adjoin group of
+<I><strong>G</strong></I> have zeros of the same order at <code>E(d)^r</code>.
 <P>
 The function returns the list of indices of unipotent characters which are
 <I>d</I>-cuspidal. If <I>d</I> is omitted, it is taken to be <I>0</I>.
@@ -231,7 +247,29 @@ The function returns the list of indices of unipotent characters which are
     gap> CuspidalUnipotentCharacters(W);
     [ 14 ]
     gap> CuspidalUnipotentCharacters(W,3);
-    [ 1, 2, 5, 7, 8, 9, 12, 14 ]</pre>
-<P><a href ="chap098.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap100.htm">Next</a><BR><a href = "theindex.htm">Index</a>
+    [ 1, 2, 5, 7, 8, 9, 12, 14 ]
+    gap> CuspidalUnipotentCharacters(ComplexReflectionGroup(4),3);
+    [ 3, 6, 7, 10 ]</pre>
+<P><A NAME="SECT007"><h2>99.7 CuspidalPairs</h2></a>
+<P><P>
+<A name = "I6"></a>
+
+<P>
+<code>CuspidalPairs(<var>W</var>[,<var>d</var>[,<var>ad</var>]])</code>
+<P>
+returns  the  pairs  <I>(LF,&lambda;)</I>  where  <I>LF</I>  is a <I>d</I>-split Levi (with
+<I>d</I>-center  of  dimension  <I>ad</I>  if  <I>ad</I>  is  given)  and  <I>&lambda;</I>  is a
+<I>d</I>-cuspidal  character of <I>LF</I>. If <I>d</I> is omitted it is assumed to be <I>1</I>,
+which means ordinary cuspidal pairs. The character <I>&lambda;</I> is returned as
+its index amongst unipotent characters. <code>d</code> can represent an arbitrary root
+of  unity  (if  integral,  it  represents  <code>E(d)</code>  and  if a fraction <code>r/d</code>
+represents <code>E(d)^r</code>).
+<P>
+<pre>    gap> CuspidalPairs(CoxeterGroup("F",4));
+    [ [ F4, 31 ], [ F4, 32 ], [ F4, 33 ], [ F4, 34 ], [ F4, 35 ],
+      [ F4, 36 ], [ F4, 37 ], [ B2&lt;3,2>.(q-1)^2, 6 ], [ (q-1)^4, 1 ] ]
+    gap> CuspidalPairs(ComplexReflectionGroup(4),3);
+    [ [ G4, 3 ], [ G4, 6 ], [ G4, 7 ], [ G4, 10 ], [ (q-1)(q-E3), 1 ] ]</pre>
+<a href ="chap098.htm">Previous</a> <a href = "index.htm">Up</a> <a href ="chap100.htm">Next</a><BR><a href = "theindex.htm">Index</a>
 <P>
 <address>gap3-jm<br>30 Oct 2020</address></body></html>

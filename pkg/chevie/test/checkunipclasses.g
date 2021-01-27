@@ -162,4 +162,4 @@ CHEVIE.AddTest("NrSemisimple",function(WF)local l,g,q;
   if Sum(l) <> g then
     ChevieErr("found nr elem=",Sum(l)," instead of ",g,"\n");
   fi;
-end,W->IsWeylGroup(W) and Size(FundamentalGroup(W))=1);
+end,W->IsWeylGroup(W) and Size(FundamentalGroup(W))=1 and Size(W)<10^8);

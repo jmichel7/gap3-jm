@@ -165,6 +165,7 @@ ReflTypeOpsUnipotentCharacters:=function(t) local uc,a,s,i,indices,r;
     Print("Warning: ",ReflectionName(t)," Is not a Spets!!");
     return uc;
   fi;
+  uc:=Copy(uc);
   Inherit(uc,UnipotentCharactersOps.ParamsAndNames(uc.harishChandra));
   if not IsBound(uc.charSymbols) then
     uc.charSymbols:=uc.charParams;
@@ -568,6 +569,23 @@ end;
 UnipotentCharactersOps.HighestPowerGenericDegrees:=function(uc)local uc,ud;
   ud:=CycPolUnipotentDegrees(Group(uc));
   return List(ud{uc.harishChandra[1].charNumbers},Degree);
+end;
+
+# Permutation of the unipotent characters induced by an automorphism of W
+# PermutationOnUnipotents(W,aut [,uniplist])
+PermutationOnUnipotents:=function(arg)local aut,W,p,t,l,uc;
+  aut:=arg[2];W:=arg[1];
+  uc:=UnipotentCharacters(W);
+  if Length(arg)=3 then l:=arg[3];else l:=[1..Size(uc)];fi;
+  t:=List(DeligneLusztigCharacterTable(W),x->x{l});
+  Add(t,Eigenvalues(uc,l));t:=TransposedMat(t);
+  if Length(Set(t))<Length(t) then 
+    t:=List(l,x->Position(uc.harishChandra[1].charNumbers,x));
+    if ForAll(t,x->x<>false) then return PermutationOnCharacters(W,aut,t);
+    else Error("Rw + eigen cannot disambiguate\n");
+    fi;
+  fi;
+  return PermListList(t,List(t,r->Permuted(r,PermutationOnClasses(W,aut))));
 end;
 
 if not IsBound(CHEVIE.families) then ReadChv("unip/families");fi;

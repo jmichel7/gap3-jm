@@ -255,7 +255,8 @@ CHEVIE.AddData("UnipotentCharacters","2F4",function()local res;
         "subcategory of Drinfeld double of $\\tilde\\frakS_4\n$",
         "see Ph. D. Thesis of Abel Lacabanne, section 5.2\n"),
         eigenvalues:=[1,1,1,-1,-1,-1,-E(4),E(4),E(4),-E(4),-E(3),-E(3)^2,-1],
-        sh:=[1,1,1,1,1,E(4),-E(4),-1,1,1,E(3),E(3)^2,-1]),
+        sh:=[1,1,1,1,1,E(4),-E(4),-1,1,1,E(3),E(3)^2,-1],
+        ennola:=[2,1,3,4,6,5,10,9,8,7,11,12,13]),
         [3,19,20,7,8,11,14,15,16,17,6,18,21])],
   almostHarishChandra:=[
     rec(relativeType:=rec(

@@ -581,9 +581,10 @@ ICCTable:=function(arg)local W,i,q,tbl,o,res,q,uc,ss,b,f,k,R,n;
   return res;
 end;
 
-# XTable(uc[,opt]): values of functions X_\iota on unipotent
-# classes (opt.classes bound) or local systems (opt.classes unbound)
+# XTable(uc[,opt]): values of functions \tilde X_\iota on unipotent
+# classes (opt.classes=true) or local systems (opt.classes unbound)
 # opt: variable (default X(Cyclotomics))
+# Note that c_\iota=\beta_u+(rkss L_\CI)/2
 #
 # Formatting: options of FormatTable + [.classes, .CycPol]
 # In the case opt.classes a side effect is computing cardClass giving the
@@ -606,7 +607,7 @@ XTable:=function(arg)
     parameter:=Concatenation(List(pieces,x->x.parameter)),
     relgroups:=List(uc.springerSeries,x->x.relgroup));
   n:=Length(l);
-  if IsBound(opt.classes) then
+  if IsBound(opt.classes) and opt.classes then
     res.classes:=Permuted(l,p);
     res.cardClass:=[];
     for i in [1..Length(uc.classes)] do
@@ -623,10 +624,10 @@ XTable:=function(arg)
   res.operations:=rec();
   res.operations.String:=x->SPrint("XTable(",W,",rec(variable:=",q,"))");
   res.operations.Format:=function(x,opt)local res,tbl,i,b;
-    res:=SPrint("Values of character sheaves X_\iota on");
+    res:=SPrint("Values of character sheaves $\tilde X_\iota$ on");
     opt.rowLabels:=Concatenation(List(x.relgroups,g->
-      List(CharNames(g,opt),n->SPrint("Q^{",ReflectionName(g),"}_{",n,"}"))));
-    opt.rowsLabel:="Q";
+      List(CharNames(g,opt),n->SPrint("X^{",ReflectionName(g),"}_{",n,"}"))));
+    opt.rowsLabel:="X";
     tbl:=Copy(x.scalar);
     if IsBound(x.classes) then
       PrintToString(res," unipotent classes\n");
@@ -650,6 +651,8 @@ end;
 # GreenTable(uc[,opt])
 # values of Green functions Q_{wF} on unipotent classes
 # opt: variable:=(default X(Cyclotomics))
+# method: use formula DLM3 (3.1)
+# Lines indexed by (I,wF). Columns by unip. classes or local systems
 GreenTable:=function(arg)local uc,W,opt,t,m,i,g;
   uc:=arg[1];W:=Group(uc.spets);
   if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;

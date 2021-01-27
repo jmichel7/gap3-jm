@@ -17,10 +17,10 @@
 AbsHeckeOps:=OperationsRecord("AbsHeckeOps");
 
 AbsHeckeOps.CompactPara:=function(p) p:=ShallowCopy(p);
-  if Length(Set(p))=1 then p:=[p[1]];fi;
   p:=Zip(p,List(p,Length),function(p,e)
     if IsList(p) and p{[2..Length(p)]}=List([1..e-1],j->E(e)^j) 
     then return p[1];else return p;fi;end);
+  if Length(Set(p))=1 then p:=[p[1]];fi;
   if Length(p)=1 and not IsList(p[1]) then p:=p[1];fi;
   return p;
 end;

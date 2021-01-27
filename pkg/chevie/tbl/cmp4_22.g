@@ -1561,20 +1561,22 @@ G4_22Test:=function(res,rows,i)local l,o,p,ic,T;
   res.irreducibles:=rows{ic};
   if Length(Set(res.irreducibles))=Length(res.classes) then l:=i;
   else
-  l:=List(rows,x->Position(rows,x));
-  if Length(Set(l))<>Length(res.classes) then
-     Error("specialization not semi-simple");fi;
-  l:=List(Set(l),x->Filtered([1..Length(l)],i->l[i]=x));
-  Print("*** WARNING: bad choice of character restrictions from ",T,
-    " for this specialization\n");
-  if not CHEVIE.CheckIndexChars then
-    Print("Try again with CHEVIE.CheckIndexChars:=true\n");fi;
-  o:=Filtered(l,x->Number(i,j->j in x)>1);
-  Print(" over-represented by ",Intersection(Union(o),i)," : ",o,"\n");
-  Print(" absent : ",Filtered(l,x->Number(i,j->j in x)=0),"\n");
-  Print(" Choosing ",List(l,x->x[1]),"\n");
-  l:=List(l,x->x[1]);
-  res.irreducibles:=rows{l};
+    l:=List(rows,x->Position(rows,x));
+    if Length(Set(l))<>Length(res.classes) then
+       Error("specialization not semi-simple");fi;
+    l:=List(Set(l),x->Filtered([1..Length(l)],i->l[i]=x));
+    Print("*** WARNING: bad choice of character restrictions from ",T,
+      " for H(G",res.ST,",",AbsHeckeOps.CompactPara(res.parameter),")\n");
+    if not CHEVIE.CheckIndexChars then
+      Print("Try again with CHEVIE.CheckIndexChars:=true\n");fi;
+    o:=Filtered(l,x->Number(i,j->j in x)>1);
+  # Print(" over-represented by ",Intersection(Union(o),i)," : ",o,"\n");
+  # Print(" absent : ",Filtered(l,x->Number(i,j->j in x)=0),"\n");
+    l:=List(l,x->x[1]);
+    o:=TransposedMat([i,l]);
+    o:=Filtered(o,x->x[1]<>x[2]);
+    Print(" Changing ",List(o,x->x[1])," to ",List(o,x->x[2]),"\n");
+    res.irreducibles:=rows{l};
   fi;
   Add(CHEVIE.G4_22CachedIndexChars[res.ST],[res.parameter,l]);
   return l;
@@ -2116,6 +2118,22 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
   else
    return false;
   fi;
+end);
+
+CHEVIE.AddData("Ennola","G4_22",function(ST)local uc,res,p,A,b,f;
+  uc:=CHEVIE.R("UnipotentCharacters","G4_22")(ST);
+  if uc=false then return false;fi;
+  res:=uc.a*0;
+  for f in uc.families do
+    A:=FusionAlgebra(f);
+    b:=Basis(A);
+    if not IsBound(f.ennola) then f.ennola:=f.special;fi;
+    if f.ennola>0 then p:=SignedPermListList(b,b[f.ennola]*b);
+                  else p:=SignedPermListList(b,-b[-f.ennola]*b);
+    fi;
+    res{f.charNumbers}:=Permuted(f.charNumbers,p);
+  od;
+  return SignedPerm(res);
 end);
 
 CHEVIE.AddData("Invariants","G4_22",function(ST)local d;d:=rec(

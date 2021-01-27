@@ -536,7 +536,10 @@ end;
 # if second argument given it will change A.special to i, and
 # params should also be given which will change A.parameters
 FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt,S1;
-  if IsMat(arg[1]) then S:=arg[1];else S:=arg[1].fourierMat;fi;
+  if IsMat(arg[1]) then S:=arg[1];
+  elif IsBound(arg[1].fusionAlgebra) then return arg[1].fusionAlgebra;
+  else S:=arg[1].fourierMat;
+  fi;
   if Length(arg)=2 then opt:=arg[2];fi;
   if Length(arg)=1 then params:=[1..Length(S)]; else params:=arg[2].params; fi;
   if IsMat(arg[1]) then 
@@ -561,7 +564,8 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt,S1;
   A.Involution:=function(r)local b; b:=Permuted(A.basis,A.involution);
     return Sum(r.coefficients,x->x[1]*b[x[2]]);
   end;
-  S1:=List(S,x->x/x[special]);
+# S1:=List(S,x->x/x[special]);
+  S1:=List(TransposedMat(S),x->x/x[special]);
   A.duality:=SignedPermListList(TransposedMat(Permuted(S1,
      Perm(A.involution))),TransposedMat(S1));
   if A.duality=false then Error("the matrix does not have the * involution");fi;
@@ -589,9 +593,7 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt,S1;
   A.structureconstants:=List([1..d],i->List([1..i],j->
     Filtered(TransposedMat([List([1..d],k->S[i][k]*S[j][k])*s,[1..d]]),
      x->x[1]<>0)));
-  if ForAll(Flat(A.structureconstants),x->x>=0) then
-    InfoChevie("# positive structure constants\n");
-  fi;
+  A.positive:=ForAll(Flat(A.structureconstants),x->x>=0);
   if ForAny(Flat(A.structureconstants),x->not IsInt(x)) then
     Error("structure constants are not integral");
   fi;
@@ -607,6 +609,7 @@ FusionAlgebra:=function(arg) local S,params,A,d,special,s,opt,S1;
   if false in d then return A;fi;
   A.cDim:=d[special]^2;
   A.qDim:=List(d,x->d[special]/x);
+  if not IsMat(arg[1]) then arg[1].fusionAlgebra:=A;fi;
   return A;
 end;
 

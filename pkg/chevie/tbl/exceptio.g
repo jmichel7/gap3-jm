@@ -201,6 +201,29 @@ CHEVIE.IndirectAddData("SchurElement",["F4","G25","G26","G32"],
   return VcycSchurElement(Y,CHEVIE.R("SchurModels",t).(ci.name),ci);
 end);
 
+CHEVIE.IndirectAddData("Ennola",["E7","E8","F4","2F4","G2",
+         "H3","H4","G24","G25","G26","G27","G29","G32","G33","G34"],
+  t->function(arg)local uc,res,p,A,b,f;
+  uc:=CHEVIE.R("UnipotentCharacters",t);
+  if IsFunc(uc) then uc:=uc();fi;
+  res:=uc.a*0;
+  for f in uc.families do
+    if IsBound(f.ennola) then
+      if IsList(f.ennola) then p:=SignedPerm(f.ennola);
+      else A:=FusionAlgebra(f);
+        b:=Basis(A);
+        if not IsBound(f.ennola) then f.ennola:=f.special;fi;
+        if f.ennola>0 then p:=SignedPermListList(b,b[f.ennola]*b);
+                      else p:=SignedPermListList(b,-b[-f.ennola]*b);
+        fi;
+      fi;
+    else p:=SignedPerm();
+    fi;
+    res{f.charNumbers}:=Permuted(f.charNumbers,p);
+  od;
+  return SignedPerm(res);
+end);
+
 ############################################################################
 #  VcycSchurElement(Y,schur model[,schur data])
 #

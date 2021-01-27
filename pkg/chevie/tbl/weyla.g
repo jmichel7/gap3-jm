@@ -344,6 +344,9 @@ CHEVIE.AddData("UnipotentCharacters","A",function(l)local ci;
     A:=ci.A);
 end);
 
+CHEVIE.AddData("Ennola","A",function(l)
+  if l=1 then return SignedPerm([-1,2]); else return SignedPerm();fi;end);
+
 CHEVIE.AddData("Invariants","A",function(n)local m;
   m:=CHEVIE.A.GeneratingRoots(n);
   return List([2..n+1],i->function(arg)local v;v:=arg*m;

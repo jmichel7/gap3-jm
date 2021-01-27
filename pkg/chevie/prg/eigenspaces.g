@@ -274,3 +274,20 @@ CuspidalUnipotentCharacters:=function(arg)local WF,d,ad,ud;
   ud:=CycPolUnipotentDegrees(WF);
   return Filtered([1..Length(ud)],i->ad=Valuation(ud[i],d));
 end;
+
+# CuspidalPairs(W[,d[,ad]]) returns the pairs (LF,\lambda) where LF is a d-split
+# Levi [with d-center of dimension ad] and lambda a d-cuspidal character of LF 
+CuspidalPairs:=function(arg)local W,d,ad,WF;
+  W:=arg[1];
+  if IsSpets(W) then WF:=W;W:=Group(WF); else WF:=Spets(W); fi;
+  if Length(arg)=1 then arg[2]:=0; fi;
+  d:=arg[2];
+  if Length(arg)=2 then 
+    return Concatenation(List([0.. Length(RelativeDegrees(WF,d))],
+      ad->CuspidalPairs(WF,d,ad)));
+  fi;
+  ad:=arg[3];
+  if IsInt(d) and d<>0 then d:=1/d;fi;
+  return Concatenation(List(SplitLevis(WF,d,ad),HF->
+    List(CuspidalUnipotentCharacters(HF,d),char->[HF,char])));
+end;
