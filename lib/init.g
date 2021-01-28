@@ -205,7 +205,7 @@ PR("            ##  V.Felsch, E.Horvath,  A.Hulpke  # A.Kaup,     J.Meier");
 PR("           ###  J.Mnich,  W.Nickel,   A.Niemeyer# G.Pfeiffer, U.Polis");
 PR("          ## #  A.Seress  H.Theissen, A.Wegner  #");
 PR("         ##  #                                  #");
-PR("        ##   #  Distribution: gap3-jm 15 feb 20");
+PR("        ##   #  Distribution: gap3-jm 28 jan 21");
 PR("       ##    #    see http://webusers.imj-prg.fr/~jean.michel/gap3");
 Print("          ##    ##    ",VERSION,"\n");
 PR("       ######                                 For help enter: ?<return>");

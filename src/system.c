@@ -2272,7 +2272,8 @@ long syFindInToc (char* topic, long offset,
                 syEchoch (CTR('G'), fin);
             else {
               syHelpHeader (0, 0, fin);
-              syEchos("contentsline is garbage in 'manual.toc'",fin);
+              syEchos("contentsline is garbage in 'manual.toc'\n",fin);
+              syEchos(line,fin);
            }
             SyFclose( fid );
            return -2;
@@ -2544,7 +2545,7 @@ void syHelpHeader (	char* left, char* right, long fin)
 	
 	if (!right) {   /* this is used for error messages */
 		syEchos ("Help: ", fin);
-		syEchos (left, fin);
+		if(left) syEchos (left, fin);
 		return;
 	}
 	if (SyNrCols > sizeof (line) )
@@ -2561,7 +2562,7 @@ void syHelpHeader (	char* left, char* right, long fin)
 	*p++ = ' ';
 	*p++ = ' ';
 	*p++ = ' ';
-	while ((*p++ = *left++) != '\0' && p < r );
+	if(left){ while ((*p++ = *left++) != '\0' && p < r );}
 	p[-1] = ' '; 
 	
 	if (right)

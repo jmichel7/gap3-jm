@@ -35,16 +35,6 @@ function(W)local uc,en,f,i,B,r,es,stored,implemented,rr,t;
 end,
 W->IsSpetsial(W) and Length(W.type)=1);
 
-# i^n where n fraction i AsRootOfUnity computed in 'right' way
-# so it agrees with GetRoot
-PowerRoot:=function(i,n)local d,j,n1,k;
-  d:=Denominator(i);j:=1;
-  n1:=Denominator(n);
-  if n1=1 then return Mod1(n*i);fi;
-  repeat k:=Gcd(n1,d);n1:=n1/k;j:=j*k;until k=1;
-  return Mod1((Numerator(i)*Numerator(n)*GcdRepresentation(n1,d)[1])/j/d);
-end;
-
 # EigenAndDegHecke(s) 
 # s is a series. Uses only s.Hecke, s.d, 
 # (and s.degree, s.levi and s.cuspidal for non-principal series)
@@ -136,3 +126,141 @@ CHEVIE.AddTest("Series",function(arg)local W,l,s,c,e,Ed,pred,n;
   return l;
 end,
 IsSpetsial);
+
+# ParameterExponents(W[,HC series no])
+# check that the parameter exponents of the relative hecke algebras
+# agree with unipotent degrees corresponding to cyclic
+# relative groups of sub-series
+CHEVIE.AddTest("ParameterExponents",
+function(arg)local h,i,I,L,hh,ud,t,H,s,exp,W,ser,G,m,e;
+  W:=arg[1];
+  ser:=UnipotentCharacters(W).harishChandra;
+  if Length(arg)=1 then
+    for i in [1..Length(ser)] do
+      CHEVIE.Test("ParameterExponents",W,i);
+    od;
+    InfoChevie("\n   ");
+    return;
+  fi;
+  h:=ser[arg[2]];
+  I:=Concatenation(List(h.relativeType,x->x.indices));
+  if IsSpets(W) then I:=List(I,x->Cycle(W.phi,x));
+  else 
+#     InfoChevie("# ",IntListToString(h.levi),"\n");
+#     CHEVIE.Testing(IntListToString(h.levi));
+    G:=RelativeGroup(W,h.levi);
+    if G.relativeIndices{Concatenation(List(G.type,t->t.indices))}<>I 
+    then ChevieErr("indices computed=",
+      IntListToString(G.relativeIndices{Concatenation(List(G.type,t->t.indices))}),
+      " stored=",IntListToString(I),"\n");
+    fi;
+    I:=List(I,x->[x]);
+  fi;
+  for i in [1..Length(I)] do
+    L:=ReflectionSubgroup(W,Concatenation(h.levi,I[i]));
+    t:=ReflectionType(L);
+    H:=ReflectionSubgroup(L,h.levi);
+    InfoChevie("\n   # ParameterExponents from ",ReflectionName(H),":",I[i]);
+    CHEVIE.Testing("from ",ReflectionName(H),":",I[i]);
+    if t=false or (not IsBound(t[1].indices) and not IsBound(t[1].orbit))then
+      ChevieErr("Levi ",Concatenation(h.levi,I[i])," could not be identified\n");
+    else
+      if not IsSpets(L) then L:=Spets(L);H:=SubSpets(L,h.levi);fi;
+      hh:=FindSeriesInParent(h,H,L,UnipotentCharacters(L).harishChandra).ser;
+      if Length(hh.charNumbers)<>2 then 
+        s:=SeriesNC(L,H,Position(UnipotentCharacters(H).TeXCharNames,
+               h.cuspidalName),1);
+        SeriesOps.RelativeGroup(s);
+        if CharNumbers(s)=false or SeriesOps.fill(s)=false then 
+          Error("could not fill ",s);
+        else 
+          if IsInt(hh.parameterExponents[1]) then 
+            exp:=[1..s.e]*0;exp[1]:=hh.parameterExponents[1];
+          else exp:=hh.parameterExponents[1];
+          fi;
+          if IsBound(s.translation) then
+          t:=Filtered([0,s.translation..s.e],function(d)local v;
+            v:=1+List([1..s.e]+d,x->x mod s.e);
+            return s.mC{v}=exp and s.charNumbers{v}=hh.charNumbers;end);
+          else t:=[1];
+          fi;
+          if Length(t)=0 then Error("unexpected");fi;
+#    Ok("decs=",t);
+        fi;
+      else
+        ud:=UnipotentDegrees(L,X(Cyclotomics));
+        ud:=ud[hh.charNumbers[1]]/ud[hh.charNumbers[2]];
+        if Length(ud.coefficients)<>1 or ud.coefficients[1]<>1 then
+          ChevieErr("not monomial");
+        elif h.parameterExponents[i]<>ud.valuation then
+          ChevieErr(ReflectionName(L),": wrong parameter ",
+            h.parameterExponents[i],
+            " instead of ",ud.valuation,"\n");
+        fi;
+#         Ok("=",ud.valuation);
+      fi;
+    fi;
+  od;
+end,
+IsSpetsial);
+
+# this was never called. Suppress?
+# Check that the stored parameters of 1-HC series are correct
+CHEVIE.AddTest("HCSeries",
+function(WF)local sers,uc,ss,s,ul,p,para,stored_para,i;
+  if not IsSpets(WF) then WF:=Spets(WF);fi;
+  uc:=UnipotentCharacters(WF);
+  sers:=uc.harishChandra;
+  ss:=Filtered(CuspidalPairs(WF,1),x->SemisimpleRank(x[1])<SemisimpleRank(WF));
+  for s in ss do
+    s:=Series(WF,s[1],s[2],1);
+    ul:=UnipotentCharacters(s.levi);
+    p:=PositionProperty(sers,h->ul.TeXCharNames[s.cuspidal]=h.cuspidalName
+      and Eigenvalues(ul)[s.cuspidal]=h.eigenvalue);
+    para:=Hecke(s).parameter;
+    para:=List(para,x->List(x,Mvp)); # should be unnecessary
+    stored_para:=sers[p].parameterExponents;
+    for i in s.WGL.generatingReflections do
+      stored_para[i]:=stored_para[s.WGL.orbitRepresentative[i]];od;
+    stored_para:=List([1..Length(para)],function(i)
+      if IsRat(stored_para[i]) then return 
+        Concatenation([stored_para[i]],[1..Length(para[i])-1]*0);
+      else return stored_para[i];
+      fi;end);
+    para:=List(para,v->List(v,Degree));
+    if para<>stored_para and para<>Reversed(stored_para) then 
+      CHEVIE.Check.EqLists(s.charNumbers,sers[p].charNumbers,"charnum","stored");
+      CHEVIE.Check.EqLists(para,stored_para,"para","stored para");
+    fi;
+  od;
+end,
+IsSpetsial);
+
+# for a reflection group of rank r: Discriminant(G)
+#          returns a list of linear factors as Mvps in x1,x2,...,xr
+ReflectionDiscriminant:=function(W)local h,res,coroot,w,vars;
+  res:=[];
+  vars:=List([1..Length(ReflectionDegrees(W))],
+		i->Mvp(Concatenation("x",String(i))));
+  for h in HyperplaneOrbits(W) do
+    coroot:=W.simpleCoroots[h.s];
+    for w in List(Elements(ConjugacyClasses(W)[h.classno[1]]),x->
+      RepresentativeOperation(W,W.generators[h.s],x)) do
+      Append(res,List([1..h.e_s],i->MatXPerm(W,w^-1)*coroot));
+    od;
+  od;
+  res:=List(res,x->Sum([1..Length(x)],i->Mvp(vars[i])*x[i]));
+  return res;
+end;
+
+CHEVIE.AddTest("Discriminant",
+function(W)local j,r,ii;
+  r:=Product(ReflectionDiscriminant(W))*Mvp("x")^0;
+  j:=Discriminant(W);
+  if j=false then ChevieErr("not implemented\n");return;fi;
+  ii:=Invariants(W);
+  ii:=List(ii,x->ApplyFunc(x,List([1..W.rank],i->Mvp(SPrint("x",i)))));
+  j:=ApplyFunc(j,ii);
+  if r<>j*r.coeff[1]/j.coeff[1] then ChevieErr("disagrees\n");fi;
+end,
+x->not IsSpets(x) and Size(x)<1152); # F4 first painful client

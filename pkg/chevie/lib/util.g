@@ -512,6 +512,16 @@ Dictionary:=function()local res;
   return res;
 end;
 
+# i^n where n fraction, i fraction result of AsRootOfUnity 
+# computed in 'right' way
+PowerRoot:=function(i,n)local d,j,n1,k;
+  d:=Denominator(i);j:=1;
+  n1:=Denominator(n);
+  if n1=1 then return Mod1(n*i);fi;
+  repeat k:=Gcd(n1,d);n1:=n1/k;j:=j*k;until k=1;
+  return Mod1((Numerator(i)*Numerator(n)*GcdRepresentation(n1,d)[1])/j/d);
+end;
+
 ############################################################################
 GetRootWarned:=[];
 
@@ -560,9 +570,8 @@ GetRoot:=function(arg)local x,n,msg,i,j,k,ret,d,n1,error;
   elif IsCyc(x) then
     i:=AsRootOfUnity(x);
     if i<>false then
-      d:=Denominator(i);j:=1;n1:=n;
-      repeat k:=Gcd(n1,d);n1:=n1/k;j:=j*k; until k=1;
-      return ret(E(j*d)^(Numerator(i)*GcdRepresentation(n1,d)[1]));
+      i:=PowerRoot(i,1/n);
+      return ret(E(Denominator(i))^Numerator(i));
     fi;
     if IsInt(x^2) and n mod 2=1 then
       i:=RootInt(x^2,n); if i^n=x^2 then return ret(ER(i));fi;

@@ -198,7 +198,7 @@ typedef unsigned long   TypSymbolSet;
 **  identifier, integers or strings after that many characters.
 */
 #define MAXVALUE "2048"
-char            Value [2048];
+extern char Value [2048];
 
 /****************************************************************************
 **
