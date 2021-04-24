@@ -343,7 +343,7 @@ CHEVIE.compat.CharTable2D := function(l)
   tbl.classes := SizesConjugacyClasses(hi){lst};
   tbl.text := "extracted from generic character table of type B";
   sy := List(CharacterParameters(hi), a->a[2]);
-  lst2 := Filtered([1..Length(sy)],i-> CHEVIE.R("testchar","2D")(sy[i]));
+  lst2 := Filtered([1..Length(sy)],i-> CHEVIE.R("IsPreferred","2D")(sy[i]));
   tbl.irredinfo := List(CharacterParameters(hi){lst2}, a->rec(charparam := a[2],
                  charname := CHEVIE.R("CharName","2D")(a[2])));
   tbl.irreducibles := Irr(hi){lst2}{lst};
@@ -369,7 +369,7 @@ CHEVIE.compat.HeckeCharTable2D := function(l,param,rootparam)
   tbl.ClassNames := cli.classnames;
   tbl.ClassParameters := cli.classparams;
 
-  tchar := CHEVIE.R("testchar","2D");
+  tchar := CHEVIE.R("IsPreferred","2D");
   chp := CharacterParameters(hi);
   lst2 := Filtered(lst2, i-> tchar(chp[i]));
   tbl.CharacterParameters := chp{lst2};

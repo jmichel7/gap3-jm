@@ -540,6 +540,16 @@ CHEVIE.AddData("UnipotentCharacters","B",function(arg)
   return uc;
 end);
 
+CHEVIE.AddData("Ennola","B",function(n)local uc,l;
+  uc:=CHEVIE.R("UnipotentCharacters","B")(n);
+  l:=uc.charSymbols;
+  return SignedPerm(List([1..Length(l)],function(i)local s;
+    s:=EnnolaSymbol(l[i]);
+    if Length(s[1])<Length(s[2]) then s:=s{[2,1]};fi;
+    return Position(l,s)*(-1)^uc.A[i];
+  end));
+end);
+
 # References:
 # [Lu]   G.Lusztig,   Character   sheaves   on   disconnected   groups,  II
 # Representation Theory 8 (2004) 72--124
@@ -712,6 +722,9 @@ CHEVIE.AddData("UnipotentClasses","B",function(r,char,type)local cl,uc,
       addSpringer(ss->ss.Z=[-1] and Rank(ss.relgroup)=Sum(s,Sum),i,s,d);
     od;
   fi;
+  for ss in uc.springerSeries do 
+    if not ForAll(ss.Z,x->x=1) then ss.hc:=0;fi;
+  od;
   return uc;
 end);
 

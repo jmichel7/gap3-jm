@@ -2298,7 +2298,7 @@ f39:=function(x,y) return ExpandRep(5,81,
 end);
 
 CHEVIE.AddData("Representation","G33",i->
-  CHEVIE.R("HeckeRepresentation","G33")(List([1..5],i->[1,-1]),[],i));
+  CHEVIE.R("HeckeRepresentation","G33")(List([1..5],i->[1/1,-1/1]),[],i));
 
 CHEVIE.AddData("UnipotentCharacters","G33",function()local J;J:=E(3);
  return rec(

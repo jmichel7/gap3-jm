@@ -10,12 +10,12 @@
 ShrinkPresentation:=function(arg)local g,lim,rot,count,test;
   g:=arg[1];
   if Length(arg)=2 then lim:=arg[2];else lim:=1000;fi;
-  rot:=function(i)local l;l:=g.tietze[6][i];
-    l:=l{Concatenation([2..Length(l)],[1])};g.tietze[6][i]:=l;
+  rot:=function(i)
+    g.tietze[TZ_RELATORS][i]:=Rotation(g.tietze[TZ_RELATORS][i],1);
   end;
   test:=function()local v,i,j,before,tt,t;
-    g.tietze[6]:=Filtered(g.tietze[6],x->Length(x)>0);
-    tt:=g.tietze[6];
+    g.tietze[TZ_RELATORS]:=Filtered(g.tietze[TZ_RELATORS],x->Length(x)>0);
+    tt:=g.tietze[TZ_RELATORS];
     if Product(tt,Length)<lim then
       v:=List(tt,x->0);
       if Length(v)=0 then return false;fi;
@@ -28,7 +28,7 @@ ShrinkPresentation:=function(arg)local g,lim,rot,count,test;
         od;
 	rot(j);v[j]:=v[j]+1;
 	TzGoGo(g);
-	tt:=g.tietze[6];
+	tt:=g.tietze[TZ_RELATORS];
 	if Length(tt)<before[1] or Sum(tt,Length)<before[2] then return true;fi;
       od;
     else 
@@ -38,13 +38,13 @@ ShrinkPresentation:=function(arg)local g,lim,rot,count,test;
 	j:=1;
 	while i>Length(tt[j]) do i:=i-Length(tt[j]);j:=j+1;od;
 	before:=[Length(tt),t];rot(j);TzGoGo(g);
-	tt:=g.tietze[6];
+	tt:=g.tietze[TZ_RELATORS];
 	if Length(tt)<before[1] or Sum(tt,Length)<before[2] then return true;fi;
       od;
     fi;
     return false;
   end;
-  count:=0; if g.tietze[6]<>[] then while test() do count:=count+1;od; fi;
+  count:=0; if g.tietze[TZ_RELATORS]<>[] then while test() do count:=count+1;od; fi;
 end;
     
 DisplayPresentation:=function(arg)local g,min,maj,l,i,w,n,used,f,lw,m;
@@ -56,16 +56,16 @@ DisplayPresentation:=function(arg)local g,min,maj,l,i,w,n,used,f,lw,m;
   maj:="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   used:=[];
   g:=arg[1];
-  l:=List(g.tietze[6],x->List(x,function(y)
+  l:=List(g.tietze[TZ_RELATORS],x->List(x,function(y)
     AddSet(used,AbsInt(y));
     if y<0 then return maj[-y];else return min[y];fi;
     end));
-  if g.tietze[1]>Length(used) then
-    Print("There are ",g.tietze[1]-Length(used)," free generators\n");
+  if g.tietze[TZ_NUMGENS]>Length(used) then
+    Print("There are ",g.tietze[TZ_NUMGENS]-Length(used)," free generators\n");
   fi;
   for i in [1..Length(l)] do
     w:=l[i];lw:=Length(w);
-    if lw mod 2=1 then Print(i,": ",w,"=1\n");
+    if lw mod 2=1 or Length(arg)=2 then Print(i,": ",w,"=1\n");
     elif lw>0 then
       m:=List([1..lw],i->Number(f(i),x->x in min));
       n:=Maximum(m);
@@ -80,20 +80,16 @@ DisplayPresentation:=function(arg)local g,min,maj,l,i,w,n,used,f,lw,m;
 end;
 
 # <presentation>, "abA"
-ConjugatePresentation:=function(p,s)local f,x,l,n,minmaj;
+ConjugatePresentation:=function(p,s)local c,n,minmaj;
  minmaj:="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
- l:=List(s,l->Position(minmaj,l));
- f:=FpGroupPresentation(p);
- x:=AbstractGenerator("x");
- if l[1]-l[3]>0 then n:=f.(l[3])^-1*x*f.(l[3]);
- else n:=f.(l[1])*x*f.(l[1])^-1;
+ c:=List(s,l->Position(minmaj,l));
+ c:=List(c,function(l)if l>26 then return 26-l;else return l;fi;end);
+ if c[1]<>-c[3] then 
+   Error("second argument should be a conjugacy pattern like \"abA\"");
  fi;
- f.relators:=List(f.relators,y->EliminatedWord(y,f.(l[2]),n));
- f.relators:=List(f.relators,y->EliminatedWord(y,x,f.(l[2])));
- f:=SimplifiedFpGroup(f);
- p:=PresentationFpGroup(f);
- ShrinkPresentation(p,100);
- return p;
+ n:=Copy(p);TzSubstituteGen(n.tietze,c[2],c);TzGoGo(n);
+ ShrinkPresentation(n,100);
+ return n;
 end;
 
 TryConjugatePresentation:=function(arg)
@@ -106,11 +102,11 @@ TryConjugatePresentation:=function(arg)
   end;
 # s: "Cac" means take a->Cac
 
-  Tally:=p->[Length(p.tietze[6]),Sum( p.tietze[6], Length)];
+  Tally:=p->[Length(p.tietze[TZ_RELATORS]),Sum( p.tietze[TZ_RELATORS], Length)];
 
   applicable:=function(p)local res,v,i,r;
    res:=[];
-   for v in p.tietze[6] do
+   for v in p.tietze[TZ_RELATORS] do
      for i in [1..Length(v)-2] do
        if v[i]=-v[i+2] then
          if v[i+1]>0 then r:=List(v{[i..i+2]},toletter);

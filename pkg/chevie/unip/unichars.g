@@ -158,6 +158,6 @@ end;
 
 UnipCharOps.Frobenius:=function(WF,x,i)
   x:=ShallowCopy(x);
-  x.v:=Permuted(x.v,PermutationOnUnipotents(Group(WF),WF.phi));
+  x.v:=Permuted(x.v,PermutationOnUnipotents(Group(WF),WF.phi^-i));
   return x;
 end;

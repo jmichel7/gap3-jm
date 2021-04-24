@@ -48,11 +48,12 @@ function(arg)local W,i,uw,hw,L,index,cusp,t,R,q,l,ud,o,aA,reldeg,
 # for o in HyperplaneOrbits(R) do 
 #   InfoChevie(" es=",o.e_s," esNs=",o.e_s*o.N_s);
 # od;
-  o:=Set(R.orbitRepresentative);
-  o:=List(R.generatingReflections,i->Position(o,R.orbitRepresentative[i]));
-  para:=List(o,function(i)local h,m;h:=HyperplaneOrbits(R)[i];
+  para:=List(HyperplaneOrbits(R),function(h)local m;
     h:=List(h.det_s,i->(aA[i]-aA[PositionId(R)])/h.e_s/h.N_s);
     m:=Maximum(Maximum(h),0);return m-Concatenation([0],h);end);
+  o:=Set(R.orbitRepresentative);
+  o:=List(R.generatingReflections,i->Position(o,R.orbitRepresentative[i]));
+  para:=para{o};
   para:=List(para,function(l)
     if ForAll(l{[2..Length(l)]},x->x=0) then return l[1];
     else return l;

@@ -60,8 +60,8 @@ CHEVIE.AddData("ClassInfo","2D",function(n)local  l, B;
 end);
 
 CHEVIE.AddData("NrConjugacyClasses", "2D", function(n)
-  if n mod 2 = 1 then return NrPartitionTuples(n, 2) / 2;
-  else return (NrPartitionTuples(n, 2) - NrPartitions(n/2)) /2;
+  if n mod 2=1 then return QuoInt(NrPartitionTuples(n,2),2);
+  else return QuoInt(NrPartitionTuples(n,2)-NrPartitions(QuoInt(n,2)),2);
   fi;
 end);
 
@@ -103,21 +103,16 @@ CHEVIE.AddData("ClassParameter","2D",function(n,w)local x, i, res, mark, cyc, j;
   return [Reversed(res[1]),Reversed(res[2])];
 end);
 
-CHEVIE.AddData("IsPreferred","2D",
 # test if a character of W(B) corresponds to the preferred extension
 # for ^2D, see [CS,17.2] and [Lusztig-book,4.4,4.18]:
- function(pp)pp:=SymbolPartitionTuple(pp,0);return pp[1]>pp[2];end);
+CHEVIE.AddData("IsPreferred","2D",function(pp)
+  pp:=SymbolPartitionTuple(pp,0);return pp[1]>pp[2];end);
 
-CHEVIE.AddData("IsGood","2D",pp->pp[1]>pp[2]);
-# whether a character of W(B) corresponds to the "good" extension for 2D
+CHEVIE.AddData("CharParams","2D",n->Filtered(CHEVIE.R("CharParams","B")(n),
+                                             CHEVIE.R("IsPreferred","2D")));
 
-CHEVIE.AddData("testchar","2D",CHEVIE.R("IsPreferred","2D"));
-
-CHEVIE.AddData("CharParams","2D",n->Filtered(CHEVIE.R("CharParams","B")
-         (n),CHEVIE.R("testchar","2D")));
-
-CHEVIE.AddData("CharName","2D",
-                function(arg) return PartitionTupleToString(arg[2]); end);
+CHEVIE.AddData("CharName","2D",function(arg) 
+                             return PartitionTupleToString(arg[2]); end);
 
 CHEVIE.AddData("CharInfo","2D",function(n)local res,resparams;
   res:=rec(charparams:=CHEVIE.R("CharParams","2D")(n));
@@ -143,14 +138,11 @@ end);
 ##  and which correspond to the *preferred* extensions defined in [CS,17.2,
 ##  case D_l].
 ##
-##  Alternatively  you can get the  *good* extension instead of *preferred*
-##  extension by defining testchar appropriately.
-##
 CHEVIE.AddData("CharTable","2D", function(l)local hi, tbl,lst, chr;
   hi:=CHEVIE.R("CharTable","B")(l);
   chr:=[1..Length(hi.classparams)];
   lst:=Filtered(chr, i->Length(hi.classparams[i][2]) mod 2=1);
-  chr:=Filtered(chr,i->CHEVIE.R("testchar","2D")
+  chr:=Filtered(chr,i->CHEVIE.R("IsPreferred","2D")
                      (hi.irredinfo[i].charparam));
   tbl:=rec(identifier:=SPrint("W(^2D",l,")"),
     size:=hi.size/2,
@@ -182,7 +174,7 @@ CHEVIE.AddData("HeckeCharTable", "2D", function(l,param,rootparam)
 	   operations:=CharTableOps);
   Inherit(tbl,CHEVIE.R("ClassInfo","2D")(l));
   chr:=Filtered(chr,
-	i->CHEVIE.R("testchar","2D")(hi.irredinfo[i].charparam));
+	i->CHEVIE.R("IsPreferred","2D")(hi.irredinfo[i].charparam));
   tbl.irredinfo:=List(hi.irredinfo{chr},a->rec(charparam:=a.charparam,
       charname:=CHEVIE.R("CharName","2D")(l,a.charparam)));
   tbl.irreducibles:=TransposedMat(List(tbl.classtext,
@@ -295,6 +287,19 @@ CHEVIE.AddData("UnipotentCharacters","2D",function(rank)
   return uc;
 end);
 
+CHEVIE.AddData("Ennola","2D",function(n)local uc,l;
+  if n mod 2=1 then return SignedPerm();fi;
+  uc:=CHEVIE.R("UnipotentCharacters","2D")(n);
+  l:=uc.charSymbols;
+  return SignedPerm(List([1..Length(l)],function(i)local s,p;
+    if not IsList(l[i][2]) then return i*(-1)^uc.A[i];fi;
+    s:=EnnolaSymbol(l[i]);
+    p:=Position(l,s);
+    if p=false then p:=Position(l,Reversed(s));fi;
+    return p*(-1)^uc.A[i];
+  end));
+end);
+
 CHEVIE.AddData("UnipotentClasses","2D",function(r,p)local uc,cc,j;
   uc:=Copy(CHEVIE.R("UnipotentClasses","D")(r,p));
   if p<>2 then
@@ -307,7 +312,7 @@ CHEVIE.AddData("UnipotentClasses","2D",function(r,p)local uc,cc,j;
         if j[2]>1 then cc.red:=cc.red*CoxeterGroup("B",QuoInt(j[2]-1,2));fi;
       elif j[2]>2 then 
         if QuoInt(j[2],2)=3 then
-             cc.red:=cc.red*Spets(CoxeterGroup("D",QuoInt(j[2],2)),(1,3));
+             cc.red:=cc.red*Spets(CoxeterGroup("A",3),(1,3));
         else cc.red:=cc.red*Spets(CoxeterGroup("D",QuoInt(j[2],2)),(1,2));
         fi;
       else cc.red:=cc.red*Torus([[-1]]);

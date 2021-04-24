@@ -1161,12 +1161,6 @@ CHEVIE.AddData("UnipotentCharacters","H4",function()local cuspidal;
   54, 54, 54, 54, 54, 54, 54, 54, 54, 54 ]);
 end);
 
-CHEVIE.AddData("Invariants","H4",function()local r,C;
-  C:=CHEVIE.R("CartanMat","H4");r:=RootsCartan(C)*C; 
-  return List(CHEVIE.R("ReflectionDegrees","H4"),
-   d-> function(arg) return Sum(r,a->(arg*a)^d);end);
-end);
-
 CHEVIE.AddData("Discriminant","H4",function()return function(x1,x2,x3,x4)
 return 356653503212267529442883791160074481878819871789501462448439296000000000000000\
 000000000000000000000000000000000000000*x1*x2^4*x3^2*x4-1502822026355964889020\

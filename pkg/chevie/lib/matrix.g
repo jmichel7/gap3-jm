@@ -540,7 +540,7 @@ RepresentativeRowColPermutation:=function(m1,m2)
     for g in cg do s:=s or best(g,PermutedByCols); od;
   until not s;
   InfoChevie("\n");
-  if mm[1]<>mm[2] then Error("RepresentativeRowColOperation failed");fi;
+  if mm[1]<>mm[2] then Error("RepresentativeRowColPermutation failed");fi;
   p:=[rperm[1]/rperm[2],cperm[1]/cperm[2]];
 # if PermutedByCols(Permuted(m1,p[1]),p[2])<>m2 then Error("theory");fi;
   return p;

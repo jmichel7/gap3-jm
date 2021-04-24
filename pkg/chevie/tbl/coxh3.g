@@ -188,12 +188,6 @@ CHEVIE.AddData("UnipotentCharacters","H3",function()local res;
   return res;
 end);
 
-CHEVIE.AddData("Invariants","H3",function()local r,C;
-  C:=CHEVIE.R("CartanMat","H3");r:=RootsCartan(C)*C; 
- return List(CHEVIE.R("ReflectionDegrees","H3"),
-   d-> function(arg) return Sum(r,a->(arg*a)^d);end);
-end);
-
 # the discriminant as a polynomial in the invariants
 CHEVIE.AddData("Discriminant","H3",function()return function(a,b,c)
 return 131835937500*a*b^3*c-100195312500*a^2*b*c^2+

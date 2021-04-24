@@ -168,9 +168,9 @@ SpetsOps.ReflectionType:=function(WF)
     for a in type do
       if a.series="ST" and IsBound(a.p) and [a.p,a.q,a.rank]=[3,3,3] then
 	c:=CHEVIE.R("ReducedInRightCoset","timp")(a.subgroup,WF.phi);
-	if c<>false and WF.phi<>c.phi or c.gen<>a.subgroup.rootInclusion{c.gen}
+	if c<>false and WF.phi<>c.phi or c.gen<>a.subgroup.rootRestriction{c.gen}
         then 
-	  c.gen:=a.subgroup.rootInclusion{c.gen};
+#  c.gen:=a.subgroup.rootInclusion{c.gen};
 	  a.indices:=W.rootRestriction{c.gen};
 	  a.subgroup:=ReflectionSubgroup(W,c.gen); 
 	  WF.phi:=c.phi;
@@ -379,7 +379,12 @@ Spets:=function(arg)local W, WF,perm,t,s,i,j;
 [[2,(-1+ER(3))*E(3)], [2,(-1+ER(3))*E(3)^2], [2,(-1+ER(3))]],
 [[(3+ER(3))/2,ER(3)*E(3)^2],[(3+ER(3))/2,ER(3)*E(3)],[(3+ER(3))/2,ER(3)]]/3),
 (1,2,3));
-      elif arg[1]="2G5" then return Spets(ComplexReflectionGroup(5),(1,2));
+      elif arg[1]="2G5" then return 
+        Spets(PermRootGroup([[E(24)^8-E(24)^11+2*E(24)^16-E(24)^17,E(3)], 
+        [-E(24)^8+E(24)^11-2*E(24)^16+E(24)^17,E(3)]],
+        [[1/2*E(3),1/2*E(24)^8+1/2*E(24)^11+E(24)^16+1/2*E(24)^17], 
+        [-1/2*E(3),1/2*E(24)^8+1/2*E(24)^11+E(24)^16+1/2*E(24)^17]]),
+        [[-1,0],[0,1]]);
       elif arg[1]="3G333" then 
         return Spets(ComplexReflectionGroup(3,3,3),(1,2,44));
       elif arg[1]="3pG333" then 

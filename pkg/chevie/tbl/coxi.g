@@ -242,7 +242,7 @@ end);
 ##  the Poincare polynomial and D is the generic degree of phi.
 ##
 CHEVIE.AddData("SchurElement","I",function(m,phi,para,rootpara)
-  local u,v,ruv,e,ci;
+  local u,v,ruv,e,ci,m2;
   if m mod 2=1 then 
     ci:=CHEVIE.R("CharInfo","I")(m);
     ci:=ci.malleParams[Position(ci.charparams,phi)];
@@ -250,11 +250,12 @@ CHEVIE.AddData("SchurElement","I",function(m,phi,para,rootpara)
              [List([0..m-1],i->E(m)^i),para[2]],[])/m; 
   fi;
   u:=-para[1][1]/para[1][2];v:=-para[2][1]/para[2][2];
+  m2:=QuoInt(m,2); # and not m/2: for julia
   if phi[1]=1 then
-    if phi[2]=m/2 then e:=Sum([0..m/2-1],i->(u/v)^i)*(u+1)*(v+1)/v;
-      if phi[3]="'" then return e;else return (v/u)^(m/2)*e;fi;
-    else e:=Sum([0..m/2-1],i->(u*v)^i)*(u+1)*(v+1);
-      if phi[2]=0 then return e;else return (u*v)^(-m/2)*e;fi;
+    if phi[2]=m2 then e:=Sum([0..m2-1],i->(u/v)^i)*(u+1)*(v+1)/v;
+      if phi[3]="'" then return e;else return (v/u)^m2*e;fi;
+    else e:=Sum([0..m2-1],i->(u*v)^i)*(u+1)*(v+1);
+      if phi[2]=0 then return e;else return (u*v)^-m2*e;fi;
     fi;
   else e:=E(m)^phi[2]+E(m)^-phi[2];
     if ForAll([1,2],i->IsBound(rootpara[i])) then ruv:=Product(rootpara);
@@ -357,4 +358,20 @@ CHEVIE.AddData("UnipotentCharacters","I",function(e)local cusp,uc,f;
   uc.A:=Concatenation([0,e],List(uc.families[1].parameters,x->e-1));
   if e=5 then uc.curtis:=[2,1,3,4,6,5];fi;
   return uc;
+end);
+
+CHEVIE.AddData("Ennola","I",function(e)local uc,l;
+  if e mod 2=1 then return SignedPerm();fi;
+  uc:=CHEVIE.R("UnipotentCharacters","I")(e);
+  l:=uc.charSymbols;
+  return SignedPerm(List([1..Length(l)],function(i)local s,p,a,u;
+    s:=EnnolaSymbol(l[i]);
+    if IsList(s[Length(s)]) then u:=Rotations(s);
+    else u:=List(Rotations(s{[1..Length(s)-2]}),
+       x->Concatenation(x,s{[Length(s)-1,Length(s)]}));
+    fi;
+    for a in u do p:=Position(l,a); 
+      if p<>false then return p*(-1)^uc.A[i];fi;
+    od;
+  end));
 end);

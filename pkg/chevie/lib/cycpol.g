@@ -443,8 +443,9 @@ end;
 #  CycPol(obj)
 #    calls obj.operations.CycPol if it exists otherwise.
 ##
-CycPol:=function(p)
-  local res,d,a,l,i,r,e,n,q,tested,try,testcyc,testall,conductor,bounds,found;
+CycPol:=function(arg)local p,res,d,a,l,i,r,e,n,q,tested,try,testcyc,
+  testall,conductor,bounds,found,opt;
+  p:=arg[1];if Length(arg)=2 then opt:=arg[2];else opt:=rec();fi;
   if IsList(p) then
     res:=rec(coeff:=p[1],valuation:=p[2],vcyc:=[],operations:=CycPolOps);
     if Length(p)>2 and IsList(p[3]) then res.vcyc:=p{[3..Length(p)]};
@@ -564,7 +565,7 @@ CycPol:=function(p)
     return p.operations.CycPol(p);
   else Error("CycPol(",p,") not implemented");
   fi;
-  return CycPolOps.normalize(res);
+  return Inherit(CycPolOps.normalize(res),opt);
 end;
 
 LcmCycPol:=function(arg)local res,lcm2,p;

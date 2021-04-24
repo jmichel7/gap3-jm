@@ -420,6 +420,19 @@ CHEVIE.AddData("UnipotentCharacters","D",function(rank)local uc,symbols,r,d,s;
   return uc;
 end);
 
+CHEVIE.AddData("Ennola","D",function(n)local uc,l;
+  if n mod 2=1 then return SignedPerm();fi;
+  uc:=CHEVIE.R("UnipotentCharacters","D")(n);
+  l:=uc.charSymbols;
+  return SignedPerm(List([1..Length(l)],function(i)local s,p;
+    if not IsList(l[i][2]) then return i*(-1)^uc.A[i];fi;
+    s:=EnnolaSymbol(l[i]);
+    p:=Position(l,s);
+    if p=false then p:=Position(l,Reversed(s));fi;
+    return p*(-1)^uc.A[i];
+  end));
+end);
+
 CHEVIE.AddData("ReflectionDegrees","D",n->Concatenation(2*[1..n-1],[n]));
 
 # References for unipotent classes:
@@ -619,5 +632,8 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
       fi;
     od;
   fi;
+  for ss in uc.springerSeries do 
+    if not ForAll(ss.Z,x->x=1) then ss.hc:=0;fi;
+  od;
   return uc;
 end);

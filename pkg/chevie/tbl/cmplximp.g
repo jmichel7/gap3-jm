@@ -261,7 +261,7 @@ CHEVIE.AddData("ClassInfo","imp",function(p,q,r)local res,times,trans,I,i,j,a,S;
      od;
      d:=d mod p;
      if d mod q<>0 then Error();
-     elif d<>0 then res:=Concatenation(1+res,[1..d/q]*0+1);
+     elif d<>0 then res:=Concatenation(1+res,[1..QuoInt(d,q)]*0+1);
      elif p<>q then res:=1+res;
      fi;
     #Print(IntListToString(res),"\n");
@@ -432,15 +432,7 @@ CHEVIE.AddData("HighestPowerFakeDegrees","imp",function(p,q,r)local ci;
 
 CHEVIE.AddData("CharSymbols","imp",function(p,q,r)local s,ss,res;
   if q=1 then return SymbolsDefect(p,r,0,1);
-  elif q=p then ss:=SymbolsDefect(p,r,0,0);
-    res:=[];
-    for s in ss do p:=Position(Rotations(s){[2..Length(s)]},s);
-      if p=false then Add(res,s);
-      else Append(res,List([0..Length(s)/p-1],
-        i->Concatenation(List(s{[1..p]},ShallowCopy),[Length(s)/p,i])));
-      fi;
-    od;
-    return res;
+  elif q=p then return SymbolsDefect(p,r,0,0);
   else return false;
   fi;
 end);

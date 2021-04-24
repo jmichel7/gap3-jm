@@ -186,9 +186,9 @@ CHEVIE.AddData("UnipotentCharacters","3D4",function()local res;
   families:=[
     Family("C1",[1]),
     Family("C1",[2]),
-    Family("C1",[5]),
-    Family("C1",[6]),
-    Family("C2",[7, 4, 3, 8 ])],
+    Family("C1",[5],rec(ennola:=-1)),
+    Family("C1",[6],rec(ennola:=-1)),
+    Family("C2",[7, 4, 3, 8 ],rec(ennola:=-4))],
   a:=[ 0, 12, 3, 3, 1, 7, 3, 3 ],
   A:=[ 0, 12, 9, 9, 5, 11, 9, 9 ]);
 end);

@@ -1014,7 +1014,6 @@ Partitions := function ( arg )
     return parts;
 end;
 
-
 #############################################################################
 ##
 #F  NrPartitions( <n> ) . . . . . . . . .  number of partitions of an integer
@@ -1426,6 +1425,29 @@ PowerPartition := function(pi, k)
 
 end;
 
+# decent implementation but we must keep the other since too many
+# programs (especially for B2/C2) depend on the order it gives
+PartitionTuples2:=function(n,r)local l,inner,list;
+  l:=List([0..n],i->Partitions(i));
+  list:=[[]];
+  inner:=function(n,r)local k,start,i,beg;
+    k:=Length(list[Length(list)]);
+    start:=true;
+    if r=1 then beg:=n; else beg:=0;fi;
+    for i in [beg..n] do
+      for p in l[i+1] do
+        if not start then Add(list,list[Length(list)]{[1..k]}); fi;
+        start:=false;
+        Add(list[Length(list)],p);
+        if r>1 then inner(n-i,r-1); fi;
+      od;
+    od;
+    return;
+  end;
+  if r=0 then if n>0 then Error("non-sensical 0-tuples of sum $n");fi;
+  else inner(n,r);fi;
+  return list;
+end;
 
 #############################################################################
 ##
@@ -1434,15 +1456,10 @@ end;
 ##  'PartitionTuples'  returns the list of all <r>-tuples of partitions which
 ##  together form a partition of <n>.
 ##
-PartitionTuples := function(n, r)
-
+PartitionTuples:= function(n, r)
    local m, k, pm, i, t, t1, s, res, empty;
-
    empty:= rec(tup:= List([1..r], x->[]), pos:= List([1..n-1], x-> 1));
-
-   if n = 0 then
-      return [empty.tup];
-   fi;
+   if n = 0 then return [empty.tup]; fi;
 
    pm:= List([1..n-1], x->[]);
    for m in [1..QuoInt(n,2)] do 

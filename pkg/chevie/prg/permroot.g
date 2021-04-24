@@ -562,7 +562,7 @@ PermRootOps.ReducedInRightCoset:=function(W,F)local w,base,ir,a,t;
     if ReflectionName(t)="G333" then  
       base:=CHEVIE.R("ReducedInRightCoset","timp")(a.subgroup,F);
       if base=false then Error("should not happen");
-      else a.indices:=W.rootRestriction{a.subgroup.rootInclusion{base.gen}};
+      else a.indices:=W.rootRestriction{base.gen};
            F:=base.phi;
       fi;
     elif ReflectionName(t)="G7" then Error("2G7 not yet implemented");

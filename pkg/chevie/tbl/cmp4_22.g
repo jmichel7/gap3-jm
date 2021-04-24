@@ -1525,7 +1525,7 @@ G4_22Helper:=function(c,e,x,n,p)local nz,r,res,root;
 # if root<>(GetRoot(x,n)*E(n)^p)^r then Error("roots");fi;
 # Print("root=",x,"\n");
   res:=c*root^0;
-  res{nz}:=List(nz,i->c[i]*root^(e[i]/r));
+  res{nz}:=List(nz,i->c[i]*root^QuoInt(e[i],r));
   return res;
 end;
 

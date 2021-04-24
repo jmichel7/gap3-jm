@@ -13,7 +13,8 @@
 
 UnipotentClassOps:=OperationsRecord("UnipotentClassOps");
 
-# compute name of unipotent class according to options opt
+# compute name of unipotent class arg[1] according to options opt
+# options: mizuno, shoji, locsys, class 
 UnipotentClassOps.Name:=function(arg)local cl,opt,n;
   cl:=arg[1];if Length(arg)=2 then opt:=arg[2];else opt:=rec();fi;
   if IsBound(opt.mizuno) and IsBound(cl.mizuno) then n:=cl.mizuno;
@@ -27,7 +28,7 @@ UnipotentClassOps.Name:=function(arg)local cl,opt,n;
     if IsBound(opt.TeX) then return SPrint(n,"^{",cl,"}");
     else return SPrint(n,cl);fi;
   elif IsBound(opt.class) then
-    if opt.class=PositionId(cl.Au) then return n;fi;
+    if opt.class=PositionClass(cl.Au,cl.Au.identity) then return n;fi;
     cl:=ChevieClassInfo(cl.Au).classnames[opt.class];
     if IsBound(opt.TeX) then return SPrint("\\hbox{$",n,"$}_{(",cl,")}");
     else return SPrint(n,"_",cl);fi;
@@ -541,7 +542,7 @@ ICCTable:=function(arg)local W,i,q,tbl,o,res,q,uc,ss,b,f,k,R,n;
   res.L:=tbl[2]*q^(W.N+SemisimpleRank(R)-SemisimpleRank(W));
   res.uc:=uc;
   if IsBound(ss.parameter) then res.parameter:=ss.parameter;
-  else res.parameter:=[1..Length(ss.locsys)];
+  elif i=1 then res.parameter:=[1..Length(ss.locsys)];
   fi;
   if Length(arg)=3 and q<>arg[3] then
     q:=arg[3];
@@ -583,33 +584,36 @@ end;
 
 # XTable(uc[,opt]): values of functions \tilde X_\iota on unipotent
 # classes (opt.classes=true) or local systems (opt.classes unbound)
-# opt: variable (default X(Cyclotomics))
+# opt: variable (default Mvp(:q))
 # Note that c_\iota=\beta_u+(rkss L_\CI)/2
 #
-# Formatting: options of FormatTable + [.classes, .CycPol]
+# Formatting: options of FormatTable + [ .CycPol]
 # In the case opt.classes a side effect is computing cardClass giving the
 # cardinality of conjugacy classes
 XTable:=function(arg)
   local opt,uc,W,res,pieces,l,m,n,p,q,greenpieces,Au,i,b;
   uc:=arg[1];W:=Group(uc.spets);
   if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
-  if not IsBound(opt.variable) then opt.variable:=X(Cyclotomics);fi;
+  if not IsBound(opt.variable) then opt.variable:=Mvp("q");fi;
   q:=opt.variable;
-  pieces:=List([1..Length(uc.springerSeries)],i->ICCTable(uc,i,q));
+  pieces:=List([1..Length(uc.springerSeries)],i->ICCTable(uc,i));
   greenpieces:=List(pieces,x->List(x.scalar,
-   l->Zip(l,x.dimBu,function(x,y)return x*q^y;end)));
+   l->Zip(l,x.dimBu,function(x,y)return Value(x,q)*q^y;end)));
+  for i in [1..Length(uc.springerSeries)] do 
+    greenpieces[i]:=greenpieces[i]*q^(Length(uc.springerSeries[i].levi)/2);
+  od;
   l:=Concatenation(List(pieces,x->x.locsys));
   p:=SortingPerm(l);
   res:=rec(
     scalar:=TransposedMat(Permuted(ApplyFunc(DiagonalMat,greenpieces),p)),
     uc:=uc,
     Y:=OnMatrices(ApplyFunc(DiagonalMat,List(pieces,p->p.L)),p),
-    parameter:=Concatenation(List(pieces,x->x.parameter)),
     relgroups:=List(uc.springerSeries,x->x.relgroup));
   n:=Length(l);
   if IsBound(opt.classes) and opt.classes then
     res.classes:=Permuted(l,p);
     res.cardClass:=[];
+    res.Y:=Value(res.Y,q);
     for i in [1..Length(uc.classes)] do
       Au:=uc.classes[i].Au;
       b:=Filtered([1..Length(res.classes)],j->res.classes[j][1]=i);
@@ -622,11 +626,23 @@ XTable:=function(arg)
     res.locsys:=Permuted(l,p);
   fi;
   res.operations:=rec();
-  res.operations.String:=x->SPrint("XTable(",W,",rec(variable:=",q,"))");
+  res.operations.String:=function(x)
+    res:=SPrint("XTable(",W);
+    if IsBound(x.classes) then Append(res,",rec(classes:=true))");
+    else Append(res,")");
+    fi;
+    return res;
+  end;
   res.operations.Format:=function(x,opt)local res,tbl,i,b;
-    res:=SPrint("Values of character sheaves $\tilde X_\iota$ on");
-    opt.rowLabels:=Concatenation(List(x.relgroups,g->
-      List(CharNames(g,opt),n->SPrint("X^{",ReflectionName(g),"}_{",n,"}"))));
+    if IsBound(opt.TeX) then
+      res:=SPrint("Values of character sheaves $\\tilde X_\\iota$ on");
+      opt.rowLabels:=Concatenation(List(x.relgroups,g->List(CharNames(g,opt),
+        n->SPrint("X^{",ReflectionName(g),"}_{",n,"}"))));
+    else
+      res:=SPrint("Values of character sheaves tilde X_iota on");
+      opt.rowLabels:=Concatenation(List(x.relgroups,g->List(CharNames(g,opt),
+        n->SPrint("X^",ReflectionName(g),"_",n))));
+    fi;
     opt.rowsLabel:="X";
     tbl:=Copy(x.scalar);
     if IsBound(x.classes) then
@@ -650,13 +666,12 @@ end;
 
 # GreenTable(uc[,opt])
 # values of Green functions Q_{wF} on unipotent classes
-# opt: variable:=(default X(Cyclotomics))
+# opt: variable:=(default Mvp(:q))
 # method: use formula DLM3 (3.1)
 # Lines indexed by (I,wF). Columns by unip. classes or local systems
 GreenTable:=function(arg)local uc,W,opt,t,m,i,g;
   uc:=arg[1];W:=Group(uc.spets);
   if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
-  opt:=Inherit(opt,rec(classes:=true));
   t:=XTable(uc,opt);
   m:=ApplyFunc(DiagonalMat,List(t.relgroups,
        g->TransposedMat(CharTable(g).irreducibles)));
@@ -667,21 +682,41 @@ GreenTable:=function(arg)local uc,W,opt,t,m,i,g;
     i:=i+NrConjugacyClasses(g);
   od;
   t.operations.Format:=function(x,opt)local res,tbl,i,b;
-    res:=SPrint("Values of Green functions Q_{wF} on unipotent classes\n");
+    if IsBound(opt.TeX) then
+      res:=SPrint("Values of Green functions $Q_{wF}$ on");
+      opt.rowsLabel:="Q^I_{wF}\\class";
+    else res:=SPrint("Values of Green functions Q_wF on");
+      opt.rowsLabel:="Q^I_wF\\class";
+    fi;
     opt.rowLabels:=Concatenation(List(x.relgroups,function(g)local classnames;
       classnames:=List(ChevieClassInfo(g).classnames,x->TeXStrip(x,opt));
-      return List(classnames,n->SPrint("Q^{",ReflectionName(g),"}_{",n,"}"));
+      return List(classnames,function(n) if IsBound(opt.TeX) then 
+             return SPrint("Q^{",ReflectionName(g),"}_{",n,"}");
+        else return SPrint("Q^",ReflectionName(g),"_",n);
+        fi;end);
       end));
-    opt.rowsLabel:="Q^I_{wF}\\class";
     tbl:=Copy(x.scalar);
-    opt.columnLabels:=List(x.classes,p->Name(x.uc.classes[p[1]],
+    if IsBound(x.classes) then
+      PrintToString(res," unipotent classes\n");
+      opt.columnLabels:=List(x.classes,p->Name(x.uc.classes[p[1]],
         Inherit(rec(class:=p[2]),opt)));
+    else
+      PrintToString(res," local systems\n");
+      opt.columnLabels:=List(x.locsys,p->Name(x.uc.classes[p[1]],
+        Inherit(rec(locsys:=p[2]),opt)));
+    fi;
     if not IsBound(opt.CycPol) then opt.CycPol:=true;fi;
     if opt.CycPol then tbl:=List(tbl,y->List(y,CycPol));fi;
     PrintToString(res,FormatTable(tbl,opt));
     return String(res);
   end;
-  t.operations.String:=x->SPrint("GreenTable(",W,")");
+  t.operations.String:=function(x)local res;
+    res:=SPrint("GreenTable(",W);
+    if IsBound(x.classes) then Append(res,",rec(classes:=true))");
+    else Append(res,")");
+    fi;
+    return res;
+  end;
   t.operations.Display:=function(x,opt)opt.screenColumns:=SizeScreen()[1];
                Print(Format(x,opt));end;
   return t;
@@ -690,16 +725,32 @@ end;
 # values of unipotent characters
 # UnipotentValues(uc[,opt]) values on unipotent classes (opt.classes bound)
 # or local systems (opt.classes unbound)
-UnipotentValues:=function(arg)local uc,opt,res,q,W;
+UnipotentValues:=function(arg)local f,uc,opt,res,q,W,uw,i,m,hc;
   uc:=arg[1];W:=Group(uc.spets);
   if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
-  if not IsBound(opt.variable) then opt.variable:=X(Cyclotomics);fi;
+  if not IsBound(opt.variable) then opt.variable:=Mvp("q");fi;
   q:=opt.variable;
   res:=Copy(XTable(uc,opt));
-  uc:=UnipotentCharacters(W);
-  res.scalar:=TransposedMat(uc.operations.Fourier(uc){res.parameter})
-    *res.scalar;
-  res.operations.String:=x->SPrint("UnipotentValues(",W,",",q,")");
+  uw:=UnipotentCharacters(W);
+  f:=Fourier(uw);
+  m:=[];
+  for i in [1..Length(uc.springerSeries)] do
+    if i=1 then Append(m,f{uw.harishChandra[1].charNumbers});
+    elif not IsBound(uc.springerSeries[i].hc) then Error("not implemented");
+    else hc:=uc.springerSeries[i].hc;
+      if hc=0 then Append(m,List(uc.springerSeries[i].locsys,x->0*f[1]));
+      else Append(m,f{uw.harishChandra[hc].charNumbers});
+      fi;
+    fi;
+  od;
+  res.scalar:=TransposedMat(m)*res.scalar;
+  res.operations.String:=function(x)
+    res:=SPrint("UnipotentValues(",W);
+    if IsBound(x.classes) then Append(res,",rec(classes:=true))");
+    else Append(res,")");
+    fi;
+    return res;
+  end;
   res.operations.Format:=function(x,opt)local s,i,b,tbl;
     s:="Values of unipotent characters for ";
     if IsBound(opt.TeX) then 
@@ -715,7 +766,7 @@ UnipotentValues:=function(arg)local uc,opt,res,q,W;
         Inherit(rec(locsys:=p[2]),opt)));
       PrintToString(s," on local systems\n");
     fi;
-    opt.rowLabels:=CharNames(uc,opt);
+    opt.rowLabels:=CharNames(uw,opt);
     if not IsBound(opt.CycPol) then opt.CycPol:=true;fi;
     if opt.CycPol then tbl:=List(tbl,y->List(y,CycPol));fi;
     return Concatenation(s,FormatTable(tbl,opt));
@@ -725,7 +776,7 @@ end;
 
 # values of mellin  on unipotent classes
 MellinValues:=function(arg)local uc,q,res,b,tbl,f,labels,W;
-  uc:=arg[1];if Length(arg)=1 then q:=X(Cyclotomics); else q:=arg[2];fi;
+  uc:=arg[1];if Length(arg)=1 then q:=Mvp("q"); else q:=arg[2];fi;
   res:=Copy(XTable(uc,q));
   W:=Group(uc.spets);
   uc:=UnipotentCharacters(W);

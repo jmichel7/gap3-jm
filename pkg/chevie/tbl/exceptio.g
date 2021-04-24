@@ -201,7 +201,7 @@ CHEVIE.IndirectAddData("SchurElement",["F4","G25","G26","G32"],
   return VcycSchurElement(Y,CHEVIE.R("SchurModels",t).(ci.name),ci);
 end);
 
-CHEVIE.IndirectAddData("Ennola",["E7","E8","F4","2F4","G2",
+CHEVIE.IndirectAddData("Ennola",["E7","E8","F4","2F4","G2","3D4",
          "H3","H4","G24","G25","G26","G27","G29","G32","G33","G34"],
   t->function(arg)local uc,res,p,A,b,f;
   uc:=CHEVIE.R("UnipotentCharacters",t);
@@ -222,6 +222,13 @@ CHEVIE.IndirectAddData("Ennola",["E7","E8","F4","2F4","G2",
     res{f.charNumbers}:=Permuted(f.charNumbers,p);
   od;
   return SignedPerm(res);
+end);
+
+CHEVIE.IndirectAddData("Invariants",["E7","E8","H3","H4"],
+  t->function()local r,C;
+  C:=CHEVIE.R("CartanMat",t);r:=RootsCartan(C)*C; 
+ return List(CHEVIE.R("ReflectionDegrees",t),
+   d-> function(arg) return Sum(r,a->(arg*a)^d);end);
 end);
 
 ############################################################################

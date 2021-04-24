@@ -1,33 +1,28 @@
-
-# According to Michel (principal series) and Gunter (other cases)
-# the eigenvalue of Ennola_E(z)^k(rho_chi) is  
-#  EigenEnnola(W,i,k)/Ennolascalar(rho,E(z)^k)
-# where z=|ZW| and rho_chi is i-th unip. char.
-# check that Ennola is multiply by Ennola(special) in fusion algebra
 CHEVIE.AddTest("Ennola",
-function(W)local uc,en,f,i,B,r,es,stored,implemented,rr,t;
+function(W)local uc,en,f,i,B,r,es,stored,implemented,rr,t,S,m;
   if not IsSpets(W) then W:=Spets(W);fi;
-  t:=W.type[1];
-  if t.orbit[1].series in ["G","I","F"] and t.twist<>() then
-    Print("not applicable\n");return;
+  uc:=UnipotentCharacters(W);
+  S:=Fourier(uc);
+  m:=PermutationMat(Ennola(W));
+  if m<>[] and not IsDiagonalMat(m^(S^-1)) then
+    Error("Ennola not diagonal in basis of character sheaves");
   fi;
-  implemented:=not IsBound(t.orbit[1].p) and not t.orbit[1].series in ["B","D"];
+  t:=W.type[1];
   en:=SpetsEnnola(t,false);
-  if ForAny(en,x->Length(x)>1) then ChevieErr("Ambiguity in Ennola:",en,"\n");fi;
-  en:=Cartesian(en);
-  if en=[] then ChevieErr("Ennola failed for ",W,"\n");return;fi;
-  en:=en[1];
-  if not implemented then Print("Ennola=",en,"\n");return; fi;
-  stored:=not t.orbit[1].series in ["A"];
-  if not stored then
-    if SpetsEnnola(t)<>Ennola(W) then Error("value of Ennola");fi;
+  if ForAny(en,x->Length(x)<>1) then 
+    if t.twist<>() then return;fi;
+    ChevieErr("Ambiguity in Ennola:",en,"\n");
+  fi;
+  en:=Cartesian(en)[1];
+  if t.orbit[1].series in ["A","B","D","I"] or IsBound(t.orbit[1].p) then
+    if SpetsEnnola(t)<>Ennola(W) then ChevieErr("value of Ennola");fi;
     return;
   fi;
-  uc:=UnipotentCharacters(W);
+# check that Ennola is multiply by Ennola(special) in fusion algebra
   for i in [1..Length(uc.families)] do
     f:=uc.families[i];
     if IsBound(f.ennola) then stored:=f.ennola;else stored:=f.special;fi;
-    if implemented and not stored=en[i] then 
+    if not stored=en[i] then 
       Error("for family ",i,"=",TeXStrip(f.name)," ennola stored=",stored,
             " ennola=",en[i],"\n");
     fi;
@@ -115,7 +110,7 @@ CheckSerie:=function(s)local W,l,s,c,e,Ed,pred,n;
   fi;
 end;
 
-# test(WF[,d[,ad]]) or test(series)
+# Test("Series",WF[,d[,ad]])
 CHEVIE.AddTest("Series",function(arg)local W,l,s,c,e,Ed,pred,n;
   W:=arg[1];
   if Length(arg)>=2 then l:=Filtered(ApplyFunc(Series,arg),s->s.levi<>s.spets);
@@ -249,8 +244,7 @@ ReflectionDiscriminant:=function(W)local h,res,coroot,w,vars;
       Append(res,List([1..h.e_s],i->MatXPerm(W,w^-1)*coroot));
     od;
   od;
-  res:=List(res,x->Sum([1..Length(x)],i->Mvp(vars[i])*x[i]));
-  return res;
+  return List(res,x->vars*x);
 end;
 
 CHEVIE.AddTest("Discriminant",

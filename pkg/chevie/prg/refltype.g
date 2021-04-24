@@ -431,6 +431,10 @@ SpetsEnnola:=function(arg)local t,z,xi,PositionsSgn,uc,EnnolaBete,OmegaChi,
 
   # More sophisticated Ennola taking in account the predicted eigenvalues for
   # Ennola(principal series).
+  # According to Michel (principal series) and Gunter (other cases)
+  # the eigenvalue of Ennola_E(z)^k(rho_chi) is  
+  #  EigenEnnola(W,i,k)/Ennolascalar(rho,E(z)^k)
+  # where z=|ZW| and rho_chi is i-th unip. char.
   EnnolaBE:=function(i)local W,f,eig,n,e,j;
     f:=uc.families[i];
     eig:=Eigenvalues(f);

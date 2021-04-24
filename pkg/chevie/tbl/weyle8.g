@@ -2887,12 +2887,6 @@ CHEVIE.AddData("UnipotentCharacters","E8",function()
   104, 104, 104, 104, 104, 104, 104, 104 ]);
 end);
 
-CHEVIE.AddData("Invariants","E8",function()local r,C;
-  C:=CHEVIE.R("CartanMat","E8");r:=RootsCartan(C)*C; 
-  return List(CHEVIE.R("ReflectionDegrees","E8"),
-    d-> function(arg) return Sum(r,a->(arg*a)^d);end);
-end);
-
 CHEVIE.AddData("UnipotentClasses","E8",function(p)local uc,Z,l,l1,i,s,c,class;
   if p=0 then p:=1;fi;Z:=n->ComplexReflectionGroup(n,1,1);
   class:=n->First(uc.classes,x->x.name=n);
@@ -3085,7 +3079,7 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("E",8),levi:="",Z:=[],
     [27,1],[35,1],[23,2],[43,2],[31,2],[15,2],[53,2],[22,1],[45,1],[31,3],
     [20,2],[47,1],[28,1],[39,2],[24,2],[44,1],[27,2],[35,2]]),
    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[29,1]],
-     parameter:=[165])]);# Fourier transform of 165th unip. character
+     hc:=18)]);# Fourier transform of 165th unip. character
   if p=2 then Append(uc.classes,[
     rec(name:="(D_7(a_1))_2",succ:=["D7(a1)"],red:=Z(2),dimBu:=10,Au:=Z(2)),
     rec(name:="(D_5{+}A_2)_2",succ:=["D5+A2"],red:=Z(2),dimBu:=14,Au:=Z(2)),
@@ -3093,9 +3087,12 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("E",8),levi:="",Z:=[],
       dimBu:=24,Au:=Z(2)),
     rec(name:="(A_3{+}A_2)_2",succ:=["A3+A2"],red:=CoxeterGroup("A",1,"B",2),
       dimBu:=32)]);
-    for c in ["D_6","A_7"] do Add(class(c).succ,"(D7(a1))2");od;
-    for c in ["E_8(a_7)","D_5{+}A_1"] do Add(class(c).succ,"(D5+A2)2");od;
-    for c in ["D_4{+}A_1","2A_3"] do Add(class(c).succ,"(D4+A2)2");od;
+    for c in ["D_6","A_7"] do 
+      Add(class(c).succ,"(D7(a1))2");od;
+    for c in ["E_8(a_7)","D_5{+}A_1"] do 
+      Add(class(c).succ,"(D5+A2)2");od;
+    for c in ["D_4{+}A_1","2A_3"] do 
+      Add(class(c).succ,"(D4+A2)2");od;
     Add(class("A_3{+}2A_1").succ,"(A3+A2)2");
     c:=class("D_6(a_1)");
     c.AuAction:=ExtendedReflectionGroup(Z(2)*Z(2),[(1,2),(1,2)]);
@@ -3136,14 +3133,16 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("E",8),levi:="",Z:=[],
     s:=PositionProperty(l,x->x[3]=CHEVIE.R("CharInfo","F4")().kondo[i]);
     return [PositionProperty(uc.classes,
       i->UnipotentClassOps.Name(i,rec(mizuno:=true))=l[s][1]),l[s][2]];
-  end)));
+  end),hc:=4));
   Append(uc.springerSeries,[
-    rec(relgroup:=CoxeterGroup("A",1),levi:=[1..7],Z:=[],locsys:=[[5,2],[1,2]]),
-    rec(relgroup:=CoxeterGroup("A",1),levi:=[1..7],Z:=[],locsys:=[[5,4],[1,4]]),
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[2,2]]),
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[2,4]]),
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[9,5]]),
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[10,1]])]);
+    rec(relgroup:=CoxeterGroup("A",1),levi:=[1..7],Z:=[],locsys:=[[5,2],[1,2]],
+       hc:=0),
+    rec(relgroup:=CoxeterGroup("A",1),levi:=[1..7],Z:=[],locsys:=[[5,4],[1,4]],
+       hc:=0),
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[2,2]],hc:=17),
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[2,4]],hc:=10),
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[9,5]],hc:=19),
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[10,1]],hc:=7)]);
   elif p=3 then Add(uc.classes,
     rec(name:="(A_7)_3",succ:=["A7"],red:=Z(2),dimBu:=12));
     Add(uc.classes[26].succ,"(A7)3");
@@ -3151,19 +3150,19 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("E",8),levi:="",Z:=[],
     Append(uc.springerSeries,[
       rec(relgroup:=CoxeterGroup("G",2),levi:=[1..6],Z:=[],locsys:=[
        [1,2],[16,2],[14,2],[2,2],[4,5],[5,2]],
-warning:="As conjectured by Lusztig, Arxiv 1608.02223 conjecture 6.2"),
+warning:="As conjectured by Lusztig, Arxiv 1608.02223 conjecture 6.2",hc:=5),
       rec(relgroup:=CoxeterGroup("G",2),levi:=[1..6],Z:=[],locsys:=[
        [1,3],[16,3],[14,3],[2,3],[4,6],[5,3]],
-warning:="As conjectured by Lusztig, Arxiv 1608.02223 conjecture 6.2"),
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[4,2]]),
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[4,3]])]);
+warning:="As conjectured by Lusztig, Arxiv 1608.02223 conjecture 6.2",hc:=6),
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[4,2]],hc:=9),
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[4,3]],hc:=8)]);
     uc.springerSeries[1].locsys[72][2]:=4;
     uc.springerSeries[1].locsys{[13,51]}:=[[71,1],[18,2]];
   elif p=5 then Append(uc.springerSeries,[
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[1,2]]),
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[1,3]]),
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[1,4]]),
-    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[1,5]])]);
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[1,2]],hc:=16),
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[1,3]],hc:=15),
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[1,4]],hc:=14),
+    rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[1,5]],hc:=13)]);
   fi;
   uc.orderClasses:=List(uc.classes,c->List(c.succ,
     n->PositionProperty(uc.classes,c->UnipotentClassOps.Name(c)=n)));

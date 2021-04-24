@@ -144,7 +144,7 @@ PresentationOps.Save := function( file, T, name )
 
         # now write the whole contents of the tietze record to file, but
         # replace T.generators by a list of the internal genarator names
-        # and T.tietze[TZ_GEBERATORS] by an empty list, and suppress all
+        # and T.tietze[TZ_GENERATORS] by an empty list, and suppress all
         # those components which are words.
         for n in RecFields(T) do
         comp := T.(n);

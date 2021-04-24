@@ -375,6 +375,7 @@ CHEVIE.AddData("UnipotentClasses","A",function(n,p)local uc,i,j,cl,d,ss;
     else for j in [0..d-1] do Add(ss(E(d)^j).locsys,[i,j+1]);od;
     fi;
   od;
+  for ss in uc.springerSeries{[2..Length(uc.springerSeries)]} do ss.hc:=0;od;
   uc.orderClasses:=Hasse(Poset(List(uc.classes,x->List(uc.classes,y->
             Dominates(y.parameter,x.parameter)))));
   return uc;

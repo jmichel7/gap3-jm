@@ -22,28 +22,30 @@ CHEVIE.AddData("PhiFactors","timp",function(p,q,r,phi)local res,o;
   Error("wrong arguments");
 end);
 
+# here W should have type[1] be G333 with indices [1,2,3]
 CHEVIE.AddData("ReducedInRightCoset","timp",function(W,phi)
-  local e,y,sets,sets2,i,v;
+  local e,y,sets,sets2,i,v,m1perm,o,g;
   # Case of G(3,3,3)
   # quads of roots which have the same CartanMat and are representatives of 
   # W-orbits of quads of reflections satisfying Corran-Picantin relations
   sets:=[[1,2,3,44],[21,3,1,32],[3,11,2,36],[22,3,2,16]]; # 3G333
   sets2:=[[1,50,3,12,2], [3,52,2,23,11], [1,16,3,43,38],  # 4G333
           [2,37,3,15,14], [50,3,52,38,53], [1,23,3,22,45]];
-  for i in sets do
-    y:=Set(List(i,j->Reflection(W,j)));
-    e:=RepresentativeOperation(W,y,OnSets(y,phi),OnSets);
-    if e<>false then 
-      return rec(gen:=i{[1..3]},phi:=phi/e);
-    fi;
+  m1perm:=( 1, 4)( 2, 8)( 3,13)( 5,22)( 6,14)( 7,10)( 9,17)(11,25)(12,33)(15,42)
+ (16,18)(19,37)(20,35)(21,24)(23,29)(26,38)(27,46)(28,30)(31,40)(32,39)(34,45)
+ (36,54)(41,43)(44,49)(47,50)(48,52)(51,53); # effect of -1 on roots
+  m1perm:=MappingPermListList(W.rootInclusion,Permuted(W.rootInclusion,m1perm));
+  for g in [(),m1perm] do
+    for i in List(sets,x->W.rootInclusion{x}) do
+      for o in [[4,1,3,2],[2,4,3,1],[1..4]] do
+        e:=RepresentativeOperation(W,i{o},OnTuples(i,phi*g),OnTuples);
+        if e<>false then return rec(gen:=i{[1..3]},phi:=phi/e); fi;
+      od;
+    od;
   od;
-  for i in sets2 do
-    y:=W.rootInclusion{i{[1..4]}};
-    v:=Set(y);
-    e:=RepresentativeOperation(W,v,OnSets(v,phi),OnSets);
-    if e<>false and PermListList(y,OnTuples(y,phi/e))=(1,2,3,4) then 
-      return rec(gen:=i{[1,5,3]},phi:=phi/e);
-    fi;
+  for i in List(sets2,x->W.rootInclusion{x}) do
+    e:=RepresentativeOperation(W,i{[2,3,4,1]},OnTuples(i{[1..4]},phi),OnTuples);
+    if e<>false then return rec(gen:=i{[1,5,3]},phi:=phi/e);fi;
   od;
   return false;
   end
@@ -52,15 +54,18 @@ CHEVIE.AddData("ReducedInRightCoset","timp",function(W,phi)
 CHEVIE.AddData("ClassInfo","timp",function(p,q,r,phi)
   if [p,q,r]=[3,3,3] then
     if phi=(1,4,2) then
-      return rec( classtext:=[[],[3],[1],[2,1],[3,1],[3,2,1],[2,3,1,2,3,1]],
+      return rec(classes:=[3,9,9,3,18,9,3],
+        classtext:=[[],[3],[1],[2,1],[3,1],[3,2,1],[2,3,1,2,3,1]],
         classparams:=[[],[3],[1],[2,1],[3,1],[3,2,1],[2,3,1,2,3,1]],
         classnames:=["Id","3","1","21","31","321","231231"]);
     elif phi=(1,2,4) then
-      return rec( classtext:=[[],[3],[1],[1,2],[3,1],[3,1,2],[1,3,2,1,3,2]],
+      return rec(classes:=[3,9,9,3,18,9,3],
+        classtext:=[[],[3],[1],[1,2],[3,1],[3,1,2],[1,3,2,1,3,2]],
         classparams:=[[],[3],[1],[1,2],[3,1],[3,1,2],[1,3,2,1,3,2]],
         classnames:=["Id","3","1","12","31","312","132132"]);
     elif phi=(1,2,3,4) then
-      return rec( classtext:=[[],[1],[1,2],[1,2,3],[1,2,1],[1,2,1,3]],
+      return rec(classes:=[9,9,9,9,9,9],
+        classtext:=[[],[1],[1,2],[1,2,3],[1,2,1],[1,2,1,3]],
         classparams:=[[],[1],[1,2],[1,2,3],[1,2,1],[1,2,1,3]],
         classnames:=["Id","1","12","123","121","1213"]);
     else Error("should not happen");
@@ -233,6 +238,8 @@ CHEVIE.AddData("UnipotentCharacters","timp",function(p,q,r,phi)local res,a;
     return res;
     else Error("should not happen");return false;
     fi;
-  else ChevieErr("UnipotentCharacters not implemented");return false;
+  else 
+    if q=1 or q=p then ChevieErr("UnipotentCharacters not implemented");fi;
+    return false;
   fi;
 end);

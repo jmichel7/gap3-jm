@@ -325,50 +325,93 @@ LessSymbols:=function(x,y)return
   List(x,Length)<List(y,Length) or (List(x,Length)=List(y,Length) and x>y);
 end;
 
+# Malle-defect of symbol of shape s
+DefShape:=function(s)local e; e:=Length(s);
+ return (Binomial(e,2)*QuoInt(Sum(s),e)-s*[0..e-1]) mod e;
+end;
+
+SymbolsShape:=function(r,s)local S,IsReducedSymbol,res,s,p,e;
+
+  IsReducedSymbol:=s->ForAll(Rotations(s){[2..Length(s)]},
+    x->s=x or LessSymbols(x,s));
+
+  e:=Length(s);
+  S:=List(PartitionTuples(r-RankSymbol(List(s,x->[0..x-1])),e),
+                                     x->SymbolPartitionTuple(x,s));
+
+  if Sum(s) mod e<>0 then return S;fi;
+  S:=Filtered(S,IsReducedSymbol);
+  if DefShape(s)<>0 then return S;fi;
+  res:=[];
+  for s in S do p:=Position(Rotations(s){[2..Length(s)]},s);
+    if p=false then Add(res,s);
+    else Append(res,List([0..Length(s)/p-1],
+      i->Concatenation(List(s{[1..p]},ShallowCopy),[Length(s)/p,i])));
+    fi;
+  od;
+  return res;
+end;
+
+# possible shapes for cuspidal e-symbols of rank<=r, content=c
+ShapesSymbols:=function(e,r,def,c)local f,res,m,new;
+  f:=function(lim2,sum,nb,max)local res,a;
+    if nb=1 then 
+      if sum=0 then return [[sum]];
+      else return [];
+      fi;
+    fi;
+    res:=[];a:=QuoInt(sum,nb-1);
+    while a<=max and Binomial(a,2)<=lim2 and a<=sum do
+      Append(res,List(f(lim2-Binomial(a,2),sum-a,nb-1,a),
+           x->Concatenation([a],x)));
+      a:=a+1;
+    od;
+    return res;
+  end;
+  res:=[];m:=0;
+  repeat new:=f(r+QuoInt((m*e+c-1)*(m*e+c-e+1),2*e),c+m*e,e,c+m*e);
+         Append(res,new); m:=m+1;
+  until Length(new)=0;
+  res:=Concatenation(List(res,x->Arrangements(x,e)));
+  return Filtered(res,s->DefShape(s)=def and 
+    ForAll(Rotations(s){[2..Length(s)]},x->DefShape(x)<>def or x<=s));
+end;
+
 # e-symbols of rank r, Malle-defect def and content=c (mod e)
 # The list is returned sorted by HC series (principal series first)
 # SymbolsDefect(d,r,0,1) gives symbols of unipotent characters of G(d,1,r)
 # SymbolsDefect(e,r,0,0) gives symbols of unipotent characters of G(e,e,r)
 SymbolsDefect:=function(e,r,def,c)
-  local defShape, shapesSymbols, IsReducedSymbol, S;
+  return Concatenation(List(ShapesSymbols(e,r,def,c),s->SymbolsShape(r,s)));
+end;
 
-  # Malle-defect of symbol of shape s
-  defShape:=function(s)local e; e:=Length(s);
-   return (Binomial(e,2)*QuoInt(Sum(s),e)-s*[0..e-1]) mod e;
-  end;
-
-  # possible shapes for cuspidal symbols of rank<=r, length e, content=c mod e
-  shapesSymbols:=function(r,e,c)local f,res,m,new;
-    f:=function(lim2,sum,nb,max)local res,a;
-      if nb=1 then 
-	if sum=0 then return [[sum]];
-	else return [];
-	fi;
-      fi;
-      res:=[];a:=QuoInt(sum,nb-1);
-      while a<=max and Binomial(a,2)<=lim2 and a<=sum do
-	Append(res,List(f(lim2-Binomial(a,2),sum-a,nb-1,a),
-	     x->Concatenation([a],x)));
-	a:=a+1;
-      od;
-      return res;
-    end;
-    res:=[];m:=0;
-    repeat new:=f(r+QuoInt((m*e+c-1)*(m*e+c-e+1),2*e),c+m*e,e,c+m*e);
-	   Append(res,new); m:=m+1;
-    until Length(new)=0;
-    res:=Concatenation(List(res,x->Arrangements(x,e)));
-    return Filtered(res,s->defShape(s)=def and 
-      ForAll(Rotations(s){[2..Length(s)]},x->defShape(x)<>def or x<=s));
-  end;
-
-  IsReducedSymbol:=s->ForAll(Rotations(s){[2..Length(s)]},
-    x->s=x or LessSymbols(x,s));
-
-  S:=Concatenation(List(shapesSymbols(r,e,c),s->
-    List(PartitionTuples(r-RankSymbol(List(s,x->[0..x-1])),e),
-                                     x->SymbolPartitionTuple(x,s))));
-  if c<>0 then return S;else return Filtered(S,IsReducedSymbol);fi;
+# Ennola of e-symbol s (of content 1 or 0)
+# The order of Ennola (order of center of group) is computed automatically:
+# it is e for content 1 and gcd(e,rank(s)) for content 0.
+EnnolaSymbol:=function(s)local e,res,i,k,times,ind,z;
+  if not IsList(s[Length(s)]) then
+    times:=s[Length(s)-1];
+    ind:=s[Length(s)];s:=FullSymbol(s);
+  fi;
+  e:=Length(s);
+  if Sum(s,Length) mod e=1 then z:=e;else z:=Gcd(e,RankSymbol(s));fi;
+  if z=1 then return s;fi;
+  res:=List(s,x->[]);
+  for i in [1..Length(s)] do
+    for k in s[i] do
+      Add(res[1+((i+k*e/z) mod e)],k);
+    od;
+  od;
+  for i in res do Sort(i);od;
+  if IsBound(times) then
+    if e/times<>First([1..e],i->Rotation(res,i)=res) then
+      Error("period changed!");
+    fi;
+    if e mod 2=0 then ind:=(ind+e/2-1) mod times; fi; 
+    # works for types D,I and G(3,3,3) but ???
+    res:=Concatenation(res{[1..e/times]},[times,ind]);
+  fi;
+  return res;
 end;
 
 # XSP(rho,s,n[,d]) returns the union of the Lusztig-Spaltenstein 

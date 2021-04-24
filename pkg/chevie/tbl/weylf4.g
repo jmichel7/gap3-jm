@@ -14,8 +14,7 @@
 ##
 CHEVIE.AddData("CartanMat","F4",function(arg)local a,type;
   if Length(arg)=1 then type:=arg[1];else type:=1;fi;
-  a:=CHEVIE.R("CartanMat","A")(4);a[2][3]:=-type;a[3][2]:=2/a[2][3];
-  return a;
+  return [[2,-1,0,0],[-1,2,-type,0],[0,-2/type,2,-1],[0,0,-1,2 ]];
 end);
 
 CHEVIE.AddData("PrintDiagram","F4",function(indices,title,type)
@@ -169,7 +168,7 @@ CHEVIE.AddData("HeckeCharTable","F4",function(param,sqrtparam)
   tbl:=rec(
   identifier := "H(F4)",
   text := "origin: Meinolf Geck, April 1992",
-  parameter := [ u ,u ,v ,v ],
+  parameter:=[u,u,v,v],
   size := 1152,
   powermap:=CHEVIE.R("PowerMaps","F4"));
   Inherit(tbl,CHEVIE.R("ClassInfo","F4")());
@@ -675,7 +674,7 @@ charLabels:=["(1,1)","(1,\\lambda^{\\wedge3})","(1,\\sigma)",
   "(g_2,\\varepsilon'')","(g_2,\\varepsilon)","(g'_2,1)",
   "(g'_2,\\varepsilon)","(g'_2,\\varepsilon')","(g'_2,\\varepsilon'')",
   "(g'_2,r)","(g_3,1)","(g_3,\\zeta_3)","(g_3,\\zeta_3^2)",
-  "(g_4,1)","(g_4,-1)","(g_4,-i)","(g_4,i)"],
+  "(g_4,1)","(g_4,-1)","(g_4,i)","(g_4,-i)"],
 size:=21,
 eigenvalues:=[1,1,1,1,1,1,-1,1,-1,1,1,1,1,-1,1,E(3),E(3)^2,1,-1,E(4),-E(4)],
 name:="D(S_4)",
@@ -992,13 +991,10 @@ rec(name:="F_4(a_1)",shoji:="B_4",succ:=["F4"],dynkin:=[2,2,0,2],Au:=Z(2),
 rec(name:="F_4",succ:=[],dynkin:=[2,2,2,2],Au:=Z(Gcd(12,p^2)),
     balacarter:=[1,2,3,4])],
 springerSeries:=[
-rec(relgroup:=CoxeterGroup("F",4),levi:=[],Z:=[],
- locsys:=[[16,1],[6,1],[11,2],[1,1],
- [14,1],[3,1],[15,1],[2,1],[9,1],[14,2],[9,2],[11,4],[4,1],[8,1],[11,3],[11,5],
- [15,2],[7,1],[10,1],[3,2],[13,1],[5,1],[12,1],[6,2],[10,2]]),
-rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[11,1]],
-   parameter:=[37]) # Fourier transform of 37th unip. character
-   ]);
+  rec(relgroup:=CoxeterGroup("F",4),levi:=[],Z:=[],locsys:=[[16,1],[6,1],[11,2],
+ [1,1],[14,1],[3,1],[15,1],[2,1],[9,1],[14,2],[9,2],[11,4],[4,1],[8,1],[11,3],
+ [11,5],[15,2],[7,1],[10,1],[3,2],[13,1],[5,1],[12,1],[6,2],[10,2]]),
+  rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[11,1]],hc:=9)]);
   if p=2 then Append(uc.classes,
 [rec(name:="(\\tilde A_1)_2",succ:=["~A1"],red:=CoxeterGroup("B",3),dimBu:=16),
  rec(name:="(B_2)_2",succ:=["B2","C3(a1)2"],red:=CoxeterGroup("B",2),dimBu:=8,Au:=Z(2)),
@@ -1013,17 +1009,20 @@ rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[11,1]],
   c.AuAction:=ExtendedReflectionGroup(CoxeterGroup("A",2),(1,2));
   c:=class("\\tilde A_1");c.red:=CoxeterGroup("B",2);c.dimBu:=13;
   Unbind(c.dynkin);Unbind(c.AuAction);
-  uc.springerSeries:=[rec(relgroup:=CoxeterGroup("F",4),levi:=[],Z:=[],
+  uc.springerSeries[1]:=rec(relgroup:=CoxeterGroup("F",4),levi:=[],Z:=[],
       locsys:=[[16,1],[6,1],[5,1],[1,1],[14,1],[17,1],[14,5],[2,1],[18,2],#9
        [14,4],[9,1],[20,1],[4,1],[8,1],[11,2],[11,3],[15,2],[7,1],[19,1],#19
-       [3,1],[13,2],[5,2],[12,2],[6,2],[10,1]]),
-      rec(relgroup:=CoxeterGroup("B",2),levi:=[2,3],Z:=[],
-      locsys:=[[12,1],[14,2],[18,1],[16,3],[13,1]])];
-  Append(uc.springerSeries,List([[11,1],[16,2],[16,4],[15,1],[14,3]],c->
-    rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[c])));
+       [3,1],[13,2],[5,2],[12,2],[6,2],[10,1]]);
+  Add(uc.springerSeries,rec(relgroup:=CoxeterGroup("B",2),levi:=[2,3],Z:=[],
+      locsys:=[[12,1],[14,2],[18,1],[16,3],[13,1]],hc:=2));
+  Append(uc.springerSeries,
+  [rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[16,2]],hc:=5),
+   rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[16,4]],hc:=4),
+   rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[15,1]],hc:=3),
+   rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[14,3]],hc:=8)]);
   elif p=3 then Append(uc.springerSeries,
-    [rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[16,2]]),
-    rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[16,3]])]);
+  [rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[16,2]],hc:=6),
+   rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[16,3]],hc:=7)]);
   fi;
 # uc.operations:=UnipotentClassesOps;
   uc.orderClasses:=List(uc.classes,c->List(c.succ,

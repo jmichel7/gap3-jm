@@ -8,9 +8,7 @@
 ##
 CHEVIE.AddData("CartanMat","G2",function(arg)local a,type;
   if Length(arg)>0 then type:=arg[1];else type:=1;fi;
-  a:=[[2,-1],[-3,2]];
-  a[1][2]:=-type;a[2][1]:=3/a[1][2];
-  return a;
+  return [[2,-type],[-3/type,2]];
 end);
 
 CHEVIE.AddData("PrintDiagram","G2",function(indices,title,type)
@@ -241,10 +239,11 @@ CHEVIE.AddData("UnipotentClasses","G2",function(p,type)local uc,Z,c;
 springerSeries:=[rec(relgroup:=CoxeterGroup("G",2),levi:="",Z:=[],
   locsys:=[[5,1],[1,1],[4,2],[2,1],[4,3],[3,1]]),
   rec(relgroup:=CoxeterGroup(),levi:=[1,2],Z:=[],locsys:=[[4,1]],
-   parameter:=[8])]); # Fourier transform of 8th unip. character
+   hc:=5)]); # Fourier transform of 8th unip. character
   if p=2 then uc.springerSeries[1].locsys[1]:=[5,2];
     Add(uc.springerSeries,
-      rec(relgroup:=CoxeterGroup(),levi:=[1,2],Z:=[],locsys:=[[5,1]]));
+      rec(relgroup:=CoxeterGroup(),levi:=[1,2],Z:=[],locsys:=[[5,1]],
+      hc:=3));
   elif p=3 then 
     Add(uc.classes,rec(name:="(\\tilde A_1)_3",
       succ:=["~A1"],dimBu:=3,red:=Z(2),Au:=CoxeterGroup()));
@@ -252,7 +251,8 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("G",2),levi:="",Z:=[],
     uc.classes[3].dimBu:=2;Unbind(uc.classes[3].dynkin);
     uc.springerSeries[1].locsys{[3,5]}:=[[6,1],[4,2]];
     for c in [2,3] do Add(uc.springerSeries,
-      rec(relgroup:=CoxeterGroup(),levi:=[1,2],Z:=[],locsys:=[[5,c]]));od;
+      rec(relgroup:=CoxeterGroup(),levi:=[1,2],Z:=[],locsys:=[[5,c]],
+      hc:=2*c-2));od;
   fi;
   uc.orderClasses:=List(uc.classes,c->List(c.succ,
     n->PositionProperty(uc.classes,c->UnipotentClassOps.Name(c)=n)));

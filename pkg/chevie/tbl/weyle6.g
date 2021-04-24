@@ -816,24 +816,25 @@ rec(name:="1",succ:=["A1"],dynkin:=[0,0,0,0,0,0],balacarter:=[],
    [6,1],[16,1],[9,1],[12,1]]),
 # See Lusztig arxiv:1608.02223 for next case
   rec(levi:=[1,3,5,6],relgroup:=CoxeterGroup("G",2),Z:=[E(3)],
-    locsys:=[[1,2],[14,2],[13,2],[2,2],[4,3],[5,2]]),
+    locsys:=[[1,2],[14,2],[13,2],[2,2],[4,3],[5,2]],hc:=0),
   rec(levi:=[1,3,5,6],relgroup:=CoxeterGroup("G",2),Z:=[E(3)^2],
-    locsys:=[[1,3],[14,3],[13,3],[2,3],[4,5],[5,3]]),
-  rec(relgroup:=CoxeterGroup(),levi:=[1..6],Z:=[E(3)],locsys:=[[4,2]]),
-  rec(relgroup:=CoxeterGroup(),levi:=[1..6],Z:=[E(3)^2],locsys:=[[4,6]])]);
+    locsys:=[[1,3],[14,3],[13,3],[2,3],[4,5],[5,3]],hc:=0),
+  rec(relgroup:=CoxeterGroup(),levi:=[1..6],Z:=[E(3)],locsys:=[[4,2]],hc:=0),
+ rec(relgroup:=CoxeterGroup(),levi:=[1..6],Z:=[E(3)^2],locsys:=[[4,6]],hc:=0)]);
   if p=2 then Add(uc.springerSeries,
     rec(levi:=[2,3,4,5],relgroup:=CoxeterGroup("A",2),Z:=[1],
-    locsys:=[[8,1],[3,1],[1,4]]));
+    locsys:=[[8,1],[3,1],[1,4]],hc:=2));
     uc.springerSeries[1].locsys{[11,13]}:=[[3,2],[8,2]];
     uc.springerSeries[2].locsys[1]:=[1,3];
     uc.springerSeries[3].locsys[1]:=[1,5];
     for c in [2,6] do Add(uc.springerSeries,
       rec(relgroup:=CoxeterGroup(),levi:=[1..6],Z:=[E(3)^(1-c)],
-        locsys:=[[1,c]]));od;
+        locsys:=[[1,c]],hc:=0));od;
   elif p=3 then uc.springerSeries:=uc.springerSeries{[1]};
-    uc.springerSeries[1].locsys{[7,15]}[2]:=[1,2];
+    uc.springerSeries[1].locsys{[7,15]}:=[[4,1],[4,2]];
     for c in [2,3] do Add(uc.springerSeries,
-      rec(relgroup:=CoxeterGroup(),levi:=[1..6],Z:=[1],locsys:=[[1,c]]));od;
+     rec(relgroup:=CoxeterGroup(),levi:=[1..6],Z:=[1],locsys:=[[1,c]],hc:=c+1));
+    od;
   fi;
   uc.orderClasses:=List(uc.classes,c->List(c.succ,
     n->PositionProperty(uc.classes,c->UnipotentClassOps.Name(c)=n)));

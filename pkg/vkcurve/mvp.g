@@ -462,10 +462,15 @@ MvpOps.\=:=function(x,y)
   fi;
 end;
 
-MvpOps.CycPol:=function(p)local l;
+MvpOps.CycPol:=function(p)local l,v;
   l:=Variables(p);
   if Length(l)=0 then return CycPol(ScalMvp(p));
-  elif Length(l)=1 then return CycPol(ScalMvp(Value(p,[l[1],X(Cyclotomics)])));
+  elif Length(l)=1 then 
+    v:=Valuation(p);
+    p:=p/Mvp(l[1])^v;
+    l:=CycPol(ScalMvp(Value(p,[l[1],X(Cyclotomics)])),rec(vname:=l[1]));
+    l.valuation:=l.valuation+v;
+    return l;
   else Error("Mvp should be univariate");fi;
 end;
 

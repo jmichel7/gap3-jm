@@ -11,7 +11,7 @@ if not IsBound(CHEVIE) then
 fi;
 
 CHEVIE.name:="chevie";
-CHEVIE.date:=[2021,1,28];
+CHEVIE.date:=[2021,4,24];
 CHEVIE.homepage:="http://webusers.imj-prg.fr/~jean.michel/chevie";
 CHEVIE.copyright:=
 ["If you use CHEVIE in your work please cite the authors as follows:",
@@ -46,7 +46,7 @@ AUTO(ReadChv("lib/decimal"),
 AUTO(ReadChv("lib/symbol"),
   Compositions,
   CycPolFakeDegreeSymbol, CycPolGenericDegreeSymbol, DefectSymbol,
-  DifferencePartitions, FullSymbol, HighestPowerFakeDegreeSymbol,
+  DifferencePartitions, EnnolaSymbol, FullSymbol, HighestPowerFakeDegreeSymbol,
   HighestPowerGenericDegreeSymbol, LessSymbols,
   LowestPowerFakeDegreeSymbol, LowestPowerGenericDegreeSymbol,
   PartBeta, PartitionTupleToString, RankSymbol, ShiftBeta, StringSymbol,
@@ -59,7 +59,7 @@ AUTO(ReadChv("lib/util"),
   Drop, EvalWords, EvalPolRoot, FastValue, FOrbit, FOrbits, GetRoot, GetWord,
   InductionTable, InductionTableOps, Inherit, InverseListsMap,
   MinimalWordProperty, PermutationOnCharacters, PermutationOnClasses,
-  PositionCartesian, PositionDet, PowerRoot, Replace, Rotations, 
+  PositionCartesian, PositionDet, PowerRoot, Replace, Rotation, Rotations, 
   SymmetricDifference, Transversals, TwoTree, Dtime, Stime, Elapsed, EvScheme);
 
 AUTO(ReadChv("lib/po"),
