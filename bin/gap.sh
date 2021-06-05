@@ -38,9 +38,7 @@ GAP_MEM=512m
 ##  It should be one of
 ##     gap.linux for linux 64 bit
 ##     gap.linux32 for linux 32 bit
-##     gap.mac for Mac OSX on X86 32 bit (most stable version for mac)
-##     gap.mac64 for Mac OSX on X86 64 bit
-##  Thanks to Andrew Mathas for gap.mac
+##     gap.mac for Mac OSX on X86 64 bit and arm (thanks to Jay Taylor)
 ##
 GAP_PRG=gap.linux
 

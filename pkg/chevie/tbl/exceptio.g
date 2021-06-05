@@ -12,7 +12,7 @@
 CHEVIE.IndirectAddData("CharName",["2E6","E6","E7","E8","2F4","F4","G2",
   "H3","H4","2G5","G24","G25","G26","G27","G29","G31","G32","G33","G34"],
   t->function(x,option)local s,f;
-    for f in ["frame","kondo","spaltenstein","gp"] do
+    for f in ["frame","kondo","spaltenstein","gp","lusztig"] do
       if IsBound(option.(f)) then s:=CHEVIE.R("CharInfo",t)();
         if IsBound(s.(f)) then 
           s:=s.(f)[Position(s.charparams,x)];

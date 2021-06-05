@@ -13,6 +13,7 @@ CHEVIE.AddData("PhiFactors","timp",function(p,q,r,phi)local res,o;
   if p=q then
     if p mod o=0 then
       if phi=(1,2,4) then return [1,1,E(3)^2];
+      elif phi^-1=(1,2,4) then return [1,1,E(3)];
       else res:=List([1..r],x->E(1));res[Length(res)]:=E(o); return res;
       fi;
     elif [p,q,r,o]=[3,3,3,4] then return [E(4),1,-E(4)];

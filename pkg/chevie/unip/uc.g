@@ -72,19 +72,31 @@ UnipotentCharactersOps.RelativeHecke:=function(uc,i,q)local hw,t;
 end;
 
 # next is a field to hide its name
-UnipotentCharactersOps.ParamsAndNames:=function(sers)local res,ser,t,n,params;
-  res:=rec(charParams:=[],TeXCharNames:=[]);
+UnipotentCharactersOps.Params:=function(sers)local res,ser,t,n;
+  res:=[];
   for ser in sers do
     t:=ser.relativeType;n:=ser.cuspidalName;
-    params:=CHEVIE.Data("CharInfo",t).charparams;
-    res.charParams{ser.charNumbers}:=List(params,x->[n,x]);
-    res.TeXCharNames{ser.charNumbers}:=List(params,function(x)local s;
-      s:=Copy(n);
-      if IsBound(t.orbit) then t.rank:=t.orbit[1].rank;fi;
-      if Length(s)>0 and t.rank>0 then Add(s,':');fi;
-      if t.rank>0 then  Append(s,CHEVIE.Data("CharName",t,x,rec(TeX:=1)));fi;
-      return String(s);
-      end);
+    if IsBound(t.orbit) then t.rank:=t.orbit[1].rank;fi;
+    res{ser.charNumbers}:=List(CHEVIE.Data("CharInfo",t).charparams,x->[n,x]);
+  od;
+  return res;
+end;
+
+SerNames:=function(sers,opt)local res,ser,n,tt,nn;
+  res:=[];
+  for ser in sers do
+    tt:=ser.relativeType;n:=TeXStrip(ser.cuspidalName,opt);
+    if tt=[] then res{ser.charNumbers}:=[n];
+    else nn:=List(tt,function(t)local params;
+      params:=CHEVIE.Data("CharInfo",t).charparams;
+      return List(params,x->CHEVIE.Data("CharName",t,x,opt));
+        end);
+      if IsBound(opt.TeX) then nn:=List(Cartesian(nn),x->Join(x,"\\otimes "));
+      else nn:=List(Cartesian(nn),x->Join(x,","));
+      fi;
+      if ser.levi<>[] then nn:=List(nn,x->SPrint(n,":",x));fi;
+      res{ser.charNumbers}:=List(nn,String);
+    fi;
   od;
   return res;
 end;
@@ -95,7 +107,7 @@ UnipotentCharactersOps.CharNames:=function(uc,opt)
      if Length(x[1])=1 then return "Id";
      else return TeXStrip(SPrint("\\rho_{",x[1][1],",",x[1][2],"}"),opt);
      fi;end);
-  else return List(uc.TeXCharNames,x->TeXStrip(x,opt));
+  else return SerNames(uc.harishChandra,opt);
   fi;
 end;
 
@@ -166,7 +178,7 @@ ReflTypeOpsUnipotentCharacters:=function(t) local uc,a,s,i,indices,r;
     return uc;
   fi;
   uc:=Copy(uc);
-  Inherit(uc,UnipotentCharactersOps.ParamsAndNames(uc.harishChandra));
+  uc.charParams:=UnipotentCharactersOps.Params(uc.harishChandra);
   if not IsBound(uc.charSymbols) then
     uc.charSymbols:=uc.charParams;
   fi;
@@ -230,9 +242,7 @@ ReflTypeOpsUnipotentCharacters:=function(t) local uc,a,s,i,indices,r;
   if not IsBound(uc.almostCharSymbols) then
     uc.almostCharSymbols:=uc.charSymbols;
   fi;
-  a:=UnipotentCharactersOps.ParamsAndNames(uc.almostHarishChandra);
-  uc.almostCharParams:=a.charParams;
-  uc.almostTeXCharNames:=a.TeXCharNames;
+  uc.almostCharParams:=UnipotentCharactersOps.Params(uc.almostHarishChandra);
   return uc;
 end;
 
@@ -273,7 +283,6 @@ HasTypeOpsUnipotentCharacters:=function(WF)
 	    cuspidalName:="", eigenvalue:=1, charNumbers :=[ 1 ])],
       families := [Family("C1",[1])],
       charParams := [ [ "", [ 1 ] ] ],
-      TeXCharNames := [ "" ],
       charSymbols := [ [ "", [ 1 ] ] ],
       size:=1,
       almostHarishChandra:=[
@@ -281,7 +290,6 @@ HasTypeOpsUnipotentCharacters:=function(WF)
             cuspidalName := "", eigenvalue:=1, charNumbers := [1])],
       almostCharSymbols := [ [ "", [ 1 ] ] ],
       almostCharParams := [ [ "", [ 1 ] ] ],
-      almostTeXCharNames := [ "" ],
       a := [ 0 ],
       A := [ 0 ],
       group:=WF,
@@ -294,7 +302,7 @@ HasTypeOpsUnipotentCharacters:=function(WF)
 # Parent(Group(WF))
     uc:=ReflTypeOps.UnipotentCharacters(t);
     if uc=false then return false;fi;
-    H:=List(t.orbit,x->ReflectionSubgroup(W,W.rootInclusion{x.indices}));
+    H:=List(t.orbit,x->ReflectionSubgroup(W,W.rootInclusion{x.indices{[1..x.rank]}}));
     for s in uc.harishChandra do
       s.levi:=Concatenation(List(H,x->x.rootInclusion{s.levi}));
       s.relativeType.indices:=H[1].rootInclusion{s.relativeType.indices};
@@ -322,10 +330,7 @@ HasTypeOpsUnipotentCharacters:=function(WF)
     fi;
   od;
   
-  for a in ["TeXCharNames","almostTeXCharNames"]
-  do res.(a):=List(res.(a),x->Join(x,"\\otimes "));od;
-
-  res.size:=Length(res.TeXCharNames);
+  res.size:=Length(res.charParams);
   
   for a in [ "harishChandra", "almostHarishChandra" ] 
   do res.(a):=List(res.(a),CartesianSeries);od;
@@ -341,7 +346,7 @@ HasTypeOpsUnipotentCharacters:=function(WF)
   od;
 
   # finally the new 'charNumbers' lists
-  tmp:=Cartesian(List(simp,a->[1..Length(a.TeXCharNames)]));
+  tmp:=Cartesian(List(simp,a->[1..Length(a.charParams)]));
   for a in [ "harishChandra", "almostHarishChandra", "families"] do
     for s in res.(a) do
       s.charNumbers:=List(s.charNumbers,y->Position(tmp,y));
@@ -354,9 +359,6 @@ HasTypeOpsUnipotentCharacters:=function(WF)
   od;
   if res.almostCharSymbols=res.almostCharParams then
     res.almostCharSymbols:=res.almostCharParams;
-  fi;
-  if res.almostTeXCharNames=res.TeXCharNames then
-    res.almostTeXCharNames:=res.TeXCharNames;
   fi;
   if Length(res.almostHarishChandra)=Length(res.harishChandra) then
   for i in [1..Length(res.almostHarishChandra)] do
@@ -372,8 +374,8 @@ HasTypeOpsUnipotentCharacters:=function(WF)
   return res;
 end;
 
-UnipotentCharactersOps.AlmostCharNames:=function(uc,option)
-  return List(uc.almostTeXCharNames,x->TeXStrip(x,option));
+UnipotentCharactersOps.AlmostCharNames:=function(uc,opt)
+  return SerNames(uc.almostHarishChandra,opt);
 end;
 
 UnipotentCharacters:=function(W)

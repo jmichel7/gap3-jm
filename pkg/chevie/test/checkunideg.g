@@ -199,7 +199,7 @@ function(W)local uc,i,e,j,f,n;
     for j in [1..Length(f.charNumbers)] do
       n:=f.charNumbers[j];
       if e[n]<>f.eigenvalue then
-        ChevieErr("HCfamily ",i,"#",j,":",uc.TeXCharNames[n],"=",n,
+        ChevieErr("HCfamily ",i,"#",j,":",CharNames(uc,rec(TeX:=true))[n],"=",n,
           " eigen from fam.=",e[n]," but from HC=",f.eigenvalue,"\n");
       fi;
     od;
@@ -220,7 +220,7 @@ function(W)local uc,i,e,j,f,n,q;
     for j in [1..Length(f.charNumbers)] do
       n:=f.charNumbers[j];
       if e[n]<>q[j] then
-        ChevieErr("HCfamily ",i,"#",j,":",uc.TeXCharNames[n],"=",n,
+        ChevieErr("HCfamily ",i,"#",j,":",CharNames(uc,rec(TeX:=true))[n],"=",n,
           " eigen from HC.=",e[n]," but from fam=",q[j],"\n");
       fi;
     od;

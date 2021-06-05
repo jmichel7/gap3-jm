@@ -49,6 +49,7 @@ unknown:
 	@echo "'linux32' for linux with gcc in 32bit mode"
 	@echo "'macosx'  for mac os x with gcc in 32 bit mode"
 	@echo "'macosx64'  for mac os x with gcc (64 bit)"
+	@echo "'macosxU'  universal binary for mac os x (64 bit)"
 	@echo "'bsd'     for bsd with gcc"
 	@echo "'solaris CC=gcc' for Solaris with GNU cc"
 	@echo "'solaris CC=cc'  for Solaris with cc"
@@ -90,10 +91,24 @@ macosx:
 
 # sbrk doesn't work in macosx so we need to use vm_allocate
 macosx64:
-	@$(MAKE) system.o   CC=gcc  CFLAGS="$(COPTS) -O -DSYS_IS_64BIT -DSYS_IS_MACOSX -DARCH_INCLUDE -DSYS_HAS_IOCTL_PROTO"
-	@$(MAKE) gap CC=gcc CFLAGS="$(COPTS) -DSYS_IS_64BIT -O" LOPTS="$(LOPTS)"
+	@$(MAKE) system.o   CC=gcc  CFLAGS="$(COPTS) -O -DSYS_IS_64_BIT -DSYS_IS_MACOSX -DARCH_INCLUDE -DSYS_HAS_IOCTL_PROTO"
+	@$(MAKE) gap CC=gcc CFLAGS="$(COPTS) -DSYS_IS_64_BIT -O" LOPTS="$(LOPTS)"
 	strip gap
 	mv gap ../bin/gap.mac
+
+macosxU:
+	@$(MAKE) system.o   CC=gcc  CFLAGS="$(COPTS) -arch x86_64 -O -DSYS_IS_64_BIT -DSYS_IS_MACOSX -DARCH_INCLUDE -DSYS_HAS_IOCTL_PROTO"
+	@$(MAKE) gap CC=gcc CFLAGS="$(COPTS) -arch x86_64 -DSYS_IS_64_BIT -O" LOPTS="$(LOPTS) -arch x86_64"
+	strip gap
+	mv gap gap.mac_x86_64
+	rm -rf *.o
+	@$(MAKE) system.o   CC=gcc  CFLAGS="$(COPTS) -arch arm64 -O -DSYS_IS_64_BIT -DSYS_IS_MACOSX -DARCH_INCLUDE -DSYS_HAS_IOCTL_PROTO" LOPTS="$(LOPTS) -arch arm64"
+	@$(MAKE) gap CC=gcc CFLAGS="$(COPTS) -arch arm64 -DSYS_IS_64_BIT -O" LOPTS="$(LOPTS) -arch arm64"
+	strip gap
+	mv gap gap.mac_arm64
+	lipo -create -output gap.mac gap.mac_x86_64 gap.mac_arm64
+	mv gap.mac ../bin/gap.mac
+	rm gap.mac_x86_64 gap.mac_arm64
 
 x86-dos-djgpp:
 	@$(MAKE) system.o   CC=gcc  CFLAGS="$(COPTS) -DSYS_IS_WINDOWS"
@@ -136,7 +151,7 @@ OBJECTS = gap.o system.o gasman.o scanner.o idents.o read.o eval.o\
           record.o statemen.o function.o coding.o
 
 gap: $(OBJECTS)
-	$(CC) $(LOPTS) -o gap $(OBJECTS) -lrt
+	$(CC) $(LOPTS) -o gap $(OBJECTS)
 
 gapdjg.exe: $(OBJECTS)
 	$(CC) $(LOPTS) -o gapdjg.out $(OBJECTS) -lpc
@@ -194,4 +209,4 @@ coding.o  : coding.h   $(INCBASC) list.h plist.h blister.h finfield.h vecffe.h
 #T  Miscellaneous  . . . . . . . . . . . . . . . . . targets to clean up, etc.
 ##
 clean:
-	rm -f *.o gap gapdjg.out gapdjg.exe
+	rm -f *.o gap gap.mac_x86_64 gap.mac_arm64 gapdjg.out gapdjg.exe

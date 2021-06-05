@@ -163,7 +163,7 @@ function(arg)local h,i,I,L,hh,ud,t,H,s,exp,W,ser,G,m,e;
       if not IsSpets(L) then L:=Spets(L);H:=SubSpets(L,h.levi);fi;
       hh:=FindSeriesInParent(h,H,L,UnipotentCharacters(L).harishChandra).ser;
       if Length(hh.charNumbers)<>2 then 
-        s:=SeriesNC(L,H,Position(UnipotentCharacters(H).TeXCharNames,
+        s:=SeriesNC(L,H,Position(CharNames(UnipotentCharacters(H),rec(TeX:=true)),
                h.cuspidalName),1);
         SeriesOps.RelativeGroup(s);
         if CharNumbers(s)=false or SeriesOps.fill(s)=false then 
@@ -210,7 +210,7 @@ function(WF)local sers,uc,ss,s,ul,p,para,stored_para,i;
   for s in ss do
     s:=Series(WF,s[1],s[2],1);
     ul:=UnipotentCharacters(s.levi);
-    p:=PositionProperty(sers,h->ul.TeXCharNames[s.cuspidal]=h.cuspidalName
+    p:=PositionProperty(sers,h->CharNames(ul,rec(TeX:=true))[s.cuspidal]=h.cuspidalName
       and Eigenvalues(ul)[s.cuspidal]=h.eigenvalue);
     para:=Hecke(s).parameter;
     para:=List(para,x->List(x,Mvp)); # should be unnecessary

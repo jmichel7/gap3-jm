@@ -303,7 +303,7 @@ BalaCarterLabels:=function(W)local l;
 end;
 
 HasTypeOpsUnipotentClasses:=function(WF,p)
-  local t,tf,u,uc,ucl,ll,i,j,k,f,p,g,l,chars,Au,W,s,bc;
+  local t,tf,u,uc,ucl,ll,i,j,k,f,p,g,l,chars,Au,W,s,bc,permZ;
   W:=Group(WF);
   t:=ReflectionType(W); 
   tf:=ReflectionType(WF); 
@@ -410,6 +410,10 @@ HasTypeOpsUnipotentClasses:=function(WF,p)
        s->ForAll(AlgebraicCentre(W).descAZ,y->Product(s.Z{y})=1));
     ucl:=AdjustAu(ucl); 
   fi;
+  permZ:=Group(WeightInfo(W).AdjointFundamentalGroup,());
+  permZ:=List(OnTuples(permZ.generators,WF.phi),x->GetWord(permZ,x));
+  ucl.springerSeries:=Filtered(ucl.springerSeries,
+       x->List(permZ,i->Product(x.Z{i}))=x.Z);
   s:=ucl.springerSeries[1];
   s.relgroup:=RelativeCoset(WF,s.levi);
   s.locsys:=s.locsys{ChevieCharInfo(s.relgroup).charRestrictions};

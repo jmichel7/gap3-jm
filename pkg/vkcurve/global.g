@@ -35,7 +35,7 @@ VKCURVE.Loops:=function(r)local m,i,P,l,segmentNumbers,uniquePoints;
       then r.loops:=r.loops{List(r.roots,z->Position(r.roots,z))};
       else r.loops:=r.loops{List(r.trueroots,z->Position(r.roots,z))};
   fi;
-  segmentNumbers:=Union(List(r.loops,x->List(x,AbsInt)));
+  segmentNumbers:=Set(Union(List(r.loops,x->List(x,AbsInt))));
   r.loops:=List(r.loops,x->List(x,function(y)
     if y<0 then return -Position(segmentNumbers,-y);
            else return Position(segmentNumbers,y);

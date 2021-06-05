@@ -36,7 +36,7 @@ FindCuspidalInLevi:=function(n,HF)local strip,cusp;
     do n:=n{[1..Length(n)-l]};od;
     return n;
   end;
-  cusp:=Position(List(UnipotentCharacters(HF).TeXCharNames,
+  cusp:=Position(List(CharNames(UnipotentCharacters(HF),rec(TeX:=true)),
      x->strip(x,"\\otimes ")),strip(n,"\\otimes "));
   if cusp=false then
     Error("cuspidal ",n," not found in ",HF,"\n");
@@ -173,7 +173,7 @@ LusztigInductionPieces:=function(res)
           x->Position(Group(WFGL).relativeIndices,x))},
             Group(WFGL).MappingFromNormalizer(LF.phi*WF.phi^-1));
     else
-      L:=ReflectionSubgroup(W,ser.levi); # L^op contained in LF
+      L:=ReflectionSubgroup(W,ser.levi); # L^p.op contained in LF
       Jb:=Concatenation(List(ser.relativeType,
          function(x)if IsBound(x.orbit) then return
           Concatenation(List(x.orbit,y->y.indices));
