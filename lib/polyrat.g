@@ -1224,7 +1224,6 @@ local  p2,  res,  j,  i, ii,o,d,b,lco,degs,  step,  c,  cnew,  sel,  deli,
     degs:=Filtered( alldegs, i -> 2*i<=degf );
     if IsBound(opt.onlydegs) then
       degs:=Intersection(degs,opt.onlydegs);
-#Print("degs=",degs,"\n");
     fi;
 
     if act in sel  then

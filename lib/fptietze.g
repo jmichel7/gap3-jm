@@ -75,11 +75,9 @@ TR_TREENUMS := 5;
 TR_TREEPOINTERS := 6;
 TR_TREELAST := 7;
 
-
-TzSubstituteWord := 0;
+TzSubstituteWord := 0;    # this and 2 next: suppress complaints
 TzInitGeneratorImages := 0;
 TzUpdateGeneratorImages := 0;
-
 
 #############################################################################
 ##
