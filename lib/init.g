@@ -1157,7 +1157,7 @@ RequirePackage("meataxe","nq","pcqa","sisyphos","ve");
 RequirePackage("arep","guava");
 # purely gap packages
 RequirePackage("autag","cryst","dce","gliss","grim");
-RequirePackage("matrix","monoid","xmod");
+RequirePackage("matrix","monoid"); # suppressed "xmod" which causes bugs
 RequirePackage("algebra","specht");
 RequirePackage("chevie"); # requires vkcurve, specht, algebra
 RequirePackage("vkcurve");
