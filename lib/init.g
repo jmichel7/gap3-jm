@@ -278,7 +278,7 @@ end;
 
 ReadLib := function ( name )
     if not ReadPath( LIBNAME, name, ".g", "ReadLib" )  then
-     Error("the library file '",name,"' must exist and be readable");
+     Error("the library file '",name,".g' must exist and be readable");
     fi;
 end;
 
