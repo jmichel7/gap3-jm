@@ -81,6 +81,7 @@ DBVKQuotient:=function(r) local braids,z,b,auts,n,F,seg,
   height:=zero[Position(dist,Minimum(dist))];
   basestring:=Length(Filtered(zero,z->(z.r < height.r)
 	    or ((z.r = height.r) and (z.i <= height.i))));
+# Print("basestring=",basestring," r.braids=",r.braids);
   fbase:=F.generators[basestring];
   rels:=[];
   for aut in auts do
@@ -112,5 +113,6 @@ DBVKQuotient:=function(r) local braids,z,b,auts,n,F,seg,
       fi;
   od;
   Add(rels,fbase);
+# Print("=>rels=",rels,"\n");
   return F/rels;
 end;

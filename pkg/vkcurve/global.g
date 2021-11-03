@@ -23,7 +23,6 @@
 #  .basepoint -- holds the chosen basepoint
 #
 VKCURVE.Loops:=function(r)local m,i,P,l,segmentNumbers,uniquePoints;
-  Inherit(r,LoopsAroundPunctures(r.roots));
   # here we  have loops around the  'true' roots and around  the 'extra'
   # roots Difference(r.roots,r.trueroots). We get rid of the extra loops
   # and the associated segments and points, first saving the basepoint.
@@ -311,15 +310,25 @@ VKCURVE.SearchHorizontal:=function(r0)local height,section,r;
 end;
 
 # curve --  an Mvp in x and y describing a curve in complex^2
-FundamentalGroup:=function(arg)local c,r,i;
+FundamentalGroup:=function(arg)local c,r,i,loops,opt;
   c:=arg[1];
   if IsPolynomial(c) or IsMvp(c) then
-    if Length(arg)=2 then VKCURVE.SetPrintLevel(arg[2]);
-		     else VKCURVE.SetPrintLevel(0);fi;
+    arg:=arg{[2..Length(arg)]};
+    if Length(arg)>0 and IsRec(arg[1]) then
+      opt:=arg[1];
+      if IsBound(opt.loops) then loops:=opt.loops;fi;
+      arg:=arg{[2..Length(arg)]};
+    fi;
+    if Length(arg)>0 then VKCURVE.SetPrintLevel(arg[1]);
+		     else VKCURVE.SetPrintLevel(0);
+    fi;
     r:=VKCURVE.PrepareCurve(c);
     VKCURVE.Discy(r);VKCURVE.GetDiscyRoots(r);
     if Length(r.roots)=0 then return VKCURVE.TrivialCase(r);fi;
     if not r.ismonic then r:=VKCURVE.SearchHorizontal(r); fi;
+    if IsBound(loops) then Inherit(r,ConvertLoops(loops));
+    else Inherit(r,LoopsAroundPunctures(r.roots));
+    fi;
     VKCURVE.Loops(r); VKCURVE.Zeros(r);
     if Length(r.zeros[1])=0 then return VKCURVE.TrivialCase(r);fi;
     r.B:=Braid(CoxeterGroupSymmetricGroup(Length(r.zeros[1])));
@@ -349,6 +358,7 @@ PrepareFundamentalGroup:=function(curve,name)local r,i,f,fname;
   VKCURVE.Discy(r);VKCURVE.GetDiscyRoots(r);
   if Length(r.roots)=0 then return VKCURVE.TrivialCase(r);fi;
   if not r.ismonic then r:=VKCURVE.SearchHorizontal(r); fi;
+  Inherit(r,LoopsAroundPunctures(r.roots));
   VKCURVE.Loops(r);VKCURVE.Zeros(r);
   if Length(r.zeros[1])=0 then return VKCURVE.TrivialCase(r);fi;
   fname:=Cat(r.name,".tmp");PrintTo(fname,"");

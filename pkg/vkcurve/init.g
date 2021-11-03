@@ -45,7 +45,7 @@ ReadVK:= function(name)
 end;
 
 AUTO(ReadVK("action"),VKQuotient,DBVKQuotient,BnActsOnFn);
-AUTO(ReadVK("loops"),LoopsAroundPunctures);
+AUTO(ReadVK("loops"),ConvertLoops,LoopsAroundPunctures);
 AUTO(ReadVK("plbraid"),LBraidToWord);
 AUTO(ReadVK("polyroot"),NewtonRoot,SeparateRoots,SeparateRootsInitialGuess,
   FindRoots);

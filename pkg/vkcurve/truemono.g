@@ -69,7 +69,7 @@ FollowMonodromy:=function(arg) local globalrec,a,b,
     dist:=List([1..d],i->[1..d]);
     for k in [1..d] do 
        for l in [k+1..d] do
-	 dist[k][l]:=mynorm(v[k]-v[l]);
+	 dist[k][l]:=mynorm(a[k]-a[l]);
 	 dist[l][k]:=dist[k][l];
 	 dist[k][k]:=dist[k][l];
        od;
@@ -78,9 +78,9 @@ FollowMonodromy:=function(arg) local globalrec,a,b,
     R:=List([1..d],k->Minimum(dist[k])/4);
     res:=[1..d];
     for k in [1..d] do
-	z:=Filtered(b,i->mynorm(i-a[k])<R[k]);
-	if Length(z) <> 1 then Error("something's wrong"); fi;
-	res[k]:=z[1];
+      z:=Filtered(b,i->mynorm(i-a[k])<R[k]);
+      if Length(z) <> 1 then Error("something's wrong"); fi;
+      res[k]:=z[1];
     od;
   return res;
   end;

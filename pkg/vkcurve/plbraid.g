@@ -32,6 +32,8 @@ LBraidToWord:=function(v1,v2,B)
      local des,k,x1,x2,y1,y2,p,q,inv,i,j,tcrit,crit,t,u,ut,
      xut,put,res,xt,yt,x,xcrit,posx,nx,xx,n,starbraid,desingularized;
 
+#Print(evalf(v1,6),"=>",evalf(v2,6),"\n");
+
 # Deals with "star" linear braids, those with associated permutation being w_0
   starbraid:=function(y,offset,B)local n,k;
     n:=Length(y);
@@ -67,6 +69,8 @@ LBraidToWord:=function(v1,v2,B)
   if (Length(Set(x1)) < n) or (Length(Set(x2)) < n) then 
   if VKCURVE.showSingularProj
     then   Print("WARNING: singular projection (resolved)\n"); fi;
+#  Print("v1:=");Cut(FormatGAP(v1));Print(";\n");
+#  Print("v2:=");Cut(FormatGAP(v2));Print(";\n");
        des:=desingularized(v1,v2);
        return LBraidToWord(des[1],des[2],B); fi;
   p:=SortingPerm(x1);
@@ -93,13 +97,13 @@ LBraidToWord:=function(v1,v2,B)
      xt:=Permuted(xt,put);
      yt:=Permuted(yt,put);
      xcrit:=Set(xt);
-  #Print(xt); Print("\n");
-  #Print(xcrit); Print("\n");
      for x in xcrit do
 	 posx:=Position(xt,x);
 	 nx:=Length(Filtered(xt,xx->x=xx));
+#        Print("posx=",posx," nx=",nx," yt=",yt{[posx..posx+nx-1]}," ",posx-1);
 	 res:=res*starbraid(yt{[posx..posx+nx-1]},posx-1,B);
-	 od;
+#        Print(" res=",res,"\n");
+     od;
      u:=t; 
   od;
   if VKCURVE.showBraiding then 
@@ -109,6 +113,8 @@ LBraidToWord:=function(v1,v2,B)
 	     Print("=    Nontrivial braiding = ");
 	     Print(String(res,-10));Print("=\n");
 	     Print("======================================\n");
+#  Print("v1:=");Cut(FormatGAP(v1));Print(";\n");
+#  Print("v2:=");Cut(FormatGAP(v2));Print(";\n");
 	  else
 	     Print("=    Nontrivial braiding = ");
 	     Print(String(res,-10));Print("=\n");

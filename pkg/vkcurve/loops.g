@@ -7,6 +7,29 @@
 ##  This file holds the implementation of LoopsAroundPunctures
 ## 
 #############################################################################
+# converts old result format (list of loops) to the new format :
+#  .points   : set of all endpoints of all segments
+#  .segments : set of all segments used, where endpoints are indexed
+#              as in points
+#     .loops : list of sequence of numbers of used segments
+ConvertLoops:=function(oldres) local res,segments,loops,points;
+res:=ShallowCopy(oldres);
+segments:=Set(Concatenation(
+        List(res,l->List([2..Length(l)],i->Set([l[i-1],l[i]])) )));
+loops:=List(res,l->List([2..Length(l)],
+	    function(i) local seg;
+	      seg:=[l[i-1],l[i]];
+	      if Position(segments,seg) = false then
+	         return -Position(segments,Reversed(seg));
+	      else
+	         return Position(segments,seg);
+	      fi;
+	    end ));
+points:=Set(Concatenation(segments));
+segments:=List(segments,s->[Position(points,s[1]),Position(points,s[2])]);
+return rec(points:=points,segments:=segments,loops:=loops);
+end;
+
 #########################################################################
 # Computes a list of generators of the fundamental group of
 #       C - {y1,...,yn}
@@ -27,7 +50,7 @@ LoopsAroundPunctures:=function(originalroots)
          cut,newcirc,distneighbours,circleorigin,
 	          rs,is,maxr,minr,maxi,mini,box,average,
 	tan,cmplxscal,cnorm,cycorder,lineq,crossing,boundpaths,
-	mediatrix,convert,neighbours,detectsleftcrossing,shrink;
+	mediatrix,neighbours,detectsleftcrossing,shrink;
 		  
 tan:= x -> x.i/x.r;
 cmplxscal:=function(x,y) return x.r*y.r+x.i*y.i; end;
@@ -148,36 +171,13 @@ shrink:=function(l)local k;
   fi;
 end;
 
-# converts old result format (list of loops) to the new format :
-#  .points   : set of all endpoints of all segments
-#  .segments : set of all segments used, where endpoints are indexed
-#              as in points
-#     .loops : list of sequence of numbers of used segments
-convert:=function(oldres) local res,segments,loops,points;
-res:=ShallowCopy(oldres);
-segments:=Set(Concatenation(
-        List(res,l->List([2..Length(l)],i->Set([l[i-1],l[i]])) )));
-loops:=List(res,l->List([2..Length(l)],
-	    function(i) local seg;
-	      seg:=[l[i-1],l[i]];
-	      if Position(segments,seg) = false then
-	         return -Position(segments,Reversed(seg));
-	      else
-	         return Position(segments,seg);
-	      fi;
-	    end ));
-points:=Set(Concatenation(segments));
-segments:=List(segments,s->[Position(points,s[1]),Position(points,s[2])]);
-return rec(points:=points,segments:=segments,loops:=loops);
-end;
-
 roots:=originalroots;
 n:=Length(roots);
 average:=Sum(roots)/n;
 Sort(roots,function(x,y) local dx,dy;
     dx:=cnorm(x-average); dy:=cnorm(y-average);
     return dx < dy; end );
-if n=1 then return convert([roots[1]+[Complex(1,0),Complex(0,1),
+if n=1 then return ConvertLoops([roots[1]+[Complex(1,0),Complex(0,1),
                Complex(-1,0),Complex(0,-1),Complex(1,0)]]);
 fi;
 ys:=List(roots,x->rec(y:=x));
@@ -208,10 +208,10 @@ od;
 # The evalf trick is just in case we are dealing with cyclotomics
 #rs:=List(ys,y->evalf(y.y.r)); is:=List(ys,y->evalf(y.y.i));
 rs:=List(ys,y->y.y.r); is:=List(ys,y->y.y.i);
-minr:=ys[Position(rs,Minimum(rs))].y.r;
-maxr:=ys[Position(rs,Maximum(rs))].y.r;
-mini:=ys[Position(is,Minimum(is))].y.i;
-maxi:=ys[Position(is,Maximum(is))].y.i;
+minr:=Minimum(rs);#minr:=ys[Position(rs,Minimum(rs))].y.r;
+maxr:=Maximum(rs);#maxr:=ys[Position(rs,Maximum(rs))].y.r;
+mini:=Minimum(is);#mini:=ys[Position(is,Minimum(is))].y.i;
+maxi:=Maximum(is);#maxi:=ys[Position(is,Maximum(is))].y.i;
 box:=[Complex(minr-2,mini-2),Complex(minr-2,maxi+2),
       Complex(maxr+2,mini-2),Complex(maxr+2,maxi+2),
       Complex((maxr+minr)/2,mini-(maxr-minr)/2-2),
@@ -252,7 +252,7 @@ if VKCURVE.showLoops then Print("circles computed\n"); fi;
 boundpaths(ys,sy,[],ys[1]);
 for y in ys do
     k:=Length(y.path);
-    if k > 1 then circleorigin:=(y.y+y.path[k-1])/2;
+    if k>1 then circleorigin:=(y.y+y.path[k-1])/2;
       k:=Position(y.circle,circleorigin);
       y.circle:=Concatenation(
         Sublist(y.circle,[k..Length(y.circle)]),Sublist(y.circle,[1..k-1]));
@@ -260,9 +260,9 @@ for y in ys do
 od;
 for y in ys do
     k:=Length(y.path);
-    y.handle:=Concatenation(List([1..k-1],i->
-          Sublist( sy(y.path[i]).circle,
-	[1..Position(sy(y.path[i]).circle,(y.path[i]+y.path[i+1])/2)])));
+    y.handle:=Concatenation(List([1..k-1],function(i)local c;
+      c:=sy(y.path[i]).circle;
+      return c{[1..Position(c,(y.path[i]+y.path[i+1])/2)]};end));
     y.loop:=Concatenation([y.handle,y.circle,Reversed(y.handle)]);
 od;
 for y in ys do y.loop:=shrink(y.loop); od;
@@ -270,5 +270,5 @@ Sort(ys,
        function(y1,y2)
        return Position(originalroots,y1.y)< Position(originalroots,y2.y);
        end);
-return convert(List(ys,y->y.loop));
+return ConvertLoops(List(ys,y->y.loop));
 end;

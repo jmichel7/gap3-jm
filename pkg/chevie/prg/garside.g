@@ -906,7 +906,7 @@ PermRootOpsDualBraidMonoid:=function(arg)local W,new,M,n,r;
     M.atoms:=Filtered(M.atoms,r->ReflectionLength(W,M.delta/r)<n);
   fi;
   M.AtomListSimple:=function(v)
-    if IsCoxeterGroup(W) then return ReflectionWord(W,v);
+    if IsCoxeterGroup(W) then return ReflectionWord(Parent(W),v);
     else return ReflectionWord(W,v,M.atoms);
     fi;
   end;
