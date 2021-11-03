@@ -56,7 +56,7 @@ CHEVIE.AddData("CharInfo","H3",function()local res;
   charparams:=[[1,15],[1,0],[5,5],[5,2],[3,6],[3,8],[3,1],[3,3],[4,3],[4,4]],
   gp:=["1_r'","1_r","5_r'","5_r","3_s","overline{3}_s","3_s'","overline{3}_s'",
      "4_r'","4_r"],
-  opdam:=(9,10),
+  hgal:=(9,10),
   extRefl:=[2,7,5,1]);
   res.b:=List(res.charparams,x->x[2]);
   return res;
@@ -115,7 +115,7 @@ CHEVIE.AddData("HeckeCharTable","H3",function(param,sqrtparam)
   powermap:=CHEVIE.R("PowerMaps","H3"),
   irreducibles:=List(CHEVIE.R("vpolheckeirreducibles","H3"),
       i->List(i,function(j)local res;res:=ValuePol(j[1],q);
-       if IsInt(j[2]) then res:=res*q^j[2];else res:=res*v^(2*j[2]);fi;
+       if IsInt(j[2]) then res:=res*q^j[2];else res:=res*v^Int(2*j[2]);fi;
        return res;end)),
   irredinfo:=CHEVIE.R("IrredInfo","H3"));
   Inherit(tbl,ci);

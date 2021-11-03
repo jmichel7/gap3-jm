@@ -133,13 +133,18 @@ end;
 # usage DeligneLusztigLefschetz(hecke element[,i])
 # if not i given |X_T^{F^m}| for divisible h
 # if i given use eigenvalues^i
-DeligneLusztigLefschetz:=function(arg)local W,h,ct,uc,i;
+DeligneLusztigLefschetz:=function(arg)local W,h,ct,uc,i,ch;
   h:=arg[1];
   if IsHeckeCosetElt(h) then W:=ReflectionCoset(h.coset);
-  else W:=Group(Hecke(h)); fi;
+    ch:=HeckeCharValues(h);
+  elif IsHeckeElt(h) then W:=Group(Hecke(h)); 
+    ch:=HeckeCharValues(h);
+  elif IsHeckeAlgebra(h) then W:=Group(h);  
+    ch:=HeckeCharValues(h,arg[2]);arg:=arg{Drop([1..Length(arg)],2)};
+  fi;
   uc:=UnipotentCharacters(W);
   if Length(arg)=2 then i:=arg[2];else i:=0;fi;
-  return UnipotentCharacter(W,Zip(ComplexConjugate(HeckeCharValues(h))*
+  return UnipotentCharacter(W,Zip(ComplexConjugate(ch)*
     uc.operations.Fourier(uc){uc.almostHarishChandra[1].charNumbers},
       List(uc.operations.Eigenvalues(uc,[1..Size(uc)]),x->x^i),
       function(a,b)return a*b;end));

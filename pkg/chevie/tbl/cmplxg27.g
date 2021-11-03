@@ -120,7 +120,7 @@ CHEVIE.AddData("CharInfo","G27",function()local res;
 # of identity from the parabolic A2 given by [1,3]
 # for the other pairs the character with the smallest degree of the fakedegree
 # is labelled with ', the other with ''
-  opdam:=(19,20)(21,22)(23,26,28)(24,27,25), extRefl:=[1,5,10,2]);
+  hgal:=(19,20)(21,22)(23,28,26)(24,25,27), extRefl:=[1,5,10,2]);
   res.b:=List(res.charparams,x->x[2]);
   return res;
 end);
@@ -176,7 +176,7 @@ CHEVIE.AddData("sparseFakeDegrees","G27",
 40],[1,5,3,11,3,17,3,23,3,29,2,35],[1,8,3,14,3,20,3,26,3,32,2,38]]);
 
 # Computed JM feb. 2008
-CHEVIE.AddData("HeckeCharTable","G27",function(para,root)
+CHEVIE.AddData("HeckeCharTable","G27",function(para,rootpara)
   local tbl,r,p,q,f1,f3,f11,f12,f15,f19,f23,f29,f31;
   q:=-para[1][1]/para[1][2];r:=para[1][1];p:=para[1][2];
   tbl:=rec(
@@ -300,7 +300,7 @@ end);
 CHEVIE.AddData("CharTable","G27",function()
   return CHEVIE.R("HeckeCharTable","G27")([[1,-1],[1,-1],[1,-1]],[]);end);
 
-CHEVIE.AddData("HeckeRepresentation","G27",function(para,root,i)
+CHEVIE.AddData("HeckeRepresentation","G27",function(para,rootpara,i)
   local p,r,rep,f1,f3,f11,f12,f15,f19,f23,f29,f31;
   p:=para[1][2];r:=para[1][1];
   f1:=r->List([1..3],x->[[r]]);

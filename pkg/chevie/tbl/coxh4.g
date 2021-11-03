@@ -106,7 +106,7 @@ CHEVIE.AddData("CharInfo","H4",function()local res;
   "16_{rr}", "16_{rr}'", "16_r", "16_r'", "18_r", "24_t", "overline{24}_t", 
   "24_s", "overline{24}_s", "25_r", "25_r'", "30_s", "overline{30}_s", 
   "36_{rr}", "36_{rr}'", "40_r", "48_{rr}"],
-  opdam:=(18,20)(19,21), extRefl:=[1,3,7,4,2]);
+  hgal:=(18,20)(19,21), extRefl:=[1,3,7,4,2]);
   res.b:=List(res.charparams,x->x[2]);
   return res;
 end);

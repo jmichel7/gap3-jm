@@ -105,10 +105,6 @@ CHEVIE.AddData("CharInfo","I",function(m)local res,applyf,v,m1;
   res.b:=List(res.charparams,x->x[2]);
   res.B:=List(res.charparams,function(phi)
     if phi[1]=1 then return phi[2]; else return m-phi[2]; fi; end);
-  res.a:=List(res.charparams,function(phi)
-  if phi[1]<>1 or phi[2]=QuoInt(m,2) then return 1;else return phi[2]; fi; end);
-  res.A:=List(res.charparams,function(phi)
-  if phi[1]=1 or phi[2]=QuoInt(m,2) then return m-1;else return phi[2];fi; end);
   res.charSymbols:=List([1..QuoInt(m-1,2)],function(l)local S;
       S:=List([1..m],i->[0]); S[1]:=[1];S[l+1]:=[1];return S;end);
   v:=List([1..m],x->[0]);v[m]:=[1,2];
@@ -175,11 +171,11 @@ CHEVIE.AddData("HeckeCharTable","I",function(m,param,rootparam)
   cl:=CHEVIE.R("ClassInfo","I")(m); r:=cl.classtext;
   ct:=List(ct,i->List(r,x->Product(i{x})));
   Append(ct,List([1..QuoInt(m-1,2)],j->List([1..Length(r)],function(i)local k;
-      k:=Length(r[i])/2;
       if r[i]=[] then return 2*v^0;
       elif r[i]=[1] then return u-1;
       elif r[i]=[2] then return v-1;
-      else return squv^k*(E(m)^(k*j)+E(m)^(-k*j));
+      else k:=QuoInt(Length(r[i]),2);
+         return squv^k*(E(m)^(k*j)+E(m)^(-k*j));
       fi;
     end)));
   tbl:=rec(identifier:=SPrint("H(I2(",m,"))"),cartan:=CartanMat("I",2,m), 

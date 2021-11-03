@@ -468,12 +468,12 @@ HasTypeOps.ChevieCharInfo:=function(W)local res,t,p,f,n,i,gt,keep;
       res.(f):=List(Cartesian(List(p,x->x.(f))),Sum);
     fi;
   od;
-  if ForAny(p,x->IsBound(x.opdam)) then
-    res.opdam:=List(p,function(x)if IsBound(x.opdam) then return x.opdam;
+  if ForAny(p,x->IsBound(x.hgal)) then
+    res.hgal:=List(p,function(x)if IsBound(x.hgal) then return x.hgal;
       else return ();fi;end);
     gt:=Cartesian(List(p,x->[1..Length(x.charparams)]));
-    res.opdam:=PermListList(gt,
-      List(gt,t->Zip(t,res.opdam,function(x,i)return x^i;end)));
+    res.hgal:=PermListList(gt,
+      List(gt,t->Zip(t,res.hgal,function(x,i)return x^i;end)));
   fi;
   if IsSpets(W) then 
     gt:=List(ReflectionType(Group(W)),x->Set(x.indices));

@@ -646,8 +646,7 @@ end;
 HyperplaneOrbits:=function(W)local ct,o,s;
   if not IsBound(W.orbits) then
     ct:=CharTable(W);
-    W.orbits:=List(Orbits(W,Reflections(W)),
-      x->rec(s:=W.rootInclusion[PositionProperty(W.reflections,s->s in x)]));
+    W.orbits:=List(Set(W.orbitRepresentative),x->rec(s:=x));
     for o in W.orbits do
       s:=W.reflections[W.rootRestriction[o.s]];
       o.e_s:=OrderPerm(s);
@@ -1200,7 +1199,7 @@ end;
 
 # Catalan(n) Catalan Number
 # Catalan(W [,m] [,q]]) [q][Fuss-]Catalan numbers of W
-Catalan:=function(arg)local W,d,h,ct,complex,ci,f,opdam,fd,m;
+Catalan:=function(arg)local W,d,h,ct,complex,ci,f,hgal,fd,m;
   W:=arg[1];arg:=arg{[2..Length(arg)]};
   if IsInt(W) then return Product([2..W],i->(W+i)/i);fi;
   if Length(W.type)>1 then Error(W," should be irreducible");fi;
@@ -1213,10 +1212,10 @@ Catalan:=function(arg)local W,d,h,ct,complex,ci,f,opdam,fd,m;
       return Product(d,x->f(m*h+x)/f(x));
   fi;
   ci:=ChevieCharInfo(W);
-  if IsBound(ci.opdam) then opdam:=ci.opdam^-1;else opdam:=();fi;
+  if IsBound(ci.hgal) then hgal:=ci.hgal;else hgal:=();fi;
   ct:=CharTable(W).irreducibles;
   complex:=PermListList(ct,ComplexConjugate(ct));
-  fd:=FakeDegrees(W,X(Rationals))[ci.extRefl[2]^(opdam^m*complex)];
+  fd:=FakeDegrees(W,X(Rationals))[ci.extRefl[2]^(hgal^m*complex)];
   fd:=1+Concatenation(List([1..Length(fd.coefficients)],i->
     ([1..fd.coefficients[i]]*0+1)*(i-1+fd.valuation)));
   return Product(Zip(fd,d,function(e,d)return f(m*h+e)/f(d);end));

@@ -93,7 +93,7 @@ CHEVIE.AddData("CharInfo","G29",function()local res;
 # A_3=ReflectionSubgroup(W,[1,2,4])
 # phi_{6,10}''' occurs in the tensor square of the phi_{4,1}, and
 # phi_{6,10''''} is the complex conjugate.
-  opdam:=(24,26)(25,27), extRefl:=[1,5,14,8,2]);
+  hgal:=(24,26)(25,27), extRefl:=[1,5,14,8,2]);
   res.b:=List(res.charparams,x->x[2]);
   return res;
 end);

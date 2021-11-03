@@ -177,14 +177,17 @@ W->IsSpetsial(W));
 
 # check that stored a and A are correct
 CHEVIE.AddTest("aA",
-function(W)local uc,ud,q;
+function(W)local uc,ud,q,ci;
   uc:=UnipotentCharacters(W);
   q:=X(Cyclotomics); ud:=UnipotentDegrees(W,q);
+  ci:=ChevieCharInfo(W);
   if IsBound(uc.a) then 
     CHEVIE.Check.EqLists(uc.a,List(ud,x->x.valuation),"stored a","computed a");
+    CHEVIE.Check.EqLists(uc.a{uc.almostHarishChandra[1].charNumbers},ci.a,"uc a","charinfo a");
   fi;
   if IsBound(uc.A) then 
     CHEVIE.Check.EqLists(uc.A,List(ud,Degree),"stored A","computed A");
+    CHEVIE.Check.EqLists(uc.A{uc.almostHarishChandra[1].charNumbers},ci.A,"uc a","charinfo a");
   fi;
 end,
 W->IsSpetsial(W));

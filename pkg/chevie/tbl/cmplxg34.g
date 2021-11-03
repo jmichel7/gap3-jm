@@ -286,7 +286,7 @@ CHEVIE.AddData("CharInfo","G34",function()local res;
 # phi{120,21}' occurs in the permutation character induced from A_5
 # phi{280,12}',phi{280,30}'',phi{560,18}''' are in phi_{6,1}tensor phi_{336,17}
 # phi_{540,21}' occurs in phi{6,1} tensor phi{105,20}
-  opdam:=(96,103)(97,102)(98,101)(99,100)(140,144,142)(141,143,145)
+  hgal:=(96,103)(97,102)(98,101)(99,100)(140,142,144)(141,145,143)
     (158,160)(159,161),
   extRefl:=[1,5,10,11,7,4,2]);
   res.b:=List(res.charparams,x->x[2]);

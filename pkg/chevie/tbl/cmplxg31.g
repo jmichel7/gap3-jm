@@ -125,7 +125,7 @@ CHEVIE.AddData("CharInfo","G31",function()local res;
 #  phi{20,13}' is complex conjugate from phi{20,7}
 #  phi{45,12}' is tensored by sign from phi{45,8}'
   extRefl:=[1,4,11,5,2],
-  opdam:=( 3, 5)( 4, 6)(11,12)(17,19)(18,20)(27,29)(28,30)(31,33)(32,34)(35,36)
+  hgal:=( 3, 5)( 4, 6)(11,12)(17,19)(18,20)(27,29)(28,30)(31,33)(32,34)(35,36)
     (39,40)(42,44)(43,45)(48,49)(50,52)(51,53));
   res.b:=List(res.charparams,x->x[2]);
   return res;

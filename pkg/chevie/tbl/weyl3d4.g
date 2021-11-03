@@ -160,10 +160,10 @@ CHEVIE.AddData("sparseFakeDegrees","3D4",
 CHEVIE.AddData("UnipotentCharacters","3D4",function()local res;
   return rec(
   harishChandra:=[
-    rec(relativeType:=rec(series:="G",indices:=[1,3],rank:=2),
+    rec(relativeType:=rec(series:="G",indices:=[3,1],rank:=2),
       levi:=[  ], eigenvalue:=1,
-      parameterExponents:=[3,1], cuspidalName:="",
-      charNumbers:=[1,2,6,5,7,3]),
+      parameterExponents:=[1,3], cuspidalName:="",
+      charNumbers:=[1,2,5,6,7,3]),
     rec(relativeType:=rec(series:="A",indices:=[  ],rank:=0),
       levi:=[ 1 .. 4 ], eigenvalue:=1,
       parameterExponents:=[], cuspidalName:="{}^3D_4[1]",

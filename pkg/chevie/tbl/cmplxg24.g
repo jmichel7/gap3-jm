@@ -79,7 +79,7 @@ CHEVIE.AddData("ClassInfo","G24",
 CHEVIE.AddData("CharInfo","G24",function()local res;
   res:=rec(charparams:=[[1,0],[1,21],[3,8],[3,1],[3,10],[3,3],[6,2],
                         [6,9],[7,6],[7,3],[8,4],[8,5]],
-  opdam:=(11,12), extRefl:=[1,4,5,2]);
+  hgal:=(11,12), extRefl:=[1,4,5,2]);
   res.b:=List(res.charparams,x->x[2]);
   return res;
 end);
@@ -100,7 +100,7 @@ CHEVIE.AddData("sparseFakeDegrees","G24",
 1,16],[1,5,2,7,1,9,1,11,1,13,1,15,1,17]]);
 
 # Computed JM oct. 2005
-CHEVIE.AddData("HeckeCharTable","G24",function(param,root)
+CHEVIE.AddData("HeckeCharTable","G24",function(param,roots)
   local r,tbl,p,f1,f3,f6,f7,f8,u;
   r:=param[1][1];p:=param[1][2];u:=GetRoot(-p*r,2);
   f1:=function(r)return[1,r,r^2,r^2,r^9,r^3,r^4,r^7,r^18,r^6,r^11,r^21];end;
@@ -132,7 +132,7 @@ end);
 CHEVIE.AddData("CharTable","G24",function()
   return CHEVIE.R("HeckeCharTable","G24")([[1,-1],[1,-1],[1,-1]],[]);end);
 
-CHEVIE.AddData("HeckeRepresentation","G24",function(para,root,i)
+CHEVIE.AddData("HeckeRepresentation","G24",function(para,roots,i)
   local p,r,rep,f1,f3,f7,f9,f11;
   p:=para[1][2];r:=para[1][1];
   f1:=r->List([1..3],x->[[r]]);

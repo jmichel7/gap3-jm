@@ -112,7 +112,7 @@ CHEVIE.AddData("CharInfo","G33",function()local res;
 # phi_40,5' has fake degree q^31+q^29+2q^27+...
 # phi_10,8' tensored by sign is phi_10,17' and
 # phi_40,5' tensored by sign is phi_40,14'
-  opdam:=(37,38), extRefl:=[1,4,9,12,5,2]);
+  hgal:=(37,38), extRefl:=[1,4,9,12,5,2]);
   res.b:=List(res.charparams,x->x[2]);
   return res;
 end);

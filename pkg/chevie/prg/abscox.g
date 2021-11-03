@@ -642,6 +642,7 @@ AbsCoxOps.ReflectionSubgroup:=function(W,J)local refs,P,inc,l;
   else P.reflectionParent:=W;
   fi;
   AbsCoxOps.CompleteCoxeterGroupRecord(P);
+  Inherit(P.operations,W.operations);
   if P.semisimpleRank=0 then
        P.name:=SPrint("ReflectionSubgroup(",W,", [])");
   else P.name:=SPrint("ReflectionSubgroup(",W,", ",InclusionGens(P),")");

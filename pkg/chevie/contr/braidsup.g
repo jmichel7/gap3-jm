@@ -5,7 +5,7 @@
 #    (C) Jean MICHEL 1995-2007
 ###########################################################################
 ##
-#F  LeftDivisors(b)   returns all left divisors of Graside element b
+#F  LeftDivisors(b)   returns all left divisors of Garside element b
 ##
 #   Example:
 #   gap> B:=Braid(CoxeterGroup("A",2)); 

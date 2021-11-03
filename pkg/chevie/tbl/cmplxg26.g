@@ -91,7 +91,7 @@ CHEVIE.AddData("CharInfo","G26",function()local res;
 # The complex conjugate of phi{6,11}' is phi{6,13}
 # The complex conjugate of phi{6,4}' is phi{6,2}
 # The complex conjugate of phi{6,7}' is phi{6,5}
-  opdam:=(39,40),extRefl:=[1,24,15,4]);
+  hgal:=(39,40),extRefl:=[1,24,15,4]);
   res.b:=List(res.charparams,x->x[2]);
   return res;
 end);

@@ -286,24 +286,36 @@ end,
 function(W)local t;t:=ReflectionType(W);
   return Length(t)=1 and IsBound(t[1].ST) and t[1].ST in [4..22];end);
 
-CHEVIE.AddTest("Opdam",
-function(W)local ct,complex,x,fd,ci,c,i,f,opdam;
+# CoxeterNumber of i-th character of W following Gordon-Griffeth
+CoxeterNumber:=function(W,i)local cl,ct;
+  ct:=CharTable(W).irreducibles;
+  cl:=ChevieClassInfo(W).classes;
+  return Sum(ReflectionDegrees(W)-1)-Sum(HyperplaneOrbits(W),
+    h->Sum(h.classno,c->cl[c]*ct[i][c]/ct[i][1]));
+end;
+
+CHEVIE.AddTest("Hgal",
+function(W)local ct,complex,x,fd,ci,c,i,f,hgal,z,H,gal;
+  if Size(W)=1 then return;fi;
   ct:=CharTable(W).irreducibles;
   complex:=PermListList(ct,ComplexConjugate(ct));
   x:=Mvp("x");
-  fd:=FakeDegrees(W,x);
+  z:=Gcd(ReflectionDegrees(W));
+  H:=Hecke(W,x^z);
+  ct:=CharTable(H).irreducibles;
+  gal:=PermListList(ct,Value(ct,["x",x*E(z)]));
   ci:=ChevieCharInfo(W);
-  if IsBound(ci.opdam) then opdam:=ci.opdam;else opdam:=();fi;
-  # c_\chi in Gordon-Griffeth
-  c:=function(W,i)local cl;
-    cl:=ChevieClassInfo(W).classes;
-    return Sum(ReflectionDegrees(W)-1)-Sum(HyperplaneOrbits(W),
-      h->Sum(h.classno,c->cl[c]*ct[i][c]/ct[i][1]));
-  end;
+  if IsBound(ci.hgal) then hgal:=ci.hgal;else hgal:=();fi;
+  if gal=false then ChevieErr("could not compute gal\n");
+  elif gal<>hgal then 
+    if gal=hgal^-1 then ChevieErr("hgal should be inverted\n");
+    else ChevieErr("Hgal wwwwwwwwwwwrong\n");fi;
+  fi;
+  fd:=FakeDegrees(W,x);
+  # following test is [Malle, Rationality... Theorem 6.5]
   for i in [1..NrConjugacyClasses(W)] do
-    f:=fd[i^complex];
-    if fd[i^opdam]<>x^c(W,i)*Value(f,["x",x^-1]) then 
-      ChevieErr("Opdam wrong for ",i,"\n");
+    if fd[i^(hgal*complex)]<>x^CoxeterNumber(W,i)*Value(fd[i],["x",x^-1]) then 
+      ChevieErr("Hgal wrong for ",i,"\n");
     fi;
   od;
 end,

@@ -313,7 +313,7 @@ end;
 
 ReflTypeOps.Print:=function(t)Print(String(t));end;
 
-ReflTypeOps.ChevieCharInfo:=function(t)local res,f,get,uc;
+ReflTypeOps.ChevieCharInfo:=function(t)local res,f,get,uc,s,para;
   get:=function(f,F)local tmp;
     if not IsBound(res.(f)) then 
       tmp:=CHEVIE.Data(F,t);if tmp<>false then res.(f):=tmp;fi;
@@ -333,8 +333,19 @@ ReflTypeOps.ChevieCharInfo:=function(t)local res,f,get,uc;
   if not IsBound(res.a) then
     uc:=CHEVIE.Data("UnipotentCharacters",t);
     if uc<>false then
-      res.a:=uc.a{uc.harishChandra[1].charNumbers};
-      res.A:=uc.A{uc.harishChandra[1].charNumbers};
+      if IsBound(uc.almostHarishChandra) then
+        res.a:=uc.a{uc.almostHarishChandra[1].charNumbers};
+        res.A:=uc.A{uc.almostHarishChandra[1].charNumbers};
+      else
+        res.a:=uc.a{uc.harishChandra[1].charNumbers};
+        res.A:=uc.A{uc.harishChandra[1].charNumbers};
+      fi;
+    else
+      para:=CHEVIE.Data("EigenvaluesGeneratingReflections",t);
+      para:=List(para,x->Concatenation([Mvp("x")],List([1..1/x-1],j->E(1/x)^j)));
+      s:=List(res.charparams,p->CHEVIE.Data("SchurElement",t,p,para,[]));
+      res.a:=Valuation(s[res.positionId])-List(s,Valuation);
+      res.A:=Degree(s[res.positionId])-List(s,Degree);
     fi;
   fi;
   if IsBound(t.orbit) and not IsBound(res.charRestrictions) then

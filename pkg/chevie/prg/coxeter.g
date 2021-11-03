@@ -568,7 +568,7 @@ CoxeterGroupOps.ReflectionSubgroup:=function(W,J)
   res.reflections:=List(res.rootInclusion,i->Reflection(W,i));
   AddComponentsCoxeterGroup(res);
   AbsCoxOps.CompleteCoxeterGroupRecord(res);
-  Inherit(res.operations,CoxeterGroupOps);
+  Inherit(res.operations,W.operations);
   if res.semisimpleRank=0 then
        res.name:=SPrint("ReflectionSubgroup(",W,", [])");
   else res.name:=SPrint("ReflectionSubgroup(",W,", ",InclusionGens(res),")");

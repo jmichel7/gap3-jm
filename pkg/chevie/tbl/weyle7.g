@@ -96,7 +96,7 @@ CHEVIE.AddData("CharInfo","E7",function()local res;
   "210_b'", "216_a", "216_a'", "280_a", "280_a'", "280_b", "280_b'", "315_a",
   "315_a'", "336_a", "336_a'", "378_a", "378_a'", "405_a", "405_a'", "420_a",
   "420_a'", "512_a", "512_a'" ],
-  opdam:=(59,60),extRefl:=[1,4,7,14,13,8,3,2]);
+  hgal:=(59,60),extRefl:=[1,4,7,14,13,8,3,2]);
   res.b:=List(res.charparams,x->x[2]);
   return res;
 end);

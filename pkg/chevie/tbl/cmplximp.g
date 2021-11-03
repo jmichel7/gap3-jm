@@ -155,7 +155,7 @@ CHEVIE.AddData("ParabolicRepresentatives","imp",function(p,q,r,s)local t;
     if q=2 then t:=[[[]],[[1],[2],[3]],[[1..3]]];return t[s+1];
     elif p=q then 
       if p mod 2=0 then t:=[[[]],[[1],[2]],[[1,2]]];return t[s+1];
-                   else t:=[[],[1],[1,2]];return t[s+1];fi;
+                   else t:=[[[]],[[1]],[[1,2]]];return t[s+1];fi;
     else return false;
     fi;
   else return false;
@@ -406,7 +406,7 @@ CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,s,fd;
     res.b:=List(res.charSymbols,LowestPowerFakeDegreeSymbol);
   fi;
   if e>1 and d>1 then
-    res.opdam:=PermListList(res.charparams,List(res.charparams,
+    res.hgal:=PermListList(res.charparams,List(res.charparams,
       function(s)
         if not IsList(s[Length(s)]) then
           s:=Copy(s);t:=QuoInt(Length(s)-2,d);
@@ -816,8 +816,8 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
   return CHEVIE.compat.MakeCharacterTable(res);
 end);
 
-CHEVIE.AddData("HeckeRepresentation","imp",function(p,q,r,para,root,i)
-  local X,Y,t,x,a,v,d,T,S,m,extra,l,m1,p1rRep,f;
+CHEVIE.AddData("HeckeRepresentation","imp",function(p,q,r,para,rootpara,i)
+  local X,Y,t,x,a,v,d,T,S,m,extra,l,m1,p1rRep,f,e;
   if not IsList(para) then para:=[para];fi;
   if [q,r]=[1,2] then X:=para[2];Y:=para[1];#integral matrices in this case
     t:=PartitionTuples(2,p)[i];
@@ -1990,27 +1990,27 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
     if q=1 then return p1rRep();
     elif p=q then para:=[List([0..p-1],i->E(p)^i),para[1]];
     else
-      if para[2]<>para[3] then
-        if q mod 2=0 and r=2 then
-          S:=CHEVIE.R("CharInfo","imp")(p,q,r).malle[i];
-	  if S[1]=1 then 
-	    return [[[para[1][1+((S[4]-1) mod (p/q))]]],
-	     [[para[2][S[2]]]],[[para[3][S[3]]]]];
-	  else Y:=para[2];T:=para[3];
-	    if q>2 then X:=List(para[1],y->GetRoot(y,q/2));
-	      X:=Concatenation(List([1..q/2],i->E(q/2)^i*X));
-	    else X:=para[1];fi;
-	    X:=X{S{[3,4]}};
-	    v:=S[2]*GetRoot(Product(X)*Product(Y)*Product(T)*
-	      E(p/q)^(2-S[3]-S[4]),2)*E(p)^(S[3]+S[4]-2);
-            d:=1+Sum(X)*0+Sum(Y)*0+Sum(T)*0;
-	    return [(d*[[X[1],Sum(Y,y->1/y)-X[2]/v*Sum(T)],[0,X[2]]])^(q/2),
-	      [[Sum(Y),1/X[1]],[-Product(Y)*X[1],0]],
-	      [[0,-Product(T)/v],[v,Sum(T)]]];
-	  fi;
-	else Error("should not happen");
-	fi;
-      elif para[1]=List([1..p/q],i->E(p/q)^(i-1)) then
+      e:=QuoInt(p,q);
+      if q mod 2=0 and r=2 then
+        S:=CHEVIE.R("CharInfo","imp")(p,q,r).malle[i];
+        if S[1]=1 then 
+          return [[[para[1][1+((S[4]-1) mod e)]]],
+           [[para[2][S[2]]]],[[para[3][S[3]]]]];
+        else Y:=para[2];T:=para[3];
+          if q>2 then X:=List(para[1],y->GetRoot(y,QuoInt(q,2)));
+            X:=Concatenation(List([1..QuoInt(q,2)],i->E(QuoInt(q,2))^i*X));
+          else X:=para[1];fi;
+          X:=X{S{[3,4]}};
+          v:=S[2]*GetRoot(Product(X)*Product(Y)*Product(T)*
+            E(e)^(2-S[3]-S[4]),2)*E(p)^(S[3]+S[4]-2);
+          d:=1+Sum(X)*0+Sum(Y)*0+Sum(T)*0;
+          return [(d*[[X[1],Sum(Y,y->1/y)-X[2]/v*Sum(T)],
+            [0,X[2]]])^QuoInt(q,2),[[Sum(Y),1/X[1]],[-Product(Y)*X[1],0]],
+            [[0,-Product(T)/v],[v,Sum(T)]]];
+        fi;
+      fi;
+      if para[2]<>para[3] then Error("should not happen");fi;
+      if para[1]=List([1..e],i->E(e)^(i-1)) then
 	  para:=[List([0..p-1],i->E(p)^i),para[2]];
       else para:=[Concatenation(TransposedMat(List(para[1],i->List([0..q-1],
 	j->E(q)^j)*GetRoot(i,q)))),para[2]];
