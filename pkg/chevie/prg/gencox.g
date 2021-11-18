@@ -85,12 +85,16 @@ CoxeterGroupSymmetricGroup:=function(n)local W;
   W.operations.IsLeftDescending:=function(W,w,i) return i^w>(i+1)^w;end;
   AbsCoxOps.CompleteCoxeterGroupRecord(W);
   W.operations.FirstLeftDescending:=function(W,w)local i;
-    for i in [1..n-1] do if i^w>(i+1)^w then return i;fi;od;return false;end;
-  W.operations.ReflectionDegrees:=W->[2..n];
+    for i in [1..W.nbGeneratingReflections] do 
+      if i^w>(i+1)^w then return i;fi;
+    od;return false;end;
+  W.operations.ReflectionDegrees:=W->1+[1..W.nbGeneratingReflections];
   W.operations.Reflections:=W->W.reflections;
   W.operations.ReflectionCharValue:=
-                         function(W,w)return Number([1..n],i->i=i^w)-1;end;
-  W.operations.ReflectionLength:=function(W,w)local l,i,cyc,mark;l:=n;mark:=[];
+    function(W,w)return Number([1..W.nbGeneratingReflections+1],i->i=i^w)-1;end;
+  W.operations.ReflectionLength:=function(W,w)local l,i,cyc,mark,n;
+    if w=() then return 0;fi;
+    n:=LargestMovedPointPerm(w);l:=n;mark:=[];
     for i in [1..n] do if not IsBound(mark[i]) then 
       cyc:=CyclePermInt(w,i); mark{cyc}:=cyc; l:=l-1;
     fi; od;
@@ -105,7 +109,7 @@ CoxeterGroupSymmetricGroup:=function(n)local W;
       s:=s*(i,j);
     end;
     while true do
-      s:=();for i in [1..n-1] do try(i);od;
+      s:=();for i in [1..W.nbGeneratingReflections] do try(i);od;
       if s=() then return Concatenation([res],arg);fi;
       res:=res*s;arg:=LeftQuotient(s,arg);
     od;
@@ -113,7 +117,7 @@ CoxeterGroupSymmetricGroup:=function(n)local W;
   W.operations.DualBraidMonoid:=PermRootOps.DualBraidMonoid;
   W.operations.CoxeterLength:=function(W,w)local i ,j, length;
     length:=0;
-    for j in [1..n] do for i in [1..j-1] do
+    for j in [1..W.nbGeneratingReflections+1] do for i in [1..j-1] do
         if i^w>j^w then length:=length+1; fi;
     od; od;
     return length;

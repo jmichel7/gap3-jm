@@ -4,27 +4,8 @@
 #  This file contains some supplementary programs for working with braids
 #    (C) Jean MICHEL 1995-2007
 ###########################################################################
-##
-#F  LeftDivisors(b)   returns all left divisors of Garside element b
-##
-#   Example:
-#   gap> B:=Braid(CoxeterGroup("A",2)); 
-#   function ( arg ) ... end
-#   gap> LeftDivisors(B(1,2));
-#   [ ., 1, 12 ]
-##
-LeftDivisors:=function(b)local s,M,w;
-  M:=b.monoid;if b=M.Elt([]) then return [b];fi;
-  w:=GarsideAlpha(b);
-  s:=Filtered([1..M.nrAtoms],i->M.IsLeftDescending(w,i));
-  s:=List(s,x->M.Elt([M.atoms[x]]));
-  return Union([M.Elt([])],s,Union(List(s,x->x*LeftDivisors(x^-1*b))));
-end;
-
-RightDivisors:=b->List(LeftDivisors(b.monoid.Reverse(b)),b.monoid.Reverse);
 
 ########################################################################
-##
 #F  PiRoots(wF,d) this function returns all reduced d-th roots of pi in the
 ##   braid monoid of the Coxeter coset WF using a very bestial algorithm
 ##

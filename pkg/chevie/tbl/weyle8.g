@@ -2823,11 +2823,11 @@ CHEVIE.AddData("UnipotentCharacters","E8",function()
       charNumbers:=[ 164 ]),
     rec(relativeType:=rec(series:="A",indices:=[  ],rank:=0),
  levi:=[ 1 .. 8 ],eigenvalue:=1,
-      parameterExponents:=[  ], cuspidalName:="E_8[1]",
+      parameterExponents:=[  ], cuspidalName:="E_8^2[1]",
       charNumbers:=[ 165 ]),
     rec(relativeType:=rec(series:="A",indices:=[  ],rank:=0),
  levi:=[ 1 .. 8 ],eigenvalue:=1,
-      parameterExponents:=[  ], cuspidalName:="E_8^2[1]",
+      parameterExponents:=[  ], cuspidalName:="E_8[1]",
       charNumbers:=[ 166 ])],
   families:=[
     Family("C1",[ 1 ]), Family("C1",[ 2 ]), Family("C1",[ 5 ]),

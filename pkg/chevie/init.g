@@ -169,9 +169,9 @@ AUTO(ReadChv("prg/garside"),
   CompleteGarsideRecord, DualBraid, PermRootOpsDualBraidMonoid,
   EltBraid, GarsideAlpha,
   GarsideEltOps, GarsideOmega, GarsideWords, GoodCoxeterWord, 
-  LeftDivisorsSimple, LeftGcd, LeftLcm, Presentation, ReversedWord, 
-  RightGcd, RightLcm, ShrinkGarsideGeneratingSet,TwistedPowerMonoid,
-  VeryGoodCoxeterWord);
+  LeftDivisorsSimple, LeftDivisors, LeftGcd, LeftLcm, Presentation, 
+  ReversedWord, RightGcd, RightLcm, ShrinkGarsideGeneratingSet,
+  TwistedPowerMonoid, VeryGoodCoxeterWord);
 
 AUTO(ReadChv("prg/gt"),
   ClassTypes,RationalUnipotentClasses,ClosedSubsets);

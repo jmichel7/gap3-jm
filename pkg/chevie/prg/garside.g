@@ -78,8 +78,7 @@ GarsideEltOps.LeftDescentSet:=function(b)
     fi;
   fi;
   if Length(b.elm)=0 then return [];fi;
-  return Filtered([1..b.monoid.nrAtoms],
-    i->b.monoid.IsLeftDescending(b.elm[1],i));
+  return b.monoid.LeftDescentSet(b.elm[1]);
 end;
 
 GarsideEltOps.Format:=function(b,option)local M,res,p,seqCollected,W;
@@ -431,6 +430,12 @@ CompleteGarsideRecord:=function(M,opt)local eltops;
       return res;
     end;
   fi;
+  if not IsBound(M.LeftDescentSet) then
+    M.LeftDescentSet:=w->Filtered([1..M.nrAtoms],i->M.IsLeftDescending(w,i));
+  fi;
+  if not IsBound(M.RightAscentSet) then
+    M.RightAscentSet:=w->Filtered([1..M.nrAtoms],i->M.IsRightAscending(w,i));
+  fi;
   if not IsBound(M.FormatSimple) then
     M.FormatSimple:=function(s,opt)local l;l:=M.AtomListSimple(s);
       if IsBound(opt.GAP) then return Join(l);
@@ -618,19 +623,19 @@ end;
 ##  M is a (locally) Garside monoid with atoms of length 1.
 ##  GarsideWords(W,l) returns the set of elements of M of length l.
 
-GarsideWords:=function(M,l)local i,bb,w,b,B,s,r,rr,RA,lb;
+GarsideWords:=function(M,l)local i,bb,w,b,B,s,r,rr,lb;
   if l=0 then return [M.Elt([])];fi;
   if not IsBound(M.words) then 
     M.words:=[Set(List(M.atoms,x->M.Elt([x])))];
   fi;
-  RA:=w->Filtered([1..M.nrAtoms],i->M.IsRightAscending(w,i));
   if not IsBound(M.words[l]) then 
     M.words[l]:=[];
     for b in GarsideWords(M,l-1) do
       lb:=Length(b.elm);
       if lb=0 then r:=[];
       else
-        r:=RA(b.elm[lb]);if lb=1 then rr:=[]; else rr:=RA(b.elm[lb-1]);fi;
+        r:=M.RightAscentSet(b.elm[lb]);
+        if lb=1 then rr:=[]; else rr:=M.RightAscentSet(b.elm[lb-1]);fi;
         for s in r do
           w:=M.Product(b.elm[lb],M.atoms[s]);
           if not ForAny(rr,i->M.IsLeftDescending(w,i)) then
@@ -673,6 +678,45 @@ LeftDivisorsSimple:=function(arg)local M,s,res,i,rest,x,new;
 # return List(res,x->GarsideEltOps.Normalize(M.Elt([x[1]])));
   return List(res,x->List(x,y->y[1]));
 end;
+
+###########################################################################
+#F  LeftDivisors(b[,i])   returns all left divisors of Garside element b
+##                        [of length i]
+LeftDivisors:=function(arg)local b,LeftDivisors2,LeftDivisors3;
+  b:=arg[1];
+  LeftDivisors2:=function(b,avoid)local s,M,res,x,bx;
+    M:=b.monoid;if b.pd=0 and b.elm=[] then return [b];fi;
+    s:=LeftDivisorsSimple(M,GarsideAlpha(b));
+    s:=Concatenation(s{[2..Length(s)]});
+    s:=Filtered(s,x->Intersection(M.LeftDescentSet(x),avoid)=[]);
+    res:=[M.B()];
+    for x in s do
+      bx:=M.B(x);
+      Append(res,bx*LeftDivisors2(bx^-1*b,M.RightAscentSet(x)));
+    od;
+    return res;
+  end;
+  LeftDivisors3:=function(b,avoid,i)local s,M,res,x,bx,j,sj;
+    M:=b.monoid;
+    if i=0 then return [M.B()];fi;
+    s:=LeftDivisorsSimple(M,GarsideAlpha(b));
+    res:=[];
+    for j in [1..Minimum(Length(s)-1,i)] do
+      sj:=s[j+1];
+      sj:=Filtered(sj,x->Intersection(M.LeftDescentSet(x),avoid)=[]);
+      for x in sj do
+        bx:=M.B(x);
+        Append(res,bx*LeftDivisors3(bx^-1*b,M.RightAscentSet(x),i-j));
+      od;
+    od;
+    return res;
+  end;
+  if Length(arg)=1 then return LeftDivisors2(b,[]);
+  else return LeftDivisors3(b,[],arg[2]);
+  fi;
+end;
+
+RightDivisors:=b->List(LeftDivisors(b.monoid.Reverse(b)),b.monoid.Reverse);
 
 #############################################################################
 ##                                                                         ##
