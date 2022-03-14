@@ -184,9 +184,9 @@ cut:=function(bl,para)local csch,lcm,lsch,p0,ct,ch,msch,l,Ah,getH;
   # csch holds the Schur elements for characters of Ah in bl
   lcm:=ApplyFunc(LcmCycPol,csch);
   lsch:=List(csch,x->lcm/x);
-  InfoChevie(" Schur:",Stime(),"\c");
+  InfoChevie(" Schur:",Stime());
   lsch:=List(lsch,x->Value(x,Mvp("x")));
-  InfoChevie(" Value:",Stime()," \c");
+  InfoChevie(" Value:",Stime()," ");
   ct:=TransposedMat(CharTable(Ah).irreducibles{bl});
   SortParallel(List(ChevieClassInfo(W).classtext,x->-Length(x)),ct);
   ct:=Filtered(ct,r->ForAll(r,x->IsCyc(x) or (not ForAny(x.coeff,IsUnknown) and

@@ -601,8 +601,9 @@ AbsCoxOps.ReflectionSubgroup:=function(W,J)local refs,P,inc,l;
   # checking if subgroup in cache:
   P:=CHEVIE.GetCached(W,"ReflectionSubgroups",rec(callarg:=[J]),x->x.callarg);
   if IsBound(P.isGroup) then return P;fi;
+  P.operations:=W.operations;
   if not IsSubset(W.reflectionsLabels,J) 
-    or W.name{[1..26]}="CoxeterGroupSymmetricGroup" 
+    or (IsBound(W.name) and W.name{[1..26]}="CoxeterGroupSymmetricGroup")
   then # Use Dyer's method
     refs:=List(J,i->Reflection(W,i));
     Inherit(P,Subgroup(W,refs));
@@ -644,7 +645,6 @@ AbsCoxOps.ReflectionSubgroup:=function(W,J)local refs,P,inc,l;
   else P.reflectionParent:=W;
   fi;
   AbsCoxOps.CompleteCoxeterGroupRecord(P);
-  Inherit(P.operations,W.operations);
   if P.semisimpleRank=0 then
        P.name:=SPrint("ReflectionSubgroup(",W,", [])");
   else P.name:=SPrint("ReflectionSubgroup(",W,", ",InclusionGens(P),")");

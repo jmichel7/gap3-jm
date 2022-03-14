@@ -67,8 +67,12 @@ end);
 CHEVIE.AddData("CharInfo","2I",function(m)local res;
   res:=rec(extRefl:=[1,3,2]);
   if m=4 then res.charparams:= [[[2],[]], [[],[1,1]],[[1],[1]]];
+    res.b:=[0,4,1];
+    res.B:=[0,4,3];
   else res.charparams:=Concatenation([[1,0],[1,m]],
       List([1..QuoInt(m-1,2)],i->[2,i]));
+    res.b:=List(res.charparams,x->x[2]);
+    res.B:=Concatenation([0,m],List([1..QuoInt(m-1,2)],i->m-i));
   fi;
   return res;
 end);

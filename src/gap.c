@@ -1732,7 +1732,7 @@ void            InitGap (int argc, char *argv[])
     HdTime  = FindIdent( "time"  );
 
     hd = FindIdent( "VERSRC" );
-    version = "19 Mar 2021"; 
+    version = "04 Jun 2021"; 
     PTR(hd)[0] = NewBag( T_STRING, SyStrlen(version)+1 );
     SyStrncat( (char*)PTR(PTR(hd)[0]), version, SyStrlen(version)+1 );
     hd = FindIdent( "VERSYS" ); version = VERSYS;

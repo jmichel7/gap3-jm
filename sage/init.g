@@ -278,7 +278,7 @@ end;
 
 ReadLib := function ( name )
     if not ReadPath( LIBNAME, name, ".g", "ReadLib" )  then
-     Error("the library file '",name,"' must exist and be readable");
+     Error("the library file '",name,".g' must exist and be readable");
     fi;
 end;
 
@@ -1157,7 +1157,7 @@ AUTO( ReadSml( "smallgrp.sml" ),
 RequirePackage("arep","guava");
 # purely gap packages
 RequirePackage("autag","cryst","dce","gliss","grim");
-RequirePackage("matrix","monoid","xmod");
+RequirePackage("matrix","monoid"); # suppressed "xmod" which causes bugs
 RequirePackage("algebra","specht");
 RequirePackage("chevie"); # requires vkcurve, specht, algebra
 RequirePackage("vkcurve");

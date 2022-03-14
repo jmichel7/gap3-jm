@@ -30,7 +30,7 @@
 # Mainly  diagnostic, prints  the chapters  data structure.  Also checks
 # that each section has the correct back reference to its chapter
 
-VERSION="24 Apr 2021"
+VERSION="02 Dec 2021"
 $footer = "<P>\n<address>gap3-jm<br>#{VERSION}</address></body></html>"
 # Printed at the bottom of every page
 
