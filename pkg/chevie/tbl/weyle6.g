@@ -17,8 +17,12 @@ CHEVIE.AddData("GeneratingRoots", "E6",
   [0,0,-1,1,0,0,0,0],
   [0,0,0,-1,1,0,0,0] ]);
 
-CHEVIE.AddData("WeightInfo","E6",
-  rec(minusculeWeights:=[1,6],decompositions:=[[1],[2]],moduli:=[3]));
+CHEVIE.AddData("WeightInfo","E6",function()local M;
+  M:=IdentityMat(6);
+  M[1][6]:=-1; M[3][6]:=-2; M[5][6]:=-1;
+  return rec(minusculeWeights:=[1,6],
+      decompositions:=[[2],[1]],moduli:=[3],chosenAdaptedBasis:=M);
+end);
 
 CHEVIE.AddData("NrConjugacyClasses", "E6", 25);
 

@@ -1589,8 +1589,8 @@ CHEVIE.AddData("HeckeCharTable","G4_22",function(ST,para,root)
   c35:=Combinations([1..5],3);
   c23:=[[2,3],[1,3],[1,2]];
   c:=0*Product(para,Product);
+  GenericRow:=function(char)local l,r;
   if ST in [4..7] then
-  GenericRow:=function(char)local l;
     if char[1]=1 then l:=[1,X[char[2]],Y[char[3]],Z[char[4]]];
       return List(classes,class->l[class[1]]*Product(l)^class[2]);
     fi;
@@ -1599,9 +1599,7 @@ CHEVIE.AddData("HeckeCharTable","G4_22",function(ST,para,root)
     fi;
     return G4_22Helper(List(classes,class->Sum(l[class[1]])),
       List(classes,c->c[2]),Product(l{[2..4]},Product),char[1],char[2]);
-  end;
   elif ST in [8..15] then
-  GenericRow:=function(char)local l;
     if char[1]=1 then
       l:=[1,X[char[2]],Y[char[3]],Z[char[4]],Z[char[4]]^2];
       return List(classes,class->l[class[1]]*Product(l{[2..4]})^class[2])+c;
@@ -1614,9 +1612,7 @@ CHEVIE.AddData("HeckeCharTable","G4_22",function(ST,para,root)
     Add(l,List(l[4],x->x^2));     
     return G4_22Helper(List(classes,class->Sum(l[class[1]])),
       List(classes,c->c[2]),Product(l{[2..4]},Product),char[1],char[2])+c;
-  end;
   elif ST in [16..22] then
-  GenericRow:=function(char)local l,r;
 #   Print("char=",char,"\n");
     if char[1]=1 then l:=[1,X[char[2]],Y[char[3]],Z[char[4]],Z[char[4]]^2];
       return List(classes,class->l[class[1]]*Product(l{[2..4]})^class[2]);
@@ -1633,8 +1629,8 @@ CHEVIE.AddData("HeckeCharTable","G4_22",function(ST,para,root)
     Add(l,List(l[4],x->x^2));
     return G4_22Helper(List(classes,class->Sum(l[class[1]])),
       List(classes,c->c[2]),Product(l{[2..4]},Product),char[1],char[2]);
-  end;
   fi;
+  end;
   res:=rec(name:=SPrint("H(G",ST,")"),ST:=ST,
     parameter:=para,
     degrees:=CHEVIE.R("ReflectionDegrees","G4_22")(ST),

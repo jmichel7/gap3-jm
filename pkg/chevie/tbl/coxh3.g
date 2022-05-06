@@ -15,13 +15,14 @@ CHEVIE.AddData("GeneratingRoots", "H3", function()local a;a:=(1+ER(5))/2;
   return [[a,-1,a-1],[-a,1,a-1],[1,a-1,-a]]/2;
 end);
 
-# consider using the following Galois-stable model w.r.t. the automorphism
-# Aut(H3,[[1,2,1,2,3,2,1,2,1],[3],[2]]), equal to the 
-# usual model conjugate by [[(5-ER(5))/2,-ER(5),-1+ER(5)],
-#   [-2*ER(5),1,0],[2*ER(5),1,0]]
-#H3:=CoxeterGroup([[(5-ER(5))/2,-ER(5),-1+ER(5)],[-2*ER(5),1,0],[2*ER(5),1,0]],
-#[[(5+ER(5))/40,(-1-ER(5))/4,(-3+ER(5))/16],[(-3*ER(5))/20,1/2,(2-ER(5))/8],
-# [(3*ER(5))/20,1/2,(2+ER(5))/8]]);
+# The Galois-invariant model is CoxeterGroup(roots,coroots) given below
+CHEVIE.AddData("InvariantModel","H3",rec(
+  Aut:=[[1,2,1,2,3,2,1,2,1],[3],[2]],         #galois is Aut(H3,Aut)
+  roots:=[[(5-ER(5))/2,-ER(5),-1+ER(5)],[-2*ER(5),1,0],[2*ER(5),1,0]],
+  coroots:=[[(5+ER(5))/40,(-1-ER(5))/4,(-3+ER(5))/16],[(-3*ER(5))/20,1/2,(2-ER(5))/8],
+            [(3*ER(5))/20,1/2,(2+ER(5))/8]],
+  conj:=[[(5-ER(5))/2,-ER(5),-1+ER(5)],[-2*ER(5),1,0],[2*ER(5),1,0]]));
+# usual matgens^conj=invariant matgens
 
 CHEVIE.AddData("NrConjugacyClasses","H3", 10);
 

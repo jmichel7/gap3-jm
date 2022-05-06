@@ -77,11 +77,15 @@ CHEVIE.AddData("NrConjugacyClasses", "B", function(arg)
   return NrPartitionTuples(arg[1], 2);
 end);
 
-CHEVIE.AddData("WeightInfo","B",function(n,type)
-  if type=2 then return rec(minusculeWeights:=[1],minusculeCoweights:=[n],
-    decompositions:=[[1]],moduli:=[2]);
-  else           return rec(minusculeWeights:=[n],minusculeCoweights:=[1],
-    decompositions:=[[1]],moduli:=[2]);
+CHEVIE.AddData("WeightInfo","B",function(n,type)local M,i;
+  M:=IdentityMat(n);
+  if type=2 then 
+    for i in [1..n-1] do M[i][n]:=-((n+i-1) mod 2);od;
+    return rec(minusculeWeights:=[1],
+    minusculeCoweights:=[n],
+    decompositions:=[[1]],moduli:=[2],chosenAdaptedBasis:=M);
+  else return rec(minusculeWeights:=[n],minusculeCoweights:=[1],
+    decompositions:=[[1]],moduli:=[2],chosenAdaptedBasis:=M);
   fi;
 end);
 

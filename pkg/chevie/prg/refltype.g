@@ -94,6 +94,9 @@ ReflTypeOps.WeightInfo:=function(t)local s;
   if not IsBound(s.minusculeCoweights) then 
     s.minusculeCoweights:=s.minusculeWeights;
   fi;
+  if not IsBound(s.chosenAdaptedBasis) then 
+    s.chosenAdaptedBasis:=IdentityMat(t.rank);
+  fi;
   return s;
 end;
 

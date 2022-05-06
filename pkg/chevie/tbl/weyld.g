@@ -31,11 +31,21 @@ CHEVIE.AddData("GeneratingRoots", "D", function(l)local r, rts, i;
   return Reversed(rts); # CHEVIE ordering
 end);
 
-CHEVIE.AddData("WeightInfo","D",function(n)local res;
-  if n mod 2=1 then return rec(minusculeWeights:=[1,2,n],
-    decompositions:=[[1],[3],[2]],moduli:=[4]);
-  else return rec(minusculeWeights:=[1,2,n],decompositions:=[[1,0],[0,1],[1,1]],
-    moduli:=[2,2]);
+CHEVIE.AddData("WeightInfo","D",function(n)local res,M,i;
+  M:=IdentityMat(n);
+  if n mod 2=1 then 
+    for i in [3..n-1] do M[i][n]:=-((i-2) mod 2);od;
+    M[1][2] := -1;
+    for i in [3..n] do M[i][2]:=-2*((i-2) mod 2);od;
+    return rec(minusculeWeights:=[1,2,n],
+    decompositions:=[[3],[1],[2]],moduli:=[4],chosenAdaptedBasis:=M);
+  else 
+    for i in [4..n-1] do M[i][n]:=-((i-3) mod 2);od;
+    M[1][2] := -1;
+    M[1][n] := -1;
+    return rec(minusculeWeights:=[1,2,n],
+    decompositions:=[[1,1],[1,0],[0,1]],
+    moduli:=[2,2],chosenAdaptedBasis:=M);
   fi;
 end);
 

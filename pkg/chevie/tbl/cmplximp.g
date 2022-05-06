@@ -817,7 +817,7 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
 end);
 
 CHEVIE.AddData("HeckeRepresentation","imp",function(p,q,r,para,rootpara,i)
-  local X,Y,t,x,a,v,d,T,S,m,extra,l,m1,p1rRep,f,e;
+  local X,Y,t,x,a,v,d,T,S,m334,m335,extra,l,m,m1,p1rRep,f,e;
   if not IsList(para) then para:=[para];fi;
   if [q,r]=[1,2] then X:=para[2];Y:=para[1];#integral matrices in this case
     t:=PartitionTuples(2,p)[i];
@@ -881,7 +881,7 @@ CHEVIE.AddData("HeckeRepresentation","imp",function(p,q,r,para,rootpara,i)
     else return -para[1][2]*r[i](x)*x^0;fi;
   elif [p,q,r]=[3,3,4] then 
     x:=-para[2][1]/para[2][2];
-    m:=function(i)local f1,f2,f3,f5,f7,f8,f11,f13;
+    m334:=function(i)local f1,f2,f3,f5,f7,f8,f11,f13;
      f1:=x->x^0*[[[x,-1,0,0,0,0,0,0,0,0,1-x-x^2+x^3,0],
      [0,-1,0,0,0,0,0,0,0,0,0,0],[0,0,-1+x,0,x,0,-x,0,0,0,x-x^2,0],
      [0,0,0,-1+x,0,0,-x,0,0,0,x-x^2,0],[0,0,1,-1,0,0,0,0,0,0,
@@ -937,10 +937,10 @@ x,0,0,0],[0,0,0,0,0,x,0,0,0,0,1-x,x-x^2],[0,0,0,0,0,0,0,0,0,1,0,x],[0,0,0,1,0,
        f8(x,E(3)),f8(x,E(3)^2),-x*f7(x^-1,E(3)),f11(x),-x*f3(x^-1),f13(x),
        -x*f2(x^-1,E(3)^2),-x*f2(x^-1,E(3)),-x*f11(x^-1),-x*f5(x^-1)];
      return x^0*r[i];end;
-     return -para[2][2]*m(i);
+     return -para[2][2]*m334(i);
   elif [p,q,r]=[3,3,5] then 
      x:=-para[2][1]/para[2][2];
-     m:=function(i)local r,f1,f2,f3,f4,f8,f9,f11,f12,f13,f17,f20,f23,f29;
+     m335:=function(i)local r,f1,f2,f3,f4,f8,f9,f11,f12,f13,f17,f20,f23,f29;
      f1:=function(x)return
   x^0*[[[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [E(3)^2-E(3)^2*x,E(3)^2-E(3)^2*x,0,0,0,E(3)^2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1940,7 +1940,7 @@ E(3)^2*q,0,0,0,0,-E(3)+E(3)*q,E(3)^2*q,0,0,0,-1+q]]];end;
      f17(1/x)*-x,[[[x]],[[x]],[[x]],[[x]],[[x]]]];
      return r[i];
      end;
-     return -para[2][2]*m(i);
+     return -para[2][2]*m335(i);
   elif [p,q,r]=[4,4,3] then 
      x:=-para[2][1]/para[2][2];
      r:=x^0*
