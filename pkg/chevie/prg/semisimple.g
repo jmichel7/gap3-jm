@@ -462,6 +462,18 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
     fi;
     return CoxeterGroup(R,cR);
   end;
+  data.cso:=function(dim)local R,cR,i,n;
+     n:=QuoInt(dim,2);
+     R:=NullMat(n,n+1);
+     cR:=NullMat(n,n+1);
+     R[1]{[1..3]}:=[1,-1,-1];
+     cR[1]{[2..3]}:=[-1,-1];
+     for i in [2..n] do
+       R[i]{[i,i+1]}:=[1,-1];
+       cR[i]{[i,i+1]}:=[1,-1];
+     od;
+     return CoxeterGroup(R,cR);
+  end;
   data.("3gpin8"):=CoxeterCoset(data.gpin(8),[[1,1,1,0,0,0],
    [-2,0,-1,-1,-1,-1],[-1,0,-1,0,0,-1],[-1,0,-1,0,-1,0],
    [-1,0,-1,-1,0,0],[-1,-1,0,0,0,0]]);
@@ -513,8 +525,17 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
   data.2E6sc:=CoxeterCoset(CoxeterGroup("E",6,"sc"),(1,6)(3,5));
   data.E6sc:=CoxeterGroup("E",6,"sc");
   data.E6:=CoxeterGroup("E",6);
+  data.CE6:=CoxeterGroup([[1,2,-1,0,0,0,0],[0,0,-2,-1,0,0,0],[0,-1,2,-1,0,0,0],
+      [-1,0,0,2,-1,0,0],[1,0,0,-1,2,-1,0],[0,0,0,0,-1,2,0]],
+      [[0,1,0,0,0,0,0],[3,-2,-1,0,-2,-1,-1],[3,-2,0,0,-2,-1,-1],
+       [0,0,0,1,0,0,0],[0,0,0,0,1,0,0],[0,0,0,0,0,1,0]]);
   data.E7sc:=CoxeterGroup("E",7,"sc");
   data.E7:=CoxeterGroup("E",7);
+  data.CE7:=CoxeterGroup([[0,2,-1,0,0,0,0,0],[1,0,0,-1,0,0,0,0],
+   [0,-1,2,-1,0,0,0,0],[-1,0,-1,2,-1,0,0,0],[1,0,0,-1,2,-1,0,0],
+   [-1,0,0,0,-1,2,-1,0],[1,0,0,0,0,-1,2,0]],
+   [[0,1,0,0,0,0,0,0],[2,0,0,0,-1,0,-1,-1],[0,0,1,0,0,0,0,0],[0,0,0,1,0,0,0,0],
+    [0,0,0,0,1,0,0,0],[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,1,0]]);
   data.E8:=CoxeterGroup("E",8);
   data.2F4:=CoxeterCoset(CoxeterGroup("Fsym",4),(1,4)(2,3));
   data.F4:=CoxeterGroup("F",4);
