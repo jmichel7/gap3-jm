@@ -26,7 +26,7 @@ CheckCharParams:=function(W) local ct,q,fd,db,n,l,nm,t,f,fd,ok,ddb,occursin,
   n:=ReflectionName(W);
   if IsBound(ChevieCharInfo(W).malle) then
     l:=ChevieCharInfo(W).malle;
-    nm:=List(l,x->CHEVIE.R("CharName","G2")(x,rec()));
+    nm:=List(l,p->TeXStrip(exceptioCharName(p)));
   elif n[1] in "EFGH" and Length(n)<4 then
     l:=Filtered(Collected(CharParams(W)),x->x[2]>1);
     if Length(l)>0 then ChevieErr("Duplicated:",l,"\n");fi;

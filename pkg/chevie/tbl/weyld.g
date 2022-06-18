@@ -140,10 +140,6 @@ end);
 ##  
 CHEVIE.AddData("CharInfo","D",n->CHEVIE.R("CharInfo","imp")(2,2,n));
 
-# how to make a .charname from a .charparam
-CHEVIE.AddData("CharName","D", 
-  function(arg)return PartitionTupleToString(arg[2]);end);
-
 #############################################################################
 ##
 #F  ClassParameter( <n>, <w> )  . . . . . . . . . class parameter of w

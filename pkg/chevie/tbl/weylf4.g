@@ -84,22 +84,25 @@ CHEVIE.AddData("CharInfo","F4",function()local res;
    [9,2],[9,6,2],[9,6,1],[9,10],[6,6,1],[6,6,2],[12,4],[4,1],[4,7,2],[4,7,1],
    [4,13],[8,3,2],[8,9,1],[8,3,1],[8,9,2],[16,5]],
 # names of the characters in Kondo's table, see [Carter-book,p.413]:
-  kondo:=[ "1_1","1_2","1_3","1_4","2_1",
-  "2_2","2_3","2_4","4_1","9_1","9_2","9_3","9_4","6_1","6_2","12","4_2",
-  "4_3","4_4","4_5","8_1", "8_2","8_3","8_4","16"],
+# jm 18/6/2022: kondo permuted by diagram automorphism to fix error found by
+# Jonas Hetz
+  kondo:=[ "1_1","1_3","1_2","1_4","2_3",
+  "2_4","2_1","2_2","4_1","9_1","9_3","9_2","9_4","6_1","6_2","12","4_2",
+  "4_4","4_3","4_5","8_3", "8_4","8_1","8_2","16"],
 # names used in Spaltenstein's [Generalized Springer correspondance for
 # exceptional groups]
-  spaltenstein:=[ "1_1","1_2","1_3","1_4","2_1",
-  "2_2","2_3","2_4","4","9_1","9_2","9_3","9_4","6_1","6_2","12","4_1",
-  "4_2","4_3","4_4","8_1", "8_2","8_3","8_4","16"],
+  spaltenstein:=["1_1","1_3","1_2","1_4","2_3","2_4","2_1","2_2","4","9_1",
+  "9_3","9_2","9_4","6_1","6_2","12","4_1","4_3","4_2","4_4","8_3","8_4",
+  "8_1","8_2","16"],
 # names used by Lusztig [Characters of reductive groups ..., 4.10]
-  lusztig:=[ "1_1","1_3","1_2","1_4","2_3","2_4","2_1","2_2","4_1","9_1","9_3",
-  "9_2","9_4","6_1","6_2","12_1","4_2","4_4","4_3","4_5","8_3","8_4","8_1",
-  "8_2", "16_1" ],
+  lusztig:=["1_1","1_3","1_2","1_4","2_3","2_4","2_1","2_2","4_1","9_1",
+  "9_3","9_2","9_4","6_1","6_2","12_1","4_2","4_4","4_3","4_5",
+  "8_3","8_4","8_1","8_2","16_1"],
   extRefl:=[1,17,15,20,4],
   a:=[0,4,4,24,1,13,1,13,4,2,4,4,10,4,4,4,1,4,4,13,3,9,3,9,4],
   A:=[0,20,20,24,11,23,11,23,20,14,20,20,22,20,20,20,11,20,20,23,15,21,15,21,20]);
   res.b:=List(res.charparams,x->x[2]);
+  res.charnames:=List(res.charparams,exceptioCharName);
   return res;
   end
 );
@@ -960,50 +963,53 @@ CHEVIE.AddData("UnipotentClasses","F4",function(p,type)local uc,Z,class,c;
 "	 1"),
 classes:=[
 rec(name:="1",succ:=["A1"],dynkin:=[0,0,0,0],
-    balacarter:=[],red:=CoxeterGroup("F",4)),
+    balacarter:=[],red:=CoxeterGroup("F",4),rep:=[]),
 rec(name:="A_1",succ:=["~A1"],dynkin:=[1,0,0,0],
-    balacarter:=[1],red:=CoxeterGroup("C",3)),
+    balacarter:=[1],red:=CoxeterGroup("C",3),rep:=[1]),
 rec(name:="\\tilde A_1",succ:=["A1+~A1"],dynkin:=[0,0,0,1],Au:=Z(Gcd(2,p-1)),
     balacarter:=[3],red:=CoxeterGroup("A",3),
-    AuAction:=ExtendedReflectionGroup(CoxeterGroup("A",3),(1,3))),
+    AuAction:=ExtendedReflectionGroup(CoxeterGroup("A",3),(1,3)),rep:=[3]),
 rec(name:="A_1{+}\\tilde A_1",succ:=["A2","~A2"],dynkin:=[0,1,0,0],
-    balacarter:=[1,3],red:=CoxeterGroup("A",1,"A",1)),
+    balacarter:=[1,3],red:=CoxeterGroup("A",1,"A",1),rep:=[1,3]),
 rec(name:="\\tilde A_2",succ:=["~A2+A1"],dynkin:=[0,0,0,2],Au:=Z(Gcd(2,p)),
-    balacarter:=[3,4],red:=CoxeterGroup("G",2)),
+    balacarter:=[3,4],red:=CoxeterGroup("G",2),rep:=[3,4]),
 rec(name:="A_2",succ:=["A2+~A1"],dynkin:=[2,0,0,0],Au:=Z(2),
     balacarter:=[1,2],red:=CoxeterGroup("A",2),
-    AuAction:=ExtendedReflectionGroup(CoxeterGroup("A",2),(1,2))),
+    AuAction:=ExtendedReflectionGroup(CoxeterGroup("A",2),(1,2)),rep:=[1,2]),
 rec(name:="A_2{+}\\tilde A_1",succ:=["~A2+A1","B2"],dynkin:=[0,0,1,0],
-    balacarter:=[1,2,4],red:=Z(2)),
+    balacarter:=[1,2,4],red:=Z(2),rep:=[1,2,4]),
 rec(name:="\\tilde A_2{+}A_1",succ:=["C3(a1)"],dynkin:=[0,1,0,1],
-    balacarter:=[1,3,4],red:=Z(2)),
+    balacarter:=[1,3,4],red:=Z(2),rep:=[1,3,4]),
 rec(name:="B_2",succ:=["C3(a1)"],dynkin:=[2,0,0,1],Au:=Z(Gcd(p-1,2)),
     balacarter:=[2,3],red:=CoxeterGroup("A",1,"A",1),
-    AuAction:=ExtendedReflectionGroup(CoxeterGroup("A",1,"A",1),(1,2))),
+    AuAction:=ExtendedReflectionGroup(CoxeterGroup("A",1,"A",1),(1,2)),rep:=[2,3]),
 rec(name:="C_3(a_1)",shoji:="A_1{+}B_2",succ:=["F4(a3)"],dynkin:=[1,0,1,0],
-    Au:=Z(Gcd(p-1,2)),balacarter:=[2,-3,4],red:=Z(2)),
+    Au:=Z(Gcd(p-1,2)),balacarter:=[2,-3,4],red:=Z(2),rep:=[2,4,9]),
 rec(name:="F_4(a_3)",shoji:="A_3{+}\\tilde A_1",succ:=["C3","B3"],dynkin:=[0,2,0,0],
-    Au:=CoxeterGroup("A",4-Gcd(p,2)),balacarter:=[-1,2,-3,-4]),
+    Au:=CoxeterGroup("A",4-Gcd(p,2)),balacarter:=[-1,2,-3,-4],rep:=[2,5,9,18]),
 rec(name:="C_3",succ:=["F4(a2)"],dynkin:=[1,0,1,2],Au:=Z(Gcd(p,2)),
-    balacarter:=[2,3,4], red:=Z(2)),
+    balacarter:=[2,3,4], red:=Z(2),rep:=[2,3,4]),
 rec(name:="B_3",succ:=["F4(a2)"],dynkin:=[2,2,0,0],Au:=Z(Gcd(p,2)),
-    balacarter:=[1,2,3],red:=Z(2)),
+    balacarter:=[1,2,3],red:=Z(2),rep:=[1,2,3]),
 rec(name:="F_4(a_2)",shoji:="C_3{+}A_1",succ:=["F4(a1)"],dynkin:=[0,2,0,2],
-    Au:=CoxeterGroup("B",Gcd(p,2)),balacarter:=[-1,2,-3,4]),
+    Au:=CoxeterGroup("B",Gcd(p,2)),balacarter:=[-1,2,-3,4],rep:=[5,9,4,7]),
 rec(name:="F_4(a_1)",shoji:="B_4",succ:=["F4"],dynkin:=[2,2,0,2],Au:=Z(2),
-    balacarter:=[1,2,-3,4]),
+    balacarter:=[1,2,-3,4],rep:=[1,2,6,7]),
 rec(name:="F_4",succ:=[],dynkin:=[2,2,2,2],Au:=Z(Gcd(12,p^2)),
-    balacarter:=[1,2,3,4])],
+    balacarter:=[1,2,3,4],rep:=[1,2,3,4])],
 springerSeries:=[
   rec(relgroup:=CoxeterGroup("F",4),levi:=[],Z:=[],locsys:=[[16,1],[6,1],[11,2],
  [1,1],[14,1],[3,1],[15,1],[2,1],[9,1],[14,2],[9,2],[11,4],[4,1],[8,1],[11,3],
  [11,5],[15,2],[7,1],[10,1],[3,2],[13,1],[5,1],[12,1],[6,2],[10,2]]),
   rec(relgroup:=Z(1),levi:=[1,2,3,4],Z:=[],locsys:=[[11,1]],hc:=9)]);
   if p=2 then Append(uc.classes,
-[rec(name:="(\\tilde A_1)_2",succ:=["~A1"],red:=CoxeterGroup("B",3),dimBu:=16),
- rec(name:="(B_2)_2",succ:=["B2","C3(a1)2"],red:=CoxeterGroup("B",2),dimBu:=8,Au:=Z(2)),
- rec(name:="(\\tilde A_2{+}A_1)_2",succ:=["~A2+A1","C3(a1)2"],red:=Z(2),dimBu:=7),
- rec(name:="C_3(a_1)_2",succ:=["C3(a1)"],red:=Z(2),dimBu:=6)]);
+[rec(name:="(\\tilde A_1)_2",succ:=["~A1"],red:=CoxeterGroup("B",3),dimBu:=16,
+ rep:=[3,9]),
+ rec(name:="(B_2)_2",succ:=["B2","C3(a1)2"],red:=CoxeterGroup("B",2),dimBu:=8,
+  Au:=Z(2),rep:=[2,3,11]),
+ rec(name:="(\\tilde A_2{+}A_1)_2",succ:=["~A2+A1","C3(a1)2"],red:=Z(2),
+   dimBu:=7,rep:=[1,3,4,16]),
+ rec(name:="C_3(a_1)_2",succ:=["C3(a1)"],red:=Z(2),dimBu:=6,rep:=[2,4,9,20])]);
   Add(class("1").succ,"(~A1)2");Add(class("A_1{+}\\tilde A_1").succ,"(B2)2");
   class("\\tilde A_2").succ:=["(~A2+A1)2"];
   c:=class("\\tilde A_2{+}A_1");c.red:=Z(1);c.dimBu:=6;Unbind(c.dynkin);

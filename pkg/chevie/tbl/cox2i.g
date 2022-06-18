@@ -53,26 +53,17 @@ CHEVIE.AddData("ClassParameter","2I",function(m,w)local l;
   fi;
 end);
 
-#how to make a .charname from a .charparam
-CHEVIE.AddData("CharName","2I",function(m,x,option)local s;
-  if IsList(x[1]) then return PartitionTupleToString(x);
-  else
-    if IsBound(option.TeX) then s:="phi";else s:="\\phi_";fi;
-    s:=SPrint(s,"{",x[1],",",x[2],"}");
-    if Length(x)=3 then Append(s,x[3]);fi;
-    return String(s);
-  fi;
-end);
-
 CHEVIE.AddData("CharInfo","2I",function(m)local res;
   res:=rec(extRefl:=[1,3,2]);
   if m=4 then res.charparams:= [[[2],[]], [[],[1,1]],[[1],[1]]];
     res.b:=[0,4,1];
     res.B:=[0,4,3];
+    res.charnames:=List(res.charparams,PartitionTupleToString);
   else res.charparams:=Concatenation([[1,0],[1,m]],
       List([1..QuoInt(m-1,2)],i->[2,i]));
     res.b:=List(res.charparams,x->x[2]);
     res.B:=Concatenation([0,m],List([1..QuoInt(m-1,2)],i->m-i));
+    res.charnames:=List(res.charparams,exceptioCharName);
   fi;
   return res;
 end);
@@ -94,7 +85,7 @@ end);
 ##  <m>=4 (2B_2) or <m>=6 (2G_2).
 ##
 CHEVIE.AddData("HeckeCharTable","2I",function(m,param,sqrtparam)
-  local q,i,j,ct,cos,cl,l,ident,ord,v,tbl;
+  local q,i,j,ct,cos,cl,l,ident,ord,v,tbl,ci;
   q:=-param[1][1]/param[1][2];
   if m=4 then ident:="2B"; elif m=6 then ident:="2G"; else ident:="2I2"; fi;
   ident:=SPrint(ident,"(",m,")");
@@ -112,12 +103,13 @@ CHEVIE.AddData("HeckeCharTable","2I",function(m,param,sqrtparam)
     od;
 #   ct[i+2]:=ct[i+2]*(-1)^i; # to make Ennola duality work
   od;
+  ci:=CHEVIE.R("CharInfo","2I")(m);
   tbl:=rec(identifier:=ident, name:=ident,
      cartan:=[[2,-cos(1)],[-cos(1),2]],  size:=2*m,
      parameter:=[q,q],  sqrtparameter:=[v,v],
      irreducibles:=ct*v^0,
-     irredinfo:=List(CHEVIE.R("CharInfo","2I")(m).charparams,x->rec(
-      charparam:=x,charname:=CHEVIE.R("CharName","2I")(m,x,rec(TeX:=true)))));
+     irredinfo:=Zip(ci.charparams,ci.charnames,function(x,y)return
+    rec(charparam:=x,charname:=y);end));
   Inherit(tbl,cl);
   tbl.centralizers:=List(cl.classes,i->tbl.size/i);
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);

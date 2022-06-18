@@ -69,6 +69,7 @@ CHEVIE.AddData("CharInfo","G25",function()local res;
 # phi{6,4}' is complexconjugate of phi{6,2}
   extRefl:=[1,12,8,3]);
   res.b:=List(res.charparams,x->x[2]);
+  res.charnames:=List(res.charparams,exceptioCharName);
   return res;
 end);
 

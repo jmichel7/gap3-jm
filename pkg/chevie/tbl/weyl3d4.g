@@ -22,9 +22,6 @@ CHEVIE.AddData("generators","3D4",
 CHEVIE.AddData("phi","3D4",(1,2,4)(5,6,7)(8,10,9)
   (13,14,16)(17,18,19)(20,22,21));
 
-CHEVIE.AddData("CharName","3D4",function(arg)return
-  PartitionTupleToString(arg[1]);end);
-
 CHEVIE.AddData("CartanMat","3D4",[[2,0,-1,0],[0,2,-1,0],[-1,-1,2,-1],
   [0,0,-1,2]]);
 
@@ -58,14 +55,17 @@ end);
 
 CHEVIE.AddData("NrConjugacyClasses","3D4",7);
 
-CHEVIE.AddData("CharInfo","3D4",function()return
-  rec(extRefl:=[1,5,4,6,2],
+CHEVIE.AddData("CharInfo","3D4",function()local res;
+  res:=rec(extRefl:=[1,5,4,6,2],
       charparams:=[[[],[4]],[[],[1,1,1,1]],[[],[2,2]],
           [[1,1],[2]],[[1],[3]],[[1],[1,1,1]],[[1],[2,1]]],
       charRestrictions:=[13,4,10,5,11,3,6],
       nrGroupClasses:=13,
       b:=[ 0, 12, 4, 4, 1, 7, 3 ],
-      B:=[ 0, 12, 8, 8, 5, 11, 9 ]);end);
+      B:=[ 0, 12, 8, 8, 5, 11, 9 ]);
+  res.charnames:=List(res.charparams,PartitionTupleToString);
+  return res;
+end);
 
 ###########################################################################
 ##

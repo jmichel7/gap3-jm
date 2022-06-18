@@ -54,36 +54,40 @@ end;
 
 ##  The remaining entries are for character tables in classical types. Their
 ##  creation is very incompatible between GAP3/4.
-CHEVIE.compat.CharTableA := function(n)local tbl;
+CHEVIE.compat.CharTableA := function(n)local tbl,ci;
   tbl:=CharTable("Symmetric",n+1);
   tbl.identifier:=SPrint("W(A",n,")");
   tbl.cartan:=CartanMat("A",n);
   Inherit(tbl,CHEVIE.R("ClassInfo","A")(n));
-  tbl.irredinfo:=List(CHEVIE.R("CharParams","A")(n),
-  x->rec(charparam:=x, charname:=CHEVIE.R("CharName","A")(n,x,rec(TeX:=true))));
+  ci:=CHEVIE.R("CharInfo","A")(n);
+  tbl.irredinfo:=Zip(ci.charparams,ci.charnames,function(x,y)return
+    rec(charparam:=x,charname:=y);end);
   return tbl;
 end;
-CHEVIE.compat.HeckeCharTableA := function(n, param,sqrtparam)local tbl,q;
+
+CHEVIE.compat.HeckeCharTableA := function(n, param,sqrtparam)local tbl,q,ci;
   q:=-param[1][1]/param[1][2];
   tbl:= CharTableSpecialized(CHEVIE.R("Hk","A"), [n+1, q]);
   tbl.cartan:= CartanMat("A", n);
   tbl.parameter:= List([1..n], x-> q);
   Inherit(tbl,CHEVIE.R("ClassInfo","A")(n));
-  tbl.irredinfo:=List(CHEVIE.R("CharParams","A")(n),x->
-    rec(charparam:=x,charname:=CHEVIE.R("CharName","A")(n,x,rec(TeX:=true))));
+  ci:=CHEVIE.R("CharInfo","A")(n);
+  tbl.irredinfo:=Zip(ci.charparams,ci.charnames,function(x,y)return
+    rec(charparam:=x,charname:=y);end);
   CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
   return tbl;
 end;
-CHEVIE.compat.CharTableB := function(rank)local tbl;
+CHEVIE.compat.CharTableB := function(rank)local tbl,ci;
   tbl:=CharTable("WeylB",rank);
   tbl.identifier:=SPrint("W(B",rank,")");
   tbl.cartan:=CartanMat("B",rank);
   Inherit(tbl,CHEVIE.R("ClassInfo","B")(rank));
-  tbl.irredinfo:=List(CHEVIE.R("CharParams","B")(rank),x->rec(charparam:=x,
-    charname:=CHEVIE.R("CharName","B")(rank,x,rec(TeX:=true))));
+  ci:=CHEVIE.R("CharInfo","B")(rank);
+  tbl.irredinfo:=Zip(ci.charparams,ci.charnames,function(x,y)return
+    rec(charparam:=x,charname:=y);end);
   return tbl;
 end;
-CHEVIE.compat.HeckeCharTableB := function(n, param,sqrtparam) local q, tbl;
+CHEVIE.compat.HeckeCharTableB := function(n, param,sqrtparam) local q, tbl,ci;
   q:=List(param,x->-x[1]/x[2]);
   tbl:= CharTableSpecialized(CHEVIE.R("Hk","B"), [n, q[1], q[2]]);
   tbl.identifier := SPrint("H(B", n, ")");
@@ -92,8 +96,9 @@ CHEVIE.compat.HeckeCharTableB := function(n, param,sqrtparam) local q, tbl;
   tbl.classtext:= CHEVIE.R("ClassInfo","B")(n).classtext;
   tbl.classparams:= List(tbl.classparam, x-> x[2]);
   tbl.classnames:= List(tbl.classparams, PartitionTupleToString);
-  tbl.irredinfo:=List(CHEVIE.R("CharParams","B")(n),x->
-           rec(charparam:=x,charname:=CHEVIE.R("CharName","B")(n,x,rec(TeX:=true))));
+  ci:=CHEVIE.R("CharInfo","B")(n);
+  tbl.irredinfo:=Zip(ci.charparams,ci.charnames,function(x,y)return
+    rec(charparam:=x,charname:=y);end);
   CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
   return tbl;
 end;

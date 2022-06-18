@@ -120,14 +120,12 @@ CHEVIE.AddData("LowestPowerFakeDegree","A",p->p*[0..Length(p)-1]);
 CHEVIE.AddData("HighestPowerFakeDegree","A",p->Sum(p)*(Sum(p)-1)/2
    -CHEVIE.R("LowestPowerFakeDegree","A")(AssociatedPartition(p)));
 
-# A.CharName(rank,param[,opt])
-CHEVIE.AddData("CharName","A",function(arg)return IntListToString(arg[2]);end);
-
 CHEVIE.AddData("CharInfo","A",function(n)local res;
-  res:=rec(charparams:=CHEVIE.R("CharParams","A")(n));
+  res:=rec(charparams:=Partitions(n+1));
+  res.charnames:=List(res.charparams,IntListToString);
   res.extRefl:=List([0..n],
      i->Position(res.charparams,Concatenation([n+1-i],[1..i]*0+1)));
-  res.b:=List(res.charparams,CHEVIE.R("LowestPowerFakeDegree","A"));
+  res.b:=List(res.charparams,p->p*[0..Length(p)-1]);
   res.B:=List(res.charparams,CHEVIE.R("HighestPowerFakeDegree","A"));
   res.a:=res.b; res.A:=res.B;
   return res;
@@ -358,12 +356,24 @@ CHEVIE.AddData("Invariants","A",function(n)local m;
     return Sum(Arrangements([1..n+1],i),a->Product(v{a}));end);
   end);
 
-CHEVIE.AddData("UnipotentClasses","A",function(n,p)local uc,i,j,cl,d,ss;
+CHEVIE.AddData("UnipotentClasses","A",function(n,p)
+  local uc,i,j,cl,d,ss,partition2parab;
   uc:=rec(classes:=List(Partitions(n+1),p->rec(parameter:=p)),
     springerSeries:=Concatenation(List(DivisorsInt(n+1),d->
    List(PrimeResidues(d),i->rec(relgroup:=CoxeterGroup("A",(n+1)/d-1),
         Z:=[E(d)^i],levi:=Filtered([1..n+1],i->i mod d<>0),locsys:=[])))));
   ss:=z->First(uc.springerSeries,x->x.Z=[z]);
+  partition2parab:=function(p)local res,c,pa,i;
+    res:=[]; c:=1;
+    for pa in p do
+      for i in [1..pa-1] do
+        Add(res,c);
+        c:=c+1;
+      od;
+      c:=c+1;
+    od;
+    return res; 
+  end;
   for i in [1..Length(uc.classes)] do
     cl:=uc.classes[i];p:=cl.parameter;d:=Gcd(p);
     cl.name:=IntListToString(p);
@@ -376,6 +386,7 @@ CHEVIE.AddData("UnipotentClasses","A",function(n,p)local uc,i,j,cl,d,ss;
       Append(cl.red,[p..p+j[2]-2]);p:=p+j[2];od;
     cl.red:=ReflectionSubgroup(CoxeterGroup("A",p-2),cl.red);
     cl.AuAction:=ExtendedReflectionGroup(cl.red,[IdentityMat(Rank(cl.red))]);
+    cl.rep:=partition2parab(cl.parameter);
     if d=2 then Add(ss(1).locsys,[i,2]);Add(ss(-1).locsys,[i,1]);
     else for j in [0..d-1] do Add(ss(E(d)^j).locsys,[i,j+1]);od;
     fi;

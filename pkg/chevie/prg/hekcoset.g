@@ -29,8 +29,8 @@ HeckeCosetOps.CharTable:=function(HF)local res,tbl,WF,H,tmp;
     res:=CharTableDirectProduct(res,tbl);
   od;
   res.classes:=List(res.centralizers,x->res.size/x);
-  res.irredinfo:=List(CharParams(WF),x->rec(charparam:=x,
-                                        charname:=CharName(WF,x,rec(TeX:=true))));
+  res.irredinfo:=Zip(CharParams(WF),CharNames(WF),
+       function(x,y)return rec(charparam:=x,charname:=y);end);
   Inherit(res,ChevieClassInfo(WF));
   res.name:=Concatenation("H(",ReflectionName(WF),")");
   res.identifier:=res.name;

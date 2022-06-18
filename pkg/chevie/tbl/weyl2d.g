@@ -111,9 +111,6 @@ CHEVIE.AddData("IsPreferred","2D",function(pp)
 CHEVIE.AddData("CharParams","2D",n->Filtered(CHEVIE.R("CharParams","B")(n),
                                              CHEVIE.R("IsPreferred","2D")));
 
-CHEVIE.AddData("CharName","2D",function(arg) 
-                             return PartitionTupleToString(arg[2]); end);
-
 CHEVIE.AddData("CharInfo","2D",function(n)local res,resparams;
   res:=rec(charparams:=CHEVIE.R("CharParams","2D")(n));
   res.extRefl:=List([0..n-2],i->[[1..i]*0+1,[n-i]]);
@@ -124,6 +121,7 @@ CHEVIE.AddData("CharInfo","2D",function(n)local res,resparams;
   res.charRestrictions:=List(res.charparams,x->PositionProperty(resparams,
     y->y=x or y=Reversed(x)));
   res.nrGroupClasses:=Length(resparams);
+  res.charnames:=List(res.charparams,PartitionTupleToString);
   return res;
 end);
 
@@ -152,7 +150,7 @@ CHEVIE.AddData("CharTable","2D", function(l)local hi, tbl,lst, chr;
     text:="extracted from generic character table of type B",
     operations:=CharTableOps,
     irredinfo:=List(hi.irredinfo{chr},a->rec(charparam:=a.charparam,
-		   charname:=CHEVIE.R("CharName","2D")(l,a.charparam))),
+		   charname:=PartitionTupleToString(a.charparam))),
     irreducibles:=hi.irreducibles{chr}{lst});
    Inherit(tbl,CHEVIE.R("ClassInfo","2D")(l));
    return tbl;
@@ -176,7 +174,7 @@ CHEVIE.AddData("HeckeCharTable", "2D", function(l,param,rootparam)
   chr:=Filtered(chr,
 	i->CHEVIE.R("IsPreferred","2D")(hi.irredinfo[i].charparam));
   tbl.irredinfo:=List(hi.irredinfo{chr},a->rec(charparam:=a.charparam,
-      charname:=CHEVIE.R("CharName","2D")(l,a.charparam)));
+      charname:=PartitionTupleToString(a.charparam)));
   tbl.irreducibles:=TransposedMat(List(tbl.classtext,
     x->HeckeCharValues(Basis(Hecke(CoxeterGroup("B",l),q),"T")
       (Concatenation([1],Replace(x,[1],[1,2,1]))),hi.irreducibles{chr})));

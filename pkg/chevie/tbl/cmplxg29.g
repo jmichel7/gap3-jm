@@ -95,6 +95,7 @@ CHEVIE.AddData("CharInfo","G29",function()local res;
 # phi_{6,10''''} is the complex conjugate.
   hgal:=(24,26)(25,27), extRefl:=[1,5,14,8,2]);
   res.b:=List(res.charparams,x->x[2]);
+  res.charnames:=List(res.charparams,exceptioCharName);
   return res;
 end);
 

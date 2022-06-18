@@ -81,6 +81,7 @@ CHEVIE.AddData("CharInfo","G24",function()local res;
                         [6,9],[7,6],[7,3],[8,4],[8,5]],
   hgal:=(11,12), extRefl:=[1,4,5,2]);
   res.b:=List(res.charparams,x->x[2]);
+  res.charnames:=List(res.charparams,exceptioCharName);
   return res;
 end);
 

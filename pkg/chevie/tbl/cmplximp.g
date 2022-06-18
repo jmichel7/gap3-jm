@@ -419,6 +419,11 @@ CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,s,fd;
         return Minimum(List([1..e],i->Rotation(s,i*d)));
         end));
   fi;
+  res.charnames:=List(res.charparams,function(s)
+     if IsList(s[Length(s)]) and Sum(s,Sum)=1 then return FormatTeX(E(Length(s))^(Position(s,[1])-1));
+     else return PartitionTupleToString(s,rec(TeX:=true));
+     fi;
+  end);
   return res;
 end);
 
@@ -443,13 +448,6 @@ CHEVIE.AddData("FakeDegree","imp",function(p,q,r,c,v)
   else return false;
   fi;
   return Value(c,v);
-end);
-
-CHEVIE.AddData("CharName","imp",function(p,q,r,s,option)
-  if RankSymbol(s)=1 then 
-       return Format(E(Length(s))^(Position(s,[1])-1),option);
-  else return PartitionTupleToString(s,option);
-  fi;
 end);
 
 CHEVIE.AddData("SchurModel","imp",function(p,q,r,phi)

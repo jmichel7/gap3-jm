@@ -104,7 +104,6 @@ end);
 
 # parameters for characters
 CHEVIE.AddData("CharParams","2A",n->Partitions(n+1));
-CHEVIE.AddData("CharName","2A",function(arg)return IntListToString(arg[2]);end);
 
 CHEVIE.AddData("CharInfo","2A",n->CHEVIE.R("CharInfo","A")(n));
 

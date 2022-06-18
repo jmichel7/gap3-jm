@@ -84,24 +84,14 @@ CHEVIE.AddData("NrConjugacyClasses","I", m->QuoInt(m+3,2)+((m+1)mod 2)*2);
 CHEVIE.AddData("ParabolicRepresentatives", "I", function(m,s)
   return CHEVIE.R("ParabolicRepresentatives","imp")(m,m,2,s);end);
 
-#how to make a .charname from a .charparam
-CHEVIE.AddData("CharName","I",function(m,x,option)local s;
-  if IsList(x[1]) then return PartitionTupleToString(x);
-  else
-    if IsBound(option.TeX) then s:="\\phi";else s:="phi";fi;
-    s:=SPrint(s,"{",x[1],",",x[2],"}");
-    if Length(x)=3 then Append(s,x[3]);fi;
-    return String(s);
-  fi;
-end);
-
 CHEVIE.AddData("CharInfo","I",function(m)local res,applyf,v,m1;
   res:=rec(charparams:=[[1,0]]);
   if m mod 2=0 then res.extRefl:=[1,5,4];m1:=QuoInt(m,2);
-     Append(res.charparams,[[1,m1,"'"],[1,m1,"''"]]);
+     Append(res.charparams,[[1,m1,1],[1,m1,2]]);
   else res.extRefl:=[1,3,2];fi;
   Add(res.charparams,[1,m]);
   Append(res.charparams,List([1..QuoInt(m-1,2)],i->[2,i]));
+  res.charnames:=List(res.charparams,exceptioCharName);
   res.b:=List(res.charparams,x->x[2]);
   res.B:=List(res.charparams,function(phi)
     if phi[1]=1 then return phi[2]; else return m-phi[2]; fi; end);
@@ -159,7 +149,7 @@ end);
 ##
 ##
 CHEVIE.AddData("HeckeCharTable","I",function(m,param,rootparam)
-  local u, v, squv, cl, r, ct, tbl;
+  local u, v, squv, cl, r, ct, tbl, ci;
   u:=-param[1][1]/param[1][2]; v:=-param[2][1]/param[2][2];
   if m mod 2<>0 then squv:=u;
   elif IsBound(rootparam[1]) and IsBound(rootparam[2]) then
@@ -178,10 +168,11 @@ CHEVIE.AddData("HeckeCharTable","I",function(m,param,rootparam)
          return squv^k*(E(m)^(k*j)+E(m)^(-k*j));
       fi;
     end)));
+  ci:=CHEVIE.R("CharInfo","I")(m);
   tbl:=rec(identifier:=SPrint("H(I2(",m,"))"),cartan:=CartanMat("I",2,m), 
     size:=2*m,
-    irredinfo:=List(CHEVIE.R("CharInfo","I")(m).charparams,x->rec(
-       charparam:=x,charname:=CHEVIE.R("CharName","I")(m,x,rec(TeX:=true)))),
+    irredinfo:=Zip(ci.charparams,ci.charnames,function(x,y)return
+      rec(charparam:=x,charname:=y);end),
     parameter:=[u,v], powermap:=[], irreducibles:=ct*v^0);
   Inherit(tbl,cl);
   tbl.centralizers:=List(tbl.classes,i->tbl.size/i);

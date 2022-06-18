@@ -61,6 +61,7 @@ CHEVIE.AddData("CharInfo","G2",function()local res;
   # charnames in Spaltenstein's "Sous-groupes de Borel et classes unipotentes"
   res.spaltenstein:=["1","\\varepsilon","\\varepsilon_l","\\varepsilon_c",
                      "\\theta'","\\theta''"];
+  res.charnames:=List(res.charparams,exceptioCharName);
   return res;
   end
 );
@@ -229,14 +230,16 @@ CHEVIE.AddData("UnipotentClasses","G2",function(p,type)local uc,Z,c;
   if p=0 then p:=1;fi; Z:=n->ComplexReflectionGroup(n,1,1);
   uc:=rec(classes:=[
    rec(name:="1",succ:=["A1"],dynkin:=[0,0],balacarter:=[],
-     red:=CoxeterGroup("G",2)),
-   rec(name:="A_1",succ:=["~A1"],dynkin:=[1,0],balacarter:=[1],red:=Z(2)),
+     red:=CoxeterGroup("G",2),rep:=[]),
+   rec(name:="A_1",succ:=["~A1"],dynkin:=[1,0],balacarter:=[1],red:=Z(2),
+    rep:=[6]),
    rec(name:="\\tilde A_1",succ:=["G2(a1)"],dynkin:=[0,1],balacarter:=[2],
-     red:=Z(2-(Gcd(p,3)-1)/2)),
+     red:=Z(2-(Gcd(p,3)-1)/2),rep:=[4]),
    rec(name:="G_2(a_1)",succ:=["G2"],dynkin:=[2,0],balacarter:=[1,-2],
-     Au:=CoxeterGroup("A",2-(Gcd(p,3)-1)/2)),
-   rec(name:="G_2",succ:=[],dynkin:=[2,2],Au:=Z(Gcd(p,6)),balacarter:=[1,2])],
-springerSeries:=[rec(relgroup:=CoxeterGroup("G",2),levi:="",Z:=[],
+     Au:=CoxeterGroup("A",2-(Gcd(p,3)-1)/2),rep:=[1,5]),
+   rec(name:="G_2",succ:=[],dynkin:=[2,2],Au:=Z(Gcd(p,6)),balacarter:=[1,2],
+     rep:=[2,1])],
+  springerSeries:=[rec(relgroup:=CoxeterGroup("G",2),levi:="",Z:=[],
   locsys:=[[5,1],[1,1],[4,2],[2,1],[4,3],[3,1]]),
   rec(relgroup:=CoxeterGroup(),levi:=[1,2],Z:=[],locsys:=[[4,1]],
    hc:=5)]); # Fourier transform of 8th unip. character
@@ -246,7 +249,7 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("G",2),levi:="",Z:=[],
       hc:=3));
   elif p=3 then 
     Add(uc.classes,rec(name:="(\\tilde A_1)_3",
-      succ:=["~A1"],dimBu:=3,red:=Z(2),Au:=CoxeterGroup()));
+      succ:=["~A1"],dimBu:=3,red:=Z(2),Au:=CoxeterGroup(),rep:=[4,6]));
     Add(uc.classes[1].succ,"(~A1)3");
     uc.classes[3].dimBu:=2;Unbind(uc.classes[3].dynkin);
     uc.springerSeries[1].locsys{[3,5]}:=[[6,1],[4,2]];

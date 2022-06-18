@@ -32,6 +32,7 @@ CHEVIE.AddData("CharInfo","2F4",function()local res,resparams;
   res.charRestrictions:=List(res.charparams,x->Position(resparams,x));
   res.nrGroupClasses:=Length(resparams);
   res.b:=List(res.charparams,x->x[2]);
+  res.charnames:=List(res.charparams,exceptioCharName);
   return res;
 end);
 

@@ -59,13 +59,24 @@ HasTypeOps:=OperationsRecord("HasTypeOps");
 #F  CharName(W,p[,option]) . . . . . . . . Name of character with .charparam p
 #    option may be "TeX"
 ##
-HasTypeOps.CharName:=function(W,p,option)local t;
-  t:=ReflectionType(W);
-  return Join(List([1..Length(t)],i->CharName(t[i],p[i],option)));
+HasTypeOps.CharName:=function(W,p,option)local p;
+  p:=Position(ChevieCharInfo(W).charparams,p);
+  return CharNames(W,option)[p];
 end;
 
-HasTypeOps.CharNames:=function(W,option)
-  return List(ChevieCharInfo(W).charparams,x->CharName(W,x,option));
+HasTypeOps.CharNames:=function(W,options)local ci,l,f;
+  ci:=ChevieCharInfo(W);
+  l:=ci.charnames;
+  for f in ["frame","kondo","spaltenstein","gp","lusztig"] do
+    if IsBound(options.(f)) and IsBound(ci.(f)) then 
+      l:=ci.(f); 
+      if f="kondo" then
+        InfoChevie("# Warning: on 18-6-2022 the .kondo notation has been permuted by the outer automorphism to fix an error in Carter's table\n");
+      fi;
+    fi;
+  od;
+  if not IsBound(options.TeX) then l:=List(l,TeXStrip);fi;
+  return l;
 end;
 
 HasTypeOps.NrConjugacyClasses:=W->Product(List(ReflectionType(W),
@@ -172,8 +183,9 @@ HasTypeOps.CharTable:=function(W)local t, l, tbl, cl, d;
     fi;
   fi;
   
-  tbl.irredinfo:=List(ChevieCharInfo(W).charparams,
-              x->rec(charparam:=x,charname:=CharName(W,x,rec(TeX:=true))));
+  tbl.irredinfo:=Zip(ChevieCharInfo(W).charparams,
+    ChevieCharInfo(W).charnames,
+       function(x,y)return rec(charparam:=x,charname:=y);end);
 
   # for a coset, InitClassesCharTable which is called from
   # CharTableDirectProduct uses a wrong value of size (centralizers[1])
@@ -452,8 +464,8 @@ HasTypeOps.ChevieCharInfo:=function(W)local res,t,p,f,n,i,gt,keep;
   else res:=rec();
   fi; 
   res.charparams:=Cartesian(List(p,x->x.charparams));
-  res.charnames:=List(res.charparams,x->CharName(W,x,rec()));
   if keep then return res;fi;
+  res.charnames:=List(Cartesian(List(p,x->x.charnames)),Join);
 # if ForAll(p,x->IsBound(x.charnames)) then 
 #   res.charnames:=List(Cartesian(List(p,x->x.charnames)),Join);
 # fi;

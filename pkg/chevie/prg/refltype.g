@@ -116,8 +116,17 @@ ReflTypeOps.PoincarePolynomial:=function(t,param)
   return CHEVIE.Data("PoincarePolynomial",t,param);
 end;
 
-ReflTypeOps.CharName:=function(arg)
-  return ApplyFunc(CHEVIE.Data,Concatenation(["CharName"],arg));
+ReflTypeOps.CharNames:=function(t,options)local ci,l,f;
+  ci:=ChevieCharInfo(t);
+  l:=ci.charnames;
+  for f in ["frame","kondo","spaltenstein","gp","lusztig"] do
+    if IsBound(options.(f)) and IsBound(ci.(f)) then l:=ci.(f); fi;
+    if f="kondo" then
+      InfoChevie("# Warning: on 18-6-2022 the .kondo notation has been permuted by the outer automorphism to fix an error in Carter's table\n");
+    fi;
+  od;
+  if not IsBound(options.TeX) then l:=List(l,TeXStrip);fi;
+  return l;
 end;
 
 ReflTypeOps.FakeDegree:=function(t,p,q)
@@ -323,10 +332,7 @@ ReflTypeOps.ChevieCharInfo:=function(t)local res,f,get,uc,s,para;
     fi;
   end;
   res:=CHEVIE.Data("CharInfo",t);
-# if not IsBound(res.charnames) then
-#   res.charnames:=List(res.charparams,
-#          x->ApplyFunc(CHEVIE.Data,["CharName",t,x,rec()]));
-# fi;
+  if not IsBound(res.charnames) then Error("charnames missing for ",t); fi;
   res.positionId:=res.extRefl[1];
   res.positionDet:=res.extRefl[Length(res.extRefl)];
   get("b","LowestPowerFakeDegrees");
@@ -345,10 +351,12 @@ ReflTypeOps.ChevieCharInfo:=function(t)local res,f,get,uc,s,para;
       fi;
     else
       para:=CHEVIE.Data("EigenvaluesGeneratingReflections",t);
+      if para<>false then
       para:=List(para,x->Concatenation([Mvp("x")],List([1..1/x-1],j->E(1/x)^j)));
       s:=List(res.charparams,p->CHEVIE.Data("SchurElement",t,p,para,[]));
       res.a:=Valuation(s[res.positionId])-List(s,Valuation);
       res.A:=Degree(s[res.positionId])-List(s,Degree);
+      fi;
     fi;
   fi;
   if IsBound(t.orbit) and not IsBound(res.charRestrictions) then

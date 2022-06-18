@@ -8,7 +8,7 @@
 ##  remaining data files to  be shared by the GAP 3 and  GAP 4 versions of
 ##  CHEVIE.
 ##
-# maybe change these names in GAP3 ? XXX
+# maybe change these names in GAP3 ?
 # (or define synonyms in GAP3 and use the new names in data files)
 SymbolPartitionTuple := SymbolPartitionTupleShape;
 Symbols := SymbolsRankDefect;

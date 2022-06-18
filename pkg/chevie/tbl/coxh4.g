@@ -60,7 +60,7 @@ function(s)local t;t:=[[[]],[[1]],[[1,2],[1,3],[2,3]],
   [[1,2,3],[1,2,4],[1,3,4],[2,3,4]],[[1..4]]];
   return t[s+1];end);
 
-CHEVIE.AddData("ClassParameter","H4",CHEVIE.R("WordsClassRepresentatives","H4"));
+CHEVIE.AddData("ClassParameter","H4",function(w)return 1;end);
 
 CHEVIE.AddData("PowerMaps","H4",
 [,[1,1,10,1,5,3,10,5,4,3,15,5,3,18,22,10,24,26,27, 1, 3,
@@ -101,14 +101,15 @@ CHEVIE.AddData("CharInfo","H4",function()local res;
     [8,12],[8,13],[9,2],[9,22],[9,6],[9,26],[10,12],[16,11],[16,13],[16,3],
     [16,21],[16,6],[16,18],[18,10],[24,11],[24,7],[24,12],[24,6],[25,4],
     [25,16],[30,10,1],[30,10,2],[36,5],[36,15],[40,8],[48,9]],
-  GeckPfeiffer:=["1_r", "1_r'", "4_t", "4_t'", "overline{4}_t", 
-  "overline{4}_t'", "6_s", "overline{6}_s", "8_r", "8_{rr}", "9_s", "9_s'", 
-  "overline{9}_s", "overline{9}_s'", "10_r", "16_t", "overline{16}_t", 
-  "16_{rr}", "16_{rr}'", "16_r", "16_r'", "18_r", "24_t", "overline{24}_t", 
-  "24_s", "overline{24}_s", "25_r", "25_r'", "30_s", "overline{30}_s", 
+  gp:=["1_r", "1_r'", "4_t", "4_t'", "\\overline{4}_t", 
+  "\\overline{4}_t'", "6_s", "\\overline{6}_s", "8_r", "8_{rr}", "9_s", "9_s'", 
+  "\\overline{9}_s", "\\overline{9}_s'", "10_r", "16_t", "\\overline{16}_t", 
+  "16_{rr}", "16_{rr}'", "16_r", "16_r'", "18_r", "24_t", "\\overline{24}_t", 
+  "24_s", "\\overline{24}_s", "25_r", "25_r'", "30_s", "\\overline{30}_s", 
   "36_{rr}", "36_{rr}'", "40_r", "48_{rr}"],
   hgal:=(18,20)(19,21), extRefl:=[1,3,7,4,2]);
   res.b:=List(res.charparams,x->x[2]);
+  res.charnames:=List(res.charparams,exceptioCharName);
   return res;
 end);
 

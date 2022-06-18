@@ -87,10 +87,7 @@ SerNames:=function(sers,opt)local res,ser,n,tt,nn;
   for ser in sers do
     tt:=ser.relativeType;n:=TeXStrip(ser.cuspidalName,opt);
     if tt=[] then res{ser.charNumbers}:=[n];
-    else nn:=List(tt,function(t)local params;
-      params:=CHEVIE.Data("CharInfo",t).charparams;
-      return List(params,x->CHEVIE.Data("CharName",t,x,opt));
-        end);
+    else nn:=List(tt,t->CharNames(t,opt));
       if IsBound(opt.TeX) then nn:=List(Cartesian(nn),x->Join(x,"\\otimes "));
       else nn:=List(Cartesian(nn),x->Join(x,","));
       fi;

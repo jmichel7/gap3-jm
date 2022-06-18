@@ -55,11 +55,12 @@ end);
 CHEVIE.AddData("CharInfo","H3",function()local res;
   res:=rec(
   charparams:=[[1,15],[1,0],[5,5],[5,2],[3,6],[3,8],[3,1],[3,3],[4,3],[4,4]],
-  gp:=["1_r'","1_r","5_r'","5_r","3_s","overline{3}_s","3_s'","overline{3}_s'",
+  gp:=["1_r'","1_r","5_r'","5_r","3_s","\\overline{3}_s","3_s'","\\overline{3}_s'",
      "4_r'","4_r"],
   hgal:=(9,10),
   extRefl:=[2,7,5,1]);
   res.b:=List(res.charparams,x->x[2]);
+  res.charnames:=List(res.charparams,exceptioCharName);
   return res;
 end);
 

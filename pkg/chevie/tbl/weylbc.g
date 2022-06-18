@@ -165,10 +165,6 @@ end);
 ##
 CHEVIE.AddData("CharParams", "B", n->PartitionTuples(n,2));
 
-#how to make charname from charparam
-CHEVIE.AddData("CharName", "B",
-  function(arg) return PartitionTupleToString(arg[2]); end);
-
 CHEVIE.AddData("LowestPowerFakeDegree","B", function(p) local pp, m, res;
   pp:=SymbolPartitionTuple(p,1); m:=Length(pp[2]);
   res:=pp[1]*[m,m-1..0];
@@ -177,7 +173,8 @@ CHEVIE.AddData("LowestPowerFakeDegree","B", function(p) local pp, m, res;
 end);
 
 CHEVIE.AddData("CharInfo","B",function(n)local res;
-  res:=rec(charparams:=CHEVIE.R("CharParams","B")(n));
+  res:=rec(charparams:=PartitionTuples(n,2));
+  res.charnames:=List(res.charparams,PartitionTupleToString);
   res.extRefl:=Concatenation(
    List([0..n-1],i->Position(res.charparams,[[n-i],[1..i]*0+1])),
    [Position(res.charparams,[[],[1..n]*0+1])]);

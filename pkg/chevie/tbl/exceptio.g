@@ -8,28 +8,19 @@
 ##  This file contains various code which is common to several (but not all)
 ##  types of reflection groups.
 ##
-
-CHEVIE.IndirectAddData("CharName",["2E6","E6","E7","E8","2F4","F4","G2",
-  "H3","H4","2G5","G24","G25","G26","G27","G29","G31","G32","G33","G34"],
-  t->function(x,option)local s,f;
-    for f in ["frame","kondo","spaltenstein","gp","lusztig"] do
-      if IsBound(option.(f)) then s:=CHEVIE.R("CharInfo",t)();
-        if IsBound(s.(f)) then 
-          s:=s.(f)[Position(s.charparams,x)];
-          if IsBound(option.TeX) then return s; else return TeXStrip(s);fi;
-        fi;
-      fi;
-    od;
-    if IsBound(option.TeX) then s:="\\phi_";else s:="phi";fi;
-    PrintToString(s,"{",x[1],",",x[2],"}");
-    if Length(x)=3 then Append(s,List([1..x[3]],y->'\''));fi;
-    return String(s);
-end);
+exceptioCharName:=function(x)local s;
+  s:=SPrint("\\phi_{",x[1],",",x[2],"}");
+  if Length(x)=3 then Append(s,List([1..x[3]],y->'\''));fi;
+  return String(s);
+end;
 
 CHEVIE.IndirectAddData("IrredInfo",["G24","G25","G26","G27","G29","G31","G32",
   "G33","G34","H3","H4","2E6","2F4","3D4","E6","E7","E8","F4","G2"],
-  t->List(CHEVIE.R("CharInfo",t)().charparams,x->
-    rec(charparam:=x,charname:=CHEVIE.R("CharName",t)(x,rec(TeX:=true)))));
+  function(t)local ci;
+    ci:=CHEVIE.R("CharInfo",t)();
+    return Zip(ci.charparams,ci.charnames,function(x,y)return
+         rec(charparam:=x,charname:=y);end);
+  end);
 
 #CHEVIE.AddData("ClassName",["H3","H4","G4_22",
 #  "G24","G25","G26","G27","G29","G31","G32","G33","G34"],x->x);

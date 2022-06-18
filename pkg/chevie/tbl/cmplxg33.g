@@ -114,6 +114,7 @@ CHEVIE.AddData("CharInfo","G33",function()local res;
 # phi_40,5' tensored by sign is phi_40,14'
   hgal:=(37,38), extRefl:=[1,4,9,12,5,2]);
   res.b:=List(res.charparams,x->x[2]);
+  res.charnames:=List(res.charparams,exceptioCharName);
   return res;
 end);
 
