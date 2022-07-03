@@ -3153,11 +3153,12 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("E",8),levi:="",Z:=[],
     Add(uc.classes[26].succ,"(A7)3");
     c:=class("A_7");c.red:=Z(1);c.dimBu:=11;Unbind(c.dynkin);
     Append(uc.springerSeries,[
+# 2-7-2022 chars. no3 and 4 of G2 permuted (error found by Jonas Hetz)
       rec(relgroup:=CoxeterGroup("G",2),levi:=[1..6],Z:=[],locsys:=[
-       [1,2],[16,2],[14,2],[2,2],[4,5],[5,2]],
+       [1,2],[16,2],[2,2],[14,2],[4,5],[5,2]],
 warning:="As conjectured by Lusztig, Arxiv 1608.02223 conjecture 6.2",hc:=5),
       rec(relgroup:=CoxeterGroup("G",2),levi:=[1..6],Z:=[],locsys:=[
-       [1,3],[16,3],[14,3],[2,3],[4,6],[5,3]],
+       [1,3],[16,3],[2,3],[14,3],[4,6],[5,3]],
 warning:="As conjectured by Lusztig, Arxiv 1608.02223 conjecture 6.2",hc:=6),
     rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[4,2]],hc:=9),
     rec(relgroup:=CoxeterGroup(),levi:=[1..8],Z:=[],locsys:=[[4,3]],hc:=8)]);

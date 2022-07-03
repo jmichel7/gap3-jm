@@ -820,10 +820,11 @@ rec(name:="1",succ:=["A1"],dynkin:=[0,0,0,0,0,0],balacarter:=[],
    [3,1],[19,1],[8,1],[14,1],[4,1],[17,2],[11,1],[10,3],[10,2],[7,1],[15,1],
    [6,1],[16,1],[9,1],[12,1]]),
 # See Lusztig arxiv:1608.02223 for next case
+# 2-7-2022 chars. no3 and 4 of G2 permuted (error found by Jonas Hetz)
   rec(levi:=[1,3,5,6],relgroup:=CoxeterGroup("G",2),Z:=[E(3)],
-    locsys:=[[1,2],[14,2],[13,2],[2,2],[4,3],[5,2]],hc:=0),
+    locsys:=[[1,2],[14,2],[2,2],[13,2],[4,3],[5,2]],hc:=0),
   rec(levi:=[1,3,5,6],relgroup:=CoxeterGroup("G",2),Z:=[E(3)^2],
-    locsys:=[[1,3],[14,3],[13,3],[2,3],[4,5],[5,3]],hc:=0),
+    locsys:=[[1,3],[14,3],[2,3],[13,3],[4,5],[5,3]],hc:=0),
   rec(relgroup:=CoxeterGroup(),levi:=[1..6],Z:=[E(3)],locsys:=[[4,2]],hc:=0),
  rec(relgroup:=CoxeterGroup(),levi:=[1..6],Z:=[E(3)^2],locsys:=[[4,6]],hc:=0)]);
   if p=2 then Add(uc.springerSeries,
