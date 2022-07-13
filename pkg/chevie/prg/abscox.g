@@ -185,7 +185,10 @@ end;
 
 AbsCoxOps.EltWord:=function(W,w)
   if Length(w)=0 then return W.identity;fi;
-  return Product(W.reflections{List(w,a->W.operations.ReflectionFromName(W,a))});
+  return Product(List(w,function(a)
+    if IsInt(a) and a<0 then 
+         return W.reflections[W.operations.ReflectionFromName(W,-a)]^-1;
+    else return W.reflections[W.operations.ReflectionFromName(W,a)];fi;end));
 end;
 
 #############################################################################
