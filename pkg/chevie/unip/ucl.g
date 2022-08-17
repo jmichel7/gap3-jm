@@ -182,6 +182,9 @@ QuotientAu:=function(Au,chars)local ct,cl,k,f,q,n,d,g,AbGens,finish,e,Z,h,p,t;
     elif ReflectionName(Au)="A1xB2" and Size(k)=2 
       and LongestCoxeterElement(Au) in k
     then return finish(CoxeterGroup("B",2),[[1,2,1,2],[1],[2]]);
+    elif ReflectionName(Au)="A2xA1xA1" and Size(k)=2 
+      and LongestCoxeterElement(ReflectionSubgroup(Au,[3,4])) in k
+    then return finish(CoxeterGroup("A",2,"A",1),[[1],[2],[3],[3]]);
     fi;
   fi;
 # Print(" Au=",ReflectionName(Au)," sub=",List(k.generators,e.Get),"\n");
