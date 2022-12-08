@@ -614,10 +614,12 @@ end;
 # given a minuscule coweight in one irreducible component (by its index)
 # return corresponding permutation of extended diagram of component
 # or given a coweight (as a list) return corresponding permutation
-WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
+WeightToAdjointFundamentalGroupElement:=function(arg)local W,i,t,b,l,full;
+  W:=arg[1];i:=arg[2];
+  if Length(arg)=3 then full:=arg[3];else full:=false;fi;
   if IsList(i) then 
     if i=[] then return ();fi;
-    return Product(i,x->WeightToAdjointFundamentalGroupElement(W,x));
+    return Product(i,x->WeightToAdjointFundamentalGroupElement(W,x,full));
   fi;
   t:=First(ReflectionType(W),t->i in t.indices);
   l:=W.rootInclusion{t.indices};
@@ -627,7 +629,9 @@ WeightToAdjointFundamentalGroupElement:=function(W,i)local t,b,l;
 # are listed by decreasing height
   Add(l,W.rootInclusion[Maximum(Filtered([1..Length(W.roots)],
     i->ForAll([1..W.semisimpleRank],j->j in t.indices or W.roots[i][j]=0)))]);
-  return RestrictedPerm(b,l);
+  if full then return b;
+  else return RestrictedPerm(b,l);
+  fi;
 end;
 
 AdjointFundamentalGroupElementToWeight:=function(W,p)

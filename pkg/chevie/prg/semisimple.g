@@ -258,13 +258,43 @@ CoxeterGroupOps.Centralizer:=function(W,s)local p,W0s,N,totalW;
   else p:=Filtered(W.rootInclusion{[1..W.N]},i->s^Parent(W).roots[i]=s.v[1]^0);
   fi;
   W0s:=ReflectionSubgroup(W,p);
-  N:=Normalizer(totalW,W0s);
-  N:=Filtered(List(LeftCosets(N,W0s),Representative),w->s=s^w);
+  N:=FundamentalGroup(W,true);
+  N:=Filtered(Elements(N),x->s^x=s);
   N:=List(N,x->ReducedInRightCoset(W0s,x));
   N:=Subgroup(W,AbelianGenerators(N));
   if W.rank<>W.semisimpleRank then
     if Length(N.generators)=0 then N:=Group(W.matgens[1]^0);
     else N:=ApplyFunc(Group,List(N.generators,x->MatXPerm(W,x)));
+    fi;
+  fi;
+  return ExtendedReflectionGroup(W0s,N.generators);
+end;
+
+# left around to check centralizer sometimes...
+Centralizer2:=function(W,s)local p,W0s,N,totalW;
+  if s in Parent(W) or IsGroup(s) then return PermGroupOps.Centralizer(W,s);fi;
+  if  not IsSemisimpleElement(s) then
+    Error(s," must be an element of Parent(W) or a semisimple element");
+  fi;
+  if IsExtendedGroup(W) then 
+    totalW:=Subgroup(Parent(W.group),Concatenation(W.group.generators,W.phis));
+    W:=W.group;
+  else totalW:=W;
+  fi;
+  if s.additive then 
+       p:=Filtered(W.rootInclusion{[1..W.N]},i->s^Parent(W).roots[i]=0);
+  else p:=Filtered(W.rootInclusion{[1..W.N]},i->s^Parent(W).roots[i]=s.v[1]^0);
+  fi;
+  W0s:=ReflectionSubgroup(W,p);
+  if Size(FundamentalGroup(W))=1 then N:=Group(W.identity);
+  else N:=Normalizer(totalW,W0s);
+    N:=Filtered(List(LeftCosets(N,W0s),Representative),w->s=s^w);
+    N:=List(N,x->ReducedInRightCoset(W0s,x));
+    N:=Subgroup(W,AbelianGenerators(N));
+    if W.rank<>W.semisimpleRank then
+      if Length(N.generators)=0 then N:=Group(W.matgens[1]^0);
+      else N:=ApplyFunc(Group,List(N.generators,x->MatXPerm(W,x)));
+      fi;
     fi;
   fi;
   return ExtendedReflectionGroup(W0s,N.generators);
@@ -298,12 +328,13 @@ end;
 ## each irreducible component.
 ## The fundamental group is defined as (P^\vee\cap Y(T))/Q^\vee
 #
-CoxeterGroupOps.FundamentalGroup:=function(W)local e,omega;
+CoxeterGroupOps.FundamentalGroup:=function(arg)local W,e,omega;
+  W:=arg[1];
   if W.cartan=[] then return Group(());fi;
   omega:=W.cartan^-1*W.simpleCoroots;# simple coweights in basis of Y(T)
   e:=WeightInfo(W).minusculeCoweights;
   e:=Filtered(e,x->ForAll(Sum(omega{x}),IsInt)); # minusc. coweights in Y
-  e:=List(e,x->WeightToAdjointFundamentalGroupElement(W,x));
+  e:=List(e,x->WeightToAdjointFundamentalGroupElement(W,x,Length(arg)=2));
   return Group(AbelianGenerators(Group(e,())),());
 end;
 
