@@ -244,8 +244,8 @@ end;
 ##  C_G^0(s). It is accepted that <W> itself is an extended group.
 ##
 CoxeterGroupOps.Centralizer:=function(W,s)local p,W0s,N,totalW;
-  if s in Parent(W) or IsGroup(s) then return PermGroupOps.Centralizer(W,s);fi;
   if  not IsSemisimpleElement(s) then
+    if s in Parent(W) or IsGroup(s) then return PermGroupOps.Centralizer(W,s);fi;
     Error(s," must be an element of Parent(W) or a semisimple element");
   fi;
   if IsExtendedGroup(W) then 
@@ -269,6 +269,8 @@ CoxeterGroupOps.Centralizer:=function(W,s)local p,W0s,N,totalW;
   fi;
   return ExtendedReflectionGroup(W0s,N.generators);
 end;
+
+ExtendedGroupOps.Centralizer:=CoxeterGroupOps.Centralizer;
 
 # left around to check centralizer sometimes...
 Centralizer2:=function(W,s)local p,W0s,N,totalW;
