@@ -522,8 +522,6 @@ ICCTable:=function(arg)local W,i,q,tbl,o,res,q,uc,ss,b,f,k,R,n;
   q:=Indeterminate(Rationals);
   ss:=uc.springerSeries[i];
   res:=rec(spets:=uc.spets,relgroup:=ss.relgroup,series:=i,q:=q,p:=uc.p);
-  if IsBound(ss.warning) then Print("# ",ss.warning,"\n");
-    res.warning:=ss.warning;fi;
 # We are going to solve the equation in "unipotent support", page 151
 # $Transposed(P)\Lambda P=\omega$
 # where $\Lambda_{i,j}$ is  $\sum_{g\in G^F} Y_i(g)\overline{Y_j(g)}$
