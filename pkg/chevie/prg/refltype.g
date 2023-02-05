@@ -120,9 +120,11 @@ ReflTypeOps.CharNames:=function(t,options)local ci,l,f;
   ci:=ChevieCharInfo(t);
   l:=ci.charnames;
   for f in ["frame","kondo","spaltenstein","gp","lusztig"] do
-    if IsBound(options.(f)) and IsBound(ci.(f)) then l:=ci.(f); fi;
-    if f="kondo" then
-      InfoChevie("# Warning: on 18-6-2022 the .kondo notation has been permuted by the outer automorphism to fix an error in Carter's table\n");
+    if IsBound(options.(f)) and IsBound(ci.(f)) then 
+      l:=ci.(f); 
+      if f="kondo" then
+        InfoChevie("# Warning: on 18-6-2022 the .kondo notation has been permuted by the outer automorphism to fix an error in Carter's table\n");
+      fi;
     fi;
   od;
   if not IsBound(options.TeX) then l:=List(l,TeXStrip);fi;

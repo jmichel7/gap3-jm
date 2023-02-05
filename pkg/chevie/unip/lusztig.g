@@ -168,10 +168,11 @@ LusztigInductionPieces:=function(res)
     if IsBound(WF.isCoxeterCoset) then
       WFGL:=RelativeCoset(WF,h.levi);
       LFGL:=RelativeCoset(LF,h.levi);
-      LFGL:=CoxeterSubCoset(WFGL,
-        Group(WFGL).rootInclusion{List(Group(LFGL).relativeIndices,
-          x->Position(Group(WFGL).relativeIndices,x))},
-            Group(WFGL).MappingFromNormalizer(LF.phi*WF.phi^-1));
+      w:=Group(LFGL).relativeIndices;
+      WGL:=Group(WFGL);
+      w:=List(w,x->Position(WGL.relativeIndices,x));
+      if WGL.rootInclusion<>[1..2*WGL.N] then Error();fi;
+      LFGL:=CoxeterSubCoset(WFGL,w,WGL.MappingFromNormalizer(LF.phi/WF.phi));
     else
       L:=ReflectionSubgroup(W,ser.levi); # L^p.op contained in LF
       Jb:=Concatenation(List(ser.relativeType,

@@ -66,7 +66,6 @@ CHEVIE.Check.EqObj:=function(arg)local a,b,d,fa,fb,nopt,depth,pr,diffs,
   if IsBound(opt.depth) then depth:=opt.depth;else depth:=20;fi;
   if IsBound(opt.diffs) then nbdiffs:=opt.diffs-1;else nbdiffs:=5;fi;
   if depth<=-5 then return 0;fi;
-  if a=b then return 1;fi;
   fa:=PositionProperty(history[1],x->IsIdentical(x,a));
   fb:=PositionProperty(history[2],x->IsIdentical(x,b));
   if fa=fb and fa<>false then pr("{a} already seen");return 1;fi;
@@ -85,7 +84,8 @@ CHEVIE.Check.EqObj:=function(arg)local a,b,d,fa,fb,nopt,depth,pr,diffs,
     for d in Intersection(fa,fb) do 
       if d in ["operations","parent", "group","domain", "baseRing",
         "classInvariants","stabChain","groundRing", "relativeGroups",
-	"transversal","Spetss", "SubCosets","ReflectionSubgroups"]
+	"transversal","Spetss", "SubCosets","ReflectionSubgroups",
+        "stabilizer"]
       then ;# pr("will not compare {a}.",d," and {b}.",d);
       else
         nopt:=ShallowCopy(opt);nopt.depth:=depth-1;
@@ -98,6 +98,7 @@ CHEVIE.Check.EqObj:=function(arg)local a,b,d,fa,fb,nopt,depth,pr,diffs,
       fi;
     od;
     if diffs>0 then return 2;elif compared then return 1;else return 0;fi;
+  elif a=b then return 1;
   elif IsString(a) then
     if not IsString(b) then pr("{a} is a string but {b} is not");return 2;
     elif a<>b then pr("{a}=",a," but {b}=",b);return 2;
@@ -114,6 +115,11 @@ CHEVIE.Check.EqObj:=function(arg)local a,b,d,fa,fb,nopt,depth,pr,diffs,
     fi;
     if ForAll([1..Length(a)],i->IsBound(a[i])) and
        ForAll([1..Length(b)],i->IsBound(b[i])) then
+      p:=PermListList(a,b);
+      if p<>false then pr("{a}=Permuted({b},",p,")");return 2;fi;  
+    else a:=Copy(a);b:=Copy(b);
+      for d in [1..Length(a)] do if not IsBound(a[d]) then a[d]:=false;fi;od;
+      for d in [1..Length(b)] do if not IsBound(b[d]) then b[d]:=false;fi;od;
       p:=PermListList(a,b);
       if p<>false then pr("{a}=Permuted({b},",p,")");return 2;fi;  
     fi;

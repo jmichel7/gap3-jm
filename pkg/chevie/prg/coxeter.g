@@ -808,6 +808,8 @@ CoxeterGroupOps.RelativeGroup:=function(W,J)local res,qr,S,I,vI,r;
     Error("implemented only for standard parabolic subgroups");
   fi;
   I:=Filtered(S,x->not x in J); # not Difference(S,J): keep the order
+  SortParallel(List(I,x->PositionProperty(W.type,t->x in 
+    W.rootInclusion{t.indices})),I); #order compatible with parent components
   vI:=List(I,i->LongestCoxeterElement(W,Concatenation([i],J))*
      LongestCoxeterElement(W,J));
   if ForAny(vI,g->OnSets(Set(J),g)<>Set(J)) then 
