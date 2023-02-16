@@ -61,6 +61,8 @@ CHEVIE.AddData("CharInfo","G2",function()local res;
   # charnames in Spaltenstein's "Sous-groupes de Borel et classes unipotentes"
   res.spaltenstein:=["1","\\varepsilon","\\varepsilon_l","\\varepsilon_c",
                      "\\theta'","\\theta''"];
+  res.lusztig:=["1","\\varepsilon","\\varepsilon'","\\varepsilon''",
+                     "\\theta'","\\theta''"];
   res.charnames:=List(res.charparams,exceptioCharName);
   return res;
   end
@@ -124,7 +126,7 @@ CHEVIE.AddData("HeckeCharTable","G2",function(para,sqrtpara)
      [f1(x,z),f1(y,t),f1(y,z),f1(x,t),f2(x,y,z,t,1),f2(x,y,z,t,-1)],
     irredinfo:=CHEVIE.R("IrredInfo","G2"));
   Inherit(tbl,CHEVIE.R("ClassInfo","G2"));
-  tbl.centralizers:=List(tbl.classes,x->tbl.size/x);
+  tbl.centralizers:=List(tbl.classes,x->QuoInt(tbl.size,x));
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);
   return tbl;
 end);

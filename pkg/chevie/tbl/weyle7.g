@@ -666,7 +666,7 @@ CHEVIE.AddData("HeckeCharTable","E7",function(param,sqrtparam)local q,v,tbl,p;
       else return res*q^-j[2]*(-q)^l;fi;
     end);
     fi;end);
-  tbl.centralizers := List(tbl.classes,x->tbl.size/x);
+  tbl.centralizers := List(tbl.classes,x->QuoInt(tbl.size,x));
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);
   CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
   return tbl;

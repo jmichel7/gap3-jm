@@ -286,10 +286,10 @@ CHEVIE.AddData("ClassInfo","imp",function(p,q,r)local res,times,trans,I,i,j,a,S;
 	else Add(res.classparams,S);
 	fi;
 	Add(res.orders,I.orders[i]);
-	Add(res.centralizers,I.centralizers[i]*a/q);
+	Add(res.centralizers,QuoInt(I.centralizers[i]*a,q));
       od;
     od;
-    res.classes:=List(res.centralizers,x->res.centralizers[1]/x);
+    res.classes:=List(res.centralizers,x->QuoInt(res.centralizers[1],x));
     res.classnames:=List(res.classparams,CHEVIE.R("ClassName","imp"));
     return res;
   fi;
@@ -804,11 +804,11 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
       char->List(cl.classparams,class->GenericEntry(char,class)));
   else 
     Inherit(res,cl,["centralizers","orders","classnames"]);
-    res.classes:=List(res.centralizers,x->res.size/x);
+    res.classes:=List(res.centralizers,x->QuoInt(res.size,x));
     res.irreducibles:=List([1..Length(res.classes)],i->CharRepresentationWords(
       CHEVIE.R("HeckeRepresentation","imp")(p,q,r,para,[],i),cl.classtext));
   fi;
-  res.centralizers:=List(res.classes,x->res.size/x);
+  res.centralizers:=List(res.classes,x->QuoInt(res.size,x));
   res.parameter:=para;
   res.irreducibles:=res.irreducibles*Product(para,Product)^0;
   return CHEVIE.compat.MakeCharacterTable(res);

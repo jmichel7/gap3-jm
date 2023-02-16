@@ -108,7 +108,7 @@ CHEVIE.compat.CharTableD := function(n)
   hi:=CharTable("WeylB",n);
   if not IsBound(hi.size) then hi.size:=2^n*Factorial(n); fi;
   if n mod 2 = 0 then
-    S:=CharTable("Symmetric",n/2);
+    S:=CharTable("Symmetric",QuoInt(n,2));
     Sval:=function(aa,pp)
       return S.irreducibles[Position(S.classparam,[1,aa[1]])]
                            [Position(S.classparam,[1,pp[1]/2])];
@@ -149,7 +149,7 @@ CHEVIE.compat.CharTableD := function(n)
   end;
 
   res:=rec(identifier:=SPrint("W(D",n,")"));
-  res.size:=hi.size/2;
+  res.size:=QuoInt(hi.size,2);
   res.cartan:=CartanMat("D",n);
   Inherit(res,cli);
   res.powermap:=[];

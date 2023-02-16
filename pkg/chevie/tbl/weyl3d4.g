@@ -92,7 +92,7 @@ CHEVIE.AddData("HeckeCharTable","3D4",function(param,sqrtparam)local q,tbl;
 		  [ q-1, 2,      -q^4-q^2, q-1,   0,  2*q^4, -2*q^2 ] ]*q^0,
   irredinfo:=CHEVIE.R("IrredInfo","3D4"));
   Inherit(tbl,CHEVIE.R("ClassInfo","3D4")());
-  tbl.centralizers:=List(tbl.classes,x->tbl.size/x);
+  tbl.centralizers:=List(tbl.classes,x->QuoInt(tbl.size,x));
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);
   CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
   return tbl;

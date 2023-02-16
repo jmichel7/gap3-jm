@@ -1744,7 +1744,7 @@ CHEVIE.AddData("HeckeCharTable","G4_22",function(ST,para,root)
   classes:=CHEVIE.R("paramclasses","G4_22")(ST){res.indexclasses};
   res.size:=Product(res.degrees); res.order:=res.size;
   res.identifier:=res.name;
-  res.centralizers:=List(res.classes,x->res.size/x);
+  res.centralizers:=List(res.classes,x->QuoInt(res.size,x));
   ci:=CHEVIE.R("CharInfo","G4_22")(ST);
   res.irredinfo:=Zip(ci.charparams,ci.charnames,function(x,y)return
     rec(charparam:=x,charname:=y);end);

@@ -83,9 +83,8 @@ CHEVIE.AddData("CharInfo","F4",function()local res;
   [[1,0],[1,12,2],[1,12,1],[1,24],[2,4,2],[2,16,1],[2,4,1],[2,16,2],[4,8],
    [9,2],[9,6,2],[9,6,1],[9,10],[6,6,1],[6,6,2],[12,4],[4,1],[4,7,2],[4,7,1],
    [4,13],[8,3,2],[8,9,1],[8,3,1],[8,9,2],[16,5]],
-# names of the characters in Kondo's table, see [Carter-book,p.413]:
-# jm 18/6/2022: kondo permuted by diagram automorphism to fix error found by
-# Jonas Hetz
+# jm 18/6/2022: kondo changed to fix error found by Jonas Hetz
+# names used by Lusztig [Characters of reductive groups ..., 4.10]
   kondo:=[ "1_1","1_3","1_2","1_4","2_3",
   "2_4","2_1","2_2","4_1","9_1","9_3","9_2","9_4","6_1","6_2","12","4_2",
   "4_4","4_3","4_5","8_3", "8_4","8_1","8_2","16"],
@@ -94,13 +93,14 @@ CHEVIE.AddData("CharInfo","F4",function()local res;
   spaltenstein:=["1_1","1_3","1_2","1_4","2_3","2_4","2_1","2_2","4","9_1",
   "9_3","9_2","9_4","6_1","6_2","12","4_1","4_3","4_2","4_4","8_3","8_4",
   "8_1","8_2","16"],
-# names used by Lusztig [Characters of reductive groups ..., 4.10]
-  lusztig:=["1_1","1_2","1_3","1_4","2_1","2_2","2_3","2_4","4_1","9_1",
+# Kondo names of the characters in [Carter-book,p.413]:
+  carter:=["1_1","1_2","1_3","1_4","2_1","2_2","2_3","2_4","4_1","9_1",
   "9_2","9_3","9_4","6_1","6_2","12_1","4_2","4_3","4_4","4_5",
   "8_1","8_2","8_3","8_4","16_1"],
   extRefl:=[1,17,15,20,4],
   a:=[0,4,4,24,1,13,1,13,4,2,4,4,10,4,4,4,1,4,4,13,3,9,3,9,4],
   A:=[0,20,20,24,11,23,11,23,20,14,20,20,22,20,20,20,11,20,20,23,15,21,15,21,20]);
+  res.lusztig:=res.kondo;
   res.b:=List(res.charparams,x->x[2]);
   res.charnames:=List(res.charparams,exceptioCharName);
   return res;
@@ -179,7 +179,7 @@ CHEVIE.AddData("HeckeCharTable","F4",function(param,sqrtparam)
   size := 1152,
   powermap:=CHEVIE.R("PowerMaps","F4"));
   Inherit(tbl,CHEVIE.R("ClassInfo","F4")());
-  tbl.centralizers:=List(tbl.classes,x->tbl.size/x);
+  tbl.centralizers:=List(tbl.classes,x->QuoInt(tbl.size,x));
   dual:=f->Zip(f(u^-1,v^-1),tbl.classtext,function(a,w)
     return a*(-u)^Number(w,j->j in [1,2])*(-v)^Number(w,j->j in [3,4]);end);
   f4:=function(u,v)

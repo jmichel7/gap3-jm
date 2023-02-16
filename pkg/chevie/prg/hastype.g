@@ -67,7 +67,7 @@ end;
 HasTypeOps.CharNames:=function(W,options)local ci,l,f;
   ci:=ChevieCharInfo(W);
   l:=ci.charnames;
-  for f in ["frame","kondo","spaltenstein","gp","lusztig"] do
+  for f in ["frame","kondo","spaltenstein","gp","lusztig","carter"] do
     if IsBound(options.(f)) and IsBound(ci.(f)) then 
       l:=ci.(f); 
       if f="kondo" then

@@ -126,7 +126,7 @@ CHEVIE.AddData("HeckeCharTable","G24",function(param,roots)
   galomorphisms:=Group( ( 5, 6)( 9,10) ),
   irredinfo:=CHEVIE.R("IrredInfo","G24"));
   Inherit(tbl,CHEVIE.R("ClassInfo","G24"));
-  tbl.centralizers := List(tbl.classes,x->tbl.size/x);
+  tbl.centralizers := List(tbl.classes,x->QuoInt(tbl.size,x));
   return CHEVIE.compat.MakeCharacterTable(tbl);
 end);
 

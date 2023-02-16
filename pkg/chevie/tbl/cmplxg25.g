@@ -115,7 +115,7 @@ CHEVIE.AddData("HeckeCharTable","G25",function(para,root)
    v^4*J*u^4*w^4*(u*v+u*w+v*w), -u^6*v^6-u^6*w^6-v^6*w^6,
    -J*u*v*w*(2*w^3+2*v^3-3*u*v*w+2*u^3),-u*v*w,-J*u*v*w, -J^2*u^5*v^5*w^5];end;
   Inherit(res,CHEVIE.R("ClassInfo","G25"));
-  res.centralizers:=List(res.classes,x->res.order/x);
+  res.centralizers:=List(res.classes,x->QuoInt(res.order,x));
 # Position in chars of G26
 # [1,3,4,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47]
   res.irreducibles:=[f10(u),f10(w),f10(v),f23(v,w,u),f23(u,v,w),f23(u,w,v),

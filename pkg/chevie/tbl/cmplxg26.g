@@ -105,7 +105,7 @@ CHEVIE.AddData("HeckeCharTable","G26",function(para,root)
    parameter:=para{[1,2]}, dim:=3,
    irredinfo:=CHEVIE.R("IrredInfo","G26"));
   Inherit(res,CHEVIE.R("ClassInfo","G26"));
-  res.centralizers:=List(res.classes,x->res.order/x);
+  res.centralizers:=List(res.classes,x->QuoInt(res.order,x));
   f10:=function(r,u) return [1,r,r*u^2,r^2*u^6,r^3*u^9,r*u,r^2*u^2,r^4*u^4,
   r*u^4,r^5*u^8,r^2*u^8,r^11*u^20,r^4*u^7,r*u^2,r^2*u^4,r^3*u^6,r^4*u^8,
   r^5*u^10,r^6*u^12,r^9*u^18,r^12*u^24,r^15*u^30,r*u,r^4*u^7,r^7*u^13,r*u^2,

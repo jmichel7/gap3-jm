@@ -481,7 +481,7 @@ f21(x,y),f21(y,x),f23(x,y,E(3)),f23(y,x,E(3)),f23(x,y,E(3)^2),f23(y,x,E(3)^2),
 f27(x,y,E(3)),f27(y,x,E(3)),f27(x,y,E(3)^2),f27(y,x,E(3)^2),
 f31(x,y,E(3)),f31(y,x,E(3)),f31(x,y,E(3)^2),f31(y,x,E(3)^2),
 f35(x,y),f35(y,x),f37(x,y,-1),f37(x,y,1),f39(x,y),f39(y,x)];
-  tbl.centralizers:=List(tbl.classes,x->tbl.order/x);
+  tbl.centralizers:=List(tbl.classes,x->QuoInt(tbl.order,x));
   tbl.irredinfo:=CHEVIE.R("IrredInfo","G33");
   return CHEVIE.compat.MakeCharacterTable(tbl);
 end);

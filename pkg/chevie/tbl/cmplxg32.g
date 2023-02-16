@@ -2064,7 +2064,7 @@ u^20*v^20*w^20*(v^3-4*w*v*u+u^3+w^3), 27*r*u^33*v^33*w^33*(w^2+v^2+u^2), 9*r*u^1
   irredinfo:=CHEVIE.R("IrredInfo","G32"),
   text:="origin: J.Michel, 2008/2012");
   Inherit(res,CHEVIE.R("ClassInfo","G32"));
-  res.centralizers:=List(res.classes,x->res.order/x);
+  res.centralizers:=List(res.classes,x->QuoInt(res.order,x));
   res.irreducibles:=
 [f1(u),f1(w), f1(v),f4(v,w),f4(u,v),f4(w,u),f4(w,v),f4(u,w),f4(v,u),#9
  f5(u,v,w),f5(w,u,v),f5(v,w,u),f5(u,w,v),f5(v,u,w),f5(w,v,u),#15

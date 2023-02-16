@@ -111,7 +111,7 @@ CHEVIE.AddData("HeckeCharTable","2I",function(m,param,sqrtparam)
      irredinfo:=Zip(ci.charparams,ci.charnames,function(x,y)return
     rec(charparam:=x,charname:=y);end));
   Inherit(tbl,cl);
-  tbl.centralizers:=List(cl.classes,i->tbl.size/i);
+  tbl.centralizers:=List(cl.classes,i->QuoInt(tbl.size,i));
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);
   CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
   return tbl;
