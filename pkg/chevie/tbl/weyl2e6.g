@@ -329,14 +329,14 @@ CHEVIE.AddData("UnipotentCharacters","2E6",function()local uc,p,h;
     Family("C'1",[23]), 
     Family("C1",[25]), 
     Family("C1",[24]), 
-    Family("C2",[4,7,10,13],rec(name:="Cd_2",eigenvalues:=[1,1,1,1],
+    Family("C2",[4,10,7,13],rec(name:="Cd_2",eigenvalues:=[1,1,1,1],
       fourierMat:=1/2*[[1,1,1,1],[1,1,-1,-1],[1,-1,1,-1],[-1,1,1,-1]],
       sh:=[1,1,1,1])),
       # change last eigenvalue, and negate last line...
-    Family("C2",[5,8,9,14],rec(eigenvalues:=[1,1,1,1],name:="Cc_2",
+    Family("C2",[5,9,8,14],rec(eigenvalues:=[1,1,1,1],name:="Cc_2",
     sh:=[1,1,1,1])),
       # change last eigenvalue
-    Family("S3",[18,17,19,3,6,28,29,30],
+    Family("S3",[18,17,3,19,6,28,29,30],
       rec(name:="S3b",eigenvalues:=[1,1,1,1,1,1,E(3),E(3)^2],
       sh:=[1,1,1,1,1,1,E(3)^2,E(3)])) 
       # change 6th eigenvalue
