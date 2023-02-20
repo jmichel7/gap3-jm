@@ -4,7 +4,7 @@
 ##
 #Y  Copyright (C) 1994 - 2001  The CHEVIE Team
 ##
-##  This file contains special functions for Coxeter groups and Iwahori-Hecke 
+##  This file contains special functions for Coxeter groups and Iwahori-Hecke
 ##  algebras  of type  D.
 ##
 CHEVIE.AddData("CartanMat","D",function ( n ) local  a,m;
@@ -14,7 +14,7 @@ CHEVIE.AddData("CartanMat","D",function ( n ) local  a,m;
   return a{[1..n]}{[1..n]};
 end);
 
-CHEVIE.AddData("Size", "D", 
+CHEVIE.AddData("Size", "D",
         function(arg) return 2^(arg[1]-1)*Factorial(arg[1]); end);
 
 CHEVIE.AddData("PrintDiagram","D",function(r,indices,title)local i,s;
@@ -33,13 +33,13 @@ end);
 
 CHEVIE.AddData("WeightInfo","D",function(n)local res,M,i;
   M:=IdentityMat(n);
-  if n mod 2=1 then 
+  if n mod 2=1 then
     for i in [3..n-1] do M[i][n]:=-((i-2) mod 2);od;
     M[1][2] := -1;
     for i in [3..n] do M[i][2]:=-2*((i-2) mod 2);od;
     return rec(minusculeWeights:=[1,2,n],
     decompositions:=[[3],[1],[2]],moduli:=[4],chosenAdaptedBasis:=M);
-  else 
+  else
     for i in [4..n-1] do M[i][n]:=-((i-3) mod 2);od;
     M[1][2] := -1;
     M[1][n] := -1;
@@ -53,7 +53,7 @@ CHEVIE.AddData("ParabolicRepresentatives", "D", function(l,s)
   return CHEVIE.R("ParabolicRepresentatives","imp")(2,2,l,s);end);
 
 # arg: n[, classparams]  (to avoid recomputation in ClassInfo)
-CHEVIE.AddData("WordsClassRepresentatives","D", function(arg) 
+CHEVIE.AddData("WordsClassRepresentatives","D", function(arg)
   local n, param, res, w, i, pi, l,r;
   n := arg[1];
   if Length(arg)=2 then param := List(arg[2], a-> List(a, ShallowCopy));
@@ -77,17 +77,17 @@ CHEVIE.AddData("WordsClassRepresentatives","D", function(arg)
             fi;
             i:= i+l;
          od;
-   
+
          #  the unsigned cycles.
-         for l in pi[1] do 
+         for l in pi[1] do
 	   r:=l mod 2;
 	   Append(w,i+Concatenation([1,3..l-1-r],[2,4..l+r-2]));
-	   i:= i+l; 
+	   i:= i+l;
          od;
 
          #  cosmetics for lexicographics.
          if w <> [] and w[1] = 2 then w[1]:= 1; fi;
-   
+
          # classes are labelled with '+', if they have representatives
 	 # in parabolic subgroup of type A_{l-1}, given by {1,3,4,..}
 	 if pi[2] = [] and ForAll(pi[1], x->x mod 2=0)  then
@@ -106,14 +106,14 @@ end);
 #F  ClassInfo( <n> ) . . . . . . .  conjugacy classes for type D.
 ##
 ##  ClassInfo returns a record with components:
-##    classtext:   representatives of minimal length in  the  conjugacy  
+##    classtext:   representatives of minimal length in  the  conjugacy
 ##                 classes, as words in generators in standard order
 ##    classparams:  double partitions or [partition,sign],
 ##                 parameterizing the classes
 ##    classnames:  strings for double partitions or [partition,sign].
 ##    classes:  cardinality of the classes
 ##    centralizers:  cardinality of the classes
-##  
+##
 ##  The ordering corresponds to the order of the columns of  the  ordinary
 ##  character table of the Coxeter group of type $D_n$, as returned by the GAP
 ##  function 'CharTable("WeylD", <n>)'.
@@ -137,16 +137,16 @@ end);
 #############################################################################
 ##
 #F  CharInfo( <n> )  . . . . . . . . . . . characters for type D
-##  
+##
 CHEVIE.AddData("CharInfo","D",n->CHEVIE.R("CharInfo","imp")(2,2,n));
 
 #############################################################################
 ##
 #F  ClassParameter( <n>, <w> )  . . . . . . . . . class parameter of w
-##  
+##
 ##  given an element w  of a Coxeter group W of type A  as word in  standard
 ##  generators, ClassParameter returns the classparam of its conjugacy class.
-##  
+##
 
 # Used by 'ClassParamD' for distinguishing classes with '+' or '-' in label:
 # (precomputed for D_n with n=4,6,8)
@@ -207,12 +207,12 @@ CHEVIE.AddData("gensMODA","D",
 
 CHEVIE.AddData("ClassParameter","D",function(n,w)
   local x, i, res, mark, cyc, j, tmp, gens;
-  
+
   x:=();
   for i in w do
     if i=1 then x:=x*(1,n+2)(2,n+1); else x:=x*(i-1,i)(i-1+n,i+n);fi;
   od;
-  
+
   res:=[[],[]];
   mark:=[1..n];
   for i in [1..n] do
@@ -228,13 +228,13 @@ CHEVIE.AddData("ClassParameter","D",function(n,w)
       od;
     fi;
   od;
-  
+
   if res[2]=[] and ForAll(res[1],i->i mod 2 = 0 ) then
     # for classes with '+' or '-' we use the cycle type for the
     # permutation representation on the cosets of the parabolic
-    # subgroup [2..n]: (the generators for this representation are 
+    # subgroup [2..n]: (the generators for this representation are
     # stored in the global variable 'CHEVIE.R("gensMODA","D")')
-    
+
     if not IsBound(CHEVIE.R("gensMODA","D")[n]) then
       tmp:=CoxeterGroup("D",n);
       gens:=PermCosetsSubgroup (tmp,
@@ -246,17 +246,17 @@ CHEVIE.AddData("ClassParameter","D",function(n,w)
       CHEVIE.R("gensMODA","D")[n]:=[gens,tmp{2*[1..Length(tmp)/2]-1},
                              tmp{2*[1..Length(tmp)/2]}];
     fi;
-    
+
     tmp:=CycleStructurePerm(Product(CHEVIE.R("gensMODA","D")[n][1]{w}));
-    if tmp in CHEVIE.R("gensMODA","D")[n][2] and 
+    if tmp in CHEVIE.R("gensMODA","D")[n][2] and
                          not tmp in CHEVIE.R("gensMODA","D")[n][3] then
       res[2]:='+';
-    elif not tmp in CHEVIE.R("gensMODA","D")[n][2] 
+    elif not tmp in CHEVIE.R("gensMODA","D")[n][2]
                          and tmp in CHEVIE.R("gensMODA","D")[n][3] then
       res[2]:='-';
     fi;
-  fi;  
-  
+  fi;
+
   Sort(res[1]);
   if IsList(res[2]) then
     Sort(res[2]);
@@ -269,16 +269,16 @@ end);
 #############################################################################
 ##
 #F  CharTable( <l> ) . . .  character table of CoxeterGroup("D",l)
-##  
+##
 ##  This function returns  the part of the character table the Coxeter group
 ##  of  type B_l on classes  inside  a reflection subgroup  of  type D_l.
-##  
+##
 ##  If l is even then some of the classes  and restrictions split into two
 ##  classes or  characters, respectively. Their  values  are given by  the
 ##  character  values    for W(B_l) and   those  for  the  symmetric group
 ##  S_(l/2). This is described in [Pfeiffer, G., Character Tables of  Weyl
-##  Groups in GAP]. 
-##  
+##  Groups in GAP].
+##
 CHEVIE.AddData("CharTable","D", CHEVIE.compat.CharTableD);
 
 ###########################################################################
@@ -290,12 +290,12 @@ CHEVIE.AddData("CharTable","D", CHEVIE.compat.CharTableD);
 ##
 CHEVIE.tmp:=ShallowCopy(CharTableWeylD);
 
-CHEVIE.tmp.identifier:= "HeckeD"; 
+CHEVIE.tmp.identifier:= "HeckeD";
 
 CHEVIE.tmp.specializedname:=nq->SPrint("H(D",nq[1],")");
 
-CHEVIE.tmp.size:=nq->2^(nq[1]-1)*Factorial(nq[1]);  
-CHEVIE.tmp.order:=nq->2^(nq[1]-1)*Factorial(nq[1]);  
+CHEVIE.tmp.size:=nq->2^(nq[1]-1)*Factorial(nq[1]);
+CHEVIE.tmp.order:=nq->2^(nq[1]-1)*Factorial(nq[1]);
 
 CHEVIE.tmp.domain:= function(nq)
    return IsList(nq) and Length(nq)=2 and IsInt(nq[1]) and nq[1]>1;
@@ -310,7 +310,7 @@ CHEVIE.tmp.irreducibles:=[[function(nq, alpha, pi)
    local delta, va,vb, val,n, q,AHk,BHk,s;
    n:=nq[1];q:=nq[2];s:="+-";
    if q=1 then return CharTableWeylD.irreducibles[1][1](n, alpha, pi); fi;
-   
+
    AHk:=CHEVIE.R("Hk","A").irreducibles[1][1];
    BHk:=CHEVIE.R("Hk","B").irreducibles[1][1];
 
@@ -442,16 +442,16 @@ end);
 CHEVIE.AddData("ReflectionDegrees","D",n->Concatenation(2*[1..n-1],[n]));
 
 # References for unipotent classes:
-# [Lu] G.Lusztig, Character sheaves on disconnected groups, II 
+# [Lu] G.Lusztig, Character sheaves on disconnected groups, II
 #   Representation Theory 8 (2004) 72--124
 #
 # [GM]  M.Geck and G.Malle, On the existence of a unipotent support for the
 # irreducible  characters of  a finite  group of  Lie type,  Trans. AMS 352
 # (1999) 429--456
-# 
+#
 # [S]  N.Spaltenstein,  Classes  unipotentes  et  sous-groupes  de
 # Borel, Springer LNM 946 (1982)
-# 
+#
 CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
   d,i,symbol2partition,addSpringer,partition2DR,trspringer,LuSpin,j;
   addSpringer:=function(s,i)local ss,p;
@@ -471,9 +471,9 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
     symbol2partition:=function(S)local c,i,l,part,ex; # see [GM] 2.17
       c:=Concatenation(S);Sort(c); i:=1;part:=[];ex:=[];
       while i<=Length(c) do
-	if i=Length(c) or c[i+1]-c[i]>1 then 
+	if i=Length(c) or c[i+1]-c[i]>1 then
 	     Add(part,2*(c[i]-2*(i-1))+2);i:=i+1;
-	elif c[i+1]-c[i]>0 then 
+	elif c[i+1]-c[i]>0 then
 	     l:=2*(c[i]-2*(i-1))+1;Append(part,[l,l]);i:=i+2;
 	else l:=2*(c[i]-2*(i-1));Append(part,[l,l]);i:=i+2;Add(ex,l);
 	fi;
@@ -498,10 +498,10 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
   SortBy(l,x->[AbsInt(x[1]),-SignInt(x[1])]);
   uc:=rec(classes:=[],springerSeries:=List(l,function(d)local res;
     res:=rec(defect:=d[1],locsys:=[],levi:=[1..n-d[2]]);
-    if (n-d[2]) mod 4=0 or char=2 then 
+    if (n-d[2]) mod 4=0 or char=2 then
        if n mod 2=0 then res.Z:=[1,1];else res.Z:=[1];fi;
-    else 
-       if n mod 2=0 then res.Z:=[-1,-1];else res.Z:=[-1];fi;
+    else
+       if n mod 2=0 then res.Z:=[-1,1];else res.Z:=[-1];fi;
     fi;
     if d[1]=0 then res.relgroup:=CoxeterGroup("D",d[2]);
     else res.relgroup:=CoxeterGroup("B",d[2]);fi;
@@ -525,7 +525,7 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
       j:=cc.parameter;
       for j in Collected(j) do
 	if j[1]mod 2=0 then cc.red:=cc.red*CoxeterGroup("C",QuoInt(j[2],2));
-	elif j[2]mod 2<>0 then 
+	elif j[2]mod 2<>0 then
 	  if j[2]>1 then cc.red:=cc.red*CoxeterGroup("B",QuoInt(j[2]-1,2));fi;
 	elif j[2]>2 then cc.red:=cc.red*CoxeterGroup("D",QuoInt(j[2],2));
 	else cc.red:=cc.red*Torus(1);
@@ -548,7 +548,7 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
       m:=Maximum(x.parameter[1][1],y.parameter[1][1]);
       f:=x->List([1..m],i->Sum(Filtered(x,z->z<i))+i*Number(x,z->z>=i));
       fx:=f(x.parameter[1]);fy:=f(y.parameter[1]);
-      for i in [1..m] do 
+      for i in [1..m] do
 	if fx[i]<fy[i] then return false;
 	elif fx[i]=fy[i] and i in y.parameter[2] then
 	  if i in Difference(x.parameter[1],x.parameter[2])then return false;fi;
@@ -560,27 +560,27 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
   else
     uc.orderClasses:=Hasse(Poset(List([1..Length(uc.classes)],
     i->List([1..Length(uc.classes)],
-    j->Dominates(uc.classes[j].parameter,uc.classes[i].parameter) 
+    j->Dominates(uc.classes[j].parameter,uc.classes[i].parameter)
       and (uc.classes[j].parameter<>uc.classes[i].parameter or i=j)))));
   fi;
-  
+
   if char<>2 then
     d:=0;
     while 4*d^2-d<=n do i:=4*d^2-d;
       if (n-d) mod 2=0 then
 	l:=Concatenation([1..i],[i+2,i+4..n]);
 	s:=rec(relgroup:=CoxeterGroup("B",QuoInt(n-i,2)),levi:=l,locsys:=[]);
-	if n mod 2=0 then s.Z:=[1,-1];else s.Z:=[E(4)];fi;
+	if n mod 2=0 then s.Z:=[-1,-1];else s.Z:=[E(4)];fi;
 	Add(uc.springerSeries,s);
         if d=0 then l:=Concatenation([1],[4,6..n]);fi;
 	s:=rec(relgroup:=CoxeterGroup("B",QuoInt(n-i,2)),levi:=l,locsys:=[]);
-	if n mod 2=0 then s.Z:=[-1,1];else s.Z:=[-E(4)];fi;
+	if n mod 2=0 then s.Z:=[1,-1];else s.Z:=[-E(4)];fi;
 	Add(uc.springerSeries,s);
 	i:=4*d^2+d;
 	if d<>0 and i<=n then
 	  l:=Concatenation([1..i],[i+2,i+4..n]);
 	  s:=rec(relgroup:=CoxeterGroup("B",QuoInt(n-i,2)),levi:=l,locsys:=[]);
-	  if n mod 2=0 then s.Z:=[1,-1];else s.Z:=[E(4)];fi;
+	  if n mod 2=0 then s.Z:=[-1,-1];else s.Z:=[E(4)];fi;
 	  Add(uc.springerSeries,s);
 	  s:=rec(relgroup:=CoxeterGroup("B",QuoInt(n-i,2)),levi:=l,locsys:=[]);
 	  if n mod 2=0 then s.Z:=[1,1];else s.Z:=[-E(4)];fi;
@@ -630,15 +630,15 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
       else Error("Au non-commutative of order ",Size(cl.Au)*2,
                  " not implemented");
       fi;
-      if not '-' in cl.name then addSpringer(ss->ss.Z in [[1,-1],[E(4)]] and 
+      if not '-' in cl.name then addSpringer(ss->ss.Z in [[-1,-1],[E(4)]] and
 	  ss.relgroup.rank=Sum(s,Sum),i,s,k[1]);
       fi;
-      if not '+' in cl.name then addSpringer(ss->ss.Z in [[-1,1],[-E(4)]] and 
+      if not '+' in cl.name then addSpringer(ss->ss.Z in [[1,-1],[-E(4)]] and
           ss.relgroup.rank=Sum(s,Sum),i,s,k[2]);
       fi;
     od;
   fi;
-  for ss in uc.springerSeries do 
+  for ss in uc.springerSeries do
     if not ForAll(ss.Z,x->x=1) then ss.hc:=0;fi;
   od;
   return uc;

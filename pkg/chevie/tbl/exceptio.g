@@ -59,7 +59,7 @@ CHEVIE.IndirectAddData("CharTable",["3D4","E6","2E6","E7","E8",
  t->function()local res,rank;
   rank:=Position("12345678",t[Length(t)]);
   res:=CHEVIE.R("HeckeCharTable",t)(List([1..rank],x->[1,-1]),
-                                          List([1,rank],x->1));
+                                          List([1..rank],x->1));
   CHEVIE.compat.ChangeIdentifier(res, SPrint("W(",t,")"));
   return res;
 end);
