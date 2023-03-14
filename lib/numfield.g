@@ -850,7 +850,7 @@ LenstraBase := function( N, stabilizer, supergroup )
           od;
     
         fi;
-    
+
         for pnt in orb do        # take any of the latest orbits
     
           # remove the equivalence class of 'pnt'

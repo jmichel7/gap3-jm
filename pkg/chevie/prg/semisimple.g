@@ -114,7 +114,7 @@ SubTorus:=function(arg)local W,V; W:=arg[1];
   if ForAny(V.moduli,x->x<>1) then 
     Error("not a pure sublattice");return false;
   fi;
-  return rec(generators:=V.sub,complement:=V.complement,group:=W,
+  return rec(generators:=BaseIntMat(V.sub),complement:=V.complement,group:=W,
     operations:=SubTorusOps);
 end;
 
@@ -126,19 +126,9 @@ SubTorusOps.Print:=function(T)Print(String(T));end;
 SubTorusOps.Rank:=T->Length(T.generators);
 
 # element in subtorus
-SubTorusOps.\in:=function(s,T)local n,i,v,r,V; 
-  n:=Lcm(List(s.v,Denominator)); s:=s.v*n;
-  V:=List(T.generators,x->List(x,y->y mod n));
-  i:=1;
-  for v in Filtered(V,x->x<>0*x) do
-    while v[i]=0 do if s[i]<>0 then return false;else i:=i+1;fi;od;
-    r:=Gcdex(n,v[i]);
-    v:=List(r.coeff2*v,x->x mod n);
-    if s[i] mod v[i]<>0 then return false;
-    else s:=s-s[i]/v[i]*v;s:=List(s,x->x mod n);
-    fi;
-  od;
-  return s=0*s;
+SubTorusOps.\in:=function(s,T)local x; 
+  x:=SolutionMat(Concatenation(T.generators,T.complement),s.v);
+  return ForAll(x{[1..Length(T.complement)]+Length(T.generators)},IsInt);
 end;
 
 # returns (Tso,s-stable representatives of T/Tso) for automorphism s of T
