@@ -36,8 +36,11 @@ CHEVIE.AddData("ClassInfo","2E6",function()local res;
   return res;
 end);
 
-CHEVIE.AddData("CharInfo","2E6",function()
-  return CHEVIE.R("CharInfo","E6")();end);
+CHEVIE.AddData("CharInfo","2E6",function()local res;
+  res:=CHEVIE.R("CharInfo","E6")();
+  res.a:=[0,36,7,1,25,7,3,15,3,15,2,20,6,12,3,15,7,7,7,5,11,4,13,6,10];
+  return res;
+end);
 
 CHEVIE.AddData("cyclestructure","2E6",[ [], [ 36 ], [ 30 ], [ , 24 ], [ , 20 ],
   [ , 22 ], [ ,, 18 ], [ 5,, 15 ],
@@ -267,6 +270,19 @@ CHEVIE.AddData("HeckeCharTable","2E6",function(param,rootparam)local q,v,tbl;
   tbl := CHEVIE.compat.MakeCharacterTable(tbl);
   CHEVIE.compat.AdjustHeckeCharTable(tbl,param);
   return tbl;
+end);
+
+CHEVIE.AddData("HeckeRepresentation","2E6",function(param,sqrtparam,i)
+  local H,res,W,p; W:=CoxeterGroup("E",6);
+  H:=Hecke(W,-param[1][1]/param[1][2]);
+  res:=rec(gens:=CHEVIE.R("HeckeRepresentation","E6")(param,sqrtparam,i));
+  res.F:=Product(res.gens{[1,4,6,3,2,5]})^6/
+    GetRoot(HeckeCentralMonomials(H)[i])*(-1)^CHEVIE.R("CharInfo","2E6")().a[i];
+  return res;
+end);
+
+CHEVIE.AddData("Representation","2E6",function(i)
+  return CHEVIE.R("HeckeRepresentation","2E6")(List([1..6],x->[1,-1]),[],i);
 end);
 
 CHEVIE.AddData("PhiFactors","2E6",[1,-1,1,1,-1,1]);

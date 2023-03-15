@@ -182,6 +182,19 @@ CHEVIE.AddData("HeckeCharTable", "2D", function(l,param,rootparam)
   return tbl;
 end);
 
+CHEVIE.AddData("HeckeRepresentation", "2D", function(n,para,rootpara,i)
+  local param,bno,parab,r;
+  param:=CHEVIE.R("CharInfo","2D")(n).charparams[i];
+  bno:=Position(CHEVIE.R("CharInfo","B")(n).charparams,param);
+  parab:=ShallowCopy(para);parab[1]:=[1,-1];
+  r:=CHEVIE.R("HeckeRepresentation","B")(n,parab,[],bno);
+  return rec(gens:=Concatenation([r[2]^r[1]],r{[2..Length(r)]}),F:=r[1]);
+end);
+
+CHEVIE.AddData("Representation","2D",function(n,i)
+  return CHEVIE.R("HeckeRepresentation","2D")
+       (n,List([1..n],x->[1,-1]),[1..n*0+1],i);end);
+
 CHEVIE.AddData("FakeDegree","2D",function(n,c,q)
   return Value(CycPolFakeDegreeSymbol(SymbolPartitionTuple(c,0),1),q);end);
 

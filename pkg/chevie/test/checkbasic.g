@@ -38,7 +38,7 @@ function(W)local index,m,R,cr,rb,integrality,Coroots,try,p,replines,x;
     return res;
   end;
   R:=DefaultRing(Flat(CartanMat(W)));
-  try:=Combinations(W.generatingReflections,W.rank);
+  try:=Combinations(W.generatingReflections,W.semisimpleRank);
   p:=PositionProperty(try,v->integrality(W.roots,v,R));
   if p=false then ChevieErr("found no root basis");else;fi;
   cr:=Coroots(W);
