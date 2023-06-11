@@ -102,7 +102,7 @@ ClassTypes:=function(arg)local W,WF,l,p;
 end;
 
 # returns the Poset of closed subsystems of the root system of W
-ClosedSubsets:=function(W)local sum,closure,l,w,new,n,p,P,covered,f;
+ClosedSubsystems:=function(W)local sum,closure,l,w,new,n,p,P,covered,f;
   if IsBound(W.closedsubsets) then return W.closedsubsets;fi;
   sum:=List([1..2*W.N],i->List([1..2*W.N],function(j)local p;
     p:=Position(W.roots,W.roots[i]+W.roots[j]);
@@ -142,7 +142,7 @@ ClassTypesOps.NrConjugacyClasses:=function(C)local HF,W,H,o,P,l,less,mu,n,i,r,b;
   fi;
   for r in C.ss do
     if not IsBound(r.nrClasses) then 
-    HF:=r.CGs;H:=Group(HF); P:=Copy(ClosedSubsets(W));
+    HF:=r.CGs;H:=Group(HF); P:=Copy(ClosedSubsystems(W));
     o:=Filtered([1..Size(P)],i->OnSets(P.elements[i],HF.phi)=P.elements[i]);
     o:=Filtered(o,i->ForAll(InclusionGens(H),j->j in P.elements[i]));
     P:=Restricted(P,o);P.elements:=P.elements{o};

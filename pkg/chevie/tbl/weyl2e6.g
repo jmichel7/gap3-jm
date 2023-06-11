@@ -282,7 +282,8 @@ CHEVIE.AddData("HeckeRepresentation","2E6",function(param,sqrtparam,i)
 end);
 
 CHEVIE.AddData("Representation","2E6",function(i)
-  return CHEVIE.R("HeckeRepresentation","2E6")(List([1..6],x->[1,-1]),[],i);
+  return CHEVIE.R("HeckeRepresentation","2E6")(List([1..6],x->[1,-1]),
+ [1..6]*0+1,i);
 end);
 
 CHEVIE.AddData("PhiFactors","2E6",[1,-1,1,1,-1,1]);

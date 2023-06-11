@@ -491,7 +491,7 @@ end;
 ##
 PresentationFpGroup := function ( arg )
 
-    local G, ggens, grels, i, invs, lengths, numgens, numrels, printlevel,
+    local G, ggens, grels, i, invs, lengths, numgens, numrels, printLevel,
           rels, T, tietze, total;
 
     # check the first argument to be a finitely presented group.
@@ -501,9 +501,9 @@ PresentationFpGroup := function ( arg )
     fi;
 
     # check the second argument to be an integer.
-    printlevel := 1;
-    if Length( arg ) = 2 then  printlevel := arg[2];  fi;
-    if not IsInt( printlevel ) then
+    printLevel := 1;
+    if Length( arg ) = 2 then  printLevel := arg[2];  fi;
+    if not IsInt( printLevel ) then
         Error( "second argument must be an integer" );
     fi;
 
@@ -557,7 +557,7 @@ PresentationFpGroup := function ( arg )
     T.generatorsLimit := 0;
     T.lengthLimit := "infinity";
     T.loopLimit := "infinity";
-    T.printLevel := printlevel;
+    T.printLevel := printLevel;
     T.saveLimit := 10;
     T.searchSimultaneous := 20;
 
@@ -1684,19 +1684,24 @@ TzEliminateGens := function ( arg )
             TzEliminateFromTree( T );
         else
             TzEliminateGen1( T );
+            if T.printLevel>=3 then Print("a ");TzPrintStatus(T);fi;
         fi;
         if tietze[TZ_NUMREDUNDS] = redundantsLimit then
             TzRemoveGenerators( T );
+            if T.printLevel>=3 then Print("b ");TzPrintStatus(T);fi;
         fi;
         modified := modified or tietze[TZ_MODIFIED];
         num := num + 1;
     od;
     tietze[TZ_MODIFIED] := modified;
-    if tietze[TZ_NUMREDUNDS] > 0 then  TzRemoveGenerators( T );  fi;
+    if tietze[TZ_NUMREDUNDS] > 0 then  
+       if T.printLevel>=3 then Print("c ");TzPrintStatus(T);fi;
+       TzRemoveGenerators( T );  fi;
 
     if modified then
         # handle relators of length 1 or 2.
         TzHandleLength1Or2Relators( T );
+        if T.printLevel>=3 then Print("d ");TzPrintStatus(T);fi;
         # sort the relators and print the status line.
         TzSort( T );
         if T.printLevel >= 2 then  TzPrintStatus( T, true );  fi;
@@ -1999,7 +2004,6 @@ TzGo := function ( arg )
     looplimit := T.loopLimit;
     count := 0;
     while count < looplimit and tietze[TZ_TOTAL] > 0 do
-
         # replace substrings by substrings of equal length.
         TzSearchEqual( T );
         if tietze[TZ_MODIFIED] then  TzSearch( T );  fi;
@@ -3159,6 +3163,9 @@ TzSearch := function ( T )
                 if k > numrels then  j := lastj;  fi;
                 if i <= j then
                     altered := TzSearchC( tietze, i, j );
+                    if T.printLevel>=3 and altered>0 then
+                      Print("#altered=",altered,"\n");
+                    fi;
                     modified := modified or altered > 0;
                     i := j;
                 fi;
@@ -3245,6 +3252,9 @@ TzSearchEqual := function ( T )
             if k > numrels then  j := lastj;  fi;
             if i <= j then
                 altered := TzSearchC( tietze, i, j, equal );
+                if T.printLevel>=3 and altered>0 then
+                  Print("#eqaltered=",altered,"\n");
+                fi;
                 modified := modified or altered > 0;
                 i := j;
             fi;
@@ -3317,7 +3327,7 @@ end;
 TzSubstitute := function ( arg )
 
     local elim, gen, i, invs, j, k, n, narg, numgens, pair, pairs,
-          printlevel, T, tietze, word;
+          printLevel, T, tietze, word;
 
     # just call 'TzSubstituteWord' if the second argument is a word.
     narg := Length( arg );
@@ -3364,7 +3374,7 @@ TzSubstitute := function ( arg )
     if numgens < 2 then  return;  fi;
 
     # initialize some local variables.
-    printlevel := T.printLevel;
+    printLevel := T.printLevel;
     invs := tietze[TZ_INVERSES];
 
     # determine the n most frequently occurring relator subwords of the form
@@ -3372,7 +3382,7 @@ TzSubstitute := function ( arg )
     # and sort them  by decreasing numbers of occurrences.
     pairs := TzMostFrequentPairs( T, n );
     if Length( pairs ) < n then
-        if narg > 1 and printlevel >= 1 then
+        if narg > 1 and printLevel >= 1 then
             Print( "#I  TzSubstitute: second argument is out of range\n" );
         fi;
         return;
@@ -3405,16 +3415,16 @@ TzSubstitute := function ( arg )
     # replace all relator subwords of the form a * b by the new generator.
     T.printLevel := 0;
     TzSearch( T );
-    T.printLevel := printlevel;
+    T.printLevel := printLevel;
 
     #  eliminate a generator.
-    if printlevel = 1 then  T.printLevel := 2;  fi;
+    if printLevel = 1 then  T.printLevel := 2;  fi;
     if elim > 0 then
         TzEliminateGen( T, AbsInt( pair[elim] ) );
     else
         TzEliminateGen1( T );
     fi;
-    T.printLevel := printlevel;
+    T.printLevel := printLevel;
     if tietze[TZ_MODIFIED] then  TzSearch( T );  fi;
     if tietze[TZ_NUMREDUNDS] > 0 then  TzRemoveGenerators( T );  fi;
 
@@ -3434,7 +3444,7 @@ end;
 TzSubstituteCyclicJoins := function ( T )
 
     local exp, exp1, exp2, exponents, gen, gen2, gens, i, invs, lengths, n2,
-          next, num, num1, num2, numgens, numrels, printlevel, rel, rels,
+          next, num, num1, num2, numgens, numrels, printLevel, rel, rels,
           tietze;
 
     # check the given argument to be a Tietze record.
@@ -3461,7 +3471,7 @@ TzSubstituteCyclicJoins := function ( T )
     numrels := tietze[TZ_NUMRELS];
     lengths := tietze[TZ_LENGTHS];
     invs := tietze[TZ_INVERSES];
-    printlevel := T.printLevel;
+    printLevel := T.printLevel;
 
     # Now work off all commutator relators of length 4.
     i := 1;
@@ -3490,7 +3500,7 @@ TzSubstituteCyclicJoins := function ( T )
                 numgens := tietze[TZ_NUMGENS];
                 invs := tietze[TZ_INVERSES];
 
-                if printlevel >= 1 then
+                if printLevel >= 1 then
                     Print( "#I  substituting new generator ",gen,
                         " defined by ",gens[num1]*gens[num2],"\n" );
                 fi;
@@ -3509,11 +3519,11 @@ TzSubstituteCyclicJoins := function ( T )
                 # save gens[num2] before eliminating gens[num1] because
                 # its number may change.
                 gen2 := gens[num2];
-                if printlevel = 1 then  T.printLevel := 2;  fi;
+                if printLevel = 1 then  T.printLevel := 2;  fi;
                 TzEliminate( T, gens[num1] );
                 num2 := Position( gens, gen2 );
                 TzEliminate( T, gens[num2] );
-                T.printLevel := printlevel;
+                T.printLevel := printLevel;
                 numgens := tietze[TZ_NUMGENS];
                 numrels := tietze[TZ_NUMRELS];
                 invs := tietze[TZ_INVERSES];
@@ -3529,7 +3539,7 @@ TzSubstituteCyclicJoins := function ( T )
         TzHandleLength1Or2Relators( T );
         # sort the relators and print the status line.
         TzSort( T );
-        if printlevel >= 1 then  TzPrintStatus( T, true );  fi;
+        if printLevel >= 1 then  TzPrintStatus( T, true );  fi;
     fi;
 end;
 
@@ -3577,7 +3587,7 @@ end;
 ##
 TzSubstituteWord := function ( arg )
 
-    local gen, gens, images, nargs, printlevel, string, T, tzword, word;
+    local gen, gens, images, nargs, string, T, tzword, word;
 
     # check the number of arguments.
     nargs := Length( arg );

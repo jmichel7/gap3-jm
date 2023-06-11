@@ -630,10 +630,12 @@ CHEVIE.AddData("UnipotentClasses","D",function(n,char)local s,uc,cl,cc,l,ss,k,
       else Error("Au non-commutative of order ",Size(cl.Au)*2,
                  " not implemented");
       fi;
-      if not '-' in cl.name then addSpringer(ss->ss.Z in [[-1,-1],[E(4)]] and
+      if not '-' in cl.name then addSpringer(ss->ss.Z in 
+                                       [[(-1)^(QuoInt(n,2)+1),-1],[E(4)]] and
 	  ss.relgroup.rank=Sum(s,Sum),i,s,k[1]);
       fi;
-      if not '+' in cl.name then addSpringer(ss->ss.Z in [[1,-1],[-E(4)]] and
+      if not '+' in cl.name then addSpringer(ss->ss.Z in 
+                                       [[(-1)^QuoInt(n,2),-1],[-E(4)]] and
           ss.relgroup.rank=Sum(s,Sum),i,s,k[2]);
       fi;
     od;

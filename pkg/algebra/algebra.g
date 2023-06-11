@@ -1024,6 +1024,7 @@ end;
 
 Augmentation:=function(r)return Sum(r.coefficients,i->i[1]);end;
 
+######################################################################
 ## GrothendieckRing(G,Q) renvoie l'anneau de Grothendieck A=Q Irr(G) 
 ##(si Q est omis, on prend pour Q le corps des rationnels)
 ##
@@ -1124,7 +1125,7 @@ GrothendieckRingOps.CartanMatrix:=function(A)local res;
   return res;
 end;
 
-GrothendieckRing:=function(arg)local G,Q,A,d,T,irr;
+GrothendieckRing:=function(arg)local G,Q,A,d,T,irr,i,j;
   G:=arg[1];
   if Length(arg)=1 then Q:=Rationals; else Q:=arg[2]; fi;
   if IsBound(G.tensorproducts) then 
@@ -1147,7 +1148,7 @@ GrothendieckRing:=function(arg)local G,Q,A,d,T,irr;
   FDAlgebraOps.underlyingspace(A);
   if not IsBound(G.tensorproducts) then 
     G.tensorproducts:=
-       List([1..d],i->MatScalarProducts(T,Tensored([irr[i]],irr),irr));
+       List([1..d],i->List([1..d],j->DecomposeTensor(A.group,i,j)));
   fi;
   A.one:=AlgebraElement(A,[[Q.one,Position(G.tensorproducts,IdentityMat(d))]]);
   FDAlgebraOps.StructureConstants(A,List([1..d], i-> List([1..d], j-> 
@@ -1206,6 +1207,7 @@ AdamsOperation:=function(A,n)local r,G;
   return AlgebraHomomorphismByLinearity(A,A,r*A.basis);
 end;
 
+#########################################################################
 ## GroupAlgebraCentre(G,Q) renvoie le centre de l'algebre de groupe Q[G] 
 ##(si Q est omis, on prend pour Q le corps des rationnels)
 GroupAlgebraCentreOps:=OperationsRecord("GroupAlgebraCentreOps",FDAlgebraOps);
@@ -1278,7 +1280,7 @@ GroupAlgebraCentre:=function(arg) local G,Q,A,d,T,irr,prod,i,j,invs,pid;
   return A;
 end;
 
-#################################################################################
+################################################################################
 ## La fonction SolomonAlgebra(W,Q) construit l'algebre de Solomon 
 ## d'un groupe de Coxeter fini W sur le corps Q (s'il est omis, 
 ## la fonction prend pour Q le corps des rationnels). Le resultat 
@@ -1638,6 +1640,7 @@ SolomonAlgebraOps.CartanMatrix:=function(A)local t;
   return t;
 end;
 
+###########################################################################
 ## GeneralizedSolomonAlgebra(n[,Q])    construit   l'algebre   de   Solomon
 ## generalisee  de CoxeterGroup("B",n)  sur le  corps Q  (s'il est omis, la
 ## fonction  prend pour  Q le  corps des  rationnels). Le  resultat est une
@@ -1926,6 +1929,7 @@ GeneralizedSolomonAlgebra:=function(arg) local W,Q,A,B,r,d,i,j,k,S,T,ST,I,SC,
   return A;
 end;
 
+############################################################################
 QuaternionAlgebra:=function(arg) local a,b,Q,A;
   a:=arg[1];
   b:=arg[2];
@@ -1954,8 +1958,7 @@ QuaternionAlgebra:=function(arg) local a,b,Q,A;
   return A;
 end;
 
-#########################################
-
+###########################################################################
 ZeroHeckeAlgebraOps:=OperationsRecord("ZeroHeckeAlgebraOps",FDAlgebraOps);
 
 ZeroHeckeAlgebraOps.Print:=function(A)

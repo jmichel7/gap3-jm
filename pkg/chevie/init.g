@@ -174,7 +174,7 @@ AUTO(ReadChv("prg/garside"),
   TwistedPowerMonoid, VeryGoodCoxeterWord);
 
 AUTO(ReadChv("prg/gt"),
-  ClassTypes,RationalUnipotentClasses,ClosedSubsets);
+  ClassTypes,RationalUnipotentClasses,ClosedSubsystems);
 
 AUTO(ReadChv("prg/gencox"),
   CoxeterGroupByCartanMatrix, CoxeterGroupByCoxeterMatrix,
