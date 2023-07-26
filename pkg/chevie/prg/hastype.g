@@ -68,12 +68,7 @@ HasTypeOps.CharNames:=function(W,options)local ci,l,f;
   ci:=ChevieCharInfo(W);
   l:=ci.charnames;
   for f in ["frame","kondo","spaltenstein","gp","lusztig","carter"] do
-    if IsBound(options.(f)) and IsBound(ci.(f)) then 
-      l:=ci.(f); 
-      if f="kondo" then
-        InfoChevie("# Warning: on 18-6-2022 the .kondo notation has been permuted by the outer automorphism to fix an error in Carter's table\n");
-      fi;
-    fi;
+    if IsBound(options.(f)) and IsBound(ci.(f)) then l:=ci.(f); fi;
   od;
   if not IsBound(options.TeX) then l:=List(l,TeXStrip);fi;
   return l;

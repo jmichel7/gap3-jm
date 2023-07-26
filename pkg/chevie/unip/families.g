@@ -119,7 +119,7 @@ FamilyOps.\*:=function(arg)local res,a;
 end;
 
 # permutes a family f by permutation or GaloisCyc
-FamilyOps.\^:=function(f,p)local n;
+FamilyOps.\^:=function(f,p)local n,sp,sgns;
   f:=ShallowCopy(f);
   if IsPerm(p) then
     for n in ["x","chi","charNumbers","eigenvalues","unpdeg","fakdeg",
@@ -129,7 +129,7 @@ FamilyOps.\^:=function(f,p)local n;
     for n in ["fourierMat","mellin"] do
       if IsBound(f.(n)) then f.(n):=OnMatrices(f.(n),p);fi;
     od;
-    for n in ["perm","special"] do
+    for n in ["perm","special","cospecial"] do
       if IsBound(f.(n)) then f.(n):=f.(n)^p;fi;
     od;
     f.explanation:=SPrint("Permuted(",p,",",f.explanation,")");
@@ -250,7 +250,7 @@ CHEVIE.families.ExtPowCyclic:=function(e,n)local g;
 end;
 
 # The families for cyclic groups (big family in Z_n is X(n(n-1)/2))
-# It is  the exterior square of the character ring for Z/pZ,
+# X(p) is  the exterior square of the character ring for Z/pZ,
 # However for a different normalisation than the above: the Fourier
 # matrix is the opposite, and the eigenvalues are different if e<>3
 CHEVIE.families.X:=function(p)local ss;
@@ -315,11 +315,14 @@ CHEVIE.families.Z2.eigenvalues:=CHEVIE.families.Z2.eigenvalues*E(8)^3;
 # or in tensor products)
 
 # Drinfeld double of Z/nZ
-CHEVIE.families.QZ:=function(n)local g;
+CHEVIE.families.QZ:=function(arg)local g,n;
+  n:=arg[1];
   g:=ComplexReflectionGroup(n,1,1);
   g.name:=SPrint("\\BZ/",n);
   CharTable(g).classnames:=CharNames(g,rec(TeX:=true));
-  return DrinfeldDouble(g);
+  if Length(arg)=1 then return DrinfeldDouble(g);
+  else return DrinfeldDouble(g,rec(pivotal:=arg[2]));
+  fi;
 end;
   
 # the Drinfeld double of S3, Lusztig's version
@@ -471,9 +474,10 @@ NrDrinfeldDouble:=g->Sum(ConjugacyClasses(g),c->
 #   .mellin is such that ApplyFunc(DiagonalMat,M) is the Mellin transform mat
 #   then fourierMat^ApplyFunc(DiagonalMat,M)  is a permutation
 #   .mellinLabels: labels for pairs [x,y] of commuting elements
-# DrinfeldDouble(G,rec(lusztig:=true)) computes the matrix T
-# DrinfeldDouble(G) computes the matrix S=\Delta T (see conv.tex)
-DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu; 
+# DrinfeldDouble(G,rec(lusztig:=true,pivotal_character:=List(G.generators,x->1),
+#      pivotal_element:=G.identity)) computes the matrix S_0 of Lusztig
+# DrinfeldDouble(G) computes the matrix S=\Delta S_0 of Malle (cf spetsmats.tex)
+DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct; 
   g:=arg[1];if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
   res:=rec(group:=g);
   lu:=IsBound(opt.lusztig) and opt.lusztig;if lu then res.lusztig:=lu;fi;
@@ -505,8 +509,21 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu;
        function(x,y)return x/y;end);end));
   if lu then res.name:="L";res.explanation:="Lusztig's";
   else res.name:="";res.explanation:="";fi;
-  PrintToString(res.name,"D(",g,")");
-  PrintToString(res.explanation,"DrinfeldDouble(",g,")");
+  PrintToString(res.explanation,"DrinfeldDouble(",g);
+# PrintToString(res.name,"D(",g,")");
+  res.name:=res.explanation;
+  if Length(RecFields(opt))>0 then
+    PrintToString(res.explanation,",rec(");
+    if IsBound(opt.lusztig) then
+      PrintToString(res.explanation,"lusztig:=",opt.lusztig);
+    fi;
+    if Length(RecFields(opt))=2 then PrintToString(res.explanation,",");fi;
+    if IsBound(opt.pivotal) then
+      PrintToString(res.explanation,"pivotal:=",opt.pivotal);
+    fi;
+    PrintToString(res.explanation,")");
+  fi;
+  PrintToString(res.explanation,")");
   IsString(res.explanation);
   res.operations:=FamilyOps;
   res.mellin:=ApplyFunc(DiagonalMat,List(res.classinfo,r->
@@ -520,7 +537,7 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu;
       return Position(res.xy,[r1.elt,r1.centelms[PositionClass(r1.centralizer,
         r.elt^RepresentativeOperation(g,y^-1,r1.elt))]]);
       end))); # Fourier permutation of the Mellin basis
-  Unbind(res.classinfo);
+# Unbind(res.classinfo);
   res.fourierMat:=IdentityMat(res.size){p}^res.mellin;
   if lu then 
     res.perm:=PermListList(ComplexConjugate(TransposedMat(res.mellin)),
@@ -529,6 +546,21 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu;
   fi;
   res.special:=Position(res.charLabels,"(Id,Id)");
   if res.special=false then Error();fi;
+  if IsBound(opt.pivotal) then 
+    pivelm:=opt.pivotal[1]; pivchar:=opt.pivotal[2];
+    ct:=res.classinfo[1].chars;
+    p:=DiagonalMat(Concatenation(List(res.classinfo,cp->List(cp.chars,ch->
+      Product(pivchar{GetWord(g,cp.elt)})*
+        ch[PositionClass(cp.centralizer,pivelm)]/ch[1]))));
+    res.fourierMat:=p*res.fourierMat*p;
+    res.fourierMat:=res.fourierMat*
+    ct[PositionProperty(ct,x->ForAll([1..Length(g.generators)],i->
+      x[PositionClass(g,g.(i))]=pivchar[i]))][PositionClass(g,pivelm)]^2;
+    res.eigenvalues:=res.eigenvalues*p;
+    res.cospecial:=res.special^SignedPerm(res.fourierMat^2);
+  else
+    res.cospecial:=res.special;
+  fi;
   return res;
 end;
 

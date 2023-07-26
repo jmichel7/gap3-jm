@@ -58,6 +58,9 @@ DisplayPresentation:=function(arg)local g,min,maj,l,i,w,n,used,f,lw,m;
   g:=arg[1];
   l:=List(g.tietze[TZ_RELATORS],x->List(x,function(y)
     AddSet(used,AbsInt(y));
+    if AbsInt(y)>26 then 
+      Error("cannot display presentation with >26 used generators");
+    fi;
     if y<0 then return maj[-y];else return min[y];fi;
     end));
   if g.tietze[TZ_NUMGENS]>Length(used) then

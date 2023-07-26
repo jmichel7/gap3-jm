@@ -593,7 +593,8 @@ CHEVIE.AddData("UnipotentCharacters","G27",function()
     ComplexConjugate(Family(CHEVIE.families.X(3),[33,31,54],rec(ennola:=-3))),
  # C2 changed to C'\"2 by Gunter 22/9/99
     Family(Family("C'\"2")*CHEVIE.families.Dihedral(5),
-      [19,21,58,56,20,22,57,55,65,63,59,61,66,64,60,62],rec(ennola:=-9)),
+      [19,21,58,56,20,22,57,55,65,63,59,61,66,64,60,62],
+      rec(ennola:=-9,special:=1,cospecial:=5)),
     Family(CHEVIE.families.X(3),[34,32,67],rec(ennola:=-2)),
     Family("Z9",[24,69,68,27,73,71,25,72,70],rec(cospecial:=4,
      signs:=[1,1,-1,1,1,-1,1,1,-1],ennola:=6)),

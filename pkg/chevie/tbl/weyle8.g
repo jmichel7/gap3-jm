@@ -3121,19 +3121,17 @@ springerSeries:=[rec(relgroup:=CoxeterGroup("E",8),levi:="",Z:=[],
    [51,1],[10,4],[56,2],[36,1],[17,1],[50,1],[21,1],[52,1],[10,6],[56,3],[27,1],
    [35,1],[23,2],[43,2],[31,2],[15,1],[53,1],[22,1],[45,1],[31,3],[20,2],[47,1],
    [28,2],[39,1],[24,1],[44,1],[27,4],[35,2]];
-# serie given in Kondo/Mizuno notation to compare with Spaltenstein
+# serie given in Kondo/Mizuno notation to compare easily with Spaltenstein
 # The Kondo-labels of Carter are used here. They differ as follows:
 # Spaltenstein   4   4_1 4_2 4_3 4_4
 # Carter         4_1 4_2 4_3 4_4 4_5
-# 18-6-2022: the correspondence Carter<->Kondo has been permuted by the
-# diagram automorphism to fix the error found by Jonas Hetz
-  l:=[["E8",3,"1_1"],["E8(a1)",3,"2_1"],["E8(a2)",1,"4_2"],["E7+A1",2,"8_1"],
-   ["E7+A1",3,"1_2"],["E7",3,"9_1"],["E7(a1)+A1",1,"4_3"],["E7(a1)",1,"9_2"],
-   ["D8(a1)",3,"8_3"],["D7",1,"2_3"],["E7(a2)+A1",5,"12"],
+  l:=[["E8",3,"1_1"],["E8(a1)",3,"2_3"],["E8(a2)",1,"4_2"],["E7+A1",2,"8_3"],
+   ["E7+A1",3,"1_3"],["E7",3,"9_1"],["E7(a1)+A1",1,"4_4"],["E7(a1)",1,"9_3"],
+   ["D8(a1)",3,"8_1"],["D7",1,"2_1"],["E7(a2)+A1",5,"12"],
    ["E7(a2)+A1",3,"6_2"],["E7(a2)",1,"16"],["E6+A1",1,"6_1"],
-   ["(D7(a1))2",1,"4_1"],["E6",1,"8_4"],["D6",1,"9_3"],["(D5+A2)2",1,"4_4"],
-   ["D6(a1)",2,"9_4"],["D6(a1)",3,"2_4"],["D5+A1",1,"8_2"],["D5",1,"4_5"],
-   ["(D4+A2)2",1,"1_3"],["D4+A1",1,"2_2"],["D4",1,"1_4"]];
+   ["(D7(a1))2",1,"4_1"],["E6",1,"8_2"],["D6",1,"9_2"],["(D5+A2)2",1,"4_3"],
+   ["D6(a1)",2,"9_4"],["D6(a1)",3,"2_2"],["D5+A1",1,"8_4"],["D5",1,"4_5"],
+   ["(D4+A2)2",1,"1_2"],["D4+A1",1,"2_4"],["D4",1,"1_4"]];
   Add(uc.springerSeries,rec(relgroup:=CoxeterGroup("F",4),levi:=[2..5],Z:=[],
   locsys:=List([1..Length(l)],function(i)local s;
     s:=PositionProperty(l,x->x[3]=CHEVIE.R("CharInfo","F4")().kondo[i]);

@@ -105,11 +105,10 @@ IsSignedPerm:=x->IsRec(x) and IsBound(x.operations)
 Perm:=p->PermList(List(p.l,AbsInt));
 
 #underlying Signs of a SignedPerm
-Signs:=p->Permuted(List(p.l,SignInt),Perm(p));
+Signs:=p->List(p.l,SignInt);
 
 # We have the properties p=SignedPerm(Perm(p),Signs(p)) and
-# if N=OnMatrices(M,p) then
-#    M=OnMatrices(N,Perm(p))^DiagonalMat(Signs(p)))
+# if N=OnMatrices(M,p) then M=OnMatrices(N^DiagonalMat(Signs(p)),Perm(p))
 
 # Transforms hyperoctaedral perm or matrix or perm+signs to a signed perm,
 SignedPerm:=function(arg)local ls,n,i,nz,res;
@@ -139,8 +138,9 @@ SignedPerm:=function(arg)local ls,n,i,nz,res;
 # Apply hyperoctaedral permutation sp to list l
     if Length(arg)=2 then n:=arg[2];
       if IsList(n) then  # perm, signs
-        return SignedPerm(Permuted(Zip([1..Length(n)],n,
-          function(x,y)return x*y;end),ls^-1));fi;
+        return SignedPerm(Zip(Permuted([1..Length(n)],ls^-1),n,
+          function(x,y)return x*y;end));
+      fi;
     elif ls=() then n:=1;
     else n:=QuoInt(LargestMovedPointPerm(ls)+1,2);fi;
     return SignedPerm(List(OnTuples([1,3..2*n-1],ls),function(i)
@@ -255,7 +255,7 @@ SignedPermMatMat:=function(arg)
       OnMatrices(N{J}{J},tr^-1),OnMatrices);
     if e=false then return false;
     else if e^-1*e^tr<>SignedPerm() then 
-            Print("*** tr does not commute to e\n");
+            InfoChevie("#*** tr does not commute to e\n");
          fi;
          tr:=e*tr;
     fi;

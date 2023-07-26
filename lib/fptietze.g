@@ -1603,6 +1603,8 @@ TzEliminateGen1 := function ( T )
             gen := -gen;
             pos := Position( rel, gen );
         fi;
+#       DisplayPresentation(T);
+#       Print("rel=",rel,"\n");
         word := Concatenation( Sublist( rel, [pos+1..length] ),
             Sublist( rel, [1..pos-1] ) );
 
@@ -1684,24 +1686,24 @@ TzEliminateGens := function ( arg )
             TzEliminateFromTree( T );
         else
             TzEliminateGen1( T );
-            if T.printLevel>=3 then Print("a ");TzPrintStatus(T);fi;
+#           if T.printLevel>=3 then Print("a ");TzPrintStatus(T);Print(tietze[TZ_FLAGS],"\n");fi;
         fi;
         if tietze[TZ_NUMREDUNDS] = redundantsLimit then
             TzRemoveGenerators( T );
-            if T.printLevel>=3 then Print("b ");TzPrintStatus(T);fi;
+#           if T.printLevel>=3 then Print("b ");TzPrintStatus(T);Print(tietze[TZ_FLAGS],"\n");fi;
         fi;
         modified := modified or tietze[TZ_MODIFIED];
         num := num + 1;
     od;
     tietze[TZ_MODIFIED] := modified;
     if tietze[TZ_NUMREDUNDS] > 0 then  
-       if T.printLevel>=3 then Print("c ");TzPrintStatus(T);fi;
+#      if T.printLevel>=3 then Print("c ");TzPrintStatus(T);Print(tietze[TZ_FLAGS],"\n");fi;
        TzRemoveGenerators( T );  fi;
 
     if modified then
         # handle relators of length 1 or 2.
         TzHandleLength1Or2Relators( T );
-        if T.printLevel>=3 then Print("d ");TzPrintStatus(T);fi;
+#       if T.printLevel>=3 then Print("d ");TzPrintStatus(T);Print(tietze[TZ_FLAGS],"\n");fi;
         # sort the relators and print the status line.
         TzSort( T );
         if T.printLevel >= 2 then  TzPrintStatus( T, true );  fi;
@@ -1988,7 +1990,7 @@ TzGo := function ( arg )
 
     # get the arguments.
     T := arg[1];
-    printstatus := T.printLevel = 1 and
+    printstatus := T.printLevel>=1 and
         not ( Length( arg ) > 1 and IsBool( arg[2] ) and arg[2] );
 
     # check the first argument to be a Tietze record.
@@ -2006,16 +2008,21 @@ TzGo := function ( arg )
     while count < looplimit and tietze[TZ_TOTAL] > 0 do
         # replace substrings by substrings of equal length.
         TzSearchEqual( T );
+#       Print(tietze[TZ_FLAGS],"\n");
         if tietze[TZ_MODIFIED] then  TzSearch( T );  fi;
+#       Print(tietze[TZ_FLAGS],"\n");
 
         # eliminate generators.
         TzEliminateGens( T );
+#       Print("before search ");DisplayPresentation(T);
+#       Print(tietze[TZ_FLAGS],"\n");
         if tietze[TZ_MODIFIED] then
             TzSearch( T );
             count := count + 1;
         else
             count := looplimit;
         fi;
+#       Print("after search ");DisplayPresentation(T);
 
         if printstatus then  TzPrintStatus( T, true );  fi;
     od;
@@ -3162,9 +3169,12 @@ TzSearch := function ( T )
                 od;
                 if k > numrels then  j := lastj;  fi;
                 if i <= j then
+         #          Print(T.tietze[TZ_FLAGS],"\n");
                     altered := TzSearchC( tietze, i, j );
                     if T.printLevel>=3 and altered>0 then
-                      Print("#altered=",altered,"\n");
+                      Print("#SearchC(",i,",",j,") altered=",altered,"\n");
+         #            DisplayPresentation(T,true);
+         #            Print(T.tietze[TZ_FLAGS],"\n");
                     fi;
                     modified := modified or altered > 0;
                     i := j;
@@ -3253,7 +3263,7 @@ TzSearchEqual := function ( T )
             if i <= j then
                 altered := TzSearchC( tietze, i, j, equal );
                 if T.printLevel>=3 and altered>0 then
-                  Print("#eqaltered=",altered,"\n");
+                  Print("#SearchCeq(",i,",",j,") altered=",altered,"\n");
                 fi;
                 modified := modified or altered > 0;
                 i := j;
@@ -3672,8 +3682,10 @@ end;
 ##  Hence it does not check the arguments.
 ##
 TzUpdateGeneratorImages := function ( T, n, word )
-    
     local i, image, invword, j, newim, num, oldnumgens;
+    if T.printLevel>=3 then Print("#UpdateImages(",n,",",word,")\n"); 
+        PrintArray(T.imagesOldGens);
+    fi;
 
     if n = 0 then
 
@@ -3721,6 +3733,9 @@ TzUpdateGeneratorImages := function ( T, n, word )
             Print( "#I  terminated the tracing of generator images\n" );
         fi;
 
+    fi;
+    if T.printLevel>=3 then Print("#UpdateImages(",n,",",word,")\n"); 
+        PrintArray(T.imagesOldGens);
     fi;
 end;
 

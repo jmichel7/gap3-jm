@@ -10736,8 +10736,8 @@ CHEVIE.AddData("UnipotentCharacters","G34",
   Family(CHEVIE.families.X(3)*ComplexConjugate(Family("X5")),
      [42,55,178,174,8,10,53,179,173,46,176,177,180,37,175],
      rec(signs:=[1,1,-1,-1,1,1,1,-1,-1,1,-1,-1,1,1,-1],ennola:=15)),  #G_33
-   Family(CHEVIE.families.QZ(3),[26,59,57,31,183,181,32,182,184],
-    rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2,ennola:=-6)),#I4^3
+   Family(CHEVIE.families.QZ(3,[(),[E(3)]]),[57,59,26,184,182,32,181,183,31],
+	rec(signs:=[1,1,1,1,-1,-1,1,-1,-1],ennola:=-7)),
    Family(CHEVIE.families.QZ(3),[81,68,71,45,185,188,39,187,186],
      rec(signs:=[1,1,1,1,1,1,1,-1,-1],ennola:=6)), #I5^3
   Family(CHEVIE.families.X(3)*ComplexConjugate(Family("X5")),
@@ -10749,14 +10749,14 @@ CHEVIE.AddData("UnipotentCharacters","G34",
      rec(signs:=[1,1,1,1,1,1,1,1,-1,-1,-1,-1],ennola:=11)),
    Family("C1",[28],rec(ennola:=-1)),
    Family("C2",[124,63,105,205],rec(ennola:=-4)),  #D4
-   Family(CHEVIE.families.QZ(3),[22,86,84,79,208,206,78,207,209],
-    rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2,ennola:=9)),#I4^3
+   Family(CHEVIE.families.QZ(3,[(),[E(3)]]),[84,86,22,209,207,78,206,208,79],
+     rec(signs:=[1,1,1,1,-1,-1,1,-1,-1],ennola:=4)),
    Family(ComplexConjugate(Family("Z9")),[141,215,213,145,214,212,143,211,210],
      rec(special:=7,cospecial:=1,ennola:=2)),
    Family(ComplexConjugate(CHEVIE.families.X(3)),[134,136,216],
      rec(signs:=[1,1,-1],ennola:=3)),  #I3^3
-   Family(CHEVIE.families.QZ(3),[129,156,154,72,219,217,74,218,220],
-     rec(signs:=[1,1,1,-1,1,1,-1,-1,-1],special:=3,cospecial:=2,ennola:=-5)),
+   Family(CHEVIE.families.QZ(3,[(),[E(3)]]),[154,156,129,220,218,74,217,219,72],
+     rec(signs:=[1,1,1,-1,-1,-1,1,1,-1],ennola:=-8)),
    Family("C1",[67]),
    # C2 changed to C'\"2 Gunter 22/9/99
    Family("C'\"2",[159, 161,221,222],rec(ennola:=-3)),  #G_33
@@ -10783,14 +10783,14 @@ CHEVIE.AddData("UnipotentCharacters","G34",
    # C2 changed to C'\"2 Gunter 22/9/99, then to C2h on 26.2.2003:
    Family("C'\"2",[160, 158,296,297],rec(ennola:=3)),  #G_33
    Family("C1",[66]),
-   Family(CHEVIE.families.QZ(3),[128,73,75,157,298,301,155,300,299],
-     rec(signs:=[1,-1,-1,1,1,-1,1,1,-1],special:=4,cospecial:=7,ennola:=3)),
+   Family(CHEVIE.families.QZ(3,[(),[E(3)]]),[157,155,128,298,300,73,301,299,75],
+	rec(signs:=[1,1,1,1,1,-1,-1,-1,-1],ennola:=9)),
    Family(CHEVIE.families.X(3),[137,135,302],rec(signs:=[1,1,-1],ennola:=2)),
 # order changed by JM 22/10/99 from [144,142,140,303,307,305,304,306,308]
    Family("Z9",[140,304,303,144,308,306,142,307,305],
      rec(special:=1,cospecial:=4,ennola:=6)),
-   Family(CHEVIE.families.QZ(3),[21,77,76,85,309,312,87,311,310],
-     rec(signs:=[1,-1,-1,1,1,1,1,-1,-1],special:=4,cospecial:=7,ennola:=5)), #\bar I4^3
+   Family(CHEVIE.families.QZ(3,[(),[E(3)]]),[85,87,21,309,311,77,312,310,76],
+	rec(signs:=[1,1,1,1,-1,-1,1,-1,-1],ennola:=4)),
    Family("C2",[123,62,104,313],rec(ennola:=-4)),  #D4
    Family("C1",[27],rec(ennola:=-1)),
    # C2 changed to C'\"2 Gunter 22/9/99, then to C2h on 26.2.2003:
@@ -10802,8 +10802,8 @@ CHEVIE.AddData("UnipotentCharacters","G34",
      rec(signs:=[1,1,1,-1,-1,-1,1,1,-1,1,-1,-1,1,1,-1],ennola:=-10)),
    Family(CHEVIE.families.QZ(3),[80,69,70,41,332,331,44,330,333],
                 rec(signs:=[1,1,1,1,-1,-1,1,1,1],ennola:=-5)),  #\bar I3^5
-   Family(CHEVIE.families.QZ(3),[25,30,29,58,334,337,60,336,335],
-     rec(signs:=[1,-1,-1,1,1,1,1,-1,-1],special:=4,cospecial:=7,ennola:=-6)), #\bar I3^4
+   Family(CHEVIE.families.QZ(3,[(),[E(3)]]),[58,60,25,334,336,30,337,335,29],
+	rec(signs:=[1,1,1,1,-1,-1,1,-1,-1],ennola:=-7)),
    Family(ComplexConjugate(CHEVIE.families.X(3))*Family("X5"),
      [40,56,343,339,7,9,54,344,338,43,341,342,345,38,340],
      rec(signs:=[1,1,-1,-1,1,1,1,-1,-1,1,-1,-1,1,1,-1],ennola:=10)),
