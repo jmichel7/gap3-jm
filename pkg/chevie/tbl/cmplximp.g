@@ -1968,7 +1968,7 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
 	  l:=Position(t[j][k],i); if l<>false then return [j,k,l];fi;
 	od; od;
       end;
-      ct:=p->para[1][p[1]]*Q^(p[3]-p[2]);
+      ct:=p->para[1][p[1]]*(Q*1/1)^(p[3]-p[2]);
       T:=Tableaux(S);
       return Concatenation([DiagonalMat(List(T,S->ct(pos(S,1))))],
 	List([2..r],i->List([1..Length(T)],function(j)local S,v,a,b,p,tll;

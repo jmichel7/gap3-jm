@@ -477,7 +477,7 @@ NrDrinfeldDouble:=g->Sum(ConjugacyClasses(g),c->
 # DrinfeldDouble(G,rec(lusztig:=true,pivotal_character:=List(G.generators,x->1),
 #      pivotal_element:=G.identity)) computes the matrix S_0 of Lusztig
 # DrinfeldDouble(G) computes the matrix S=\Delta S_0 of Malle (cf spetsmats.tex)
-DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct; 
+DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct,o; 
   g:=arg[1];if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
   res:=rec(group:=g);
   lu:=IsBound(opt.lusztig) and opt.lusztig;if lu then res.lusztig:=lu;fi;
@@ -487,14 +487,29 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct;
     r:=rec(elt:=Representative(c),name:=n);
     if r.elt=g.identity then r.name:="Id";fi;
     r.centralizer:=Centralizer(g,r.elt);
-    r.centelms:=List(ConjugacyClasses(r.centralizer),Representative);
-    t:=CharTable(r.centralizer);
-    r.charNames:=CharNames(r.centralizer,rec(TeX:=true));
-    r.names:=ClassNamesCharTable(t);
+    if IsCyclic(r.centralizer) then
+      o:=Size(r.centralizer);
+      r.centralizer:=Group(First(Elements(r.centralizer),x->OrderPerm(x)=o
+         and x^(o/OrderPerm(r.elt))=r.elt));
+      r.centelms:=List([0..o-1],i->r.centralizer.generators[1]^i);
+      r.centralizer.operations:=ShallowCopy(r.centralizer.operations);
+      r.centralizer.operations.ConjugacyClasses:=
+         g->List(r.centelms,x->ConjugacyClass(g,x));
+      r.centralizer.name:=Concatenation("Z(",n,")");
+      r.charNames:=List([0..o-1],i->FormatTeX(E(o)^i));
+      r.names:=r.charNames;
+      r.centralizers:=List([1..o],x->o);
+      r.chars:=List([0..o-1],i->List([0..o-1],j->E(o)^(i*j)));
+    else 
+      r.centelms:=List(ConjugacyClasses(r.centralizer),Representative);
+      t:=CharTable(r.centralizer);
+      r.charNames:=CharNames(r.centralizer,rec(TeX:=true));
+      r.chars:=t.irreducibles;
+      r.names:=ClassNamesCharTable(t);
+      r.centralizers:=t.centralizers;
+    fi;
     r.names[Position(r.centelms,g.identity)]:="Id";
-    r.chars:=t.irreducibles;
     r.charNames[PositionProperty(r.chars,y->y=y*0+1)]:="Id";
-    r.centralizers:=t.centralizers;
     return r;end);
   res.charLabels:=Concatenation(List(res.classinfo,r->List(r.charNames,
     y->SPrint("(",r.name,",",y,")"))));
