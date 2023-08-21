@@ -10443,6 +10443,7 @@ CHEVIE.AddData("sparseFakeDegrees","G34",
 famf42:=function()local g6,g7,f42;
   g7:=(1,2,3,4,5,6,7);g6:=(2,6,5,7,3,4);
   f42:=Group(g7,g6);
+  f42.operations:=Copy(f42.operations);
   f42.operations.ConjugacyClasses:=
        g->List([(),g6^4,g6^5,g6^2,g6,g6^3,g7],x->ConjugacyClass(g,x));
   f42.charTable:=rec(
@@ -10665,7 +10666,7 @@ CHEVIE.AddData("UnipotentCharacters","G34",
   123,124,125]);
 end);
 
-CHEVIE.AddData("UnipotentCharacters","G34",CHEVIE.R("UnipotentCharacters","G34")());
+#CHEVIE.AddData("UnipotentCharacters","G34",CHEVIE.R("UnipotentCharacters","G34")());
 
 # for the next function see
 # Conway & Sloane Math.Proc.Camb.Phil.Soc. 93(1983) p.437

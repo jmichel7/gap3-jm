@@ -477,13 +477,13 @@ NrDrinfeldDouble:=g->Sum(ConjugacyClasses(g),c->
 # DrinfeldDouble(G,rec(lusztig:=true,pivotal_character:=List(G.generators,x->1),
 #      pivotal_element:=G.identity)) computes the matrix S_0 of Lusztig
 # DrinfeldDouble(G) computes the matrix S=\Delta S_0 of Malle (cf spetsmats.tex)
-DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct,o; 
+DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct; 
   g:=arg[1];if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
   res:=rec(group:=g);
   lu:=IsBound(opt.lusztig) and opt.lusztig;if lu then res.lusztig:=lu;fi;
   res.classinfo:=Zip(ConjugacyClasses(g),
                      ClassNamesCharTable(CharTable(g)),
-    function(c,n)local r,t;
+    function(c,n)local r,t,o;
     r:=rec(elt:=Representative(c),name:=n);
     if r.elt=g.identity then r.name:="Id";fi;
     r.centralizer:=Centralizer(g,r.elt);

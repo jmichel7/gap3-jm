@@ -695,6 +695,7 @@ end);
 famf20:=function()local g4,g5,f20;
   g4:=(2,4,5,3);g5:=(1,2,3,4,5);
   f20:=Group(g5,g4);
+  f20.operations:=Copy(f20.operations);
   f20.operations.ConjugacyClasses:=
        g->List([(),g4^3,g4,g4^2,g5],x->ConjugacyClass(g,x));
   f20.charTable:=rec(classnames:=["1","g_4^3","g_4","g_2","g_5"],

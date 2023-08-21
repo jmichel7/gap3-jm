@@ -3279,8 +3279,8 @@ CHEVIE.AddData("UnipotentCharacters","G32",function()local i3,I,J,cuspidal;
  families:=[
  Family("C1",[1]),
  Family(CHEVIE.families.X(3),[9,6,103],rec(signs:=[1,1,-1],ennola:=3)),
- Family(CHEVIE.families.QZ(3),[26,20,23,15,106,104,12,105,107],
-  rec(signs:=[1,1,1,1,1,-1,1,1,1], special:=2,cospecial:=3,ennola:=7)),
+ Family(CHEVIE.families.QZ(3,[(),[E(3)]]),[20,23,26,106,104,15,105,12,107],
+  rec(signs:=[1,1,1,1,-1,1,1,1,1],ennola:=8)),
  Family(CHEVIE.families.X(3),[37,34,108],rec(signs:=[1,1,-1],ennola:=-1)),
  Family(CHEVIE.families.X(6),
    [57,64,49,61,54,111,113,109,115,17,116,110,18,114,112],
