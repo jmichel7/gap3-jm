@@ -42,16 +42,21 @@ PPerm:=function(arg)local v,res,n;
   if Length(arg)=0 then return PPerm([]);
   elif IsList(arg[1]) and IsInt(arg[Length(arg)]) then 
     n:=arg[Length(arg)];
-    res:=Product(arg{[1..Length(arg)-1]},function(cyc)local i,perm,k,d;
-      if not IsList(cyc[Length(cyc)]) then d:=0;
+    res:=Product(arg{[1..Length(arg)-1]},function(cyc)local i,i1,perm,k,d;
+      if (not IsList(cyc[Length(cyc)])) or Length(cyc[Length(cyc)])=2 then d:=0;
       else d:=cyc[Length(cyc)][1];cyc:=cyc{[1..Length(cyc)-1]};fi;
+      cyc:=List(cyc,function(v)
+        if IsList(v) then return v[1]+n*v[2];
+        else return v;
+        fi;
+      end);
       if Length(Set(List(cyc,x->x mod n)))<>Length(cyc) then
         Error(cyc," : the images must be distinct mod ",n);
       fi;
       perm:=[1..n];cyc:=cyc-1;
       for i in [1..Length(cyc)] do
-	k:=1+cyc[i] mod n;
-	perm[k]:=cyc[1+i mod Length(cyc)]+k-cyc[i];
+        k:=1+cyc[i] mod n;
+        perm[k]:=cyc[1+i mod Length(cyc)]+k-cyc[i];
       od;  
       perm[k]:=perm[k]+d*n;
       return PPermOps.New(perm);
