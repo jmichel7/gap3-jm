@@ -38,6 +38,7 @@ PPermOps.New:=perm->rec(perm:=perm,operations:=PPermOps);
 # represented by cycle_1*..*cycle_m where cycle_i is a list [i_1,..,i_k,[d]] 
 # where i_1,..,i_k differ mod n representing the permutation 
 # i_1->i_2->..->i-k->i_1+d*n         if d=0 then [d] can be omitted
+# i_j itself can be a list [l_j,k_j] meaning l_j+k_j*n
 PPerm:=function(arg)local v,res,n;
   if Length(arg)=0 then return PPerm([]);
   elif IsList(arg[1]) and IsInt(arg[Length(arg)]) then 
@@ -346,11 +347,9 @@ AtildeGroupOps.DualBraidMonoid:=function(arg)local M,n,W,delta;
   end;
   M.B:=function(arg)local x,p;
     if IsList(arg[1]) then x:=[arg[1]]; else x:=arg; fi;
-    p:=PositionProperty(x,y->not Number(Cycles(y),c->c[Length(c)][1]<>0)in [0,2]);
-    if p<>false then Error(x[p]," is not a dual simple");fi;
-    x:=Concatenation(List(x,M.AtomListSimple));
-    if not ForAll(x,M.IsDualAtom) then
-      Error("not atom of dual monoid: ",First(x,y->not M.IsDualAtom(y)));fi;
+    if ForAny(x,y->ReflectionLength(y)+ReflectionLength(M.delta/y)<>M.rank)
+      return false;
+    end;
     return GarsideEltOps.Normalize(Product(List(x,y->M.Elt([y]))));
   end;
   M.AtomListSimple:=function(w) local s,res,v;res:=[];v:=w;
