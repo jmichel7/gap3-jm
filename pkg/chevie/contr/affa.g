@@ -348,8 +348,8 @@ AtildeGroupOps.DualBraidMonoid:=function(arg)local M,n,W,delta;
   M.B:=function(arg)local x,p;
     if IsList(arg[1]) then x:=[arg[1]]; else x:=arg; fi;
     if ForAny(x,y->ReflectionLength(y)+ReflectionLength(M.delta/y)<>M.rank)
-      return false;
-    end;
+    then return false;
+    fi;
     return GarsideEltOps.Normalize(Product(List(x,y->M.Elt([y]))));
   end;
   M.AtomListSimple:=function(w) local s,res,v;res:=[];v:=w;
