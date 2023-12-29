@@ -13,7 +13,8 @@ ShrinkPresentation:=function(arg)local g,lim,rot,count,test;
   rot:=function(i)
     g.tietze[TZ_RELATORS][i]:=Rotation(g.tietze[TZ_RELATORS][i],1);
   end;
-  test:=function()local v,i,j,before,tt,t;
+  if g.tietze[TZ_RELATORS]=[] then return;fi;
+  test:=function()local v,i,j,before,tt;
     g.tietze[TZ_RELATORS]:=Filtered(g.tietze[TZ_RELATORS],x->Length(x)>0);
     tt:=g.tietze[TZ_RELATORS];
     if Product(tt,Length)<lim then
@@ -33,18 +34,16 @@ ShrinkPresentation:=function(arg)local g,lim,rot,count,test;
       od;
     else 
       for i in [1..lim] do
-	t:=Sum(tt,Length);
-	i:=Random([1..t]);
-	j:=1;
-	while i>Length(tt[j]) do i:=i-Length(tt[j]);j:=j+1;od;
-	before:=[Length(tt),t];rot(j);TzGoGo(g);
+ 	before:=[Length(tt),Sum(tt,Length)];
+        j:=Random([1..Length(tt)]);
+        rot(j);TzGoGo(g);
 	tt:=g.tietze[TZ_RELATORS];
-	if Length(tt)<before[1] or Sum(tt,Length)<before[2] then return true;fi;
+	if [Length(tt),Sum(tt,Length)]<before then return true;fi;
       od;
     fi;
     return false;
   end;
-  count:=0; if g.tietze[TZ_RELATORS]<>[] then while test() do count:=count+1;od; fi;
+  count:=0; while test() do count:=count+1;od;
 end;
     
 DisplayPresentation:=function(arg)local g,min,maj,l,i,w,n,used,f,lw,m;
@@ -68,7 +67,8 @@ DisplayPresentation:=function(arg)local g,min,maj,l,i,w,n,used,f,lw,m;
   fi;
   for i in [1..Length(l)] do
     w:=l[i];lw:=Length(w);
-    if lw mod 2=1 or Length(arg)=2 then Print(i,": ",w,"=1\n");
+    if Length(arg)=2 and arg[2]=0 then Print("(",g.tietze[TZ_FLAGS][i],")"); fi;
+    if lw mod 2=1 or (Length(arg)=2 and arg[2]=true) then Print(i,": ",w,"=1\n");
     elif lw>0 then
       m:=List([1..lw],i->Number(f(i),x->x in min));
       n:=Maximum(m);

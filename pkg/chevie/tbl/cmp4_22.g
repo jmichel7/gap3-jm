@@ -588,110 +588,98 @@ CHEVIE.AddData("PowerMaps","G4_22",function(ST)local l,res,i;
   return res;
 end);
 
-CHEVIE.AddData("ClassInfo","G4_22",function(ST)local res,p,g,z,f,digits;
+CHEVIE.AddData("ClassInfo","G4_22",function(ST)local res,p,g,z,f,h,digits;
   p:=CHEVIE.R("paramclasses","G4_22")(ST);
   res:=rec();
-  g:=function(c,a,b)return c[2] mod a=b[c[1]];end;
-  f:=function(class,z)local r,i;
-    r:=[[],[1],[2],[3],[3,3]];r:=r[class[1]];
-    for i in [1..class[2]] do Append(r,z);od;
+  g:=function(a, b)
+    return Filtered([1..Length(p)],i->p[i][2]mod a=b[p[i][1]]);
+  end;
+  f:=function(class,z)local r, i;
+    r:=[[], [1], [2], [3], [3, 3]];r:=r[class[1]];
+    for i in [1..class[2]] do Append(r, z);od;
     return r;
   end;
-  if ST=4 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],6,[0,3,2,0]));
-    res.classtext:=List(p{res.indexclasses},
-                  x->Replace(f(x,[3,1]),[2],[],[1,3,1],[2],[3],[1]));
+  h:=function(z, l)
+    return List(p{res.indexclasses},
+          x->ApplyFunc(Replace,Concatenation([f(x, z)],l)));
+  end;
+  if ST=4 then
+    res.indexclasses:=g(6, [0, 3, 2, 0]);
+    res.classtext:=h([3, 1], [[2], [], [1, 3, 1], [2], [3], [1]]);
     z:="121212";
-  elif ST=5 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],2,[0,1,0,0]));
-    res.classtext:=List(p{res.indexclasses},
-                  x->Replace(f(x,[2,3]),[1],[],[2],[1],[3],[2]));
+  elif ST=5 then
+    res.indexclasses:=g(2, [0, 1, 0, 0]);
+    res.classtext:=h([2, 3], [[1], [], [2], [1], [3], [2]]);
     z:="1212";
-  elif ST=6 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],3,[0,0,2,0]));
-    res.classtext:=List(p{res.indexclasses},
-                  x->Replace(f(x,[3,1]),[2],[],[3],[2]));
+  elif ST=6 then
+    res.indexclasses:=g(3, [0, 0, 2, 0]);
+    res.classtext:=h([3, 1], [[2], [], [3], [2]]);
     z:="212121";
-  elif ST=7 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],1,[0,0,0,0]));
-    res.classtext:=List(p{res.indexclasses},x->f(x,[1,2,3]));
+  elif ST=7 then
+    res.indexclasses:=g(1, [0, 0, 0, 0]);
+    res.classtext:=h([1, 2, 3], []);
     z:="123";
   elif ST=8 then
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],6,[0,3,2,0,0]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[3,1]),[2],[],[1,3,1],[2],[3],[1]));
+    res.indexclasses:=g(6, [0, 3, 2, 0, 0]);
+    res.classtext:=h([3, 1], [[2], [], [1, 3, 1], [2], [3], [1]]);
     z:="121212";
   elif ST=9 then
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],3,[0,0,2,0,0]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[3,1]),[2],[],[3],[2]));
+    res.indexclasses:=g(3, [0, 0, 2, 0, 0]);
+    res.classtext:=h([3, 1], [[2], [], [3], [2]]);
     z:="212121";
   elif ST=10 then
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],2,[0,1,0,0,0]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[2,3]),[1],[],[2],[1],[3],[2]));
+    res.indexclasses:=g(2, [0, 1, 0, 0, 0]);
+    res.classtext:=h([2, 3], [[1], [], [2], [1], [3], [2]]);
     z:="1212";
   elif ST=11 then
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],1,[0,0,0,0,0]));
-    res.classtext:=List(p{res.indexclasses},x->f(x,[1,2,3]));
+    res.indexclasses:=g(1, [0, 0, 0, 0, 0]);
+    res.classtext:=h([1, 2, 3], []);
     z:="123";
   elif ST=12 then
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],12,[0,0,8,3,6]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[1,2]),[3],[],[2,1,2,1,2],[2,3]));
+    res.indexclasses:=g(12, [0, 0, 8, 3, 6]);
+    res.classtext:=h([1, 2], [[3], [], [2, 1, 2, 1, 2], [2, 3]]);
     z:="123123123123";
   elif ST=13 then
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],6,[0,0,2,3,0]));
+    res.indexclasses:=g(6, [0, 0, 2, 3, 0]);
     res.classtext:=List([[],[0],[0,0],[0,0,0],[2],[2,0],[3,1,2],[3,1,2,0],
-    [3,1,2,0,0],[3,1,2,0,0,0],[2,3,1,2,1],[2,3,1,2,1,0],
-    [2,3,1,2,1,0,0],[2,3,1,2,1,0,0,0],[1],[1,0]],x->Replace(x,
-      [0],[1,2,3,1,2,3,1,2,3]));
-  # The above only correct in the group
+     [3,1,2,0,0],[3,1,2,0,0,0],[2,3,1,2,1],[2,3,1,2,1,0],[2,3,1,2,1,0,0],
+     [2,3,1,2,1,0,0,0],[1],[1,0]],x->Replace(x,[0],[1,2,3,1,2,3,1,2,3]));
     z:="123123123";
   elif ST=14 then
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],4,[0,0,0,3,2]));
-    res.classtext:=List(p{res.indexclasses},x->Replace(f(x,[1,2]),[3],[]));
+    res.indexclasses:=g(4, [0, 0, 0, 3, 2]);
+    res.classtext:=h([1, 2], [[3], []]);
     z:="12121212";
   elif ST=15 then
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],2,[0,0,0,1,0]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[1,2,3]),[3,3],[4],[3,1,2,3],[4,1,2],[4],[3]));
+    res.indexclasses:=g(2, [0, 0, 0, 1, 0]);
+    res.classtext:=h([1, 2, 3], [[3, 3], [4],[3, 1, 2, 3],[4, 1, 2],[4],[3]]);
     z:="12312";
-  elif ST=16 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],6,[0,3,2,0,0]));
-    res.classtext:=List(p{res.indexclasses},
-      c->Replace(f(c,[3,1]),[2],[],[1,3,1],[2],[3],[1]));
+  elif ST=16 then
+    res.indexclasses:=g(6, [0, 3, 2, 0, 0]);
+    res.classtext:=h([3, 1], [[2], [], [1, 3, 1], [2], [3], [1]]);
     z:="121212";
-  elif ST=17 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],3,[0,0,2,0,0]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[3,1]),[2],[],[3],[2]));
+  elif ST=17 then
+    res.indexclasses:=g(3, [0, 0, 2, 0, 0]);
+    res.classtext:=h([3, 1], [[2], [], [3], [2]]);
     z:="212121";
-  elif ST=18 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],2,[0,1,0,0,0]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[2,3]),[1],[],[2],[1],[3],[2]));
+  elif ST=18 then
+    res.indexclasses:=g(2, [0, 1, 0, 0, 0]);
+    res.classtext:=h([2, 3], [[1], [], [2], [1], [3], [2]]);
     z:="1212";
-  elif ST=19 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],1,[0,0,0,0,0]));
-    res.classtext:=List(p{res.indexclasses},
-      x->f(x,[1,2,3]));
+  elif ST=19 then
+    res.indexclasses:=g(1, [0, 0, 0, 0, 0]);
+    res.classtext:=h([1, 2, 3], []);
     z:="123";
-  elif ST=20 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],10,[0,5,0,4,8]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[1,2]),[3],[],[1,1],[],
-                                      [1,2,1],[3],[2],[1],[3],[2]));
+  elif ST=20 then
+    res.indexclasses:=g(10, [0, 5, 0, 4, 8]);
+    res.classtext:=h([1, 2],[[3],[],[1, 1],[],[1, 2, 1],[3],[2],[1],[3],[2]]);
     z:="2121212121";
-  elif ST=21 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],5,[0,0,0,4,3]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[1,2]),[3],[]));
+  elif ST=21 then
+    res.indexclasses:=g(5, [0, 0, 0, 4, 3]);
+    res.classtext:=h([1, 2], [[3], []]);
     z:="1212121212";
-  elif ST=22 then 
-    res.indexclasses:=Filtered([1..Length(p)],i->g(p[i],15,[0,0,5,9,3]));
-    res.classtext:=List(p{res.indexclasses},
-      x->Replace(f(x,[1,2]),[3],[],[2,1,2,1,2],[2,3]));
+  elif ST=22 then
+    res.indexclasses:=g(15, [0, 0, 5, 9, 3]);
+    res.classtext:=h([1, 2], [[3], [], [2, 1, 2, 1, 2], [2, 3]]);
     z:="123123123123123";
   fi;
   digits:="123"; 
@@ -2225,8 +2213,8 @@ CHEVIE.AddData("Ennola","G4_22",function(ST)local uc,res,p,A,b,f;
     A:=FusionAlgebra(f);
     b:=Basis(A);
     if not IsBound(f.ennola) then f.ennola:=f.special;fi;
-    if f.ennola>0 then p:=SignedPermListList(b,b[f.ennola]*b);
-                  else p:=SignedPermListList(b,-b[-f.ennola]*b);
+    if f.ennola>0 then p:=SignedPermListList(b[f.ennola]*b,b);
+                  else p:=SignedPermListList(-b[-f.ennola]*b,b);
     fi;
     res{f.charNumbers}:=Permuted(f.charNumbers,p);
   od;

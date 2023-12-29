@@ -156,7 +156,7 @@ SignedPermListList:=function(a,b)local p,i,res;
   for i in [1..Length(a)] do
     if b[i^(p^-1)]<>a[i] then res[i]:=-res[i];fi;
   od;
-  return SignedPerm(res);
+  return SignedPerm(res)^-1;
 end;
 
 # duplicate lines and cols of M so HOgroup operates

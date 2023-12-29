@@ -478,7 +478,7 @@ SpetsEnnola:=function(arg)local t,z,xi,PositionsSgn,uc,EnnolaBete,OmegaChi,
     b:=Basis(A);
     res:=[];
     for i in [1..Length(b)] do
-      p:=SignedPermListList(b,b[i]*b);
+      p:=SignedPermListList(b[i]*b,b);
       if p<>false then 
         if ForAll([1..Size(f)],j->j^p in poss[j]) then Add(res,i);fi;
         p:=SignedPerm(-p.l);
@@ -495,8 +495,8 @@ SpetsEnnola:=function(arg)local t,z,xi,PositionsSgn,uc,EnnolaBete,OmegaChi,
   for i in [1..Length(l)] do
     f:=uc.families[i];
     A:=FusionAlgebra(f);b:=Basis(A);
-    if l[i]>0 then p:=SignedPermListList(b,b[l[i]]*b);
-              else p:=SignedPermListList(b,-b[-l[i]]*b);
+    if l[i]>0 then p:=SignedPermListList(b[l[i]]*b,b);
+              else p:=SignedPermListList(-b[-l[i]]*b,b);
     fi;
     res{f.charNumbers}:=Permuted(f.charNumbers,p);
   od;

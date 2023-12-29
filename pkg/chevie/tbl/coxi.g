@@ -95,22 +95,20 @@ CHEVIE.AddData("CharInfo","I",function(m)local res,applyf,v,m1;
   res.b:=List(res.charparams,x->x[2]);
   res.B:=List(res.charparams,function(phi)
     if phi[1]=1 then return phi[2]; else return m-phi[2]; fi; end);
-  res.charSymbols:=List([1..QuoInt(m-1,2)],function(l)local S;
-      S:=List([1..m],i->[0]); S[1]:=[1];S[l+1]:=[1];return S;end);
-  v:=List([1..m],x->[0]);v[m]:=[1,2];
-  res.charSymbols:=Concatenation([v],res.charSymbols);
+  v:=List([1..m],x->[0]);v[m]:=[2]; res.charSymbols:=[v];
   if m mod 2=0 then
-    v:=List([1..m],x->[0]);v[m]:=[1];v[m1]:=[1];
-    res.charSymbols:=Concatenation([v],res.charSymbols);
-    v:=List([1..m],x->[0]);v[m]:=[1];v[m1]:=[1];
-    res.charSymbols:=Concatenation([v],res.charSymbols);
+#   v:=List([1..m1-1],x->[0]);Append(v,[[1],2,0]);Add(res.charSymbols,v);
+#   v:=List([1..m1-1],x->[0]);Append(v,[[1],2,1]);Add(res.charSymbols,v);
+    v:=List([1..m1-1],x->[0]);Add(v,[1]);Append(v,v);Add(res.charSymbols,v);
+    v:=List([1..m1-1],x->[0]);Add(v,[1]);Append(v,v);Add(res.charSymbols,v);
   fi;
-  v:=List([1..m],x->[0,1]);v[m]:=[2];
-  res.charSymbols:=Concatenation([v],res.charSymbols);
+  v:=List([1..m],x->[0,1]);v[m]:=[1,2]; Add(res.charSymbols,v);
+  Append(res.charSymbols,List([1..QuoInt(m-1,2)],function(l)local S;
+      S:=List([1..m],i->[0]); S[1]:=[1];S[l+1]:=[1];return S;end));
   res.malleParams:=List(res.charSymbols,x->List(x,PartBeta));
   if m mod 2=0 then
-    res.malleParams[2]:=Concatenation(res.malleParams[2]{[1..m1]},[1]);
-    res.malleParams[3]:=Concatenation(res.malleParams[3]{[1..m1]},[-1]);
+    res.malleParams[2]:=Concatenation(res.malleParams[2]{[1..m1]},[2,0]);
+    res.malleParams[3]:=Concatenation(res.malleParams[3]{[1..m1]},[2,1]);
   fi;
   return res;
 end);
@@ -269,11 +267,9 @@ CHEVIE.AddData("DecompositionMatrix","I",function(n,p)local T, m;
 end);
 
 CHEVIE.AddData("FactorizedSchurElement","I",function(arg)local ci;
-  if arg[1] mod 2=0 and arg[3][1]<>arg[3][2] then Error("not implemented");fi;
   ci:=CHEVIE.R("CharInfo","I")(arg[1]);
   ci:=ci.malleParams[Position(ci.charparams,arg[2])];
-  return CHEVIE.R("FactorizedSchurElement","imp")
-    (arg[1],arg[1],2,ci,arg[3],1);
+  return CHEVIE.R("FactorizedSchurElement","imp")(arg[1],arg[1],2,ci,arg[3],1);
 end);
 
 CHEVIE.AddData("Invariants","I",function(arg)local e,type,m;

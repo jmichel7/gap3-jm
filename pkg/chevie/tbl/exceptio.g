@@ -204,8 +204,8 @@ CHEVIE.IndirectAddData("Ennola",["E7","E8","F4","2F4","G2","3D4",
       else A:=FusionAlgebra(f);
         b:=Basis(A);
         if not IsBound(f.ennola) then f.ennola:=f.special;fi;
-        if f.ennola>0 then p:=SignedPermListList(b,b[f.ennola]*b);
-                      else p:=SignedPermListList(b,-b[-f.ennola]*b);
+        if f.ennola>0 then p:=SignedPermListList(b[f.ennola]*b,b);
+                      else p:=SignedPermListList(-b[-f.ennola]*b,b);
         fi;
       fi;
     else p:=SignedPerm();

@@ -29,7 +29,7 @@
 # 1) singular real projections are identified
 # 2) calls starbraid for each
 LBraidToWord:=function(v1,v2,B)
-     local des,k,x1,x2,y1,y2,p,q,inv,i,j,tcrit,crit,t,u,ut,
+     local des,k,x1,x2,y1,y2,q,inv,i,j,tcrit,crit,t,u,ut,
      xut,put,res,xt,yt,x,xcrit,posx,nx,xx,n,starbraid,desingularized;
 
 #Print(evalf(v1,6),"=>",evalf(v2,6),"\n");
@@ -73,8 +73,7 @@ LBraidToWord:=function(v1,v2,B)
 #  Print("v2:=");Cut(FormatGAP(v2));Print(";\n");
        des:=desingularized(v1,v2);
        return LBraidToWord(des[1],des[2],B); fi;
-  p:=SortingPerm(x1);
-  q:=p^-1;
+  q:=SortingPerm(x1)^-1;
   inv:=[];
   for i in [1..n-1] do
     for j in [i+1..n] do

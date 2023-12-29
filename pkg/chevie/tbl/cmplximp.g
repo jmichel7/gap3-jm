@@ -567,6 +567,11 @@ CHEVIE.AddData("FactorizedSchurElement","imp",function(p,q,r,phi,para,root)
     if IsInt(phi[Length(phi)]) then m:=Length(phi)-2;phi:=FullSymbol(phi);
     else m:=p;
     fi;
+    if para[1]<>para[2] then
+      InfoChevie("# FactorizedSchurElements(H(G(",p,",",q,",",r,"),",para,
+                 ") not implemented\n");
+      return false;
+    fi;
     F:=CHEVIE.imp.FactorizedSchurElement(p,1,r,phi,
       Concatenation([List([0..p-1],i->E(p)^i)],para{[2..Length(para)]}),[]);
     F.factor:=F.factor/m;
@@ -584,8 +589,8 @@ CHEVIE.AddData("FactorizedSchurElement","imp",function(p,q,r,phi,para,root)
     F.factor:=p/(q*m)*F.factor;
     return F;
     #return p/q*CHEVIE.imp.FactorizedSchurElement(p,1,r,phi,para)/m;
-   else CHEVIE.compat.InfoChevie("# FactorizedSchurElements(H(G(",
-                     p,",",q,",",r,"),",para,") not implemented\n");
+  else InfoChevie("# FactorizedSchurElements(H(G(",p,",",q,",",r,"),",para,
+                  ") not implemented\n");
     return false;
   fi;
 end);

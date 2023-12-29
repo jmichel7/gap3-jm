@@ -199,6 +199,10 @@ for y in ys do
 	fi;
     od;
 od;
+#Print(List(roots,evalf),"\n");
+#Print("neighbours:",List(ys,x->Length(x.neighbours)),"\n");
+#Print("friends:",List(ys,x->Length(x.friends)),"\n");
+#Print("lovers:",List(ys,x->Length(x.lovers)),"\n");Error();
 for y in ys do
     distneighbours:=List(y.neighbours,z->(y.y.r-z.r)^2+(y.y.i-z.i)^2);
     SortParallel(distneighbours,y.neighbours);

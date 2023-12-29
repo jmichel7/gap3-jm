@@ -65,10 +65,8 @@ end;
 # Printing controlled by VKCURVE.showAction
 ############################################################
 
-DBVKQuotient:=function(r) local braids,z,b,auts,n,F,seg,
-                               zero,basestring,dist,k,height,
-                               fbase,aut,correctaut,ifbase,f,
-                               choices,conjugator,conj,rels,g;
+DBVKQuotient:=function(r) local braids,auts,n,F,zero,basestring,dist,k,height,
+  fbase,aut,correctaut,ifbase,conjugator,conj,rels,g;
   # get the true monodromy braids and the Hurwitz action basic data
   n:=r.braids[1].monoid.group.nbGeneratingReflections+1;
   braids:=r.braids;#{List(r.trueroots,z->Position(r.roots,z))};
@@ -85,32 +83,22 @@ DBVKQuotient:=function(r) local braids,z,b,auts,n,F,seg,
   fbase:=F.generators[basestring];
   rels:=[];
   for aut in auts do
-      # Find an element conjugator such that
-      #    conjugator*aut(fbase)/conjugator = fbase
-      ifbase:=Image(aut,fbase);
-      conjugator:=F.1/F.1;
-      choices:=Concatenation(List(F.generators{[1..n]},f->[f,f^-1]));
-      repeat
-	k:=0;
-	repeat k := k+1;
-	      until LengthWord(choices[k]*ifbase) < LengthWord(ifbase);
-	ifbase:=choices[k] * ifbase /choices[k];
-	conjugator:= choices[k] * conjugator;
-      until
-	LengthWord(ifbase)=1;
-      # Replacing aut by  correctaut:= Conj(conjugator)*aut
-      conj:=GroupHomomorphismByImages(F,F,
-	 F.generators,conjugator*F.generators/conjugator);
-      conj.isMapping:=true;
-      correctaut:=CompositionMapping(conj,aut);
-      if Position(auts,aut) > Length(r.verticallines)
-      then
-	  Append(rels,List(F.generators{[1..n]},f->Image(correctaut,f)/f));
-      else
-	  g:=F.generators[Position(auts,aut)+n];
-	  Append(rels,List(F.generators{[1..n]},
-			       f-> Image(correctaut,f)*g/(g*f)));
-      fi;
+    # Find conjugator such that conjugator*aut(fbase)/conjugator=fbase
+    ifbase:=Image(aut,fbase);
+    conjugator:=F.identity;
+    while LengthWord(ifbase)>1 do
+      k:=Subword(ifbase,1,1);
+      ifbase:=k^-1*ifbase*k;
+      conjugator:=conjugator*k;
+    od;
+    # Replacing aut by  correctaut:= Conj(conjugator)*aut
+    conj:=GroupHomomorphismByImages(F,F,F.generators,
+       List(F.generators,x->x^conjugator));
+    conj.isMapping:=true;
+    correctaut:=CompositionMapping(conj,aut);
+    k:=Position(auts,aut);
+    if k>Length(r.verticallines)then g:=F.identity;else g:=F.generators[k+n];fi;
+    Append(rels,List(F.generators{[1..n]},f->Image(correctaut,f)*g/(g*f)));
   od;
   Add(rels,fbase);
 # Print("=>rels=",rels,"\n");
