@@ -26,6 +26,7 @@ CheckCharParams:=function(W) local ct,q,fd,db,n,l,nm,t,f,fd,ok,ddb,occursin,
   n:=ReflectionName(W);
   if IsBound(ChevieCharInfo(W).malle) then
     l:=ChevieCharInfo(W).malle;
+    if Length(l[1])>=4 then return;fi; # G(p,q,2) with q even
     nm:=List(l,p->TeXStrip(exceptioCharName(p)));
   elif n[1] in "EFGH" and Length(n)<4 then
     l:=Filtered(Collected(CharParams(W)),x->x[2]>1);

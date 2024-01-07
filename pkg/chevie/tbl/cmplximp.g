@@ -1,4 +1,4 @@
-#############################################################################
+##  #############################################################################
 ##
 #A  tbl/cmplximp.g        CHEVIE library        Gunter Malle and  Jean Michel
 ##
@@ -169,26 +169,29 @@ CHEVIE.AddData("NrConjugacyClasses","imp",function(p,q,r)
   fi;
 end);
 
-CHEVIE.AddData("ClassInfo","imp",function(p,q,r)local res,times,trans,I,i,j,a,S;
+CHEVIE.AddData("ClassInfo","imp",function(p,q,r)
+  local res,times,trans,I,i,j,a,S,e1;
   times:=function(e,o)return Concatenation(List([1..e],x->o));end;
-  if [q,r]=[2,2] and not IsBound(CHEVIE.othermethod) then 
+  if r=2 and p<>q and q mod 2=0 then 
+    e1:=q/2;
+# if s,t,u generate G(p,2,2) then s':=s^e1,t,u generate G(p,q,2)
+# z:=stu generates Z(G(p,2,2)) and z':=z^e1 generates Z(G(p,q,2))
+# relations for G(p,2,2) are stu=tus=ust
+# relations for G(p,q,2) are s'tu=tus' and [z',u]=1
     res:=rec(classtext:=[],classparams:=[],classnames:=[]);
     for i in [0..p-1] do for j in [0..QuoInt(p-i-1,2)] do
-      Add(res.classparams,Concatenation([1..j]*0+1,[1..i]*0));
-      Add(res.classtext,Concatenation([1..j]*0+1,times(i,[1,2,3])));
-      Add(res.classnames,String(Concatenation(times(j,"1"),times(i,"z"))));
+      if (j+i)mod e1=0 then
+      Add(res.classparams,Concatenation(times(j,[1]),times(i,[0])));
+      Add(res.classtext,Concatenation(times((j+i)/e1,[1]),times(i,[2,3])));
+      Add(res.classnames,String(Concatenation(times((j+i)/e1,"1"),
+           times(i mod e1,"23"),times(QuoInt(i,e1),"z"))));
+      fi;
     od;od;
-    for j in [2,3] do
-      for i in [0..QuoInt(p,2)-1] do Add(res.classparams,Concatenation([j],[1..i]*0));
-	Add(res.classtext,Concatenation([j],times(i,[1,2,3])));
-	Add(res.classnames,String(Concatenation(String(j),times(i,"z"))));
-      od;
-    od;
-    res.malle:=[];
-    for a in [0..p-1] do 
-       Append(res.malle,List([0..QuoInt(p-a-1,2)],m->[3,a,m]));od;
-    Append(res.malle,List([0..QuoInt(p,2)-1],m->[1,m]));
-    Append(res.malle,List([0..QuoInt(p,2)-1],m->[2,m]));
+    for j in [2,3] do for i in [0,e1..p/2-e1] do 
+      Add(res.classparams,Concatenation([j],times(i,[0])));
+      Add(res.classtext,Concatenation([j],times(i/e1,[1]),times(i,[2,3])));
+      Add(res.classnames,String(Concatenation(String(j),times(i/e1,"z"))));
+    od;od;
     res.orders:=List(res.classparams,function(c)
      if Length(c)>0 and c[1] in [2,3] then 
          return Lcm(2,QuoInt(p,Gcd(Number(c,x->x=0),p)));
@@ -196,7 +199,7 @@ CHEVIE.AddData("ClassInfo","imp",function(p,q,r)local res,times,trans,I,i,j,a,S;
        QuoInt(QuoInt(p,2),Gcd(Number(c,x->x=1),QuoInt(p,2))));
      fi;end);
     res.classes:=List(res.classparams,function(c)
-      if Length(c)>0 and c[1] in [2,3] then return QuoInt(p,q);
+      if Length(c)>0 and c[1] in [2,3] then return QuoInt(p,2);
       elif 1 in c then return 2;else return 1;fi;end);
     return res;
   elif q=1 then
@@ -597,7 +600,7 @@ end);
 
 CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
   local X,Y,Z,res,cl,GenericEntry,pow,d,I,LIM,HooksBeta,StripsBeta,Strips,
-                                Delta,StripsCache,chiCache,code,j,ci;
+                                Delta,StripsCache,chiCache,code,j,ci,e1;
   res:=rec();
   res.name:=SPrint("H(G(",p,",",q,",",r,"))"); res.identifier:=res.name;
   res.degrees:=CHEVIE.R("ReflectionDegrees","imp")(p,q,r);
@@ -783,9 +786,12 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
 
     res.irreducibles:=List(List(cl.classparams,x->List(x,BetaSet)),
         x->List(cl.classparams,y->GenericEntry(y,x)));
-  elif [q,r]=[2,2] and not IsBound(CHEVIE.othermethod) then
+  elif r=2 and p<>q and q mod 2=0 then
     Inherit(res,cl,["classes","orders"]);
-    X:=para[2];Y:=para[3];Z:=para[1];
+    e1:=q/2;
+    X:=para[2];Y:=para[3];
+    Z:=List(para[1],x->GetRoot(x,e1));
+    Z:=Concatenation(List([0..e1-1],j->Z*E(e1)^j));
     ci:=CHEVIE.R("CharInfo","imp")(p,q,r);
     GenericEntry:=function(char,class)local w;
       char:=ci.malle[Position(ci.charparams,char)];
@@ -795,7 +801,7 @@ CHEVIE.AddData("HeckeCharTable","imp",function(p,q,r,para,root)
          if i=0 then return Product(w); else return w[i]; fi;end);
       else
         w:=char[2]*GetRoot(X[1]*X[2]*Y[1]*Y[2]*Z[char[3]]*Z[char[4]]*
-          E(p/q)^(2-char[3]-char[4]),2)*E(p)^(char[3]+char[4]-2);
+          E(p/2)^(2-char[3]-char[4]),2)*E(p)^(char[3]+char[4]-2);
         class:=List([0..3],i->Number(class,j->i=j));
         if class[2]>0 then char:=Sum(Z{char{[3,4]}},x->x^class[2]);
         elif class[3]>0 then char:=Sum(X);
@@ -2001,11 +2007,11 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
            [[para[2][S[2]]]],[[para[3][S[3]]]]];
         else Y:=para[2];T:=para[3];
           if q>2 then X:=List(para[1],y->GetRoot(y,QuoInt(q,2)));
-            X:=Concatenation(List([1..QuoInt(q,2)],i->E(QuoInt(q,2))^i*X));
+            X:=Concatenation(List([0..QuoInt(q,2)-1],i->E(QuoInt(q,2))^i*X));
           else X:=para[1];fi;
           X:=X{S{[3,4]}};
           v:=S[2]*GetRoot(Product(X)*Product(Y)*Product(T)*
-            E(e)^(2-S[3]-S[4]),2)*E(p)^(S[3]+S[4]-2);
+            E(QuoInt(p,2))^(2-S[3]-S[4]),2)*E(p)^(S[3]+S[4]-2);
           d:=1+Sum(X)*0+Sum(Y)*0+Sum(T)*0;
           return [(d*[[X[1],Sum(Y,y->1/y)-X[2]/v*Sum(T)],
             [0,X[2]]])^QuoInt(q,2),[[Sum(Y),1/X[1]],[-Product(Y)*X[1],0]],

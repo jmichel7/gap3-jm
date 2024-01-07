@@ -3236,7 +3236,6 @@ TzSearchEqual := function ( T )
     numrels := tietze[TZ_NUMRELS];
     modified := false;
     oldtotal := tietze[TZ_TOTAL];
-    equal := true;
 
     # substitute substrings by substrings of equal length.
     i := 1;
@@ -3261,9 +3260,15 @@ TzSearchEqual := function ( T )
             od;
             if k > numrels then  j := lastj;  fi;
             if i <= j then
-                altered := TzSearchC( tietze, i, j, equal );
+                if T.printLevel>=4 then
+                  Print("#SearchCeq(",i,",",j,")\n");
+                  DisplayPresentation(T,true);
+                fi;
+                altered := TzSearchC( tietze, i, j, true);
                 if T.printLevel>=3 and altered>0 then
-                  Print("#SearchCeq(",i,",",j,") altered=",altered,"\n");
+                  Print("#SearchCeq(",i,",",j,") altered=",altered," to total",
+                       tietze[TZ_TOTAL],"\n");
+                  Print(tietze[TZ_RELATORS]{[i..j]},"\n");
                 fi;
                 modified := modified or altered > 0;
                 i := j;

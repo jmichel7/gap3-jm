@@ -465,6 +465,7 @@ function(W)local cs,ud,i,vud,uc,n,fd,vfd;
   od;
 end,
 function(W)local n;
+  if not IsSpetsial(W) then return false;fi;
   n:=ReflectionType(W);
   if Length(n)>1 then return false; elif Length(n)=0 then return true;fi;
   n:=n[1];
