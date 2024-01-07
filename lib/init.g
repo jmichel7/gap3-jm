@@ -184,7 +184,7 @@
 InfoRead1:=Ignore;
 Revision:=rec();  # used by tbl/*.tbl
 
-VERLIB := "07 Sep 2021";
+VERLIB := "07 Jan 2024";
 if not IsBound( VERSRC ) then  VERSRC := "unknown";  fi;
 if not IsBound( VERSYS ) then  VERSYS := "unknwon";  fi;
 VERSION:="lib:";Append(VERSION,VERLIB);
@@ -205,7 +205,7 @@ PR("            ##  V.Felsch, E.Horvath,  A.Hulpke  # A.Kaup,     J.Meier");
 PR("           ###  J.Mnich,  W.Nickel,   A.Niemeyer# G.Pfeiffer, U.Polis");
 PR("          ## #  A.Seress  H.Theissen, A.Wegner  #");
 PR("         ##  #                                  #");
-PR("        ##   #  Distribution: gap3-jm 14 mar 22");
+PR("        ##   #  Distribution: gap3-jm 07 jan 24");
 PR("       ##    #    see http://webusers.imj-prg.fr/~jean.michel/gap3");
 Print("          ##    ##    ",VERSION,"\n");
 PR("       ######                                 For help enter: ?<return>");

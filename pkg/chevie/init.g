@@ -11,7 +11,7 @@ if not IsBound(CHEVIE) then
 fi;
 
 CHEVIE.name:="chevie";
-CHEVIE.date:=[2023,2,6];
+CHEVIE.date:=[2024,1,7];
 CHEVIE.homepage:="http://webusers.imj-prg.fr/~jean.michel/chevie";
 CHEVIE.copyright:=
 ["If you use CHEVIE in your work please cite the authors as follows:",
