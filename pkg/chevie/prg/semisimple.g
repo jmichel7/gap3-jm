@@ -222,6 +222,31 @@ SemisimpleSubgroup:=function(arg)local T,n;
   fi;
 end;
 
+# returns w,s1 such that s1 is in the fundamental alcove of the affine
+# Weyl group and s1^w==s
+ToAlcove:=function(s)local W,w,i,l,j;
+  W:=s.group;
+  w:=W.identity;
+  i:=0;
+  l:=s.v;
+  while i<=SemisimpleRank(W) do
+    if i=0 then
+      for j in WeightInfo(W).highestroot do
+        if l*(W.roots[j]*W.simpleRoots)>1 then
+          l:=l-(l*(W.roots[j]*W.simpleRoots)-1)*PermRootOps.Coroot(W,j);
+          w:=w*Reflection(W,j);
+        fi;
+      od;
+    elif l*(W.roots[i]*W.simpleRoots)<0 then
+      l:=l-l*(W.roots[i]*W.simpleRoots)*PermRootOps.Coroot(W,i);
+      w:=w*W.(i);
+      i:=-1;
+    fi;
+    i:=i+1;
+  od;
+  return [w,SemisimpleElement(W,l)];
+end;
+
 #############################################################################
 ##
 #F  Centralizer( <W>, <s>)  . . . Stabilizer of <s> in <W>
@@ -233,7 +258,7 @@ end;
 ##  the diagram automorphism part being those induced by C_G(s)/C_G^0(s) on
 ##  C_G^0(s). It is accepted that <W> itself is an extended group.
 ##
-CoxeterGroupOps.Centralizer:=function(W,s)local p,W0s,N,totalW;
+CoxeterGroupOps.Centralizer:=function(W,s)local p,W0s,N,totalW,s0,w;
   if  not IsSemisimpleElement(s) then
     if s in Parent(W) or IsGroup(s) then return PermGroupOps.Centralizer(W,s);fi;
     Error(s," must be an element of Parent(W) or a semisimple element");
@@ -250,8 +275,9 @@ CoxeterGroupOps.Centralizer:=function(W,s)local p,W0s,N,totalW;
   W0s:=ReflectionSubgroup(W,p);
   # for the computation of W(s) see Bonnafé, "Quasi-isolated elements in
   # reductive groups", comm. in algebra 33 (2005) proposition 3.14
+  w:=ToAlcove(s);s0:=w[2];w:=w[1];
   N:=FundamentalGroup(W,true);
-  N:=Filtered(Elements(N),x->s^x=s);
+  N:=List(Filtered(Elements(N),x->s0^x=s0),y->w*y*w^-1);
   N:=List(N,x->ReducedInRightCoset(W0s,x));
   N:=Subgroup(W,AbelianGenerators(N));
   if W.rank<>W.semisimpleRank then
@@ -520,10 +546,12 @@ RootDatum:=function(arg)local type,data,res; type:=arg[1];
   data.2E6sc:=CoxeterCoset(CoxeterGroup("E",6,"sc"),(1,6)(3,5));
   data.E6sc:=CoxeterGroup("E",6,"sc");
   data.E6:=CoxeterGroup("E",6);
-  data.CE6:=CoxeterGroup([[1,2,-1,0,0,0,0],[0,0,-2,-1,0,0,0],[0,-1,2,-1,0,0,0],
-      [-1,0,0,2,-1,0,0],[1,0,0,-1,2,-1,0],[0,0,0,0,-1,2,0]],
-      [[0,1,0,0,0,0,0],[3,-2,-1,0,-2,-1,-1],[3,-2,0,0,-2,-1,-1],
-       [0,0,0,1,0,0,0],[0,0,0,0,1,0,0],[0,0,0,0,0,1,0]]);
+  data.CE6:=CoxeterGroup([[2,0,-1,0,0,0,1],[0,2,0,-1,0,0,0],[-1,0,2,-1,0,0,-1],
+   [0,-1,-1,2,-1,0,0],[0,0,0,-1,2,-1,1],[0,0,0,0,-1,2,-1]],
+   IdentityMat(7){[1..6]});
+  data.2CE6:=CoxeterCoset(data.CE6,[[0,0,0,0,0,1,0],[0,1,0,0,0,0,0],
+   [0,0,0,0,1,0,0],[0,0,0,1,0,0,0],[0,0,1,0,0,0,0],[1,0,0,0,0,0,0],
+   [0,0,0,0,0,0,-1]]);
   data.E7sc:=CoxeterGroup("E",7,"sc");
   data.E7:=CoxeterGroup("E",7);
   data.CE7:=CoxeterGroup([[0,2,-1,0,0,0,0,0],[1,0,0,-1,0,0,0,0],

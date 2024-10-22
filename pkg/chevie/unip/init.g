@@ -24,7 +24,8 @@ AUTO(ReadChv("unip/families"),
    FusionAlgebra,
    NrDrinfeldDouble,
    OnFamily,
-   SubFamilyij);
+   SubFamilyij,
+   TwistedDrinfeldDoubleCyclic);
 
 AUTO(ReadChv("unip/unichars"),
    AlmostCharacter,

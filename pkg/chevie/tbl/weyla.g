@@ -382,9 +382,9 @@ CHEVIE.AddData("UnipotentClasses","A",function(n,p)
       Sum(p{[1..i-1]})+[1..p[i]-1]));
     p:=Concatenation(List(p,x->[1-x,3-x..x-1]));Sort(p);
     cl.dynkin:=List([1..Length(p)-1],i->p[i+1]-p[i]);
-    cl.red:=[];p:=1;for j in Collected(cl.parameter) do
-      Append(cl.red,[p..p+j[2]-2]);p:=p+j[2];od;
-    cl.red:=ReflectionSubgroup(CoxeterGroup("A",p-2),cl.red);
+    cl.red:=CoxeterGroup();p:=Collected(cl.parameter);
+    for j in p do cl.red:=cl.red*CoxeterGroup("A",j[2]-1);od;
+    cl.red:=cl.red*Torus(Length(p)-1);
     cl.AuAction:=ExtendedReflectionGroup(cl.red,[IdentityMat(Rank(cl.red))]);
     cl.rep:=partition2parab(cl.parameter);
     if d=2 then Add(ss(1).locsys,[i,2]);Add(ss(-1).locsys,[i,1]);

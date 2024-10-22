@@ -83,7 +83,8 @@ AUTO(ReadChv("lib/factschur"),
   FactorizedSchurElementsOps);
 
 AUTO(ReadChv("lib/sperm"),
-  IsSignedPerm, Perm, SignedPermListList, SignedPerm, Signs);
+  IsSignedPerm, Perm, SignedMatStab, SignedPermListList, SignedPerm, 
+  SignedPermMatMat, Signs);
 
 AUTO(ReadChv("prg/abscox"),
   AbsCoxOps, Bruhat, BruhatSmaller, CartanMatFromCoxeterMatrix,

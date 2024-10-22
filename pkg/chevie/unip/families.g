@@ -1,4 +1,4 @@
-#############################################################################
+############################################################################
 ##
 #A  families.g      Families of Unipotent Characters         (C)  Jean Michel
 ##
@@ -203,24 +203,19 @@ CHEVIE.families.C2:=rec(group:="C2", name:="C_2",
   mellin:=[[1,1,0,0],[1,-1,0,0],[0,0,1,1],[0,0,1,-1]],
   mellinLabels:=["(1,1)","(1,g2)","(g2,1)","(g2,g2)"]);
 # variation occuring in E7 and E8
-CHEVIE.families.("C'2"):=rec(group:="C2",name:="C'_2",
-  explanation:="TwistedDrinfeldDouble(Z/2)",
-  charLabels:=["(1,1)",  "(1,\\varepsilon)", "(g_2,1)","(g_2,\\varepsilon)"],
-  fourierMat:=1/2*[[1,1,-1,-1],[1,1,1,1],[-1,1,1,-1],[-1,1,-1,1]],
+CHEVIE.families.LTQZ2:=rec(group:=CyclicGroup(2),
+  cocycle:=-1,pivotal:=[ 1, -1 ],
+  explanation:="Lusztig's TwistedDrinfeldDouble(Z/2)",
+  charparams:=[[1,1],[1,-1],[-1,E(4)],[-1,-E(4)]],
+  charLabels:=[ "(1,1)","(1,-1)","(-1,i)","(-1,-i)"],
+  bar:=[1,1],defect:=1,
+  fourierMat:=[[1,1,-1,-1],[1,1,1,1],[-1,1,1,-1],[-1,1,-1,1]]/2,
   eigenvalues:=[1,1,E(4),-E(4)],
-  qEigen:=[0,0,1/2,1/2],
+  name:="LusztigTwistedDrinfeldDoubleCyclic(2,-1,[1,-1])",
+  explanation:="LusztigTwistedDrinfeldDoubleCyclic(2,-1,[1,-1])",
+  qEigen:=[ 0, 0, 1/2, 1/2 ],
   perm:=(3,4),
-  lusztig:=true, # does not satisfy (ST)^3=1 but (SPT)^3=1
-  cospecial:=2);
-# same but non-lusztig version. Occurs in  H3 and H4 and G24,26,33,34,27
-CHEVIE.families.("C'\"2"):=rec(group:="C2", name:="C'''_2",
-  explanation:="TwistedDrinfeldDouble(Z/2)'",
-  charLabels:=["(1,1)", "(1,\\varepsilon)", "(g_2,1)", "(g_2,\\varepsilon)"],
-  fourierMat:=1/2*[[1,1,-1,-1],[1,1,1,1],[-1,1,-1,1],[-1,1,1,-1]],
-  eigenvalues:=[1,1,E(4),-E(4)],
-  qEigen:=[0,0,1/2,1/2],
-  perm:=(3,4),
-  cospecial:=2);
+  lusztig:=true); # does not satisfy (ST)^3=1 but (SPT)^3=1
 
 # n-th exterior power of the character ring of the cyclic group
 # of order n, according to Michael Cuntz.
@@ -292,15 +287,87 @@ end;
 CHEVIE.families.X5:=SubFamilyij(CHEVIE.families.X(6),1,3,1-E(3));
 CHEVIE.families.X5.cospecial:=5;
 
-#  family made from QZ(3) by Gunter 22/9/99:
-CHEVIE.families.Z9:=CHEVIE.families.ExtPowCyclic(9,1);
-if CHEVIE.families.Z9.eigenvalues<>List([0..8],i->E(9)^(5*i^2))then Error();fi;
-Inherit(CHEVIE.families.Z9, rec(
-  charparams:=[[0,1],[1,E(9)^5],[2,E(9)],[0,E(3)],[1,E(9)^8],
-               [2,E(9)^4],[0,E(3)^2],[1,E(9)^2],[2,E(9)^7]],
-  perm:=(2,9)(3,8)(4,7)(5,6),
-  explanation:="Twisted Drinfeld double of Z/3",
-  qEigen:=[0,2/3,1/3,0,2/3,1/3,0,2/3,1/3]));
+# compute  the modular  data of  the category  of modules  over the twisted
+# Drinfeld double of a cyclic group G of order n
+# arguments are of the form (n,q,[piv]), where n is the order of the group,
+# q  corresponds to the value of the 3-cocycle on (q,q^(n-1),q^(n-1)) (q is
+# an  n-th  root  of  unity)  and  piv  (optional)  is  a pivotal structure
+# different form the usual one (on vector spaces)
+#
+# The result is a record with fields:
+#   .group: the group
+#   .cocycle: the value of the 3-cocycle on the element (1,1,n-1)(a root of
+#   unity)
+#   .pivotal: a pair [k,alpha] where the 2-cocycle associated with k is a
+#     coboundary  (an  integer  in  [0..n-1]),  and alpha the corresponding
+#     1-cocycle  (a n^2-th root of unity)  (for the cyclic group, the Schur
+#     multiplier  is trivial,  therefore these  pairs correspond exactly to
+#     simple objects of the category)
+#   .charparams: labels of lines of the fourier matrix by
+#     pairs [x,chi]: elt of  G, projective character of G for the
+#     corresponding cocycle 
+#   .special is the position of the special line (here 1 where (x,chi)=(1,1) is)
+#   .eigenvalues are the eigenvalues chi(x)/chi(1) 
+#     (inverse of the T-matrix of the category)
+#   .fourierMat is the Fourier matrix (renormalized S-matrix)
+#  .bar  is  the  object  \overline{1}  needed  to renormalise the S-matrix
+#    (related to the non sphericity of the pivotal structure)
+#
+# In general, we have the relation (ST)^3=\tau id, where the explicit value
+# of \tau can be computed using Gauss sums.
+TwistedDrinfeldDoubleCyclic:=function(arg) 
+  local n, G, zeta, res, simple, i, piv, bar, omega, theta, gamma;
+  n:=arg[1];
+  zeta:=arg[2];
+  if Length(arg)=2 then
+    piv:=[1,1];
+  else
+    piv:=arg[3];
+  fi;
+  piv[1]:=AsRootOfUnity(piv[1])*n;
+  G:=CyclicGroup(n);
+  res:=rec(group:=G);
+  res.cocycle:=zeta;
+  omega:=function(a,b,c) #computes the 3-cocycle associated to zeta: (a,b,c) 
+  # is sent to zeta^(a*(b+c)^quo), where 0 <= a,b,c < n
+      return zeta^((a mod n)*QuoInt((b mod n)+(c mod n),n));
+  end;
+  theta:=function(g,a,b) #computes the function theta_g(a,b)
+      return omega(g,a,b)*omega(a,g,b)^(-1)*omega(a,b,g);
+  end;
+  gamma:=function(g,a,b) #computes the function gamma_g(a,b)
+      return omega(a,b,g)*omega(a,g,b)^(-1)*omega(g,a,b);
+  end;
+  simple:=[];
+  for i in [0..n-1] do
+    Append(simple,List([0..n-1],j->[i,GetRoot(Product(List([1..n-1],k->theta(i,1,k))),n)*E(n)^j])); 
+  # if a is a representation with cocycle theta_i then 
+  # 1=a(n)=theta_a(1,n-1)^(-1)a(1)a(n-1)=...=
+  # theta_a(1,n-1)^(-1)*theta_a(1,n-2)^(-1)*...*theta_a(1,1)^(-1)a(1)^n 
+  od;
+  if not (piv in simple) then return false;fi; 
+  #if the given pivotal structure is not of the expected form, we bail out
+  res.pivotal:=[E(n)^piv[1],piv[2]];
+  res.charparams:=List(simple,i->[E(n)^i[1],i[2]]);
+  res.charLabels:=List(res.charparams,x->SPrint("(",FormatTeX(x[1]),",",FormatTeX(x[2]),")"));
+  res.special:=1;
+  bar:=[(-2*piv[1]) mod n, piv[2]^(-2)*gamma(1,piv[1],-piv[1])^(-1)*gamma(1,piv[1],-2*piv[1])^(-1)];
+  res.bar:=[E(n)^bar[1],bar[2]];
+  res.fourierMat:=1/(n*piv[2]^(-2*piv[1]))*List(simple,i->List(simple,j->piv[2]^i[1]*piv[2]^j[1]*i[2]^piv[1]*j[2]^piv[1]*i[2]^j[1]*j[2]^i[1]));  
+  res.eigenvalues:=List(simple,i->piv[2]^i[1]*i[2]^piv[1]*i[2]^i[1]);
+  res.defect:=Sum(res.eigenvalues)/n*piv[2]^(-2*piv[1]);
+  res.name:=SPrint("TwistedDrinfeldDouble(Z/",n,",",zeta);
+  res.qEigen:=List(res.charparams,x->AsRootOfUnity(ComplexConjugate(x[1])));
+  if piv<>[0,1] then PrintToString(res.name,",",[E(n)^piv[1],piv[2]]);fi;
+  PrintToString(res.name,")");
+  res.perm:=PermList(res.fourierMat^2*[1..n^2]);
+  return Family(res);
+end;
+
+# Twisted Drinfeld double of Z/nZ
+CHEVIE.families.TQZ:=function(arg)
+  return ApplyFunc(TwistedDrinfeldDoubleCyclic,arg);
+end;
 
 CHEVIE.families.Z4:=CHEVIE.families.ExtPowCyclic(4,1);
 Inherit(CHEVIE.families.Z4, rec(
@@ -477,12 +544,14 @@ NrDrinfeldDouble:=g->Sum(ConjugacyClasses(g),c->
 # DrinfeldDouble(G,rec(lusztig:=true,pivotal_character:=List(G.generators,x->1),
 #      pivotal_element:=G.identity)) computes the matrix S_0 of Lusztig
 # DrinfeldDouble(G) computes the matrix S=\Delta S_0 of Malle (cf spetsmats.tex)
-DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct; 
+DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct,ci;
   g:=arg[1];if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
   res:=rec(group:=g);
   lu:=IsBound(opt.lusztig) and opt.lusztig;if lu then res.lusztig:=lu;fi;
-  res.classinfo:=Zip(ConjugacyClasses(g),
-                     ClassNamesCharTable(CharTable(g)),
+  if IsBound(g.generatingReflections) then ci:=ChevieClassInfo(g).classnames;
+  else ci:=ClassNamesCharTable(CharTable(g));
+  fi;
+  res.classinfo:=Zip(ConjugacyClasses(g),ci,
     function(c,n)local r,t,o;
     r:=rec(elt:=Representative(c),name:=n);
     if r.elt=g.identity then r.name:="Id";fi;
@@ -563,6 +632,7 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct;
   if res.special=false then Error();fi;
   if IsBound(opt.pivotal) then 
     pivelm:=opt.pivotal[1]; pivchar:=opt.pivotal[2];
+    res.pivotal:=opt.pivotal;
     ct:=res.classinfo[1].chars;
     p:=DiagonalMat(Concatenation(List(res.classinfo,cp->List(cp.chars,ch->
       Product(pivchar{GetWord(g,cp.elt)})*
@@ -577,6 +647,53 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct;
     res.cospecial:=res.special;
   fi;
   return res;
+end;
+
+CHEVIE.families.F20:=function()local g4,g5,f20;
+  g4:=(2,4,5,3);g5:=(1,2,3,4,5);
+  f20:=Group(g5,g4);
+  f20.operations:=Copy(f20.operations);
+  f20.operations.ConjugacyClasses:=
+       g->List([(),g4^3,g4,g4^2,g5],x->ConjugacyClass(g,x));
+  f20.charTable:=rec(classnames:=["1","g_4^3","g_4","g_2","g_5"],
+    irreducibles:=[[1,1,1,1,1],[1,-1,-1,1,1],[1,-E(4),E(4),-1,1],
+      [1,E(4),-E(4),-1,1],[4,0,0,0,-1]],
+    centralizers:=[20,4,4,4,5]);
+  f20.operations.CharNames:=function(g,opt)
+    return ["1","-1","i","-i","\\rho"];end;
+  f20.name:="F20";
+  return DrinfeldDouble(f20);
+end;
+  
+CHEVIE.families.F42:=function()local g6,g7,f42;
+  g7:=(1,2,3,4,5,6,7);g6:=(2,6,5,7,3,4);
+  f42:=Group(g7,g6);
+  f42.operations:=Copy(f42.operations);
+  f42.operations.ConjugacyClasses:=
+       g->List([(),g6^4,g6^5,g6^2,g6,g6^3,g7],x->ConjugacyClass(g,x));
+  f42.charTable:=rec(
+   classnames:=["1","g_6^4","g_6^5","g_6^2","g_6","g_6^3","g_7"],
+   irreducibles:=
+  [[1,      1,       1,      1,       1,  1,  1],
+   [1,      1,      -1,      1,      -1, -1,  1],
+   [1, E(3)^2,   -E(3),   E(3), -E(3)^2, -1,  1],
+   [1,   E(3), -E(3)^2, E(3)^2,   -E(3), -1,  1],
+   [1, E(3)^2,    E(3),   E(3),  E(3)^2,  1,  1],
+   [1,   E(3),  E(3)^2, E(3)^2,    E(3),  1,  1],
+   [6,      0,       0,      0,       0,  0, -1]],
+  centralizers:=[ 42, 6, 6, 6, 6, 6, 7 ]);
+  f42.operations.CharNames:=function(g,opt)
+    return ["1","-1","-\\zeta_3^2","-\\zeta_3","\\zeta_3^2","\\zeta_3","\\rho"];
+  end;
+  f42.name:="F42";
+  return DrinfeldDouble(f42);
+end;
+  
+CHEVIE.families.G4:=function()local g4;
+  g4:=ComplexReflectionGroup(4);
+  ChevieClassInfo(g4);
+  g4.classInfo.classnames:=["1","z","g_4","g_6","g_6^4","g_6^2","g_6^5"];
+  return DrinfeldDouble(g4,rec(pivotal:=[EltWord(g4,[1,2])^3,[E(3),E(3)]]));
 end;
 
 # A:=FusionAlgebra(<family> [,rec(special:=i, params:=xxx)])

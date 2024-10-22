@@ -640,7 +640,7 @@ end;
 # (in terms of generators of the fundamental group)
 HasTypeOps.WeightInfo:=function(W)local l,res,n,M;
   M:=IdentityMat(SemisimpleRank(W));
-  l:=List(ReflectionType(W),function(t)local r,g,C;
+  l:=List(ReflectionType(W),function(t)local r,g,C,mm;
     r:=ShallowCopy(WeightInfo(t));
     g:=Filtered([1..Length(r.minusculeCoweights)],
        i->Sum(r.decompositions[i])=1); # generators of fundamental group
@@ -651,6 +651,8 @@ HasTypeOps.WeightInfo:=function(W)local l,res,n,M;
     r.csi{[1..Length(g)]}{t.indices}:=C{r.minusculeCoweights{g}};
     r.minusculeWeights:=t.indices{r.minusculeWeights};
     r.minusculeCoweights:=t.indices{r.minusculeCoweights};
+    mm:=List(W.roots,x->Sum(x{t.indices}));
+    r.highestroot:=Position(mm,Maximum(mm));
     M{t.indices}{t.indices}:=r.chosenAdaptedBasis;
     return r;
     end);
@@ -661,7 +663,8 @@ HasTypeOps.WeightInfo:=function(W)local l,res,n,M;
     decompositions:=List(Cartesian(List(l,x->Concatenation(x.decompositions,
       [0*x.moduli]))),Concatenation),
     moduli:=Concatenation(List(l,x->x.moduli)),
-    chosenAdaptedBasis:=M);
+    chosenAdaptedBasis:=M,
+    highestroot:=List(l,x->x.highestroot));
 # centre of simply connected group: the generating minuscule coweights
 # mod the root lattice
   res.CenterSimplyConnected:=Concatenation(List(l,r->r.csi));

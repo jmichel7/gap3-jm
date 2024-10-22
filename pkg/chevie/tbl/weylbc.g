@@ -172,23 +172,9 @@ CHEVIE.AddData("LowestPowerFakeDegree","B", function(p) local pp, m, res;
   return 2*res+Sum(pp[2])-m*(m-1)*(4*m+1)/6;
 end);
 
-CHEVIE.AddData("CharInfo","B",function(n)local res;
-  res:=rec(charparams:=PartitionTuples(n,2));
-  res.charnames:=List(res.charparams,PartitionTupleToString);
-  res.extRefl:=Concatenation(
-   List([0..n-1],i->Position(res.charparams,[[n-i],[1..i]*0+1])),
-   [Position(res.charparams,[[],[1..n]*0+1])]);
-  res.a:=List(res.charparams,
-    p->LowestPowerGenericDegreeSymbol(SymbolPartitionTuple(p,1)));
-  res.A:=List(res.charparams,
-    p->HighestPowerGenericDegreeSymbol(SymbolPartitionTuple(p,1)));
-  res.b:=List(res.charparams,CHEVIE.R("LowestPowerFakeDegree","B"));
-  res.B:=res.a+res.A-res.b;
-  return res;
-end);
+CHEVIE.AddData("CharInfo","B",n->CHEVIE.R("CharInfo","imp")(2,1,n));
 
-##  essentially the library call to table "WeylB", l, but different
-##  in GAP 3 and GAP 4
+## essentially the library call to table "WeylB", but different in GAP3 and GAP4
 CHEVIE.AddData("CharTable", "B", CHEVIE.compat.CharTableB);
 
 #############################################################################

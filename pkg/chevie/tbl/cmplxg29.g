@@ -692,22 +692,6 @@ end;
   return ApplyFunc(rep[i][1],rep[i]{[2..Length(rep[i])]})+0*Product(para[1]);
 end);
 
-famf20:=function()local g4,g5,f20;
-  g4:=(2,4,5,3);g5:=(1,2,3,4,5);
-  f20:=Group(g5,g4);
-  f20.operations:=Copy(f20.operations);
-  f20.operations.ConjugacyClasses:=
-       g->List([(),g4^3,g4,g4^2,g5],x->ConjugacyClass(g,x));
-  f20.charTable:=rec(classnames:=["1","g_4^3","g_4","g_2","g_5"],
-    irreducibles:=[[1,1,1,1,1],[1,-1,-1,1,1],[1,-E(4),E(4),-1,1],
-      [1,E(4),-E(4),-1,1],[4,0,0,0,-1]],
-    centralizers:=[20,4,4,4,5]);
-  f20.operations.CharNames:=function(g,opt)
-    return ["1","-1","i","-i","\\rho"];end;
-  f20.name:="F20";
-  return DrinfeldDouble(f20);
-end;
-  
 CHEVIE.AddData("UnipotentCharacters","G29",function()
  return rec(
   harishChandra:=[
@@ -777,7 +761,7 @@ levi:=[1..4], parameterExponents:=[],
     Family(CHEVIE.families.X(4),[31,28,33,45,46,44],
       rec(signs:=[1,1,1,1,-1,-1],ennola:=-3)),
     #JM 24/2/2003 changed signs of 46 to fit with G443
-    Family(famf20(),
+    Family(CHEVIE.families.F20(),
      [34,55,15,14,13,35,52,48,51,36,53,47,54,37,49,11,50,12,56,57,58,59],
      rec(signs:=[1,1,-1,-1,1,1,-1,1,-1,1,1,1,1,1,1,1,1,1,1,1,1,1],ennola:=4)),
     #JM 24/2/2003 changed signs of 51..54 to fit with G443 and exchanged 14

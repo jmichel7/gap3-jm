@@ -183,7 +183,7 @@ CHEVIE.AddData("ClassInfo","imp",function(p,q,r)
       if (j+i)mod e1=0 then
       Add(res.classparams,Concatenation(times(j,[1]),times(i,[0])));
       Add(res.classtext,Concatenation(times((j+i)/e1,[1]),times(i,[2,3])));
-      Add(res.classnames,String(Concatenation(times((j+i)/e1,"1"),
+      Add(res.classnames,String(Concatenation(times((j+i)/e1-QuoInt(i,e1),"1"),
            times(i mod e1,"23"),times(QuoInt(i,e1),"z"))));
       fi;
     od;od;
@@ -340,22 +340,31 @@ CHEVIE.AddData("PowerMaps","imp",function(p,q,r)local pow,pp,pw,res;
   fi;
 end);
 
-CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,s,fd;
-  res:=rec();d:=QuoInt(de,e);
-  if e=1 then res.charparams:=PartitionTuples(r,de); s:=[1..d]*0;s[1]:=1;
-    res.charSymbols:=List(res.charparams,x->SymbolPartitionTuple(x,s));
+CHEVIE.AddData("CharParams","imp",function(de,e,r)local t,tt,s,charparams,d;
+  if e=1 then return PartitionTuples(r,de);
   else
-    res.charparams:=[];
+    charparams:=[];
+    d:=QuoInt(de,e);
     for t in PartitionTuples(r,de) do
       tt:=List([1..e]*d,i->Rotation(t,i));
       if t=Minimum(tt) then
 	s:=Position(tt,t);
-	if s=e then Add(res.charparams,t);
+	if s=e then Add(charparams,t);
 	else t:=t{[1..s*d]}; s:=QuoInt(e,s);
-	  Append(res.charparams,List([0..s-1],i->Concatenation(t,[s,i])));
+	  Append(charparams,List([0..s-1],i->Concatenation(t,[s,i])));
 	fi;
       fi;
     od;
+    return charparams;
+  fi;
+end);
+
+CHEVIE.AddData("CharInfo","imp",function(de,e,r)local d,ct,res,t,tt,s,fd;
+  res:=rec(charparams:=CHEVIE.R("CharParams","imp")(de,e,r));
+  d:=QuoInt(de,e);
+  if e=1 then s:=[1..d]*0;s[1]:=1;
+    res.charSymbols:=List(res.charparams,x->SymbolPartitionTuple(x,s));
+  else
     if d=1 then
       res.charSymbols:=List(res.charparams,x->SymbolPartitionTuple(x,0));
     fi;
@@ -525,15 +534,19 @@ CHEVIE.AddData("SchurData","imp",function(p,q,r,phi)local ci,res;
   fi;
 end);
 
-CHEVIE.AddData("SchurElement","imp",function(p,q,r,phi,para,root)local m;
+CHEVIE.AddData("SchurElement","imp",function(p,q,r,phi,para,root)local m,Z,e1;
   if r=1 then return VcycSchurElement(Concatenation(para[1],[0]),
     CHEVIE.imp.SchurModel(p,q,r,phi));
   elif p=1 then return VcycSchurElement([0,-para[1][1]/para[1][2]],
     CHEVIE.imp.SchurModel(p,q,r,phi));
   elif q=1 then return VcycSchurElement(Concatenation(para[1],
     [-para[2][1]/para[2][2]]),CHEVIE.imp.SchurModel(p,q,r,phi));
-  elif [q,r]=[2,2] then return VcycSchurElement(Concatenation(para{[2,3,1]}),
-      CHEVIE.imp.SchurModel(p,q,r,phi),CHEVIE.imp.SchurData(p,q,r,phi));
+  elif r=2 and q mod 2=0 then
+    e1:=QuoInt(q,2);
+    Z:=List(para[1],x->GetRoot(x,e1));
+    Z:=Concatenation(List([0..e1-1],j->Z*E(e1)^j));
+    return VcycSchurElement(Concatenation(para[2],para[3],Z),
+      CHEVIE.imp.SchurModel(p,2,r,phi),CHEVIE.imp.SchurData(p,2,r,phi))/e1;
   elif p=q then
     if IsInt(phi[Length(phi)]) then m:=Length(phi)-2;phi:=FullSymbol(phi);
     else m:=p;

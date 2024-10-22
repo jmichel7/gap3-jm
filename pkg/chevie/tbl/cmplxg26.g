@@ -504,8 +504,8 @@ CHEVIE.AddData("UnipotentCharacters","G26",function()
      [24,18,2,52,50,10,49,12,51],rec(signs:=[-1,-1,-1,1,1,1,-1,1,1],ennola:=4)),
    Family(CHEVIE.families.QZ(3,[(),[E(3)]]),
    [31,37,13,55,53,23,54,17,56],rec(signs:=[-1,-1,-1,1,1,1,-1,1,1],ennola:=-9)),
-  ## Changed from C'\"2 to C2h by Gunter on 26.2.2003, and back on 27.2.2003:
-   Family("C'\"2",[ 40, 39, 57, 58 ],rec(ennola:=3)),
+   Family(CHEVIE.families.TQZ(2,-1,[ 1, -1 ]),[40,39,58,57],
+    rec(cospecial:=2, ennola:=4)),
    Family(Family("C2")*CHEVIE.families.X(3),
      [ 33, 27, 59, 22, 16, 60, 48, 46, 64, 61, 62, 63 ],
      rec(signs:=[ 1, 1, -1, -1, -1, -1, 1, 1, 1, -1, -1, 1 ],

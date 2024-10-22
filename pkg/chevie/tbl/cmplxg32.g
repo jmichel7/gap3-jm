@@ -3204,13 +3204,6 @@ CHEVIE.AddData("Discriminant","G32",function()return function(a,b,c,d)
 64570*a^5*d^2-9759475*a^5*b^2*c-62764*a^6*b*d-81614375*a^6*c^2+
 (761263/40)*a^7*b^2+(5723475/22)*a^8*c+(-2706867/9680)*a^10;end;end);
 
-famg4:=function()local g4;
-  g4:=ComplexReflectionGroup(4);
-  ChevieClassInfo(g4);
-  g4.classInfo.classnames:=["1","z","g_4","g_6","g_6^4","g_6^2","g_6^5"];
-  return DrinfeldDouble(g4,rec(pivotal:=[EltWord(g4,[1,2])^3,[E(3),E(3)]]));
-end;
-
 CHEVIE.AddData("UnipotentCharacters","G32",function()local i3,I,J,cuspidal;
  J:=E(3);i3:=J-J^2;I:=E(4);
   cuspidal:=function(arg)local res,n; n:="G_{32}";
@@ -3288,19 +3281,18 @@ CHEVIE.AddData("UnipotentCharacters","G32",function()local i3,I,J,cuspidal;
  Family(CHEVIE.families.X(3)*Family("X5"),
   [46,72,123,119,41,44,69,124,118,45,120,117,125,122,121],
   rec(signs:=[1,1,-1,-1,1,1,1,-1,-1,1,-1,-1,1,1,-1],ennola:=-10)),
- Family(famg4(),
+ Family(CHEVIE.families.G4(),
   [73,76,147,133,132,149,80,13,10,32,43,40,97,148,52,150,136,151,126,139,27,130,
    138,84,128,135,144,141,74,145,143,142,77,146,129,134,137,81,127,140,28,131],
    rec(signs:=[1,1,1,-1,-1,1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,-1,1,1,1,-1,
     1,-1,-1,1,-1,1,-1,-1,-1,-1,1,1,-1,1,1,1],ennola:=9)),
-#  Changed by Gunter 22/9/99 from C2 to C'\"2, again on 27.2.2003:
- Family(CHEVIE.families.X(3)*Family("C'\"2"),
-   [93,96,154,156,94,95,155,157,153,152,158,159],
-   rec(signs:=[1,1,1,1,1,1,1,1,-1,-1,1,1],cospecial:=6,ennola:=8)),
+ Family(CHEVIE.families.X(3)*CHEVIE.families.TQZ(2,-1,[1,-1]),
+   [93,96,156,154,94,95,157,155,153,152,159,158],rec(signs:=[1,1,1,1,1,1,
+    1,1,-1,-1,1,1], cospecial:=6, ennola:=7)),
  Family(CHEVIE.families.X(3)*CHEVIE.families.X(3),
    [85,87,161,88,82,160,163,162,164],
    rec(signs:=[1,1,-1,1,1,-1,-1,-1,1],cospecial:=5,ennola:=-6)),
- Family("Z9",[ 100, 165,166,101,167,169,102,168,170],rec(special:=7,ennola:=9)),
+ Family(CHEVIE.families.TQZ(3,E(3)^2,[1,E(3)^2]),[102,100,101,167,168,165,170,166,169],rec(ennola:=7)),
  Family(Family("X5")*CHEVIE.families.QZ(3),[53,21,59,90,185,177,47,187,193,
   79,33,36,98,184,179,99,183,178,180,182,181,192,198,196,191,197,195,171,172,
   173,174,68,189,175,71,190,56,60,24,48,188,194,89,186,176],

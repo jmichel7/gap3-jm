@@ -2475,7 +2475,7 @@ CHEVIE.AddData("UnipotentCharacters","E7",function()
     Family("C2",[56, 43, 34, 66],rec(ennola:=-3)),
     Family("C2",[30, 5, 23, 67],rec(ennola:=-4)), 
     Family("C2",[17, 16, 8, 61],rec(ennola:=4)),
-    Family("C'2",[60, 59, 76, 75 ],rec(ennola:=3)),
+    Family("LTQZ2",[60,59,76,75], rec(cospecial:=2, ennola:=3)),
     Family("S3", [50,47,20,46,14,68,72,74],rec(ennola:=-5)),
     Family("S3", [49,48,19,45,13,64,71,73],rec(ennola:=5))],
   a:=[ 0, 63, 46, 1, 25, 4, 3, 30, 36, 3, 2, 37, 16, 7, 3, 30, 30, 3, 16, 7,

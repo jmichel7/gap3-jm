@@ -84,17 +84,17 @@ CHEVIE.AutoLoad(["PrintDiagram","BraidRelations","GeneratingRoots",
   "NrConjugacyClasses","ParabolicRepresentatives","ClassNames",
   "WordsClassRepresentatives","PowerMaps","ClassInfo","CharInfo",
   "CycPolSchurElements","HeckeCharTable","CharTable","HeckeRepresentation",
-  "Representation","sparseFakeDegrees","Invariants"],["G34"],"tbl/cmplxg34");
-CHEVIE.AutoLoad(["UnipotentCharacters"],["G34","G34"],"tbl/cmplxg34");
+  "Representation","sparseFakeDegrees","UnipotentCharacters","Invariants"],
+  ["G34"],"tbl/cmplxg34");
 CHEVIE.AutoLoad(["PrintDiagram","SemisimpleRank","BraidRelations","Size",
   "ReflectionName","GeneratingRoots","EigenvaluesGeneratingReflections",
   "CartanMat","ReflectionDegrees","ReflectionCoDegrees",
   "ParabolicRepresentatives","NrConjugacyClasses","ClassInfo","ClassName",
-  "PowerMaps","CharInfo","LowestPowerFakeDegrees","HighestPowerFakeDegrees",
-  "CharSymbols","FakeDegree","SchurModel","SchurData","SchurElement",
-  "FactorizedSchurElement","HeckeCharTable","HeckeRepresentation",
-  "Representation","CharTable","UnipotentCharacters","Invariants",
-  "InitHeckeBasis"],["imp"],"tbl/cmplximp");
+  "PowerMaps","CharParams","CharInfo","LowestPowerFakeDegrees",
+  "HighestPowerFakeDegrees","CharSymbols","FakeDegree","SchurModel",
+  "SchurData","SchurElement","FactorizedSchurElement","HeckeCharTable",
+  "HeckeRepresentation","Representation","CharTable","UnipotentCharacters",
+  "Invariants","InitHeckeBasis"],["imp"],"tbl/cmplximp");
 CHEVIE.AutoLoad(["PhiFactors","ReducedInRightCoset","ClassInfo",
   "NrConjugacyClasses","CharInfo","CharTable","UnipotentCharacters"],["timp"],
   "tbl/cmpxtimp");
@@ -110,7 +110,7 @@ CHEVIE.AutoLoad(["ReflectionDegrees","Size","GeneratingRoots","InvariantModel",
   "UnipotentCharacters","Discriminant","KLeftCellRepresentatives"],["H3"],
   "tbl/coxh3");
 CHEVIE.AutoLoad(["ReflectionDegrees","Size","GeneratingRoots","InvariantModel",
-  "CartanMat","WordsClassRepresentatives","NrConjugacyClasses",
+  "CartanMat","words","WordsClassRepresentatives","NrConjugacyClasses",
   "ParabolicRepresentatives","ClassParameter","PowerMaps","ClassInfo",
   "CharInfo","vpolheckeirreducibles","CycPolSchurElements","cycpolfakedegrees",
   "HeckeCharTable","WGraphs","WGraph","HeckeRepresentation","Representation",
@@ -162,12 +162,14 @@ CHEVIE.AutoLoad(["WordsClassRepresentatives","ClassInfo","NrConjugacyClasses",
   "UnipotentCharacters","UnipotentClasses"],["2A"],"tbl/weyl2a");
 CHEVIE.AutoLoad(["ClassParams","WordsClassRepresentatives","ClassInfo",
   "NrConjugacyClasses","ClassParameter","IsPreferred","CharParams","CharInfo",
-  "CharTable","HeckeCharTable","FakeDegree","PhiFactors","UnipotentCharacters",
-  "Ennola","UnipotentClasses"],["2D"],"tbl/weyl2d");
+  "CharTable","HeckeCharTable","HeckeRepresentation","Representation",
+  "FakeDegree","PhiFactors","UnipotentCharacters","Ennola","UnipotentClasses"],
+  ["2D"],"tbl/weyl2d");
 CHEVIE.AutoLoad(["NrConjugacyClasses","ClassInfo","CharInfo","cyclestructure",
   "generators","phi","CartanMat","vpolheckeirreducibles","FakeDegree",
-  "ClassParameter","HeckeCharTable","PhiFactors","UnipotentCharacters",
-  "Ennola","UnipotentClasses"],["2E6"],"tbl/weyl2e6");
+  "ClassParameter","HeckeCharTable","HeckeRepresentation","Representation",
+  "PhiFactors","UnipotentCharacters","Ennola","UnipotentClasses"],["2E6"],
+  "tbl/weyl2e6");
 CHEVIE.AutoLoad(["NrConjugacyClasses","ClassInfo","CharInfo","cyclestructure",
   "generators","phi","CartanMat","ClassParameter","HeckeCharTable",
   "PhiFactors","Representation","HeckeRepresentation","sparseFakeDegrees",

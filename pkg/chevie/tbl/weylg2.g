@@ -64,6 +64,9 @@ CHEVIE.AddData("CharInfo","G2",function()local res;
   res.lusztig:=["1","\\varepsilon","\\varepsilon'","\\varepsilon''",
                      "\\theta'","\\theta''"];
   res.charnames:=List(res.charparams,exceptioCharName);
+  res.charSymbols:=[[[0],[0],[0],[0],[0],[2]],
+    [[0,1],[0,1],[0,1],[0,1],[0,1],[1,2]],[[0],[0],[1],2,0],[[0],[0],[1],2,1],
+    [[0],[0],[0],[0],[1],[1]],[[0],[0],[0],[1],[0],[1]]];
   return res;
   end
 );

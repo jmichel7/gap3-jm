@@ -2174,7 +2174,7 @@ CHEVIE.AddData("UnipotentCharacters","G4_22",function(ST)local r3,I,J,cuspidal;
    -1,1,-1,-1,-1,-1,1,1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,1,1,1,1,1,1,-1,1,1,1,1],
        ennola:=32)),
       Family(CHEVIE.families.X(3),[23,24,66],rec(signs:=[1,1,-1],ennola:=2)),
-      Family("Z9",[19,70,67,20,72,71,21,68,69],rec(cospecial:=4,ennola:=6)),
+      Family(CHEVIE.families.TQZ(3,E(3)^2),[19,20,21,68,70,72,67,71,69],rec(cospecial:=2,ennola:=8)),
       Family(rec( fourierMat:=
         OnMatrices(
 	[[      1,     1, 2,      1,      1,-ER(-2),-ER(-2),-ER(-2),-ER(-2)],

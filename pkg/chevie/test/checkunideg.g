@@ -372,8 +372,8 @@ function(arg)local W,f,inds,O,P,S,Sbar,Id,real,wreal,i,j,v,
       ChevieErr("\n.cospecial=",f.cospecial," should be",special,"\n");
     fi;
     check(ComplexConjugate(ud)=Permuted(ud,ps),"ud*=ud^p");
-    if real<>false then
-      check(Permuted(f.eigenvalues,real/f.perm)=f.eigenvalues,"eig*=eig^perm");
+    if real<>false and IsBound(f.lusztig) then
+      check(Permuted(f.eigenvalues,real/f.perm)=f.eigenvalues,"eig^-1=eig^perm");
     fi;
     if IsBound(opt.hard) then
       if S=Sbar then Print("\n|  S real");

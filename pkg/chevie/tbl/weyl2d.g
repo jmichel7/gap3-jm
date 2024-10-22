@@ -111,17 +111,31 @@ CHEVIE.AddData("IsPreferred","2D",function(pp)
 CHEVIE.AddData("CharParams","2D",n->Filtered(CHEVIE.R("CharParams","B")(n),
                                              CHEVIE.R("IsPreferred","2D")));
 
-CHEVIE.AddData("CharInfo","2D",function(n)local res,resparams;
+#the map which goes from almost characters to unipotent characters for 2Dn
+Defect0to2:=function(ST)local a;
+  a:=Minimum(SymmetricDifference(ST[1],ST[2]));
+  ST:=[SymmetricDifference(ST[1],[a]),SymmetricDifference(ST[2],[a])];
+  if Length(ST[1])>Length(ST[2]) then return ST;else return Reversed(ST);fi;
+end;
+
+CHEVIE.AddData("CharInfo","2D",function(n)local res,resparams,f;
   res:=rec(charparams:=CHEVIE.R("CharParams","2D")(n));
   res.extRefl:=List([0..n-2],i->[[1..i]*0+1,[n-i]]);
   Append(res.extRefl,[[[1],[1..n-1]*0+1],[[],[1..n]*0+1]]);
   res.extRefl:=List(res.extRefl,x->PositionProperty(res.charparams,y->y=x
      or y=Reversed(x)));
-  resparams:=CHEVIE.R("CharInfo","D")(n).charparams;
+  resparams:=CHEVIE.R("CharParams","imp")(2,2,n);
   res.charRestrictions:=List(res.charparams,x->PositionProperty(resparams,
     y->y=x or y=Reversed(x)));
   res.nrGroupClasses:=Length(resparams);
   res.charnames:=List(res.charparams,PartitionTupleToString);
+  f:=List(res.charparams,
+      c->CycPolFakeDegreeSymbol(SymbolPartitionTuple(c,0),1));
+  res.b:=List(f,Valuation);
+  res.B:=List(f,Degree);
+  res.charSymbols:=List(res.charparams,c->Defect0to2(SymbolPartitionTuple(c,0)));
+  res.a:=List(res.charSymbols,LowestPowerGenericDegreeSymbol);
+  res.A:=List(res.charSymbols,HighestPowerGenericDegreeSymbol);
   return res;
 end);
 
@@ -203,7 +217,7 @@ CHEVIE.AddData("PhiFactors","2D",function(n)local res;
 end);
 
 CHEVIE.AddData("UnipotentCharacters","2D",function(rank)
-  local symbols,uc,n,i,d,s,r,f,z,Defect0to2;
+  local symbols,uc,n,i,d,s,r,f,z;
   uc:=rec(harishChandra:=[],charSymbols:=[],almostHarishChandra:=[]);
   for d in 4*[0..QuoInt(RootInt(rank)-1,2)]+2 do
     r:=QuoInt(d^2,4);
@@ -242,12 +256,6 @@ CHEVIE.AddData("UnipotentCharacters","2D",function(rank)
       symbols:=List(CHEVIE.R("CharParams","2D")(rank),
                     x->SymbolPartitionTuple(x,0));
     fi;
-#the map which goes from almost characters to unipotent characters for 2Dn
-    Defect0to2:=function(ST)local a;
-      a:=Minimum(SymmetricDifference(ST[1],ST[2]));
-      ST:=[SymmetricDifference(ST[1],[a]),SymmetricDifference(ST[2],[a])];
-      if Length(ST[1])>Length(ST[2]) then return ST;else return Reversed(ST);fi;
-    end;
     s.charNumbers:=List(symbols,s->Position(uc.charSymbols,Defect0to2(s)));
     uc.almostCharSymbols{s.charNumbers}:=symbols;
     if d<>0 then FixRelativeType(s);fi;

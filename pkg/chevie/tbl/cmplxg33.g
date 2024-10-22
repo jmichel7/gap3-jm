@@ -2350,9 +2350,8 @@ levi:=[1..5], parameterExponents:=[],
  Family("C1",[36],rec(ennola:=-1)),
  Family(ComplexConjugate(CHEVIE.families.X(3)),[34,32,51],
    rec(signs:=[1,1,-1],ennola:=-1)),
- # changed Gunter 22/9/99 from C2 to C'\"2; and to C2h on 26.2.2003
- # and back 27.2.2003:
- Family("C'\"2",[37,38,52,53],rec(ennola:=-3)),
+ Family(CHEVIE.families.TQZ(2,-1,[ 1, -1 ]),[37,38,53,52],
+   rec(cospecial:=2, ennola:=-4)),
  Family("C1",[14],rec(ennola:=-1)),
  Family(CHEVIE.families.X(3),[33,31,54],rec(signs:=[1,1,-1],ennola:=1)),
  Family("C1",[40],rec(ennola:=-1)),

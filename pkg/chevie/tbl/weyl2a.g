@@ -236,20 +236,13 @@ CHEVIE.AddData("UnipotentCharacters","2A",function(l)local  uc, d, k, s, i, r;
   return uc;
 end);
 
-CHEVIE.AddData("UnipotentClasses","2A",function(r,p)local uc,c,t,WF,m;
+CHEVIE.AddData("UnipotentClasses","2A",function(r,p)local uc,c,t,WF,m,i;
   uc:=Copy(CHEVIE.R("UnipotentClasses","A")(r,p));
   for c in uc.classes do
-    t:=Parent(c.red);
-    if Length(ReflectionType(t))>1 then Error();fi;
-    if Length(ReflectionType(t))=0 or Rank(t)=1 then
-      WF:=CoxeterCoset(Parent(c.red));
-    else WF:=CoxeterCoset(Parent(c.red),Product([1..QuoInt(Rank(t),2)],
-      i->(i,Rank(t)+1-i)));
-    fi;
-    t:=Twistings(WF,InclusionGens(c.red));
-    m:=List(t,x->ReflectionEigenvalues(x,PositionClass(x,x.phi)));
-    m:=List(m,x->Number(x,y->y=1/2));
-    p:=Position(m,Maximum(m));
-    c.red:=Spets(c.red,t[p].phi);
+    t:=ReflectionType(c.red);
+    m:=MatXPerm(c.red,PermList(Concatenation(List(t,x->Reversed(x.indices)))));
+    p:=Collected(c.parameter);
+    for i in [1..Length(p)-1] do m[Length(m)+1-i][Length(m)+1-i]:=-1; od;
+    c.red:=Spets(c.red,m);
   od;
   return uc;end);

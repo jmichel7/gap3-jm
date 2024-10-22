@@ -106,6 +106,8 @@ CHEVIE.AddData("CharInfo","I",function(m)local res,applyf,v,m1;
   Append(res.charSymbols,List([1..QuoInt(m-1,2)],function(l)local S;
       S:=List([1..m],i->[0]); S[1]:=[1];S[l+1]:=[1];return S;end));
   res.malleParams:=List(res.charSymbols,x->List(x,PartBeta));
+  res.a:=List(res.charSymbols,LowestPowerGenericDegreeSymbol);
+  res.A:=List(res.charSymbols,HighestPowerGenericDegreeSymbol);
   if m mod 2=0 then
     res.malleParams[2]:=Concatenation(res.malleParams[2]{[1..m1]},[2,0]);
     res.malleParams[3]:=Concatenation(res.malleParams[3]{[1..m1]},[2,1]);
