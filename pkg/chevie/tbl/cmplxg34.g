@@ -10584,8 +10584,9 @@ CHEVIE.AddData("UnipotentCharacters","G34",
 	rec(signs:=[1,1,1,1,-1,-1,1,-1,-1],ennola:=4)),
    Family("C2",[123,62,104,313],rec(ennola:=-4)),  #D4
    Family("C1",[27],rec(ennola:=-1)),
+# exchanged 314,315 on nov. 2024 to satisfy ennola-scalars axiom
    Family(CHEVIE.families.X(3)*CHEVIE.families.TQZ(2,-1,[1,-1]),
-     [97,102,318,316,99,100,319,317,315,314,321,320],rec(signs:=[1,1,1,1,1,
+     [97,102,318,316,99,100,319,317,314,315,321,320],rec(signs:=[1,1,1,1,1,
       1,1,1,-1,-1,-1,-1], cospecial:=6, ennola:=-8)),
    Family(ComplexConjugate(CHEVIE.families.X(3))*Family("X5"),
      [108,88,327,323,34,36,90,328,322,110,325,326,329,115,324],

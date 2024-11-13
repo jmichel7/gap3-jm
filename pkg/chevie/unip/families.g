@@ -132,6 +132,9 @@ FamilyOps.\^:=function(f,p)local n,sp,sgns;
     for n in ["perm","special","cospecial"] do
       if IsBound(f.(n)) then f.(n):=f.(n)^p;fi;
     od;
+    for n in ["ennola"] do
+      if IsBound(f.(n)) then f.(n):=SignInt(f.(n))*AbsInt(f.(n))^p;fi;
+    od;
     f.explanation:=SPrint("Permuted(",p,",",f.explanation,")");
   elif IsInt(p) then
     f.fourierMat:=List(f.fourierMat,x->List(x,y->GaloisCyc(y,p)));
