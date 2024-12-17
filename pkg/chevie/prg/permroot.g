@@ -493,12 +493,13 @@ PermRootOps.Coroot:=function(W,i)local m;
   if i in W.generatingReflections then
     if not IsBound(W.simpleCoroots[i]) then 
       m:=MatXPerm(W,Reflection(W,i));
-      W.simpleCoroots[i]:=List(m^0-m,v->ProportionalityCoefficient(v,W.roots[i]));
+      W.simpleCoroots[i]:=List(m^0-m,
+      v->ProportionalityCoefficient(v,TransposedMat(W.simpleRoots)*W.roots[i]));
     fi;
     return W.simpleCoroots[i];
   fi;
   m:=MatXPerm(W,Reflection(W,i));
-  return List(m^0-m,v->ProportionalityCoefficient(v,W.roots[i]));
+  return List(m^0-m,v->ProportionalityCoefficient(v,TransposedMat(W.simpleRoots)*W.roots[i]));
 end;
 
 # returns reflection corresponding to r-th root
