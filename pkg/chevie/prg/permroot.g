@@ -489,17 +489,19 @@ end;
 ##  'MatYPerm( <W>, <w> )' is the matrix representing <w> as linear map on Y.
 MatYPerm:=function(W,w)return TransposedMat(MatXPerm(W,w^-1));end;
 
-PermRootOps.Coroot:=function(W,i)local m;
+PermRootOps.Coroot:=function(W,i)local m,r;
+  if IsCoxeterGroup(W) then r:=TransposedMat(W.simpleRoots)*W.roots[i];
+  else r:=W.roots[i];
+  fi;
   if i in W.generatingReflections then
     if not IsBound(W.simpleCoroots[i]) then 
       m:=MatXPerm(W,Reflection(W,i));
-      W.simpleCoroots[i]:=List(m^0-m,
-      v->ProportionalityCoefficient(v,TransposedMat(W.simpleRoots)*W.roots[i]));
+      W.simpleCoroots[i]:=List(m^0-m,v->ProportionalityCoefficient(v,r));
     fi;
     return W.simpleCoroots[i];
   fi;
   m:=MatXPerm(W,Reflection(W,i));
-  return List(m^0-m,v->ProportionalityCoefficient(v,TransposedMat(W.simpleRoots)*W.roots[i]));
+  return List(m^0-m,v->ProportionalityCoefficient(v,r));
 end;
 
 # returns reflection corresponding to r-th root
