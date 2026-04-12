@@ -335,7 +335,7 @@ function(arg)local W,f,inds,O,P,S,Sbar,Id,real,wreal,i,j,v,
   if ps=false then ChevieErr("S* is not ps(S)\n| ");fi;
   wreal:=IsBound(f.perm);
   if not IsBound(f.sh) and wreal<>ForAll(ps.l,x->x>0) then
-    Error("weakly real=",wreal," but ps=",ps,"\n");
+    ChevieErr("weakly real=",wreal," but ps=",ps,"\n");
   fi;
   if wreal then # S^2 is perm
     real:=PermListList(ComplexConjugate(f.eigenvalues),f.eigenvalues);

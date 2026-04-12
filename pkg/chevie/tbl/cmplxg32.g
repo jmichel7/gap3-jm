@@ -169,14 +169,12 @@ end);
 # f36,f45 use E(3); f64 uses GetRoot(v*w); f81 uses GetRoot(u*v*w,3)
 CHEVIE.AddData("HeckeCharTable","G32",function(para,root)
   local u,v,w,f1,f4,f5,f6,f10,f15,f15b,f20a,f20b,f20c,f20d,f24,f30a,f30b,f36,
-  f40,f45,f60a,f60b,f60c,f64,f80,f81,res,a,b,c,d,e,f;
-# a:=Mvp("a"); b:=Mvp("b"); c:=Mvp("c"); d:=Mvp("d"); e:=Mvp("e"); f:=Mvp("f");
+  f40,f45,f60a,f60b,f60c,f64,f80,f81,res,a,b,c,d,e;
+# a:=Mvp("a"); b:=Mvp("b"); c:=Mvp("c"); e:=Mvp("e");
   a:=1; # a=+-1
   b:=1; # b in 1, -1, 3, -3
   c:=1; # c=+-1
-  d:=E(3); # d=+-E(3)
   e:=1; # e in +-1,+-3,+-5
-  f:=1;
   u:=para[1][1];  v:=para[1][2];  w:=para[1][3];
   f1:=u->List(CHEVIE.R("WordsClassRepresentatives","G32"),i->u^Length(i));
   f4:=function(v,w)return[4,v+3*w,w*(2*w+v),2*w*(w+v),v^2+3*w^2,2*w^3,
@@ -1099,7 +1097,8 @@ u^10*v^13*w^24-4*u^10*v^15*w^22-4*u^10*v^16*w^21+u^11*v^12*w^24-
 18*u^10*v^12*w^19+12*u^10*v^13*w^18+10*u^11*v^12*w^18,18*u^15*v^18*w^28+
 12*u^15*v^19*w^27+10*u^16*v^18*w^27,40*u^25*v^30*w^45,40*u^15*v^18*w^27,
 40*u^10*v^12*w^18,40*u^20*v^24*w^36];end;
-  f45:=function(u,v,w,j)
+  f45:=function(u,v,w,j)local d;
+   d:=-j; # d:=+-E(3)
 return[45,18*u+18*v+9*w,8*u*v+2*u*w+2*v*w+
 3*u^2+3*v^2,14*u*v+8*u*w+8*v*w+7*u^2+7*v^2+w^2,18*u^2+18*v^2+9*w^2,-5*u*v*w+
 3*u^3+3*v^3,4*u*v*w+4*u*v^2+4*u^2*v+2*u^2*w+2*v^2*w+u^3+v^3,-j^2*u*v*w+
@@ -1975,7 +1974,7 @@ u^12*v^16*w^15,4*r*u^15*v^22*w^25+4*r*u^15*v^25*w^22-8*r*u^16*v^23*w^23,
 24*u^10*v^16*w^15+16*u^11*v^15*w^15,24*r*u^15*v^22*w^23+24*r*u^15*v^23*w^22+
 16*r*u^16*v^22*w^22,64*r*u^25*v^37*w^37,64*r*u^15*v^22*w^22,64*u^10*v^15*w^15,
 64*u^20*v^30*w^30];end;
-  f81:=function(u,v,w,r)
+  f81:=function(u,v,w,r)local f;f:=1;
 return
 [81, 27*u+27*v+27*w, 3*(v+u+w)^2, 9*(v+u+w)^2, 27*u^2+27*v^2+27*w^2, -12*w*v*u+3*u^
 3+3*v^3+3*w^3, (v+u+w)^3, 0, 9*(v+u+w)*(w^2+v^2+u^2), -u*w*v*(v+u+w), w^2*v^2*u^2*(
@@ -2031,7 +2030,7 @@ w*u^5*v^2+v^3*u^5+u^6*w^2+u^6*w*v+u^6*v^2), r*u^33*v^33*w^33*(v+u+w)*(v^3-4*w*v*
 2*v^4*u+4*w*v^5*u+3*w^5*u^2+3*w^4*v*u^2-2*w^3*v^2*u^2-2*w^2*v^3*u^2+3*w*v^4*u^2+3*v
 ^5*u^2+2*w^4*u^3-2*w^2*v^2*u^3+2*v^4*u^3+2*u^4*w^3+3*u^4*w^2*v+3*u^4*w*v^2+2*u^4*v^
 3+3*u^5*w^2+4*u^5*w*v+3*u^5*v^2),
-r*u^10*v^10*w^10*f*(u+v+w),
+-u^10*v^10*w^10*f*(u+v+w),
 -r^2*u^28*v^28*w^28*(w^2+v^2+u^2), -3*r*u^3*v^3*w^3, 9*r^2*u^6*v^6*w^6*(v+u+w)*(w^
 2+v^2+u^2), -3*r^2*u^16*v^16*w^16, r*u^13*v^13*w^13*(v+u+w)*(v^3-4*w*v*u+u^3+w^3),
 -r*u^14*v^14*w^14*(v+u+w), 2*w^2*v^2*u^2*(3*w^4*v^2+3*w^2*v^4+4*w^4*v*u+4*w*v^4*u+3

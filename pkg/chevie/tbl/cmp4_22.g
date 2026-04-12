@@ -1678,7 +1678,6 @@ CHEVIE.AddData("HeckeCharTable","G4_22",function(ST,para,root)
   c24:=Combinations([1..4],2); c23:=[[2,3],[1,3],[1,2]];
   c25:=Combinations([1..5],2); #precompute to save time
   c35:=Combinations([1..5],3);
-  c23:=[[2,3],[1,3],[1,2]];
   c:=0*Product(para,Product);
   GenericRow:=function(char)local l,r;
   if ST in [4..7] then

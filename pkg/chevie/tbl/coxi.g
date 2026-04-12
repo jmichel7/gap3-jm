@@ -240,7 +240,7 @@ CHEVIE.AddData("SchurElement","I",function(m,phi,para,rootpara)
   m2:=QuoInt(m,2); # and not m/2: for julia
   if phi[1]=1 then
     if phi[2]=m2 then e:=Sum([0..m2-1],i->(u/v)^i)*(u+1)*(v+1)/v;
-      if phi[3]="'" then return e;else return (v/u)^m2*e;fi;
+      if phi[3]=1 then return e;else return (v/u)^m2*e;fi;
     else e:=Sum([0..m2-1],i->(u*v)^i)*(u+1)*(v+1);
       if phi[2]=0 then return e;else return (u*v)^-m2*e;fi;
     fi;
