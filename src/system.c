@@ -409,9 +409,7 @@ struct {
 **  'SyFopen' must adjust the mode argument to open the file in binary  mode.
 */
 
-long            SyFopen ( name, mode )
-    char *              name;
-    char *              mode;
+long SyFopen (char *name,char *mode)
 {
     long                fid;
 
@@ -461,7 +459,7 @@ long            SyFopen ( name, mode )
 **  from 'SyFopen'.
 */
 
-void  SyFclose ( fid ) long fid;
+void  SyFclose ( long fid )
 {
     /* check file identifier                                               */
     if ( syBuf[fid].fp == (FILE*)0 ) {
@@ -573,10 +571,7 @@ int             syCTRO;                 /* number of '<ctr>-O' pending     */
 
 #define IS_SEP(C)       (!IsAlpha(C) && !IsDigit(C) && (C)!='_')
 
-char *          SyFgets ( line, length, fid )
-    char                line [];
-    long                length;
-    long                fid;
+char *SyFgets (char line[], long length, long fid )
 {
     int                 ch,  ch2,  ch3, last;
     char                * p,  * q,  * r,  * s,  * t;
@@ -1134,7 +1129,9 @@ char *          SyFgets ( line, length, fid )
 # define SYS_SGTTY_H
 #endif
 #ifndef SYS_HAS_IOCTL_PROTO             /* UNIX decl. from 'man'           */
-extern  int             ioctl ( int, unsigned long, char * );
+extern int ioctl ( int, unsigned long, char * );
+#else
+#include <sys/ioctl.h>
 #endif
 
 struct sgttyb   syOld, syNew;           /* old and new terminal state      */
@@ -1162,8 +1159,7 @@ extern  int             kill ( int, int );
 
 long            syFid;
 
-SYS_SIG_T       syAnswerCont ( signr )
-    int                 signr;
+SYS_SIG_T syAnswerCont (int signr)
 {
     syStartraw( syFid );
     signal( SIGCONT, SIG_DFL );
@@ -1173,8 +1169,7 @@ SYS_SIG_T       syAnswerCont ( signr )
 #endif
 }
 
-SYS_SIG_T       syAnswerTstp ( signr )
-    int                 signr;
+SYS_SIG_T syAnswerTstp (int signr)
 {
     syStopraw( syFid );
     signal( SIGCONT, syAnswerCont );
@@ -1186,8 +1181,7 @@ SYS_SIG_T       syAnswerTstp ( signr )
 
 #endif
 
-int             syStartraw ( fid )
-    long                fid;
+int syStartraw (long fid)
 {
     /* if running under a window handler, tell it that we want to read     */
     if ( syWindow ) {
@@ -1274,9 +1268,7 @@ int  syGetch (long fid)
     return ch;
 }
 
-void            syEchoch ( ch, fid )
-    int                 ch;
-    long                fid;
+void syEchoch(int ch, long fid)
 {
     char                ch2;
 
@@ -1291,9 +1283,7 @@ void            syEchoch ( ch, fid )
     }
 }
 
-void            syEchos ( str, fid )
-    char *              str;
-    long                fid;
+void syEchos(char *str, long fid)
 {
     /* if running under a window handler, send the line to it              */
     if ( syWindow && fid < 4 )
@@ -1318,12 +1308,14 @@ void            syEchos ( str, fid )
 **  continue signals if this particular version  of UNIX supports them, so we
 **  can turn the terminal line back to cooked mode before stopping GAP.
 */
-#include       <termio.h>         /* terminal control functions      */
+#include       <termios.h>         /* terminal control functions      */
 #ifndef SYS_HAS_IOCTL_PROTO             /* UNIX decl. from 'man'           */
-extern  int             ioctl ( int, int, struct termio * );
+extern int ioctl ( int, int, struct termios * );
+#else
+#include <sys/ioctl.h>
 #endif
 
-struct termio   syOld, syNew;           /* old and new terminal state      */
+struct termios  syOld, syNew;           /* old and new terminal state      */
 
 #include       <signal.h>         /* signal handling functions       */
 #ifdef SYS_HAS_SIG_T
@@ -1423,7 +1415,7 @@ int             syGetch (long fid )
 
     /* read a character                                                    */
     while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
-        ;
+      ;
 
     /* if running under a window handler, handle special characters        */
     if ( syWindow && ch == '@' ) {
@@ -1553,12 +1545,9 @@ void  syEchos (char *str, long fid )
 */
 #if SYS_BSD || SYS_MACOSX || SYS_USG || SYS_WINDOWS
 
-void            SyFputs ( line, fid )
-    char                line [];
-    long                fid;
+void SyFputs (char line [], long fid)
 {
     long                i;
-    size_t ignore;
 
     /* if outputing to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {
@@ -1581,8 +1570,7 @@ void            SyFputs ( line, fid )
         syWinPut( fid, (fid == 1 ? "@n" : "@f"), line );
 
     /* otherwise, write it to the output file                              */
-    else
-        ignore=write( fileno(syBuf[fid].fp), line, i );
+    else write( fileno(syBuf[fid].fp), line, i ); /* ignore error return */
 }
 
 #elif SYS_MSDOS
@@ -1633,16 +1621,12 @@ void            SyFputs ( line, fid )
 **  '@<chr>', e.g., <newline> is converted to '@J'.
 */
 
-void            syWinPut ( fid, cmd, str )
-    long                fid;
-    char *              cmd;
-    char *              str;
+void syWinPut (long fid, char *cmd, char *str)
 {
     long                fd;             /* file descriptor                 */
     char                tmp [130];      /* temporary buffer                */
     char *              s;              /* pointer into the string         */
     char *              t;              /* pointer into the temporary      */
-    size_t ignore;
 
     /* if not running under a window handler, don't do nothing             */
     if ( ! syWindow || 4 <= fid )
@@ -1653,7 +1637,7 @@ void            syWinPut ( fid, cmd, str )
     else                         fd = fileno(syBuf[fid].fp);
 
     /* print the cmd                                                       */
-    ignore=write( fd, cmd, SyStrlen(cmd) );
+    write( fd, cmd, SyStrlen(cmd) ); /* ignore error return */
 
     /* print the output line, duplicate '@' and handle <ctr>-<chr>         */
     s = str;  t = tmp;
@@ -1668,12 +1652,12 @@ void            syWinPut ( fid, cmd, str )
             *t++ = *s++;
         }
         if ( 128 <= t-tmp ) {
-            ignore=write( fd, tmp, t-tmp );
+            write( fd, tmp, t-tmp ); /* ignore error return */
             t = tmp;
         }
     }
     if ( 0 < t-tmp ) {
-        ignore=write( fd, tmp, t-tmp );
+        write( fd, tmp, t-tmp ); /* ignore error return */
     }
 }
 
@@ -1686,7 +1670,7 @@ void            syWinPut ( fid, cmd, str )
 **  collection is currently  in, and <size>  is the correspoding value, e.g.,
 **  number of live bags.
 */
-void            SyPinfo (int nr, long size )
+void SyPinfo (int nr, long size )
 {
     char                cmd [3];
     char                buf [16];
@@ -1721,9 +1705,7 @@ void            SyPinfo (int nr, long size )
 */
 char            WinCmdBuffer [8000];
 
-char *          SyWinCmd ( str,  len )
-    char *              str;
-    long                len;
+char *SyWinCmd (char *str, long len)
 {
     char                buf [130];      /* temporary buffer                */
     char *              s;              /* pointer into the string         */
@@ -1843,8 +1825,7 @@ extern  int             kill ( int, int );
 #endif
 unsigned long   syLastIntr;             /* time of the last interrupt      */
 
-SYS_SIG_T       syAnswerIntr ( signr )
-    int                 signr;
+SYS_SIG_T syAnswerIntr (int signr)
 {
     unsigned long       nowIntr;
 
@@ -1969,9 +1950,8 @@ void  SyExit (long ret ) { exit( (int)ret ); }
 
 void      SyExec (char * cmd ) 
 {
-    long  ignore;
     syWinPut( 0, "@z", "" );
-    ignore = system( cmd );
+    system( cmd ); /* ignore error return */
     syWinPut( 0, "@mAgIc", "" );
 }
 
@@ -2071,9 +2051,9 @@ char		* ManualFname = "manual",
 long            SyHelpWarnings = 1;  /* if nonzero, print warnings. Otherwise just beep. */
                
 
-void            SyHelp ( topic, fin )
-    char *              topic;          /* topic for which help is sought  */
-    long                fin;            /* file id of input and output     */
+void            SyHelp (
+    char *              topic,          /* topic for which help is sought  */
+    long                fin)            /* file id of input and output     */
 {
     char                * p, * q;       /* loop variables                  */
     unsigned long       raw;            /* is input in raw mode?           */

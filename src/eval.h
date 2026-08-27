@@ -686,7 +686,7 @@ extern  void            PrComm ( TypHandle hd );
 **  Installs the function  <func> as evaluation function for bags of  <type>.
 */
 extern  void            InstEvFunc ( unsigned int     type,
-                                       TypHandle        (* func) () );
+                                       TypHandle  (* func) (TypHandle hd) );
 
 
 /****************************************************************************
@@ -696,10 +696,10 @@ extern  void            InstEvFunc ( unsigned int     type,
 **  Installs the function  <func>  as  evaluation  function  for  the  binary
 **  operation with the table <tab> for operands of type  <typeL> and <typeR>.
 */
-extern  void            InstBinOp ( TypHandle  (* table [T_VAR][T_VAR]) (),
+extern void InstBinOp ( TypHandle  (* table [T_VAR][T_VAR]) (TypHandle hd),
                                       unsigned int      leftType,
                                       unsigned int      rightType,
-                                      TypHandle         (* func) () );
+                                      TypHandle  (* func) (TypHandle hd) );
 
 
 /****************************************************************************
@@ -708,7 +708,7 @@ extern  void            InstBinOp ( TypHandle  (* table [T_VAR][T_VAR]) (),
 **
 **  Installs the function <func> as printing function  for  bags  of  <type>.
 */
-extern  void            InstPrFunc ( unsigned int type, void (* func)() );
+extern  void InstPrFunc ( unsigned int type, void (* func)(TypHandle hd) );
 
 
 /****************************************************************************
@@ -726,7 +726,7 @@ extern  void            InstVar ( char * name, TypHandle hdVal );
 **
 **  Installs the function <func> as internal function with the  name  <name>.
 */
-extern  void            InstIntFunc ( char name[], TypHandle (* func)() );
+extern  void InstIntFunc ( char name[], TypHandle func(TypHandle) );
 
 
 /****************************************************************************

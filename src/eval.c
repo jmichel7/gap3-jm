@@ -1721,9 +1721,7 @@ void            PrComm ( hd )
 **
 **  Installs the function  <func> as evaluation function for bags of  <type>.
 */
-void            InstEvFunc ( type, func )
-    unsigned int        type;
-    TypHandle           (* func) ();
+void InstEvFunc (unsigned int type, TypHandle (* func) (TypHandle hd))
 {
     EvTab[ type ] = func;
 }
@@ -1736,10 +1734,11 @@ void            InstEvFunc ( type, func )
 **  Installs the function  <func>  as  evaluation  function  for  the  binary
 **  operation with the table <tab> for operands of type  <typeL> and <typeR>.
 */
-void            InstBinOp ( table, leftType, rightType, func )
-    TypHandle           (* table [T_VAR][T_VAR]) ();
-    unsigned int        leftType,  rightType;
-    TypHandle           (* func) ();
+void InstBinOp (
+    TypHandle           (* table [T_VAR][T_VAR]) (TypHandle hd),
+    unsigned int        leftType,  
+    unsigned int        rightType,
+    TypHandle           (* func) (TypHandle hd))
 {
     table[ leftType ][ rightType ] = func;
 }
@@ -1751,9 +1750,7 @@ void            InstBinOp ( table, leftType, rightType, func )
 **
 **  Installs the function <func> as printing function  for  bags  of  <type>.
 */
-void            InstPrFunc ( type, func )
-    unsigned int        type;
-    void                (* func) ();
+void InstPrFunc (unsigned int type, void (* func) (TypHandle hd))
 {
     PrTab[ type ] = func;
 }
@@ -1765,9 +1762,7 @@ void            InstPrFunc ( type, func )
 **
 **  Installs the value <hdVal> ar value of the new variable with name <name>.
 */
-void            InstVar ( name, hdVal )
-    char                * name;
-    TypHandle           hdVal;
+void InstVar (char* name, TypHandle hdVal)
 {
     TypHandle           hdVar;
 
@@ -1784,15 +1779,13 @@ void            InstVar ( name, hdVal )
 **
 **  Installs the function <func> as internal function with the  name  <name>.
 */
-void            InstIntFunc ( name, func )
-    char                name [];
-    TypHandle           (* func) ();
+void InstIntFunc (char name [], TypHandle(* func) (TypHandle hd))
 {
     TypHandle           hdDef,  hdVar;
 
     /* nice casts, aren't they?                                            */
     hdDef = NewBag( T_FUNCINT, sizeof(TypHandle(**)()) );
-    * (TypHandle(**)())PTR(hdDef) = func;
+    *(TypHandle(**)(TypHandle))PTR(hdDef) = func;
 
     hdVar = FindIdent( name );
     if ( PTR(hdVar)[0] != 0 )

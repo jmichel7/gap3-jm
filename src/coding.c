@@ -45,8 +45,7 @@
 **  'RootPrimePower' returns the smallest  root  of the positive  prime power
 **  <q>.  If <q> is not a positive prime power, 'RootPrimePower' returns 0.
 */
-unsigned long   RootPrimePower ( q )
-    long                q;
+unsigned long RootPrimePower (long  q)
 {
     unsigned long       p;
     if ( q < 2 )  return 0;
@@ -67,9 +66,7 @@ unsigned long   RootPrimePower ( q )
 **  <mat> is not a finite  field matrix,  or if  not all  its entries lie  in
 **  'GF(<q>)', 'ConvMatFFE' return 0, otherwise 1.
 */
-unsigned long   ConvMatFFE ( mat, q )
-    TypHandle           mat;
-    unsigned long       q;
+unsigned long   ConvMatFFE (TypHandle mat, unsigned long q)
 {
     unsigned long       i;              /* loop variable                   */
 
@@ -96,9 +93,7 @@ unsigned long   ConvMatFFE ( mat, q )
 **  field vector, or  if not all its entries  lie in  'GF(<q>)', 'ConvVecFFE'
 **  return 0, otherwise 1.
 */
-unsigned long   ConvVecFFE ( vec, q )
-    TypHandle           vec;
-    unsigned long       q;
+unsigned long   ConvVecFFE (TypHandle vec, unsigned long q)
 {
     unsigned long       p;              /* characteristic                  */
     unsigned long       d;              /* degree of <vec>                 */
@@ -149,8 +144,7 @@ unsigned long   ConvVecFFE ( vec, q )
 **  such that '<mat2>[<i>][<k>] := <mat>[<i>][<k>] =  Z(2)', where <mat> is a
 **  matrix over GF(2).
 */
-TypHandle       BlistsMatFF2 ( mat )
-    TypHandle           mat;
+TypHandle BlistsMatFF2 (TypHandle mat)
 {
     TypHandle           mat2;           /* new matrix, result              */
     TypHandle           row2;           /* row of <mat2>                   */
@@ -178,8 +172,7 @@ TypHandle       BlistsMatFF2 ( mat )
 **  'BlistVecFF2' returns a  new boolean list  <vec2>, such that '<vec2>[<i>]
 **  := <vec>[<i>] = Z(2)', where <vec> is a vector over GF(2).
 */
-TypHandle       BlistVecFF2 ( vec )
-    TypHandle           vec;
+TypHandle BlistVecFF2 (TypHandle vec)
 {
     TypHandle           vec2;           /* boolean list, result            */
     unsigned long       len;            /* length of vector                */
@@ -223,8 +216,7 @@ TypHandle       BlistVecFF2 ( vec )
 **  'if <vec>[<i>] then <vec2>[<i>] := Z(2); else <vec2>[<i>] := 0*Z(2); fi;'
 **  where <vec> is a boolean list.
 */
-TypHandle       VecFF2Blist ( vec )
-    TypHandle           vec;
+TypHandle VecFF2Blist (TypHandle vec)
 {
     TypHandle           vec2;           /* vector over GF(2), result       */
     unsigned long       len;            /* length of blist                 */
@@ -255,8 +247,7 @@ TypHandle       VecFF2Blist ( vec )
 **  'WeightVecFFE' returns the weight of the finite field vector <vec>, i.e.,
 **  the number of nonzero entries.
 */
-unsigned long   WeightVecFFE ( vec )
-    TypHandle           vec;
+unsigned long WeightVecFFE(TypHandle vec)
 {
     unsigned long       n;              /* weight, result                  */
     TypFFE *            v;              /* pointer into <vec>              */
@@ -286,9 +277,7 @@ unsigned long   WeightVecFFE ( vec )
 **  common field.   The  distance is the  number  of places  where <vec1> and
 **  <vec2> differ.
 */
-TypHandle       DistanceVecFFE ( vec1, vec2 )
-    TypHandle           vec1;
-    TypHandle           vec2;
+TypHandle DistanceVecFFE (TypHandle vec1, TypHandle vec2)
 {
     unsigned long       n;              /* distance, result                */
     unsigned long       p;              /* characteristic                  */
@@ -341,8 +330,7 @@ TypHandle       DistanceVecFFE ( vec1, vec2 )
     return INT_TO_HD(n);
 }
 
-TypHandle       FunDistanceVecFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunDistanceVecFFE (TypHandle hdCall)
 {
     /* check the number of arguments                                       */
     if ( SIZE(hdCall) != 3*SIZE_HD )
@@ -372,9 +360,7 @@ TypHandle       FunDistanceVecFFE ( hdCall )
 **  that the value '<d>[<i>]'  is the number of  vectors in <vecs>  that have
 **  distance '<i>+1' to <vec>.
 */
-TypHandle       DistancesDistributionVecFFEsVecFFE ( vecs, vec )
-    TypHandle           vecs;
-    TypHandle           vec;
+TypHandle DistancesDistributionVecFFEsVecFFE (TypHandle vecs, TypHandle vec)
 {
     TypHandle           dst;            /* distances distribution, result  */
     unsigned long       n;              /* distance of one row of <vecs>   */
@@ -446,8 +432,7 @@ TypHandle       DistancesDistributionVecFFEsVecFFE ( vecs, vec )
     return dst;
 }
 
-TypHandle       FunDistancesDistributionVecFFEsVecFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunDistancesDistributionVecFFEsVecFFE (TypHandle hdCall)
 {
     /* check the number of arguments                                       */
     if ( SIZE(hdCall) != 3*SIZE_HD )
@@ -479,12 +464,12 @@ TypHandle       FunDistancesDistributionVecFFEsVecFFE ( hdCall )
 **  value '<d>[<i>]' is the  number of vectors  in the vector space generated
 **  by the rows of <mat> that have distance '<i>+1' to <vec>.
 */
-void            DDM2V2 ( mat, vec, sum, l, dst )
-    TypHandle           mat;
-    TypHandle           vec;
-    TypHandle           sum;
-    unsigned long       l;
-    TypHandle           dst;
+void DDM2V2 (
+    TypHandle           mat,
+    TypHandle           vec,
+    TypHandle           sum,
+    unsigned long       l,
+    TypHandle           dst)
 {
     unsigned long       nrb;            /* number of blocks of <vec>       */
     unsigned long *     r;              /* pointer into row of <mat>       */
@@ -569,14 +554,14 @@ void            DDM2V2 ( mat, vec, sum, l, dst )
 
 }
 
-void            DDMFVF ( mat, q, vec, sum, l, lim, dst )
-    TypHandle           mat;
-    unsigned long       q;
-    TypHandle           vec;
-    TypHandle           sum;
-    unsigned long       l;
-    unsigned long       lim;
-    TypHandle           dst;
+void            DDMFVF (
+    TypHandle           mat,
+    unsigned long       q,
+    TypHandle           vec,
+    TypHandle           sum,
+    unsigned long       l,
+    unsigned long       lim,
+    TypHandle           dst)
 {
     TypHandle           cnt;            /* current count                   */
     unsigned long       len;            /* length of <vec>                 */
@@ -669,10 +654,7 @@ void            DDMFVF ( mat, q, vec, sum, l, lim, dst )
 
 }
 
-TypHandle       DistancesDistributionMatFFEVecFFE ( mat, q, vec )
-    TypHandle           mat;
-    TypHandle           q;
-    TypHandle           vec;
+TypHandle DistancesDistributionMatFFEVecFFE(TypHandle mat, TypHandle q, TypHandle vec)
 {
     TypHandle           dst;            /* distribution, result            */
     unsigned long       p;              /* characteristic                  */
@@ -726,8 +708,7 @@ TypHandle       DistancesDistributionMatFFEVecFFE ( mat, q, vec )
     return dst;
 }
 
-TypHandle       FunDistancesDistributionMatFFEVecFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunDistancesDistributionMatFFEVecFFE (TypHandle hdCall)
 {
     /* check the number of arguments                                       */
     if ( SIZE(hdCall) != 4*SIZE_HD )
@@ -760,15 +741,15 @@ TypHandle       FunDistancesDistributionMatFFEVecFFE ( hdCall )
 **  distance  less than or  equal  to  <stop>,  which must  be a  nonnegative
 **  integer, then it stops immediately and returns this vector.
 */
-void            CVCM2V2 ( mat, vec, l, stop, sum, i, pmin, best )
-    TypHandle           mat;
-    TypHandle           vec;
-    unsigned long       l;
-    unsigned long       stop;
-    TypHandle           sum;
-    unsigned long       i;
-    unsigned long *     pmin;
-    TypHandle           best;
+void CVCM2V2 (
+    TypHandle           mat,
+    TypHandle           vec,
+    unsigned long       l,
+    unsigned long       stop,
+    TypHandle           sum,
+    unsigned long       i,
+    unsigned long *     pmin,
+    TypHandle           best)
 {
     unsigned long       nrb;            /* number of blocks of <vec>       */
     unsigned long *     r;              /* pointer into row of <mat>       */
@@ -849,17 +830,17 @@ void            CVCM2V2 ( mat, vec, l, stop, sum, i, pmin, best )
 
 }
 
-void            CVCMFVF ( mat, q, vec, l, stop, sum, i, lim, pmin, best )
-    TypHandle           mat;
-    unsigned long       q;
-    TypHandle           vec;
-    unsigned long       l;
-    unsigned long       stop;
-    TypHandle           sum;
-    unsigned long       i;
-    unsigned long       lim;
-    unsigned long *     pmin;
-    TypHandle           best;
+void CVCMFVF (
+    TypHandle           mat,
+    unsigned long       q,
+    TypHandle           vec,
+    unsigned long       l,
+    unsigned long       stop,
+    TypHandle           sum,
+    unsigned long       i,
+    unsigned long       lim,
+    unsigned long *     pmin,
+    TypHandle           best)
 {
     unsigned long       len;            /* length of <vec>                 */
     TypFFE *            fld;            /* successor table for field       */
@@ -956,12 +937,12 @@ void            CVCMFVF ( mat, q, vec, l, stop, sum, i, lim, pmin, best )
 
 }
 
-TypHandle       AClosestVectorCombinationsMatFFEVecFFE (mat,q,vec,l,stop)
-    TypHandle           mat;
-    TypHandle           q;
-    TypHandle           vec;
-    TypHandle           l;
-    TypHandle           stop;
+TypHandle AClosestVectorCombinationsMatFFEVecFFE (
+    TypHandle           mat,
+    TypHandle           q,
+    TypHandle           vec,
+    TypHandle           l,
+    TypHandle           stop)
 {
     TypHandle           best;           /* closest vector, result          */
     unsigned long       min;            /* minimum distance                */
@@ -1032,8 +1013,7 @@ TypHandle       AClosestVectorCombinationsMatFFEVecFFE (mat,q,vec,l,stop)
     return best;
 }
 
-TypHandle       FunAClosestVectorCombinationsMatFFEVecFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunAClosestVectorCombinationsMatFFEVecFFE(TypHandle hdCall)
 {
     /* check the number of arguments                                       */
     if ( SIZE(hdCall) != 6*SIZE_HD )
@@ -1063,14 +1043,14 @@ TypHandle       FunAClosestVectorCombinationsMatFFEVecFFE ( hdCall )
 **  elements must lie   in  GF(<q>).  The   rows of  <mat> must be   linearly
 **  independent.
 */
-unsigned long   CLM2 ( cls, rem, syn, vec, tam, l, i )
-    TypHandle           cls;
-    unsigned long       rem;
-    unsigned long       syn;
-    TypHandle           vec;
-    TypHandle           tam;
-    unsigned long       l;
-    unsigned long       i;
+unsigned long   CLM2 (
+    TypHandle           cls,
+    unsigned long       rem,
+    unsigned long       syn,
+    TypHandle           vec,
+    TypHandle           tam,
+    unsigned long       l,
+    unsigned long       i)
 {
     unsigned long       len;            /* length of <vec>                 */
     TypFFE *            v;              /* pointer into <vec>              */
@@ -1144,16 +1124,16 @@ unsigned long   CLM2 ( cls, rem, syn, vec, tam, l, i )
     return rem;
 }
 
-unsigned long   CLMF ( cls, rem, syn, q, vec, tam, l, i, lim )
-    TypHandle           cls;
-    unsigned long       rem;
-    TypHandle           syn;
-    unsigned long       q;
-    TypHandle           vec;
-    TypHandle           tam;
-    unsigned long       l;
-    unsigned long       i;
-    unsigned long       lim;
+unsigned long CLMF(
+    TypHandle           cls,
+    unsigned long       rem,
+    TypHandle           syn,
+    unsigned long       q,
+    TypHandle           vec,
+    TypHandle           tam,
+    unsigned long       l,
+    unsigned long       i,
+    unsigned long       lim)
 {
     unsigned long       len;            /* length of <vec>                 */
     unsigned long       len2;           /* length of <syn>                 */
@@ -1278,9 +1258,7 @@ unsigned long   CLMF ( cls, rem, syn, q, vec, tam, l, i, lim )
     return rem;
 }
 
-TypHandle       CosetLeaderMatFFE ( mat, q )
-    TypHandle           mat;
-    TypHandle           q;
+TypHandle CosetLeaderMatFFE (TypHandle mat, TypHandle q)
 {
     TypHandle           cls;            /* coset leaders, result           */
     unsigned long       rem;            /* number of coset leaders         */
@@ -1393,8 +1371,7 @@ TypHandle       CosetLeaderMatFFE ( mat, q )
     return cls;
 }
 
-TypHandle       FunCosetLeadersMatFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCosetLeadersMatFFE (TypHandle hdCall)
 {
     /* check the number of arguments                                       */
     if ( SIZE(hdCall) != 3*SIZE_HD )
@@ -1413,7 +1390,7 @@ TypHandle       FunCosetLeadersMatFFE ( hdCall )
 **
 **  'InitCoding' initializes the coding theory package.
 */
-void            InitCoding ()
+void InitCoding ()
 {
     InstIntFunc( "DistanceVecFFE",
                  FunDistanceVecFFE );
@@ -1426,6 +1403,3 @@ void            InitCoding ()
     InstIntFunc( "CosetLeadersMatFFE",
                  FunCosetLeadersMatFFE );
 }
-
-
-

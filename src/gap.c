@@ -194,7 +194,7 @@ int  main (int argc, char *argv[])
 {
     TypHandle           hd;
     unsigned long       start;
-    extern void         InitGap ();
+    extern void         InitGap (int argc, char *argv[]);
     extern char         * In;
 
     /* initialize everything                                               */
@@ -383,14 +383,12 @@ TypHandle FunBacktrace(TypHandle hdCall)
 **
 **  'Error' is the GAP kernel error handler.
 */
-TypHandle       Error ( msg, arg1, arg2 )
-    char                msg [];
-    long                arg1, arg2;
+TypHandle       Error (char msg [], long arg1, long arg2 )
 {
     TypHandle           hd;
     TypHandle           hdTilde; 
     long                i;
-    extern TypHandle    FunPrint();
+    extern TypHandle    FunPrint(TypHandle hdcall);
     extern char         * In;
     extern TypHandle    HdStack;
     extern unsigned long        TopStack;
@@ -515,8 +513,7 @@ TypHandle       Error ( msg, arg1, arg2 )
 **  has value 'Print' and prints its arguments or has value 'Ignore' and does
 **  nothing at all.
 */
-TypHandle       FunIgnore( hdCall )
-    TypHandle       hdCall;
+TypHandle FunIgnore(TypHandle hdCall)
 {
     return HdVoid;
 }
@@ -537,8 +534,7 @@ TypHandle       FunIgnore( hdCall )
 **  that it has been called from 'FunError' because the  format  argument  is
 **  'FunError'.  'FunError' passes <hdCall> as the first extra argument.
 */
-TypHandle       FunError ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunError (TypHandle hdCall)
 {
     return Error("FunError", (long)hdCall, 0L );
 }
@@ -548,8 +544,7 @@ TypHandle       FunError ( hdCall )
 **
 *F  FunWindowCmd( <hdCall> )  . . . . . . . . . . .  execute a window command
 */
-TypHandle	FunWindowCmd ( hdCall )
-    TypHandle	    hdCall;
+TypHandle FunWindowCmd (TypHandle hdCall)
 {
     TypHandle       hdStr;
     TypHandle       hdTmp;
@@ -712,8 +707,7 @@ TypHandle	FunWindowCmd ( hdCall )
 **  similar, but causes an error if a file is not found.  'READ'  could  also
 **  be used for a 'ReadLib' which searches for a file in various directories.
 */
-TypHandle       FunREAD ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunREAD (TypHandle hdCall)
 {
     TypHandle           hd,  hdName,  hdOld;
 
@@ -773,8 +767,7 @@ TypHandle       FunREAD ( hdCall )
 **
 **  'AUTO' is a procedure, i.e., does not return a value.
 */
-TypHandle       FunAUTO ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunAUTO (TypHandle hdCall)
 {
     TypHandle           hdExpr,  hdVar;
     long                i;
@@ -833,8 +826,7 @@ TypHandle       FunAUTO ( hdCall )
 **  literals and other empty lists.  For that it relies on  'IsString'  *not*
 **  to convert empty lists to type 'T_STRING'.  This is ugly.
 */
-TypHandle       FunPrint ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunPrint (TypHandle hdCall)
 {
     TypHandle           hd;
     long                i;
@@ -880,8 +872,7 @@ TypHandle       FunPrint ( hdCall )
 **
 **  See the note about empty string literals and empty lists in 'Print'.
 */
-TypHandle       FunPrntTo ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunPrntTo (TypHandle hdCall)
 {
     TypHandle           hd;
     long                i;
@@ -930,8 +921,7 @@ TypHandle       FunPrntTo ( hdCall )
 **
 **  See the note about empty string literals and empty lists in 'Print'.
 */
-TypHandle       FunAppendTo ( hdCall )
-    TypHandle           hdCall;
+TypHandle       FunAppendTo (TypHandle hdCall)
 {
     TypHandle           hd;
     long                i;
@@ -982,8 +972,7 @@ TypHandle       FunAppendTo ( hdCall )
 **  input   from  '*stdin*'  and  '*errin*'  and  output  to  '*stdout*'  and
 **  '*errout*' will no longer be echoed to a file.
 */
-TypHandle       FunLogTo ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunLogTo(TypHandle hdCall)
 {
     TypHandle           hdName;
 
@@ -1023,8 +1012,7 @@ TypHandle       FunLogTo ( hdCall )
 **  that input  from '*stdin*' and '*errin*' will  no longer  be echoed  to a
 **  file.
 */
-TypHandle       FunLogInputTo ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunLogInputTo (TypHandle hdCall)
 {
     TypHandle           hdName;
 
@@ -1094,8 +1082,7 @@ TypHandle       FunLogInputTo ( hdCall )
 **  If an evaluation error occurs, 'ReadTest' enters a break  loop,  but  the
 **  input for this break loop is taken from the test input file.
 */
-TypHandle       FunReadTest ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunReadTest (TypHandle hdCall)
 {
     TypHandle           hd,  hdName,  hdOld;
     unsigned long       start;
@@ -1155,8 +1142,7 @@ TypHandle       FunReadTest ( hdCall )
 **
 **  'Help' prints a section from the on-line documentation about <topic>.
 */
-TypHandle       FunHelp ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunHelp (TypHandle hdCall)
 {
     return Error("Help: not yet implemented",0L,0L);
 }
@@ -1176,8 +1162,7 @@ TypHandle       FunHelp ( hdCall )
 **
 **  'Exec' is a procedure, i.e., does not return a value.
 */
-TypHandle       FunExec ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunExec(TypHandle hdCall)
 {
     TypHandle           hdCmd;
     if ( SIZE(hdCall) != 2*SIZE_HD )
@@ -1202,8 +1187,7 @@ TypHandle       FunExec ( hdCall )
 **  How much time execution of statements take is of course system dependent.
 **  The accuracy of this number is also system dependent.
 */
-TypHandle       FunRuntime ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunRuntime (TypHandle hdCall)
 {
     if ( SIZE(hdCall) != SIZE_HD )
         return Error("usage: Runtime()",0L,0L);
@@ -1231,8 +1215,7 @@ TypHandle       FunRuntime ( hdCall )
 **  to leave this value unaffected.  Note that those parameters can  also  be
 **  set with the command line options '-x <x>' and '-y <y>'.
 */
-TypHandle       FunSizeScreen ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunSizeScreen (TypHandle hdCall)
 {
     TypHandle           hdSize;         /* argument and result list        */
     long                len;            /* length of lines on the screen   */
@@ -1298,8 +1281,7 @@ TypHandle       FunSizeScreen ( hdCall )
 **  'TmpName()' returns a file names that can safely be used for a temporary
 **  file.  It returns 'false' in case of failure.
 */
-TypHandle	FunTmpName ( hdCall )
-    TypHandle       hdCall;
+TypHandle	FunTmpName(TypHandle hdCall)
 {
     TypHandle       hdStr;
     char          * str;
@@ -1322,8 +1304,7 @@ TypHandle	FunTmpName ( hdCall )
 **
 **  'FunIsIdentical' implements 'IsIdentical'
 */
-TypHandle       FunIsIdentical ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsIdentical (TypHandle hdCall)
 {
     TypHandle           hdL;
     TypHandle           hdR;
@@ -1352,8 +1333,7 @@ TypHandle       FunIsIdentical ( hdCall )
 **  'HANDLE' returns the handle  of  the  object  <obj>  as  an  integer.  It
 **  exists only for debugging purposes and should only be  used  by  experts.
 */
-TypHandle       FunHANDLE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunHANDLE (TypHandle hdCall)
 {
     TypHandle           hdHD;
     TypHandle           hdObj;
@@ -1382,8 +1362,7 @@ TypHandle       FunHANDLE ( hdCall )
 **  which is not a valid handle is likely to crash GAP.  Thus  this  function
 **  is only there for debugging purposes and should only be used by experts.
 */
-TypHandle       FunOBJ ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunOBJ (TypHandle hdCall)
 {
     TypHandle           hdObj;
     TypHandle           hdHD;
@@ -1409,8 +1388,7 @@ TypHandle       FunOBJ ( hdCall )
 **
 **  'TYPE' returns the type of the object <obj> as a string.
 */
-TypHandle       FunTYPE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTYPE ( TypHandle hdCall)
 {
     TypHandle           hdType;
     TypHandle           hdObj;
@@ -1449,8 +1427,7 @@ TypHandle       FunTYPE ( hdCall )
 **  helps  to   avoid  infinite recursion if    an  object contains itself as
 **  subobject.
 */
-void            MarkObj ( hdObj )
-    TypHandle           hdObj;
+void MarkObj (TypHandle hdObj)
 {
     unsigned long       i;
 
@@ -1470,8 +1447,7 @@ void            MarkObj ( hdObj )
         MarkObj( PTR(hdObj)[i-1] );
 }
 
-unsigned long   SizeObj ( hdObj )
-    TypHandle           hdObj;
+unsigned long   SizeObj(TypHandle hdObj)
 {
     unsigned long       size;
     unsigned long       i;
@@ -1498,8 +1474,7 @@ unsigned long   SizeObj ( hdObj )
     return size;
 }
 
-TypHandle       FunSIZE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunSIZE (TypHandle hdCall)
 {
     unsigned long       size;
     TypHandle           hdObj;
@@ -1522,8 +1497,7 @@ TypHandle       FunSIZE ( hdCall )
 **
 **  'GASMAN( "display" | "clear" | "collect" | "message" )'
 */
-TypHandle       FunGASMAN ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunGASMAN (TypHandle hdCall)
 {
     TypHandle           hdCmd;          /* handle of an argument           */
     unsigned long       i,  k;          /* loop variables                  */
@@ -1598,8 +1572,7 @@ TypHandle       FunGASMAN ( hdCall )
 *N  15-Jan-91 martin this function should not be here
 *N  15-Jan-91 martin this function should not be called 'Coefficients'
 */
-TypHandle       FunCoefficients ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCoefficients (TypHandle hdCall)
 {
     long                pos, num, val;
     TypHandle           hdRes, hdList, hdInt;
@@ -1652,8 +1625,7 @@ TypHandle       FunCoefficients ( hdCall )
 **
 **  'NUMBER_HANDLES( <type> )'
 */
-TypHandle       FunNUMBERHANDLES ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunNUMBERHANDLES (TypHandle hdCall)
 {
     long                typ;
     TypHandle           hdTyp;
@@ -1683,8 +1655,7 @@ TypHandle       FunNUMBERHANDLES ( hdCall )
 **
 **  'SIZE_HANDLES( <type> )'
 */
-TypHandle       FunSIZEHANDLES ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunSIZEHANDLES(TypHandle hdCall)
 {
     long                typ;
     TypHandle           hdTyp;

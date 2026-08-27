@@ -276,7 +276,7 @@ TypHandle       EvFunccall ( hdCall )
                 sime = SyTime();
             }
         }
-        hdRes = (** (TypHandle(**)())PTR(hdDef)) ( hdCall );
+        hdRes = (** (TypHandle(**)(TypHandle))PTR(hdDef)) ( hdCall );
         if ( IsProfiling == 1 ) {
             time = SyTime()-Timesum-time;  Timesum += time;
             for ( i = 0; i < SIZE(HdTimes)/SIZE_HD; i += 5 ) {
