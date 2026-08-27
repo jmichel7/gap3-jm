@@ -547,7 +547,7 @@ NrDrinfeldDouble:=g->Sum(ConjugacyClasses(g),c->
 # DrinfeldDouble(G,rec(lusztig:=true,pivotal_character:=List(G.generators,x->1),
 #      pivotal_element:=G.identity)) computes the matrix S_0 of Lusztig
 # DrinfeldDouble(G) computes the matrix S=\Delta S_0 of Malle (cf spetsmats.tex)
-DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct,ci;
+DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct,ci,x1;
   g:=arg[1];if Length(arg)=1 then opt:=rec();else opt:=arg[2];fi;
   res:=rec(group:=g);
   lu:=IsBound(opt.lusztig) and opt.lusztig;if lu then res.lusztig:=lu;fi;
@@ -561,14 +561,16 @@ DrinfeldDouble:=function(arg)local g,res,p,opt,r,lu,pivchar,pivelm,ct,ci;
     r.centralizer:=Centralizer(g,r.elt);
     if IsCyclic(r.centralizer) then
       o:=Size(r.centralizer);
+      x1:=First(Elements(r.centralizer),x->OrderPerm(x)=o);
       r.centralizer:=Group(First(Elements(r.centralizer),x->OrderPerm(x)=o
-         and x^(o/OrderPerm(r.elt))=r.elt));
+           and x^(o/OrderPerm(r.elt))=r.elt));
       r.centelms:=List([0..o-1],i->r.centralizer.generators[1]^i);
       r.centralizer.operations:=ShallowCopy(r.centralizer.operations);
       r.centralizer.operations.ConjugacyClasses:=
          g->List(r.centelms,x->ConjugacyClass(g,x));
       r.centralizer.name:=Concatenation("Z(",n,")");
-      r.charNames:=List([0..o-1],i->FormatTeX(E(o)^i));
+      x1:=InverseMod(PositionProperty([1..o],i->x1^i=r.centralizer.1),o);
+      r.charNames:=List([0..o-1],i->FormatTeX(E(o)^(i*x1)));
       r.names:=r.charNames;
       r.centralizers:=List([1..o],x->o);
       r.chars:=List([0..o-1],i->List([0..o-1],j->E(o)^(i*j)));

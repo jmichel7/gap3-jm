@@ -338,7 +338,7 @@ HasTypeOpsUnipotentCharacters:=function(WF)
   else res.families:=List(res.families,x->ApplyFunc(FamilyOps.\*,x));
   fi;
   
-  for a in ["a", "A"] do 
+  for a in ["a","A","b","B"] do 
     if IsBound(res.(a)) then res.(a):=List(res.(a),Sum);fi;
   od;
 

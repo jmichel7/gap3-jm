@@ -102,7 +102,7 @@ ClassTypes:=function(arg)local W,WF,l,p;
 end;
 
 # returns the Poset of closed subsystems of the root system of W
-ClosedSubsystems:=function(W)local sum,closure,l,w,new,n,p,P,covered,f;
+ClosedSubsystemsPoset:=function(W)local sum,closure,l,w,new,n,p,P,covered,f;
   if IsBound(W.closedsubsets) then return W.closedsubsets;fi;
   sum:=List([1..2*W.N],i->List([1..2*W.N],function(j)local p;
     p:=Position(W.roots,W.roots[i]+W.roots[j]);
@@ -133,6 +133,84 @@ ClosedSubsystems:=function(W)local sum,closure,l,w,new,n,p,P,covered,f;
   W.closedsubsets:=P;return P;
 end;
 
+# all closed subsystems. Code of Meinolf Geck
+ClosedSubsystems:=function(W)
+  local mat,systems,new,k,r,s,x,sroots,prev;
+  sroots:=Set(W.roots{[1..W.N]});
+  mat:=IdentityMat(W.N);
+  for r in [1..W.N] do
+    for s in [1..r-1] do
+      if W.roots[r]-W.roots[s] in sroots then
+        mat[r][s]:=1;
+      fi;
+    od;
+  od;
+  prev:=List([1..W.N],r->[r]);
+  systems:=[[[]],prev];
+  InfoChevie("#I 1 ",Length(prev),"\c ");
+  for k in [1..Length(W.cartan)-1] do 
+    new:=[];
+    for s in prev do 
+      for r in [s[k]+1..W.N] do 
+        if ForAll(s,x->mat[r][x]=0) then
+          Add(new,Concatenation(s,[r]));
+        fi;
+      od;
+    od;
+    Add(systems,new);
+    InfoChevie(Length(new),"\c ");
+    prev:=new;
+  od;
+  InfoChevie(" Total = ",Sum(List(systems,Length)),"\n");
+  return systems;
+end;
+
+# representatives of W-orbits of closed subsystems. Code of Meinolf Geck
+ClosedSubsystemsRepresentatives:=function(W)
+  local mat,systems,new,k,r,r1,s,x,subsorbits,sroots,prev;
+  sroots:=Set(W.roots{[1..W.N]});
+  mat:=IdentityMat(W.N);
+  for r in [1..W.N] do
+    for s in [1..r-1] do
+      if W.roots[r]-W.roots[s] in sroots then
+        mat[r][s]:=1;
+      fi;
+    od;
+  od;
+  # W-orbits representatives in sys=list of subsystems
+  subsorbits:=function(W,sys)
+    local r,i,orb,rest;
+    rest:=[1..Length(sys)];
+    orb:=[];
+    while Length(rest)>0 do 
+      Add(orb,rest[1]);
+      r:=Filtered(rest,i->RepresentativeOperation(W,sys[rest[1]],
+                                           sys[i],OnSets)<>false);
+      rest:=Difference(rest,r);
+    od;
+    return sys{orb};
+  end;
+  prev:=subsorbits(W,List([1..W.N],r->[r]));
+  systems:=[[[]],prev];
+  InfoChevie("#I 1 ",Length(prev),"\c ");
+  for k in [1..Length(W.cartan)-1] do 
+    new:=[];
+    for s in prev do 
+      for r in [s[k]+1..W.N] do 
+        if ForAll(s,x->mat[r][x]=0) then
+          Add(new,Concatenation(s,[r]));
+        fi;
+      od;
+    od;
+    new:=subsorbits(W,new);
+    Add(systems,new);
+    InfoChevie(Length(new),"\c ");
+    prev:=new;
+  od;
+  InfoChevie(" Total = ",Sum(List(systems,Length)),"\n");
+  return systems;
+end;
+
 # See Fleischmann-Janiszczak AAECC 1996 definition 2.1
 ClassTypesOps.NrConjugacyClasses:=function(C)local HF,W,H,o,P,l,less,mu,n,i,r,b;
   W:=Group(C.spets);b:=Set(Factors(PermRootOps.BadNumber(W)));
@@ -142,7 +220,7 @@ ClassTypesOps.NrConjugacyClasses:=function(C)local HF,W,H,o,P,l,less,mu,n,i,r,b;
   fi;
   for r in C.ss do
     if not IsBound(r.nrClasses) then 
-    HF:=r.CGs;H:=Group(HF); P:=Copy(ClosedSubsystems(W));
+    HF:=r.CGs;H:=Group(HF); P:=Copy(ClosedSubsystemsPoset(W));
     o:=Filtered([1..Size(P)],i->OnSets(P.elements[i],HF.phi)=P.elements[i]);
     o:=Filtered(o,i->ForAll(InclusionGens(H),j->j in P.elements[i]));
     P:=Restricted(P,o);P.elements:=P.elements{o};

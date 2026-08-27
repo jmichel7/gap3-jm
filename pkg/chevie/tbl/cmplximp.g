@@ -1413,9 +1413,9 @@ q^0*[[[-1,0,0,0,0],[0,-1,0,0,0],[q^3,-q^2,q,0,0],[0,0,0,-1,0],[-q^3,0,0,-q^2,q]]
 0,0],[q,-1+q,0,0,0],[0,0,-1,0,0],[0,0,0,-1,0],[-q^4,q^3,-q^2,-q^2,q]],[[-1,0,
 0,0,0],[0,0,0,1,0],[0,0,0,0,1],[0,q,0,-1+q,0],[0,0,q,0,-1+q]]];end;
    f29:=function(q)return
-q^0*[[[q,q^4,0,0,-q^2,0],[0,-1,0,0,0,0],[0,0,-1,0,0,0],[0,q^3,-q^2,q,0,0],[0,0,0,
-0,-1,0],[0,0,q^4,0,-q^3,q]],[[q,q^4,0,0,-q^2,0],[0,-1,0,0,0,0],[0,0,-1,0,0,0],
-[0,q^3,-q^2,q,0,0],[0,0,0,0,-1,0],[0,0,q^4,0,-q^3,q]],[[-1+q,0,0,0,q,0],[0,-1,
+q^0*[[[q,q^4,0,0,-q^2,0],[0,-1,0,0,0,0],[0,0,-1,0,0,0],[0,q^3,-q^2,q,0,0],[0,0,0,0,-1,0],[0,0,q^4,0,-q^3,q]],
+     [[q,q^4,0,0,-q^2,0],[0,-1,0,0,0,0],[0,0,-1,0,0,0],[0,q^3,-q^2,q,0,0],[0,0,0,0,-1,0],[0,0,q^4,0,-q^3,q]],
+[[-1+q,0,0,0,q,0],[0,-1,
 0,0,0,0],[0,0,0,1,0,0],[0,0,q,-1+q,0,0],[1,0,0,0,0,0],[0,0,0,0,0,q]],[[0,0,0,
 0,0,1],[0,0,1,0,0,0],[0,q,-1+q,0,0,0],[0,0,0,-1,0,0],[0,0,0,0,q,0],[q,0,0,0,0,
 -1+q]],[[-1+q,0,0,q,0,0],[0,q,0,0,0,0],[0,0,0,0,1,0],[1,0,0,0,0,0],[0,0,q,0,
@@ -1983,7 +1983,7 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
   else
     S:=CHEVIE.R("CharInfo","imp")(p,q,r).charparams[i];
     # S is a p-tuple of partitions of area r
-    p1rRep:=function()local Q,pos,ct;
+    p1rRep:=function(S,para)local Q,pos,ct;
     # Model of Ariki,  Halverson-Ram for reps of G(p,1,r): 
     # needs rational fractions if the parameters are indeterminates
       if r>1 then Q:=-para[2][1]/para[2][2];else Q:=0;fi;
@@ -2009,7 +2009,7 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
 	  p:=Position(T,S);if p<>false then v[p]:=tll-para[2][2];fi;
 	  return v;end)))*Product(para,Product)^0;
     end;
-    if q=1 then return p1rRep();
+    if q=1 then return p1rRep(S,para);
     elif p=q then para:=[List([0..p-1],i->E(p)^i),para[1]];
     else
       e:=QuoInt(p,q);
@@ -2043,7 +2043,7 @@ x,0],[0,1,-1,-1,0,x]],[[-1,0,0,0,0,0],[-x,x,0,0,0,x],[0,0,0,0,-x,0],[0,0,0,x,
       d:=Length(S)-2;
       S:=FullSymbol(S);
     fi;
-    v:=p1rRep();
+    v:=p1rRep(S,para);
     if p=q then v:=Concatenation([v[2]^v[1]],v{[2..Length(v)]});
     elif q>1 then v:=Concatenation([v[1]^q,v[2]^v[1]],v{[2..Length(v)]});
     fi;
@@ -2328,62 +2328,65 @@ CHEVIE.AddData("UnipotentCharacters","imp",function(p,q,r)
    uc.B:=[1..Length(uc.charSymbols)]*0;
    uc.b{uc.harishChandra[1].charNumbers}:=ci.b;
    uc.B{uc.harishChandra[1].charNumbers}:=ci.B;
-   if [p,q,r]=[3,3,3] then
-     uc.families[6]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[8,7,11],
-       rec(signs:=[1,1,-1]));
-     uc.families[4]:=Family(CHEVIE.families.X(3),[4,5,12],
-       rec(signs:=[1,1,-1]));
-     uc.curtis:=[ 1, 2, 3, 7, 8, 10, 4, 5, 9, 6, -12, -11 ];
-   elif [p,q,r]=[3,3,4] then
-     uc.families[2]:=Family(CHEVIE.families.X(3),[2,4,23],
-       rec(signs:=[1,1,-1]));
-     uc.families[6]:=Family(CHEVIE.families.QZ(3),[13,9,8,10,19,22,7,21,20],
-      rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2));
-     uc.families[9]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[15,14,18],
-       rec(signs:=[1,1,-1]));
-   elif [p,q,r]=[3,3,5] then
-     uc.families[3]:=Family(CHEVIE.families.X(3),[3,6,51],
-       rec(signs:=[1,1,-1]));
-     uc.families[4]:=Family(CHEVIE.families.X(3),[4,5,54],
-       rec(signs:=[1,1,-1]));
-     uc.families[6]:=Family(CHEVIE.families.QZ(3),[9,10,8,21,44,46,20,49,45],
-       rec(signs:=[1,1,1,1,1,1,1,-1,-1]));
-     uc.families[7]:=Family(CHEVIE.families.QZ(3),[23,11,16,12,42,50,15,48,40],
-       rec(signs:=[1,-1,-1,1,1,1,1,-1,-1],special:=4,cospecial:=7));
-     uc.families[8]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[14,13,41],
-       rec(signs:=[1,1,-1]));
-     uc.families[11]:=Family(CHEVIE.families.X(3),[19,22,47],
-       rec(signs:=[1,1,-1]));
-     uc.families[13]:=Family(CHEVIE.families.QZ(3),[32,27,26,28,38,53,25,52,39],
-       rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2));
-     uc.families[15]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[31,30,37],
-       rec(signs:=[1,1,-1]));
-     uc.families[16]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[34,33,43],
-       rec(signs:=[1,1,-1]));
-   elif [p,q,r]=[4,4,3] then
-     uc.families[2]:=Family(CHEVIE.families.X(4),[3,2,4,14,16,13],
-	 rec(signs:=[1,1,1,1,-1,-1]));
-     uc.families[4]:=Family(ComplexConjugate(CHEVIE.families.X(4)),
-       [8,6,7,12,15,11],rec(signs:=[1,1,1,1,-1,-1]));
-     uc.curtis:=[1,6,7,8,10,2,3,4,9,5,14,13,12,11,-16,-15];
-   elif [p,q,r]=[4,4,4] then
-     uc.families[5]:=Family(CHEVIE.families.X(4),[5,8,9,46,53,47],
- 	rec(signs:=[1,1,1,-1,-1,1]));
-     uc.families[6]:=Family("C2",[12,7,6,42]);
-     uc.families[7]:=Family(CHEVIE.families.X(4),[13,10,11,41,55,43],
-      rec(signs:=[1,1,1,1,1,-1],special:=3,cospecial:=1));
-     uc.families[9]:=Family(CHEVIE.families.QZ(4),
-     [18,21,28,22,23,49,39,54,56,40,15,36,19,52,37,51],
-     rec(signs:=[1,1,1,1,1,1,-1,-1,1,-1,-1,-1,1,1,-1,-1],
-     special:=2,cospecial:=4));
-    uc.families[10]:=Family(ComplexConjugate(CHEVIE.families.X(4)),
-     [16,17,20,38,50,34],rec(signs:=[1,1,1,-1,1,1],special:=3,cospecial:=1));
-     uc.families[12]:=Family("C2",[27,26,25,35]);
-     uc.families[13]:=Family(ComplexConjugate(CHEVIE.families.X(4)),
-       [30,29,31,44,48,45],rec(signs:=[1,1,1,1,1,-1],special:=3,cospecial:=1));
-   else uc.families:=List(uc.families,x->MakeFamilyImprimitive(
+   uc.families:=List(uc.families,x->MakeFamilyImprimitive(
      uc.charSymbols{x.charNumbers},uc));
-   fi; 
+   if [p,q,r]=[3,3,3] then
+     uc.curtis:=[ 1, 2, 3, 7, 8, 10, 4, 5, 9, 6, -12, -11 ];
+   fi;
+#   if [p,q,r]=[3,3,3] then
+#     uc.families[6]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[8,7,11],
+#       rec(signs:=[1,1,-1]));
+#     uc.families[4]:=Family(CHEVIE.families.X(3),[4,5,12],
+#       rec(signs:=[1,1,-1]));
+#     uc.curtis:=[ 1, 2, 3, 7, 8, 10, 4, 5, 9, 6, -12, -11 ];
+#   elif [p,q,r]=[3,3,4] then
+#     uc.families[2]:=Family(CHEVIE.families.X(3),[2,4,23],
+#       rec(signs:=[1,1,1]));
+#     uc.families[6]:=Family(CHEVIE.families.QZ(3),[13,9,8,10,19,22,7,21,20],
+#       rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2));
+#     uc.families[9]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[15,14,18],
+#       rec(signs:=[1,1,1]));
+#   elif [p,q,r]=[3,3,5] then
+#     uc.families[3]:=Family(CHEVIE.families.X(3),[3,6,51],
+#       rec(signs:=[1,1,-1]));
+#     uc.families[4]:=Family(CHEVIE.families.X(3),[4,5,54],
+#       rec(signs:=[1,1,-1]));
+#     uc.families[6]:=Family(CHEVIE.families.QZ(3),[9,10,8,21,44,46,20,49,45],
+#       rec(signs:=[1,1,1,1,1,1,1,-1,-1]));
+#     uc.families[7]:=Family(CHEVIE.families.QZ(3),[23,11,16,12,42,50,15,48,40],
+#       rec(signs:=[1,-1,-1,1,1,1,1,-1,-1],special:=4,cospecial:=7));
+#     uc.families[8]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[14,13,41],
+#       rec(signs:=[1,1,-1]));
+#     uc.families[11]:=Family(CHEVIE.families.X(3),[19,22,47],
+#       rec(signs:=[1,1,-1]));
+#     uc.families[13]:=Family(CHEVIE.families.QZ(3),[32,27,26,28,38,53,25,52,39],
+#       rec(signs:=[1,1,1,-1,-1,1,-1,-1,1],special:=3,cospecial:=2));
+#     uc.families[15]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[31,30,37],
+#       rec(signs:=[1,1,-1]));
+#     uc.families[16]:=Family(ComplexConjugate(CHEVIE.families.X(3)),[34,33,43],
+#       rec(signs:=[1,1,-1]));
+#   elif [p,q,r]=[4,4,3] then
+#     uc.families[2]:=Family(CHEVIE.families.X(4),[3,2,4,14,16,13],
+#	 rec(signs:=[1,1,1,1,-1,-1]));
+#     uc.families[4]:=Family(ComplexConjugate(CHEVIE.families.X(4)),
+#       [8,6,7,12,15,11],rec(signs:=[1,1,1,1,-1,-1]));
+#     uc.curtis:=[1,6,7,8,10,2,3,4,9,5,14,13,12,11,-16,-15];
+#   elif [p,q,r]=[4,4,4] then
+#     uc.families[5]:=Family(CHEVIE.families.X(4),[5,8,9,46,53,47],
+# 	rec(signs:=[1,1,1,-1,-1,1]));
+#     uc.families[6]:=Family("C2",[12,7,6,42]);
+#     uc.families[7]:=Family(CHEVIE.families.X(4),[13,10,11,41,55,43],
+#      rec(signs:=[1,1,1,1,1,-1],special:=3,cospecial:=1));
+#     uc.families[9]:=Family(CHEVIE.families.QZ(4),
+#     [18,21,28,22,23,49,39,54,56,40,15,36,19,52,37,51],
+#     rec(signs:=[1,1,1,1,1,1,-1,-1,1,-1,-1,-1,1,1,-1,-1],
+#     special:=2,cospecial:=4));
+#    uc.families[10]:=Family(ComplexConjugate(CHEVIE.families.X(4)),
+#     [16,17,20,38,50,34],rec(signs:=[1,1,1,-1,1,1],special:=3,cospecial:=1));
+#     uc.families[12]:=Family("C2",[27,26,25,35]);
+#     uc.families[13]:=Family(ComplexConjugate(CHEVIE.families.X(4)),
+#       [30,29,31,44,48,45],rec(signs:=[1,1,1,1,1,-1],special:=3,cospecial:=1));
+#   fi; 
    return uc;
   fi;
 end);
