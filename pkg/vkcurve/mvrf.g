@@ -47,7 +47,7 @@ LaurentDenominator := function(arg)local res, f;
   return MvpOps.Mvp([res],[1]);
 end;
 else
-LaurentDenominator := function(arg)local res, v;
+LaurentDenominator := function(arg)local res,v,p;
   res:=MonomialGcd(Set(Concatenation(List(arg,function(x)
     if IsRec(x) then return List(x.pairs,y->y[1]);else return [];fi;end))));
   for p in res.pairs do if p[2]>=0 then p[2]:=Int(p[2])-p[2];

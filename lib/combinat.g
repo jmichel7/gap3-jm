@@ -1430,7 +1430,7 @@ end;
 PartitionTuples2:=function(n,r)local l,inner,list;
   l:=List([0..n],i->Partitions(i));
   list:=[[]];
-  inner:=function(n,r)local k,start,i,beg;
+  inner:=function(n,r)local k,start,i,beg,p;
     k:=Length(list[Length(list)]);
     start:=true;
     if r=1 then beg:=n; else beg:=0;fi;
