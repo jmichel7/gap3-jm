@@ -143,7 +143,7 @@ end;
 #F  HasTypeOps.BraidRelations( <W> ) . . . see corresponding dispatcher 
 #F  function
 ##
-HasTypeOps.BraidRelations:=function(W)local res,type,i,j;
+HasTypeOps.BraidRelations:=function(W)local res,type,i,j,p;
   type:=ReflectionType(W);
   res:=Concatenation(List(type,t->List(BraidRelations(t),
     x->List(x,y->W.rootInclusion{y}))));

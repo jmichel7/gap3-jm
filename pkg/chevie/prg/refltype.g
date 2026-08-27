@@ -394,7 +394,7 @@ end;
 
 # SpetsEnnola(t[,ret]) if 2-arg return basis no.
 SpetsEnnola:=function(arg)local t,z,xi,PositionsSgn,uc,EnnolaBete,OmegaChi,
-  predeigen,EnnolaBE,FamEnnola,fd,q,l,res,A,b,i,f;
+  predeigen,EnnolaBE,FamEnnola,fd,q,l,res,A,b,i,f,p;
   t:=arg[1];
   if IsBound(t.orbit) then z:=Gcd(List(ReflectionDegrees(t),x->x[1]));
   else z:=Gcd(ReflectionDegrees(t));
@@ -469,7 +469,7 @@ SpetsEnnola:=function(arg)local t,z,xi,PositionsSgn,uc,EnnolaBete,OmegaChi,
     return e;
   end;
 
-  FamEnnola:=function(i)local poss,f,A,b,res;
+  FamEnnola:=function(i)local poss,f,A,b,res,p;
     if IsBound(t.twist) and t.twist<>() then poss:=EnnolaBete(i);
     else poss:=EnnolaBE(i);
     fi;

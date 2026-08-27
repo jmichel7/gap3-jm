@@ -363,7 +363,7 @@ end;
 ##  a new set of generators whose orders are the abelian invariants of G
 ##  (thanks to Klaus Lux for the algorithm)
 ##
-AbelianGenerators:=function(G)local l,i,H,d,rels,rel;
+AbelianGenerators:=function(G)local l,i,H,d,rels,rel,p;
   if IsList(G) then G:=ApplyFunc(Group,G);fi;
   l:=Filtered(G.generators,x->x<>x^0);
   if l=[] then return l;fi;
