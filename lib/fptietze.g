@@ -3262,7 +3262,7 @@ TzSearchEqual := function ( T )
             if i <= j then
                 if T.printLevel>=4 then
                   Print("#SearchCeq(",i,",",j,")\n");
-                  DisplayPresentation(T,true);
+#                 DisplayPresentation(T,true);
                 fi;
                 altered := TzSearchC( tietze, i, j, true);
                 if T.printLevel>=3 and altered>0 then

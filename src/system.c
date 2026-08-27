@@ -1367,7 +1367,7 @@ int             syStartraw (long fid )
     }
 
     /* try to get the terminal attributes, will fail if not terminal       */
-    if ( ioctl( fileno(syBuf[fid].fp), TCGETA, &syOld ) == -1 )   return 0;
+    if ( tcgetattr(fileno(syBuf[fid].fp),&syOld ) == -1 )   return 0;
 
     /* disable interrupt, quit, start and stop output characters           */
     syNew = syOld;
@@ -1381,7 +1381,7 @@ int             syStartraw (long fid )
     syNew.c_cc[VMIN]  = 1;
     syNew.c_cc[VTIME] = 0;
     syNew.c_lflag    &= ~(ECHO|ICANON);
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syNew ) == -1 )  return 0;
+    if ( tcsetattr(fileno(syBuf[fid].fp),TCSADRAIN, &syNew ) == -1 )  return 0;
 
 #ifdef SIGTSTP
     /* install signal handler for stop                                     */
@@ -1405,14 +1405,13 @@ void            syStopraw (long fid )
 #endif
 
     /* enable input buffering, line editing and echo again                 */
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syOld ) == -1 )
+    if ( tcsetattr( fileno(syBuf[fid].fp), TCSADRAIN, &syOld ) == -1 )
         fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
 }
 
 int             syGetch (long fid )
 {
     char                ch;
-
     /* read a character                                                    */
     while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
       ;

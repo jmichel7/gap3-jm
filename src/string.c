@@ -93,8 +93,7 @@ TypHandle               HdChars [256];
 **  characters are  constant and thus  selfevaluating, 'EvChar'  just returns
 **  <hdChr>.
 */
-TypHandle       EvChar ( hdChr )
-    TypHandle           hdChr;
+TypHandle EvChar(TypHandle hdChr)
 {
     return hdChr;
 }
@@ -109,9 +108,7 @@ TypHandle       EvChar ( hdChr )
 **
 **  Is called from the 'Eq' binop, so both operands are already evaluated.
 */
-TypHandle       EqChar ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqChar(TypHandle hdL, TypHandle hdR)
 {
     if ( *(unsigned char*)PTR(hdL) == *(unsigned char*)PTR(hdR) )
         return HdTrue;
@@ -129,9 +126,7 @@ TypHandle       EqChar ( hdL, hdR )
 **
 **  Is called from the 'Lt' binop, so both operands are already evaluated.
 */
-TypHandle       LtChar ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtChar(TypHandle hdL, TypHandle hdR)
 {
     if ( *(unsigned char*)PTR(hdL) < *(unsigned char*)PTR(hdR) )
         return HdTrue;
@@ -146,8 +141,7 @@ TypHandle       LtChar ( hdL, hdR )
 **
 **  'PrChar' prints the character <hdChr>.
 */
-void            PrChar ( hdChr )
-    TypHandle           hdChr;
+void PrChar(TypHandle hdChr)
 {
     unsigned char       chr;
 
@@ -243,9 +237,7 @@ long LenString (TypHandle  hdList)
 **  the  function  in  'TabElmfList', 'TabElmlList',  and  'TabElmrList'  for
 **  strings.
 */
-TypHandle       ElmString ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmString(TypHandle hdList, long pos)
 {
     /* check the position                                                  */
     if ( LEN_STRING( hdList ) < pos ) {
@@ -258,9 +250,7 @@ TypHandle       ElmString ( hdList, pos )
     return ELM_STRING( hdList, pos );
 }
 
-TypHandle       ElmfString ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmfString(TypHandle hdList, long pos)
 {
     return ELM_STRING( hdList, pos );
 }
@@ -278,9 +268,7 @@ TypHandle       ElmfString ( hdList, pos )
 **
 **  'ElmsString' is the function in 'TabElmsList' for strings.
 */
-TypHandle       ElmsString ( hdList, hdPoss )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
+TypHandle ElmsString(TypHandle hdList, TypHandle hdPoss)
 {
     TypHandle           hdElms;         /* selected sublist, result        */
     long                lenList;        /* length of <list>                */
@@ -366,7 +354,6 @@ TypHandle       ElmsString ( hdList, hdPoss )
     return hdElms;
 }
 
-
 /****************************************************************************
 **
 *F  AssString(<hdList>,<pos>,<hdVal>)  . . . . . . . . . . assign to a string
@@ -381,10 +368,10 @@ TypHandle       ElmsString ( hdList, hdPoss )
 **  the  same  stuff as 'AssPlist'.  This  is because  a  string is not  very
 **  likely to stay a string after the assignment.
 */
-TypHandle       AssString ( hdList, pos, hdVal )
-    TypHandle           hdList;
-    long                pos;
-    TypHandle           hdVal;
+TypHandle AssString(
+    TypHandle           hdList,
+    long                pos,
+    TypHandle           hdVal)
 {
     long                plen;           /* physical length of <list>       */
 
@@ -424,10 +411,10 @@ TypHandle       AssString ( hdList, pos, hdVal )
 **  same stuff as 'AsssPlist'.  This is because a  string  is not very likely
 **  to stay a string after the assignment.
 */
-TypHandle       AsssString ( hdList, hdPoss, hdVals )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
-    TypHandle           hdVals;
+TypHandle AsssString(
+    TypHandle           hdList,
+    TypHandle           hdPoss,
+    TypHandle           hdVals)
 {
     /* convert <list> to a plain list                                      */
     PLAIN_LIST( hdList );
@@ -448,10 +435,10 @@ TypHandle       AsssString ( hdList, hdPoss, hdVals )
 **
 **  'PosString' is the function in 'TabPosList' for strings.
 */
-long            PosString ( hdList, hdVal, start )
-    TypHandle           hdList;
-    TypHandle           hdVal;
-    long                start;
+long PosString(
+    TypHandle           hdList,
+    TypHandle           hdVal,
+    long                start)
 {
     long                lenList;        /* length of <list>                */
     TypHandle           hdElm;          /* one element of <list>           */
@@ -486,8 +473,7 @@ long            PosString ( hdList, hdVal, start )
 **
 **  'PlainString' is the function in 'TabPlainList' for strings.
 */
-void            PlainString ( hdList )
-    TypHandle           hdList;
+void PlainString (TypHandle hdList)
 {
     long                lenList;        /* logical length of the string    */
     TypHandle           hdCopy;         /* handle of the list              */
@@ -522,8 +508,7 @@ void            PlainString ( hdList )
 **
 **  'IsDenseString' is the function in 'TabIsDenseList' for strings.
 */
-long            IsDenseString ( hdList )
-    TypHandle           hdList;
+long IsDenseString(TypHandle hdList)
 {
     return 1;
 }
@@ -537,8 +522,7 @@ long            IsDenseString ( hdList )
 **
 **  'IsPossString' is the function in 'TabIsPossList' for strings.
 */
-long            IsPossString ( hdList )
-    TypHandle           hdList;
+long IsPossString (TypHandle hdList)
 {
     return LEN_STRING( hdList ) == 0;
 }
@@ -553,9 +537,7 @@ long            IsPossString ( hdList )
 **
 **  Is called from the 'Eq' binop, so both operands are already evaluated.
 */
-TypHandle       EqString ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqString(TypHandle hdL, TypHandle hdR)
 {
     if ( SyStrcmp( (char*)PTR(hdL), (char*)PTR(hdR) ) == 0 )
         return HdTrue;
@@ -572,9 +554,7 @@ TypHandle       EqString ( hdL, hdR )
 **
 **  Is called from the 'Lt' binop, so both operands are already evaluated.
 */
-TypHandle       LtString ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtString(TypHandle hdL, TypHandle hdR)
 {
     if ( SyStrcmp( (char*)PTR(hdL), (char*)PTR(hdR) ) < 0 )
         return HdTrue;
@@ -591,8 +571,7 @@ TypHandle       LtString ( hdL, hdR )
 **  No linebreaks are allowed, if one must be inserted  anyhow,  it  must  be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-void            PrString ( hdStr )
-    TypHandle           hdStr;
+void PrString(TypHandle hdStr)
 {
     char                * p;
 
@@ -618,8 +597,7 @@ void            PrString ( hdStr )
 **  'PrintString' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-void            PrintString ( hdStr )
-    TypHandle           hdStr;
+void PrintString(TypHandle hdStr)
 {
     Pr( "%s", (long)(char*)PTR(hdStr), 0L );
 }
@@ -631,8 +609,7 @@ void            PrintString ( hdStr )
 **
 **  'IsString' returns 1 if the list <hdList> is a string, and 0 otherwise.
 */
-long            IsString ( hdList )
-    TypHandle           hdList;
+long IsString(TypHandle hdList)
 {
     long                isString;       /* result                          */
     long                lenList;        /* length of the list              */
@@ -699,8 +676,7 @@ long            IsString ( hdList )
 **  'IsString' returns 'true' if the object <obj> is a  string,  and  'false'
 **  otherwise.  Will cause an error if <obj> is an unbound variable.
 */
-TypHandle       FunIsString ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsString(TypHandle hdCall)
 {
     TypHandle           hdObj;
 
@@ -725,8 +701,7 @@ TypHandle       FunIsString ( hdCall )
 **
 **  'EvMakeString' evaluates the string literal <hdString> to a constant one.
 */
-TypHandle       EvMakeString ( hdMake )
-    TypHandle           hdMake;
+TypHandle EvMakeString (TypHandle hdMake)
 {
     TypHandle           hdString;
 

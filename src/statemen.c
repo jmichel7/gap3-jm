@@ -82,8 +82,7 @@ TypHandle       HdStat;
 **  handles, the first is the handle of the first <statement>, the second  is
 **  the handle of the second <statement>, and so on.
 */
-TypHandle       EvStatseq ( hdSSeq )
-    TypHandle           hdSSeq;
+TypHandle EvStatseq (TypHandle hdSSeq)
 {
     TypHandle           hdRes;
     unsigned long       k;
@@ -121,8 +120,7 @@ TypHandle       EvStatseq ( hdSSeq )
 **  otherwise the number of handles is odd and the last  handle is the handle
 **  of the <statements> following the 'else'.
 */
-TypHandle       EvIf ( hdIf )
-    TypHandle           hdIf;
+TypHandle EvIf (TypHandle hdIf)
 {
     TypHandle           hdRes,  hdSSeq;
     unsigned long       i,  k;
@@ -197,8 +195,7 @@ TypHandle       EvIf ( hdIf )
 **  handle is the handle  of the <variable>,  the second handle is the handle
 **  of the <list> and the third is the handle of the <statements>.
 */
-TypHandle       EvFor ( hdFor )
-    TypHandle           hdFor;
+TypHandle EvFor(TypHandle hdFor)
 {
     TypHandle           hdList,  hdRes,  hdVar,  hdSSeq,  hdElm;
     long                j;
@@ -330,8 +327,7 @@ TypHandle       EvFor ( hdFor )
 **  handle is the handle of the <condition>, the second handle is the  handle
 **  of the <statements>.
 */
-TypHandle       EvWhile ( hdWhile )
-    TypHandle           hdWhile;
+TypHandle EvWhile (TypHandle hdWhile)
 {
     TypHandle           hdRes,  hdCond,  hdSSeq;
     unsigned long       k;
@@ -402,8 +398,7 @@ TypHandle       EvWhile ( hdWhile )
 **  handle is the handle of the <condition>, the second handle is the  handle
 **  of the <statements>.
 */
-TypHandle       EvRepeat ( hdRep )
-    TypHandle           hdRep;
+TypHandle EvRepeat (TypHandle hdRep)
 {
     TypHandle           hdRes, hdCond, hdSSeq;
     unsigned long       k;
@@ -459,8 +454,7 @@ TypHandle       EvRepeat ( hdRep )
 **
 **  A linebreak is forced after each <statement> except the last one.
 */
-void            PrStatseq ( hdSSeq )
-    TypHandle           hdSSeq;
+void PrStatseq (TypHandle hdSSeq)
 {
     unsigned long       k;
 
@@ -472,7 +466,6 @@ void            PrStatseq ( hdSSeq )
     }
 }
 
-
 /****************************************************************************
 **
 *F  PrIf( <hdIf> )  . . . . . . . . . . . . . . . . . . print an if statement
@@ -482,8 +475,7 @@ void            PrStatseq ( hdSSeq )
 **  A Linebreak is forced after the 'then'  and  <statements>.  If  necessary
 **  it is preferred immediately before the 'then'.
 */
-void            PrIf ( hdIf )
-    TypHandle           hdIf;
+void PrIf(TypHandle hdIf)
 {
     unsigned long       i;
 
@@ -517,8 +509,7 @@ void            PrIf ( hdIf )
 **  A linebreak is forced after the 'do' and the <statements>.  If  necesarry
 **  it is preferred immediately before the 'in'.
 */
-void            PrFor ( hdFor )
-    TypHandle           hdFor;
+void PrFor(TypHandle hdFor)
 {
     Pr("for%4> ",0L,0L);       Print( PTR(hdFor)[0] );
     Pr("%2<  in%2> ",0L,0L);   Print( PTR(hdFor)[1] );
@@ -536,8 +527,7 @@ void            PrFor ( hdFor )
 **  A linebreak is forced after the 'do' and the <statements>.  If  necessary
 **  it is preferred immediately before the 'do'.
 */
-void            PrWhile ( hdWhile )
-    TypHandle           hdWhile;
+void PrWhile(TypHandle hdWhile)
 {
     Pr("while%4> ",0L,0L);     Print( PTR(hdWhile)[0] );
     Pr("%2<  do%2>\n",0L,0L);  Print( PTR(hdWhile)[1] );
@@ -553,8 +543,7 @@ void            PrWhile ( hdWhile )
 **
 **  A linebreak is forced after the 'repeat' and the <statements>.
 */
-void            PrRepeat ( hdRep )
-    TypHandle           hdRep;
+void PrRepeat (TypHandle hdRep)
 {
     Pr("repeat%4>\n",0L,0L);
     Print( PTR(hdRep)[1] );
@@ -563,14 +552,13 @@ void            PrRepeat ( hdRep )
     Pr("%2<",0L,0L);
 }
 
-
 /****************************************************************************
 **
 *F  InitStat()  . . . . . . . . . . . . . . . initialize the statement module
 **
 **  Is called from 'InitEval' to initialize the statement evaluation  module.
 */
-void            InitStat ()
+void InitStat ()
 {
     InstEvFunc( T_STATSEQ,  EvStatseq );
     InstEvFunc( T_IF,       EvIf      );

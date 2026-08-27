@@ -168,8 +168,7 @@ unsigned long   Timesum;
 **                            \
 **      'HdExec' --------------+-> <exec 3> -> <exec 4> -> 0
 */
-void            ChangeEnv ( hdEnv )
-    TypHandle           hdEnv;
+void ChangeEnv (TypHandle hdEnv)
 {
     TypHandle  hdDo, hdComm, hdTmp, hdUndo;
     TypHandle  * ptUndo,  * ptDef,  * ptDo;
@@ -244,8 +243,7 @@ void            ChangeEnv ( hdEnv )
 **  statement sequence.  After that 'EvFunccall' calls 'ChangeEnv'  again  to
 **  restore the old values from the execute bag.
 */
-TypHandle       EvFunccall ( hdCall )
-    TypHandle           hdCall;
+TypHandle EvFunccall (TypHandle hdCall)
 {
     TypHandle           hdDef,  hdExec,  hdRes = 0,  hdOld;
     TypHandle           hdStat,  hd;
@@ -472,8 +470,7 @@ TypHandle       EvFunccall ( hdCall )
 **  'EvFunction' returns the value of the function <hdFun>.  Since  functions
 **  are constants and thus selfevaluating it just returns <hdFun>.
 */
-TypHandle       EvFunction ( hdDef )
-    TypHandle           hdDef;
+TypHandle EvFunction (TypHandle hdDef)
 {
     return hdDef;
 }
@@ -512,8 +509,7 @@ TypHandle       EvFunction ( hdDef )
 **      data 1:                 (short) number of arguments (n).
 **      data 2:                 (short) number of local variables (m).
 */
-TypHandle       EvMakefunc ( hdFun )
-    TypHandle           hdFun;
+TypHandle EvMakefunc (TypHandle hdFun)
 {
     TypHandle           Result;
     short               nrArg,  nrLoc, i;
@@ -556,8 +552,7 @@ TypHandle       EvMakefunc ( hdFun )
 **  now say that the function call will return 'HdReturn', thus it will make
 **  its way back to the mail loop.
 */
-TypHandle       EvReturn ( hdRet )
-    TypHandle           hdRet;
+TypHandle EvReturn (TypHandle hdRet)
 {
     TypHandle           hd;
 
@@ -571,7 +566,6 @@ TypHandle       EvReturn ( hdRet )
     return HdReturn;
 }
 
-
 /****************************************************************************
 **
 *F  FunIsFunc( <hdCall> ) . . . . . . . . . . . .  internal function 'IsFunc'
@@ -579,8 +573,7 @@ TypHandle       EvReturn ( hdRet )
 **  'IsFunc'  returns 'true' if the object <obj> is  a  function and  'false'
 **  otherwise.  May cause an error if <obj> is an unbound variable.
 */
-TypHandle       FunIsFunc ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsFunc (TypHandle hdCall)
 {
     TypHandle           hdObj;
 
@@ -621,8 +614,7 @@ TypHandle       FunIsFunc ( hdCall )
 **
 **  'Untrace' switches this off again.
 */
-TypHandle       FunTrace ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTrace (TypHandle hdCall)
 {
     TypHandle           hdDef;
     short               nrLoc,  i;
@@ -651,8 +643,7 @@ TypHandle       FunTrace ( hdCall )
 **
 **  'Untrace' switches of the tracing for the functions passed as  arguments.
 */
-TypHandle       FunUntrace ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunUntrace (TypHandle hdCall)
 {
     TypHandle           hdDef;
     short               nrLoc, i;
@@ -694,8 +685,7 @@ TypHandle       FunUntrace ( hdCall )
 **  In the third form, without  arguments,  'Profile'  prints  the  profiling
 **  information.
 */
-TypHandle       FunProfile ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunProfile (TypHandle hdCall)
 {
     TypHandle           hdArg;
     short               i;
@@ -749,8 +739,7 @@ TypHandle       FunProfile ( hdCall )
 **
 *F  FunApplyFunc( <hdCall> )  . . . . . . . . . . . . .  internal 'ApplyFunc'
 */
-TypHandle FunApplyFunc ( hdCall )
-    TypHandle		hdCall;
+TypHandle FunApplyFunc(TypHandle hdCall)
 {
     TypHandle           hdNew;		/* the new function call bag       */
     TypHandle           hdFunc;         /* the function                    */
@@ -786,8 +775,7 @@ TypHandle FunApplyFunc ( hdCall )
 **  short form: 'function (...) internal; end'.
 */
 /*ARGSUSED*/
-void            PrFuncint ( hdFun )
-    TypHandle           hdFun;
+void PrFuncint(TypHandle hdFun)
 {
     Pr("%2>function%< %>(...)%< %>internal;%< %>end%2<",0L,0L);
 }
@@ -813,8 +801,7 @@ void            PrFuncint ( hdFun )
 */
 long            prFull;
 
-void            PrFunction ( hdFun )
-    TypHandle           hdFun;
+void PrFunction(TypHandle hdFun)
 {
     short               nrArg,  nrLoc,  i;
 
@@ -857,8 +844,7 @@ void            PrFunction ( hdFun )
 **  'PrintFunction' prints the function with the handle <hdFun> in  the  full
 **  form, i.e., with the statement sequence.  It is called from 'Print'.
 */
-void            PrintFunction ( hdFun )
-    TypHandle           hdFun;
+void PrintFunction(TypHandle hdFun)
 {
     prFull = 1L;
     PrFunction( hdFun );
@@ -876,8 +862,7 @@ void            PrintFunction ( hdFun )
 **  Linebreaks are preffered after the opening  parenthesis  and  the  commas
 **  between the arguments.
 */
-void            PrFunccall ( hdCall )
-    TypHandle           hdCall;
+void PrFunccall(TypHandle hdCall)
 {
     long                i;
 
@@ -901,8 +886,7 @@ void            PrFunccall ( hdCall )
 **  'PrReturn' prints the return statement with the  handle  <hdRet>  in  the
 **  usual form 'return;' or 'return <expr>;'.
 */
-void            PrReturn ( hdRet )
-    TypHandle           hdRet;
+void PrReturn (TypHandle hdRet)
 {
     if ( PTR(hdRet)[0] == HdReturn ) {
         Pr("quit",0L,0L);

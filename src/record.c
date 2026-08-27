@@ -132,8 +132,7 @@
 **  'EvRec' evaluates  the record <hdRec>.   Since records are constants  and
 **  thus selfevaluating this simply returns <hdRec>.
 */
-TypHandle       EvRec ( hdRec )
-    TypHandle           hdRec;
+TypHandle EvRec(TypHandle hdRec)
 {
     return hdRec;
 }
@@ -162,8 +161,7 @@ TypHandle       HdTilde;
 **  variable '~'.  Thus expressions in the variable  record can refer to this
 **  variable and its subobjects to create objects that are not trees.
 */
-TypHandle       EvMakeRec ( hdLiteral )
-    TypHandle           hdLiteral;
+TypHandle EvMakeRec(TypHandle hdLiteral)
 {
     TypHandle           hdRec;          /* handle of the result            */
 
@@ -201,10 +199,10 @@ TypHandle       EvMakeRec ( hdLiteral )
 **  means looping over  the components, copying  the names at the odd entries
 **  and evaluating the values at the even entries.
 */
-TypHandle       MakeRec ( hdDst, ind, hdLiteral )
-    TypHandle           hdDst;
-    unsigned long       ind;
-    TypHandle           hdLiteral;
+TypHandle MakeRec (
+    TypHandle           hdDst,
+    unsigned long       ind,
+    TypHandle           hdLiteral)
 {
     TypHandle           hdRec;          /* handle of the result            */
     TypHandle           hdNam;          /* handle of component name bag    */
@@ -278,8 +276,7 @@ TypHandle       MakeRec ( hdDst, ind, hdLiteral )
 **  record name is  store in a  unique record name  bag, i.e.,  no two record
 **  name bags have the same string.  Thus we can simply compare handles.
 */
-TypHandle     EvRecElm ( hdElm )
-    TypHandle           hdElm;
+TypHandle EvRecElm (TypHandle hdElm)
 {
     TypHandle           hdRec,  hdNam,  * ptRec,  *ptEnd;
     unsigned long       k;              /* value from <rec>.(<int>)        */
@@ -340,8 +337,7 @@ TypHandle     EvRecElm ( hdElm )
 **  the record has  no element  with the  name   <name> it is   automatically
 **  extended.
 */
-TypHandle       EvRecAss ( hdAss )
-    TypHandle           hdAss;
+TypHandle EvRecAss(TypHandle hdAss)
 {
     TypHandle           hdRec,  hdNam,  hdVal;
     TypHandle           * ptRec,  * ptEnd;
@@ -441,8 +437,7 @@ TypHandle       HdStrSum;
 
 TypHandle       HdCallSum;
 
-TypHandle       SumRec ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle SumRec (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -532,8 +527,7 @@ TypHandle       HdStrDiff;
 
 TypHandle       HdCallDiff;
 
-TypHandle       DiffRec ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle DiffRec(TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -623,8 +617,7 @@ TypHandle       HdStrProd;
 
 TypHandle       HdCallProd;
 
-TypHandle       ProdRec ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle ProdRec(TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -714,8 +707,7 @@ TypHandle       HdStrQuo;
 
 TypHandle       HdCallQuo;
 
-TypHandle       QuoRec ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle QuoRec(TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -805,7 +797,7 @@ TypHandle       HdStrMod;
 
 TypHandle       HdCallMod;
 
-TypHandle       ModRec (TypHandle hdL, TypHandle hdR )
+TypHandle ModRec(TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -894,8 +886,7 @@ TypHandle       HdStrPow;
 
 TypHandle       HdCallPow;
 
-TypHandle       PowRec ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle PowRec(TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -985,8 +976,7 @@ TypHandle       HdStrComm;
 
 TypHandle       HdCallComm;
 
-TypHandle       CommRec ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle CommRec(TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -1076,8 +1066,7 @@ TypHandle       HdStrEq;
 
 TypHandle       HdCallEq;
 
-TypHandle       EqRec ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle EqRec(TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -1193,8 +1182,7 @@ TypHandle       HdStrLt;
 
 TypHandle       HdCallLt;
 
-TypHandle       LtRec ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle LtRec(TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;           /* handle of operations record     */
     TypHandle           * ptRec;        /* pointer into the record         */
@@ -1323,7 +1311,6 @@ l2:
     return HdFalse;
 }
 
-
 /****************************************************************************
 **
 *F  InRec( <hdL>, <hdR> ) . . . . . . . . . .  test if a record is in another
@@ -1351,8 +1338,7 @@ TypHandle       HdStrIn;
 
 TypHandle       HdCallIn;
 
-TypHandle       InRec ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle InRec(TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -1412,8 +1398,7 @@ TypHandle       HdStrPrint;
 
 TypHandle       HdCallPrint;
 
-void            PrRec ( hdRec )
-    TypHandle           hdRec;
+void PrRec(TypHandle hdRec)
 {
     TypHandle           hdOp;
     TypHandle           * ptRec,  * ptEnd;
@@ -1504,8 +1489,7 @@ l1:
 **
 **  '<record> . <name>'
 */
-void            PrRecElm ( hdElm )
-    TypHandle           hdElm;
+void PrRecElm(TypHandle hdElm)
 {
     char *              name;
 
@@ -1566,8 +1550,7 @@ void            PrRecElm ( hdElm )
 **
 **  '<record>.<name> := <expr>;'
 */
-void            PrRecAss ( hdAss )
-    TypHandle           hdAss;
+void PrRecAss(TypHandle hdAss)
 {
     Pr( "%2>", 0L, 0L );
     Print( PTR(hdAss)[0] );
@@ -1584,8 +1567,7 @@ void            PrRecAss ( hdAss )
 **  'IsRec'  returns 'true' if the object  <obj>  is  a  record  and  'false'
 **  otherwise.  May cause an error if <obj> is an unbound variable.
 */
-TypHandle       FunIsRec ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsRec(TypHandle hdCall)
 {
     TypHandle           hdObj;
 
@@ -1627,8 +1609,7 @@ TypHandle       FunIsRec ( hdCall )
 **      gap> RecFields( r );
 **      [ "r7" ] |
 */
-TypHandle       FunRecFields ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunRecFields(TypHandle hdCall)
 {
     TypHandle           hdRec,  hdNam;
     TypHandle           hdStr;
