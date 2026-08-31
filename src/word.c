@@ -150,9 +150,7 @@
 **  'SwordWord'  returns  either  a  sword  representing  <word> in <list> or
 **  'HdFalse' if <word> could not convert.
 */
-TypHandle       SwordWord ( hdLst, hdWrd )
-    TypHandle       hdLst;
-    TypHandle       hdWrd;
+TypHandle SwordWord (TypHandle hdLst, TypHandle hdWrd)
 {
     TypHandle       hdSwrd,  * ptLst,  * ptEnd,  * ptG;
     TypSword        * ptSwrd;
@@ -204,8 +202,7 @@ TypHandle       SwordWord ( hdLst, hdWrd )
 **
 **  Return the representation of a T_SWORD <sword> as word of type T_WORD.
 */
-TypHandle       WordSword ( hdSwrd )
-    TypHandle       hdSwrd;
+TypHandle WordSword (TypHandle hdSwrd)
 {
     TypHandle       hdWrd, * ptWrd, * ptLst, hdAgn;
     TypSword        * ptSwrd;
@@ -256,9 +253,7 @@ TypHandle       WordSword ( hdSwrd )
 **  Convert word  <sword>  of type T_SWORD into a T_SWORD with generator list
 **  <list>.  Return 'HdFalse' if comverting process failed.
 */
-TypHandle       SwordSword ( hdLst, hdSwrd )
-    TypHandle       hdLst;
-    TypHandle       hdSwrd;
+TypHandle SwordSword (TypHandle hdLst, TypHandle hdSwrd)
 {
     if ( *PTR( hdSwrd ) == hdLst )
         return hdSwrd;
@@ -275,8 +270,7 @@ TypHandle       SwordSword ( hdLst, hdSwrd )
 **  This function evaluates a word in abstract generators, since  this  words
 **  are constants nothing happens.
 */
-TypHandle       EvWord ( hdWord )
-    TypHandle       hdWord;
+TypHandle EvWord (TypHandle hdWord)
 {
     return hdWord;
 }
@@ -289,8 +283,7 @@ TypHandle       EvWord ( hdWord )
 **  This function multplies the two words <hdL> and <hdR>. Since the function
 **  is called from evalutor both operands are already evaluated.
 */
-TypHandle       ProdWord ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle ProdWord (TypHandle hdL, TypHandle hdR)
 {
     long            lnL,  lnR,  lnRR, e;
     TypHandle       * ptL,  * ptR,  * ptRes;
@@ -418,8 +411,7 @@ TypHandle       ProdWord ( hdL, hdR )
 **  This function divides the two words <hdL> and  <hdR>.  Since the function
 **  is called from evalutor both operands are already evaluated.
 */
-TypHandle       QuoWord ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle QuoWord (TypHandle hdL, TypHandle hdR)
 {
     long            lnL,  lnR,  e;
     TypHandle       * ptL,  * ptR,  * ptRes;
@@ -548,8 +540,7 @@ TypHandle       QuoWord ( hdL, hdR )
 **  This function  left divides  the two words  <hdL>  and  <hdR>.  Since the
 **  function is called from evalutor both operands are already evaluated.
 */
-TypHandle       ModWord ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle ModWord (TypHandle hdL, TypHandle hdR)
 {
     long            lnL,  lnR,  lnLL,  lnRR,  e;
     TypHandle       * ptL,  * ptR,  * ptRes;
@@ -679,8 +670,7 @@ TypHandle       ModWord ( hdL, hdR )
 **  It is  called from  th evaluator so both  operands are already evaluated.
 *N  This function should be rewritten, it can be faster, but for the moment..
 */
-TypHandle       PowWI ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle PowWI (TypHandle hdL, TypHandle hdR)
 {
     TypHandle       hdRes,  hdLst;
     TypHandle       * ptL,  * ptRes;
@@ -764,8 +754,7 @@ TypHandle       PowWI ( hdL, hdR )
 **  It is called from the evaluator so both operands are  already  evaluated.
 *N  This function should be rewritten, it should not call 'ProdWord'.
 */
-TypHandle       PowWW ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle PowWW (TypHandle hdL, TypHandle hdR)
 {
     if ( TYPE( hdL ) == T_WORD && TYPE( hdR ) == T_SWORD )
         hdR = WordSword( hdR );
@@ -783,8 +772,7 @@ TypHandle       PowWW ( hdL, hdR )
 **  'CommWord' is  called to evaluate the commutator of  two  word  operands.
 **  It is called from the evaluator so both operands are already evaluated.
 */
-TypHandle       CommWord ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle CommWord (TypHandle hdL, TypHandle hdR)
 {
     if ( TYPE( hdL ) == T_WORD && TYPE( hdR ) == T_SWORD )
         hdR = WordSword( hdR );
@@ -808,8 +796,7 @@ TypHandle       CommWord ( hdL, hdR )
 **  Special care must be taken, if one argument is a sword because we are not
 **  allowed to call 'NewBag' for converting a sword into a word.
 */
-TypHandle       EqWord ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle EqWord (TypHandle hdL, TypHandle hdR)
 {
     TypHandle       * ptL,  * ptR,  * ptEnd,  hdLstL,  hdLstR, hdTmp;
     TypSword        * gtL,  * gtR;
@@ -930,8 +917,7 @@ TypHandle       EqWord ( hdL, hdR )
 **  Special care must be taken, if one argument is a sword because we are not
 **  allowed to call 'NewBag' for converting a sword into a word.
 */
-TypHandle       LtAgen ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle LtAgen (TypHandle hdL, TypHandle hdR)
 {
     long            c;
 
@@ -967,8 +953,7 @@ TypHandle       LtAgen ( hdL, hdR )
     }
 }
 
-TypHandle       LtWord ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle LtWord (TypHandle hdL, TypHandle hdR)
 {
     TypHandle       * ptL,  * ptR,  hdLstL,  hdLstR, hdTmp;
     TypSword          * gtL,  * gtR;
@@ -1121,8 +1106,7 @@ TypHandle       LtWord ( hdL, hdR )
 **  'PrSword' prints a sparse word in generators/exponent form. The empty word
 **  is printed as "IdAgWord".
 */
-void        PrSword ( hdWrd )
-    TypHandle       hdWrd;
+void PrSword (TypHandle hdWrd)
 {
     TypHandle       * ptLst;
     TypSword        * ptWrd;
@@ -1167,8 +1151,7 @@ void        PrSword ( hdWrd )
 **  words are printed  in  generators/exponent  form,  ie,  "a^-1*a^-1*b"  is
 **  printed as "a^-2 * b".
 */
-void            PrWord ( hdWrd )
-    TypHandle       hdWrd;
+void PrWord (TypHandle hdWrd)
 {
     long            nr, i, exp;
 
@@ -1221,8 +1204,7 @@ void            PrWord ( hdWrd )
 **  generator.  This  new generator  is  printed using  the <str>  passed  as
 **  argument to 'Word'.
 */
-TypHandle       FunAbstractGenerator ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunAbstractGenerator (TypHandle hdCall)
 {
     TypHandle       hdStr,  hdWrd,  hdAgn,  hdInv;
 
@@ -1269,10 +1251,7 @@ TypHandle       FunAbstractGenerator ( hdCall )
 **
 **  'FunAbstractGenerators' implements 'AbstractGenerators( <str>, <n> )'
 */
-TypHandle       Words ( hdStr, n )
-    TypHandle       hdStr;
-    long            n;
-    
+TypHandle Words (TypHandle hdStr, long n)
 {
     TypHandle       hdLst,  hdAgn,  hdInv,  hdTmp,  hdWrds;
     TypHandle       * ptTmp;
@@ -1330,8 +1309,7 @@ TypHandle       Words ( hdStr, n )
     return hdWrds;
 }
     
-TypHandle       FunAbstractGenerators ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunAbstractGenerators (TypHandle hdCall)
 {
     TypHandle       hdStr, hdN;
     long            n;
@@ -1362,8 +1340,7 @@ TypHandle       FunAbstractGenerators ( hdCall )
 **  words of T_WORD are stored in fully expanded form this is simply the
 **  size, while we must count T_SWORD. 
 */
-TypHandle       FunLenWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunLenWord (TypHandle hdCall)
 {
     TypHandle       hdWord;
     TypSword        * ptSwrd;
@@ -1400,8 +1377,7 @@ TypHandle       FunLenWord ( hdCall )
 **  subword of <word> starting at <from> and ending at <to>. Indexing is done
 **  with origin 1. The new word is returned.
 */
-TypHandle   FunSubword ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunSubword (TypHandle hdCall)
 {
     TypHandle       hdWord, hdFrom, hdTo, hdRes;
     long            i, toVal, fromVal;
@@ -1606,8 +1582,7 @@ TypHandle FunPosWord (TypHandle hdCall)
 **
 **  May cause an error if <obj> is an unbound variable.
 */
-TypHandle       FunIsWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunIsWord (TypHandle hdCall)
 {
     TypHandle       hdObj;
 
@@ -1637,8 +1612,7 @@ TypHandle       FunIsWord ( hdCall )
 **  This is faster  than  using  'MappedWord'  with  just  one  new  abstract
 **  generator.
 */
-TypHandle       FunEliminated( hdCall )
-    TypHandle       hdCall;
+TypHandle FunEliminated (TypHandle hdCall)
 {
     TypHandle       hdWord,  * ptWord,  hdGen,  hdInv,  hdBy,  * ptBy;
     TypHandle       hdRes,  * ptRes;
@@ -1742,8 +1716,7 @@ TypHandle       FunEliminated( hdCall )
 **  to compute the sum of the exponents of all occurrences of  the  generator
 **  <gen> in <word>.
 */
-TypHandle       FunExpsum ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunExpsum (TypHandle hdCall)
 {
     TypHandle       hdWord,  * ptWord,  hdGen,  hdInv;
     long            expsum,  i;
@@ -1787,8 +1760,7 @@ TypHandle       FunExpsum ( hdCall )
 **
 **  ...something about the function...
 */
-TypHandle       FunMappedWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunMappedWord (TypHandle hdCall)
 {
     long            i,  k,  exp;
     TypHandle       * ptOld,  hdGenOld = 0,  hdGen,  hdTmp2 = 0;
@@ -1897,7 +1869,7 @@ TypHandle       FunMappedWord ( hdCall )
 */
 TypHandle       HdIdWord;
 
-void            InitWord ()
+void InitWord (void)
 {
     long            typeL, typeR;
 

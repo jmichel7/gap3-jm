@@ -299,8 +299,7 @@
 **
 **  'LenVecFFE' is the function in 'TabLenList' for vectors.
 */
-long            LenVecFFE ( hdList )
-    TypHandle           hdList;
+long LenVecFFE (TypHandle hdList)
 {
     return LEN_VECFFE( hdList );
 }
@@ -323,9 +322,7 @@ long            LenVecFFE ( hdList )
 **  the  function  in  'TabElmfList', 'TabElmlList',  and  'TabElmrList'  for
 **  vectors.
 */
-TypHandle       ElmVecFFE ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmVecFFE (TypHandle hdList, long pos)
 {
     TypHandle           hdElm;          /* the selected element, result    */
 
@@ -344,9 +341,7 @@ TypHandle       ElmVecFFE ( hdList, pos )
     return hdElm;
 }
 
-TypHandle       ElmfVecFFE ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmfVecFFE (TypHandle hdList, long pos)
 {
     TypHandle           hdElm;          /* the selected element, result    */
 
@@ -360,9 +355,7 @@ TypHandle       ElmfVecFFE ( hdList, pos )
 
 TypHandle       HdVecFFEL;
 
-TypHandle       ElmlVecFFE ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmlVecFFE (TypHandle hdList, long pos)
 {
     ELM_VECFFE( hdList, pos, HdVecFFEL );
     return HdVecFFEL;
@@ -370,9 +363,7 @@ TypHandle       ElmlVecFFE ( hdList, pos )
 
 TypHandle       HdVecFFER;
 
-TypHandle       ElmrVecFFE ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmrVecFFE (TypHandle hdList, long pos)
 {
     ELM_VECFFE( hdList, pos, HdVecFFER );
     return HdVecFFER;
@@ -391,9 +382,7 @@ TypHandle       ElmrVecFFE ( hdList, pos )
 **
 **  'ElmsVecFFE' is the function in 'TabElmsList' for vectors.
 */
-TypHandle       ElmsVecFFE ( hdList, hdPoss )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
+TypHandle ElmsVecFFE (TypHandle hdList, TypHandle hdPoss)
 {
     TypHandle           hdElms;         /* selected sublist, result        */
     long                lenList;        /* length of <list>                */
@@ -505,10 +494,7 @@ TypHandle       ElmsVecFFE ( hdList, hdPoss )
 **  the same  stuff as  'AssPlist'.   This is because  a  vector is  not very
 **  likely to stay a vector after the assignment.
 */
-TypHandle       AssVecFFE ( hdList, pos, hdVal )
-    TypHandle           hdList;
-    long                pos;
-    TypHandle           hdVal;
+TypHandle AssVecFFE (TypHandle hdList, long pos, TypHandle hdVal)
 {
     long                plen;           /* physical length of <list>       */
 
@@ -560,10 +546,7 @@ TypHandle       AssVecFFE ( hdList, pos, hdVal )
 **  same stuff as 'AsssPlist'.  This is because a vector  is not  very likely
 **  to stay a vector after the assignment.
 */
-TypHandle       AsssVecFFE ( hdList, hdPoss, hdVals )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
-    TypHandle           hdVals;
+TypHandle AsssVecFFE (TypHandle hdList, TypHandle hdPoss, TypHandle hdVals)
 {
     /* convert <list> to a plain list                                      */
     PLAIN_LIST( hdList );
@@ -584,10 +567,7 @@ TypHandle       AsssVecFFE ( hdList, hdPoss, hdVals )
 **
 **  'PosVecFFE' is the function in 'TabPosList' for vectors.
 */
-long            PosVecFFE ( hdList, hdVal, start )
-    TypHandle           hdList;
-    TypHandle           hdVal;
-    long                start;
+long PosVecFFE (TypHandle hdList, TypHandle hdVal, long start)
 {
     long                lenList;        /* length of <list>                */
     TypHandle           hdElm;          /* one element of <list>           */
@@ -622,8 +602,7 @@ long            PosVecFFE ( hdList, hdVal, start )
 **
 **  'PlainVecFFE' is the function in 'TabPlainList' for vectors.
 */
-void            PlainVecFFE ( hdList )
-    TypHandle           hdList;
+void PlainVecFFE (TypHandle hdList)
 {
     long                lenList;        /* logical length of the vector    */
     TypHandle           hdCopy;         /* handle of the list              */
@@ -658,8 +637,7 @@ void            PlainVecFFE ( hdList )
 **
 **  'IsDenseVecFFE' is the function in 'TabIsDenseList' for vectors.
 */
-long            IsDenseVecFFE ( hdList )
-    TypHandle           hdList;
+long IsDenseVecFFE (TypHandle hdList)
 {
     return 1;
 }
@@ -673,8 +651,7 @@ long            IsDenseVecFFE ( hdList )
 **
 **  'IsPossVecFFE' is the function in 'TabIsPossList' for vectors.
 */
-long            IsPossVecFFE ( hdList )
-    TypHandle           hdList;
+long IsPossVecFFE (TypHandle hdList)
 {
     return LEN_VECFFE( hdList ) == 0;
 }
@@ -690,8 +667,7 @@ long            IsPossVecFFE ( hdList )
 **
 **  'IsXTypeVecFFE' is the function in 'TabIsXTypeList' for vectors.
 */
-long            IsXTypeVecFFE ( hdList )
-    TypHandle           hdList;
+long IsXTypeVecFFE (TypHandle hdList)
 {
     long                isVecFFE;       /* result                          */
     unsigned long       len;            /* length of the list              */
@@ -841,8 +817,7 @@ long            IsXTypeVecFFE ( hdList )
 **
 **  'IsXTypeMatFFE' is the function in 'TabIsXTypeList' for matrices.
 */
-long            IsXTypeMatFFE ( hdList )
-    TypHandle           hdList;
+long IsXTypeMatFFE (TypHandle hdList)
 {
     long                isMatFFE;       /* result                          */
     unsigned long       len;            /* length of the list              */
@@ -977,9 +952,7 @@ long            IsXTypeMatFFE ( hdList )
 **  'SumFFEVecFFE'  is an improved version of  'SumSclList', which  does  not
 **  call 'SUM'.
 */
-TypHandle       SumFFEVecFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumFFEVecFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdS;            /* sum, result                     */
     unsigned long       len;            /* length of the list              */
@@ -1081,9 +1054,7 @@ TypHandle       SumFFEVecFFE ( hdL, hdR )
 **  'SumVecFFEFFE'  is an improved  version of 'SumListScl',  which does  not
 **  call 'SUM'.
 */
-TypHandle       SumVecFFEFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumVecFFEFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdS;            /* sum, result                     */
     unsigned long       len;            /* length of the list              */
@@ -1185,9 +1156,7 @@ TypHandle       SumVecFFEFFE ( hdL, hdR )
 **  'SumVecFFEVecFFE' is an improved version of 'SumListList', which does not
 **  call 'SUM'.
 */
-TypHandle       SumVecFFEVecFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumVecFFEVecFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdS;            /* sum, result                     */
     unsigned long       len;            /* length of the list              */
@@ -1288,9 +1257,7 @@ TypHandle       SumVecFFEVecFFE ( hdL, hdR )
 **  field  element  <hdR>.   This  is   an  important function   because such
 **  constructs are used to create finite field vectors.
 */
-TypHandle       SumVectorFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumVectorFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdS;            /* sum, result                     */
     TypFFE              vS;             /* value of the sum                */
@@ -1354,9 +1321,7 @@ TypHandle       SumVectorFFE ( hdL, hdR )
 **  integer vector  <hdR>.    This is an   important function  because   such
 **  constructs are used to create finite field vectors.
 */
-TypHandle       SumFFEVector ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumFFEVector (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdS;            /* sum, result                     */
     TypFFE              vS;             /* value of the sum                */
@@ -1423,9 +1388,7 @@ TypHandle       SumFFEVector ( hdL, hdR )
 **  'DiffFFEVecFFE' is an improved version  of 'DiffSclList', which  does not
 **  call 'DIFF'.
 */
-TypHandle       DiffFFEVecFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffFFEVecFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdD;            /* difference, result              */
     unsigned long       len;            /* length of the list              */
@@ -1529,9 +1492,7 @@ TypHandle       DiffFFEVecFFE ( hdL, hdR )
 **  'DiffVecFFEFFE'  is an  improved version of 'DiffListScl', which does not
 **  call 'DIFF'.
 */
-TypHandle       DiffVecFFEFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffVecFFEFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdD;            /* difference, result              */
     unsigned long       len;            /* length of the list              */
@@ -1635,9 +1596,7 @@ TypHandle       DiffVecFFEFFE ( hdL, hdR )
 **  'DiffVecFFEVecFFE' is an  improved version of 'DiffListList',  which does
 **  not call 'PROD'.
 */
-TypHandle       DiffVecFFEVecFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffVecFFEVecFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdD;            /* difference, result              */
     unsigned long       len;            /* length of the list              */
@@ -1740,9 +1699,7 @@ TypHandle       DiffVecFFEVecFFE ( hdL, hdR )
 **  the finite field  element <hdR>.  This  is an important  function because
 **  such constructs are used to create finite field vectors.
 */
-TypHandle       DiffVectorFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffVectorFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdD;            /* difference, result              */
     TypFFE              vD;             /* value of the difference         */
@@ -1807,9 +1764,7 @@ TypHandle       DiffVectorFFE ( hdL, hdR )
 **  and the integer vector <hdR>.  This is an important function because such
 **  constructs are used to create finite field vectors.
 */
-TypHandle       DiffFFEVector ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffFFEVector (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdD;            /* difference, result              */
     TypFFE              vD;             /* value of the difference         */
@@ -1877,9 +1832,7 @@ TypHandle       DiffFFEVector ( hdL, hdR )
 **  'ProdFFEVecFFE' is an improved version  of 'ProdSclList', which  does not
 **  call 'PROD'.
 */
-TypHandle       ProdFFEVecFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdFFEVecFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* product, result                 */
     unsigned long       len;            /* length of the list              */
@@ -1981,9 +1934,7 @@ TypHandle       ProdFFEVecFFE ( hdL, hdR )
 **  'ProdVecFFEFFE'  is an  improved version of 'ProdListScl', which does not
 **  call 'PROD'.
 */
-TypHandle       ProdVecFFEFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdVecFFEFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* product, result                 */
     unsigned long       len;            /* length of the list              */
@@ -2085,9 +2036,7 @@ TypHandle       ProdVecFFEFFE ( hdL, hdR )
 **  'ProdVecFFEVecFFE' is an improved version  of 'ProdListList',  which does
 **  not call 'PROD'.
 */
-TypHandle       ProdVecFFEVecFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdVecFFEVecFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* product, result                 */
     TypFFE              vP;             /* value of the product            */
@@ -2204,9 +2153,7 @@ TypHandle       ProdVecFFEVecFFE ( hdL, hdR )
 **  not  call  'PROD'  and also  acummulates the sum  into  one fixed  vector
 **  instead of allocating a new for each product and sum.
 */
-TypHandle       ProdVecFFEMatFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdVecFFEMatFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* product, result                 */
     TypFFE              vP;             /* value of the product            */
@@ -2350,9 +2297,7 @@ TypHandle       ProdVecFFEMatFFE ( hdL, hdR )
 **  finite field  element <hdR>.  This is  an important function because such
 **  constructs are used to create finite field vectors.
 */
-TypHandle       ProdVectorFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdVectorFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* product, result                 */
     TypFFE              vP;             /* value of the product            */
@@ -2416,9 +2361,7 @@ TypHandle       ProdVectorFFE ( hdL, hdR )
 **  the integer vector  <hdR>.  This  is an  important function  because such
 **  constructs are used to create finite field vectors.
 */
-TypHandle       ProdFFEVector ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdFFEVector (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* product, result                 */
     TypFFE              vP;             /* value of the product            */
@@ -2484,9 +2427,7 @@ TypHandle       ProdFFEVector ( hdL, hdR )
 **  Note that  this  function also  does the  inversion  of matrices when the
 **  exponent is negative.
 */
-TypHandle       PowMatFFEInt ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowMatFFEInt (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP = 0;        /* power, result                   */
     TypHandle           hdPP;           /* one row of the power            */
@@ -2666,8 +2607,7 @@ TypHandle       PowMatFFEInt ( hdL, hdR )
 **
 **  'PrVecFFE' prints a vector.
 */
-void            PrVecFFE ( hdList )
-    TypHandle           hdList;
+void PrVecFFE (TypHandle hdList)
 {
     unsigned long       len;            /* logical length of the list      */
     unsigned long       i;              /* loop variable                   */
@@ -2690,8 +2630,7 @@ void            PrVecFFE ( hdList )
 **
 *F  DepthVecFFE( <hdVec> )  . . . . . . . . .  depth of a finite field vector
 */
-TypHandle DepthVecFFE ( hdVec )
-    TypHandle           hdVec;
+TypHandle DepthVecFFE (TypHandle hdVec)
 {
     long                pos;            /* current position                */
     long                len;            /* length of <hdVec>               */
@@ -2713,8 +2652,7 @@ TypHandle DepthVecFFE ( hdVec )
 **  'CharVecFFE' returns  the  characteristic  of  the  field  in  which  the
 **  elements of the finite field vector <hdVec> lie.
 */
-long            CharVecFFE ( hdVec )
-    TypHandle           hdVec;
+long CharVecFFE (TypHandle hdVec)
 {
     unsigned long       p;              /* characteristic, result          */
     unsigned long       q;              /* size of the finite field        */
@@ -2743,8 +2681,7 @@ long            CharVecFFE ( hdVec )
 **  'CharMatFFE'  returns  the  characteristic of  the  field  in  which  the
 **  elements of the finite field matrix <hdMat> lie.
 */
-long            CharMatFFE ( hdMat )
-    TypHandle           hdMat;
+long CharMatFFE (TypHandle hdMat)
 {
     return CharVecFFE( ELM_PLIST( hdMat, 1 ) );
 }
@@ -2763,8 +2700,7 @@ long            CharMatFFE ( hdMat )
 **  over a finite field (see "Vectors"), or matrix  <mat> over a finite field
 **  (see "Matrices").
 */
-TypHandle       FunCharFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCharFFE (TypHandle hdCall)
 {
     unsigned long       p;              /* characteristic, result          */
     TypHandle           hdZ;            /* finite field element            */
@@ -2802,8 +2738,7 @@ TypHandle       FunCharFFE ( hdCall )
 **  'DegreeVecFFE' returns  the  degree  of the  smallest finite  field  that
 **  contains all elements of the finite field vector <hdVec>.
 */
-long            DegreeVecFFE ( hdVec )
-    TypHandle           hdVec;
+long DegreeVecFFE (TypHandle hdVec)
 {
     unsigned long       d;              /* degree, result                  */
     unsigned long       len;            /* length of the vector            */
@@ -2854,8 +2789,7 @@ long            DegreeVecFFE ( hdVec )
 **  'DegreeMatFFE' returns  the  degree  of the  smallest finite  field  that
 **  contains all elements of the finite field matrix <hdMat>.
 */
-long            DegreeMatFFE ( hdMat )
-    TypHandle           hdMat;
+long DegreeMatFFE (TypHandle hdMat)
 {
     unsigned long       d;              /* degree, result                  */
     unsigned long       len;            /* length of the matrix            */
@@ -2906,8 +2840,7 @@ long            DegreeMatFFE ( hdMat )
 **  smallest finite field containing all elements of the vector or matrix has
 **  order larger than $2^{16}$.
 */
-TypHandle       FunDegreeFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunDegreeFFE (TypHandle hdCall)
 {
     unsigned long       d;              /* degree, result                  */
     TypHandle           hdZ;            /* finite field element            */
@@ -2946,8 +2879,7 @@ TypHandle       FunDegreeFFE ( hdCall )
 **
 **  'LogVecFFE( <vector>, <position> )'
 */
-TypHandle       FunLogVecFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunLogVecFFE (TypHandle hdCall)
 {
     long                exp, pos;
     TypHandle           hdPos, hdVec;
@@ -3013,16 +2945,12 @@ TypHandle FunIntVecFFE (TypHandle hdCall)
     return TabIntVecFFE[XType(hdVec)]( hdVec, pos );
 }
 
-TypHandle CantIntVecFFE ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle CantIntVecFFE (TypHandle hdList, long pos)
 {
     return Error("IntVecFFE: <list> must be a finite field vector",0L,0L);
 }
 
-TypHandle IntVecFFE ( hdVec, pos )
-    TypHandle           hdVec;
-    long                pos;
+TypHandle IntVecFFE (TypHandle hdVec, long pos)
 {
     TypHandle           hdRes;          /* result                          */
     TypHandle           hdElm;          /* converted element of <hdVec>    */
@@ -3068,8 +2996,7 @@ TypHandle IntVecFFE ( hdVec, pos )
 **
 **  'MakeVecFFE( <list>, <ffe> )'
 */
-TypHandle       FunMakeVecFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunMakeVecFFE (TypHandle hdCall)
 {
     TypHandle           hdList;         /* <list>, first argument          */
     TypHandle           hdFFE;          /* <ffe>, second argument          */
@@ -3133,8 +3060,7 @@ TypHandle       FunMakeVecFFE ( hdCall )
 **
 **  'NumberVecFFE( <vector>, <powers>, <integers> )'
 */
-TypHandle       FunNumberVecFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunNumberVecFFE (TypHandle hdCall)
 {
     long                num, dim, exp, i;
     TypHandle           hdVec, hdPows, hdInts;
@@ -3178,7 +3104,7 @@ TypHandle       FunNumberVecFFE ( hdCall )
 **
 **  'InitVecFFE' initializes the finite field vector package.
 */
-void            InitVecFFE ()
+void InitVecFFE (void)
 {
     long                type;
 

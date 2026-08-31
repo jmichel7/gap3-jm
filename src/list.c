@@ -206,8 +206,7 @@ long            TabIsList [T_VAR];
 */
 long            (*TabLenList[T_VAR]) ( TypHandle );
 
-long            CantLenList ( hdList )
-    TypHandle           hdList;
+long CantLenList (TypHandle hdList)
 {
     return HD_TO_INT( Error("Length: <list> must be a list",0L,0L) );
 }
@@ -277,9 +276,7 @@ TypHandle       (*TabElmfList[T_VAR]) ( TypHandle, long );
 TypHandle       (*TabElmlList[T_VAR]) ( TypHandle, long );
 TypHandle       (*TabElmrList[T_VAR]) ( TypHandle, long );
 
-TypHandle       CantElmList ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle CantElmList (TypHandle hdList, long pos)
 {
     return Error("List Element: <list> must be a list",0L,0L);
 }
@@ -318,9 +315,7 @@ TypHandle       CantElmList ( hdList, pos )
 */
 TypHandle       (*TabElmsList[T_VAR]) ( TypHandle, TypHandle );
 
-TypHandle       CantElmsList ( hdList, hdPoss )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
+TypHandle CantElmsList (TypHandle hdList, TypHandle hdPoss)
 {
     return Error("List Elements: <list> must be a list",0L,0L);
 }
@@ -352,10 +347,8 @@ TypHandle       CantElmsList ( hdList, hdPoss )
 */
 TypHandle       (*TabAssList[T_VAR]) ( TypHandle, long, TypHandle );
 
-TypHandle       CantAssList ( hdList, pos, hdVal )
-    TypHandle           hdList;
-    long                pos;
-    TypHandle           hdVal;
+TypHandle 
+CantAssList (TypHandle hdList, long pos, TypHandle hdVal)
 {
     return Error("List Assignment: <list> must be a list",0L,0L);
 }
@@ -389,10 +382,7 @@ TypHandle       CantAssList ( hdList, pos, hdVal )
 */
 TypHandle       (*TabAsssList[T_VAR]) ( TypHandle, TypHandle, TypHandle );
 
-TypHandle       CantAsssList ( hdList, hdPoss, hdVals )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
-    TypHandle           hdVals;
+TypHandle CantAsssList (TypHandle hdList, TypHandle hdPoss, TypHandle hdVals)
 {
     return Error("List Assignment: <list> must be a list",0L,0L);
 }
@@ -423,10 +413,7 @@ TypHandle       CantAsssList ( hdList, hdPoss, hdVals )
 */
 long            (*TabPosList[T_VAR]) ( TypHandle, TypHandle, long );
 
-long            CantPosList ( hdList, hdVal, start )
-    TypHandle           hdList;
-    TypHandle           hdVal;
-    long                start;
+long CantPosList (TypHandle hdList, TypHandle hdVal, long start)
 {
     return HD_TO_INT( Error("Position: <list> must be a list",0L,0L) );
 }
@@ -525,8 +512,7 @@ long            NotIsDenseList (TypHandle            hdObj )
 */
 long            (*TabIsPossList[T_VAR]) ( TypHandle );
 
-long            NotIsPossList ( hdObj )
-    TypHandle           hdObj;
+long NotIsPossList (TypHandle hdObj)
 {
     return 0;
 }
@@ -564,8 +550,7 @@ long            NotIsPossList ( hdObj )
 */
 long            (*TabIsXTypeList[T_VAR]) ( TypHandle );
 
-long            XType ( hdObj )
-    TypHandle           hdObj;
+long XType (TypHandle hdObj)
 {
     long                t;              /* loop variable                   */
 
@@ -592,8 +577,7 @@ long            XType ( hdObj )
 **  'EvList' returns the value of the list <hdList>.  The  value of a list is
 **  just the list itself, since lists are constants and thus selfevaluating.
 */
-TypHandle       EvList ( hdList )
-    TypHandle           hdList;
+TypHandle EvList (TypHandle hdList)
 {
     return hdList;
 }
@@ -608,8 +592,7 @@ TypHandle       EvList ( hdList )
 **
 **  Linebreaks are preferred after the commas.
 */
-void            PrList ( hdList )
-    TypHandle           hdList;
+void PrList (TypHandle hdList)
 {
     long                lenList;        /* logical length of <list>        */
     TypHandle           hdElm;          /* one element from <list>         */
@@ -644,9 +627,7 @@ void            PrList ( hdList )
 **
 **  Is called from the 'EQ' binop so both  operands  are  already  evaluated.
 */
-TypHandle       EqList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqList (TypHandle hdL, TypHandle hdR)
 {
     long                lenL;           /* length of the left operand      */
     long                lenR;           /* length of the right operand     */
@@ -690,9 +671,7 @@ TypHandle       EqList ( hdL, hdR )
 **
 **  Is called from the 'LT' binop so both operands are already evaluated.
 */
-TypHandle       LtList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtList (TypHandle hdL, TypHandle hdR)
 {
     long                lenL;           /* length of the left operand      */
     long                lenR;           /* length of the right operand     */
@@ -746,16 +725,12 @@ TypHandle       LtList ( hdL, hdR )
 **  'SumListList'  is a generic function  for  the third kind of sum, that of
 **  two lists.
 */
-TypHandle       SumList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumList (TypHandle hdL, TypHandle hdR)
 {
     return (*TabSum[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-TypHandle       SumSclList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumSclList (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdS;            /* handle of the sum               */
     TypHandle           hdSS;           /* one element of sum list         */
@@ -781,9 +756,7 @@ TypHandle       SumSclList ( hdL, hdR )
     return hdS;
 }
 
-TypHandle       SumListScl ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumListScl (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdS;            /* handle of the sum               */
     TypHandle           hdSS;           /* one element of sum list         */
@@ -809,9 +782,7 @@ TypHandle       SumListScl ( hdL, hdR )
     return hdS;
 }
 
-TypHandle       SumListList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumListList (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdS;            /* handle of the sum               */
     TypHandle           hdSS;           /* one element of the sum          */
@@ -867,16 +838,12 @@ TypHandle       SumListList ( hdL, hdR )
 **  'DiffListList'  is a  generic function for the  third kind of difference,
 **  that of two lists.
 */
-TypHandle       DiffList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffList (TypHandle hdL, TypHandle hdR)
 {
     return (*TabDiff[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-TypHandle       DiffSclList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffSclList (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdD;            /* handle of the difference        */
     TypHandle           hdDD;           /* one element of difference list  */
@@ -902,9 +869,7 @@ TypHandle       DiffSclList ( hdL, hdR )
     return hdD;
 }
 
-TypHandle       DiffListScl ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffListScl (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdD;            /* handle of the difference        */
     TypHandle           hdDD;           /* one element of difference list  */
@@ -930,9 +895,7 @@ TypHandle       DiffListScl ( hdL, hdR )
     return hdD;
 }
 
-TypHandle       DiffListList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffListList (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdD;            /* handle of the difference        */
     TypHandle           hdDD;           /* one element of the difference   */
@@ -991,16 +954,12 @@ TypHandle       DiffListList ( hdL, hdR )
 **  of  two lists.  Note that this  includes the  product  of a  vector and a
 **  matrix.
 */
-TypHandle       ProdList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdList (TypHandle hdL, TypHandle hdR)
 {
     return (*TabProd[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-TypHandle       ProdSclList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdSclList (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* handle of the product           */
     TypHandle           hdPP;           /* one element of product list     */
@@ -1028,9 +987,7 @@ TypHandle       ProdSclList ( hdL, hdR )
     return hdP;
 }
 
-TypHandle       ProdListScl ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdListScl (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* handle of the product           */
     TypHandle           hdPP;           /* one element of product list     */
@@ -1058,9 +1015,7 @@ TypHandle       ProdListScl ( hdL, hdR )
     return hdP;
 }
 
-TypHandle       ProdListList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdListList (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* handle of the product           */
     TypHandle           hdPP;           /* one summand of the product      */
@@ -1110,16 +1065,12 @@ TypHandle       ProdListList ( hdL, hdR )
 **  and the  inverse of <hdR> (computed as <hdR>^-1).  The right operand must
 **  either be a scalar or an invertable square matrix.
 */
-TypHandle       QuoList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle QuoList (TypHandle hdL, TypHandle hdR)
 {
     return (*TabQuo[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-TypHandle       QuoLists ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle QuoLists (TypHandle hdL, TypHandle hdR)
 {
     return PROD( hdL, POW( hdR, INT_TO_HD(-1) ) );
 }
@@ -1140,16 +1091,12 @@ TypHandle       QuoLists ( hdL, hdR )
 **  and the  inverse of <hdL> (computed as <hdL>^-1).  The left  operand must
 **  either be a scalar or an invertable square matrix.
 */
-TypHandle       ModList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ModList (TypHandle hdL, TypHandle hdR)
 {
     return (*TabMod[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-TypHandle       ModLists ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ModLists (TypHandle hdL, TypHandle hdR)
 {
     return PROD( POW( hdL, INT_TO_HD(-1) ), hdR );
 }
@@ -1169,16 +1116,12 @@ TypHandle       ModLists ( hdL, hdR )
 **  'PowLists' is a generic function for the third kind of power, that of two
 **  matrices, which is defined as the conjugation.
 */
-TypHandle       PowList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowList (TypHandle hdL, TypHandle hdR)
 {
     return (*TabPow[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-TypHandle       PowLists ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowLists (TypHandle hdL, TypHandle hdR)
 {
     return PROD( MOD( hdR, hdL ), hdR );
 }
@@ -1196,16 +1139,12 @@ TypHandle       PowLists ( hdL, hdR )
 **
 **  'CommLists' is a generic function for the commutator of two matrices.
 */
-TypHandle       CommList ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CommList (TypHandle hdL, TypHandle hdR)
 {
     return (*TabComm[XType(hdL)][XType(hdR)])( hdL, hdR );
 }
 
-TypHandle       CommLists ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CommLists (TypHandle hdL, TypHandle hdR)
 {
     return PROD( POW( PROD( hdR, hdL ), INT_TO_HD(-1) ), PROD( hdL, hdR ) );
 }
@@ -1219,8 +1158,7 @@ TypHandle       CommLists ( hdL, hdR )
 **  in the list '<hdSel>[0]'.   Both '<hdSel>[0]' and '<hdSel>[1]' first have
 **  to be evaluated.
 */
-TypHandle       EvElmList ( hdSel )
-    TypHandle           hdSel;
+TypHandle EvElmList (TypHandle hdSel)
 {
     TypHandle           hdElm;          /* <element>, result               */
     TypHandle           hdList;         /* <list>, left operand            */
@@ -1281,10 +1219,7 @@ TypHandle       EvElmList ( hdSel )
 **  creates a new list,  so that we can overwrite this list with the selected
 **  values.
 */
-TypHandle       ElmListLevel ( hdLists, pos, level )
-    TypHandle           hdLists;
-    long                pos;
-    long                level;
+TypHandle ElmListLevel (TypHandle hdLists, long pos, long level)
 {
     long                lenLists;       /* length of <lists>               */
     TypHandle           hdList;         /* one list from <lists>           */
@@ -1341,8 +1276,7 @@ TypHandle       ElmListLevel ( hdLists, pos, level )
     return hdLists;
 }
 
-TypHandle       EvElmListLevel ( hdSel )
-    TypHandle           hdSel;
+TypHandle EvElmListLevel (TypHandle hdSel)
 {
     TypHandle           hdLists;        /* <list>, left operand            */
     TypHandle           hdPos;          /* <position>, right operand       */
@@ -1381,8 +1315,7 @@ TypHandle       EvElmListLevel ( hdSel )
 **  '<hdSel>[1]' first have to be evaluated.  This implements  the  construct
 **  '<list>{<positions>}'.
 */
-TypHandle       EvElmsList ( hdSel )
-    TypHandle           hdSel;
+TypHandle EvElmsList (TypHandle hdSel)
 {
     TypHandle           hdList;         /* <list>, left operand            */
     TypHandle           hdPoss;         /* <positions>, right operand      */
@@ -1424,10 +1357,7 @@ TypHandle       EvElmsList ( hdSel )
 **  creates a  new list, so that we can overwrite this list with the selected
 **  values.
 */
-TypHandle       ElmsListLevel ( hdLists, hdPoss, level )
-    TypHandle           hdLists;
-    TypHandle           hdPoss;
-    long                level;
+TypHandle ElmsListLevel (TypHandle hdLists, TypHandle hdPoss, long level)
 {
     long                lenLists;       /* length of <lists>               */
     TypHandle           hdList;         /* one list from <lists>           */
@@ -1484,8 +1414,7 @@ TypHandle       ElmsListLevel ( hdLists, hdPoss, level )
     return hdLists;
 }
 
-TypHandle       EvElmsListLevel ( hdSel )
-    TypHandle           hdSel;
+TypHandle EvElmsListLevel (TypHandle hdSel)
 {
     TypHandle           hdLists;        /* <list>, left operand            */
     TypHandle           hdPoss;         /* <positions>, right operand      */
@@ -1523,8 +1452,7 @@ TypHandle       EvElmsListLevel ( hdSel )
 **  '<hdAss>[0]',  i.e., to  the element  at  position '<hdAss>[0][1]' in the
 **  list '<hdAss>[0][0]'.
 */
-TypHandle       EvAssList ( hdAss )
-    TypHandle           hdAss;
+TypHandle EvAssList (TypHandle hdAss)
 {
     TypHandle           hdList;         /* <list>, left operand            */
     long                plen;           /* physical length of <list>       */
@@ -1589,11 +1517,7 @@ TypHandle       EvAssList ( hdAss )
 **  '<list>...{<positions>}')  creates  dense lists, so  that  we can  select
 **  elements  with 'ELMF_LIST'.
 */
-TypHandle       AssListLevel ( hdLists, pos, hdVals, level )
-    TypHandle           hdLists;
-    long                pos;
-    TypHandle           hdVals;
-    long                level;
+TypHandle AssListLevel (TypHandle hdLists, long pos, TypHandle hdVals, long level)
 {
     TypHandle           hdList;         /* one list of <lists>             */
     TypHandle           hdVal;          /* one value from <values>         */
@@ -1672,8 +1596,7 @@ TypHandle       AssListLevel ( hdLists, pos, hdVals, level )
     return hdVals;
 }
 
-TypHandle       EvAssListLevel ( hdAss )
-    TypHandle           hdAss;
+TypHandle EvAssListLevel (TypHandle hdAss)
 {
     TypHandle           hdLists;        /* <list>, left operand            */
     TypHandle           hdPos;          /* <position>, left operand        */
@@ -1720,8 +1643,7 @@ TypHandle       EvAssListLevel ( hdAss )
 **  '<hdAss>[0]',  i.e., to  the elements at positions '<hdAss>[0][1]' in the
 **  list '<hdAss>[0][0]'.
 */
-TypHandle       EvAsssList ( hdAss )
-    TypHandle           hdAss;
+TypHandle EvAsssList (TypHandle hdAss)
 {
     TypHandle           hdList;         /* <list>, left operand            */
     TypHandle           hdPoss;         /* <positions>, left operand       */
@@ -1773,11 +1695,7 @@ TypHandle       EvAsssList ( hdAss )
 **  We    assume     that    'EvElmsList'     (the     function    evaluating
 **  '<list>...{<positions>}') created a new dense list.
 */
-TypHandle       AsssListLevel ( hdLists, hdPoss, hdVals, lev )
-    TypHandle           hdLists;
-    TypHandle           hdPoss;
-    TypHandle           hdVals;
-    long                lev;
+TypHandle AsssListLevel (TypHandle hdLists, TypHandle hdPoss, TypHandle hdVals, long lev)
 {
     long                lenLists;       /* length of <lists> and <vals>    */
     long                lenPoss;        /* length of <positions>           */
@@ -1868,8 +1786,7 @@ TypHandle       AsssListLevel ( hdLists, hdPoss, hdVals, lev )
     return hdVals;
 }
 
-TypHandle       EvAsssListLevel ( hdAss )
-    TypHandle           hdAss;
+TypHandle EvAsssListLevel (TypHandle hdAss)
 {
     TypHandle           hdLists;        /* <list>, left operand            */
     TypHandle           hdPoss;         /* <positions>, left operand       */
@@ -1926,8 +1843,7 @@ TypHandle       EvAsssListLevel ( hdAss )
 **
 **  Linebreaks are preferred after the '['.
 */
-void            PrElmList ( hdSel )
-    TypHandle           hdSel;
+void PrElmList (TypHandle hdSel)
 {
     Pr("%2>",0L,0L);  Print( PTR(hdSel)[0] );
     Pr("%<[",0L,0L);  Print( PTR(hdSel)[1] );
@@ -1943,8 +1859,7 @@ void            PrElmList ( hdSel )
 **
 **  Linebreaks are preferred after the '{'.
 */
-void            PrElmsList ( hdSel )
-    TypHandle           hdSel;
+void PrElmsList (TypHandle hdSel)
 {
     Pr("%2>",0L,0L);  Print( PTR(hdSel)[0] );
     Pr("%<{",0L,0L);  Print( PTR(hdSel)[1] );
@@ -1960,8 +1875,7 @@ void            PrElmsList ( hdSel )
 **
 **  Linebreaks are preferred before the ':='.
 */
-void            PrAssList ( hdAss )
-    TypHandle           hdAss;
+void PrAssList (TypHandle hdAss)
 {
     Pr("%2>",0L,0L);       Print( PTR(hdAss)[0] );
     Pr("%< %>:= ",0L,0L);  Print( PTR(hdAss)[1] );
@@ -1981,8 +1895,7 @@ void            PrAssList ( hdAss )
 **  case  'in' can use  a binary search.   If <list> is   a general list 'in'
 **  employs a linear search.
 */
-TypHandle       EvIn ( hdIn )
-    TypHandle           hdIn;
+TypHandle EvIn (TypHandle hdIn)
 {
     TypHandle           hdVal;          /* <val>, left operand             */
     TypHandle           hdList;         /* <list>, right operand           */
@@ -2021,8 +1934,7 @@ TypHandle       EvIn ( hdIn )
 **  'IsList'  returns  'true' if its argument   <obj> is  a  list and 'false'
 **  otherwise.
 */
-TypHandle       FunIsList ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsList (TypHandle hdCall)
 {
     TypHandle           hdObj;
 
@@ -2056,8 +1968,7 @@ TypHandle       FunIsList ( hdCall )
 **  type, is a vector and 'false' otherwise.  Will cause an error if <obj> is
 **  an unbound variable.
 */
-long            IsVector ( hdObj )
-    TypHandle           hdObj;
+long IsVector (TypHandle hdObj)
 {
     /* test if <hdObj> is a list and a vector                              */
     if ( IS_LIST( hdObj ) && (TabIsList[ XType( hdObj ) ] == 2) )
@@ -2066,8 +1977,7 @@ long            IsVector ( hdObj )
         return 0;
 }
 
-TypHandle       FunIsVector ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsVector (TypHandle hdCall)
 {
     TypHandle           hdObj;          /* handle of the object            */
 
@@ -2098,8 +2008,7 @@ TypHandle       FunIsVector ( hdCall )
 **  type, is a matrix and 'false' otherwise.  Will cause an error if <obj> is
 **  an unbound variable.
 */
-TypHandle       FunIsMat ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsMat (TypHandle hdCall)
 {
     TypHandle           hdObj;          /* handle of the object            */
 
@@ -2128,8 +2037,7 @@ TypHandle       FunIsMat ( hdCall )
 **
 **  'Length' returns the length of a list '<list>'.
 */
-TypHandle       FunLength ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunLength (TypHandle hdCall)
 {
     TypHandle           hdList;         /* handle of the list              */
 
@@ -2162,8 +2070,7 @@ TypHandle       FunLength ( hdCall )
 **  The  list is  automatically extended to   make room for  the new element.
 **  'Add' returns nothing, it is called only for its sideeffect.
 */
-TypHandle       FunAdd ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunAdd (TypHandle hdCall)
 {
     TypHandle           hdList;         /* <list>, first argument          */
     TypHandle           hdVal;          /* <val>, second argument          */
@@ -2227,8 +2134,7 @@ TypHandle       FunAdd ( hdCall )
 **
 *N  1992/12/10 martin 'Append' should use 'ASSS_LIST'
 */
-TypHandle       FunAppend ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunAppend (TypHandle hdCall)
 {
     TypHandle           hdList1;        /* handle of the first list        */
     TypHandle           hdList2;        /* handle of the second list       */
@@ -2305,8 +2211,7 @@ TypHandle       FunAppend ( hdCall )
 **  'Position' returns the position of the object <obj> in the  list  <list>.
 **  'HdFalse' is returned if the object does not occur in the list.
 */
-TypHandle       FunPosition ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunPosition (TypHandle hdCall)
 {
     TypHandle           hdList;         /* <list>, first argument          */
     TypHandle           hdVal;          /* <val>, second argument          */
@@ -2371,8 +2276,7 @@ TypHandle       FunPosition ( hdCall )
 **  equivalent  to  specifying no operation.   This function  exists  because
 **  there are places where the operation in not an option.
 */
-TypHandle       FunOnPoints ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunOnPoints (TypHandle hdCall)
 {
     TypHandle           hdRes;          /* handle of the image, result     */
     TypHandle           hdPnt;          /* handle of the point, first arg  */
@@ -2401,8 +2305,7 @@ TypHandle       FunOnPoints ( hdCall )
 **  specifies the componentwise operation of  group elements on pairs
 **  of points, which are represented by lists of length 2.
 */
-TypHandle       FunOnPairs ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunOnPairs (TypHandle hdCall)
 {
     TypHandle           hdRes;          /* handle of the image, result     */
     TypHandle           hdPair;         /* handle of the pair, first arg   */
@@ -2448,8 +2351,7 @@ TypHandle       FunOnPairs ( hdCall )
 **  points, which are represented by lists.  'OnPairs' is the special case of
 **  'OnTuples' for tuples with two elements.
 */
-TypHandle       FunOnTuples ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunOnTuples (TypHandle hdCall)
 {
     TypHandle           hdRes;          /* handle of the image, result     */
     TypHandle           hdTup;          /* handle of the tuple, first arg  */
@@ -2497,8 +2399,7 @@ TypHandle       FunOnTuples ( hdCall )
 **  specifies the operation  of group elements  on  sets of points, which are
 **  represented by sorted lists of points without duplicates (see "Sets").
 */
-TypHandle       FunOnSets ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunOnSets (TypHandle hdCall)
 {
     TypHandle           hdRes;          /* handle of the image, result     */
     TypHandle           hdSet;          /* handle of the tuple, first arg  */
@@ -2585,8 +2486,7 @@ TypHandle       FunOnSets ( hdCall )
 **
 **  specifies that group elements operate by multiplication from the right.
 */
-TypHandle       FunOnRight ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunOnRight (TypHandle hdCall)
 {
     TypHandle           hdRes;          /* handle of the image, result     */
     TypHandle           hdPnt;          /* handle of the point, first arg  */
@@ -2614,8 +2514,7 @@ TypHandle       FunOnRight ( hdCall )
 **
 **  specifies that group elements operate by multiplication from the left.
 */
-TypHandle       FunOnLeft ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunOnLeft (TypHandle hdCall)
 {
     TypHandle           hdRes;          /* handle of the image, result     */
     TypHandle           hdPnt;          /* handle of the point, first arg  */
@@ -2637,8 +2536,7 @@ TypHandle       FunOnLeft ( hdCall )
 **
 *F  DepthListx( <vec> ) . . . . . . . . . . . . . . . . . . depth of a vector
 */
-TypHandle DepthListx ( hdVec )
-    TypHandle           hdVec;
+TypHandle DepthListx (TypHandle hdVec)
 {
     long                pos;            /* current position                */
     TypHandle           zero;           /* zero element                    */
@@ -2677,8 +2575,7 @@ TypHandle DepthListx ( hdVec )
 */
 TypHandle (*TabDepthVector[T_VAR]) ( TypHandle );
 
-TypHandle FunDepthVector ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunDepthVector (TypHandle hdCall)
 {
     TypHandle           hdVec;  /* 1. argument: finite field vector        */
 
@@ -2691,8 +2588,7 @@ TypHandle FunDepthVector ( hdCall )
     return TabDepthVector[XType(hdVec)]( hdVec );
 }
 
-TypHandle CantDepthVector ( hdList )
-    TypHandle           hdList;
+TypHandle CantDepthVector (TypHandle hdList)
 {
     return Error( "DepthVector: <list> must be a vector", 0L, 0L );
 }
@@ -2704,7 +2600,7 @@ TypHandle CantDepthVector ( hdList )
 **
 **  'InitList' initializes the generic list package.
 */
-void            InitList ()
+void InitList (void)
 {
     long                type1, type2;   /* loop variable                   */
 

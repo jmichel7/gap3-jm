@@ -139,8 +139,7 @@
 **
 **  'LenSet' is the function in 'TabLenList' for sets.
 */
-long            LenSet ( hdList )
-    TypHandle           hdList;
+long LenSet (TypHandle hdList)
 {
     return LEN_PLIST( hdList );
 }
@@ -162,9 +161,7 @@ long            LenSet ( hdList )
 **  'ElmSet' is  the  function  in 'TabElmList'  for sets.   'ElmfSet' is the
 **  function in 'TabElmfList', 'TabElmlList', and 'TabElmrList' for sets.
 */
-TypHandle       ElmSet ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmSet (TypHandle hdList, long pos)
 {
     TypHandle           hdElm;          /* the selected element, result    */
 
@@ -182,9 +179,7 @@ TypHandle       ElmSet ( hdList, pos )
     return hdElm;
 }
 
-TypHandle       ElmfSet ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmfSet (TypHandle hdList, long pos)
 {
     /* select and return the element                                       */
     return ELM_PLIST( hdList, pos );
@@ -203,9 +198,8 @@ TypHandle       ElmfSet ( hdList, pos )
 **
 **  'ElmsSet' is the function in 'TabElmsList' for sets.
 */
-TypHandle       ElmsSet ( hdList, hdPoss )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
+TypHandle 
+ElmsSet (TypHandle hdList, TypHandle hdPoss)
 {
     TypHandle           hdElms;         /* selected sublist, result        */
     long                lenList;        /* length of <list>                */
@@ -322,10 +316,7 @@ TypHandle       ElmsSet ( hdList, hdPoss )
 **  same stuff as 'AssPlist'.  This  is because a set is  not very  likely to
 **  stay a set after the assignment.
 */
-TypHandle       AssSet ( hdList, pos, hdVal )
-    TypHandle           hdList;
-    long                pos;
-    TypHandle           hdVal;
+TypHandle AssSet (TypHandle hdList, long pos, TypHandle hdVal)
 {
     long                plen;           /* physical length of <list>       */
 
@@ -364,10 +355,7 @@ TypHandle       AssSet ( hdList, pos, hdVal )
 **  stuff as 'AsssPlist'.  This is because a set is not very likely to stay a
 **  set after the assignment.
 */
-TypHandle       AsssSet ( hdList, hdPoss, hdVals )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
-    TypHandle           hdVals;
+TypHandle AsssSet (TypHandle hdList, TypHandle hdPoss, TypHandle hdVals)
 {
     /* convert <list> to a plain list                                      */
     Retype( hdList, T_LIST );
@@ -387,10 +375,7 @@ TypHandle       AsssSet ( hdList, hdPoss, hdVals )
 **
 **  'PosSet' is the function in 'TabPosList' for plain lists.
 */
-long            PosSet ( hdList, hdVal, start )
-    TypHandle           hdList;
-    TypHandle           hdVal;
-    long                start;
+long PosSet (TypHandle hdList, TypHandle hdVal, long start)
 {
     unsigned long       lenList;        /* logical length of the set       */
     unsigned long       i, j, k;        /* loop variables                  */
@@ -423,8 +408,7 @@ long            PosSet ( hdList, hdVal, start )
 **
 **  'PlainSet' is the function in 'TabPlainList' for sets.
 */
-void            PlainSet ( hdList )
-    TypHandle           hdList;
+void PlainSet (TypHandle hdList)
 {
     return;
 }
@@ -438,8 +422,7 @@ void            PlainSet ( hdList )
 **
 **  'IsDenseSet' is the function in 'TabIsDenseList' for sets.
 */
-long            IsDenseSet ( hdList )
-    TypHandle           hdList;
+long IsDenseSet (TypHandle hdList)
 {
     return 1;
 }
@@ -454,8 +437,7 @@ long            IsDenseSet ( hdList )
 **
 **  'IsPossSet' is the function in 'TabIsPossList' for sets.
 */
-long            IsPossSet ( hdList )
-    TypHandle           hdList;
+long IsPossSet (TypHandle hdList)
 {
     long                lenList;        /* length of <list>                */
     TypHandle           hdElm;          /* one element of <list>           */
@@ -489,9 +471,7 @@ long            IsPossSet ( hdList )
 **
 **  Is called from the 'EQ' binop so both  operands  are  already  evaluated.
 */
-TypHandle       EqSet ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqSet (TypHandle hdL, TypHandle hdR)
 {
     long                lenL;           /* length of the left operand      */
     long                lenR;           /* length of the right operand     */
@@ -529,9 +509,7 @@ TypHandle       EqSet ( hdL, hdR )
 **
 **  Is called from the 'LT' binop so both operands are already evaluated.
 */
-TypHandle       LtSet ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtSet (TypHandle hdL, TypHandle hdR)
 {
     long                lenL;           /* length of the left operand      */
     long                lenR;           /* length of the right operand     */
@@ -569,8 +547,7 @@ TypHandle       LtSet ( hdL, hdR )
 **  copy and finally removes duplicates, which must appear next to each other
 **  now that the copy is sorted.
 */
-TypHandle       SetList ( hdList )
-    TypHandle           hdList;
+TypHandle SetList (TypHandle hdList)
 {
     TypHandle           hdSet;          /* handle of the result set        */
     TypHandle           hdElm;          /* one element of <list>           */
@@ -649,8 +626,7 @@ TypHandle       SetList ( hdList )
 **  'Set' returns a new list even if the list <list> is already a proper set,
 **  in this  case  it is   equivalent to  'ShallowCopy' (see  "ShallowCopy").
 */
-TypHandle       FunSet ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunSet (TypHandle hdCall)
 {
     TypHandle           hdSet;          /* handle of the result            */
     TypHandle           hdList;         /* handle of the argument          */
@@ -701,8 +677,7 @@ TypHandle       FunSet ( hdCall )
 **  changed to 'T_SET'.  If it is not then 'SetList' is called to make a copy
 **  of 'hdList', remove the holes, sort  the copy, and remove the duplicates.
 */
-long            IsSet ( hdList )
-    TypHandle           hdList;
+long IsSet (TypHandle hdList)
 {
     long                isSet;          /* result                          */
     long                lenList;        /* length of <list>                */
@@ -777,8 +752,7 @@ long            IsSet ( hdList )
 **  duplicates.  Will cause an  error if evaluation of   <obj> is an  unbound
 **  variable.
 */
-TypHandle       FunIsSet ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsSet (TypHandle hdCall)
 {
     TypHandle           hdObj;
 
@@ -807,8 +781,7 @@ TypHandle       FunIsSet ( hdCall )
 **  are equal if  every element of <list1> is  also an element of <list2> and
 **  if every element of <list2> is also an element of <list1>.
 */
-TypHandle       FunIsEqualSet ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsEqualSet (TypHandle hdCall)
 {
     TypHandle           hdSet1;         /* handle  of the left  set        */
     TypHandle           hdSet2;         /* handle  of the right set        */
@@ -858,8 +831,7 @@ TypHandle       FunIsEqualSet ( hdCall )
 **  Either argument  may also be  a list that  is not a  proper set, in which
 **  case 'IsSubsetSet' silently applies 'Set' (see "Set") to it first.
 */
-TypHandle       FunIsSubsetSet ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsSubsetSet (TypHandle hdCall)
 {
     TypHandle           hdSet1;         /* handle of  the left  set        */
     TypHandle           hdSet2;         /* handle of  the right set        */
@@ -963,8 +935,7 @@ TypHandle       FunIsSubsetSet ( hdCall )
 **  'AddSet' does not return  anything, it is only  called for the sideeffect
 **  of changing <set>.
 */
-TypHandle       FunAddSet ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunAddSet (TypHandle hdCall)
 {
     TypHandle           hdSet;          /* handle of the set               */
     TypHandle           hdObj;          /* handle of the object            */
@@ -1024,8 +995,7 @@ TypHandle       FunAddSet ( hdCall )
 **  'RemoveSet'   does   not return anything,  it   is  only called  for  the
 **  sideeffect of changing <set>.
 */
-TypHandle       FunRemoveSet ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunRemoveSet (TypHandle hdCall)
 {
     TypHandle           hdSet;          /* handle of the set               */
     TypHandle           hdObj;          /* handle of the object            */
@@ -1087,8 +1057,7 @@ TypHandle       FunRemoveSet ( hdCall )
 */
 TypHandle       HdUnion;
 
-TypHandle       FunUniteSet ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunUniteSet (TypHandle hdCall)
 {
     TypHandle           hdSet1;         /* handle  of left  set            */
     TypHandle           hdSet2;         /* handle  of right set            */
@@ -1177,8 +1146,7 @@ TypHandle       FunUniteSet ( hdCall )
 **  all elements from <set1> that are not  in  <set2>.  <set2> may be a  list
 **  that is not a proper set, in which case 'Set' is silently applied to it.
 */
-TypHandle       FunIntersectSet ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIntersectSet (TypHandle hdCall)
 {
     TypHandle           hdSet1;         /* handle  of left  set            */
     TypHandle           hdSet2;         /* handle  of right set            */
@@ -1252,8 +1220,7 @@ TypHandle       FunIntersectSet ( hdCall )
 **  all elements from <set1> that are in <set2>.   <set2> may  be a list that
 **  is not a proper set, in which case 'Set' is silently applied to it.
 */
-TypHandle       FunSubtractSet ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunSubtractSet (TypHandle hdCall)
 {
     TypHandle           hdSet1;         /* handle  of left  set            */
     TypHandle           hdSet2;         /* handle  of right set            */
@@ -1321,7 +1288,7 @@ TypHandle       FunSubtractSet ( hdCall )
 **
 **  'InitSet' initializes the set package.
 */
-void            InitSet ()
+void InitSet (void)
 {
 
     /* install the list functions in the tables                            */

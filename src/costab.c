@@ -101,7 +101,7 @@ static long           wordSize = 1023;  /* maximal no. of coset rep words  */
 **  'dedgen',  'dedcos',  'dedfst',  'dedlst',  'dedSize'  and 'hdTable'  are
 **  assumed to be known as static variables.
 */
-void            CompressDeductionList ( )
+void CompressDeductionList (void)
 {
     TypHandle           * ptTable;        /* pointer to the coset table    */
     long                i, j;
@@ -148,8 +148,7 @@ void            CompressDeductionList ( )
 **  'ApplyRel'  applies the relator  <rel>  to the  application  list  <app>.
 **  ...more about ApplyRel...
 */
-TypHandle       FunApplyRel ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunApplyRel (TypHandle hdCall)
 {
     TypHandle           hdApp;          /* handle of the application list  */
     TypHandle           * ptApp;        /* pointer to that list            */
@@ -218,8 +217,7 @@ TypHandle       FunApplyRel ( hdCall )
 **  'HandleCoinc'  is a subroutine of  'FunMakeConsequences'  and handles the
 **  coincidence  cos2 = cos1.
 */
-void            HandleCoinc ( cos1, cos2 )
-    unsigned long       cos1, cos2;
+void HandleCoinc (unsigned long cos1, unsigned long cos2)
 {
     TypHandle           * ptTable;        /* pointer to the coset table    */
     TypHandle           * ptNext;         /*                               */
@@ -366,8 +364,7 @@ void            HandleCoinc ( cos1, cos2 )
 **
 *F  FunMakeConsequences(<hdCall>) . . find consequences of a coset definition
 */
-TypHandle       FunMakeConsequences ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunMakeConsequences (TypHandle hdCall)
 {
     TypHandle           hdList;         /* handle of the list of arguments */
     TypHandle           hdSubs;         /*                                 */
@@ -532,8 +529,7 @@ TypHandle       FunMakeConsequences ( hdCall )
 **
 *F  FunStandardizeTable(<hdCall>)  . . . . . . . .  standardize a coset table
 */
-TypHandle       FunStandardizeTable ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunStandardizeTable (TypHandle hdCall)
 {
     TypHandle           * ptTable;      /* pointer to table                */
     unsigned long       nrgen;          /* number of rows of the table / 2 */
@@ -620,7 +616,7 @@ TypHandle       FunStandardizeTable ( hdCall )
 **  'treeType', 'hdTree2',  and  'treeWordLength'  are assumed to be known as
 **  static variables.
 */
-void            InitializeCosetFactorWord ( )
+void InitializeCosetFactorWord (void)
 {
     TypHandle           * ptWord;       /* pointer to the word             */
     long                i;              /* integer variable                */
@@ -654,8 +650,7 @@ void            InitializeCosetFactorWord ( )
 **
 **  Warning: 'factor' is not checked for being zero.
 */
-void            AddCosetFactor ( hdfactor )
-    TypHandle           hdfactor;
+void AddCosetFactor (TypHandle hdfactor)
 {
     /* handle the one generator MTC case                                   */
 
@@ -678,8 +673,7 @@ void            AddCosetFactor ( hdfactor )
 **
 **  Warning: 'factor' is not checked for being zero.
 */
-void            AddCosetFactor2 ( factor )
-    long                factor;
+void AddCosetFactor2 (long factor)
 {
     TypHandle           * ptFac;        /* pointer to the factor           */
     TypHandle           * ptWord;       /* pointer to the word             */
@@ -749,8 +743,7 @@ void            AddCosetFactor2 ( factor )
 **
 **  Warning: 'factor' is not checked for being zero.
 */
-void            SubtractCosetFactor ( hdfactor )
-    TypHandle           hdfactor;
+void SubtractCosetFactor (TypHandle hdfactor)
 {
     /* handle the one generator MTC case                                   */
 
@@ -773,8 +766,7 @@ void            SubtractCosetFactor ( hdfactor )
 **  returns the corresponding factors in "word"
 **  ...more about ApplyRel2...
 */
-TypHandle       FunApplyRel2 ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunApplyRel2 (TypHandle hdCall)
 {
     TypHandle           hdApp;          /* handle of the application list  */
     TypHandle           * ptApp;        /* pointer to that list            */
@@ -997,8 +989,7 @@ TypHandle       FunApplyRel2 ( hdCall )
 **  'FunCopyRel'  returns a copy of the given  RRS relator  such that the bag
 **  of the copy does not exceed the minimal required size.
 */
-TypHandle       FunCopyRel ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCopyRel (TypHandle hdCall)
 {
     TypHandle           hdRel;          /* handle of the given relator     */
     TypHandle           * ptRel;        /* pointer to the given relator    */
@@ -1038,8 +1029,7 @@ TypHandle       FunCopyRel ( hdCall )
 **  routines.  It replaces the given relator by its canonical representative.
 **  It does not return anything.
 */
-TypHandle       FunMakeCanonical ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunMakeCanonical (TypHandle hdCall)
 {
     TypHandle           hdRel;          /* handle of the relator           */
     TypHandle           * ptRel;        /* pointer to the relator          */
@@ -1168,8 +1158,7 @@ TypHandle       FunMakeCanonical ( hdCall )
 **  in the current generators,  if it finds any,  or it defines a  new proper
 **  tree entry, and then returns it.
 */
-TypHandle       FunTreeEntry ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTreeEntry (TypHandle hdCall)
 {
     TypHandle           * ptTree1;      /* pointer to that component       */
     TypHandle           * ptTree2;      /* pointer to that component       */
@@ -1399,7 +1388,7 @@ TypHandle       FunTreeEntry ( hdCall )
 **  'wordList'  is assumed to be known as static variable.
 **
 */
-long       TreeEntryC ( )
+long TreeEntryC (void)
 {
     TypHandle           * ptTree1;      /* ptr to first tree component     */
     TypHandle           * ptTree2;      /* ptr to second tree component    */
@@ -1571,9 +1560,7 @@ long       TreeEntryC ( )
 **  'HandleCoinc2'  is a subroutine of 'FunMakeConsequences2' and handles the
 **  coincidence  cos2 = factor * cos1.
 */
-void            HandleCoinc2 ( cos1, cos2, hdfactor )
-    long                cos1, cos2;
-    TypHandle           hdfactor;
+void HandleCoinc2 (long cos1, long cos2, TypHandle hdfactor)
 {
     TypHandle           * gen, * gen2;
     TypHandle           * inv, * inv2;
@@ -1907,8 +1894,7 @@ void            HandleCoinc2 ( cos1, cos2, hdfactor )
 **
 *F  FunMakeConsequences2(<hdCall>) .  find consequences of a coset definition
 */
-TypHandle       FunMakeConsequences2 ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunMakeConsequences2 (TypHandle hdCall)
 {
     TypHandle           hdList;         /* handle of the list of arguments */
     TypHandle           hdSubs;         /*                                 */
@@ -2285,8 +2271,7 @@ TypHandle       FunMakeConsequences2 ( hdCall )
 **
 **  'FunStandardizeTable2' standardizes an augmented coset table.
 */
-TypHandle       FunStandardizeTable2 ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunStandardizeTable2 (TypHandle hdCall)
 {
     unsigned long       nrgen;          /* number of rows of the table / 2 */
     TypHandle           * ptTable;      /* pointer to table                */
@@ -2383,8 +2368,7 @@ TypHandle       FunStandardizeTable2 ( hdCall )
 **
 **  'FunAddAbelianRelator' implements 'AddAbelianRelator( <rels>, <number> )'
 */
-TypHandle       FunAddAbelianRelator ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunAddAbelianRelator (TypHandle hdCall)
 {
     TypHandle           hdRels;         /* handle of relators list         */
     TypHandle           * ptRels;       /* pointer to relators list        */
@@ -2460,7 +2444,7 @@ TypHandle       FunAddAbelianRelator ( hdCall )
 **
 **  'InitCostab' initializes the coset table package.
 */
-void            InitCosTab ()
+void InitCosTab (void)
 {
     InstIntFunc( "ApplyRel",            FunApplyRel           );
     InstIntFunc( "MakeConsequences",    FunMakeConsequences   );

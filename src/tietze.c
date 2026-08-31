@@ -54,8 +54,7 @@
 **  'TzRelExponent1'  determines the exponent of the given relator, i. e. the
 **  maximal integer n such that the relator can be expresses as an nth power.
 */
-TypHandle       TzRelExponent1 ( hdRel )
-    TypHandle           hdRel;
+TypHandle TzRelExponent1(TypHandle hdRel)
 {
     TypHandle           * ptRel;        /* pointer to the Tietze relator   */
     long                leng;           /* length of the given relator     */
@@ -92,8 +91,7 @@ TypHandle       TzRelExponent1 ( hdRel )
 **  lator,  i.e. a free and cyclically reduced word in the Tietze generators.
 **  It returns 'HdFalse" if it cannot convert the given word.
 */
-TypHandle       FunTzRelator ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTzRelator(TypHandle hdCall)
 {
     TypHandle           hdTie;          /* handle of the Tietze stack      */
     TypHandle           * ptTie;        /* pointer to the Tietze stack     */
@@ -205,8 +203,7 @@ TypHandle       FunTzRelator ( hdCall )
 **
 **  'FunTzWord'  converts a Tietze relator to a word in the group generators.
 */
-TypHandle       FunTzWord ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTzWord(TypHandle hdCall)
 {
     TypHandle           hdTie;          /* handle of the Tietze stack      */
     TypHandle           * ptTie;        /* pointer to the Tietze stack     */
@@ -275,8 +272,7 @@ TypHandle       FunTzWord ( hdCall )
 **
 *F  FunTzSortC(<hdCall>)  . . . . . . . . . . . . sort the relators by length
 */
-TypHandle       FunTzSortC ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTzSortC(TypHandle hdCall)
 {
     TypHandle           hdTie;          /* handle of the Tietze stack      */
     TypHandle           * ptTie;        /* pointer to the Tietze stack     */
@@ -376,8 +372,7 @@ TypHandle       FunTzSortC ( hdCall )
 **
 *F  FunTzRenumberGens(<hdCall>)  . . . . . . . renumber the Tietze generators
 */
-TypHandle       FunTzRenumberGens ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTzRenumberGens(TypHandle hdCall)
 {
     TypHandle           hdTie;          /* handle of the Tietze stack      */
     TypHandle           * ptTie;        /* pointer to this stack           */
@@ -441,8 +436,7 @@ TypHandle       FunTzRenumberGens ( hdCall )
 **
 *F  FunTzReplaceGens(<hdCall>)  . . . replace Tietze generators by other ones
 */
-TypHandle       FunTzReplaceGens ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTzReplaceGens(TypHandle hdCall)
 {
     TypHandle           hdTie;          /* handle of the Tietze stack      */
     TypHandle           * ptTie;        /* pointer to this stack           */
@@ -598,8 +592,7 @@ TypHandle       FunTzReplaceGens ( hdCall )
 **
 *F  FunTzSubstituteGen(<hdCall>)  . . replace a Tietze generator by some word
 */
-TypHandle       FunTzSubstituteGen ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTzSubstituteGen(TypHandle hdCall)
 {
     TypHandle           hdTie;          /* handle of the Tietze stack      */
     TypHandle           * ptTie;        /* pointer to this stack           */
@@ -810,8 +803,7 @@ TypHandle       FunTzSubstituteGen ( hdCall )
 **
 **  'FunTzOccurrences' implements the internal function 'TzOccurrences'.
 */
-TypHandle       FunTzOccurrences ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTzOccurrences(TypHandle hdCall)
 {
     TypHandle           hdTie;          /* handle of the Tietze stack      */
     TypHandle           * ptTie;        /* pointer to the Tietze stack     */
@@ -1003,8 +995,7 @@ TypHandle       FunTzOccurrences ( hdCall )
 **
 *F  FunTzOccurrencesPairs(<hdCall>) occurrences of pairs of Tietze generators
 */
-TypHandle       FunTzOccurrencesPairs ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTzOccurrencesPairs(TypHandle hdCall)
 {
     TypHandle           hdTie;          /* handle of the Tietze stack      */
     TypHandle           * ptTie;        /* pointer to the Tietze stack     */
@@ -1164,8 +1155,7 @@ TypHandle       FunTzOccurrencesPairs ( hdCall )
 **
 **  'FunTzSearchC' implements the internal function 'TzSearchC'.
 */
-TypHandle       FunTzSearchC ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunTzSearchC(TypHandle hdCall)
 {
     TypHandle           hdTie;          /* handle of the Tietze stack      */
     TypHandle           * ptTie;        /* pointer to this stack           */

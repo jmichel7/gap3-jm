@@ -485,8 +485,7 @@ unsigned long   Pols [] = {
 **  returned.  Otherwise 'RootFiniteField' constructs  this finite  field and
 **  remembers it in 'HdFields'.
 */
-TypHandle       RootFiniteField ( q )
-    unsigned long       q;
+TypHandle RootFiniteField (unsigned long q)
 {
     TypHandle           hdZ;            /* handle of the primitive root    */
     TypHandle           hdFF;           /* handle of the finite field bag  */
@@ -594,9 +593,7 @@ TypHandle       RootFiniteField ( q )
 **  neccessary for 'CommonFF'  to create  a  new finite field, triggering   a
 **  garbage collection.
 */
-TypHandle       CommonFF ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CommonFF (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdZ;            /* root of the finite field        */
     unsigned long       q;              /* order  of the common field      */
@@ -664,8 +661,7 @@ TypHandle       CommonFF ( hdL, hdR )
 **  finite field elements  are constants  and  thus selfevaluating this  just
 **  returns <hdFFE>.
 */
-TypHandle       EvFFE ( hdFFE )
-    TypHandle           hdFFE;
+TypHandle EvFFE (TypHandle hdFFE)
 {
     return hdFFE;
 }
@@ -689,9 +685,7 @@ TypHandle       EvFFE ( hdFFE )
 **  'SumFFE' just does the conversions mentioned above  and  then  calls  the
 **  macro 'SUM_FF' to do the actual addition.
 */
-TypHandle       SumFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle SumFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdX;            /* handle of the sum               */
     TypFFE              x;              /* value of the sum                */
@@ -791,9 +785,7 @@ TypHandle       SumFFE ( hdL, hdR )
 **  'DiffFFE' just does the conversions mentioned above and  then  calls  the
 **  macros 'NEG_FF' and 'SUM_FF' to do the actual subtraction.
 */
-TypHandle       DiffFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle DiffFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdX;            /* handle of the difference        */
     TypFFE              x;              /* value of the difference         */
@@ -894,9 +886,7 @@ TypHandle       DiffFFE ( hdL, hdR )
 **  'ProdFFE' just does the conversions mentioned above and  then  calls  the
 **  macro 'PROD_FF' to do the actual multiplication.
 */
-TypHandle       ProdFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdX;            /* handle of the product           */
     TypFFE              x;              /* value of the product            */
@@ -996,9 +986,7 @@ TypHandle       ProdFFE ( hdL, hdR )
 **  'QuoFFE' just does the conversions mentioned above and  then  calls  the
 **  macro 'QUO_FF' to do the actual division.
 */
-TypHandle       QuoFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle QuoFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdX;            /* handle of the quotient          */
     TypFFE              x;              /* value of the quotient           */
@@ -1094,9 +1082,7 @@ TypHandle       QuoFFE ( hdL, hdR )
 **  'PowFFE' just does the conversions mentioned above and  then  calls  the
 **  macro 'POW_FF' to do the actual exponentiation.
 */
-TypHandle       PowFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdX;            /* handle of the power             */
     TypFFE              x;              /* value of the power              */
@@ -1157,9 +1143,7 @@ TypHandle       PowFFE ( hdL, hdR )
 **  Since '=' ought  to be transitive we also  want 'b = c'  to be 'true' and
 **  this is a problem, because they are represented over incompatible fields.
 */
-TypHandle       EqFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqFFE (TypHandle hdL, TypHandle hdR)
 {
     TypFFE              l,  r;          /* values                          */
     long                fl, fr;         /* order of the representing field */
@@ -1221,9 +1205,7 @@ TypHandle       EqFFE ( hdL, hdR )
 **
 **  Is called from the 'Lt' binop, so both operands are already  evaluated.
 */
-TypHandle       LtFFE ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtFFE (TypHandle hdL, TypHandle hdR)
 {
     TypFFE              l,  r;          /* values                          */
     long                fl, fr;         /* order of the representing field */
@@ -1278,8 +1260,7 @@ TypHandle       LtFFE ( hdL, hdR )
 **
 **  'PrFFE' prints the finite field element <hdFFE>.
 */
-void            PrFFE ( hdFFE )
-    TypHandle           hdFFE;
+void PrFFE (TypHandle hdFFE)
 {
     PrFF( FLD_FFE(hdFFE), VAL_FFE(hdFFE) );
 }
@@ -1295,9 +1276,7 @@ void            PrFFE ( hdFFE )
 **  not call 'PrFFE' because it would have to create  finite  field  elements
 **  to do so and calling 'NewBag' from a printing procedure is forbidden.
 */
-void            PrFF ( hdField, value )
-    TypHandle           hdField;
-    unsigned int        value;
+void PrFF (TypHandle hdField, unsigned int value)
 {
     unsigned long       o;              /* order of the finite field       */
     unsigned long       p;              /* characteristic of finite field  */
@@ -1345,8 +1324,7 @@ void            PrFF ( hdField, value )
 **  and 'false' otherwise.   'IsFFE' will cause  an  error if  called with an
 **  unbound variable.
 */
-TypHandle       FunIsFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsFFE (TypHandle hdCall)
 {
     TypHandle           hdObj;
 
@@ -1374,8 +1352,7 @@ TypHandle       FunIsFFE ( hdCall )
 **  'CharFFE' returns the characteristic of the field  in  which  the  finite
 **  field element <hdFFE> lies.
 */
-long            CharFFE ( hdFFE )
-    TypHandle           hdFFE;
+long CharFFE (TypHandle hdFFE)
 {
     unsigned long       p;              /* characteristic, result          */
     unsigned long       q;              /* size of the finite field        */
@@ -1404,8 +1381,7 @@ long            CharFFE ( hdFFE )
 **  'DegreeFFE' returns the degree of the smallest finite field in which  the
 **  finite field element <hdFFE> lies.
 */
-long            DegreeFFE ( hdFFE )
-    TypHandle           hdFFE;
+long DegreeFFE (TypHandle hdFFE)
 {
     unsigned long       d;              /* degree, result                  */
     TypFFE              v;              /* value of the ffe                */
@@ -1457,8 +1433,7 @@ long            DegreeFFE ( hdFFE )
 **
 **  If <z> is 0 'LogFFE' causes an error.
 */
-TypHandle       FunLogFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunLogFFE (TypHandle hdCall)
 {
     TypHandle           hdZ;            /* handle of the first argument    */
     TypHandle           hdR;            /* handle of the second argument   */
@@ -1575,8 +1550,7 @@ TypHandle       FunLogFFE ( hdCall )
 TypHandle HdIntFFEs;
 TypHandle HdLastIntFFE;
 
-TypHandle ConvTabIntFFE ( q )
-    long                q;
+TypHandle ConvTabIntFFE (long q)
 {
     long                i;              /* loop variable                   */
     TypHandle           hdZ;            /* handle of the element           */
@@ -1611,8 +1585,7 @@ TypHandle ConvTabIntFFE ( q )
     return HdLastIntFFE;
 }
 
-TypHandle FunIntFFE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIntFFE (TypHandle hdCall)
 {
     TypHandle           hdZ;            /* handle of the element           */
     TypHandle           ff;             /* finite field of <z>             */
@@ -1650,8 +1623,7 @@ TypHandle FunIntFFE ( hdCall )
 **  'Z' returns the generators of the finite field  with  <q>  elements.  <q>
 **  must be a positive prime power.
 */
-TypHandle       FunZ ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunZ (TypHandle hdCall)
 {
     TypHandle           hdZ;            /* handle of the primitive root    */
 
@@ -1676,7 +1648,7 @@ TypHandle       FunZ ( hdCall )
 **
 **  'InitFF' initializes the finite field package.
 */
-void            InitFF ()
+void InitFF (void)
 {
     /* install the evaluation function                                     */
     InstEvFunc( T_FFE, EvFFE );

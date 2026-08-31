@@ -259,8 +259,7 @@
 **
 **  'LenBlist' is the function in 'TabLenList' for boolean lists.
 */
-long            LenBlist ( hdList )
-    TypHandle           hdList;
+long LenBlist (TypHandle hdList)
 {
     return LEN_BLIST( hdList );
 }
@@ -283,9 +282,7 @@ long            LenBlist ( hdList )
 **  'ElmfBlist'  is  the  function  in  'TabElmfBlist',  'TabElmlBlist',  and
 **  'TabElmrBlist' for boolean lists.
 */
-TypHandle       ElmBlist ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmBlist(TypHandle hdList, long pos)
 {
 
     /* check the position                                                  */
@@ -299,9 +296,7 @@ TypHandle       ElmBlist ( hdList, pos )
     return ELM_BLIST( hdList, pos );
 }
 
-TypHandle       ElmfBlist ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmfBlist(TypHandle hdList, long pos)
 {
     /* select and return the element                                       */
     return ELM_BLIST( hdList, pos );
@@ -320,9 +315,7 @@ TypHandle       ElmfBlist ( hdList, pos )
 **
 **  'ElmsBlist' is the function in 'TabElmsList' for boolean lists.
 */
-TypHandle       ElmsBlist ( hdList, hdPoss )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
+TypHandle ElmsBlist(TypHandle hdList, TypHandle hdPoss)
 {
     TypHandle           hdElms;         /* selected sublist, result        */
     long                lenList;        /* length of <list>                */
@@ -448,10 +441,7 @@ TypHandle       ElmsBlist ( hdList, hdPoss )
 **  length  by one.  Otherwise the  boolean list is  converted to an ordinary
 **  list and the assignment is performed the ordinary way.
 */
-TypHandle       AssBlist ( hdList, pos, hdVal )
-    TypHandle           hdList;
-    long                pos;
-    TypHandle           hdVal;
+TypHandle AssBlist(TypHandle hdList, long pos, TypHandle hdVal)
 {
     long                plen;           /* physical length of <list>       */
 
@@ -517,10 +507,7 @@ TypHandle       AssBlist ( hdList, pos, hdVal )
 **  does the same  stuff as  'AsssPlist'.   This  is because a boolean is not
 **  very likely to stay a boolean list after the assignment.
 */
-TypHandle       AsssBlist ( hdList, hdPoss, hdVals )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
-    TypHandle           hdVals;
+TypHandle AsssBlist (TypHandle hdList, TypHandle hdPoss, TypHandle hdVals)
 {
     /* convert <list> to a plain list                                      */
     PLAIN_LIST( hdList );
@@ -542,10 +529,7 @@ TypHandle       AsssBlist ( hdList, hdPoss, hdVals )
 **
 **  'PosBlist' is the function in 'TabPosList' for boolean lists.
 */
-long            PosBlist ( hdBlist, hdVal, start )
-    TypHandle           hdBlist;
-    TypHandle           hdVal;
-    long                start;
+long PosBlist(TypHandle hdBlist, TypHandle hdVal, long start)
 {
     long                k;              /* position, result                */
     long                len;            /* logical length of the list      */
@@ -611,8 +595,7 @@ long            PosBlist ( hdBlist, hdVal, start )
 **
 **  'PlainBlist' is the function in 'TabPlainList' for boolean lists.
 */
-void            PlainBlist ( hdList )
-    TypHandle           hdList;
+void PlainBlist(TypHandle hdList)
 {
     long                lenList;        /* length of <list>                */
     long                i;              /* loop variable                   */
@@ -639,8 +622,7 @@ void            PlainBlist ( hdList )
 **
 **  'IsDenseBlist' is the function in 'TabIsDenseBlist' for boolean lists.
 */
-long            IsDenseBlist ( hdList )
-    TypHandle           hdList;
+long IsDenseBlist(TypHandle hdList)
 {
     return 1;
 }
@@ -653,8 +635,7 @@ long            IsDenseBlist ( hdList )
 **  'IsPossBlist' returns  1 if  <hdList> is  empty, and 0 otherwise, since a
 **  boolean list is a positions list if and only if it is empty.
 */
-long            IsPossBlist ( hdList )
-    TypHandle           hdList;
+long IsPossBlist(TypHandle hdList)
 {
     return LEN_BLIST(hdList) == 0;
 }
@@ -669,9 +650,7 @@ long            IsPossBlist ( hdList )
 **
 **  Is called from the 'EQ' binop so both  operands  are  already  evaluated.
 */
-TypHandle       EqBlist ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqBlist(TypHandle hdL, TypHandle hdR)
 {
     long                lenL;           /* length of the left operand      */
     long                lenR;           /* length of the right operand     */
@@ -708,8 +687,7 @@ TypHandle       EqBlist ( hdL, hdR )
 **  As a sideeffect 'IsBlist' changes the  representation  of  boolean  lists
 **  into the compact representation of type 'T_BLIST' described above.
 */
-long            IsBlist ( hdList )
-    TypHandle           hdList;
+long IsBlist (TypHandle hdList)
 {
     unsigned long       isBlist;        /* result of the test              */
     unsigned long       len;            /* logical length of the list      */
@@ -766,7 +744,6 @@ long            IsBlist ( hdList )
     return isBlist;
 }
 
-
 /****************************************************************************
 **
 *F  FunIsBlist(<hdCall>)  . . . . . . . . test if an object is a boolean list
@@ -780,8 +757,7 @@ long            IsBlist ( hdList )
 **  holes containing only 'true' and 'false'.  Will cause an  error if  <obj>
 **  <obj> is an unbound variable.
 */
-TypHandle       FunIsBlist ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsBlist(TypHandle hdCall)
 {
     TypHandle           hdObj;
 
@@ -813,8 +789,7 @@ TypHandle       FunIsBlist ( hdCall )
 **  'BlistList' is most effective if <list> is a set, but can be used with an
 **  arbitrary list that has no holes.
 */
-TypHandle       FunBlistList ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunBlistList(TypHandle hdCall)
 {
     TypHandle           hdBlist;        /* handle of the result            */
     unsigned long       * ptBlist;      /* pointer to the boolean list     */
@@ -1104,8 +1079,7 @@ int bitsulong(unsigned long m){ /* number of set bits in an ulong */
 **
 *N  1992/12/15 martin this depends on 'BIPEB' being 32
 */
-TypHandle       FunListBlist ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunListBlist(TypHandle hdCall)
 {
     TypHandle           hdSub;          /* handle of the result            */
     TypHandle           hdList;         /* handle of the first argument    */
@@ -1186,8 +1160,7 @@ TypHandle       FunListBlist ( hdCall )
 **  'SizeBlist' returns the  number of entries  of the boolean  list  <blist>
 **  that are 'true'.
 */
-TypHandle       FunSizeBlist ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunSizeBlist(TypHandle hdCall)
 {
     TypHandle           hdBlist;        /* handle of the argument          */
     unsigned long       * ptBlist;      /* pointer to blist                */
@@ -1227,8 +1200,7 @@ TypHandle       FunSizeBlist ( hdCall )
 **  of the boolean list <list1>, which must have equal length.  <blist2> is a
 **  subset if <blist1> if '<blist2>[<i>] >= <blist1>[<i>]' for all <i>.
 */
-TypHandle       FunIsSubsetBlist ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsSubsetBlist(TypHandle hdCall)
 {
     TypHandle           hdBlist1;       /* handle of the first argument    */
     TypHandle           hdBlist2;       /* handle of the second argument   */
@@ -1274,8 +1246,7 @@ TypHandle       FunIsSubsetBlist ( hdCall )
 **  <blist2>,  which  must  have the   same  length.  This  is  equivalent to
 **  assigning '<blist1>[<i>] := <blist1>[<i>] or <blist2>[<i>]' for all <i>.
 */
-TypHandle       FunUniteBlist ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunUniteBlist(TypHandle hdCall)
 {
     TypHandle           hdBlist1;       /* handle of the first argument    */
     TypHandle           hdBlist2;       /* handle of the second argument   */
@@ -1318,8 +1289,7 @@ TypHandle       FunUniteBlist ( hdCall )
 **  list <blist2>, which must  have the same  length.  This is equivalent  to
 **  assigning '<blist1>[<i>] := <blist1>[<i>] and <blist2>[<i>]' for all <i>.
 */
-TypHandle       FunIntersectBlist ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIntersectBlist(TypHandle hdCall)
 {
     TypHandle           hdBlist1;       /* handle of the first argument    */
     TypHandle           hdBlist2;       /* handle of the second argument   */
@@ -1362,8 +1332,7 @@ TypHandle       FunIntersectBlist ( hdCall )
 **  <blist1>, which must have the same  length.  This is equivalent assigning
 **  '<blist1>[<i>] := <blist1>[<i>] and not <blist2>[<i>]' for all <i>.
 */
-TypHandle       FunSubtractBlist ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunSubtractBlist(TypHandle hdCall)
 {
     TypHandle           hdBlist1;       /* handle of the first argument    */
     TypHandle           hdBlist2;       /* handle of the second argument   */
@@ -1405,8 +1374,7 @@ TypHandle       FunSubtractBlist ( hdCall )
 **  'DistanceBlist' computes the distance of two boolean list.  The  distance
 **  is the number of position in which the two boolean list differ.
 */
-TypHandle       FunDistanceBlist ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunDistanceBlist(TypHandle hdCall)
 {
     TypHandle           hdBlist1;       /* handle of the first argument    */
     TypHandle           hdBlist2;       /* handle of the second argument   */
@@ -1442,9 +1410,8 @@ TypHandle       FunDistanceBlist ( hdCall )
 **
 **  'InitBlist' initializes the boolean list package.
 */
-void            InitBlist ()
+void InitBlist()
 {
-
     /* install the list functions in the tables                            */
     TabIsList[T_BLIST]      = 1;
     TabLenList[T_BLIST]     = LenBlist;

@@ -161,9 +161,7 @@ static long         StkDim, Sp;
 **
 **  This is step 5 in Vaughan-Lee's paper "Collection from the Left".
 */
-static void     AddString ( str, exp )
-    TypSword        * str;
-    TypExp          exp;
+static void AddString (TypSword *str, TypExp exp)
 {
     TypHandle       hd;
     TypExp          e,  * p;
@@ -207,7 +205,7 @@ static void     AddString ( str, exp )
 **
 **  This is step 4 in Vaughan-Lee's paper "Collection from the Left".
 */
-static void     AddGen ()
+static void AddGen (void)
 {
     TypHandle       hd;
     TypExp          * p, e;
@@ -238,7 +236,7 @@ static void     AddGen ()
 **
 **  This is step 6 in Vaughan-Lee's paper "Collection from the Left".
 */
-static boolean  TripleWeight ()
+static boolean TripleWeight (void)
 {
     TypHandle       hd;
     TypExp          e, * p;
@@ -298,7 +296,7 @@ static boolean  TripleWeight ()
 **
 **  This is a modified step 2.
 */
-static int  VLCombiCollect ()
+static int VLCombiCollect (void)
 {
     TypSword        i,  f,  l = 0,  uw;
     TypHandle       hd;
@@ -362,7 +360,7 @@ static int  VLCombiCollect ()
 **
 **  The bound for <ue> can be decreased, if an integer overflow occures.
 */
-static boolean  CombiCollect ()
+static boolean CombiCollect (void)
 {
     TypSword        j,  f,  l = 0,  uw,  * str;
     TypHandle       hd;
@@ -490,7 +488,7 @@ static boolean  CombiCollect ()
 **
 **  This is step 5 in Vaughan-Lee's paper "Collection from the Left"
 */
-static boolean  OrdinaryCollect ()
+static boolean OrdinaryCollect (void)
 {
     TypHandle       hd;
     TypSword        j;
@@ -543,9 +541,7 @@ static boolean  OrdinaryCollect ()
 **  An exponent-vector with base address <g>  is multiplied on the right with
 **  a normed word  <h>.
 */
-boolean         AgCombinatorial ( ptG, hdH )
-    TypExp          * ptG;
-    TypHandle       hdH;
+boolean AgCombinatorial (TypExp *ptG, TypHandle hdH)
 {
     TypHandle       hdGrp,  * hdStk;
     TypSword        halfClass,  * str;
@@ -675,8 +671,7 @@ boolean         AgCombinatorial ( ptG, hdH )
 **
 **  This is step 5 in Vaughan-Lee's paper "Collection from the Left".
 */
-static void     AddString2 ( str )
-    TypSword        * str;
+static void AddString2 (TypSword *str)
 {
     TypHandle       hd;
 
@@ -704,7 +699,7 @@ static void     AddString2 ( str )
 **
 **  This is step 4 in Vaughan-Lee's paper "Collection from the Left".
 */
-static void     AddGen2 ()
+static void AddGen2 (void)
 {
     TypHandle       hd;
 
@@ -728,7 +723,7 @@ static void     AddGen2 ()
 **  to the collected part. If  <cg> > <CSeries>[(<Class>-<CWeights>(<ug>))/2]
 **  then [ <cg>, <ug> ] commutes with all generators $k$ >= <cg>.
 */
-static boolean  CombiCollect2 ()
+static boolean CombiCollect2 (void)
 {
     TypExp          * p, i;
     TypSword        l, uw;
@@ -772,7 +767,7 @@ static boolean  CombiCollect2 ()
 **  Continue scanning towards the left stacking up commutators and entries in
 **  collected part until we reach <ug> position.
 */
-static boolean  OrdinaryCollect2 ()
+static boolean OrdinaryCollect2 (void)
 {
     TypHandle       hd;
     TypExp          * p;
@@ -808,9 +803,7 @@ static boolean  OrdinaryCollect2 ()
 **  An exponent-vector with base address <g>  is multiplied on the right with
 **  a normed word  <h>.
 */
-boolean         AgCombinatorial2 ( ptG, hdH )
-    TypExp          * ptG;
-    TypHandle       hdH;
+boolean AgCombinatorial2 (TypExp *ptG, TypHandle hdH)
 {
     TypSword        halfClass, * str;
     TypHandle       * hdStk, hdGrp;
@@ -896,9 +889,7 @@ boolean         AgCombinatorial2 ( ptG, hdH )
 **  An exponent-vector with base address <g>  is multiplied on the right with
 **  a normed word  <h>.
 */
-boolean         AgSingle ( ptG, hdH )
-    TypExp          * ptG;
-    TypHandle       hdH;
+boolean AgSingle (TypExp *ptG, TypHandle hdH)
 {
 
     /** powers  . . . . . . . . . . . .  pointer to 'POWERS' of the aggrp **/
@@ -1018,9 +1009,7 @@ boolean         AgSingle ( ptG, hdH )
 **  An exponent-vector with base address <g> is multiplied on the right  with
 **  a normed word  <hd>.
 */
-boolean         AgTriple ( ptG, hdH )
-    TypExp          *ptG;
-    TypHandle       hdH;
+boolean AgTriple (TypExp *ptG, TypHandle hdH)
 {
 
     /** powers  . . . . . . . . . . . .  pointer to 'POWERS' of the aggrp **/
@@ -1156,9 +1145,7 @@ boolean         AgTriple ( ptG, hdH )
 **  An exponent-vector with base address <g>  is multiplied on the right with
 **  a normed word  <h>.
 */
-int         AgQuadruple ( ptG, hdH )
-    TypExp      * ptG;
-    TypHandle   hdH;
+int AgQuadruple (TypExp *ptG, TypHandle hdH)
 {
 
     /** powers  . . . . . . . . . . . .  pointer to 'POWERS' of the aggrp **/
@@ -1303,8 +1290,7 @@ int         AgQuadruple ( ptG, hdH )
 **  'ExpandStack'  expand the stacks for  the  collection-process  which  are
 **  stored in the internal group record in 'STACKS'.
 */
-void        ExpandStack ( hdGrp )
-    TypHandle       hdGrp;
+void ExpandStack (TypHandle hdGrp)
 {
     TypHandle       hdStk;
     long            i, plus;
@@ -1355,8 +1341,7 @@ void        ExpandStack ( hdGrp )
 **  Note that 'Colllect' must never call itself recursivly, because one stack
 **  is used to save the exponent vector of <exp>.
 */
-void            Collect ( hdExp, hdBup, hdWrd )
-    TypHandle       hdExp, hdWrd, hdBup;
+void Collect (TypHandle hdExp, TypHandle hdBup, TypHandle hdWrd)
 {
     TypHandle       hdSave = 0;
     TypSword        * ptBup;
@@ -1470,9 +1455,7 @@ void            Collect ( hdExp, hdBup, hdWrd )
 **  'AgSolution' returns the agword <a>^-1 * <b>, which is a solution of the
 **  equation <a> * x = <b>.
 */
-TypHandle       AgSolution ( hdA, hdB )
-    TypHandle       hdA;
-    TypHandle       hdB;
+TypHandle AgSolution (TypHandle hdA, TypHandle hdB)
 {
     TypHandle       hdX, hdW, hdG, hdGrp;
     TypExp          e, ea, eb;
@@ -1535,11 +1518,7 @@ TypHandle       AgSolution ( hdA, hdB )
 **  'AgSolution'  returns  <a>^-1*<b>^-1*<c>*<d>,  which is a solution of the
 **  equation <a>*<b> * x = <c>*<d>.
 */
-TypHandle       AgSolution2 ( hdA, hdB, hdC, hdD )
-    TypHandle       hdA;
-    TypHandle       hdB;
-    TypHandle       hdC;
-    TypHandle       hdD;
+TypHandle AgSolution2 (TypHandle hdA, TypHandle hdB, TypHandle hdC, TypHandle hdD)
 {
     TypHandle       hdX, hdW, hdV, hdG, hdGrp, hdCD;
     TypExp          e, ea, eb, ec, * ptV, * ptW, * ptEnd;
@@ -1641,9 +1620,7 @@ TypHandle       AgSolution2 ( hdA, hdB, hdC, hdD )
 **
 **  'FunSetCollector( <hdAgWord>, "single" )'
 */
-void        InitSingle ( hdCall, nr )
-    TypHandle       hdCall;
-    long            nr;
+void InitSingle (TypHandle hdCall, long nr)
 {
     TypHandle       hdAgGroup, hdList, hdAgWord, hdGenJ, hdRnName;
     long            nrGens, i, j;
@@ -1718,9 +1695,7 @@ void        InitSingle ( hdCall, nr )
 **  'SetCollectorAgWord( <agword>, "triple" )'
 **  'SetCollectorAgWord( <agword>, "triple", <tupleBound> )'
 */
-void        InitTriple ( hdCall, nr )
-    TypHandle       hdCall;
-    long            nr;
+void InitTriple (TypHandle hdCall, long nr)
 {
     TypHandle       hdAgGroup, hdAgWord, hdInt, hdRnName;
     TypHandle       hdGenI, hdGenJ, hdList, hdComm, hdTrip, hdTmp;
@@ -1854,9 +1829,7 @@ void        InitTriple ( hdCall, nr )
 **  'SetCollectorAgWord( <agword>, "quadruple" )'
 **  'SetCollectorAgWord( <agword>, "quadruple", <tupleBound> )'
 */
-void        InitQuadr ( hdCall, nr )
-    TypHandle       hdCall;
-    long            nr;
+void InitQuadr (TypHandle hdCall, long nr)
 {
     TypHandle       hdAgGroup, hdAgWord, hdRnName, hdInt;
     TypHandle       hdTmp, hdQuadr, hdList, hdComm, hdOld, hdAvec;
@@ -2031,9 +2004,7 @@ void        InitQuadr ( hdCall, nr )
 **  the combinatorial  collector could no be initialized. In that  case  only
 **  a warning is printed.
 */
-void        InitCombinatorial ( hdCall, nr )
-    TypHandle       hdCall;
-    long            nr;
+void InitCombinatorial (TypHandle hdCall, long nr)
 {
     TypHandle       hdWrd,  hdGrp,  hdOld;
     char            *usage1 = "SetCollectorAgWord( <g>, \"combinatorial\" )";
@@ -2103,9 +2074,7 @@ void        InitCombinatorial ( hdCall, nr )
 **  the commutator [ <gen1>,  <gen2> ].  The evaluate word  is stored in  the
 **  internal group record <hdAgGroup>.
 */
-void            EvalRhs ( hdAgGroup, gen1, gen2 )
-    TypHandle       hdAgGroup;
-    long            gen1, gen2;
+void EvalRhs (TypHandle hdAgGroup, long gen1, long gen2)
 {
     TypHandle       hdRel, hdEvalRel, hdGen;
     long            i, lenRel, genNr;
@@ -2168,9 +2137,7 @@ void            EvalRhs ( hdAgGroup, gen1, gen2 )
 **  Soicher-Collector it updates the array  'AVEC'  and stores the conjugates
 **  g_j ^ g_<genNr> in the internal group record <hdAgGroup>.
 */
-void            EvalGenRels ( hdAgGroup, genNr )
-    TypHandle       hdAgGroup;
-    long            genNr;
+void EvalGenRels (TypHandle hdAgGroup, long genNr)
 {
 
     TypHandle       hdGenJ, hdTmp, hdComm;
@@ -2239,10 +2206,7 @@ void            EvalGenRels ( hdAgGroup, genNr )
 **  <nrRel> is used only to give the user  a  hint  which  relations  in  the
 **  given presentation failed to be a power/commutator/conjugate relation.
 */
-void            CopyRelation ( hdRel, hdGrp, nrRel )
-    TypHandle       hdRel;
-    TypHandle       hdGrp;
-    long            nrRel;
+void CopyRelation (TypHandle hdRel, TypHandle hdGrp, long nrRel)
 {
     TypHandle       hdAgl,    hdW;
     TypSword        * ptAgl,  * ptW;
@@ -2428,8 +2392,7 @@ lerror:
 **  relatores   into normal   form   and  stores    them   in the    internal
 **  group-record <G> in '<G>[POWERS]' and '<G>[COMMUTATORS]'.
 */
-void            ReadRelators ( hdRec, hdG )
-    TypHandle       hdRec,  hdG;
+void ReadRelators (TypHandle hdRec, TypHandle hdG)
 {
     TypHandle       hdRels,  hdTmp,  hdRn;
     TypHandle       * ptRec, * ptEnd;
@@ -2515,10 +2478,7 @@ extern TypHandle    HdRnOp;         /** record.c ***************************/
 TypHandle           HdCallOop1;
 TypHandle           HdCallOop2;
 
-TypHandle       EvalOop ( hdObject, hdRecName, ErrorMsg )
-    TypHandle       hdObject;
-    TypHandle       hdRecName;
-    char            * ErrorMsg;
+TypHandle EvalOop (TypHandle hdObject, TypHandle hdRecName, char *ErrorMsg)
 {
     TypHandle       * ptRec, * ptEnd;
     TypHandle       hdOp, hdTmp;
@@ -2560,10 +2520,7 @@ l1:
 }
 
 
-TypHandle       EvalOop2( hdObjectL, hdObjectR, hdRecName, ErrorMsg )
-    TypHandle       hdObjectL, hdObjectR;
-    TypHandle       hdRecName;
-    char            * ErrorMsg;
+TypHandle EvalOop2 (TypHandle hdObjectL, TypHandle hdObjectR, TypHandle hdRecName, char *ErrorMsg)
 {
     TypHandle       * ptRec, * ptEnd;
     TypHandle       hdOp, hdTmp;
@@ -2640,11 +2597,7 @@ l2:
 }
 
 
-TypHandle       EvalOopN ( hdObject, hdRecName, hdCall, ErrorMsg )
-    TypHandle       hdObject;
-    TypHandle       hdRecName;
-    TypHandle       hdCall;
-    char            * ErrorMsg;
+TypHandle EvalOopN (TypHandle hdObject, TypHandle hdRecName, TypHandle hdCall, char *ErrorMsg)
 {
     TypHandle       * ptRec, * ptEnd, * ptCall, * ptTmp;
     TypHandle       hdOp, hdTmp;
@@ -2704,9 +2657,7 @@ l1:
 **  !!! WARNING !!! WARNING !! WARNING !! WARNING !!! WARNING !!! WARNING !!!
 **  This also clears <hdExp>.
 */
-TypHandle       AgWordAgExp ( hdExp, hdGrp )
-    TypHandle      hdExp;
-    TypHandle      hdGrp;
+TypHandle AgWordAgExp (TypHandle hdExp, TypHandle hdGrp)
 {
     TypHandle       hdWrd;
     TypSword        * ptWrd;
@@ -2764,8 +2715,7 @@ TypHandle       AgWordAgExp ( hdExp, hdGrp )
 **  'SetCollectExponents' does NOT clear the exponent vector.  This  must  be
 **  explicity by using 'ClearCollectExponents'.
 */
-void        SetCollectExponents ( hdWrd )
-    TypHandle      hdWrd;
+void SetCollectExponents (TypHandle hdWrd)
 {
     TypSword       * ptWrd;
     TypExp         * ptExp;
@@ -2796,8 +2746,7 @@ void        SetCollectExponents ( hdWrd )
 **  'ClearCollectExponents' clears the  exponent vector  store  in  group bag
 **  <hdAgGroup> at position 'HD_COLLECT_EXPONENTS'.
 */
-void        ClearCollectExponents ( hdAgGroup )
-    TypHandle      hdAgGroup;
+void ClearCollectExponents (TypHandle hdAgGroup)
 {
     TypExp         * ptExp, * ptEnd;
 
@@ -2816,9 +2765,7 @@ void        ClearCollectExponents ( hdAgGroup )
 **  of the reduced word, which gives references to the group, will  point  to
 **  the aggroup of <hdAgWord>.
 */
-TypHandle       HeadAgWord( hdAgWord, nrNew )
-    TypHandle       hdAgWord;
-    long            nrNew;
+TypHandle HeadAgWord (TypHandle hdAgWord, long nrNew)
 {
     long            nrGens;
     TypSword        * ptAgWord, * ptNew;
@@ -2862,8 +2809,7 @@ TypHandle       HeadAgWord( hdAgWord, nrNew )
 **
 **  0 is return, if the generator could not be found.
 */
-long            FindAgenNr( hdAgen, hdAgGroup )
-    TypHandle       hdAgen, hdAgGroup;
+long FindAgenNr (TypHandle hdAgen, TypHandle hdAgGroup)
 {
     long            k, nrGens;
     TypHandle       * ptGens;
@@ -2891,9 +2837,10 @@ long            FindAgenNr( hdAgen, hdAgGroup )
 **
 *F  AgListWord( <hdWrd>, <hdGrp> )  . . . . . . . converts T_WORD to T_AGLIST
 */
-TypHandle       AgListWord ( hdWrd, hdGrp )
-    TypHandle       hdWrd;	/* an (sorted) word in <hdGrp>.words       */
-    TypHandle       hdGrp;      /* an ag group                             */
+TypHandle AgListWord (
+    TypHandle hdWrd,	/* an (sorted) word in <hdGrp>.words       */
+    TypHandle hdGrp      /* an ag group                             */
+)
 {
     TypHandle           hdAgl;          /* handle of the    aglist, result */
     TypSword *          ptAgl;          /* pointer into the aglist         */
@@ -2976,7 +2923,7 @@ TypHandle       AgListWord ( hdWrd, hdGrp )
 **  'BlankAgGroup'  allocates  space for the  aggroup  record  and  sets  all
 **  collector independent names.
 */
-TypHandle           BlankAgGroup ()
+TypHandle BlankAgGroup (void)
 {
     TypHandle           hdAgGroup, hdRnName;
     long                i;
@@ -3026,8 +2973,7 @@ TypHandle           BlankAgGroup ()
 **  T_AGWORDs  describing  the  group  generators and 'IDENTITY' to the group
 **  identity.
 */
-void        SetGeneratorsAgGroup( hdAgGroup )
-    TypHandle       hdAgGroup;
+void SetGeneratorsAgGroup (TypHandle hdAgGroup)
 {
     long            nrGens, i;
     TypHandle       hdList, hdAgWord;
@@ -3069,10 +3015,7 @@ void        SetGeneratorsAgGroup( hdAgGroup )
 */
 TypHandle   HdRnAvec;
 
-void            SetAvecAgGroup ( hdAgGroup, low, high )
-    TypHandle           hdAgGroup;
-    long                low;
-    long                high;
+void SetAvecAgGroup (TypHandle hdAgGroup, long low, long high)
 {
     TypHandle           hdAvec;         /* handle of the avec list         */
     long *              ptAvec;         /* pointer to the avec list        */
@@ -3141,9 +3084,7 @@ void            SetAvecAgGroup ( hdAgGroup, low, high )
 **  If  <hdLst> is not void, it must be a list  of  integers  describing  the
 **  central weights of the generators.
 */
-boolean     SetCWeightsAgGroup ( hdGrp, hdLst )
-    TypHandle       hdGrp;
-    TypHandle       hdLst;
+boolean SetCWeightsAgGroup (TypHandle hdGrp, TypHandle hdLst)
 {
     TypHandle       hdWeights, hdSeries, hdId, hdRnName, hd;
     TypHandle       * comms, * powers;
@@ -3347,8 +3288,7 @@ boolean     SetCWeightsAgGroup ( hdGrp, hdLst )
 **      T_INTPOS:   stack of type 'TypExp'
 **      T_INTNEG:   stack of type 'TypSword'
 */
-void        SetStacksAgGroup( hdAgGroup )
-    TypHandle       hdAgGroup;
+void SetStacksAgGroup (TypHandle hdAgGroup)
 {
     TypHandle       hdList = 0, hdTmp;
     long            stackSize;
@@ -3437,8 +3377,7 @@ void        SetStacksAgGroup( hdAgGroup )
 **
 *F  SaveAndClearCollector( <hdAgGroup> )  . . . . . .  clears collector entry
 */
-TypHandle   SaveAndClearCollector( hdAgGroup )
-    TypHandle       hdAgGroup;
+TypHandle SaveAndClearCollector (TypHandle hdAgGroup)
 {
     TypHandle       hdSave, hdZero, hdRnName;
     long            nrEntries, i;
@@ -3469,9 +3408,7 @@ TypHandle   SaveAndClearCollector( hdAgGroup )
 **
 *F  RestoreCollector( <hdAgGroup>, <hdSave> ) . .  restores a saved collector
 */
-void        RestoreCollector( hdAgGroup, hdSave )
-    TypHandle       hdAgGroup;
-    TypHandle       hdSave;
+void RestoreCollector (TypHandle hdAgGroup, TypHandle hdSave)
 {
     long            nrEntries, i;
 

@@ -87,8 +87,7 @@ unsigned long   TopStack;
 **  It is called from the reader when the reader starts to parse a  function.
 **  It makes the local variables known to 'FindIdent'.
 */
-void            PushFunction ( hdFun )
-    TypHandle           hdFun;
+void PushFunction(TypHandle hdFun)
 {
     PTR(HdStack)[++TopStack] = hdFun;
 }
@@ -102,7 +101,7 @@ void            PushFunction ( hdFun )
 **  definition stack.  It is called from the reader when the reader  finished
 **  parsing a function.  It makes the local variables again unknown.
 */
-void            PopFunction ()
+void PopFunction ()
 {
     PTR(HdStack)[TopStack--] = 0;
 }
@@ -130,8 +129,7 @@ unsigned long   IsUndefinedGlobal;
 **  table.  If the identifier is also not found in the  global  table  a  new
 **  global variable is created.
 */
-TypHandle       FindIdent ( name )
-    char                name [];
+TypHandle FindIdent(char name[])
 {
     TypHandle           hd,  hdIdenttab,  hd2;
     char                * p;
@@ -233,8 +231,7 @@ unsigned long   NrRectab;
 **  to find a record element for a given record  name:  We  do  not  have  to
 **  compare strings, it is enough to compare handles.
 */
-TypHandle       FindRecname ( name )
-    char                name [];
+TypHandle FindRecname(char name[])
 {
     TypHandle           hd,  hdRectab,  hd2;
     char                * p;
@@ -291,10 +288,7 @@ TypHandle       FindRecname ( name )
 **
 *F  completion( <name>, <len> ) . . . . . . . .  find the completions of name
 */
-unsigned long   iscomplete ( name, len, rn )
-    char                * name;
-    unsigned long       len;
-    unsigned long       rn;
+unsigned long iscomplete(char *name, unsigned long len, unsigned long rn)
 {
     char                * curr;
     unsigned long       i, k;
@@ -313,10 +307,7 @@ unsigned long   iscomplete ( name, len, rn )
     return 0;
 }
 
-unsigned long   completion ( name, len, rn )
-    char                * name;
-    unsigned long       len;
-    unsigned long       rn;
+unsigned long  completion(char *name, unsigned long len, unsigned long rn)
 {
     char                * curr,  * next;
     unsigned long       i, k;

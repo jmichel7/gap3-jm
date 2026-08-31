@@ -219,7 +219,7 @@ CHEVIE.GenericRepresentation:=function(opname)
   f:=function(x)if x=0 then return 1;else return 0;fi;end;
   res.gens:=Concatenation(List([1..l],i->List(res.gens,
     m->ApplyFunc(KroneckerProduct,List([1..l],k->m^f(k-i))))));
-  F:=res.F; res.F:=NullMat(r^l);
+  F:=res.F; res.F:=res.gens[1]*0;
   for i in [1..r^l] do tup:=CartesianAt([1..l]*0+r,i);
     for j in [1..r] do res.F[i][PositionCartesian([1..l]*0+r,
        Concatenation([j],tup{[1..Length(tup-1)]}))]:=F[tup[Length(tup)]][j];

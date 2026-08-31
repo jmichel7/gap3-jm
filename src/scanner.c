@@ -441,7 +441,7 @@ char            TestLine [256];
 **  If there is a logfile in use and the input file is '*stdin*' or '*errin*'
 **  'GetLine' echoes the new line to the logfile.
 */
-char            GetLine ()
+char GetLine (void)
 {
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     if ( Input->file == 0 ) {
@@ -545,7 +545,7 @@ char            GetLine ()
 */
 void            GetSymbol ( void );
 
-void            GetIdent ()
+void GetIdent (void)
 {
     long                i;
     long                isQuoted;
@@ -632,7 +632,7 @@ void            GetIdent ()
 **  The size of 'Value' limits the maximal number of digits  of  an  integer.
 **  If an integer has more digits 'GetInt' issues a warning and truncates it.
 */
-void            GetInt ()
+void GetInt (void)
 {
     long                i;
     long                isInt;
@@ -697,7 +697,7 @@ void            GetInt ()
 **  The size of 'Value' limits the maximal number of characters in a  string.
 **  If a string has more characters 'GetStr' issues a error and truncates it.
 */
-void            GetStr ()
+void GetStr (void)
 {
     long                i = 0;
 
@@ -756,7 +756,7 @@ void            GetStr ()
 **  must not  be '\'' or <newline>, but  the escape  sequences '\\\'' or '\n'
 **  can be used instead.
 */
-void            GetChar ()
+void GetChar (void)
 {
 
     /* skip '\''                                                           */
@@ -804,7 +804,7 @@ void            GetChar ()
 **  After reading  a  symbol the current  character   is the first  character
 **  beyond that symbol.
 */
-void            GetSymbol ()
+void GetSymbol (void)
 {
     /* if no character is available then get one                           */
     if ( *In == '\0' )
@@ -900,8 +900,7 @@ void            GetSymbol ()
 **  probabely  just reflect the  fact  that the parser has not resynchronized
 **  yet.  'NrErrLine' is reset to 0 if a new line is read in 'GetLine'.
 */
-void            SyntaxError ( msg )
-    char                * msg;
+void SyntaxError (char *msg)
 {
     long                i;
 
@@ -975,10 +974,7 @@ void            SyntaxError ( msg )
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
 **  the next symbol it prints the string pointed to by 'Prompt'.
 */
-void            Match ( symbol, msg, skipto )
-    unsigned long       symbol;
-    char                * msg;
-    TypSymbolSet        skipto;
+void Match (unsigned long symbol, char *msg, TypSymbolSet skipto)
 {
     char                errmsg [256];
 
@@ -1019,7 +1015,7 @@ void            Match ( symbol, msg, skipto )
 **  Finally 'PutLine' checks whether the user has hit '<ctr>-C' to  interrupt
 **  the printing.
 */
-void            PutLine ()
+void PutLine (void)
 {
     /* if in test mode and the next input line matches print nothing       */
     if ( TestInput != -1 && TestOutput == Output->file
@@ -1052,8 +1048,7 @@ void            PutLine ()
 **  In the later case 'PutChr' has to decide where to  split the output line.
 **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
 */
-void            PutChr ( ch )
-    char                ch;
+void PutChr (int ch)
 {
     long                i;
     char                str [ 256 ];
@@ -1219,9 +1214,7 @@ void            PutChr ( ch )
 **  those compilers with a default integer size of 16 instead of 32 bit.  You
 **  must pass 0L if you don't make use of an argument to please lint.
 */
-void            Pr ( format, arg1, arg2 )
-    char                * format;
-    long                arg1, arg2;
+void Pr (char *format, long arg1, long arg2)
 {
     char                * p,  * q;
     long                prec,  n;
@@ -1346,8 +1339,7 @@ void            Pr ( format, arg1, arg2 )
 **  '*stdin*' for  that purpose.  This  file on   the other   hand can not be
 **  closed by 'CloseInput'.
 */
-long            OpenInput ( filename )
-    char                * filename;
+long OpenInput (char *filename)
 {
     long                file;
 
@@ -1400,7 +1392,7 @@ long            OpenInput ( filename )
 **  Calling 'CloseInput' if the  corresponding  'OpenInput' call failed  will
 **  close the current output file, which will lead to very strange behaviour.
 */
-long            CloseInput ()
+long CloseInput (void)
 {
     /* refuse to close the initial input file                              */
     if ( Input == InputFiles )
@@ -1452,8 +1444,7 @@ long            CloseInput ()
 **  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
 **  closed by 'CloseOutput'.
 */
-long            OpenOutput ( filename )
-    char                * filename;
+long OpenOutput (char *filename)
 {
     long                file;
 
@@ -1503,7 +1494,7 @@ long            OpenOutput ( filename )
 **  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
 **  'PrintTo' call or an error will not yield much better results.
 */
-long            CloseOutput ()
+long CloseOutput (void)
 {
     /* refuse to close the initial output file '*stdout*'                  */
     if ( Output == OutputFiles )
@@ -1534,8 +1525,7 @@ long            CloseOutput ()
 **  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
 **  description applies to 'OpenAppend' too.
 */
-long            OpenAppend ( filename )
-    char                * filename;
+long OpenAppend (char *filename)
 {
     long                file;
 
@@ -1577,7 +1567,7 @@ long            OpenAppend ( filename )
 **  output file.  'CloseAppend' returns 1 to indicate success.  'CloseAppend'
 **  is exactely equal to 'CloseOutput' so its description applies.
 */
-long            CloseAppend ()
+long CloseAppend (void)
 {
     /* refuse to close the initial output file '*stdout*'                  */
     if ( Output == OutputFiles )
@@ -1613,8 +1603,7 @@ long            CloseAppend ()
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-long            OpenLog ( filename )
-    char                * filename;
+long OpenLog (char *filename)
 {
 
     /* refuse to open a logfile if we already log to one                   */
@@ -1642,7 +1631,7 @@ long            OpenLog ( filename )
 **  'CloseLog' will fail if there is no logfile active and will return  0  in
 **  this case.
 */
-long            CloseLog ()
+long CloseLog (void)
 {
     /* refuse to close a non existent logfile                              */
     if ( Logfile == -1 )
@@ -1672,8 +1661,7 @@ long            CloseLog ()
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-long            OpenInputLog ( filename )
-    char                * filename;
+long OpenInputLog (char *filename)
 {
 
     /* refuse to open a logfile if we already log to one                   */
@@ -1701,7 +1689,7 @@ long            OpenInputLog ( filename )
 **  'CloseInputLog' will fail if there is no logfile active and will return 0
 **  in this case.
 */
-long            CloseInputLog ()
+long CloseInputLog (void)
 {
     /* refuse to close a non existent logfile                              */
     if ( InputLogfile == -1 )
@@ -1764,8 +1752,7 @@ long            CloseInputLog ()
 **  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
 **  The first symbol is read by 'Read' in the first call to 'Match' call.
 */
-long            OpenTest ( filename )
-    char                * filename;
+long OpenTest (char *filename)
 {
     /* do not allow to nest test files                                     */
     if ( TestInput != -1 )
@@ -1797,7 +1784,7 @@ long            OpenTest ( filename )
 **  'CloseTest' will not close a non test input file and returns 0 if such an
 **  attempt is made.
 */
-long            CloseTest ()
+long CloseTest (void)
 {
     /* refuse to a non test file                                           */
     if ( TestInput != Input->file )
@@ -1830,7 +1817,7 @@ long            CloseTest ()
 **  'InitScanner' initializes  the  scanner  package.  This  justs  sets  the
 **  current input file to '*stdin*' and current output  file  to  '*stdout*'.
 */
-void            InitScanner ()
+void InitScanner (void)
 {
 
     Input  = InputFiles-1;   OpenInput(  "*stdin*"  );/* error code ignored */

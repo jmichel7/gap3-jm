@@ -592,8 +592,7 @@ TypHandle Cyclotomic(TypHandle hdRes, long n, long m)
 **  cyclomtomics are constants  and  thus  selfevaluating  this just  returns
 **  <hdCyc>.
 */
-TypHandle       EvCyc ( hdCyc )
-    TypHandle           hdCyc;
+TypHandle EvCyc (TypHandle hdCyc)
 {
     return hdCyc;
 }
@@ -1111,8 +1110,7 @@ TypHandle QuoCyc (TypHandle hdL, TypHandle hdR)
 **
 **  Is called from the 'Pow' binop, so both operands are already evaluated.
 */
-TypHandle       PowCyc ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle PowCyc (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* power (result)                  */
     long                exp;            /* exponent (right operand)        */
@@ -1187,8 +1185,7 @@ TypHandle       PowCyc ( hdL, hdR )
 **
 **  Is called from 'EvEq' binop, so both operands are already evaluated.
 */
-TypHandle       EqCyc ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle EqCyc (TypHandle hdL, TypHandle hdR)
 {
     long                len;            /* number of terms                 */
     TypHandle           * cfl;          /* ptr to coeffs of left operand   */
@@ -1244,8 +1241,7 @@ TypHandle       EqCyc ( hdL, hdR )
 **
 **  Is called from 'EvLt' binop, so both operands are already evaluated.
 */
-TypHandle       LtCyc ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle LtCyc (TypHandle hdL, TypHandle hdR)
 {
     long                lel;            /* nr of terms of left operand     */
     TypHandle           * cfl;          /* ptr to coeffs of left operand   */
@@ -1298,8 +1294,7 @@ TypHandle       LtCyc ( hdL, hdR )
 **  In principle this is very easy, but it is complicated because we  do  not
 **  want to print stuff like '+1*', '-1*', 'E(<n>)^0', 'E(<n>)^1, etc.
 */
-void            PrCyc ( hdCyc )
-    TypHandle           hdCyc;
+void PrCyc (TypHandle hdCyc)
 {
     long                n;              /* order of the field              */
     long                len;            /* number of terms                 */
@@ -1364,8 +1359,7 @@ void            PrCyc ( hdCyc )
 **  'E' return a the primitive root of order <n>, which must  be  a  positive
 **  integer, represented as cyclotomic.
 */
-TypHandle       FunE ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunE (TypHandle hdCall)
 {
     long                i;              /* loop variable                   */
 
@@ -1409,8 +1403,7 @@ TypHandle       FunE ( hdCall )
 **  'IsCyc' returns 'true' if the object <obj> is a  cyclotomic  and  'false'
 **  otherwise.  Will cause an error if <obj> is an unbound variable.
 */
-TypHandle       FunIsCyc ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsCyc (TypHandle hdCall)
 {
     TypHandle           hdObj;          /* handle of the object            */
 
@@ -1444,8 +1437,7 @@ TypHandle       FunIsCyc ( hdCall )
 **
 **  'IsCycInt' relies on the fact that the base is an integral base.
 */
-TypHandle       FunIsCycInt ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsCycInt (TypHandle hdCall)
 {
     TypHandle           hdObj;          /* handle of the object            */
     long                len;            /* number of terms                 */
@@ -1493,8 +1485,7 @@ TypHandle       FunIsCycInt ( hdCall )
 **  'NofCyc' returns the N of the cyclotomic <cyc>, i.e., the  order  of  the
 **  roots of which <cyc> is written as a linear combination.
 */
-TypHandle       FunNofCyc ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunNofCyc (TypHandle hdCall)
 {
     TypHandle           hdCyc;          /* handle of the cyclotomic        */
     TypHandle           hdList;         /* handle of the list of cycs      */
@@ -1559,8 +1550,7 @@ TypHandle       FunNofCyc ( hdCall )
 **  of which <cyc> is written as a linear combination.  The <i>th element  of
 **  the list is the coefficient of $e_l^{i-1}$.
 */
-TypHandle       FunCoeffsCyc ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCoeffsCyc (TypHandle hdCall)
 {
     TypHandle           hdCyc;          /* handle of the cyclotomic        */
     TypHandle           hdList;         /* handle of the list              */
@@ -1781,7 +1771,7 @@ TypHandle FunGaloisCyc (TypHandle hdCall)
 **
 **  'InitCyc' initializes the cyclotomic package.
 */
-void            InitCyc ()
+void InitCyc (void)
 {
     long                i;              /* loop variable                   */
 

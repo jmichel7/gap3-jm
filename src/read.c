@@ -128,9 +128,7 @@ TypHandle       RdStats ( TypSymbolSet follow );
 **  'BinBag' makes a new bag of the type <type> with the  two  objects  <hdL>
 **  and <hdR>.  No bag is made if an error has occured  during  the  parsing.
 */
-TypHandle       BinBag ( type, hdL, hdR )
-    unsigned int        type;
-    TypHandle           hdL,  hdR;
+TypHandle BinBag (unsigned int type, TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdBin;
 
@@ -159,8 +157,7 @@ TypHandle       BinBag ( type, hdL, hdR )
 */
 TypHandle       HdCurLHS;
 
-TypHandle       RdVar ( follow )
-    TypSymbolSet        follow;
+TypHandle RdVar (TypSymbolSet follow)
 {
     TypHandle           hdVar,  hd;
     TypHandle           hdTmp;
@@ -291,8 +288,7 @@ TypHandle       RdVar ( follow )
 **      <List>          :=  '[' [ <Expr> ] {',' [ <Expr> ] } ']'
 **                      |   '[' <Expr> '..' <Expr> ']'
 */
-TypHandle       RdList ( follow )
-    TypSymbolSet        follow;
+TypHandle RdList (TypSymbolSet follow)
 {
     TypHandle           hdList;         /* handle of the result            */
     unsigned long       len;            /* logical length of the list      */
@@ -372,8 +368,7 @@ TypHandle       RdList ( follow )
 **
 **  The bag is resized 16 entries at at time to avoid  doing  it  too  often.
 */
-TypHandle       RdRec ( follow )
-    TypSymbolSet        follow;
+TypHandle RdRec (TypSymbolSet follow)
 {
     TypHandle           hdRec,  hd;
     unsigned long       i;
@@ -480,9 +475,7 @@ TypHandle       RdRec ( follow )
 **  so far.  It follows that for permutations of prime  order  no  nontrivial
 **  'Resize' is ever needed.  Cycles are enlarged, if ever 16 handles a time.
 */
-TypHandle       RdPerm ( hdFirst, follow )
-    TypHandle           hdFirst;
-    TypSymbolSet        follow;
+TypHandle RdPerm (TypHandle hdFirst, TypSymbolSet follow)
 {
     TypHandle           hdPerm,  hdCyc,  hd;
     unsigned long       i,  k,  m,  isConst;
@@ -552,8 +545,7 @@ TypHandle       RdPerm ( hdFirst, follow )
 **                              <Statments>
 **                          'end'
 */
-TypHandle       RdFunc ( follow )
-    TypSymbolSet        follow;
+TypHandle RdFunc (TypSymbolSet follow)
 {
     TypHandle           hdFun, hd;
     short               nrArg = 0,  nrLoc = 0;
@@ -644,8 +636,7 @@ TypHandle       RdFunc ( follow )
 **
 **      <String>        :=  " { <any character> } "
 */
-TypHandle       RdAtom ( follow )
-    TypSymbolSet        follow;
+TypHandle RdAtom (TypSymbolSet follow)
 {
     TypHandle           hdAt;
     long                i;
@@ -748,8 +739,7 @@ TypHandle       RdAtom ( follow )
 **
 **      <Factor>        :=  {'+'|'-'} <Atom> [ '^' {'+'|'-'} <Atom> ]
 */
-TypHandle       RdFactor ( follow )
-    TypSymbolSet        follow;
+TypHandle RdFactor (TypSymbolSet follow)
 {
     TypHandle           hdFac,  hdAt;
     long                sign1,  sign2;
@@ -814,8 +804,7 @@ TypHandle       RdFactor ( follow )
 **
 **      <Term>          :=  <Factor> { '*'|'/'|'mod' <Factor> }
 */
-TypHandle       RdTerm ( follow )
-    TypSymbolSet        follow;
+TypHandle RdTerm (TypSymbolSet follow)
 {
     TypHandle           hdTer,  hdFac;
     unsigned int        type;
@@ -850,8 +839,7 @@ TypHandle       RdTerm ( follow )
 **
 **      <Arith>         :=  <Term> { '+'|'-' <Term> }
 */
-TypHandle       RdAri ( follow )
-    TypSymbolSet        follow;
+TypHandle RdAri (TypSymbolSet follow)
 {
     TypHandle           hdAri,  hdTer;
     unsigned int        type;
@@ -881,8 +869,7 @@ TypHandle       RdAri ( follow )
 **
 **      <Rel>           :=  { 'not' } <Arith> { '=|<>|<|>|<=|>=|in' <Arith> }
 */
-TypHandle       RdRel ( follow )
-    TypSymbolSet        follow;
+TypHandle RdRel (TypSymbolSet follow)
 {
     TypHandle           hdRel,  hdAri;
     unsigned int        type;
@@ -929,8 +916,7 @@ TypHandle       RdRel ( follow )
 **
 **      <And>           :=  <Rel> { 'and' <Rel> }
 */
-TypHandle       RdAnd ( follow )
-    TypSymbolSet        follow;
+TypHandle RdAnd (TypSymbolSet follow)
 {
     TypHandle           hdAnd,  hdRel;
 
@@ -958,8 +944,7 @@ TypHandle       RdAnd ( follow )
 **
 **      <Log>           :=  <And> { 'or' <And> }
 */
-TypHandle       RdLog ( follow )
-    TypSymbolSet        follow;
+TypHandle RdLog (TypSymbolSet follow)
 {
     TypHandle           hdLog,  hdAnd;
 
@@ -988,8 +973,7 @@ TypHandle       RdLog ( follow )
 **      <Expr>          :=  <Log>
 **                      |   <Var> [ '->' <Log> ]
 */
-TypHandle       RdExpr ( follow )
-    TypSymbolSet        follow;
+TypHandle RdExpr (TypSymbolSet follow)
 {
     TypHandle           hdExp,  hdFun,  hdTmp;
 
@@ -1050,8 +1034,7 @@ TypHandle       RdExpr ( follow )
 **                          [ 'else'               <Statments> ]
 **                            'fi'
 */
-TypHandle       RdIf ( follow )
-    TypSymbolSet        follow;
+TypHandle RdIf (TypSymbolSet follow)
 {
     TypHandle           hd[128],  hdIf;
     short               i = 0;
@@ -1098,8 +1081,7 @@ TypHandle       RdIf ( follow )
 **                              <Statments>
 **                          'od'
 */
-TypHandle       RdFor ( follow )
-    TypSymbolSet        follow;
+TypHandle RdFor (TypSymbolSet follow)
 {
     TypHandle           hdVar,  hdList,  hdStats,  hdFor;
 
@@ -1146,8 +1128,7 @@ TypHandle       RdFor ( follow )
 **                              <Statments>
 **                          'od'
 */
-TypHandle       RdWhile ( follow )
-    TypSymbolSet    follow;
+TypHandle RdWhile (TypSymbolSet follow)
 {
     TypHandle       hdCond,  hdStats,  hdWhile;
 
@@ -1181,8 +1162,7 @@ TypHandle       RdWhile ( follow )
 **                              <Statments>
 **                          'until' <Expr>
 */
-TypHandle       RdRepeat ( follow )
-    TypSymbolSet    follow;
+TypHandle RdRepeat (TypSymbolSet follow)
 {
     TypHandle       hdStats,  hdCond,  hdRep;
 
@@ -1215,8 +1195,7 @@ TypHandle       RdRepeat ( follow )
 **  It is still legal to use parenthesis but they  are  no  longer  required,
 **  a return statememt is not a function call and should not look  like  one.
 */
-TypHandle       RdReturn ( follow )
-    TypSymbolSet        follow;
+TypHandle RdReturn (TypSymbolSet follow)
 {
     TypHandle           hdRet,  hdExpr;
 
@@ -1252,8 +1231,7 @@ TypHandle       RdReturn ( follow )
 **
 **      <Statement>     :=  'quit'
 */
-TypHandle       RdQuit ( follow )
-    TypSymbolSet        follow;
+TypHandle RdQuit (TypSymbolSet follow)
 {
     TypHandle           hdQuit;
     Match( S_QUIT, "", follow );
@@ -1281,8 +1259,7 @@ TypHandle       RdQuit ( follow )
 **                      |   'return' [ <Expr> ]
 **                      |   'quit'
 */
-TypHandle       RdStat ( follow )
-    TypSymbolSet        follow;
+TypHandle RdStat (TypSymbolSet follow)
 {
     TypHandle           hd,  hdExpr,  hdAss;
 
@@ -1341,8 +1318,7 @@ TypHandle       RdStat ( follow )
 **
 **  A single semicolon is an empty statement sequence not an empty statement.
 */
-TypHandle       RdStats ( follow )
-    TypSymbolSet        follow;
+TypHandle RdStats (TypSymbolSet follow)
 {
     TypHandle           hdStats,  hd [1024];
     short               i = 0;
@@ -1395,7 +1371,7 @@ TypHandle       RdStats ( follow )
 **  It has this funny name, because 'Read' would give name clash with  'read'
 **  from the C library on the stupid VAX, which turns all names to uppercase.
 */
-TypHandle       ReadIt ()
+TypHandle ReadIt (void)
 { TypHandle           hd;
 
     /* get the first symbol from the input                                 */

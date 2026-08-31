@@ -214,12 +214,16 @@ end;
 #F  HasTypeOps.Representation(<W>, i) . .  'Representation', using
 #F  the classification
 ##
-HasTypeOps.Representation:=function(W,i)local l,t,reps,i,res,ind;
+HasTypeOps.Representation:=function(W,i)local l,t,reps,i,res,ind,gens;
   t:=ReflectionType(W);
   ind:=CartesianAt(List(t,NrConjugacyClasses),i);
   reps:=List([1..Length(ind)],i->ReflTypeOps.Representation(t[i],ind[i]));
   if ForAny(reps,r->r=false) then return false;fi;
-  if Length(t)=1 then return reps[1];fi;
+  if Length(t)=1 then 
+    if IsSpets(W) then gens:=reps[1].gens;else gens:=reps[1];fi;
+    gens{t[1].indices}:=Copy(gens); 
+    if IsSpets(W) then return rec(gens:=gens,F:=reps[1].F); else return gens;fi;
+  fi;
   if IsSpets(W) then
     res:=rec(gens:=[],F:=ApplyFunc(KroneckerProduct,List(reps,x->x.F)));
     for i in [1..Length(t)] do

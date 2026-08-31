@@ -163,7 +163,7 @@
 **
 **  'LenVector' is the function in 'TabLenList' for vectors.
 */
-long  LenVector ( TypHandle  hdList)
+long  LenVector(TypHandle  hdList)
 {
     return LEN_PLIST( hdList );
 }
@@ -186,7 +186,7 @@ long  LenVector ( TypHandle  hdList)
 **  the  function  in  'TabElmfList', 'TabElmlList',  and  'TabElmrList'  for
 **  vectors.
 */
-TypHandle ElmVector (TypHandle hdList, long pos)
+TypHandle ElmVector(TypHandle hdList, long pos)
 {
     TypHandle           hdElm;          /* the selected element, result    */
 
@@ -204,7 +204,7 @@ TypHandle ElmVector (TypHandle hdList, long pos)
     return hdElm;
 }
 
-TypHandle ElmfVector (TypHandle hdList, long pos)
+TypHandle ElmfVector(TypHandle hdList, long pos)
 {
     /* select and return the element                                       */
     return ELM_PLIST( hdList, pos );
@@ -223,9 +223,7 @@ TypHandle ElmfVector (TypHandle hdList, long pos)
 **
 **  'ElmsVector' is the function in 'TabElmsList' for vectors.
 */
-TypHandle       ElmsVector ( hdList, hdPoss )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
+TypHandle ElmsVector(TypHandle hdList, TypHandle hdPoss)
 {
     TypHandle           hdElms;         /* selected sublist, result        */
     long                lenList;        /* length of <list>                */
@@ -337,10 +335,7 @@ TypHandle       ElmsVector ( hdList, hdPoss )
 **  the same  stuff as  'AssPlist'.   This is because  a  vector is  not very
 **  likely to stay a vector after the assignment.
 */
-TypHandle       AssVector ( hdList, pos, hdVal )
-    TypHandle           hdList;
-    long                pos;
-    TypHandle           hdVal;
+TypHandle AssVector(TypHandle hdList, long pos, TypHandle hdVal)
 {
     long                plen;           /* physical length of <list>       */
 
@@ -394,10 +389,7 @@ TypHandle       AssVector ( hdList, pos, hdVal )
 **  same stuff as 'AsssPlist'.  This is because a vector  is not  very likely
 **  to stay a vector after the assignment.
 */
-TypHandle       AsssVector ( hdList, hdPoss, hdVals )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
-    TypHandle           hdVals;
+TypHandle AsssVector(TypHandle hdList, TypHandle hdPoss, TypHandle hdVals)
 {
     /* convert <list> to a plain list                                      */
     Retype( hdList, T_LIST );
@@ -417,10 +409,7 @@ TypHandle       AsssVector ( hdList, hdPoss, hdVals )
 **
 **  'PosVector' is the function in 'TabPosList' for vectors.
 */
-long            PosVector ( hdList, hdVal, start )
-    TypHandle           hdList;
-    TypHandle           hdVal;
-    long                start;
+long PosVector(TypHandle hdList, TypHandle hdVal, long start)
 {
     long                lenList;        /* length of <list>                */
     TypHandle           hdElm;          /* one element of <list>           */
@@ -455,8 +444,7 @@ long            PosVector ( hdList, hdVal, start )
 **
 **  'PlainVector' is the function in 'TabPlainList' for vectors.
 */
-void            PlainVector ( hdList )
-    TypHandle           hdList;
+void PlainVector(TypHandle hdList)
 {
     return;
 }
@@ -470,8 +458,7 @@ void            PlainVector ( hdList )
 **
 **  'IsDenseVector' is the function in 'TabIsDenseList' for vectors.
 */
-long            IsDenseVector ( hdList )
-    TypHandle           hdList;
+long IsDenseVector(TypHandle hdList)
 {
     return 1;
 }
@@ -486,8 +473,7 @@ long            IsDenseVector ( hdList )
 **
 **  'IsPossVector' is the function in 'TabIsPossList' for vectors.
 */
-long            IsPossVector ( hdList )
-    TypHandle           hdList;
+long IsPossVector(TypHandle hdList)
 {
     long                lenList;        /* length of <list>                */
     TypHandle           hdElm;          /* one element of <list>           */
@@ -518,8 +504,7 @@ long            IsPossVector ( hdList )
 **
 **  'IsXTypeVector' is the function in 'TabIsXTypeList' for vectors.
 */
-long            IsXTypeVector ( hdList )
-    TypHandle           hdList;
+long IsXTypeVector(TypHandle hdList)
 {
     long                isVector;       /* result                          */
     unsigned long       len;            /* length of the list              */
@@ -607,8 +592,7 @@ long            IsXTypeVector ( hdList )
 **
 **  'IsXTypeMatrix' is the function in 'TabIsXTypeList' for matrices.
 */
-long            IsXTypeMatrix ( hdList )
-    TypHandle           hdList;
+long IsXTypeMatrix(TypHandle hdList)
 {
     long                isMatrix;       /* result                          */
     unsigned long       cols;           /* length of the rows              */
@@ -689,9 +673,7 @@ long            IsXTypeMatrix ( hdList )
 **
 **  Is called from the 'EQ' binop so both operands are already evaluated.
 */
-TypHandle       EqVector ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqVector(TypHandle hdL, TypHandle hdR)
 {
     unsigned long       lenL;           /* length of the left operand      */
     unsigned long       lenR;           /* length of the right operand     */
@@ -729,9 +711,7 @@ TypHandle       EqVector ( hdL, hdR )
 **
 **  Is called from the 'LT' binop so both operands are already evaluated.
 */
-TypHandle       LtVector ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtVector(TypHandle hdL, TypHandle hdR)
 {
     unsigned long       lenL;           /* length of the left operand      */
     unsigned long       lenR;           /* length of the right operand     */

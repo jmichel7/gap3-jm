@@ -188,8 +188,7 @@
 **
 **  'LenPlist' is the function in 'TabLenList' for plain lists.
 */
-long            LenPlist ( hdList )
-    TypHandle           hdList;
+long LenPlist (TypHandle hdList)
 {
     return LEN_PLIST( hdList );
 }
@@ -214,9 +213,7 @@ long            LenPlist ( hdList )
 **  is the function  in  'TabElmfList', 'TabElmlList', and  'TabElmrList' for
 **  plain lists.
 */
-TypHandle       ElmPlist ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmPlist (TypHandle hdList, long pos)
 {
     TypHandle           hdElm;          /* the selected element, result    */
 
@@ -239,9 +236,8 @@ TypHandle       ElmPlist ( hdList, pos )
     return hdElm;
 }
 
-TypHandle       ElmfPlist ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle 
+ElmfPlist (TypHandle hdList, long pos)
 {
     /* select and return the element                                       */
     return ELM_PLIST( hdList, pos );
@@ -261,9 +257,7 @@ TypHandle       ElmfPlist ( hdList, pos )
 **
 **  'ElmsPlist' is the function in 'TabElmsList' for plain lists.
 */
-TypHandle       ElmsPlist ( hdList, hdPoss )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
+TypHandle ElmsPlist (TypHandle hdList, TypHandle hdPoss)
 {
     TypHandle           hdElms;         /* selected sublist, result        */
     long                lenList;        /* length of <list>                */
@@ -380,10 +374,7 @@ TypHandle       ElmsPlist ( hdList, hdPoss )
 **
 **  'AssPlist' is the function in 'TabAssList' for plain lists.
 */
-TypHandle       AssPlist ( hdList, pos, hdVal )
-    TypHandle           hdList;
-    long                pos;
-    TypHandle           hdVal;
+TypHandle AssPlist (TypHandle hdList, long pos, TypHandle hdVal)
 {
     long                plen;           /* physical length of <list>       */
 
@@ -415,10 +406,8 @@ TypHandle       AssPlist ( hdList, pos, hdVal )
 **
 **  'AsssPlist' is the function in 'TabAsssList' for plain lists.
 */
-TypHandle       AsssPlist ( hdList, hdPoss, hdVals )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
-    TypHandle           hdVals;
+TypHandle 
+AsssPlist (TypHandle hdList, TypHandle hdPoss, TypHandle hdVals)
 {
     long                lenPoss;        /* length of <positions>           */
     long                pos;            /* <position> as integer           */
@@ -520,10 +509,7 @@ TypHandle       AsssPlist ( hdList, hdPoss, hdVals )
 **
 **  'PosPlist' is the function in 'TabPosList' for plain lists.
 */
-long            PosPlist ( hdList, hdVal, start )
-    TypHandle           hdList;
-    TypHandle           hdVal;
-    long                start;
+long PosPlist (TypHandle hdList, TypHandle hdVal, long start)
 {
     long                lenList;        /* length of <list>                */
     TypHandle           hdElm;          /* one element of <list>           */
@@ -558,8 +544,7 @@ long            PosPlist ( hdList, hdVal, start )
 **
 **  'PlainPlist' is the function in 'TabPlainList' for plain lists.
 */
-void            PlainPlist ( hdList )
-    TypHandle           hdList;
+void PlainPlist (TypHandle hdList)
 {
     return;
 }
@@ -574,8 +559,7 @@ void            PlainPlist ( hdList )
 **
 **  'IsDensePlist' is the function in 'TabIsDenseList' for plain lists.
 */
-long            IsDensePlist ( hdList )
-    TypHandle           hdList;
+long IsDensePlist (TypHandle hdList)
 {
     long                lenList;        /* length of <list>                */
     long                i;              /* loop variable                   */
@@ -603,8 +587,7 @@ long            IsDensePlist ( hdList )
 **
 **  'IsPossPlist' is the function in 'TabIsPossList' for plain lists.
 */
-long            IsPossPlist ( hdList )
-    TypHandle           hdList;
+long IsPossPlist (TypHandle hdList)
 {
     long                lenList;        /* length of <list>                */
     TypHandle           hdElm;          /* one element of <list>           */
@@ -634,9 +617,7 @@ long            IsPossPlist ( hdList )
 **
 **  Is called from the 'EQ' binop so both  operands  are  already  evaluated.
 */
-TypHandle       EqPlist ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqPlist (TypHandle hdL, TypHandle hdR)
 {
     long                lenL;           /* length of the left operand      */
     long                lenR;           /* length of the right operand     */
@@ -680,9 +661,7 @@ TypHandle       EqPlist ( hdL, hdR )
 **
 **  Is called from the 'LT' binop so both operands are already evaluated.
 */
-TypHandle       LtPlist ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtPlist (TypHandle hdL, TypHandle hdR)
 {
     long                lenL;           /* length of the left operand      */
     long                lenR;           /* length of the right operand     */
@@ -725,8 +704,7 @@ TypHandle       LtPlist ( hdL, hdR )
 **  the variable '~'.  Thus expressions  in the variable   list can refer  to
 **  this variable and its subobjects to create objects that are not trees.
 */
-TypHandle       EvMakeList ( hdLiteral )
-    TypHandle           hdLiteral;
+TypHandle EvMakeList (TypHandle hdLiteral)
 {
     TypHandle           hdList;         /* handle of the result            */
 
@@ -763,10 +741,7 @@ TypHandle       EvMakeList ( hdLiteral )
 **  Evaluating  a  list   literal  thus  means  looping over the  components,
 **  evaluating the expressions.
 */
-TypHandle       MakeList ( hdDst, ind, hdLiteral )
-    TypHandle           hdDst;
-    long                ind;
-    TypHandle           hdLiteral;
+TypHandle MakeList (TypHandle hdDst, long ind, TypHandle hdLiteral)
 {
     TypHandle           hdList;         /* handle of the result            */
     long                len;            /* logical length of the list      */
@@ -815,8 +790,7 @@ TypHandle       MakeList ( hdDst, ind, hdLiteral )
 **
 **  'PrMakeList' prints the list literal <hdMake>.
 */
-void            PrMakeList ( hdMake )
-    TypHandle           hdMake;
+void PrMakeList (TypHandle hdMake)
 {
     long                lenList;        /* logical length of <list>        */
     TypHandle           hdElm;          /* one element from <list>         */
@@ -847,7 +821,7 @@ void            PrMakeList ( hdMake )
 **
 **  Is called during  the  initialization  to  initialize  the  list package.
 */
-void            InitPlist ()
+void InitPlist (void)
 {
 
     /* install the list functions in the tables                            */

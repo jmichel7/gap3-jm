@@ -146,8 +146,7 @@ TypHandle               HdPerm;
 **  permutations   are constants and  thus  selfevaluating  this just returns
 **  <hdPerm>.
 */
-TypHandle       EvPerm ( hdPerm )
-    TypHandle           hdPerm;
+TypHandle EvPerm (TypHandle hdPerm)
 {
     return hdPerm;
 }
@@ -165,8 +164,7 @@ TypHandle       EvPerm ( hdPerm )
 **  This code is a little bit  tricky  in  order  to  avoid  Resize()ing  the
 **  permutation bag too often,  which would make this function terribly slow.
 */
-TypHandle       EvMakeperm ( hdPerm )
-    TypHandle           hdPerm;
+TypHandle EvMakeperm (TypHandle hdPerm)
 {
     TypHandle           hdRes;          /* handle of the result            */
     TypHandle           hdCyc;          /* handle of one cycle of hdPerm   */
@@ -289,9 +287,7 @@ TypHandle       EvMakeperm ( hdPerm )
 **
 **  This is a little bit tuned but should be sufficiently easy to understand.
 */
-TypHandle       ProdPP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdPP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* handle of the product (result)  */
     unsigned long       degP;           /* degree of the product           */
@@ -332,9 +328,7 @@ TypHandle       ProdPP ( hdL, hdR )
 }
 
 
-TypHandle       ProdPQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdPQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* handle of the product (result)  */
     unsigned long       degP;           /* degree of the product           */
@@ -375,9 +369,7 @@ TypHandle       ProdPQ ( hdL, hdR )
 }
 
 
-TypHandle       ProdQP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdQP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* handle of the product (result)  */
     unsigned long       degP;           /* degree of the product           */
@@ -418,9 +410,7 @@ TypHandle       ProdQP ( hdL, hdR )
 }
 
 
-TypHandle       ProdQQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ProdQQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* handle of the product (result)  */
     unsigned long       degP;           /* degree of the product           */
@@ -473,9 +463,7 @@ TypHandle       ProdQQ ( hdL, hdR )
 **  Unfortunatly this can not be done in <degree> steps, we need 2 * <degree>
 **  steps.
 */
-TypHandle       QuoPP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle QuoPP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdQ;            /* handle of the quotient (result) */
     unsigned long       degQ;           /* degree of the quotient          */
@@ -526,9 +514,7 @@ TypHandle       QuoPP ( hdL, hdR )
     return hdQ;
 }
 
-TypHandle       QuoPQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle QuoPQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdQ;            /* handle of the quotient (result) */
     unsigned long       degQ;           /* degree of the quotient          */
@@ -579,9 +565,7 @@ TypHandle       QuoPQ ( hdL, hdR )
     return hdQ;
 }
 
-TypHandle       QuoQP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle QuoQP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdQ;            /* handle of the quotient (result) */
     unsigned long       degQ;           /* degree of the quotient          */
@@ -632,9 +616,7 @@ TypHandle       QuoQP ( hdL, hdR )
     return hdQ;
 }
 
-TypHandle       QuoQQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle QuoQQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdQ;            /* handle of the quotient (result) */
     unsigned long       degQ;           /* degree of the quotient          */
@@ -697,9 +679,7 @@ TypHandle       QuoQQ ( hdL, hdR )
 **
 **  This can be done as fast as a single multiplication or inversion.
 */
-TypHandle       ModPP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ModPP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdM;            /* handle of the quotient (result) */
     unsigned long       degM;           /* degree of the quotient          */
@@ -741,9 +721,7 @@ TypHandle       ModPP ( hdL, hdR )
     return hdM;
 }
 
-TypHandle       ModPQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ModPQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdM;            /* handle of the quotient (result) */
     unsigned long       degM;           /* degree of the quotient          */
@@ -785,9 +763,7 @@ TypHandle       ModPQ ( hdL, hdR )
     return hdM;
 }
 
-TypHandle       ModQP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ModQP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdM;            /* handle of the quotient (result) */
     unsigned long       degM;           /* degree of the quotient          */
@@ -829,9 +805,7 @@ TypHandle       ModQP ( hdL, hdR )
     return hdM;
 }
 
-TypHandle       ModQQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle ModQQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdM;            /* handle of the quotient (result) */
     unsigned long       degM;           /* degree of the quotient          */
@@ -886,9 +860,7 @@ TypHandle       ModQQ ( hdL, hdR )
 **  This repeatedly applies the permutation <hdR> to all points  which  seems
 **  to be faster than binary powering, and does not need  temporary  storage.
 */
-TypHandle       PowPI ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowPI (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* handle of the power (result)    */
     TypPoint16          * ptP;          /* pointer to the power            */
@@ -1137,9 +1109,7 @@ TypHandle       PowPI ( hdL, hdR )
     return hdP;
 }
 
-TypHandle       PowQI ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowQI (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdP;            /* handle of the power (result)    */
     TypPoint32          * ptP;          /* pointer to the power            */
@@ -1399,9 +1369,7 @@ TypHandle       PowQI ( hdL, hdR )
 **
 **  Is called from the 'Pow' binop, so both operands are already evaluated.
 */
-TypHandle       PowIP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowIP (TypHandle hdL, TypHandle hdR)
 {
     long                img;            /* image (result)                  */
 
@@ -1423,9 +1391,7 @@ TypHandle       PowIP ( hdL, hdR )
     return INT_TO_HD(img);
 }
 
-TypHandle       PowIQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowIQ (TypHandle hdL, TypHandle hdR)
 {
     long                img;            /* image (result)                  */
 
@@ -1464,9 +1430,7 @@ TypHandle       PowIQ ( hdL, hdR )
 **  point and so on, until we come  back to  <hdL>.  The  last point  is  the
 **  preimage of <hdL>.  This is faster because the cycles are  usually short.
 */
-TypHandle       QuoIP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle QuoIP (TypHandle hdL, TypHandle hdR)
 {
     long                pre;            /* preimage (result)               */
     long                img;            /* image (left operand)            */
@@ -1493,9 +1457,7 @@ TypHandle       QuoIP ( hdL, hdR )
     return INT_TO_HD(pre);
 }
 
-TypHandle       QuoIQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle QuoIQ (TypHandle hdL, TypHandle hdR)
 {
     long                pre;            /* preimage (result)               */
     long                img;            /* image (left operand)            */
@@ -1532,9 +1494,7 @@ TypHandle       QuoIQ ( hdL, hdR )
 **
 **  Is called from the 'Pow' binop, so both operands are already evaluated.
 */
-TypHandle       PowPP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowPP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdC;            /* handle of the conjugation (res) */
     unsigned long       degC;           /* degree of the conjugation       */
@@ -1572,9 +1532,7 @@ TypHandle       PowPP ( hdL, hdR )
     return hdC;
 }
 
-TypHandle       PowPQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowPQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdC;            /* handle of the conjugation (res) */
     unsigned long       degC;           /* degree of the conjugation       */
@@ -1612,9 +1570,7 @@ TypHandle       PowPQ ( hdL, hdR )
     return hdC;
 }
 
-TypHandle       PowQP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowQP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdC;            /* handle of the conjugation (res) */
     unsigned long       degC;           /* degree of the conjugation       */
@@ -1652,9 +1608,7 @@ TypHandle       PowQP ( hdL, hdR )
     return hdC;
 }
 
-TypHandle       PowQQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle PowQQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdC;            /* handle of the conjugation (res) */
     unsigned long       degC;           /* degree of the conjugation       */
@@ -1702,9 +1656,7 @@ TypHandle       PowQQ ( hdL, hdR )
 **
 **  Is called from the 'Comm' binop, so both operands are already evaluated.
 */
-TypHandle       CommPP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CommPP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdC;            /* handle of the commutator  (res) */
     unsigned long       degC;           /* degree of the commutator        */
@@ -1743,9 +1695,7 @@ TypHandle       CommPP ( hdL, hdR )
     return hdC;
 }
 
-TypHandle       CommPQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CommPQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdC;            /* handle of the commutator  (res) */
     unsigned long       degC;           /* degree of the commutator        */
@@ -1784,9 +1734,7 @@ TypHandle       CommPQ ( hdL, hdR )
     return hdC;
 }
 
-TypHandle       CommQP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CommQP (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdC;            /* handle of the commutator  (res) */
     unsigned long       degC;           /* degree of the commutator        */
@@ -1825,9 +1773,7 @@ TypHandle       CommQP ( hdL, hdR )
     return hdC;
 }
 
-TypHandle       CommQQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CommQQ (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdC;            /* handle of the commutator  (res) */
     unsigned long       degC;           /* degree of the commutator        */
@@ -1879,9 +1825,7 @@ TypHandle       CommQQ ( hdL, hdR )
 **  Two permutations may be equal, even if the two sequences do not have  the
 **  same length, if  the  larger  permutation  fixes  the  exceeding  points.
 */
-TypHandle       EqPP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqPP (TypHandle hdL, TypHandle hdR)
 {
     unsigned long       degL;           /* degree of the left operand      */
     TypPoint16          * ptL;          /* pointer to the left operand     */
@@ -1919,9 +1863,7 @@ TypHandle       EqPP ( hdL, hdR )
     return HdTrue;
 }
 
-TypHandle       EqPQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqPQ (TypHandle hdL, TypHandle hdR)
 {
     unsigned long       degL;           /* degree of the left operand      */
     TypPoint16          * ptL;          /* pointer to the left operand     */
@@ -1959,9 +1901,7 @@ TypHandle       EqPQ ( hdL, hdR )
     return HdTrue;
 }
 
-TypHandle       EqQP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqQP (TypHandle hdL, TypHandle hdR)
 {
     unsigned long       degL;           /* degree of the left operand      */
     TypPoint32          * ptL;          /* pointer to the left operand     */
@@ -1999,9 +1939,7 @@ TypHandle       EqQP ( hdL, hdR )
     return HdTrue;
 }
 
-TypHandle       EqQQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqQQ (TypHandle hdL, TypHandle hdR)
 {
     unsigned long       degL;           /* degree of the left operand      */
     TypPoint32          * ptL;          /* pointer to the left operand     */
@@ -2050,9 +1988,7 @@ TypHandle       EqQQ ( hdL, hdR )
 **
 **  Is called from the 'Lt' binop, so both operands are already evaluated.
 */
-TypHandle       LtPP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtPP (TypHandle hdL, TypHandle hdR)
 {
     unsigned long       degL;           /* degree of the left operand      */
     TypPoint16          * ptL;          /* pointer to the left operand     */
@@ -2094,9 +2030,7 @@ TypHandle       LtPP ( hdL, hdR )
     return HdFalse;
 }
 
-TypHandle       LtPQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtPQ (TypHandle hdL, TypHandle hdR)
 {
     unsigned long       degL;           /* degree of the left operand      */
     TypPoint16          * ptL;          /* pointer to the left operand     */
@@ -2138,9 +2072,7 @@ TypHandle       LtPQ ( hdL, hdR )
     return HdFalse;
 }
 
-TypHandle       LtQP ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtQP (TypHandle hdL, TypHandle hdR)
 {
     unsigned long       degL;           /* degree of the left operand      */
     TypPoint32          * ptL;          /* pointer to the left operand     */
@@ -2182,9 +2114,7 @@ TypHandle       LtQP ( hdL, hdR )
     return HdFalse;
 }
 
-TypHandle       LtQQ ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtQQ (TypHandle hdL, TypHandle hdR)
 {
     unsigned long       degL;           /* degree of the left operand      */
     TypPoint32          * ptL;          /* pointer to the left operand     */
@@ -2241,8 +2171,7 @@ TypHandle       LtQQ ( hdL, hdR )
 **  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
 **  This is done, because it is forbidden to create new bags during printing.
 */
-void            PrPermP ( hdPerm )
-    TypHandle           hdPerm;
+void PrPermP (TypHandle hdPerm)
 {
     unsigned long       degPerm;        /* degree of the permutation       */
     TypPoint16          * ptPerm;       /* pointer to the permutation      */
@@ -2282,8 +2211,7 @@ void            PrPermP ( hdPerm )
     if ( isId )  Pr("()",0L,0L);
 }
 
-void            PrPermQ ( hdPerm )
-    TypHandle           hdPerm;
+void PrPermQ (TypHandle hdPerm)
 {
     unsigned long       degPerm;        /* degree of the permutation       */
     TypPoint32          * ptPerm;       /* pointer to the permutation      */
@@ -2333,8 +2261,7 @@ void            PrPermQ ( hdPerm )
 **
 **  Linebreaks are prefered most after cycles and  next  most  after  commas.
 */
-void            PrMakeperm ( hdPerm )
-    TypHandle           hdPerm;
+void PrMakeperm (TypHandle hdPerm)
 {
     TypHandle           hdCyc;          /* handle of one cycle             */
     unsigned long       i,  k;          /* loop variables                  */
@@ -2368,8 +2295,7 @@ void            PrMakeperm ( hdPerm )
 **  'IsPerm' returns 'true' if the object <obj> is a permutation and  'false'
 **  otherwise.  Will signal an error if <obj> is an unbound variable.
 */
-TypHandle       FunIsPerm ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsPerm (TypHandle hdCall)
 {
     TypHandle           hdObj;          /* handle of the object            */
 
@@ -2401,8 +2327,7 @@ TypHandle       FunIsPerm ( hdCall )
 **  'FunPermList' simply copies the list pointwise into  a  permutation  bag.
 **  It also does some checks to make sure that the  list  is  a  permutation.
 */
-TypHandle       FunPermList ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunPermList (TypHandle hdCall)
 {
     TypHandle           hdPerm;         /* handle of the permutation       */
     TypPoint16          * ptPerm16;     /* pointer to the permutation      */
@@ -2545,8 +2470,7 @@ TypHandle       FunPermList ( hdCall )
 **
 **  This is easy, except that permutations may  contain  trailing  fixpoints.
 */
-TypHandle       FunLargestMovedPointPerm ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunLargestMovedPointPerm (TypHandle hdCall)
 {
     unsigned long       sup;            /* support (result)                */
     TypHandle           hdPerm;         /* handle of the permutation       */
@@ -2607,8 +2531,7 @@ TypHandle       FunLargestMovedPointPerm ( hdCall )
 **
 **  Note that the order of the arguments to this function has been  reversed.
 */
-TypHandle       FunCycleLengthPermInt ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCycleLengthPermInt (TypHandle hdCall)
 {
     TypHandle           hdPerm;         /* handle of the permutation       */
     TypPoint16          * ptPerm16;     /* pointer to the permutation      */
@@ -2679,8 +2602,7 @@ TypHandle       FunCycleLengthPermInt ( hdCall )
 **  'CyclePermInt' returns the cycle of <point>, which  must  be  a  positive
 **  integer, under the permutation <perm> as a list.
 */
-TypHandle       FunCyclePermInt ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCyclePermInt (TypHandle hdCall)
 {
     TypHandle           hdList;         /* handle of the list (result)     */
     TypHandle           * ptList;       /* pointer to the list             */
@@ -2784,8 +2706,7 @@ TypHandle       FunCyclePermInt ( hdCall )
 **  Since the largest element in S(65536) has oder greater than  10^382  this
 **  computation may easily overflow.  So we have to use  arbitrary precision.
 */
-TypHandle       FunOrderPerm ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunOrderPerm (TypHandle hdCall)
 {
     TypHandle           hdPerm;         /* handle of the permutation       */
     TypPoint16          * ptPerm16;     /* pointer to the permutation      */
@@ -2906,8 +2827,7 @@ TypHandle       FunOrderPerm ( hdCall )
 **  is a homomorphism from the symmetric group onto the multiplicative  group
 **  $\{ +1, -1 \}$, the kernel of which is the alternating group.
 */
-TypHandle       FunSignPerm ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunSignPerm (TypHandle hdCall)
 {
     TypHandle           hdPerm;         /* handle of the permutation       */
     TypPoint16          * ptPerm16;     /* pointer to the permutation      */
@@ -3020,8 +2940,7 @@ TypHandle       FunSignPerm ( hdCall )
 **  respect  to the lexicographical order  defined  by '\<' the smallest such
 **  permutation.
 */
-TypHandle       FunSmallestGeneratorPerm ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunSmallestGeneratorPerm (TypHandle hdCall)
 {
     TypHandle           hdSmall;        /* handle of the smallest gen      */
     TypPoint16          * ptSmall16;    /* pointer to the smallest gen     */
@@ -3202,9 +3121,7 @@ TypHandle       FunSmallestGeneratorPerm ( hdCall )
 **  'OnTuplesPerm'  returns  the  image  of  the  tuple  <hdTup>   under  the
 **  permutation <hdPrm>.  It is called from 'FunOnTuples'.
 */
-TypHandle       OnTuplesPerm ( hdTup, hdPrm )
-    TypHandle           hdTup;
-    TypHandle           hdPrm;
+TypHandle OnTuplesPerm (TypHandle hdTup, TypHandle hdPrm)
 {
     TypHandle           hdRes;          /* handle of the image, result     */
     TypHandle           * ptRes;        /* pointer to the result           */
@@ -3295,9 +3212,7 @@ TypHandle       OnTuplesPerm ( hdTup, hdPrm )
 **  'OnSetsPerm'  returns  the  image  of  the  tuple  <hdSet>   under  the
 **  permutation <hdPrm>.  It is called from 'FunOnSets'.
 */
-TypHandle       OnSetsPerm ( hdSet, hdPrm )
-    TypHandle           hdSet;
-    TypHandle           hdPrm;
+TypHandle OnSetsPerm (TypHandle hdSet, TypHandle hdPrm)
 {
     TypHandle           hdRes;          /* handle of the image, result     */
     TypHandle           * ptRes;        /* pointer to the result           */
@@ -3451,7 +3366,7 @@ TypHandle       OnSetsPerm ( hdSet, hdPrm )
 **  Is  called  during  the  initialization  to  initialize  the  permutation
 **  package.
 */
-void            InitPermutat ()
+void InitPermutat (void)
 {
     /* install the evaluation and printing functions                       */
     InstEvFunc( T_PERM16,   EvPerm     );

@@ -209,8 +209,7 @@ TypHandle       (* EvTab[ T_ILLEGAL ]) ( TypHandle hd );
 **  If this is actually ever executed in GAP it  indicates  serious  trouble,
 **  for  example  that  the  type  field  of  a  bag  has  been  overwritten.
 */
-TypHandle       CantEval ( hd )
-    TypHandle           hd;
+TypHandle CantEval (TypHandle hd)
 {
     return Error("Panic: can't eval bag of type %d",(long)TYPE(hd),0L);
 }
@@ -257,9 +256,7 @@ TypHandle Sum(TypHandle hd)
     return SUM( hdL, hdR );
 }
 
-TypHandle       CantSum ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CantSum (TypHandle hdL, TypHandle hdR)
 {
     return Error("operations: sum of %s and %s is not defined",
                  (long)NameType[TYPE(hdL)], (long)NameType[TYPE(hdR)] );
@@ -308,9 +305,7 @@ TypHandle Diff(TypHandle hd)
     return DIFF(hdL,hdR);
 }
 
-TypHandle       CantDiff ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CantDiff (TypHandle hdL, TypHandle hdR)
 {
     return Error("operations difference of %s and %s is not defined",
                  (long)NameType[TYPE(hdL)], (long)NameType[TYPE(hdR)] );
@@ -357,9 +352,7 @@ TypHandle Prod(TypHandle hd)
     return PROD( hdL, hdR );
 }
 
-TypHandle       CantProd ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CantProd (TypHandle hdL, TypHandle hdR)
 {
     return Error("operations: product of %s and %s is not defined",
                  (long)NameType[TYPE(hdL)], (long)NameType[TYPE(hdR)] );
@@ -395,9 +388,7 @@ TypHandle Quo(TypHandle hd)
     return QUO( hdL, hdR );
 }
 
-TypHandle       CantQuo ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CantQuo (TypHandle hdL, TypHandle hdR)
 {
     return Error("operations: quotient of %s and %s is not defined",
                  (long)NameType[TYPE(hdL)], (long)NameType[TYPE(hdR)] );
@@ -425,8 +416,7 @@ TypHandle       CantQuo ( hdL, hdR )
 */
 TypHandle       (*TabMod[T_VAR][T_VAR]) ( TypHandle, TypHandle );
 
-TypHandle       Mod ( hd )
-    TypHandle           hd;
+TypHandle Mod (TypHandle hd)
 {
     TypHandle           hdL,  hdR;
 
@@ -435,9 +425,7 @@ TypHandle       Mod ( hd )
     return MOD( hdL, hdR );
 }
 
-TypHandle       CantMod ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CantMod (TypHandle hdL, TypHandle hdR)
 {
     return Error("operations: remainder of %s and %s is not defined",
                  (long)NameType[TYPE(hdL)], (long)NameType[TYPE(hdR)] );
@@ -465,8 +453,7 @@ TypHandle       CantMod ( hdL, hdR )
 */
 TypHandle       (*TabPow[T_VAR][T_VAR]) ( TypHandle, TypHandle );
 
-TypHandle       Pow ( hd )
-    TypHandle           hd;
+TypHandle Pow (TypHandle hd)
 {
     TypHandle           hdL,  hdR;
 
@@ -475,9 +462,7 @@ TypHandle       Pow ( hd )
     return POW( hdL, hdR );
 }
 
-TypHandle       CantPow ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CantPow (TypHandle hdL, TypHandle hdR)
 {
     return Error("operations: power of %s and %s is not defined",
                  (long)NameType[TYPE(hdL)], (long)NameType[TYPE(hdR)] );
@@ -500,8 +485,7 @@ TypHandle       CantPow ( hdL, hdR )
 */
 TypHandle       (*TabComm[T_VAR][T_VAR]) ( TypHandle, TypHandle );
 
-TypHandle       IntComm ( hdCall )
-    TypHandle       hdCall;
+TypHandle IntComm (TypHandle hdCall)
 {
     TypHandle       hdL, hdR;
 
@@ -514,9 +498,7 @@ TypHandle       IntComm ( hdCall )
     return (* TabComm[ TYPE(hdL) ][ TYPE(hdR) ]) ( hdL, hdR );
 }
 
-TypHandle       CantComm ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle CantComm (TypHandle hdL, TypHandle hdR)
 {
     return Error("operations: commutator of %s and %s is not defined",
                  (long)NameType[TYPE(hdL)], (long)NameType[TYPE(hdR)] );
@@ -534,8 +516,7 @@ TypHandle       CantComm ( hdL, hdR )
 **  'LeftQuotient'  returns  the  left  quotient  of  the  two group elements
 **  <expr1> and <expr2>, i.e., '<expr1>^-1 * <expr2>'.
 */
-TypHandle       FunLeftQuotient ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunLeftQuotient (TypHandle hdCall)
 {
     TypHandle       hdL, hdR;
 
@@ -575,8 +556,7 @@ TypHandle       FunLeftQuotient ( hdCall )
 */
 TypHandle       (*TabEq[T_VAR][T_VAR]) ( TypHandle, TypHandle );
 
-TypHandle       Eq ( hd )
-    TypHandle           hd;
+TypHandle Eq (TypHandle hd)
 {
     TypHandle           hdL,  hdR;
 
@@ -621,8 +601,7 @@ TypHandle       Eq ( hd )
 */
 TypHandle       (*TabLt[T_VAR][T_VAR]) ( TypHandle, TypHandle );
 
-TypHandle       Lt ( hd )
-    TypHandle           hd;
+TypHandle Lt (TypHandle hd)
 {
     TypHandle           hdL,  hdR;
 
@@ -651,8 +630,7 @@ TypHandle       Lt ( hd )
 **
 **  'Ne' is simply implemented as 'not <objL> = <objR>'.
 */
-TypHandle       Ne ( hd )
-    TypHandle           hd;
+TypHandle Ne (TypHandle hd)
 {
     TypHandle           hdL,  hdR;
 
@@ -685,8 +663,7 @@ TypHandle       Ne ( hd )
 **
 **  'Le' is simply implemented as 'not <objR> < <objL>'.
 */
-TypHandle       Le ( hd )
-    TypHandle           hd;
+TypHandle Le (TypHandle hd)
 {
     TypHandle           hdL,  hdR;
 
@@ -719,8 +696,7 @@ TypHandle       Le ( hd )
 **
 **  'Gt' is simply implemented as '<objR> < <objL>'.
 */
-TypHandle       Gt ( hd )
-    TypHandle           hd;
+TypHandle Gt (TypHandle hd)
 {
     TypHandle    hdL,  hdR;
 
@@ -750,8 +726,7 @@ TypHandle       Gt ( hd )
 **
 **  'Ge' is simply implemented as 'not <objL> < <objR>'.
 */
-TypHandle       Ge ( hd )
-    TypHandle           hd;
+TypHandle Ge (TypHandle hd)
 {
     TypHandle           hdL,  hdR;
 
@@ -784,8 +759,7 @@ TypHandle       Ge ( hd )
 **  'TabLt' table.
 */
 /*ARGSUSED*/
-TypHandle       IsTrue ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle IsTrue (TypHandle hdL, TypHandle hdR)
 {
     return HdTrue;
 }
@@ -801,8 +775,7 @@ TypHandle       IsTrue ( hdL, hdR )
 **  'TabLt' table.
 */
 /*ARGSUSED*/
-TypHandle       IsFalse ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle IsFalse (TypHandle hdL, TypHandle hdR)
 {
     return HdFalse;
 }
@@ -817,8 +790,7 @@ TypHandle       IsFalse ( hdL, hdR )
 **  The value is the only subobject <hdVar>.  If this has the handle '0' then
 **  no value has been assigned to the variable and  an  error  is  generated.
 */
-TypHandle       EvVar ( hdVar )
-    TypHandle           hdVar;
+TypHandle EvVar (TypHandle hdVar)
 {
     if ( PTR(hdVar)[0] == 0 )
         return Error("Variable: '%s' must have a value",
@@ -831,8 +803,7 @@ TypHandle       EvVar ( hdVar )
 **
 *F  EvVarAuto( <hdVar> )  . . . . . . . . . . . . . eval an autoread variable
 */
-TypHandle       EvVarAuto ( hdVar )
-    TypHandle           hdVar;
+TypHandle EvVarAuto (TypHandle hdVar)
 {
     /* evaluate the value cell, unless it is already a constant            */
     if ( T_VAR <= TYPE( PTR(hdVar)[0] ) ) {
@@ -860,8 +831,7 @@ TypHandle       EvVarAuto ( hdVar )
 **
 **  'EvVarAss' is called from 'EVAL' for bags of type 'T_VARASS'.
 */
-TypHandle       EvVarAss ( hdAss )
-    TypHandle           hdAss;
+TypHandle EvVarAss (TypHandle hdAss)
 {
     TypHandle           hdVal;
 
@@ -880,8 +850,7 @@ TypHandle       EvVarAss ( hdAss )
 **  'EvBool' returns the value of the boolean value <hdBool>.  Since  boolean
 **  values are constants and thus selfevaluating it just returns <hdBool>.
 */
-TypHandle       EvBool ( hdBool )
-    TypHandle           hdBool;
+TypHandle EvBool (TypHandle hdBool)
 {
     return hdBool;
 }
@@ -894,8 +863,7 @@ TypHandle       EvBool ( hdBool )
 **  'EvNot' returns the boolean negation of the boolean value <hdBool>, i.e.,
 **  it returns 'HdTrue' if <hdBool> is 'HdFalse' and vica versa.
 */
-TypHandle       EvNot ( hdBool )
-    TypHandle           hdBool;
+TypHandle EvNot (TypHandle hdBool)
 {
     /* evaluate the operand                                                */
     hdBool = EVAL( PTR(hdBool)[0] );
@@ -922,8 +890,7 @@ TypHandle       EvNot ( hdBool )
 **
 **      if index <= max  and list[index] = 0  then ... fi;
 */
-TypHandle       EvAnd ( hd )
-    TypHandle           hd;
+TypHandle EvAnd (TypHandle hd)
 {
     TypHandle           hd1;
 
@@ -957,8 +924,7 @@ TypHandle       EvAnd ( hd )
 **
 **      if index > max  or list[index] = 0  then ... fi;
 */
-TypHandle       EvOr ( hd )
-    TypHandle           hd;
+TypHandle EvOr (TypHandle hd)
 {
     TypHandle           hd1;
 
@@ -987,8 +953,7 @@ TypHandle       EvOr ( hd )
 **  'EqBool' returns 'HdTrue' if the  two  boolean  values  <hdL>  and  <hdR>
 **  are equal, and 'HdFalse' otherwise.
 */
-TypHandle       EqBool ( hdL, hdR )
-    TypHandle           hdL,  hdR;
+TypHandle EqBool (TypHandle hdL, TypHandle hdR)
 {
     if ( hdL == hdR )  return HdTrue;
     else               return HdFalse;
@@ -1002,8 +967,7 @@ TypHandle       EqBool ( hdL, hdR )
 **  'LtBool' return 'HdTrue' if  the  boolean value <hdL> is  less  than  the
 **  boolean value <hdR> and 'HdFalse' otherwise.
 */
-TypHandle       LtBool ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle LtBool (TypHandle hdL, TypHandle hdR)
 {
     if ( hdL == HdTrue && hdR == HdFalse )  return HdTrue;
     else                                    return HdFalse;
@@ -1016,8 +980,7 @@ TypHandle       LtBool ( hdL, hdR )
 **
 **  'PrBool' prints the boolean value <hdBool>.
 */
-void            PrBool ( hd )
-    TypHandle           hd;
+void PrBool (TypHandle hd)
 {
     if ( hd == HdTrue )  Pr("true",0L,0L);
     else                 Pr("false",0L,0L);
@@ -1031,8 +994,7 @@ void            PrBool ( hd )
 **  'IsBool' returns 'true' if the object <obj>  is  a  boolean  and  'false'
 **  otherwise.  May cause an error if <obj> is an unbound variable.
 */
-TypHandle       FunIsBool ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsBool (TypHandle hdCall)
 {
     TypHandle           hdObj;
 
@@ -1064,8 +1026,7 @@ TypHandle       FunIsBool ( hdCall )
 **  record 'ShallowCopy' makes a copy of this object,  but does not copy  the
 **  subobjects.
 */
-TypHandle       FunShallowCopy ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunShallowCopy (TypHandle hdCall)
 {
     TypHandle           hdOld;          /* handle of the old object        */
     TypHandle           * ptOld;        /* pointer to the old object       */
@@ -1109,8 +1070,7 @@ TypHandle       FunShallowCopy ( hdCall )
 **  'Copy' makes a copy of this object,  and calls itself recursively to copy
 **  the subobjects.
 */
-TypHandle       CopyShadow ( hdOld )
-    TypHandle           hdOld;
+TypHandle CopyShadow (TypHandle hdOld)
 {
     TypHandle           hdNew;          /* shadow of <hdOld>               */
     TypHandle           hdTmp;          /* shadow of element of <hdOld>    */
@@ -1137,9 +1097,10 @@ TypHandle       CopyShadow ( hdOld )
     return hdNew;
 }
 
-void            CopyForward ( hdOld, hdNew )
-    TypHandle           hdOld;          /* old bag                         */
-    TypHandle           hdNew;          /* shadow of <hdOld>               */
+void CopyForward (
+    TypHandle hdOld,          /* old bag                         */
+    TypHandle hdNew          /* shadow of <hdOld>               */
+)
 {
     unsigned long       n;              /* number of handles of <hdOld>    */
     unsigned long       i;              /* loop variable                   */
@@ -1156,9 +1117,10 @@ void            CopyForward ( hdOld, hdNew )
 
 }
 
-void            CopyCopy ( hdOld, hdNew )
-    TypHandle           hdOld;          /* old bag                         */
-    TypHandle           hdNew;          /* shadow of <hdOld>               */
+void CopyCopy (
+    TypHandle hdOld,          /* old bag                         */
+    TypHandle hdNew          /* shadow of <hdOld>               */
+)
 {
     unsigned long       n;              /* number of handles of <hdOld>    */
     unsigned long       i;              /* loop variable                   */
@@ -1181,8 +1143,7 @@ void            CopyCopy ( hdOld, hdNew )
 
 }
 
-void            CopyCleanup ( hdOld )
-    TypHandle           hdOld;
+void CopyCleanup (TypHandle hdOld)
 {
     unsigned long       n;              /* number of handles of <hdOld>    */
     unsigned long       i;              /* loop variable                   */
@@ -1203,8 +1164,7 @@ void            CopyCleanup ( hdOld )
 
 }
 
-TypHandle       Copy ( hdOld )
-    TypHandle           hdOld;
+TypHandle Copy (TypHandle hdOld)
 {
     TypHandle           hdNew;          /* copy of <hdOld>                 */
 
@@ -1241,8 +1201,7 @@ TypHandle       Copy ( hdOld )
 **  'Copy' makes a copy of this object,  and calls itself recursively to copy
 **  the subobjects.
 */
-TypHandle       FunCopy ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCopy (TypHandle hdCall)
 {
     /* check the argument                                                  */
     if ( SIZE(hdCall) != 2 * SIZE_HD )
@@ -1260,8 +1219,7 @@ TypHandle       FunCopy ( hdCall )
 **  'FunIsBound' implements the internal function 'IsBound( <expr> )'.
 **
 */
-TypHandle       FunIsBound ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsBound (TypHandle hdCall)
 {
     TypHandle           hd, hdList, hdInd, hdRec, hdNam, Result;
     unsigned long       i;              /* loop variable                   */
@@ -1344,8 +1302,7 @@ TypHandle       FunIsBound ( hdCall )
 **
 **  'FunUnbind' implements the internal function 'Unbind( <expr> )'.
 */
-TypHandle       FunUnbind ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunUnbind (TypHandle hdCall)
 {
     TypHandle           hd, hdList, hdInd, hdRec, hdNam;
     unsigned long       i;              /* loop variable                   */
@@ -1451,8 +1408,7 @@ void            (* PrTab[ T_ILLEGAL ] ) ( TypHandle hd );
 */
 TypHandle       HdTildePr;
 
-void            Print ( hd )
-    TypHandle           hd;
+void Print (TypHandle hd)
 {
     unsigned long       len;            /* hdObj[1..<len>] are a path from */
     TypHandle           hdObj[256];     /* '~' to <hd>, where hdObj[<i>+1] */
@@ -1546,8 +1502,7 @@ void            Print ( hd )
 **  If this is actually ever executed in GAP it  indicates  serious  trouble,
 **  for  example  that  the  type  field  of  a  bag  has  been  overwritten.
 */
-void            CantPrint ( hd )
-    TypHandle           hd;
+void CantPrint (TypHandle hd)
 {
     Error("Panic: can't print bag of type %d",(long)TYPE(hd),0L);
 }
@@ -1560,8 +1515,7 @@ void            CantPrint ( hd )
 **  'PrVar' prints  the variable <hdVar>, or precisly  the identifier of that
 **  variable.
 */
-void            PrVar ( hdVar )
-    TypHandle           hdVar;
+void PrVar (TypHandle hdVar)
 {
     char *              name;
 
@@ -1600,8 +1554,7 @@ void            PrVar ( hdVar )
 **
 **  Linebreaks are preffered before the ':='.
 */
-void            PrVarAss ( hdAss )
-    TypHandle           hdAss;
+void PrVarAss (TypHandle hdAss)
 {
     Pr("%2>",0L,0L);
     Print(PTR(hdAss)[0]);
@@ -1633,8 +1586,7 @@ long            prPrec;
 **
 **  'PrNot' print a not operation in the following form: 'not <expr>'.
 */
-void            PrNot ( hdNot )
-    TypHandle           hdNot;
+void PrNot (TypHandle hdNot)
 {
     long                oldPrec;
 
@@ -1650,8 +1602,7 @@ void            PrNot ( hdNot )
 **
 **  This prints any of the binary operator using  prPrec  for parenthesising.
 */
-void            PrBinop ( hdOp )
-    TypHandle           hdOp;
+void PrBinop (TypHandle hdOp)
 {
     long                oldPrec;
     char                * op;
@@ -1704,8 +1655,7 @@ void            PrBinop ( hdOp )
 **
 **  This prints a commutator.
 */
-void            PrComm ( hd )
-    TypHandle           hd;
+void PrComm (TypHandle hd)
 {
     Pr("%>Comm(%> ",0L,0L);
     Print(PTR(hd)[0]);
@@ -1800,7 +1750,7 @@ void InstIntFunc (char name [], TypHandle(* func) (TypHandle hd))
 **
 **  This is called relative lately during the initialization from  InitGap().
 */
-void            InitEval ()
+void InitEval (void)
 {
     unsigned int        type,  typeL,  typeR;
 

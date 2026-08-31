@@ -69,8 +69,7 @@
 **  Returns 'true' if the two agwords <hdL> and <hdR> are  equal.  Is  called
 **  from the evaluator, so both operands are already evaluated.
 */
-TypHandle       EqAg( hdL, hdR )
-    TypHandle       hdL, hdR;
+TypHandle EqAg (TypHandle hdL, TypHandle hdR)
 {
     TypSword        * ptL, * ptR;
 
@@ -110,8 +109,7 @@ TypHandle       EqAg( hdL, hdR )
 **  If the agwords are from different groups, the number of group  generators
 **  and the group handles are compared.
 */
-TypHandle       LtAg( hdL, hdR )
-    TypHandle       hdL, hdR;
+TypHandle LtAg (TypHandle hdL, TypHandle hdR)
 {
     TypSword        * ptL, * ptR;
     long            i, lenR, lenL;
@@ -173,8 +171,7 @@ TypHandle       LtAg( hdL, hdR )
 **
 **  As with other constants evaluating normed words simply returns.
 */
-TypHandle       EvAg( hdWrd )
-    TypHandle       hdWrd;
+TypHandle EvAg (TypHandle hdWrd)
 {
     return hdWrd;
 }
@@ -186,8 +183,7 @@ TypHandle       EvAg( hdWrd )
 **
 **  Computes the product of the two (already evaluated) agwords <hdL>, <hdR>.
 */
-TypHandle       ProdAg ( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle ProdAg (TypHandle hdL, TypHandle hdR)
 {
     TypHandle       hd, hdAgGroup;
     long            nrL, nrR, i;
@@ -246,7 +242,7 @@ TypHandle       ProdAg ( hdL, hdR )
 **  integer  <hdR>.  'PowAgI' called from the evaluator, so both operands are
 **  already evaluated.
 */
-TypHandle       PowAgI( hdL, hdR ) TypHandle       hdL,  hdR;
+TypHandle PowAgI (TypHandle hdL, TypHandle hdR)
 {
     long   i,  exp, pow, nr;
     TypHandle       hd, hdGrp, hd1;
@@ -334,8 +330,7 @@ TypHandle       PowAgI( hdL, hdR ) TypHandle       hdL,  hdR;
 **  'QuoAg' computes the  quotient <hdL> / <hdR>, that is <hdL> * <hdR> ^ -1.
 **  It is called from the evulator, so both operands are already evaluated.
 */
-TypHandle       QuoAg( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle QuoAg (TypHandle hdL, TypHandle hdR)
 {
     return ProdAg( hdL, PowAgI( hdR, INT_TO_HD( -1 ) ) );
 }
@@ -348,8 +343,7 @@ TypHandle       QuoAg( hdL, hdR )
 **  'ModAg' expects  two  agwords a and b,  solves the equation a * x = b and
 **  returns the agword x.
 */
-TypHandle       ModAg( hdL, hdR )
-    TypHandle       hdL, hdR;
+TypHandle ModAg (TypHandle hdL, TypHandle hdR)
 {
     if ( *PTR( hdR ) != *PTR( hdL ) )
         return Error( "AgWord op: agwords have different groups", 0L, 0L );
@@ -367,8 +361,8 @@ TypHandle       ModAg( hdL, hdR )
 **  Computes the conjugation <hdL>^<hdR>, that is <hdR> ^ -1 * <hdL> * <hdR>.
 **  Is called from the evulator, so both operands are already evaluated.
 */
-TypHandle       PowAgAg( hdL, hdR )
-    TypHandle       hdL,  hdR;
+TypHandle 
+PowAgAg (TypHandle hdL, TypHandle hdR)
 {
     if ( *PTR( hdL ) != *PTR( hdR ) )
         return Error( "AgWord op: agwords have different groups", 0L, 0L );
@@ -390,8 +384,7 @@ TypHandle       PowAgAg( hdL, hdR )
 **  If <USE_COMMS> one generator commutator will be evaluated using the entry
 **  'COMMUTATORS' in the group record.
 */
-TypHandle       CommAg( hdL, hdR )
-    TypHandle           hdL,  hdR;
+TypHandle CommAg (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdC;
 #   if USE_COMMS
@@ -493,8 +486,7 @@ TypHandle       CommAg( hdL, hdR )
     TypHandle       TPowAgAg ( TypHandle, TypHandle );
     TypHandle       TCommAg ( TypHandle, TypHandle );
 
-    TypHandle       TEqAg( hdL, hdR )
-        TypHandle       hdL, hdR;
+    TypHandle TEqAg (TypHandle hdL, TypHandle hdR)
    {
         unsigned long   i, time;
         TypHandle       hd = 0;
@@ -507,8 +499,7 @@ TypHandle       CommAg( hdL, hdR )
         return hd;
     }
 
-    TypHandle       TLtAg( hdL, hdR )
-        TypHandle       hdL, hdR;
+    TypHandle TLtAg (TypHandle hdL, TypHandle hdR)
     {
         unsigned long   i, time;
         TypHandle       hd = 0;
@@ -521,8 +512,7 @@ TypHandle       CommAg( hdL, hdR )
         return hd;
     }
 
-    TypHandle       TProdAg( hdL, hdR )
-        TypHandle       hdL, hdR;
+    TypHandle TProdAg (TypHandle hdL, TypHandle hdR)
     {
         unsigned long   i, time;
         TypHandle       hd = 0;
@@ -535,8 +525,7 @@ TypHandle       CommAg( hdL, hdR )
         return hd;
     }
 
-    TypHandle       TQuoAg( hdL, hdR )
-        TypHandle       hdL, hdR;
+    TypHandle TQuoAg (TypHandle hdL, TypHandle hdR)
     {
         unsigned long   i, time;
         TypHandle       hd = 0;
@@ -549,8 +538,7 @@ TypHandle       CommAg( hdL, hdR )
         return hd;
     }
 
-    TypHandle       TModAg( hdL, hdR )
-        TypHandle       hdL, hdR;
+    TypHandle TModAg (TypHandle hdL, TypHandle hdR)
     {
         unsigned long   i, time;
         TypHandle       hd = 0;
@@ -563,8 +551,7 @@ TypHandle       CommAg( hdL, hdR )
         return hd;
     }
 
-    TypHandle       TPowAgI( hdL, hdR )
-        TypHandle       hdL, hdR;
+    TypHandle TPowAgI (TypHandle hdL, TypHandle hdR)
     {
         unsigned long   i, time;
         TypHandle       hd = 0;
@@ -577,8 +564,7 @@ TypHandle       CommAg( hdL, hdR )
         return hd;
     }
 
-    TypHandle       TPowAgAg( hdL, hdR )
-        TypHandle       hdL, hdR;
+    TypHandle TPowAgAg (TypHandle hdL, TypHandle hdR)
     {
         unsigned long   i, time;
         TypHandle       hd = 0;
@@ -591,8 +577,7 @@ TypHandle       CommAg( hdL, hdR )
         return hd;
     }
 
-    TypHandle       TCommAg( hdL, hdR )
-        TypHandle       hdL, hdR;
+    TypHandle TCommAg (TypHandle hdL, TypHandle hdR)
     {
         unsigned long   i, time;
         TypHandle       hd = 0;
@@ -619,8 +604,7 @@ TypHandle       CommAg( hdL, hdR )
 */
 #if PRINT_AG | GROUP_REC
 
-    TypHandle       FunDUMPLONG( hdCall )
-        TypHandle       hdCall;
+    TypHandle FunDUMPLONG (TypHandle hdCall)
     {
         long            i, * ptr;
         TypHandle       hdObj;
@@ -647,8 +631,7 @@ TypHandle       CommAg( hdL, hdR )
 **
 *F  GapAgGroup( <aggroup> ) . . . . . . . . . . . . . . . . GAP level aggroup
 */
-TypHandle           GapAgGroup ( hdGrp )
-    TypHandle           hdGrp;
+TypHandle GapAgGroup (TypHandle hdGrp)
 {
     TypHandle           hdRec, hdRn, hdList;
 
@@ -678,8 +661,7 @@ TypHandle           GapAgGroup ( hdGrp )
 **  It allocates  and  initializes  the  internal  group-record  and  returns
 **  "rec( generators = [a_1, ..., a_n] )", where a_i are the ag-generators.
 */
-TypHandle       FunAgFpGroup ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunAgFpGroup (TypHandle hdCall)
 {
     TypHandle       hdRec,    hdGrp,    hdLst,    hdRn,  hdGns,  hdTmp;
     TypHandle       * ptRec,  * ptEnd,  * ptLst,  * ptGns;
@@ -778,8 +760,7 @@ TypHandle       FunAgFpGroup ( hdCall )
 **  routine  'InitQuadruple'  computes  the  quadruple  g_i^r ^ g_j^s.  These
 **  routines change the collector-entries of the group record of <g>.
 */
-TypHandle       FunSetCollectorAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunSetCollectorAgWord (TypHandle hdCall)
 {
     TypHandle       hdWrd, hdStr;
     long            i;
@@ -829,8 +810,7 @@ TypHandle       FunSetCollectorAgWord ( hdCall )
 **  is this operation forms a  homomorphism,  but an error  is  raised if the
 **  indices of the generators of the groups <l> and <r> are not equal.
 */
-TypHandle       FunFactorAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunFactorAgWord (TypHandle hdCall)
 {
     TypHandle       hdL, hdR;
     TypHandle       hdGrpL, hdGrpR, hdWrd;
@@ -881,9 +861,7 @@ TypHandle       FunFactorAgWord ( hdCall )
 **
 **  Copy all information of the old group and initialize the same collector.
 */
-TypHandle       FactorAgGroup ( hdGrp, new )
-    TypHandle       hdGrp;
-    long            new;
+TypHandle FactorAgGroup (TypHandle hdGrp, long new)
 {
     TypHandle       hdFac,  hdLst,  hdTmp,  hdOld,  hdNew;
     long            i,  j,  old;
@@ -1007,8 +985,7 @@ TypHandle       FactorAgGroup ( hdGrp, new )
     return GapAgGroup( hdFac );
 }
 
-TypHandle   FunFactorAgGroup ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunFactorAgGroup (TypHandle hdCall)
 {
     TypHandle       hdWrd, hdGrp, hdInt;
     long            new;
@@ -1044,8 +1021,7 @@ TypHandle   FunFactorAgGroup ( hdCall )
 */
 #if GROUP_REC
 
-    TypHandle       FunAgGroupRecord ( hdCall )
-        TypHandle       hdCall;
+    TypHandle FunAgGroupRecord (TypHandle hdCall)
     {
         TypHandle       hdWrd;
 
@@ -1088,10 +1064,7 @@ TypHandle   FunFactorAgGroup ( hdCall )
 */
 TypHandle       HdRnSumAgWord,  HdCallSumAgWord;
 
-TypHandle       SumAgWord ( hdP, hdV, hdW )
-    TypHandle       hdP;
-    TypHandle       hdV;
-    TypHandle       hdW;
+TypHandle SumAgWord (TypHandle hdP, TypHandle hdV, TypHandle hdW)
 {
     TypHandle       hdSum = 0;
     TypSword        * ptSum,  * ptV,  * ptW;
@@ -1212,8 +1185,7 @@ TypHandle       SumAgWord ( hdP, hdV, hdW )
     return hdSum;
 }
 
-TypHandle       FunSumAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunSumAgWord (TypHandle hdCall)
 {
     TypHandle       hdV,  hdW;
     char            * usage = "usage: SumAgWord( <v>, <w> )";
@@ -1254,10 +1226,7 @@ TypHandle       FunSumAgWord ( hdCall )
 */
 TypHandle       HdRnDifferenceAgWord;
 
-TypHandle       DifferenceAgWord ( hdP, hdV, hdW )
-    TypHandle       hdP;
-    TypHandle       hdV;
-    TypHandle       hdW;
+TypHandle DifferenceAgWord (TypHandle hdP, TypHandle hdV, TypHandle hdW)
 {
     TypHandle       hdDiff = 0;
     TypSword        * ptDiff, * ptV, * ptW;
@@ -1379,8 +1348,7 @@ TypHandle       DifferenceAgWord ( hdP, hdV, hdW )
     return hdDiff;
 }
 
-TypHandle       FunDifferenceAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunDifferenceAgWord (TypHandle hdCall)
 {
     TypHandle       hdV,  hdW;
     char            * usage = "usage: DifferenceAgWord( <v>, <w> )";
@@ -1426,8 +1394,7 @@ TypHandle       FunDifferenceAgWord ( hdCall )
 */
 TypHandle       HdRnDepth;
 
-TypHandle       FunDepthAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunDepthAgWord (TypHandle hdCall)
 {
     TypHandle       hdWrd;
     char            * usage = "usage: DepthAgWord( <g> )";
@@ -1475,8 +1442,7 @@ TypHandle       FunDepthAgWord ( hdCall )
 */
 TypHandle       HdRnTailDepth;
 
-TypHandle       FunTailDepthAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunTailDepthAgWord (TypHandle hdCall)
 {
     TypHandle       hdWrd;
     TypSword        * ptWrd;
@@ -1528,8 +1494,7 @@ TypHandle       FunTailDepthAgWord ( hdCall )
 */
 TypHandle       HdRnCentralWeight;
 
-TypHandle       FunCentralWeightAgWord( hdCall )
-    TypHandle       hdCall;
+TypHandle FunCentralWeightAgWord (TypHandle hdCall)
 {
     TypHandle       hdWrd, hdGrp;
 
@@ -1594,8 +1559,7 @@ TypHandle       FunCentralWeightAgWord( hdCall )
 */
 TypHandle       HdRnLeadingExponent;
 
-TypHandle       FunLeadingExponentAgWord( hdCall )
-    TypHandle       hdCall;
+TypHandle FunLeadingExponentAgWord (TypHandle hdCall)
 {
     TypHandle       hdWrd;
 
@@ -1640,8 +1604,7 @@ TypHandle       FunLeadingExponentAgWord( hdCall )
 */
 TypHandle       HdRnReducedAgWord;
 
-TypHandle       FunReducedAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunReducedAgWord (TypHandle hdCall)
 {
     TypHandle       hdL, hdR;
     TypHandle       hdGrp;
@@ -1771,8 +1734,7 @@ TypHandle       FunReducedAgWord ( hdCall )
 */
 TypHandle       HdRnNormalizeIgs;
  
-TypHandle       FunNormalizeIgs ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunNormalizeIgs (TypHandle hdCall)
 {
     TypHandle       hdIgs, hdTmp, hdOne, hdPos, hdWrd, hdGrp, hdOrd, hdIdx;
     TypHandle       hdExp;
@@ -1885,8 +1847,7 @@ TypHandle       FunNormalizeIgs ( hdCall )
 */
 TypHandle       HdRnRelativeOrder;
 
-TypHandle       FunRelativeOrderAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunRelativeOrderAgWord (TypHandle hdCall)
 {
     TypHandle       hdWrd;
 
@@ -1942,8 +1903,7 @@ TypHandle       FunRelativeOrderAgWord ( hdCall )
 */
 TypHandle       HdRnExponentAgWord;
 
-TypHandle       FunExponentAgWord( hdCall )
-    TypHandle       hdCall;
+TypHandle FunExponentAgWord (TypHandle hdCall)
 {
     TypHandle       hdWrd, hdI;
     TypSword        * pt, * ptEnd;
@@ -2021,10 +1981,7 @@ TypHandle       FunExponentAgWord( hdCall )
 */
 TypHandle       HdRnExponentsAgWord;
 
-TypHandle       IntExponentsAgWord ( hdWrd, s, e )
-    TypHandle       hdWrd;
-    long            s;
-    long            e;
+TypHandle IntExponentsAgWord (TypHandle hdWrd, long s, long e)
 {
     TypHandle       hdLst;
     TypHandle       * ptLst;
@@ -2055,11 +2012,7 @@ TypHandle       IntExponentsAgWord ( hdWrd, s, e )
     return hdLst;
 }
 
-TypHandle       FFExponentsAgWord ( hdWrd, s, e, hdZ )
-    TypHandle       hdWrd;
-    long            s;
-    long            e;
-    TypHandle       hdZ;
+TypHandle FFExponentsAgWord (TypHandle hdWrd, long s, long e, TypHandle hdZ)
 {
     TypHandle       hdLst;
     TypSword        * ptWrd,  * ptEnd;
@@ -2099,8 +2052,7 @@ TypHandle       FFExponentsAgWord ( hdWrd, s, e, hdZ )
     return hdLst;
 }
 
-TypHandle       FunExponentsAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunExponentsAgWord (TypHandle hdCall)
 {
     TypHandle       hdWrd,  hdGrp,  hdS,  hdE,  hdZ;
     long            s,  e;
@@ -2189,8 +2141,7 @@ TypHandle       FunExponentsAgWord ( hdCall )
 */
 TypHandle       HdRnInformationAgWord;
 
-TypHandle       FunInformationAgWord( hdCall )
-    TypHandle       hdCall;
+TypHandle FunInformationAgWord (TypHandle hdCall)
 {
     TypHandle       hdGrp, hdWrd;
     TypHandle       hdRec, hdTmp;
@@ -2312,8 +2263,7 @@ TypHandle       FunInformationAgWord( hdCall )
 */
 TypHandle       HdRnIsAgWord;
 
-TypHandle       FunIsAgWord( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsAgWord (TypHandle hdCall)
 {
     TypHandle           hdObj, hdTmp;
     TypHandle           * ptRec, * ptEnd;
@@ -2373,8 +2323,7 @@ l1:
 */
 TypHandle       HdRnIsCompatibleAgWord;
 
-TypHandle       FunIsCompatibleAgWord ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunIsCompatibleAgWord (TypHandle hdCall)
 {
     TypHandle       hdA, hdB;
 
@@ -2419,8 +2368,7 @@ TypHandle       FunIsCompatibleAgWord ( hdCall )
 */
 #if AG_PROFILE
 
-   TypHandle       FunAgProfile ( hdCall )
-       TypHandle       hdCall;
+   TypHandle FunAgProfile (TypHandle hdCall)
    {
        TypHandle       hdInt;
 
@@ -2573,8 +2521,7 @@ TypHandle       HdCPS,  HdCPL,  HdCPC;
 boolean         CPP = FALSE;
 long            CPN = 1;
 
-TypHandle       FunCollectorProfile ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCollectorProfile (TypHandle hdCall)
 {
     TypHandle           hdA = 0;
     long                i,  j;
@@ -2682,8 +2629,7 @@ TypHandle       FunCollectorProfile ( hdCall )
 #if ! PRINT_AG
 
     /** Print T_AGWORD in generator-exponent-form. *************************/
-    void        PrAgWord ( hdAgWord )
-        TypHandle       hdAgWord;
+    void PrAgWord (TypHandle hdAgWord)
     {
         TypSword        * pt, * ptEnd;
         TypHandle       hdAgGroup;
@@ -2712,8 +2658,8 @@ TypHandle       FunCollectorProfile ( hdCall )
 #else
 
     /** Print T_AGWORD in tuple form. **************************************/
-    void    PrAgWord( hdAgWord )
-        TypHandle       hdAgWord;
+    void 
+PrAgWord (TypHandle hdAgWord)
     {
         TypSword        * pt, * ptEnd;
 
@@ -2745,8 +2691,7 @@ TypHandle       FunCollectorProfile ( hdCall )
 */
 #if PRINT_AG | GROUP_REC
 
-    void        PrAgExp( hdAgExp )
-        TypHandle       hdAgExp;
+    void PrAgExp (TypHandle hdAgExp)
     {
         TypExp          * pt, * ptEnd;
 
@@ -2781,8 +2726,7 @@ TypHandle       FunCollectorProfile ( hdCall )
 */
 #if PRINT_AG | GROUP_REC
 
-    void        PrAgList( hdAgList )
-        TypHandle       hdAgList;
+    void PrAgList (TypHandle hdAgList)
     {
         TypSword        * pt, * ptEnd;
         int             toggle;
@@ -2824,8 +2768,7 @@ TypHandle       FunCollectorProfile ( hdCall )
 */
 #if PRINT_AG | GROUP_REC
 
-    void    PrAgen( hdAgen )
-        TypHandle       hdAgen;
+    void PrAgen (TypHandle hdAgen)
     {
         Pr( "%s", (long)( PTR( hdAgen ) + 1 ), 0L );
     }
@@ -2847,7 +2790,7 @@ TypHandle       FunCollectorProfile ( hdCall )
 */
 extern TypHandle    HdCallOop1, HdCallOop2;
 
-void        InitAg()
+void InitAg (void)
 {
     HdCallOop1 = NewBag( T_FUNCCALL, 2 * SIZE_HD );
     HdCallOop2 = NewBag( T_FUNCCALL, 3 * SIZE_HD );

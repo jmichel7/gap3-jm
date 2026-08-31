@@ -155,8 +155,7 @@
 **  'Pcp' initializes a presentation of an elementary abelian <p>-group with
 **  <n>-generators and collector <collector>.
 */
-TypHandle       FunPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunPcp (TypHandle hdCall)
 {
     TypHandle       hdLst,  hdGrp,  hdN,  hdP,  hdStr,  hdCol,  hdSwrds;
     long            p,  n,  i;
@@ -262,8 +261,7 @@ TypHandle       FunPcp ( hdCall )
 **
 *F  FunAgPcp( <P> ) . . . . . . . . . . . . . . . . . . . .  internal 'AgPcp'
 */
-TypHandle       FunAgPcp ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunAgPcp (TypHandle hdCall)
 {
     TypHandle           hdP, hdTmp;
     extern TypHandle    GapAgGroup ( TypHandle );
@@ -292,8 +290,7 @@ TypHandle       FunAgPcp ( hdCall )
 **  'GeneratorsPcp'  returns  the list of generators of <P>.  Note that we do
 **  return a copy of that list.
 */
-TypHandle       FunGeneratorsPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunGeneratorsPcp (TypHandle hdCall)
 {
     TypHandle       hdP;
     char            * usage = "usage: GeneratorsPcp( <P> )";
@@ -319,8 +316,7 @@ TypHandle       FunGeneratorsPcp ( hdCall )
 **  Extend the presentation <P> central by the given generators <L> which are
 **  of order <p>.
 */
-TypHandle       FunExtendCentralPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunExtendCentralPcp (TypHandle hdCall)
 {
     TypHandle       * ptL,  hdL,  hdP,  hdN,  hdA,  hdI,  hdTmp;
     long            i,  j,  old,  new,  len,  p;
@@ -445,8 +441,7 @@ TypHandle       FunExtendCentralPcp ( hdCall )
 **
 **  'FunCentralWeightsPcp' implements 'CentralWeightsPcp( <P> )'
 */
-TypHandle       FunCentralWeightsPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunCentralWeightsPcp (TypHandle hdCall)
 {
     TypHandle       hdVec,  hdP;
     TypHandle       * ptVec;
@@ -492,8 +487,7 @@ TypHandle       FunCentralWeightsPcp ( hdCall )
 **
 **  'Fun...' implements 'DefineCentralWeightsPcp( <P>, <W> )'
 */
-TypHandle       FunDefineCentralWeightsPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunDefineCentralWeightsPcp (TypHandle hdCall)
 {
     TypHandle       hdVec,  hdP;
     TypHandle       * ptVec;
@@ -554,8 +548,7 @@ TypHandle       FunDefineCentralWeightsPcp ( hdCall )
 **
 **  'FunDefineCommPcp' implements 'DefineCommPcp( <P>, <i>, <j>, <w> )'
 */
-TypHandle       FunDefineCommPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunDefineCommPcp (TypHandle hdCall)
 {
     TypHandle       hdW,  hdP,  hdI,  hdJ;
     long            len,  i,  j,  * ptWgt;
@@ -617,8 +610,7 @@ TypHandle       FunDefineCommPcp ( hdCall )
 **
 **  'FunAddCommPcp' implements 'AddCommPcp( <P>, <i>, <j>, <w> )'
 */
-TypHandle       FunAddCommPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunAddCommPcp (TypHandle hdCall)
 {
     TypHandle       hdW,  hdP,  hdI,  hdJ;
     long            len,  i,  j,  * ptWgt;
@@ -680,8 +672,7 @@ TypHandle       FunAddCommPcp ( hdCall )
 **
 **  'FunSubtractCommPcp' implements 'SubtractCommPcp( <P>, <i>, <j>, <w> )'
 */
-TypHandle       FunSubtractCommPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunSubtractCommPcp (TypHandle hdCall)
 {
     TypHandle       hdW,  hdP,  hdI,  hdJ;
     long            len,  i,  j,  * ptWgt;
@@ -743,8 +734,7 @@ TypHandle       FunSubtractCommPcp ( hdCall )
 **
 **  'FunDefinePowerPcp' implements 'DefinePowerPcp( <P>, <i>, <w> )'
 */
-TypHandle       FunDefinePowerPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunDefinePowerPcp (TypHandle hdCall)
 {
     TypHandle       hdW,  hdP,  hdI;
     long            len,  i,  * ptWgt;
@@ -801,8 +791,7 @@ TypHandle       FunDefinePowerPcp ( hdCall )
 **
 **  'FunAddPowerPcp' implements 'AddPowerPcp( <P>, <i>, <w> )'
 */
-TypHandle       FunAddPowerPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunAddPowerPcp (TypHandle hdCall)
 {
     TypHandle       hdW,  hdP,  hdI;
     long            len,  i,  * ptWgt;
@@ -859,8 +848,7 @@ TypHandle       FunAddPowerPcp ( hdCall )
 **
 **  'FunSubtractPowerPcp' implements 'SubtractPowerPcp( <P>, <i>, <w> )'
 */
-TypHandle       FunSubtractPowerPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunSubtractPowerPcp (TypHandle hdCall)
 {
     TypHandle       hdW,  hdP,  hdI;
     long            len,  i,  * ptWgt;
@@ -915,10 +903,7 @@ TypHandle       FunSubtractPowerPcp ( hdCall )
 **
 *F  ShrinkSwords( <hdP>, <hdList>, <hdMap> )  . . . . . . . . . . . . . local
 */
-void            ShrinkSwords( hdP, hdL, hdM )
-    TypHandle       hdP;
-    TypHandle       hdL;
-    TypHandle       hdM;
+void ShrinkSwords (TypHandle hdP, TypHandle hdL, TypHandle hdM)
 {
     TypHandle       hdG,  hdT;
     TypSword        * ptG,  * ptH;
@@ -977,8 +962,7 @@ void            ShrinkSwords( hdP, hdL, hdM )
 **  change every existing sword with this presentation,  we  must remove this
 **  presentation from every sword.
 */
-TypHandle       FunShrinkPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunShrinkPcp (TypHandle hdCall)
 {
     TypHandle       hdP,  hdC,  hdL,  hdT,  hdG;
     TypHandle       * ptT,  * ptG,  * ptC;
@@ -1166,8 +1150,7 @@ TypHandle       FunShrinkPcp ( hdCall )
 **  'TriangleIndex'  exports the macro  'IND' used to address a commuator  in
 **  the aggroup record field <COMMUTATOR>.
 */
-TypHandle       FunTriangleIndex( hdCall )
-    TypHandle       hdCall;
+TypHandle FunTriangleIndex (TypHandle hdCall)
 {
     TypHandle       hdI, hdJ;
     long            i,   j;
@@ -1199,9 +1182,7 @@ TypHandle       FunTriangleIndex( hdCall )
 **
 **  Return either the collected word or 'HdFalse'.
 */
-TypHandle   NormalWordPcp ( hdP, hdG )
-    TypHandle           hdP;
-    TypHandle           hdG;
+TypHandle NormalWordPcp (TypHandle hdP, TypHandle hdG)
 {
     TypHandle           hdQ,  hdR;
     TypHandle           * ptW;
@@ -1250,8 +1231,7 @@ TypHandle   NormalWordPcp ( hdP, hdG )
 **
 **  'FunNormalWordPcp' implements 'NormalWordPcp( <P>, <g> )'
 */
-TypHandle       FunNormalWordPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunNormalWordPcp (TypHandle hdCall)
 {
     TypHandle       hdG,  hdP;
     char            * usage = "NormalWordPcp( <P>, <g> )";
@@ -1281,8 +1261,7 @@ TypHandle       FunNormalWordPcp ( hdCall )
 **  'ProductPcp' returns the product of the two swords <a>  and <b> using the
 **  presentation <P>.
 */
-TypHandle       FunProductPcp ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunProductPcp (TypHandle hdCall)
 {
     TypHandle           hdP,  hdA,  hdB,  hdR;
     long                len,  a,  b;
@@ -1351,8 +1330,7 @@ TypHandle       FunProductPcp ( hdCall )
 **  'LeftQuotientPcp' returns the  left quotient  of the two swords <a>  and
 **  <b> using the presentation <P>.
 */
-TypHandle       FunLeftQuotientPcp ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunLeftQuotientPcp (TypHandle hdCall)
 {
     TypHandle           hdP,  hdA,  hdB,  hdR;
     long                len,  a,  b;
@@ -1421,8 +1399,7 @@ TypHandle       FunLeftQuotientPcp ( hdCall )
 **  'QuotientPcp' returns the quotient of the two swords  <a>  and <b>  using
 **  the presentation <P>.
 */
-TypHandle       FunQuotientPcp ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunQuotientPcp (TypHandle hdCall)
 {
     TypHandle           hdP,  hdA,  hdB,  hdR;
     long                len,  a,  b;
@@ -1494,8 +1471,7 @@ TypHandle       FunQuotientPcp ( hdCall )
 **  Note that if the combinatorial collector is installed,  we  can  use  the
 **  presentation in order to compute the commutator of two generators.
 */
-TypHandle       FunCommPcp ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunCommPcp (TypHandle hdCall)
 {
     TypHandle           hdP,  hdA,  hdB,  hdR;
     long                col,  a,  b,  nrA,  nrB,  len;
@@ -1624,8 +1600,8 @@ TypHandle       FunCommPcp ( hdCall )
 **  Note that if the single collector is installed,  we  use the presentation
 **  in order to compute the conjugate of two generators.
 */
-TypHandle       FunConjugatePcp ( hdCall )
-    TypHandle           hdCall;
+TypHandle 
+FunConjugatePcp (TypHandle hdCall)
 {
     TypHandle           hdP,  hdA,  hdB,  hdR;
     long                col,  a,  b,  nrA,  nrB, len;
@@ -1748,8 +1724,7 @@ TypHandle       FunConjugatePcp ( hdCall )
 **  'PowerPcp' returns the <n>.th power of <g>.  If  <n> is omitted the index
 **  of <g> is assumed.  If <g> is an integer,  the <g>.th generator is taken.
 */
-TypHandle       FunPowerPcp ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunPowerPcp (TypHandle hdCall)
 {
     TypHandle           hdP,  hdG, hdN, hdR;
     long                n;
@@ -1817,9 +1792,7 @@ TypHandle       FunPowerPcp ( hdCall )
 **  it is normed but is represented as  word not  as sword,  a bag containing
 **  the representation as sword is created.
 */
-boolean     IsNormedPcp ( hdP, hdV )
-    TypHandle       hdP;
-    TypHandle       * hdV;
+boolean IsNormedPcp (TypHandle hdP, TypHandle *hdV)
 {
     TypHandle       hdQ;
     TypSword        * ptV,  lst;
@@ -1867,8 +1840,7 @@ boolean     IsNormedPcp ( hdP, hdV )
 **
 **  'FunSumPcp' implements 'SumPcp( <P>, <v>, <w> )'
 */
-TypHandle       FunSumPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunSumPcp (TypHandle hdCall)
 {
     TypHandle       hdP,  hdV,  hdW;
     char            * usage = "usage: SumPcp( <P>, <v>, <w> )";
@@ -1905,8 +1877,7 @@ TypHandle       FunSumPcp ( hdCall )
 **
 **  'FunDifferencePcp' implements 'DifferencePcp( <P>, <v>, <w> )'
 */
-TypHandle       FunDifferencePcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunDifferencePcp (TypHandle hdCall)
 {
     TypHandle       hdP,  hdV,  hdW;
     char            * usage = "usage: DifferencePcp( <P>, <v>, <w> )";
@@ -1941,8 +1912,7 @@ TypHandle       FunDifferencePcp ( hdCall )
 **
 *F  FunExponentPcp( <hdCall> )  . . . . . . . . . . .  internal 'ExponentPcp'
 */
-TypHandle       FunExponentPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunExponentPcp (TypHandle hdCall)
 {
     TypHandle       hdP,  hdG,  hdI;
     TypSword        * ptG,  * ptE;
@@ -1990,8 +1960,7 @@ TypHandle       FunExponentPcp ( hdCall )
 **
 **  'FunExponentsPcp' implements 'ExponentsPcp( <P>, <v> )'
 */
-TypHandle       FunExponentsPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunExponentsPcp (TypHandle hdCall)
 {
     TypHandle       hdP,  hdV;
     char            * usage = "usage: ExponentsPcp( <P>, <v> )";
@@ -2022,8 +1991,7 @@ TypHandle       FunExponentsPcp ( hdCall )
 **
 **  'FunDepthPcp' implements 'DepthPcp( <g> )'
 */
-TypHandle       FunDepthPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunDepthPcp (TypHandle hdCall)
 {
     TypHandle       hdWrd,  hdP;
     char            * usage = "usage: DepthPcp( <P>, <g> )";
@@ -2049,8 +2017,7 @@ TypHandle       FunDepthPcp ( hdCall )
 **
 **  'FunTailDepthPcp' implements 'TailDepthPcp( <g> )'
 */
-TypHandle       FunTailDepthPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunTailDepthPcp (TypHandle hdCall)
 {
     TypHandle       hdWrd,  hdP;
     TypSword        * ptWrd;
@@ -2084,8 +2051,8 @@ TypHandle       FunTailDepthPcp ( hdCall )
 **              'AgWordExponents( <pcpres>, <list>, <start> )'
 **
 */
-TypHandle       FunAgWordExponents ( hdCall )
-    TypHandle       hdCall;
+TypHandle 
+FunAgWordExponents (TypHandle hdCall)
 {
     TypHandle       hdW, hdL, hdP, hdI;
     TypSword        * ptW;
@@ -2161,8 +2128,7 @@ TypHandle       FunAgWordExponents ( hdCall )
 **  'FunBaseReducedPcp' implements 'BaseReducedPcp( <P>, <B>, <v> )'
 **
 */
-TypHandle       FunBaseReducedPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunBaseReducedPcp (TypHandle hdCall)
 {
     TypHandle       hdV,  hdW,  hdL,  hdP;
     TypSword        * ptW,  * ptV;
@@ -2266,8 +2232,7 @@ TypHandle       FunBaseReducedPcp ( hdCall )
 **  'FunTailReducedPcp' implements 'TailReducedPcp( <P>, <B>, <v> )'
 **
 */
-TypHandle       FunTailReducedPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunTailReducedPcp (TypHandle hdCall)
 {
     TypHandle       hdV, hdW, hdL, hdP;
     TypSword        * ptW, * ptV;
@@ -2384,8 +2349,7 @@ TypHandle       FunTailReducedPcp ( hdCall )
 **
 **  This is for debug only !!!
 */
-TypHandle       FunPowersPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunPowersPcp (TypHandle hdCall)
 {
     TypHandle       hdP;
     char            * usage = "usage: PowersPcp( <P> )";
@@ -2414,8 +2378,7 @@ TypHandle       FunPowersPcp ( hdCall )
 **
 **  This is for debug only !!!
 */
-TypHandle       FunCommutatorsPcp ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunCommutatorsPcp (TypHandle hdCall)
 {
     TypHandle       hdP;
     char            * usage = "usage: CommutatorsPcp( <P> )";
@@ -2445,8 +2408,7 @@ TypHandle       FunCommutatorsPcp ( hdCall )
 **
 *N  Can the presentation be printed such that it could be read in again?
 */
-void        PrPcPres( hdP )
-    TypHandle       hdP;
+void PrPcPres (TypHandle hdP)
 {
     Pr( "<Pcp: %d generators, %s collector>",
         (long) NUMBER_OF_GENS( *PTR( hdP ) ),
@@ -2463,7 +2425,7 @@ void        PrPcPres( hdP )
 **
 *F  InitPcPres( void )  . . . . . . . . . initialize polycyclic presentations
 */
-void        InitPcPres ()
+void InitPcPres (void)
 {
     /** Arithmetic functions using a collector *****************************/
     InstIntFunc( "NormalWordPcp",           FunNormalWordPcp            );

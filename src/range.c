@@ -244,8 +244,7 @@
 **
 **  'LenRange' is the function in 'TabLenList' for ranges.
 */
-long            LenRange ( hdList )
-    TypHandle           hdList;
+long LenRange(TypHandle hdList)
 {
     return LEN_RANGE( hdList );
 }
@@ -268,9 +267,7 @@ long            LenRange ( hdList )
 **  the  function in  'TabElmfList',  'TabElmlList',  and  'TabElmrList'  for
 **  ranges.
 */
-TypHandle       ElmRange ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmRange(TypHandle hdList, long pos)
 {
     /* check the position                                                  */
     if ( LEN_RANGE( hdList ) < pos ) {
@@ -283,9 +280,7 @@ TypHandle       ElmRange ( hdList, pos )
     return ELM_RANGE( hdList, pos );
 }
 
-TypHandle       ElmfRange ( hdList, pos )
-    TypHandle           hdList;
-    long                pos;
+TypHandle ElmfRange(TypHandle hdList, long pos)
 {
     return ELM_RANGE( hdList, pos );
 }
@@ -303,9 +298,7 @@ TypHandle       ElmfRange ( hdList, pos )
 **
 **  'ElmsRange' is the function in 'TabElmsList' for ranges.
 */
-TypHandle       ElmsRange ( hdList, hdPoss )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
+TypHandle ElmsRange(TypHandle hdList, TypHandle hdPoss)
 {
     TypHandle           hdElms;         /* selected sublist, result        */
     long                lenList;        /* length of <list>                */
@@ -399,10 +392,7 @@ TypHandle       ElmsRange ( hdList, hdPoss )
 **  same stuff as 'AssPlist'.   This is because a range is not very likely to
 **  stay a range after the assignment.
 */
-TypHandle       AssRange ( hdList, pos, hdVal )
-    TypHandle           hdList;
-    long                pos;
-    TypHandle           hdVal;
+TypHandle AssRange(TypHandle hdList, long pos, TypHandle hdVal)
 {
     long                plen;           /* physical length of <list>       */
 
@@ -442,10 +432,10 @@ TypHandle       AssRange ( hdList, pos, hdVal )
 **  same stuff as 'AsssPlist'.  This is because a range is not very likely to
 **  stay a range after the assignment.
 */
-TypHandle       AsssRange ( hdList, hdPoss, hdVals )
-    TypHandle           hdList;
-    TypHandle           hdPoss;
-    TypHandle           hdVals;
+TypHandle       AsssRange (
+    TypHandle           hdList,
+    TypHandle           hdPoss,
+    TypHandle           hdVals)
 {
     /* convert <list> to a plain list                                      */
     PLAIN_LIST( hdList );
@@ -466,10 +456,10 @@ TypHandle       AsssRange ( hdList, hdPoss, hdVals )
 **
 **  'PosRange' is the function in 'TabPosList' for ranges.
 */
-long            PosRange ( hdList, hdVal, start )
-    TypHandle           hdList;
-    TypHandle           hdVal;
-    long                start;
+long PosRange(
+    TypHandle           hdList,
+    TypHandle           hdVal,
+    long                start)
 {
     long                k;              /* position, result                */
     long                lenList;        /* length of <list>                */
@@ -534,8 +524,7 @@ long            PosRange ( hdList, hdVal, start )
 **
 **  'PlainRange' is the function in 'TabPlainList' for ranges.
 */
-void            PlainRange ( hdList )
-    TypHandle           hdList;
+void PlainRange(TypHandle hdList)
 {
     long                lenList;        /* length of <list>                */
     long                low;            /* first element of <list>         */
@@ -568,8 +557,7 @@ void            PlainRange ( hdList )
 **
 **  'IsDenseRange' is the function in 'TabIsDenseList' for ranges.
 */
-long            IsDenseRange ( hdList )
-    TypHandle           hdList;
+long IsDenseRange(TypHandle hdList)
 {
     return 1;
 }
@@ -584,8 +572,7 @@ long            IsDenseRange ( hdList )
 **
 **  'IsPossRange' is the function in 'TabIsPossList' for ranges.
 */
-long            IsPossRange ( hdList )
-    TypHandle           hdList;
+long IsPossRange(TypHandle hdList)
 {
     /* test if the first element is positive                               */
     if ( LOW_RANGE( hdList ) <= 0 )
@@ -608,8 +595,7 @@ long            IsPossRange ( hdList )
 **
 **  'PrRange' handles bags of type 'T_RANGE' and 'T_MAKERANGE'.
 */
-void            PrRange ( hdRange )
-    TypHandle           hdRange;
+void PrRange(TypHandle hdRange)
 {
     Pr( "%2>[ %2>%d",
         LOW_RANGE(hdRange), 0L );
@@ -630,9 +616,7 @@ void            PrRange ( hdRange )
 **
 **  Is  called from the 'EQ' binop  so both  operands are  already evaluated.
 */
-TypHandle       EqRange ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle EqRange(TypHandle hdL, TypHandle hdR)
 {
     if ( LEN_RANGE(hdL) == LEN_RANGE(hdR)
       && LOW_RANGE(hdL) == LOW_RANGE(hdR)
@@ -654,9 +638,7 @@ TypHandle       EqRange ( hdL, hdR )
 **
 **  Is called from the 'LT' binop so both operands are already evaluated.
 */
-TypHandle       LtRange ( hdL, hdR )
-    TypHandle           hdL;
-    TypHandle           hdR;
+TypHandle LtRange(TypHandle hdL, TypHandle hdR)
 {
     /* first compare the first elements                                    */
     if ( LOW_RANGE(hdL) < LOW_RANGE(hdR) )
@@ -687,8 +669,7 @@ TypHandle       LtRange ( hdL, hdR )
 **
 **  'EvMakeRange' turns the literal  range  <hdMake>  into  a  constant  one.
 */
-TypHandle       EvMakeRange ( hdMake )
-    TypHandle           hdMake;
+TypHandle EvMakeRange(TypHandle hdMake)
 {
     TypHandle           hdRange;        /* handle of the result            */
     TypHandle           hdL;            /* handle of the first element     */
@@ -759,8 +740,7 @@ TypHandle       EvMakeRange ( hdMake )
 **  'PrMakeRange' prints the range literal  <hdMake> in the form '[  <low> ..
 **  <high> ]'.
 */
-void            PrMakeRange ( hdMake )
-    TypHandle           hdMake;
+void PrMakeRange(TypHandle hdMake)
 {
     if ( SIZE( hdMake ) == 2 * SIZE_HD ) {
         Pr("%2>[ %2>",0L,0L);    Print( PTR(hdMake)[0] );
@@ -784,8 +764,7 @@ void            PrMakeRange ( hdMake )
 **  otherwise.  As a  sideeffect 'IsRange' converts proper ranges represented
 **  the ordinary way to the compact representation.
 */
-long            IsRange ( hdList )
-    TypHandle           hdList;
+long IsRange(TypHandle hdList)
 {
     long                isRange;        /* result of the test              */
     long                len;            /* logical length of list          */
@@ -872,8 +851,7 @@ long            IsRange ( hdList )
 **  the elements are  consecutive integers.  Will cause an  error if <obj> is
 **  an unassigned variable.
 */
-TypHandle       FunIsRange ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsRange(TypHandle hdCall)
 {
     TypHandle           hdObj;          /* handle of the argument          */
 
@@ -895,7 +873,7 @@ TypHandle       FunIsRange ( hdCall )
 **
 **  'InitRange' initializes the range package.
 */
-void            InitRange ()
+void InitRange()
 {
 
     /* install the list functions in the tables                            */

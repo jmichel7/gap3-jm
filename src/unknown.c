@@ -65,8 +65,7 @@ long            LargestUnknown;
 **  'EvUnknown' returns the value of the unknown <hdUnd>.  Since unknowns are
 **  constants and thus selfevaluating this simply returns <hdUnd>.
 */
-TypHandle       EvUnknown ( hdUnk )
-    TypHandle           hdUnk;
+TypHandle EvUnknown (TypHandle hdUnk)
 {
     return hdUnk;
 }
@@ -79,7 +78,7 @@ TypHandle       EvUnknown ( hdUnk )
 **  'NewUnknown' returns a new unknown value, i.e., 'Unknown(<n>)' where  <n>
 **  is an integer previously not used.
 */
-TypHandle       NewUnknown ()
+TypHandle NewUnknown (void)
 {
     TypHandle           hdUnk;
 
@@ -99,8 +98,7 @@ TypHandle       NewUnknown ()
 **
 **  Is called from the 'Sum' binop, so both operands are already evaluated.
 */
-TypHandle       SumUnknown ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle SumUnknown (TypHandle hdL, TypHandle hdR)
 {
     if ( hdL == INT_TO_HD(0) )
         return hdR;
@@ -120,8 +118,7 @@ TypHandle       SumUnknown ( hdL, hdR )
 **
 **  Is called from the 'Diff' binop, so both operands are already evaluated.
 */
-TypHandle       DiffUnknown ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle DiffUnknown (TypHandle hdL, TypHandle hdR)
 {
     if ( hdR == INT_TO_HD(0) )
         return hdL;
@@ -142,8 +139,7 @@ TypHandle       DiffUnknown ( hdL, hdR )
 **
 **  Is called from the 'Prod' binop, so both operands are already evaluated.
 */
-TypHandle       ProdUnknown ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle ProdUnknown (TypHandle hdL, TypHandle hdR)
 {
     if ( hdL == INT_TO_HD(0) || hdR == INT_TO_HD(0) )
         return INT_TO_HD(0);
@@ -166,8 +162,7 @@ TypHandle       ProdUnknown ( hdL, hdR )
 **
 **  Is called from the 'Quo' binop, so both operands are already evaluated.
 */
-TypHandle       QuoUnknown ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle QuoUnknown (TypHandle hdL, TypHandle hdR)
 {
     if ( hdR == INT_TO_HD(0) )
         return Error("divisor must be nonzero",0L,0L);
@@ -190,8 +185,7 @@ TypHandle       QuoUnknown ( hdL, hdR )
 **
 **  Is called from the 'Pow' binop, so both operands are already evaluted.
 */
-TypHandle       PowUnknown ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle PowUnknown (TypHandle hdL, TypHandle hdR)
 {
     if ( hdR == INT_TO_HD(0) )
         return INT_TO_HD(1);
@@ -214,8 +208,7 @@ TypHandle       PowUnknown ( hdL, hdR )
 **
 **  Is called from 'EvEq' binop, so both operands are already evaluated.
 */
-TypHandle       EqUnknown ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle EqUnknown (TypHandle hdL, TypHandle hdR)
 {
     if ( ((long*)PTR(hdL))[0] == ((long*)PTR(hdR))[0] )
         return HdTrue;
@@ -236,8 +229,7 @@ TypHandle       EqUnknown ( hdL, hdR )
 **
 **  Is called from 'EvLt' binop, so both operands are already evaluated.
 */
-TypHandle       LtUnknown ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle LtUnknown (TypHandle hdL, TypHandle hdR)
 {
     if ( ((long*)PTR(hdL))[0] < ((long*)PTR(hdR))[0] )
         return HdTrue;
@@ -252,8 +244,7 @@ TypHandle       LtUnknown ( hdL, hdR )
 **
 **  'PrUnknown' prints the unknown <hdUnk> in the form 'Unknown(<n>)'.
 */
-void            PrUnknown ( hdUnk )
-    TypHandle           hdUnk;
+void PrUnknown (TypHandle hdUnk)
 {
     Pr("%>Unknown(%d)%<",((long*)PTR(hdUnk))[0],0L);
 }
@@ -273,8 +264,7 @@ void            PrUnknown ( hdUnk )
 **
 **  In the second form 'Unknown' returns the unknown 'Unknown(<n>)'.
 */
-TypHandle       FunUnknown ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunUnknown (TypHandle hdCall)
 {
     TypHandle           hdUnk;
     long                n;
@@ -314,8 +304,7 @@ TypHandle       FunUnknown ( hdCall )
 **  'IsUnknown' returns 'true' if the object <obj> is an unknown and  'false'
 **  otherwise.  Will cause an error if <obj> is an unbound variable.
 */
-TypHandle       FunIsUnknown ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsUnknown (TypHandle hdCall)
 {
     TypHandle           hdObj;          /* handle of the object            */
 
@@ -340,7 +329,7 @@ TypHandle       FunIsUnknown ( hdCall )
 **
 **  'InitUnknown' initializes the unknown package.
 */
-void            InitUnknown ()
+void InitUnknown (void)
 {
     unsigned int        type;
 

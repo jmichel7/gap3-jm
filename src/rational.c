@@ -75,8 +75,7 @@
 **  'EvRat' returns the value of the rational <hdRat>.  Because rationals are
 **  constants and thus selfevaluating this just returns <hdRat>.
 */
-TypHandle       EvRat ( hdRat )
-    TypHandle           hdRat;
+TypHandle EvRat (TypHandle hdRat)
 {
     return hdRat;
 }
@@ -91,8 +90,7 @@ TypHandle       EvRat ( hdRat )
 **
 **  Is called from the 'Sum' binop, so both operands are already evaluated.
 */
-TypHandle       SumRat ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle SumRat (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           numL, denL;     /* numerator and denominator left  */
     TypHandle           numR, denR;     /* numerator and denominator right */
@@ -148,8 +146,7 @@ TypHandle       SumRat ( hdL, hdR )
 **
 **  Is called from the 'Diff' binop, so both operands are already evaluated.
 */
-TypHandle       DiffRat ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle DiffRat (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           numL, denL;     /* numerator and denominator left  */
     TypHandle           numR, denR;     /* numerator and denominator right */
@@ -205,8 +202,7 @@ TypHandle       DiffRat ( hdL, hdR )
 **
 **  Is called from the 'Prod' binop, so both operands are already evaluated.
 */
-TypHandle       ProdRat ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle ProdRat (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           numL, denL;     /* numerator and denominator left  */
     TypHandle           numR, denR;     /* numerator and denominator right */
@@ -260,8 +256,7 @@ TypHandle       ProdRat ( hdL, hdR )
 **
 **  Is called from the 'Quo' binop, so both operands are already evaluated.
 */
-TypHandle       QuoRat ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle QuoRat (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           numL, denL;     /* numerator and denominator left  */
     TypHandle           numR, denR;     /* numerator and denominator right */
@@ -341,8 +336,7 @@ TypHandle       QuoRat ( hdL, hdR )
 **
 **  Is called from the 'Mod' binop, so both operands are already evaluated.
 */
-TypHandle       ModRat ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle ModRat (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           hdA, hdAL, hdB, hdBL, hdH, hdHL, hdQ;
 
@@ -379,8 +373,7 @@ TypHandle       ModRat ( hdL, hdR )
 **
 **  Is called from the 'Pow' binop, so both operands are already evaluated.
 */
-TypHandle       PowRat ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle PowRat (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           numP, denP;     /* numerator and denominator power */
     TypHandle           hdP;            /* power                           */
@@ -449,8 +442,7 @@ TypHandle       PowRat ( hdL, hdR )
 **
 **  Is called from 'EvEq' binop, so both operands are already evaluated.
 */
-TypHandle       EqRat ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle EqRat (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           numL, denL;     /* numerator and denominator left  */
     TypHandle           numR, denR;     /* numerator and denominator right */
@@ -478,8 +470,7 @@ TypHandle       EqRat ( hdL, hdR )
 **
 **  Is called from 'EvLt' binop, so both operands are already evaluated.
 */
-TypHandle       LtRat ( hdL, hdR )
-    TypHandle           hdL, hdR;
+TypHandle LtRat (TypHandle hdL, TypHandle hdR)
 {
     TypHandle           numL, denL;     /* numerator and denominator left  */
     TypHandle           numR, denR;     /* numerator and denominator right */
@@ -503,8 +494,7 @@ TypHandle       LtRat ( hdL, hdR )
 **
 **      <numerator> / <denominator>
 */
-void            PrRat ( hdRat )
-    TypHandle           hdRat;
+void PrRat (TypHandle hdRat)
 {
     Pr("%>",0L,0L);
     Print( PTR(hdRat)[0] );
@@ -521,8 +511,7 @@ void            PrRat ( hdRat )
 **  'IsRat'  returns 'true' if the object <obj> is  a  rational  and  'false'
 **  otherwise.  May cause an error if <obj> is an unbound variable.
 */
-TypHandle       FunIsRat ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunIsRat (TypHandle hdCall)
 {
     TypHandle           hdObj;
 
@@ -548,8 +537,7 @@ TypHandle       FunIsRat ( hdCall )
 **
 **  'Numerator' returns the numerator of the rational argument.
 */
-TypHandle       FunNumerator ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunNumerator (TypHandle hdCall)
 {
     TypHandle           hdRat;
 
@@ -577,8 +565,7 @@ TypHandle       FunNumerator ( hdCall )
 **
 **  'Denominator' returns the denominator of the rational argument.
 */
-TypHandle       FunDenominator ( hdCall )
-    TypHandle           hdCall;
+TypHandle FunDenominator (TypHandle hdCall)
 {
     TypHandle           hdRat;
 
@@ -606,7 +593,7 @@ TypHandle       FunDenominator ( hdCall )
 **
 **  'InitRat' initializes the rational package.
 */
-void            InitRat ()
+void InitRat (void)
 {
     InstEvFunc( T_RAT, EvRat );
     InstPrFunc( T_RAT, PrRat );

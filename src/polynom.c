@@ -89,9 +89,10 @@
 **  Convert two finite field vectors into finite field vectors over  the same
 **  finite field.  Signal an error if this conversion fails.
 */
-TypHandle UnifiedFieldVecFFE ( hdL,  hdR )
-    TypHandle	    hdL;	        /* first finite field vector       */
-    TypHandle       hdR;                /* second finite field vector      */
+TypHandle UnifiedFieldVecFFE (
+    TypHandle hdL,	        /* first finite field vector       */
+    TypHandle hdR                /* second finite field vector      */
+)
 {
     TypHandle           hdFld;          /* handle of the field             */
     unsigned long       p;              /* characteristic                  */
@@ -165,8 +166,7 @@ TypHandle UnifiedFieldVecFFE ( hdL,  hdR )
 */
 TypHandle (*TabShiftedCoeffs[T_VAR]) ( TypHandle, long );
 
-TypHandle FunShiftedCoeffs ( hdCall )
-    TypHandle       	hdCall;
+TypHandle FunShiftedCoeffs (TypHandle hdCall)
 {
     TypHandle       	hdC;		/* coeffs list                     */
     TypHandle       	hdN;		/* number of shifts                */
@@ -183,16 +183,12 @@ TypHandle FunShiftedCoeffs ( hdCall )
     return TabShiftedCoeffs[XType(hdC)]( hdC, HD_TO_INT(hdN) );
 }
 
-TypHandle CantShiftedCoeffs ( hdList, n )
-    TypHandle           hdList;
-    long                n;
+TypHandle CantShiftedCoeffs (TypHandle hdList, long n)
 {
     return Error( "<list> must be a vector", 0L, 0L );
 }
 
-TypHandle ShiftedCoeffsListx ( hdC, n )
-    TypHandle		hdC;
-    long		n;
+TypHandle ShiftedCoeffsListx (TypHandle hdC, long n)
 {
     TypHandle		hdS;		/* result                          */
     TypHandle		hdZero;		/* zero element                    */
@@ -240,9 +236,7 @@ TypHandle ShiftedCoeffsListx ( hdC, n )
     return hdS;
 }
 
-TypHandle ShiftedCoeffsVecFFE ( hdC, n )
-    TypHandle		hdC;
-    long		n;
+TypHandle ShiftedCoeffsVecFFE (TypHandle hdC, long n)
 {
     TypHandle		hdS;		/* result                          */
     TypFFE		tmp;		/* temporary                       */
@@ -299,8 +293,7 @@ TypHandle ShiftedCoeffsVecFFE ( hdC, n )
 */
 TypHandle (*TabNormalizeCoeffs[T_VAR]) ( TypHandle );
 
-TypHandle FunNormalizeCoeffs ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunNormalizeCoeffs (TypHandle hdCall)
 {
     TypHandle       hdC;
 
@@ -313,14 +306,12 @@ TypHandle FunNormalizeCoeffs ( hdCall )
     return TabNormalizeCoeffs[XType(hdC)]( hdC );
 }
 
-TypHandle CantNormalizeCoeffs ( hdList )
-    TypHandle           hdList;
+TypHandle CantNormalizeCoeffs (TypHandle hdList)
 {
     return Error( "<list> must be a vector", 0L, 0L );
 }
 
-TypHandle NormalizeCoeffsVecFFE ( hdC )
-    TypHandle		hdC;
+TypHandle NormalizeCoeffsVecFFE (TypHandle hdC)
 {
     TypFFE		tmp;            /* temporary                       */
     long		len;		/* length of <hdC>                 */
@@ -361,8 +352,7 @@ TypHandle NormalizeCoeffsVecFFE ( hdC )
     return INT_TO_HD(l1-1);
 }
 
-TypHandle NormalizeCoeffsListx ( hdC )
-    TypHandle		hdC;
+TypHandle NormalizeCoeffsListx (TypHandle hdC)
 {
     TypHandle		hdZero;         /* temporary                       */
     TypHandle		hdTmp;          /* temporary                       */
@@ -423,8 +413,7 @@ TypHandle NormalizeCoeffsListx ( hdC )
 */
 void (*TabShrinkCoeffs[T_VAR]) ( TypHandle );
 
-TypHandle FunShrinkCoeffs ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunShrinkCoeffs (TypHandle hdCall)
 {
     TypHandle       hdC;
 
@@ -438,14 +427,12 @@ TypHandle FunShrinkCoeffs ( hdCall )
     return HdVoid;
 }
 
-void CantShrinkCoeffs ( hdList )
-    TypHandle           hdList;
+void CantShrinkCoeffs (TypHandle hdList)
 {
     Error( "<list> must be a vector", 0L, 0L );
 }
 
-void ShrinkCoeffsVecFFE ( hdC )
-    TypHandle		hdC;
+void ShrinkCoeffsVecFFE (TypHandle hdC)
 {
     long		len;		/* length of <hdC>                 */
     long		i;		/* loop                            */
@@ -468,8 +455,7 @@ void ShrinkCoeffsVecFFE ( hdC )
     Resize( hdC, SIZE_PLEN_VECFFE(i) );
 }
 
-void ShrinkCoeffsListx ( hdC )
-    TypHandle		hdC;
+void ShrinkCoeffsListx (TypHandle hdC)
 {
     TypHandle		hdZero;         /* temporary                       */
     TypHandle		hdTmp;          /* temporary                       */
@@ -512,18 +498,12 @@ void ShrinkCoeffsListx ( hdC )
 */
 void (*TabAddCoeffs[T_VAR][T_VAR]) ( TypHandle, TypHandle, TypHandle );
 
-void CantAddCoeffs ( hdL, hdR, hdM )
-    TypHandle		hdL;
-    TypHandle		hdR;
-    TypHandle       	hdM;
+void CantAddCoeffs (TypHandle hdL, TypHandle hdR, TypHandle hdM)
 {
     Error("<l> and <r> must be vectors over a common field", 0L, 0L);
 }
 
-void AddCoeffsListxListx ( hdL, hdR, hdM )
-    TypHandle		hdL;
-    TypHandle		hdR;
-    TypHandle       	hdM;
+void AddCoeffsListxListx (TypHandle hdL, TypHandle hdR, TypHandle hdM)
 {
     TypHandle           hdLL;       /* one element of <hdL>                */
     TypHandle           hdRR;       /* one element of <hdR>                */
@@ -575,10 +555,7 @@ void AddCoeffsListxListx ( hdL, hdR, hdM )
     }
 }
 
-void AddCoeffsVecFFEVecFFE ( hdL, hdR, hdM )
-    TypHandle		hdL;
-    TypHandle		hdR;
-    TypHandle       	hdM;
+void AddCoeffsVecFFEVecFFE (TypHandle hdL, TypHandle hdR, TypHandle hdM)
 {
     long            l;          /* degree plus one of left polynomial      */
     long            r;          /* degree plus one of right polynomial     */
@@ -650,10 +627,7 @@ void AddCoeffsVecFFEVecFFE ( hdL, hdR, hdM )
     }
 }
 
-void AddCoeffsListxVecFFE ( hdL, hdR, hdM )
-    TypHandle		hdL;
-    TypHandle		hdR;
-    TypHandle       	hdM;
+void AddCoeffsListxVecFFE (TypHandle hdL, TypHandle hdR, TypHandle hdM)
 {
     /* catch the special case that <hdL> is empty                          */
     if ( LEN_LIST(hdL) == 0 ) {
@@ -678,8 +652,7 @@ void AddCoeffsListxVecFFE ( hdL, hdR, hdM )
 **
 **  'FunAddCoeffs' implements 'AddCoeffs( <l>, <r> )'
 */
-TypHandle FunAddCoeffs ( hdCall )
-    TypHandle       	hdCall;
+TypHandle FunAddCoeffs (TypHandle hdCall)
 {
     TypHandle       	hdL;
     TypHandle       	hdR;
@@ -707,8 +680,7 @@ TypHandle FunAddCoeffs ( hdCall )
 **
 **  'FunSumCoeffs' implements 'SumCoeffs( <l>, <r> )'
 */
-TypHandle FunSumCoeffs ( hdCall )
-    TypHandle       	hdCall;
+TypHandle FunSumCoeffs (TypHandle hdCall)
 {
     TypHandle       	hdL;
     TypHandle       	hdR;
@@ -739,23 +711,25 @@ TypHandle FunSumCoeffs ( hdCall )
 long (*TabMultiplyCoeffs[T_VAR][T_VAR]) (
     TypHandle, TypHandle, long, TypHandle, long );
 
-long CantMultiplyCoeffs ( hdP, hdL, l, hdR, r )
-    TypHandle	    	hdP;	/* space for result of <hdL> * <hdR>       */
-    TypHandle       	hdL;    /* left polynomial coeffs                  */
-    TypHandle       	hdR;    /* right polynomial coeffs                 */
-    long            	l;      /* degree plus one of left polynomial      */
-    long            	r;      /* degree plus one of right polynomial     */
+long CantMultiplyCoeffs (
+    TypHandle hdP,	/* space for result of <hdL> * <hdR>       */
+    TypHandle hdL,    /* left polynomial coeffs                  */
+    long l,      /* degree plus one of left polynomial      */
+    TypHandle hdR,    /* right polynomial coeffs                 */
+    long r      /* degree plus one of right polynomial     */
+)
 {
     Error( "<l> and <r> must be vectors over a common field", 0L, 0L);
     return 0;
 }
 
-long MultiplyCoeffsListxListx ( hdP, hdL, l, hdR, r )
-    TypHandle	    	hdP;	/* space for result of <hdL> * <hdR>       */
-    TypHandle       	hdL;    /* left polynomial coeffs                  */
-    TypHandle       	hdR;    /* right polynomial coeffs                 */
-    long            	l;      /* degree plus one of left polynomial      */
-    long            	r;      /* degree plus one of right polynomial     */
+long MultiplyCoeffsListxListx (
+    TypHandle hdP,	/* space for result of <hdL> * <hdR>       */
+    TypHandle hdL,    /* left polynomial coeffs                  */
+    long l,      /* degree plus one of left polynomial      */
+    TypHandle hdR,    /* right polynomial coeffs                 */
+    long r      /* degree plus one of right polynomial     */
+)
 {
     TypHandle       	hdLL;   /* one element of <hdL>                    */
     TypHandle       	hdRR;   /* one element of <hdR>                    */
@@ -784,12 +758,13 @@ long MultiplyCoeffsListxListx ( hdP, hdL, l, hdR, r )
     return r+l-1;
 }
 
-long MultiplyCoeffsVecFFEVecFFE ( hdP, hdL, l, hdR, r )
-    TypHandle	    	hdP;	/* space for result of <hdL> * <hdR>       */
-    TypHandle       	hdL;    /* left polynomial coeffs                  */
-    TypHandle       	hdR;    /* right polynomial coeffs                 */
-    long            	l;      /* degree plus one of left polynomial      */
-    long            	r;      /* degree plus one of right polynomial     */
+long MultiplyCoeffsVecFFEVecFFE (
+    TypHandle hdP,	/* space for result of <hdL> * <hdR>       */
+    TypHandle hdL,    /* left polynomial coeffs                  */
+    long l,      /* degree plus one of left polynomial      */
+    TypHandle hdR,    /* right polynomial coeffs                 */
+    long r      /* degree plus one of right polynomial     */
+)
 {
     TypFFE *            ptL;    /* coeffs vectors of left polynomial       */
     TypFFE * 		ptLL;   /* coeffs vectors of left polynomial       */
@@ -850,8 +825,7 @@ long MultiplyCoeffsVecFFEVecFFE ( hdP, hdL, l, hdR, r )
 */
 TypHandle (*TabProductCoeffs[T_VAR][T_VAR]) ( TypHandle, TypHandle );
 
-TypHandle FunProductCoeffs ( hdCall )
-    TypHandle       	hdCall;
+TypHandle FunProductCoeffs (TypHandle hdCall)
 {
     TypHandle       	hdL;
     TypHandle       	hdR;
@@ -866,16 +840,12 @@ TypHandle FunProductCoeffs ( hdCall )
     return TabProductCoeffs[XType(hdL)][XType(hdR)]( hdL, hdR );
 }
 
-TypHandle CantProductCoeffs ( hdL, hdR )
-    TypHandle		hdL;
-    TypHandle		hdR;
+TypHandle CantProductCoeffs (TypHandle hdL, TypHandle hdR)
 {
     return Error("<l> and <r> must be vectors over a common field", 0L, 0L);
 }
 
-TypHandle ProductCoeffsListxListx ( hdL, hdR )
-    TypHandle		hdL;
-    TypHandle		hdR;
+TypHandle ProductCoeffsListxListx (TypHandle hdL, TypHandle hdR)
 {
     TypHandle		hdP;		/* result                          */
     long		l;		/* length of <hdL>                 */
@@ -903,9 +873,7 @@ TypHandle ProductCoeffsListxListx ( hdL, hdR )
     return hdP;
 }
 
-TypHandle ProductCoeffsVecFFEVecFFE ( hdL, hdR )
-    TypHandle		hdL;
-    TypHandle		hdR;
+TypHandle ProductCoeffsVecFFEVecFFE (TypHandle hdL, TypHandle hdR)
 {
     TypHandle		hdP;		/* result                          */
     long		l;		/* length of <hdL>                 */
@@ -943,8 +911,7 @@ TypHandle ProductCoeffsVecFFEVecFFE ( hdL, hdR )
 TypHandle (*TabProductCoeffsMod[T_VAR][T_VAR]) (
     TypHandle, TypHandle, TypHandle );
 
-TypHandle FunProductCoeffsMod ( hdCall )
-    TypHandle       	hdCall;
+TypHandle FunProductCoeffsMod (TypHandle hdCall)
 {
     TypHandle       	hdL;
     TypHandle       	hdR;
@@ -961,18 +928,12 @@ TypHandle FunProductCoeffsMod ( hdCall )
     return TabProductCoeffsMod[XType(hdL)][XType(hdR)]( hdL, hdR, hdN );
 }
 
-TypHandle CantProductCoeffsMod ( hdL, hdR, hdN )
-    TypHandle		hdL;
-    TypHandle		hdR;
-    TypHandle		hdN;
+TypHandle CantProductCoeffsMod (TypHandle hdL, TypHandle hdR, TypHandle hdN)
 {
     return Error("<l> and <r> must be vectors over a common field", 0L, 0L);
 }
 
-TypHandle ProductCoeffsModListxListx ( hdL, hdR, hdN )
-    TypHandle		hdL;
-    TypHandle		hdR;
-    TypHandle		hdN;
+TypHandle ProductCoeffsModListxListx (TypHandle hdL, TypHandle hdR, TypHandle hdN)
 {
     TypHandle		hdP;		/* result                          */
     TypHandle           hdLL;           /* one element of <hdL>            */
@@ -1043,21 +1004,23 @@ TypHandle ProductCoeffsModListxListx ( hdL, hdR, hdN )
 long (*TabReduceCoeffs[T_VAR][T_VAR]) (
     TypHandle, long, TypHandle, long );
 
-long CantReduceCoeffs ( hdL, l, hdR, r )
-    TypHandle       	hdL;    /* left polynomial coeffs                  */
-    long            	l;      /* degree plus one of left polynomial      */
-    TypHandle       	hdR;    /* right polynomial coeffs                 */
-    long            	r;      /* degree plus one of right polynomial     */
+long CantReduceCoeffs (
+    TypHandle hdL,    /* left polynomial coeffs                  */
+    long l,      /* degree plus one of left polynomial      */
+    TypHandle hdR,    /* right polynomial coeffs                 */
+    long r      /* degree plus one of right polynomial     */
+)
 {
     Error( "<l> and <r> must be vectors over a common field", 0L, 0L);
     return 0;
 }
 
-long ReduceCoeffsListxListx ( hdL, l, hdR, r )
-    TypHandle       	hdL;    /* left polynomial coeffs                  */
-    long            	l;      /* degree plus one of left polynomial      */
-    TypHandle       	hdR;    /* right polynomial coeffs                 */
-    long            	r;      /* degree plus one of right polynomial     */
+long ReduceCoeffsListxListx (
+    TypHandle hdL,    /* left polynomial coeffs                  */
+    long l,      /* degree plus one of left polynomial      */
+    TypHandle hdR,    /* right polynomial coeffs                 */
+    long r      /* degree plus one of right polynomial     */
+)
 {
     TypHandle           hdLL;   /* one element of <hdL>                    */
     TypHandle           hdRR;   /* one element of <hdR>                    */
@@ -1105,11 +1068,12 @@ long ReduceCoeffsListxListx ( hdL, l, hdR, r )
     return ( l < r ) ? l : r-1;
 }
 
-long ReduceCoeffsVecFFEVecFFE ( hdL, l, hdR, r )
-    TypHandle       	hdL;    /* left polynomial coeffs                  */
-    long            	l;      /* degree plus one of left polynomial      */
-    TypHandle       	hdR;    /* right polynomial coeffs                 */
-    long            	r;      /* degree plus one of right polynomial     */
+long ReduceCoeffsVecFFEVecFFE (
+    TypHandle hdL,    /* left polynomial coeffs                  */
+    long l,      /* degree plus one of left polynomial      */
+    TypHandle hdR,    /* right polynomial coeffs                 */
+    long r      /* degree plus one of right polynomial     */
+)
 {
     TypFFE *            ptL;    /* coeffs vectors of left polynomial       */
     TypFFE *            ptLL;   /* coeffs vectors of left polynomial       */
@@ -1177,8 +1141,7 @@ long ReduceCoeffsVecFFEVecFFE ( hdL, l, hdR, r )
 **
 **  'FunReduceCoeffs' implements 'ReduceCoeffs( <l>, <r> )'
 */
-TypHandle FunReduceCoeffs ( hdCall )
-    TypHandle 		hdCall;
+TypHandle FunReduceCoeffs (TypHandle hdCall)
 {
     TypHandle       	hdL;
     long                l;
@@ -1205,8 +1168,7 @@ TypHandle FunReduceCoeffs ( hdCall )
 **
 **  'FunRemainderCoeffs' implements 'RemainderCoeffs( <l>, <r> )'
 */
-TypHandle FunRemainderCoeffs ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunRemainderCoeffs (TypHandle hdCall)
 {
     TypHandle       	hdL;
     long                l;
@@ -1238,23 +1200,25 @@ TypHandle FunRemainderCoeffs ( hdCall )
 long (*TabReduceCoeffsMod[T_VAR][T_VAR]) (
     TypHandle, long, TypHandle, long, TypHandle );
 
-long CantReduceCoeffsMod ( hdL, l, hdR, r, hdP )
-    TypHandle       	hdL;    /* left polynomial coeffs                  */
-    long            	l;      /* degree plus one of left polynomial      */
-    TypHandle       	hdR;    /* right polynomial coeffs                 */
-    long            	r;      /* degree plus one of right polynomial     */
-    TypHandle       	hdP;    /* modulo                                  */
+long CantReduceCoeffsMod (
+    TypHandle hdL,    /* left polynomial coeffs                  */
+    long l,      /* degree plus one of left polynomial      */
+    TypHandle hdR,    /* right polynomial coeffs                 */
+    long r,      /* degree plus one of right polynomial     */
+    TypHandle hdP    /* modulo                                  */
+)
 {
     Error( "<l> and <r> must be vectors over a common field", 0L, 0L);
     return 0;
 }
 
-long ReduceCoeffsModListxListx ( hdL, l, hdR, r, hdP )
-    TypHandle       	hdL;    /* left polynomial coeffs                  */
-    long            	l;      /* degree plus one of left polynomial      */
-    TypHandle       	hdR;    /* right polynomial coeffs                 */
-    long            	r;      /* degree plus one of right polynomial     */
-    TypHandle       	hdP;    /* modulo                                  */
+long ReduceCoeffsModListxListx (
+    TypHandle hdL,    /* left polynomial coeffs                  */
+    long l,      /* degree plus one of left polynomial      */
+    TypHandle hdR,    /* right polynomial coeffs                 */
+    long r,      /* degree plus one of right polynomial     */
+    TypHandle hdP    /* modulo                                  */
+)
 {
     TypHandle       hdLL;       /* one element of <hdL>                    */
     TypHandle       hdRR;       /* one element of <hdR>                    */
@@ -1334,12 +1298,13 @@ long ReduceCoeffsModListxListx ( hdL, l, hdR, r, hdP )
     return r-1;
 }
 
-long ReduceCoeffsModListx ( hdL, l, hdR, r, hdP )
-    TypHandle       	hdL;    /* left polynomial coeffs                  */
-    long            	l;      /* degree plus one of left polynomial      */
-    TypHandle       	hdR;    /* void                                    */
-    long            	r;      /* zero                                    */
-    TypHandle       	hdP;    /* modulo                                  */
+long ReduceCoeffsModListx (
+    TypHandle hdL,    /* left polynomial coeffs                  */
+    long l,      /* degree plus one of left polynomial      */
+    TypHandle hdR,    /* void                                    */
+    long r,      /* zero                                    */
+    TypHandle hdP    /* modulo                                  */
+)
 {
     TypHandle       hdTT;       /* temp element                            */
     TypHandle       hdQ;        /* <hdP> / 2                               */
@@ -1381,8 +1346,7 @@ long ReduceCoeffsModListx ( hdL, l, hdR, r, hdP )
 **
 **  'FunReduceCoeffsMod' implements 'ReduceCoeffsMod( <l>, <r>, <p> )'
 */
-TypHandle FunReduceCoeffsMod ( hdCall )
-    TypHandle       hdCall;
+TypHandle FunReduceCoeffsMod (TypHandle hdCall)
 {
     TypHandle       	hdL;
     long                l;
@@ -1424,8 +1388,7 @@ TypHandle (*TabPowerModCoeffsInt[T_VAR][T_VAR]) (
 TypHandle (*TabPowerModCoeffsLInt[T_VAR][T_VAR]) (
     TypHandle, TypHandle, TypHandle );
 
-TypHandle FunPowerModCoeffs ( hdCall )
-    TypHandle 		hdCall;
+TypHandle FunPowerModCoeffs (TypHandle hdCall)
 {
     TypHandle       	hdG;
     TypHandle       	hdE;
@@ -1447,10 +1410,11 @@ TypHandle FunPowerModCoeffs ( hdCall )
 	return TabPowerModCoeffsLInt[XType(hdG)][XType(hdR)](hdG, hdE, hdR);
 }
 
-TypHandle PowerModListxIntListx ( hdG, hdE, hdR )
-    TypHandle       	hdG;    /* polynomial coeffs                       */
-    TypHandle       	hdE;    /* exponent                                */
-    TypHandle       	hdR;    /* modulus                                 */
+TypHandle PowerModListxIntListx (
+    TypHandle hdG,    /* polynomial coeffs                       */
+    TypHandle hdE,    /* exponent                                */
+    TypHandle hdR    /* modulus                                 */
+)
 {
     TypHandle	        hdP;    /* result                                  */
     TypHandle           hdR1;   /* temporary storage for multiplication    */
@@ -1539,10 +1503,11 @@ TypHandle PowerModListxIntListx ( hdG, hdE, hdR )
     return hdP;
 }
 
-TypHandle PowerModVecFFEIntVecFFE ( hdG, hdE, hdR )
-    TypHandle       	hdG;    /* polynomial coeffs                       */
-    TypHandle       	hdE;    /* exponent                                */
-    TypHandle       	hdR;    /* modulus                                 */
+TypHandle PowerModVecFFEIntVecFFE (
+    TypHandle hdG,    /* polynomial coeffs                       */
+    TypHandle hdE,    /* exponent                                */
+    TypHandle hdR    /* modulus                                 */
+)
 {
     TypHandle	        hdP;    /* result                                  */
     TypHandle           hdR1;   /* temporary storage for multiplication    */
@@ -1626,10 +1591,11 @@ TypHandle PowerModVecFFEIntVecFFE ( hdG, hdE, hdR )
     return hdP;
 }
 
-TypHandle PowerModListxLIntListx ( hdG, hdE, hdR )
-    TypHandle       	hdG;    /* polynomial coeffs                       */
-    TypHandle       	hdE;    /* exponent                                */
-    TypHandle       	hdR;    /* modulus polynomial coeffs               */
+TypHandle PowerModListxLIntListx (
+    TypHandle hdG,    /* polynomial coeffs                       */
+    TypHandle hdE,    /* exponent                                */
+    TypHandle hdR    /* modulus polynomial coeffs               */
+)
 {
     TypHandle	        hdP;    /* result                                  */
     TypHandle           hdR1;   /* temporary storage for multiplication    */
@@ -1720,10 +1686,11 @@ TypHandle PowerModListxLIntListx ( hdG, hdE, hdR )
     return hdP;
 }
 
-TypHandle PowerModVecFFELIntVecFFE ( hdG, hdE, hdR )
-    TypHandle       	hdG;    /* polynomial coeffs                       */
-    TypHandle       	hdE;    /* exponent                                */
-    TypHandle       	hdR;    /* modulus                                 */
+TypHandle PowerModVecFFELIntVecFFE (
+    TypHandle hdG,    /* polynomial coeffs                       */
+    TypHandle hdE,    /* exponent                                */
+    TypHandle hdR    /* modulus                                 */
+)
 {
     TypHandle	        hdP;    /* result                                  */
     TypHandle           hdR1;   /* temporary storage for multiplication    */
@@ -1809,10 +1776,11 @@ TypHandle PowerModVecFFELIntVecFFE ( hdG, hdE, hdR )
     return hdP;
 }
 
-TypHandle CantPowerModCoeffs ( hdG, hdE, hdR )
-    TypHandle       	hdG;    /* polynomial coeffs                       */
-    TypHandle       	hdE;    /* exponent                                */
-    TypHandle       	hdR;    /* modulus polynomial coeffs               */
+TypHandle CantPowerModCoeffs (
+    TypHandle hdG,    /* polynomial coeffs                       */
+    TypHandle hdE,    /* exponent                                */
+    TypHandle hdR    /* modulus polynomial coeffs               */
+)
 {
     Error( "<g> and <r> must be vectors over a common field", 0L, 0L);
     return 0;
@@ -1824,7 +1792,7 @@ TypHandle CantPowerModCoeffs ( hdG, hdE, hdR )
 **
 *F  InitPolynom() . . . . . . . . . . . . . .  initialize the polynom package
 */
-void InitPolynom ()
+void InitPolynom (void)
 {
     long            type1, type2;    	/* loop variables                  */
 
